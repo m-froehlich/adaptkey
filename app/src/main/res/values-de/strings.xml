@@ -108,6 +108,10 @@
     <string name="c01_backspace_summary">Prozentualer Aufschlag, von den Nachbartasten genommen (L-04).</string>
     <string name="d361_backspace_sticky_title">Backspace klebend</string>
     <string name="d361_backspace_sticky_summary">Ein schneller erneuter Tipp direkt nach der Rücktaste bleibt Rücktaste, auch wenn er auf einer Nachbartaste landet (z. B. Enter). Nutzt oben stehendes Doppeltipp-Delay als Zeitfenster.</string>
+    <string name="d401_cursor_control_title">Cursor-Steuerungsgeste</string>
+    <string name="d401_cursor_control_summary">Langes Drücken der Leertaste bewegt per Ziehen den Cursor; kurz stillhalten wechselt zur Textauswahl.</string>
+    <string name="d401_hint_stage1">Ziehen bewegt den Cursor. Stillhalten wechselt zur Auswahl.</string>
+    <string name="d401_hint_stage2">Ziehen wählt Text aus. Tippen beendet.</string>
     <string name="c01_shift_title">Zusatzbreite der Shift-Taste</string>
     <string name="c01_shift_summary">Prozentualer Aufschlag für die Shift-Taste (D-16). Von der Kalibrierung voreingestellt; anpassbar.</string>
 

@@ -122,6 +122,9 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  * @property learnedWordExpiryWindow D-389: how long a learned word may go untouched before the daily
  *           [de.froehlichmedia.adaptkey.dictionary.LearnedWordExpirySweep] un-learns it (default
  *           [LearnedWordExpiryWindow.DEFAULT]) - a coarse früh/mittel/spät choice, not a raw duration.
+ * @property cursorControlEnabled D-401: whether a long-press on the space bar arms the cursor/selection
+ *           control gesture (default **off** - a new, screen-consuming gesture on the app's most-tapped key
+ *           needs an explicit opt-in rather than risking an accidental hold during ordinary typing).
  */
 data class AdaptSettings(
     val keyProportions: KeyProportions = KeyProportions.DEFAULT,
@@ -152,7 +155,8 @@ data class AdaptSettings(
     val autoMergeEnabled: Boolean = false,
     val autoMergeAggressiveness: AutoMergeAggressiveness = AutoMergeAggressiveness.DEFAULT,
     val sustainedLanguageSwitchThreshold: Int = DEFAULT_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD,
-    val learnedWordExpiryWindow: LearnedWordExpiryWindow = LearnedWordExpiryWindow.DEFAULT
+    val learnedWordExpiryWindow: LearnedWordExpiryWindow = LearnedWordExpiryWindow.DEFAULT,
+    val cursorControlEnabled: Boolean = false
 ) {
     
     companion object {

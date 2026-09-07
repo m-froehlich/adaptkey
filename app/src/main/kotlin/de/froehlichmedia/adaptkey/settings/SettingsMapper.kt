@@ -55,7 +55,8 @@ data class RawSettings(
     val autocorrectAggressivenessKey: String? = null,
     val autoMergeAggressivenessKey: String? = null,
     val sustainedLanguageSwitchThreshold: Int = AdaptSettings.DEFAULT_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD,
-    val learnedWordExpiryWindowKey: String? = null
+    val learnedWordExpiryWindowKey: String? = null,
+    val cursorControlEnabled: Boolean = false
 )
 
 /**
@@ -305,7 +306,8 @@ object SettingsMapper {
             sustainedLanguageSwitchThreshold = raw.sustainedLanguageSwitchThreshold.coerceIn(
                 MIN_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD, MAX_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD
             ),
-            learnedWordExpiryWindow = toLearnedWordExpiryWindow(raw)
+            learnedWordExpiryWindow = toLearnedWordExpiryWindow(raw),
+            cursorControlEnabled = raw.cursorControlEnabled
         )
     }
 }

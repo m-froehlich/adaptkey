@@ -69,6 +69,7 @@ object SettingsStore {
     const val KEY_AUTO_MERGE_AGGRESSIVENESS = "d391_auto_merge_aggressiveness"
     const val KEY_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD = "d398_sustained_language_switch_threshold"
     const val KEY_LEARNED_WORD_EXPIRY_WINDOW = "d389_learned_word_expiry_window"
+    const val KEY_CURSOR_CONTROL_ENABLED = "d401_cursor_control"
     
     /**
      * D-389: epoch millis the daily [de.froehlichmedia.adaptkey.dictionary.LearnedWordExpirySweep] last
@@ -132,6 +133,9 @@ object SettingsStore {
     /** Default stored boolean for the D-361 Backspace sticky-zone toggle (on). */
     const val DEF_BACKSPACE_STICKY_ENABLED = true
     
+    /** Default stored boolean for the D-401 cursor-control gesture toggle (off - see AdaptSettings' own KDoc). */
+    const val DEF_CURSOR_CONTROL_ENABLED = false
+    
     /** Default stored integer for the D-177 pending-blacklist expiry slider (7 days). */
     const val DEF_PENDING_BLACKLIST_EXPIRY_DAYS = AdaptSettings.DEFAULT_PENDING_BLACKLIST_EXPIRY_DAYS
     
@@ -191,7 +195,8 @@ object SettingsStore {
             sustainedLanguageSwitchThreshold = p.getInt(
                 KEY_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD, DEF_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD
             ),
-            learnedWordExpiryWindowKey = p.getString(KEY_LEARNED_WORD_EXPIRY_WINDOW, null)
+            learnedWordExpiryWindowKey = p.getString(KEY_LEARNED_WORD_EXPIRY_WINDOW, null),
+            cursorControlEnabled = p.getBoolean(KEY_CURSOR_CONTROL_ENABLED, DEF_CURSOR_CONTROL_ENABLED)
         )
         return SettingsMapper.toAdaptSettings(raw)
     }
@@ -318,6 +323,7 @@ object SettingsStore {
         KEY_LONGPRESS_DELAY,
         KEY_DOUBLE_TAP_DELAY,
         KEY_BACKSPACE_STICKY_ENABLED,
+        KEY_CURSOR_CONTROL_ENABLED,
         KEY_NUMBER_ROW,
         KEY_SYMBOL_KEY,
         KEY_SPACE_BELOW_NUMBER_ROW,

@@ -95,7 +95,13 @@ class SuggestionController(private val config: SuggestionConfig) {
          * result, since that function derives purely from typing context, never from what a candidate word
          * already carries). Tapping it commits [DisplayItem.word] verbatim, exactly as shown - never
          * re-capitalised, the same "already correctly cased" contract [COMPOUND] uses. */
-        AMBIGUOUS_CASE
+        AMBIGUOUS_CASE,
+        
+        /** D-401: the space-bar cursor/selection-control gesture's own short explanation text, shown for as
+         * long as the gesture stays armed - purely informational, like [LOADING]; a tap does nothing. Built
+         * and pushed directly to the suggestion bar, the same "built outside SuggestionController" shape
+         * [LOADING]/[EMOJI_SEARCH_QUERY] already use - there is no composing token to rank it against. */
+        CURSOR_CONTROL_HINT
     }
     
     /**

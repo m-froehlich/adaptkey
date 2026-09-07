@@ -49,6 +49,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import java.util.Locale
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.math.abs
 import de.froehlichmedia.adaptkey.capitalisation.CapitalisationContext
 import de.froehlichmedia.adaptkey.capitalisation.CapitalisationEngine
 import de.froehlichmedia.adaptkey.capitalisation.CapsMode
@@ -92,6 +93,7 @@ import de.froehlichmedia.adaptkey.gesture.WordExtent
 import de.froehlichmedia.adaptkey.keyboard.AdaptKeyboardView
 import de.froehlichmedia.adaptkey.keyboard.AlternativeScript
 import de.froehlichmedia.adaptkey.keyboard.BackspaceRepeat
+import de.froehlichmedia.adaptkey.keyboard.CursorControlGesture
 import de.froehlichmedia.adaptkey.keyboard.InlineSuggestionsBarView
 import de.froehlichmedia.adaptkey.keyboard.InputSurface
 import de.froehlichmedia.adaptkey.keyboard.Key
@@ -427,6 +429,11 @@ class AdaptKeyService : InputMethodService() {
     // state - reported a real, non-collapsed selection. See handleBackspace() for why this is trusted over
     // a fresh InputConnection.getSelectedText(0) call.
     private var selectionCollapsed = true
+    
+    // D-401: the most recent onUpdateSelection's own newSelEnd, tracked unconditionally the same way
+    // selectionCollapsed is - the cursor-control gesture's own live baseline (see cursorControlPosition's
+    // own note for why it is only actually applied while a session is active, not read here).
+    private var liveSelectionEnd = 0
     
     // composingCaseLocked marks a token whose casing the user fixed explicitly (G-05 double-tap Shift
     // toggle), so it is committed verbatim (bypassing autocorrect and §6).
@@ -1367,6 +1374,9 @@ class AdaptKeyService : InputMethodService() {
             // the window, per the user's own call, rather than a separately tuned duration.
             view.backspaceStickyEnabled = s.backspaceStickyEnabled
             view.backspaceStickyDelayMs = s.doubleTapDelayMs
+            // D-401: gated off outright while emoji search owns the keyboard (enterEmojiSearch()'s own
+            // note) - a settings reload mid-search would otherwise silently re-enable it there too.
+            view.cursorControlEnabled = s.cursorControlEnabled && !emojiSearchActive
             // D-59: the combined ?123 key can be disabled, in which case it disappears entirely.
             view.symbolKeyEnabled = s.symbolKeyEnabled
             // D-92: the calculator page's currency/decimal-separator keys follow the device's system
@@ -1614,6 +1624,13 @@ class AdaptKeyService : InputMethodService() {
         // D-149: recorded unconditionally, before the burst-guard/ownEdit branches below, so it always
         // reflects the most recently confirmed reality regardless of how this particular call is handled.
         selectionCollapsed = newSelStart == newSelEnd
+        liveSelectionEnd = newSelEnd
+        // D-401: while a session is active, also resyncs its own optimistic running offset from this same
+        // ground truth - including after a DPAD-driven line jump this code cannot compute itself (see
+        // cursorControlPosition's own note in applyCursorControlMove()).
+        if (cursorControlSessionActive) {
+            cursorControlPosition = newSelEnd
+        }
         // D-139 (temporary diagnostic): every call, with enough state to reconstruct what happened -
         // `adb logcat -s AdaptKeyJitter:D` while typing, to finally catch the reported "text jitters,
         // characters get scrambled" glitch in the act. Remove once D-139 is closed for good.
@@ -3027,6 +3044,94 @@ class AdaptKeyService : InputMethodService() {
         }
     }
     
+    // D-401: the space-bar cursor/selection-control gesture's own tracked state. cursorControlPosition is
+    // an optimistic running caret offset - seeded from the live caret when the gesture arms, updated after
+    // every setSelection() this mechanism itself issues, and resynced from onUpdateSelection's own live
+    // echo (see that callback's own note) - including after a DPAD-driven line jump, whose resulting
+    // absolute offset this code has no way to compute itself. cursorControlAnchor is the fixed end of the
+    // selection range, frozen the moment Stage 2 begins.
+    private var cursorControlSessionActive = false
+    private var cursorControlPosition = 0
+    private var cursorControlAnchor = 0
+    
+    private val cursorControlListener = object : AdaptKeyboardView.OnCursorControlListener {
+        override fun onCursorControlArmed() {
+            cursorControlSessionActive = true
+            cursorControlPosition = liveSelectionEnd
+            cursorControlAnchor = cursorControlPosition
+            showCursorControlHint(CursorControlGesture.Stage.CURSOR)
+        }
+        
+        override fun onCursorControlMove(stage: CursorControlGesture.Stage, characterDelta: Int, lineDelta: Int) {
+            applyCursorControlMove(stage, characterDelta, lineDelta)
+        }
+        
+        override fun onCursorControlStageChanged(stage: CursorControlGesture.Stage) {
+            if (stage == CursorControlGesture.Stage.SELECTION) {
+                cursorControlAnchor = cursorControlPosition
+            }
+            showCursorControlHint(stage)
+        }
+        
+        override fun onCursorControlTap() {
+            val ic = currentInputConnection ?: return
+            ic.setSelection(cursorControlPosition, cursorControlPosition)
+        }
+        
+        override fun onCursorControlEnded() {
+            cursorControlSessionActive = false
+            // D-401: the user's own explicit call - the gesture never touches composing state itself, so
+            // ending it simply resyncs the ordinary suggestion bar from whatever composing/caret state
+            // already is, exactly like any other external caret move already would.
+            refreshSuggestions()
+        }
+    }
+    
+    /**
+     * D-401: applies one incremental cursor-control step. A vertical (line) delta is sent as synthetic
+     * `KEYCODE_DPAD_UP`/`KEYCODE_DPAD_DOWN` key events - this app has no reliable way to know a target
+     * field's real line height/wrap positions (the same gap already named for `CursorAnchorInfo` elsewhere
+     * in this project), so the target app's own text layout decides what "one line up" means, exactly like
+     * a hardware d-pad would. A horizontal (character) delta instead calls `setSelection()` directly at
+     * [cursorControlPosition] plus the delta - collapsed for Stage 1, or against the frozen
+     * [cursorControlAnchor] for Stage 2.
+     *
+     * The two are deliberately never combined in the same call: after a DPAD event the resulting absolute
+     * document offset is unknown here until a fresh [onUpdateSelection] call reports it back (resynced onto
+     * [cursorControlPosition] there), so a character delta arriving in the very same tick as a line delta is
+     * simply not applied yet - it is picked up on the next move once the position is fresh. At ordinary drag
+     * speeds the two thresholds essentially never cross in the exact same event, so this is not a
+     * perceptible gap in practice.
+     */
+    private fun applyCursorControlMove(stage: CursorControlGesture.Stage, characterDelta: Int, lineDelta: Int) {
+        val ic = currentInputConnection ?: return
+        if (lineDelta != 0) {
+            val keyCode = if (lineDelta > 0) KeyEvent.KEYCODE_DPAD_DOWN else KeyEvent.KEYCODE_DPAD_UP
+            repeat(abs(lineDelta)) {
+                ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
+                ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, keyCode))
+            }
+            return
+        }
+        if (characterDelta == 0) {
+            return
+        }
+        cursorControlPosition = (cursorControlPosition + characterDelta).coerceAtLeast(0)
+        when (stage) {
+            CursorControlGesture.Stage.CURSOR -> ic.setSelection(cursorControlPosition, cursorControlPosition)
+            CursorControlGesture.Stage.SELECTION -> ic.setSelection(cursorControlAnchor, cursorControlPosition)
+        }
+    }
+    
+    /**
+     * D-401: swaps the suggestion bar to the gesture's own short explanation text for [stage] - S-01's
+     * already-established "alternate content in the same slot" shape (Autofill/credentials/emoji search).
+     */
+    private fun showCursorControlHint(stage: CursorControlGesture.Stage) {
+        val textRes = if (stage == CursorControlGesture.Stage.SELECTION) R.string.d401_hint_stage2 else R.string.d401_hint_stage1
+        setSuggestionBarItems(listOf(SuggestionController.DisplayItem(getString(textRes), SuggestionController.Kind.CURSOR_CONTROL_HINT, "")))
+    }
+    
     /**
      * §31: flips the sign of the number immediately before the caret - long-pressing the calculator's
      * minus key. Does nothing if there is no number directly before the caret. See [SignFlip] for the
@@ -3154,6 +3259,7 @@ class AdaptKeyService : InputMethodService() {
         // D-414-followup: fires once, after a genuine hold ends - see handleBackspaceRepeatEnd()'s own KDoc.
         view.onBackspaceRepeatEndListener = AdaptKeyboardView.OnBackspaceRepeatEndListener { handleBackspaceRepeatEnd() }
         view.onLongPressPopupListener = AdaptKeyboardView.OnLongPressPopupListener { key, alternative -> handleLongPressAlternative(key, alternative) }
+        view.onCursorControlListener = cursorControlListener
     }
     
     /**
@@ -3176,6 +3282,11 @@ class AdaptKeyService : InputMethodService() {
         view?.onSwipeListener = null
         view?.onBackspaceRepeatListener = null
         view?.onLongPressPopupListener = null
+        // D-401: the space-bar cursor-control gesture must never arm while search captures every keystroke
+        // locally (see this function's own class KDoc) - cursorControlEnabled is the one flag the view
+        // itself gates arming on, so forcing it off here is enough; restored from the real setting in
+        // exitEmojiSearch() below.
+        view?.cursorControlEnabled = false
         cancelEmojiSearchButtonView?.visibility = View.VISIBLE
         updateEmojiSearchResults()
     }
@@ -3195,6 +3306,8 @@ class AdaptKeyService : InputMethodService() {
         emojiSearchActive = false
         emojiSearchQuery = ""
         wireLetterKeyListeners()
+        // D-401: restores whatever the real setting says, mirroring the forced-off in enterEmojiSearch().
+        keyboardView?.cursorControlEnabled = settings.cursorControlEnabled
         cancelEmojiSearchButtonView?.visibility = View.GONE
         clearSuggestions()
     }
@@ -6740,6 +6853,9 @@ class AdaptKeyService : InputMethodService() {
             // D-414-followup: migrated from the extra row's own button - the identical, always-immediate,
             // suppression-bypassing reclaim a tap there used to perform.
             SuggestionController.Kind.RECLAIM -> reclaimWordAtCaret()
+            
+            // D-401: purely informational (the gesture's own explanation text) - a tap does nothing.
+            SuggestionController.Kind.CURSOR_CONTROL_HINT -> Unit
         }
     }
     

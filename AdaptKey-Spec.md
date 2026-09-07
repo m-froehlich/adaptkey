@@ -497,6 +497,45 @@ button) gets a real newline instead. A single-line field with no meaningful acti
 address bar) still submits, via a real `KEYCODE_ENTER` key event rather than `performEditorAction`, since such
 fields typically treat the raw key event itself as their own submit trigger.
 
+### G-08 - Space-Bar Cursor/Selection Control (D-401)
+A long-press on the space bar (opt-in, off by default - a Settings toggle, since it is a new,
+screen-consuming gesture on the app's most-tapped key) arms a two-stage touch-driven cursor mode, reached
+without leaving the keyboard: a short vibration confirms the arm, every key dims to 30% opacity, the
+suggestion bar's own slot switches to a short explanation of the current stage (S-01's established
+"alternate content in the same slot" mechanism), and a crosshair appears under the finger as the gesture's
+own origin.
+
+- **Stage 1 - cursor.** Dragging moves the text caret, horizontally by character and vertically by line
+  (via synthetic `KEYCODE_DPAD_UP`/`DOWN` key events - deliberately not a computed offset, since this app has
+  no reliable way to know a target field's real line-wrap layout across every app, the same reliability gap
+  already named for `CursorAnchorInfo` elsewhere; letting the target field's own text layout decide what "one
+  line up" means is the robust choice). Holding still for 800 ms promotes to Stage 2 (a second vibration, the
+  crosshair changes colour, the hint text updates).
+- **Stage 2 - selection.** Dragging instead extends a text selection from wherever Stage 1 left the caret. A
+  tap ends the mode outright and collapses the selection to the current position - the one lift that skips
+  the grace window below.
+- **Lifting and re-touching.** Lifting the finger keeps the gesture armed for ~1000 ms, during which the
+  crosshair fades (250 ms) back to the space key's own geometric centre. Re-touching within that window -
+  anywhere on the keyboard, not only the space key - jumps the crosshair straight to the new point (a fresh
+  origin, free to swipe in any direction, same stage as before). If nothing re-touches in time, the mode ends;
+  if a real selection is active at that point, the platform's own text-selection context menu is expected to
+  appear on its own (not explicitly triggered by this app - a real `InputConnection.setSelection()` call with
+  a genuine range is normally enough for the target view's own floating toolbar, though - like any
+  `InputConnection` behaviour - this has not been confirmed identical across every app).
+
+**Deliberately does not touch composing state.** Unlike every other long-press action in this app (L-05/L-06,
+which finalise the current token first), arming this gesture leaves whatever word is currently composing
+completely untouched - the user's own explicit call: the caret is free to move away exactly like any other
+external caret change (a tap, a drag, an arrow key) already is, relying entirely on the existing
+`onUpdateSelection`-driven reconciliation (D-313/D-406, spec §1's own guiding principle) rather than a new
+commit-then-move special case, which would also risk an unwanted autocorrect firing before the user has a
+chance to reject it.
+
+**Calibration status, stated plainly.** The drag-distance-per-character/per-line constants are a first-pass
+value carried over from Gboard's own spacebar cursor glide, adopted deliberately as the starting point (the
+user's own explicit call: "ich muss es benutzen, um zu sagen, was ich anders haben will") rather than
+independently invented - expected to be retuned once tried on a real device, not claimed to be final.
+
 ---
 
 ## 5. Suggestion Bar

@@ -244,6 +244,12 @@
             android:summary="@string/d361_backspace_sticky_summary"
             android:defaultValue="true" />
 
+        <SwitchPreferenceCompat
+            android:key="d401_cursor_control"
+            android:title="@string/d401_cursor_control_title"
+            android:summary="@string/d401_cursor_control_summary"
+            android:defaultValue="false" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:key="cat_layout_group" android:title="@string/cat_layout">

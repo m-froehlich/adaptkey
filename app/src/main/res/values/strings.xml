@@ -108,6 +108,10 @@
     <string name="c01_backspace_summary">Percentage surcharge, taken from the neighbouring keys (L-04).</string>
     <string name="d361_backspace_sticky_title">Sticky Backspace</string>
     <string name="d361_backspace_sticky_summary">A quick re-tap right after Backspace stays Backspace, even if it lands on a neighbouring key (e.g. Enter). Uses the double-tap delay above as the window.</string>
+    <string name="d401_cursor_control_title">Cursor control gesture</string>
+    <string name="d401_cursor_control_summary">Long-press the space bar to move the cursor by dragging; hold still to switch to text selection.</string>
+    <string name="d401_hint_stage1">Drag to move the cursor. Hold still to select text.</string>
+    <string name="d401_hint_stage2">Drag to select text. Tap to finish.</string>
     <string name="c01_shift_title">Extra shift width</string>
     <string name="c01_shift_summary">Percentage surcharge for the shift key (D-16). Preset by calibration; adjustable.</string>
 

@@ -143,6 +143,30 @@ class AdaptKeyboardView @JvmOverloads constructor(
         fun onLongPressAlternative(key: Key, alternative: String)
     }
     
+    /**
+     * D-401: callbacks for the space-bar cursor/selection-control gesture (see [CursorControlGesture] for
+     * the underlying stage/timing policy). [onCursorControlMove]'s deltas are always the *incremental* step
+     * count since the last call (already deduped by this view against its own running total), never a
+     * cumulative offset - the caller applies them directly against wherever the target field's own current
+     * caret now is.
+     */
+    interface OnCursorControlListener {
+        
+        /** The gesture just armed (its long-press fired) - e.g. show the bar's own Stage 1 hint text. */
+        fun onCursorControlArmed()
+        
+        /** @param characterDelta horizontal step count to apply now; @param lineDelta vertical step count (as a DPAD up/down count), both since the last call */
+        fun onCursorControlMove(stage: CursorControlGesture.Stage, characterDelta: Int, lineDelta: Int)
+        
+        fun onCursorControlStageChanged(stage: CursorControlGesture.Stage)
+        
+        /** A tap while [CursorControlGesture.Stage.SELECTION] is active - collapses the selection (D-401). */
+        fun onCursorControlTap()
+        
+        /** The gesture has ended (grace window expired with no re-touch, or a Stage 2 tap) - restore the ordinary bar. */
+        fun onCursorControlEnded()
+    }
+    
     var onKeyListener: OnKeyListener? = null
     
     var onLongPressListener: OnLongPressListener? = null
@@ -154,6 +178,8 @@ class AdaptKeyboardView @JvmOverloads constructor(
     var onBackspaceRepeatEndListener: OnBackspaceRepeatEndListener? = null
     
     var onLongPressPopupListener: OnLongPressPopupListener? = null
+    
+    var onCursorControlListener: OnCursorControlListener? = null
     
     /**
      * D-03: the label drawn on the space bar, showing the current input language (e.g. "Deutsch",
@@ -565,6 +591,32 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * bewährt" for the same class of "was this really a second, deliberate tap" decision (G-05/A-07).
      */
     var backspaceStickyDelayMs: Long = 400L
+    
+    /** D-401: whether a long-press on the space bar arms the cursor/selection-control gesture (default off). */
+    var cursorControlEnabled: Boolean = false
+    
+    // D-401: the space-bar cursor/selection-control gesture's own running state - see armCursorControl()/
+    // handleCursorControlTouch() and CursorControlGesture's own class KDoc for the full mechanism. Reuses
+    // downX/downY as its own origin (T-01's already-recorded initial contact point) rather than a second,
+    // redundant pair of fields.
+    private var cursorControlActive = false
+    private var cursorControlStage = CursorControlGesture.Stage.CURSOR
+    private var cursorControlAppliedChars = 0
+    private var cursorControlAppliedLines = 0
+    private var cursorControlGraceActive = false
+    private var cursorControlCrosshairX = 0f
+    private var cursorControlCrosshairY = 0f
+    private var cursorControlCrosshairAnimator: ValueAnimator? = null
+    private val cursorControlStillnessRunnable = Runnable {
+        if (cursorControlActive && cursorControlStage == CursorControlGesture.Stage.CURSOR) {
+            cursorControlStage = CursorControlGesture.Stage.SELECTION
+            playCursorControlStageHaptic()
+            onCursorControlListener?.onCursorControlStageChanged(cursorControlStage)
+            invalidate()
+        }
+    }
+    private val cursorControlGraceRunnable = Runnable { endCursorControl() }
+    
     // D-20 / D-35: field gestures (dismiss-down, surface swipe, word-delete) need a clearly larger travel
     // so a faint motion no longer triggers them; the space-bar language swipe (G-01) stays smaller,
     // proportional to the narrow space bar, but still deliberate.
@@ -661,6 +713,21 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private val pendingSpaceIndicatorPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = ContextCompat.getColor(context, R.color.key_hint)
         style = Paint.Style.FILL
+    }
+    
+    // D-401: the cursor-control gesture's own crosshair - Stage 1 (moving the caret) reuses the app's
+    // established accent blue (link_text/caps_lock_border's own colour); Stage 2 (selecting) switches to
+    // the already-established "confirmed/active" green (suggestion_learned_text's own colour) rather than
+    // introducing either as a new, dedicated colour resource.
+    private val cursorControlCursorPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = ContextCompat.getColor(context, R.color.link_text)
+        style = Paint.Style.STROKE
+        strokeWidth = dp(2.5f)
+    }
+    private val cursorControlSelectionPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = ContextCompat.getColor(context, R.color.suggestion_learned_text)
+        style = Paint.Style.STROKE
+        strokeWidth = dp(2.5f)
     }
     
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -847,6 +914,12 @@ class AdaptKeyboardView @JvmOverloads constructor(
         // deliberately drawn outside this clip so its own overflow keeps working.
         canvas.save()
         canvas.clipRect(0f, 0f, width.toFloat(), height.toFloat())
+        // D-401: every key dims to 30% opacity while the cursor-control gesture is active - a single alpha
+        // layer around the ordinary key drawing below, rather than touching drawKeys()'s own per-key Paint
+        // objects (which are shared, reused instances, not safe to mutate here).
+        if (cursorControlActive) {
+            canvas.saveLayerAlpha(0f, 0f, width.toFloat(), height.toFloat(), (255 * CursorControlGesture.DIMMED_KEY_ALPHA).toInt())
+        }
         // D-58: while a page switch is animating, the outgoing page slides out and the current (new) page
         // slides in from the opposite edge; slideSign carries the direction (see switchPage()).
         if (slideOutKeyRects.isNotEmpty()) {
@@ -861,11 +934,15 @@ class AdaptKeyboardView @JvmOverloads constructor(
         } else {
             drawKeys(canvas, keyRects)
         }
+        if (cursorControlActive) {
+            canvas.restore()
+        }
         canvas.restore()
         if (showTouchModel) {
             drawTouchModel(canvas)
         }
         drawLongPressPopup(canvas)
+        drawCursorControlOverlay(canvas)
     }
     
     /** D-129: identifies the calculator minus key by its own character, matching [KeyboardLayout.hasLongPressAction]. */
@@ -1003,6 +1080,29 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     /**
+     * D-401: the cursor-control gesture's own crosshair, drawn under wherever the finger currently is (or,
+     * mid-lift-grace, animating back toward the space key's own centre) - on top of the dimmed keys below,
+     * outside the clip [onDraw] applies to ordinary key drawing, matching [drawLongPressPopup]'s own
+     * deliberate overflow allowance.
+     */
+    private fun drawCursorControlOverlay(canvas: Canvas) {
+        if (!cursorControlActive) {
+            return
+        }
+        val paint = if (cursorControlStage == CursorControlGesture.Stage.SELECTION) {
+            cursorControlSelectionPaint
+        } else {
+            cursorControlCursorPaint
+        }
+        val armLength = dp(20f)
+        val cx = cursorControlCrosshairX
+        val cy = cursorControlCrosshairY
+        canvas.drawLine(cx - armLength, cy, cx + armLength, cy, paint)
+        canvas.drawLine(cx, cy - armLength, cx, cy + armLength, paint)
+        canvas.drawCircle(cx, cy, dp(14f), paint)
+    }
+    
+    /**
      * D-168: applies the same Shift/Caps-Lock case rule [labelFor] already applies to the main key label -
      * but only to a genuine word-forming letter alternative, using the identical
      * [AlternativeScript.extendsWord] predicate [commitLongPressSymbol][de.froehlichmedia.adaptkey.AdaptKeyService.commitLongPressSymbol]
@@ -1082,6 +1182,12 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     override fun onTouchEvent(event: MotionEvent): Boolean {
+        // D-401: once armed, every motion event for this gesture is its own self-contained state machine,
+        // routed here instead of the ordinary key-press handling below - see handleCursorControlTouch()'s
+        // own KDoc for why this is a separate function rather than more conditionals threaded through it.
+        if (cursorControlActive) {
+            return handleCursorControlTouch(event)
+        }
         when (event.actionMasked) {
             // T-01: the initial contact point is the authoritative tap coordinate.
             MotionEvent.ACTION_DOWN -> {
@@ -1247,12 +1353,23 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     private fun scheduleLongPress(key: Key) {
-        if (!KeyboardLayout.hasLongPressAction(key)) {
+        // D-401: a candidate for the cursor-control gesture even though space itself has no ordinary
+        // long-press action (KeyboardLayout.hasLongPressAction deliberately stays unaware of this
+        // feature-toggle-gated case - see that function's own KDoc).
+        val isCursorControlCandidate = key.code == KeyCode.SPACE && cursorControlEnabled
+        if (!KeyboardLayout.hasLongPressAction(key) && !isCursorControlCandidate) {
             return
         }
         val runnable = Runnable {
             if (pressedKey === key) {
                 longPressFired = true
+                if (isCursorControlCandidate) {
+                    // D-401: the plain system long-press haptic, exactly like any other no-popup long-press
+                    // below - this feature has no dedicated haptic setting of its own.
+                    performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                    armCursorControl()
+                    return@Runnable
+                }
                 // D-01 / D-14: any key with an alternative shows the popup - a visible on-keyboard preview
                 // (Gboard-style) that confirms the long-press and commits on release. A single-alternative
                 // key shows a one-cell popup; a key with no alternative (the combined ?123 key, or Shift)
@@ -1283,6 +1400,154 @@ class AdaptKeyboardView @JvmOverloads constructor(
         }
         longPressRunnable = runnable
         longPressHandler.postDelayed(runnable, longPressDelayMs)
+    }
+    
+    /**
+     * D-401: arms the space-bar cursor/selection-control gesture right where its long-press fired - the
+     * crosshair's own origin is [downX]/[downY], the exact point T-01 already recorded at ACTION_DOWN, so
+     * no separate origin field is needed. Deliberately does not touch [pressedKey]/composing state at all
+     * (the user's own explicit call): the document caret is free to move exactly like any other external
+     * caret change (a tap, a drag, an arrow key) already is, and the existing onUpdateSelection-driven
+     * reconciliation (D-313/D-406) handles a still-composing word the same way it always has - no new
+     * special case here, and specifically no commit of whatever word is currently composing.
+     */
+    private fun armCursorControl() {
+        pressedKey = null
+        pressedKeyRect = null
+        cursorControlActive = true
+        cursorControlStage = CursorControlGesture.Stage.CURSOR
+        cursorControlAppliedChars = 0
+        cursorControlAppliedLines = 0
+        cursorControlCrosshairX = downX
+        cursorControlCrosshairY = downY
+        longPressHandler.postDelayed(cursorControlStillnessRunnable, CursorControlGesture.HOLD_STILL_TO_SELECT_MS)
+        onCursorControlListener?.onCursorControlArmed()
+        invalidate()
+    }
+    
+    /**
+     * D-401: every motion event for an armed cursor-control gesture, from [armCursorControl] until
+     * [endCursorControl] - a deliberately separate, self-contained state machine (mirroring
+     * [BackspaceRepeat]'s own split: this view owns the timers/raw state, [onCursorControlListener]
+     * performs the actual document mutation) rather than threading yet more conditionals through the
+     * already finely-tuned ordinary key-press handling in [onTouchEvent].
+     */
+    private fun handleCursorControlTouch(event: MotionEvent): Boolean {
+        when (event.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+                // D-401: a re-touch within the lift-grace window - a fresh origin, the same stage, free to
+                // swipe in any new direction (never routed through ordinary key resolution at all).
+                if (cursorControlGraceActive) {
+                    longPressHandler.removeCallbacks(cursorControlGraceRunnable)
+                    cursorControlGraceActive = false
+                    cursorControlCrosshairAnimator?.cancel()
+                    downX = event.x
+                    downY = event.y
+                    cursorControlAppliedChars = 0
+                    cursorControlAppliedLines = 0
+                    cursorControlCrosshairX = event.x
+                    cursorControlCrosshairY = event.y
+                    invalidate()
+                }
+                return true
+            }
+            
+            MotionEvent.ACTION_MOVE -> {
+                val dx = event.x - downX
+                val dy = event.y - downY
+                if (dx * dx + dy * dy <= touchSlopPx * touchSlopPx) {
+                    return true
+                }
+                val steps = CursorControlGesture.stepsFor(dx, dy, resources.displayMetrics.density)
+                val deltaChars = steps.characters - cursorControlAppliedChars
+                val deltaLines = steps.lines - cursorControlAppliedLines
+                if (deltaChars != 0 || deltaLines != 0) {
+                    cursorControlAppliedChars = steps.characters
+                    cursorControlAppliedLines = steps.lines
+                    onCursorControlListener?.onCursorControlMove(cursorControlStage, deltaChars, deltaLines)
+                }
+                // D-401: genuine movement (beyond slop, checked above) resets the "holding still" clock -
+                // only reached while still in Stage 1, matching CursorControlGesture's own class KDoc.
+                if (cursorControlStage == CursorControlGesture.Stage.CURSOR) {
+                    longPressHandler.removeCallbacks(cursorControlStillnessRunnable)
+                    longPressHandler.postDelayed(cursorControlStillnessRunnable, CursorControlGesture.HOLD_STILL_TO_SELECT_MS)
+                }
+                cursorControlCrosshairX = event.x
+                cursorControlCrosshairY = event.y
+                invalidate()
+                return true
+            }
+            
+            MotionEvent.ACTION_UP -> {
+                longPressHandler.removeCallbacks(cursorControlStillnessRunnable)
+                // D-401: a genuine tap (no movement applied during this touch-down segment) while Stage 2 is
+                // active ends the mode immediately and collapses the selection - the one case the spec calls
+                // out explicitly; every other lift (Stage 1, or a Stage-2 touch that did move) instead waits
+                // out the ordinary re-touch grace window below.
+                if (cursorControlStage == CursorControlGesture.Stage.SELECTION &&
+                    cursorControlAppliedChars == 0 && cursorControlAppliedLines == 0
+                ) {
+                    onCursorControlListener?.onCursorControlTap()
+                    endCursorControl()
+                } else {
+                    beginCursorControlLiftGrace()
+                }
+                return true
+            }
+            
+            MotionEvent.ACTION_CANCEL -> {
+                endCursorControl()
+                return true
+            }
+        }
+        return true
+    }
+    
+    /**
+     * D-401: the finger lifted but the gesture stays armed for [CursorControlGesture.LIFT_GRACE_MS], waiting
+     * for a possible re-touch - the crosshair fades back to the space key's own centre meanwhile, matching
+     * the spec's own "geometric centre" wording exactly (falling back to wherever it already was if the
+     * space key's geometry cannot be resolved, e.g. mid-page-switch).
+     */
+    private fun beginCursorControlLiftGrace() {
+        cursorControlGraceActive = true
+        longPressHandler.postDelayed(cursorControlGraceRunnable, CursorControlGesture.LIFT_GRACE_MS)
+        val spaceRect = spaceBox()
+        val targetX = spaceRect?.centerX ?: cursorControlCrosshairX
+        val targetY = spaceRect?.let { (it.top + it.bottom) / 2f } ?: cursorControlCrosshairY
+        val startX = cursorControlCrosshairX
+        val startY = cursorControlCrosshairY
+        cursorControlCrosshairAnimator?.cancel()
+        val animator = ValueAnimator.ofFloat(0f, 1f)
+        animator.duration = CursorControlGesture.CROSSHAIR_FADE_MS
+        animator.addUpdateListener {
+            val t = it.animatedValue as Float
+            cursorControlCrosshairX = startX + (targetX - startX) * t
+            cursorControlCrosshairY = startY + (targetY - startY) * t
+            invalidate()
+        }
+        cursorControlCrosshairAnimator = animator
+        animator.start()
+    }
+    
+    /** D-401: ends the cursor-control gesture outright - the grace window expired, or a Stage 2 tap. */
+    private fun endCursorControl() {
+        longPressHandler.removeCallbacks(cursorControlStillnessRunnable)
+        longPressHandler.removeCallbacks(cursorControlGraceRunnable)
+        cursorControlCrosshairAnimator?.cancel()
+        cursorControlCrosshairAnimator = null
+        cursorControlActive = false
+        cursorControlGraceActive = false
+        onCursorControlListener?.onCursorControlEnded()
+        invalidate()
+    }
+    
+    /** D-401: the second vibration, confirming the Stage 1 -> Stage 2 (selection) transition. */
+    private fun playCursorControlStageHaptic() {
+        if (!hapticsEnabled) {
+            return
+        }
+        fireHaptic(HapticTier.MODE_SWITCH, "playCursorControlStageHaptic")
     }
     
     /**

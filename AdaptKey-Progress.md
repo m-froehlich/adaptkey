@@ -794,14 +794,10 @@ non-trivial changes).
     directly rather than a blind QWERTY default - "hier wird ohnehin klar umgeschaltet, dann kann man auch
     direkt das passende Layout nehmen." See spec's G-01 addendum and `LayoutRegistry.kindFor()`'s own KDoc
     for the full resolution order.
-  - **D-401 - OPEN, a fully-specified new feature concept (captured verbatim, the shape is already precise -**
-    **see history §276 for the complete four-stage description).** A cursor/text-selection mode reached via a
-    long-press on the space bar: long-press arms it (vibration, keys fade to 30%, crosshair appears);
-    swiping in Stage 1 moves the cursor; holding still 800ms promotes to Stage 2 (second vibration, colour
-    change), where swiping extends a text selection instead, and a tap ends the mode; lifting the finger keeps
-    the mode armed for ~1000ms (re-touching within that window re-origins the crosshair at the new point;
-    letting it expire ends the mode and, if a selection is active, opens the platform's own selection context
-    menu).
+  - **D-401 - RESOLVED, implemented (§460, v1.2.20).** The four-stage space-bar cursor/selection mode from
+    history §276's own verbatim capture - see spec G-08 and §460 in Current State for the full mechanism and
+    the design decisions made along the way (Gboard-inspired calibration, DPAD-based line movement,
+    composing state deliberately left untouched, its own opt-in Settings toggle, default off).
   - **D-403 - RESOLVED (§280 v1.0.37, §289 v1.0.44, §325 v1.0.78).** Uppercase acronyms were apparently never
     learnable and poorly supported generally - four distinct sub-reports, all now closed: (1) the
     `learnedCasingOf` ratio exemption (§280) protects an *already-learned* word from ever being overridden
@@ -1069,6 +1065,68 @@ non-trivial changes).
   if the user raises it again, ideally with its own dedicated repro.
 
 ## Current State
+
+- **§460 (v1.2.20): D-401 - the space-bar cursor/selection-control gesture, implemented end to end from**
+  **history §276's own verbatim four-stage capture.** New opt-in setting (`cursorControlEnabled`, C-01-style
+  toggle in the Key Behaviour category, default **off** - a new, screen-consuming gesture on the app's own
+  most-tapped key needs an explicit opt-in, not a risk of accidental activation during ordinary typing).
+
+  **Design discussed first, per this project's own convention**, resolving six real open points before any
+  code: (1) the drag-distance-per-character/line calibration - explicit user call to start from Gboard's own
+  known feel rather than inventing one, expecting it to change once tried for real; (2) horizontal *and*
+  vertical movement both in scope from the start, not horizontal-only; (3) **a currently-composing word is
+  deliberately left completely untouched when the gesture arms** - the user's own explicit call, reasoning
+  through it directly: committing it first (matching every other long-press action, L-05/L-06) risked an
+  unwanted autocorrect firing before the user gets a chance to reject it, and the free-cursor-move-while-
+  composing case is already handled identically to any other external caret change (D-313/D-406) with no new
+  special case needed; (4) the two tap-semantics questions (Stage 1 tap; where a Stage 2 tap's collapse
+  lands) resolved by this session's own judgement, per the user's explicit "arbeiten mit deinen Vermutungen";
+  (5) the platform's own text-selection context menu at timeout - accepted as "probably automatic, verify on
+  a real device" rather than adding an explicit, uncertain trigger call; (6) a dedicated Settings toggle,
+  confirmed worth having.
+
+  **Mechanism.** New pure `keyboard/CursorControlGesture` object (mirrors `BackspaceRepeat`'s own split -
+  stateless stage/timing/geometry constants and a `stepsFor(dx, dy, density)` pure function; all running
+  state lives on the Android side) plus 7 new JUnit5 tests. `AdaptKeyboardView` gained the entire touch state
+  machine: `scheduleLongPress()` now also arms for `KeyCode.SPACE` when `cursorControlEnabled` is set
+  (`KeyboardLayout.hasLongPressAction()` itself stays unaware of this feature-toggle-gated case, deliberately
+  kept pure); once armed, `onTouchEvent()` routes every subsequent motion event for that touch session to a
+  dedicated `handleCursorControlTouch()` instead of threading more conditionals through the already
+  finely-tuned ordinary key-press handling - re-touch within the 1000ms lift-grace window is recognised
+  before ordinary key resolution even runs, anywhere on the keyboard, not only the space key. 30% key-dimming
+  is one `Canvas.saveLayerAlpha()` wrapped around the existing `drawKeys()` call (never touches the shared,
+  reused per-key `Paint` objects themselves); the crosshair reuses the app's own established accent-blue
+  (Stage 1) and "confirmed/active" green (Stage 2, `suggestion_learned_text`) colours rather than introducing
+  new ones, and its lift-grace fade-back-to-centre is an ordinary `ValueAnimator`, the same mechanism the
+  space-bar language-change label fade already uses.
+
+  A new `AdaptKeyboardView.OnCursorControlListener` (armed / move / stage-changed / tap / ended) carries the
+  gesture to `AdaptKeyService`, which applies it: a character delta calls `InputConnection.setSelection()`
+  directly (collapsed for Stage 1, against a frozen anchor for Stage 2); a line delta is sent as synthetic
+  `KEYCODE_DPAD_UP`/`DOWN` key events instead of a computed offset - this app has no reliable way to know a
+  target field's real line-wrap layout across every app (the same reliability gap already named for
+  `CursorAnchorInfo` elsewhere), so the target app's own text layout decides what "one line up" means, the
+  same way a hardware d-pad already would. The two are deliberately never combined in the same tick (the
+  absolute offset after a DPAD jump is unknown here until a fresh `onUpdateSelection` reports it back), a
+  documented, imperceptible-at-real-drag-speed simplification, not an oversight. A new `liveSelectionEnd`
+  field, updated unconditionally in `onUpdateSelection` exactly like the existing `selectionCollapsed` already
+  is, seeds and continuously resyncs the gesture's own optimistic running caret offset - added, not
+  substituted, so nothing about the existing D-139-flagged reactive machinery there changed.
+
+  Suggestion-bar hint text uses a new `SuggestionController.Kind.CURSOR_CONTROL_HINT`, the same "built outside
+  `SuggestionController`, pushed directly" shape `LOADING`/`EMOJI_SEARCH_QUERY` already use. Explicitly
+  disabled while D-317 emoji search owns the keyboard (`enterEmojiSearch()`/`exitEmojiSearch()`, plus
+  `applySettings()`'s own `&& !emojiSearchActive` guard against a settings reload mid-search re-enabling it) -
+  the identical "nothing from an alternate input mode may reach the real document" guarantee that function's
+  own class KDoc already documents for every other listener.
+
+  New spec §4 requirement G-08. 1596 unit tests (1589 -> 1596, +7 new, all in `CursorControlGestureTest`).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 515 -> 516, `versionName` `"1.2.19"` ->
+  `"1.2.20"`.
+
+  **Not yet device-confirmed** - this is a genuinely new touch/gesture mechanism with real ergonomic
+  unknowns (the calibration constants above, the context-menu-at-timeout behaviour) that only a real device
+  can actually settle; the user's own next step is trying it and reporting what needs to change.
 
 - **§459 (v1.2.19): D-452-followup - diagnostic-only, no behaviour change.** A real device log the user sent
   (see §459's own D-452 backlog entry above for the full narration) narrowed the still-open "recurring
@@ -2228,62 +2286,10 @@ non-trivial changes).
   Indonesian, plus Serbian explicitly deferred pending its own Cyrillic-keyboard discussion) - Swahili and
   Tagalog remain as the final two languages of this round.
 
-- **§435 (v1.1.75, committed together with §436): D-450 (continued) - first Malay language pack,**
-  **seventeenth of the 18-language round -**
-  **one of only three native-edition languages this round, with a real discovery that Malay does NOT use a**
-  **comma decimal separator (British/American convention instead).** Added `Language.MALAY` (`"ms"`,
-  `"Bahasa Melayu"`) to the enum. Native edition confirmed (5.83MB, correctly bigger than the wrong file's
-  4.11MB).
+## Older Rounds (§1-§435, v0.7.6 through v1.1.75) - Pruned From This File
 
-  Real findings, confirmed by direct inspection: (1) Malay entries carry an alternative Jawi-script
-  (Arabic-based) spelling, excluded (Malay's own everyday script is Rumi/Latin). (2) Malay's own plural is
-  formed by REDUPLICATION ("bank" -> "bank-bank"), not a suffix - the standard hyphen-joining `VALID_FORM_RE`
-  already handles this. (3) Malay is genuinely isolating/agglutinative-by-affixation with near-zero verb
-  conjugation data in this source (real meN-/di-/ber- morphology is documented as separate lemmas) - honestly
-  small Wortfamilien completion for verbs/adjectives, a real characteristic not a bug. (4) no `"prep"` tag
-  exists at all - 0 `PREPOSITION` rows, the same honest pattern as Turkish's own D-449 entry for a different
-  reason. (5) **Malay (Malaysia) does NOT use a comma decimal separator** - it follows the British/American
-  period convention, the first implemented language where this differs from the project's own default,
-  verified directly rather than assumed. (6) a real calibration bug shared with Indonesian's own source
-  convention (found while building Indonesian, next entry below, and applied proactively here too): this
-  source documents a reduplicated word as its OWN separate dictionary entry whose own forms[] lists the bare
-  singular as if it were backwards a "form of" the reduplicated entry - fixed by skipping any self-
-  reduplicated (`X-X`) entry as a lemma.
-
-  The entire `mswiki-latest-pages-articles.xml.bz2` (412MB compressed) was processed via the same
-  multiprocessing/hapax-pruning extractor - 442,526 real pages, 69,018,270 real tokens, 1,012,416 distinct
-  words, 2,148,408 raw (>=3) bigram rows.
-
-  **Net result (post-fix)**: `dict.tsv` 82,409 rows (79,621 initial + 2,788 from Wortfamilien completion -
-  honestly small per finding 3 above; calibration ratios noun=0.0181 (n=773), verb=0.1106 (n=3, too small a
-  sample to be meaningful alone), adjective=0.0182 (n=1, same caveat)). POS tagging: 73,971 words kept
-  unrecognised-by-kaikki, 917,445 dropped, 15,350 removed as common-English-word contamination. Wiktionary
-  matching: 5,713 lemmas tagged, 332 unmatched; 780 existing forms linked, 2,788 generated. Proper-noun
-  handling: 233 tagged, 1 unmatched, 11 skipped as collisions. Mandatory bare-noun safety check: 0 bare-NOUN
-  rows. `bigram.tsv`: 618,179 rows (>=10 cutoff) from 2,148,408 raw. Quality gate: 0 case-insensitive
-  duplicates, 0 non-positive frequencies, 0 orphaned lemma links, 0 bare-NOUN rows - PASS.
-
-  Being native-sourced, Malay carries no fallback-language documentation requirement, but for context: only
-  5,713 lemmas + 233 proper nouns of 79,621 base entries (~7.5%) carry a real POS/lemma link - reflecting
-  this native edition's own real, honestly-limited Wortfamilien scope, not fallback-source thinness.
-
-  `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Malay's own: NO diacritic letters at all (the plain
-  26-letter Latin alphabet, confirmed directly) - `diacritics.tsv` is deliberately empty, every `hints.tsv`
-  slot carries generic typography with `t=RM` (ringgit). `abbreviations.tsv`: a hand-curated 8-entry list.
-
-  `MalayRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=**false** (see finding 5 above),
-  `timeSuggestionWord`=null, `bundledConfusablesBlacklist`=empty - `confusables_scan.py` found 3,194
-  candidate pairs, left deliberately uncurated.
-
-  New tests: `LanguageRulesTest` gained a `Malay resolves to MalayRules` case plus its own mirroring test
-  block (including the decimal-comma test asserting `false`, not `true`).
-
-  **Honesty gate (step 11) - deliberately NOT claimed satisfied**: not reviewed by anyone who actually speaks
-  Malay. Real, full-dump corpus scale (69.02M real tokens) and a genuinely native-sourced edition - but a
-  real, honestly documented Wortfamilien scope limit for verbs/adjectives specifically. Not device-confirmed
-  either. Indonesian continues next, the same language family with a richer native edition.
-
-## Older Rounds (§1-§434, v0.7.6 through v1.1.73) - Pruned From This File
+D-401 (§460): fourteenth pruning pass - §435 removed (already logged verbatim in History.md), cutoff moved
+from §435 to §436, keeping the working set at 25 rounds (§436-§460).
 
 D-452-followup (§459): thirteenth pruning pass - §434 removed (already logged verbatim in History.md), cutoff
 moved from §434 to §435, keeping the working set at 25 rounds (§435-§459).
