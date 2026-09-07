@@ -1076,6 +1076,39 @@ non-trivial changes).
 
 ## Current State
 
+- **§470 (v1.2.30): D-401-followup - the sixth log finally isolated the real mechanism: this was never a**
+  **clamp bug at all, it was gesture-calibration sensitivity.** §469's revert compiled clean, and this log
+  confirms it held: every single `leftBoundary()`/`rightBoundary()` call in the new log correctly clamps
+  (`target=107 clampedPosition=108`, never crossing) - the horizontal boundary logic is, and now stays,
+  entirely correct. The user's continued "flipping" was coming from a completely different code path this
+  whole investigation had not yet looked at closely: `moveOneLine()`, firing on ordinary, mostly-horizontal
+  drags that the user never intended as a line change at all.
+
+  **Root cause, measured directly from the log's own numbers, not guessed**: `CursorControlGesture.stepsFor()`
+  computes `lines` from vertical distance *accumulated from the gesture's own origin*, independently of how
+  large the horizontal distance already is. One log entry shows a line step firing at a cumulative drag of
+  `dx=-514, dy=42` - a drag that is overwhelmingly horizontal (514px) with only 42px (16dp) of vertical
+  drift, yet `DP_PER_LINE_STEP`'s own 32dp threshold rounds anything past *half* of itself (16dp) up to a
+  full line step. 16dp is trivially exceeded by ordinary hand wobble over any drag long enough to cover more
+  than a few characters - this is why the flipping tracked with drag length/duration rather than with any
+  deliberate vertical intent, and why it survived three straight rounds of clamp-logic changes untouched:
+  the clamp was never the mechanism producing it.
+
+  **Fixed by raising `DP_PER_LINE_STEP` from 32f to 200f** (`CursorControlGesture.kt`) - a real, deliberate
+  vertical drag (~2 keyboard key-rows tall at the reporting device's own density, per that same log) is now
+  required before a line step registers at all, while `DP_PER_CHARACTER_STEP` is untouched: only line
+  movement had this failure mode, since an unwanted character move is immediately visible and
+  self-correcting on screen, but an unwanted line jump silently teleports the caret somewhere else entirely
+  with no visual warning. Existing `CursorControlGestureTest` cases reference the constant symbolically, not
+  as a hardcoded magic number, so all pass unchanged against the new value with no test edits needed.
+
+  1596 unit tests unchanged. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 525 -> 526,
+  `versionName` "1.2.29" -> "1.2.30". Spec (`G-08`'s own "Calibration status" paragraph) updated with the
+  measured numbers and reasoning. This is the first D-401-followup round in this whole saga addressing
+  gesture *sensitivity* rather than clamp *logic* - if the flipping persists after this, the next log should
+  specifically distinguish "still a boundary/clamp symptom" from "still a spurious line-step symptom" so the
+  two failure classes are not conflated again.
+
 - **§469 (v1.2.29): D-401-followup - both empty-line "fixes" (§467, §468) reverted outright; the premise**
   **itself was wrong, not the implementation.** User's fifth log on this exact area: "Es hat sich nichts
   geändert" (nothing changed) - §468's own corrected two-sided `isOnZeroWidthLine()` check compiled, tested
@@ -2060,50 +2093,10 @@ non-trivial changes).
   to correctly split the two real profile sources (UDHR for the original 8, real Wikipedia `dict.tsv` data
   for every D-450-round addition since).
 
-- **§445 (v1.2.5): D-450-followup - first Uzbek language pack, last of the four §441 keyboard-layout-only**
-  **languages, closing the round.** No new keyboard code needed - Uzbek is Latin-QWERTY-compatible.
-  `uzwiki-latest-pages-articles.xml.bz2` (309,775,381 bytes, live-verified) -> 359,331 pages (matching
-  `uz.wikipedia.org`'s own live `siteinfo` count, 359,635), 49,202,207 tokens, 1,555,474 distinct words.
+## Older Rounds (§1-§445, v0.7.6 through v1.2.5) - Pruned From This File
 
-  **Real structural finding, checked directly before writing the extractor**: Uzbek's "oʻ"/"gʻ" modifier-
-  letter apostrophe is FIVE different Unicode characters in practice (U+02BB 231,133 occurrences, plain
-  ASCII U+0027 211,260, U+02BC 30,841, curly quotes 5,653/3,199 - counted in a 50MB dump sample), tangling
-  together two genuinely different orthographic phenomena: U+02BB marks "oʻ"/"gʻ" itself, U+02BC marks an
-  unrelated loanword glottal stop (sanʼat/"art"). `normalize_apostrophes()` (shared between both extraction
-  scripts) resolves every variant contextually - after o/g becomes U+02BB, elsewhere becomes U+02BC -
-  without this, the same word would fragment across up to five spellings.
-
-  **No native Wiktionary edition** (confirmed 404) - used the English-coverage fallback (1,860,421 bytes),
-  the **thinnest Wiktionary source of any pack this project has built** (4,465 total entries). One positive
-  finding unlike Turkish/Azerbaijani: a clean `postp` tag (16 words, no ambiguity) mapped straight to
-  `PREPOSITION`. `EXCLUDE_FORM_TAGS` deliberately omits `"error-unrecognized-form"` here (confirmed marking
-  genuine words like "uydek"/"like a house", not noise - same finding sh's own script already documents).
-
-  **Calibration check confirmed a genuine, surprising linguistic fact rather than a bug**: verb ratio 26.0x
-  (n=1,101, a real sample) - Uzbek's own "-moq" infinitive citation form is rarely used in real prose
-  compared to conjugated/converb forms ("boʻlmoq"/46 vastly outranked by "boʻlgan"/168,686), the same shape
-  this project's own Greek pack already documents for its own citation convention. Confirmed via direct
-  pair inspection across dozens of verbs, not assumed.
-
-  **Net result**: `dict.tsv` 102,548 -> 215,306 rows (+112,758). Bare-noun safety check: 0. `bigram.tsv`:
-  410,666 rows (>=10 cutoff) from 1,648,280 raw. Quality gate PASS.
-
-  **Real architectural finding**: no `diacritics.tsv` shipped - `DiacriticTable.parse()` requires single-
-  character variants, and "oʻ"/"gʻ" is a two-character digraph, so such an entry would silently become a
-  non-functional empty mapping. `hints.tsv` DOES work correctly for the long-press typing side (verified
-  against `AlternativeScript.extendsWord()` directly - both characters count as letters, so `o=oʻ`/`g=gʻ`
-  correctly append the full sequence) plus the 10 language-neutral assignments every Latin-script pack
-  shares. `abbreviations.tsv`: 11 hand-drafted entries. `UzbekRules`: `decimalCommaGluesDigits`=true,
-  `timeSuggestionWord`=null, `bundledConfusablesBlacklist`=empty - `confusables_scan.py`'s plain `"qwerty"`
-  layout found 1,693 candidates, left uncurated. `language_profiles.tsv` gained a real 200-ngram profile.
-  Capitalisation: does not capitalise common nouns.
-  **Honesty gate (step 11) NOT satisfied**: not reviewed by an Uzbek speaker, thinnest Wiktionary source of
-  any pack built so far, and the `diacritics.tsv` gap is a real, documented limitation - expect this pack to
-  need the most follow-up curation of the whole round. Not device-confirmed.
-  `versionCode` 500 -> 501, `versionName` "1.2.4" -> "1.2.5". **This closes the four-language Russian/
-  Ukrainian/Azerbaijani/Uzbek D-450-followup round** (§442-§445).
-
-## Older Rounds (§1-§444, v0.7.6 through v1.2.4) - Pruned From This File
+D-401-followup (§470): twenty-fourth pruning pass - §445 removed (already logged verbatim in History.md),
+cutoff moved from §445 to §446, keeping the working set at 25 rounds (§446-§470).
 
 D-401-followup (§469): twenty-third pruning pass - §444 removed (already logged verbatim in History.md),
 cutoff moved from §444 to §445, keeping the working set at 25 rounds (§445-§469).

@@ -43,8 +43,20 @@ object CursorControlGesture {
      */
     const val DP_PER_CHARACTER_STEP = 12f
     
-    /** Drag distance per line step (D-401) - same calibration status as [DP_PER_CHARACTER_STEP]. */
-    const val DP_PER_LINE_STEP = 32f
+    /**
+     * Drag distance per line step (D-401) - same starting-point status as [DP_PER_CHARACTER_STEP], but
+     * D-401-followup raised this specific constant well past its own original 32f: a device log showed a
+     * *cumulative* vertical drift of only 16dp (half of 32f, [stepsFor]'s own rounding threshold) from the
+     * gesture's origin was enough to register a whole unintended line step in the middle of an otherwise
+     * purely horizontal drag - trivially crossed by ordinary hand wobble over any drag covering more than a
+     * few characters, and reported on a real device as the caret "just flipping through lines" regardless of
+     * drag direction. 200f (100dp/~262px dead zone at the reporting device's own 2.625 density, roughly two
+     * keyboard key-rows tall per that same log) demands a real, deliberate vertical drag before a line step
+     * registers at all, while [DP_PER_CHARACTER_STEP] itself is untouched - only line movement had this
+     * failure mode, since character movement is immediately visible and self-correcting, but an unwanted
+     * line jump silently teleports the caret somewhere else entirely.
+     */
+    const val DP_PER_LINE_STEP = 200f
     
     /** Which half of the gesture is currently active. */
     enum class Stage {

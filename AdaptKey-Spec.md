@@ -594,6 +594,14 @@ chance to reject it.
 value carried over from Gboard's own spacebar cursor glide, adopted deliberately as the starting point (the
 user's own explicit call: "ich muss es benutzen, um zu sagen, was ich anders haben will") rather than
 independently invented - expected to be retuned once tried on a real device, not claimed to be final.
+**D-401-followup**: the line-step distance needed exactly that retuning - a device log showed a cumulative
+vertical drift of only 16dp from the gesture's own origin (half of the original 32dp threshold) was already
+enough to register a full, unintended line step in the middle of an otherwise purely horizontal drag,
+trivially crossed by ordinary hand wobble over any drag long enough to cover more than a few characters, and
+reported as the caret "just flipping through lines" regardless of drag direction. Raised to 200dp (a real,
+deliberate vertical drag, not incidental drift) - the character-step distance is untouched, since only line
+movement had this failure mode: an unwanted character move is immediately visible and self-correcting, but
+an unwanted line jump silently teleports the caret somewhere else entirely.
 
 ---
 
