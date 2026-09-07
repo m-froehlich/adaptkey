@@ -1076,6 +1076,32 @@ non-trivial changes).
 
 ## Current State
 
+- **§469 (v1.2.29): D-401-followup - both empty-line "fixes" (§467, §468) reverted outright; the premise**
+  **itself was wrong, not the implementation.** User's fifth log on this exact area: "Es hat sich nichts
+  geändert" (nothing changed) - §468's own corrected two-sided `isOnZeroWidthLine()` check compiled, tested
+  green, and was logically sound, yet the user still perceived a "flip" on the device.
+
+  **Re-reading the user's own original D-401 requirement, not the log, settled it**: from the very first
+  round of this feature, the explicit, repeated call was that a horizontal drag must never cross a line
+  boundary under any circumstances ("Ich bewege den Cursor hiermit bereits zweidimensional. Es gibt keinen
+  Grund für eine Weiterbewegung im Textfluss."). §467's own diagnosis of the original "sticking" report as a
+  bug was the actual mistake - a zero-width line clamping to a single point in both directions, forcing the
+  user to leave it via a vertical (line) move rather than a horizontal one, is not stuck at all: it is this
+  gesture's own two-independent-dimensions design working exactly as originally specified. §467/§468's own
+  "escape" logic was solving a problem that, per the user's own standing requirement, was never actually a
+  problem - it was reintroducing the one behaviour (crossing a line horizontally) the user had explicitly and
+  consistently ruled out from the start, just via a character move instead of an accidental line move.
+
+  **Fixed by reverting, not patching a third time**: `isOnZeroWidthLine()` deleted outright;
+  `leftBoundary()`/`rightBoundary()` restored to their pre-§467 form - `return result` unconditionally, no
+  unclamping exception for any boundary value, empty line or not. A blank line now clamps firmly like every
+  other line boundary; leaving it requires an explicit vertical move, exactly as G-08 always specified.
+
+  1596 unit tests unchanged. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 524 -> 525,
+  `versionName` "1.2.28" -> "1.2.29". Spec (`G-08`) updated to record both reverted attempts and why, so a
+  future round does not re-litigate the same "stuck" report as a bug a third time. Diagnostic logging (§465)
+  still kept in place - this round's own device confirmation is the next open item.
+
 - **§468 (v1.2.28): D-401-followup - §467's own empty-line fix was itself a real regression, caught on the**
   **very next device test.** User reported: "Jetzt ist es wieder wie vorher... man flippt einfach durch die
   Zeilen" (back to flipping through lines again) - the fourth log in this saga, and it pinpointed the exact
@@ -2077,45 +2103,10 @@ non-trivial changes).
   `versionCode` 500 -> 501, `versionName` "1.2.4" -> "1.2.5". **This closes the four-language Russian/
   Ukrainian/Azerbaijani/Uzbek D-450-followup round** (§442-§445).
 
-- **§444 (v1.2.4): D-450-followup - first Azerbaijani language pack, third of the four §441 keyboard-layout-**
-  **only languages to get a real dictionary.** Full Guide §8 pipeline. `azwiki-latest-pages-articles.xml.bz2`
-  (323,312,325 bytes, live-verified, a small dump) -> 216,948 pages (matching `az.wikipedia.org`'s own live
-  `siteinfo` count, 217,036), 55,499,902 tokens, 1,597,408 distinct words. RAM was not a constraint at this
-  scale, so the extractor reused Serbian's own original settings (5 workers, 4M/8M triggers).
+## Older Rounds (§1-§444, v0.7.6 through v1.2.4) - Pruned From This File
 
-  **Real casing fix applied proactively**: Azerbaijani shares Turkish's own dotted/dotless İ/I Unicode
-  SpecialCasing rule (confirmed against Unicode's own SpecialCasing.txt) - `azerbaijani_lower()` (Turkish's
-  own mapping, reused unchanged) applied in both extraction scripts, and `CasingRulesRegistry` gained a
-  one-line `Language.AZERBAIJANI to TurkishCasingRules` entry at the app's own runtime - no new logic needed.
-
-  **No native Wiktionary edition** (confirmed 404) - used the English-coverage fallback (15,724,873 bytes),
-  which despite being the "wrong"/thinner file by size turned out structurally rich: real possessive-suffix
-  noun paradigms at a similar scale to Turkish's own native edition, no combining stress marks at all. **Like
-  Turkish (D-449), Azerbaijani is postpositional, not prepositional** - only 3 words tagged `prep`/
-  `prep_phrase` in the whole file, no curated exception list built for the same no-native-fluency reason.
-
-  Calibration ratios checked directly even though none crossed the guide's own outlier threshold: noun
-  0.0893 (n=26,669), verb 0.4712 (n=6,685), adjective 0.0972 (n=56, smallest sample calibrated so far). Real
-  pairs pulled directly showed genuine Azerbaijani morphology (possessive/predicative suffix chains, real
-  intensive-reduplication forms like "yaşıl"->"yamyaşıl"/"very green") - not a bug, confirmed rather than
-  assumed.
-
-  **Net result**: `dict.tsv` 117,643 -> 651,702 rows (+534,059 from Wortfamilien completion). Bare-noun
-  safety check: 0. `bigram.tsv`: 509,198 rows (>=10 cutoff) from 1,970,071 raw. Quality gate PASS. Unlike the
-  two Cyrillic packs, this one DOES ship `hints.tsv`/`diacritics.tsv` - but with a real twist: every
-  diacritic-pair letter (ç/ə/ğ/ı/ö/ş/ü) already has its own dedicated primary key on `AzerbaijaniLayout`, so
-  `diacritics.tsv` (6 pairs shared with Turkish, "e"/"ə" the Azerbaijani-specific addition) is purely about
-  typed-without-diacritic autocorrect recovery, not AltGr access. `hints.tsv` reuses the 10 language-neutral
-  assignments every Latin-script pack shares plus a first-draft, explicitly-flagged UX set (manat sign,
-  guillemets) for the remaining keys. `abbreviations.tsv`: 13 hand-drafted entries. `AzerbaijaniRules`:
-  `decimalCommaGluesDigits`=true, `timeSuggestionWord`=null, `bundledConfusablesBlacklist`=empty -
-  `confusables_scan.py` gained `"azerbaijani"` (4,409 candidates, left uncurated). `language_profiles.tsv`
-  gained a real 200-ngram Azerbaijani profile. Capitalisation: does not capitalise common nouns.
-  **Honesty gate (step 11) NOT satisfied**: not reviewed by an Azerbaijani speaker, `hints.tsv`'s own
-  currency/punctuation choices are a first draft not a verified fact, not device-confirmed.
-  `versionCode` 499 -> 500, `versionName` "1.2.3" -> "1.2.4". Next and last: Uzbek.
-
-## Older Rounds (§1-§443, v0.7.6 through v1.2.3) - Pruned From This File
+D-401-followup (§469): twenty-third pruning pass - §444 removed (already logged verbatim in History.md),
+cutoff moved from §444 to §445, keeping the working set at 25 rounds (§445-§469).
 
 D-401-followup (§468): twenty-second pruning pass - §443 removed (already logged verbatim in History.md),
 cutoff moved from §443 to §444, keeping the working set at 25 rounds (§444-§468).

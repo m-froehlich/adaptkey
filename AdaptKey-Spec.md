@@ -523,21 +523,21 @@ own origin.
   own explicit call: this gesture already positions the cursor in two independent dimensions, so a horizontal
   drag reaching a line boundary has no reason to also flip line the way a plain document-wide character offset
   naturally would once it crosses a real newline. Only the one boundary actually at risk for the current drag
-  direction is checked at a time. **Exception, D-401-followup**: a genuinely zero-width line (an empty line
-  between two newlines) has its own start and end at the exact same offset - clamping there literally traps
-  the caret on it forever, since neither direction could ever produce a different position. Reported on a
-  real device as the caret "sticking" indefinitely on a blank line and only escaping by accident once an
-  unrelated vertical move happened to fire in the same drag (perceived as an involuntary "flip"). A move that
-  would otherwise clamp to the caret's own current position is left unclamped instead, crossing into the
-  adjacent line by exactly the drag's own delta - the same thing an ordinary text editor's arrow key already
-  does from an empty line. **The exception's own first attempt was itself a real regression, caught on the
-  very next device test**: unclamping *any* "boundary equals the caret's current position" result, without
-  checking the *other* direction too, also fired for the ordinary, correct case of the caret simply sitting
-  at the very start or end of a normal (non-empty) line - reopening the original flip bug outright ("man
-  flippt einfach durch die Zeilen"). Only a line confirmed empty in *both* directions (the character
-  immediately before the caret is a newline or the field's own start, *and* the character immediately after
-  is a newline or the field's own end) is genuinely stuck and gets unclamped; every ordinary line boundary
-  keeps clamping exactly as before.
+  direction is checked at a time, with no exception - including a genuinely zero-width (empty) line, whose
+  own start and end are the exact same offset: a character move there clamps to that single point regardless
+  of direction, so the caret cannot leave a blank line via horizontal dragging at all, only via a vertical
+  (line) move. **D-401-followup, tried and reverted twice**: a blank line clamping this way was first read as
+  a bug ("sticking", only escaping by accident once an unrelated vertical move fired in the same drag,
+  perceived as an involuntary flip) and "fixed" by unclamping it - confirmed on the very next device test to
+  reopen the original flip outright, since a genuinely empty line cannot be told apart from the caret simply
+  sitting at the very start/end of an ordinary line by checking only one direction at a time (both look
+  identical from either side alone). A second attempt added a proper two-sided check (both the character
+  immediately before *and* immediately after the caret must be a newline or the field's own start/end) -
+  correctly told the two cases apart, but a further device test showed the underlying premise itself was
+  wrong: the user's own original, repeated, explicit requirement is that a horizontal drag must never cross a
+  line boundary under any circumstances, not even from an empty line. "Getting stuck" on a blank line until a
+  vertical move actually leaves it is the correct, intended behaviour, not a bug - both unclamping attempts
+  are reverted outright.
 - **Stage 2 - selection.** Dragging instead extends a text selection from wherever Stage 1 left the caret.
   D-401-followup: **any** release while Stage 2 is active ends the mode outright and collapses the selection
   to the current position - the original "only a strict zero-movement tap ends it" reading was reported as
