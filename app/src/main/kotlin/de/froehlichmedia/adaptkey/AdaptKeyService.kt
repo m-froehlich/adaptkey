@@ -29,6 +29,7 @@ import android.util.TypedValue
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
+import android.view.inputmethod.CursorAnchorInfo
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.ExtractedTextRequest
 import android.view.inputmethod.InlineSuggestionsRequest
@@ -3112,6 +3113,22 @@ class AdaptKeyService : InputMethodService() {
     private var cursorControlOriginColumn = 0
     private var cursorControlAppliedLines = 0
     
+    // D-401-followup (temporary probe, §472): whether this gesture session has seen a single
+    // onUpdateCursorAnchorInfo() callback yet - see startCursorAnchorInfoProbe()'s own KDoc for what the
+    // probe is for. Remove together with the probe itself.
+    private var cursorControlAnchorInfoSeen = false
+    
+    private val cursorControlAnchorInfoProbeRunnable = Runnable {
+        if (!cursorControlAnchorInfoSeen) {
+            diag(
+                "AdaptKeyJitter",
+                "cursorAnchorInfo: NO callback within ${CURSOR_CONTROL_ANCHOR_PROBE_MS}ms - this editor " +
+                    "reports no caret coordinates, visual line layout is not observable here",
+                warn = true
+            )
+        }
+    }
+    
     private val cursorControlListener = object : AdaptKeyboardView.OnCursorControlListener {
         override fun onCursorControlArmed() {
             cursorControlSessionActive = true
@@ -3128,6 +3145,7 @@ class AdaptKeyService : InputMethodService() {
             handler.removeCallbacks(reclaimEnabledRunnable)
             handler.removeCallbacks(reclaimWordAtCaretRunnable)
             handler.removeCallbacks(expensiveSuggestionRunnable)
+            startCursorAnchorInfoProbe()
             showCursorControlHint(CursorControlGesture.Stage.CURSOR)
         }
         
@@ -3157,11 +3175,97 @@ class AdaptKeyService : InputMethodService() {
         
         override fun onCursorControlEnded() {
             cursorControlSessionActive = false
+            stopCursorAnchorInfoProbe()
             // D-401: the user's own explicit call - the gesture never touches composing state itself, so
             // ending it simply resyncs the ordinary suggestion bar from whatever composing/caret state
             // already is, exactly like any other external caret move already would.
             refreshSuggestions()
         }
+    }
+    
+    /**
+     * D-401-followup (temporary probe, §472): asks the target editor to report the caret's own real drawn
+     * coordinates for the duration of one cursor-control gesture, and logs whatever comes back. Changes no
+     * behaviour whatsoever - nothing reads the reported values yet.
+     *
+     * Why this exists: this gesture's one remaining structural problem is that it can only recognise a
+     * *paragraph* (a real `'\n'`, found by [adjacentLineStart]'s own text scan), while the user drags
+     * against the *visual* line they actually see, which a long paragraph soft-wraps into several of. An
+     * earlier analysis concluded that gap was simply unbridgeable, since `InputConnection` cannot be asked
+     * for the target app's own text layout - true, but not the whole picture: [CursorAnchorInfo] does not
+     * expose the layout, yet it does expose where the caret is *drawn*, and a soft wrap is directly
+     * observable there as a jump in the caret's own y coordinate. If these callbacks arrive with real
+     * coordinates, a screen-space rearchitecture of this gesture becomes possible (positioning the caret by
+     * driving it towards a target *point*, with the visual line falling out for free); if they do not, that
+     * whole direction is closed and the gesture's line handling has to be honestly re-scoped instead.
+     *
+     * Deliberately a probe of its own rather than part of that rearchitecture: three earlier rounds of this
+     * feature were built on premises that only failed on a real device, so this one tests its premise first
+     * - whether the callback arrives at all, whether the coordinates are real (not `NaN`), and whether y
+     * genuinely changes across a soft wrap within a single paragraph. [cursorControlAnchorInfoProbeRunnable]
+     * makes a negative answer explicit instead of leaving it as silence in the log, and a `false` return
+     * below already answers it for an editor that declines outright.
+     */
+    private fun startCursorAnchorInfoProbe() {
+        cursorControlAnchorInfoSeen = false
+        val ic = currentInputConnection
+        if (ic == null) {
+            diag("AdaptKeyJitter", "cursorAnchorInfo: no InputConnection at arm time - probe not started", warn = true)
+            return
+        }
+        val accepted = ic.requestCursorUpdates(InputConnection.CURSOR_UPDATE_IMMEDIATE or InputConnection.CURSOR_UPDATE_MONITOR)
+        diag("AdaptKeyJitter", "cursorAnchorInfo: requestCursorUpdates(IMMEDIATE|MONITOR) accepted=$accepted")
+        handler.postDelayed(cursorControlAnchorInfoProbeRunnable, CURSOR_CONTROL_ANCHOR_PROBE_MS)
+    }
+    
+    /**
+     * D-401-followup (temporary probe, §472): the mirror of [startCursorAnchorInfoProbe] - cancels the
+     * pending "nothing arrived" verdict and, more importantly, stops the editor reporting cursor updates
+     * again, so the probe costs nothing at all outside an active gesture.
+     */
+    private fun stopCursorAnchorInfoProbe() {
+        handler.removeCallbacks(cursorControlAnchorInfoProbeRunnable)
+        currentInputConnection?.requestCursorUpdates(0)
+    }
+    
+    /**
+     * D-401-followup (temporary probe, §472): logs every reported caret position while a cursor-control
+     * gesture is active, alongside this app's own tracked offset, so the log can be read as "text offset N
+     * is drawn at screen point (x, y)" - exactly the correspondence a screen-space rearchitecture would
+     * need. Ignored entirely outside an active gesture, since [startCursorAnchorInfoProbe] is the only
+     * caller that ever requests these updates in the first place.
+     */
+    override fun onUpdateCursorAnchorInfo(cursorAnchorInfo: CursorAnchorInfo?) {
+        super.onUpdateCursorAnchorInfo(cursorAnchorInfo)
+        if (!cursorControlSessionActive) {
+            return
+        }
+        val info = cursorAnchorInfo
+        if (info == null) {
+            diag("AdaptKeyJitter", "cursorAnchorInfo: callback arrived with null info", warn = true)
+            return
+        }
+        cursorControlAnchorInfoSeen = true
+        val markerX = info.insertionMarkerHorizontal
+        val markerTop = info.insertionMarkerTop
+        val markerBottom = info.insertionMarkerBottom
+        // The reported marker is in the editor view's own coordinates; info.matrix maps it to screen
+        // coordinates, which is the space this gesture's own finger deltas already live in.
+        val screen = floatArrayOf(markerX, markerTop)
+        if (!markerX.isNaN() && !markerTop.isNaN()) {
+            info.matrix.mapPoints(screen)
+        }
+        val flags = info.insertionMarkerFlags
+        diag(
+            "AdaptKeyJitter",
+            "cursorAnchorInfo: trackedOffset=$cursorControlPosition reportedSel=[${info.selectionStart},${info.selectionEnd}] " +
+                "markerX=$markerX top=$markerTop bottom=$markerBottom baseline=${info.insertionMarkerBaseline} " +
+                "lineHeight=${markerBottom - markerTop} screen=[${screen[0]},${screen[1]}] " +
+                "visible=${(flags and CursorAnchorInfo.FLAG_HAS_VISIBLE_REGION) != 0} " +
+                "invisible=${(flags and CursorAnchorInfo.FLAG_HAS_INVISIBLE_REGION) != 0} " +
+                "rtl=${(flags and CursorAnchorInfo.FLAG_IS_RTL) != 0} " +
+                "composingStart=${info.composingTextStart}"
+        )
     }
     
     /**
@@ -7781,6 +7885,12 @@ class AdaptKeyService : InputMethodService() {
         // via getTextBeforeCursor()/getTextAfterCursor() to find line-boundary newlines - generous enough
         // for any realistic single line/paragraph on a mobile field without requesting the whole document.
         private const val CURSOR_CONTROL_LINE_SCAN_WINDOW = 2000
+        
+        // D-401-followup (temporary probe, §472): how long startCursorAnchorInfoProbe() waits for a first
+        // onUpdateCursorAnchorInfo() callback before recording that this editor reports no caret coordinates
+        // at all. Deliberately generous - a negative result must be trustworthy, and this only ever delays a
+        // log line, never anything the user can perceive. Remove together with the probe itself.
+        private const val CURSOR_CONTROL_ANCHOR_PROBE_MS = 500L
         
         // D-347/D-350: how long the caret must sit still (composing empty) before reclaimWordAtCaret() runs -
         // see reclaimWordAtCaretRunnable's own field KDoc. Shorter than EXPENSIVE_SUGGESTION_DELAY_MS at the

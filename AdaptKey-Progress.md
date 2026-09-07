@@ -1074,6 +1074,56 @@ non-trivial changes).
   regression of that existing fix or a related race it does not fully cover. Needs a real device log to
   root-cause properly, per this project's own convention - not attempted blind.
 
+- **§472 (v1.2.32): D-401-followup - a premise probe, not a fix: does the target editor report the caret's**
+  **own drawn coordinates?** No behaviour change at all; nothing reads the probed values yet.
+
+  **Where this came from.** §471's rearchitecture was device-tested and produced two findings. The first was
+  cosmetic: horizontal positioning really is absolute *within* one touch contact (`targetColumn =
+  originColumn + characters`, `originColumn` fixed), but `originColumn` is re-established on every re-touch
+  inside the lift-grace window, and the log showed that happening every few seconds - which sums to
+  something that *looks* incremental without being it. The second is structural and is the real blocker:
+  line detection reads only real `'\n'` characters, and the tested note effectively had two of them - a
+  107-character paragraph with no embedded newline (soft-wrapping across several visible lines) and an empty
+  line after it. So "drag down = one visible line down" cannot work by construction, and a line change can
+  only ever jump to the next real paragraph - which is exactly the reported "flip" and "changing lines is
+  nearly impossible".
+
+  That analysis then concluded the gap was unbridgeable, since `InputConnection` offers no way to ask the
+  target app for its text layout, and DPAD navigation (which would have used the app's own layout) was
+  already tried and rejected in an earlier round - it moved system focus to a different field entirely in
+  Google Keep (see `adjacentLineStart`'s own KDoc). **That conclusion was wrong, and this entry exists to
+  record the correction**: `CursorAnchorInfo`/`requestCursorUpdates` does not expose the layout, but it does
+  expose where the caret is *drawn* - and a soft wrap is directly observable there as a jump in the caret's
+  own y coordinate. `CursorAnchorInfo` appears twice elsewhere in this file (D-418, and §460's own DPAD
+  note), both times dismissed for *drawing an overlay* on the grounds that app support is inconsistent; it
+  was never considered as a layout oracle for this gesture.
+
+  **Why a probe and not the rearchitecture.** Rounds §462-§470 were each built on a premise that only failed
+  on a real device. The premise here is "Google Keep reports caret coordinates", which is cheap to test and
+  expensive to assume, so this round tests only that. `startCursorAnchorInfoProbe()` requests
+  `CURSOR_UPDATE_IMMEDIATE or CURSOR_UPDATE_MONITOR` when the gesture arms (logging the editor's own accept/
+  decline return), `onUpdateCursorAnchorInfo()` logs every reported position next to this app's own tracked
+  text offset - so the log reads as "offset N is drawn at screen point (x, y)" - and
+  `stopCursorAnchorInfoProbe()` cancels the request again when the gesture ends, so nothing is requested
+  outside an active gesture. A `cursorControlAnchorInfoProbeRunnable` fires after 500 ms without a callback
+  and records the negative verdict explicitly, so "no support" reads as a real log line rather than silence.
+
+  **What the log has to answer**: (1) do callbacks arrive at all, (2) are the coordinates real rather than
+  `NaN`, (3) does y genuinely change across a soft wrap *inside one paragraph*. If yes, the planned direction
+  is a screen-space rearchitecture - drive the caret towards a target *point* rather than a target character,
+  with the visual line falling out for free and `stepsFor()`'s dominant-axis gate becoming unnecessary
+  (40 px of drift against a ~60 px line height simply targets the same line, geometrically, with no threshold
+  involved). A user requirement captured for that round and not to be lost: **the finger-to-caret ratio must
+  stay well below 1:1, at least horizontally** - the point of the gesture is precision, and 1:1 would be no
+  better than tapping in the text directly. In a screen-space model that is a plain gain factor applied to
+  `(dx, dy)`, and calibratable in real screen millimetres for the first time. If the log says no, that whole
+  direction is closed and the gesture's line handling gets honestly re-scoped to "jumps between real
+  paragraphs" instead.
+
+  1599 unit tests (unchanged - Android-only glue, per this project's own accepted testing gap).
+  `:app:assembleDebug`/`:app:testDebugUnitTest` green. `versionCode` 527 -> 528, `versionName` `"1.2.31"` ->
+  `"1.2.32"`.
+
 - **§471 (v1.2.31): D-401-followup - complete rearchitecture, prompted by the user directly correcting this**
   **gesture's own mental model rather than reporting another symptom.** After a 7th round still showed
   flipping and a "stuck at the empty line, then stuck at the left edge - unbenutzbar" report, the user
