@@ -1822,16 +1822,16 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * right-hand column (third row vs. the bottom row) - reported drifting down into Enter's own territory
      * the same way the bottom letter row drifted into the space bar.
      * 
-     * @return the tighter downward factor for a bottom-row over-space-bar letter key or Backspace, or null
-     *         (meaning "use the model's own [OffsetModel.maxOffsetFactor], same as every other direction")
-     *         otherwise
+     * @return the tighter downward factor for a bottom-row over-space-bar letter key or Backspace; failing
+     *         that, D-397's generic [GENERIC_VERTICAL_OFFSET_FACTOR] for any char key with a genuine row
+     *         below it on the active layout ([RowGeometry.hasRowBelow]); or null (meaning "use the model's
+     *         own [OffsetModel.maxOffsetFactor], same as every other direction") otherwise
      */
     private fun downwardOffsetFactorFor(key: Key): Double? {
-        return if ((key.code == KeyCode.CHAR && key.char in BOTTOM_ROW_LETTERS) || key.code == KeyCode.DELETE) {
-            if (key.code == KeyCode.DELETE) ENTER_BACKSPACE_OFFSET_FACTOR else BOTTOM_ROW_DOWNWARD_OFFSET_FACTOR
-        } else {
-            null
+        if ((key.code == KeyCode.CHAR && key.char in BOTTOM_ROW_LETTERS) || key.code == KeyCode.DELETE) {
+            return if (key.code == KeyCode.DELETE) ENTER_BACKSPACE_OFFSET_FACTOR else BOTTOM_ROW_DOWNWARD_OFFSET_FACTOR
         }
+        return genericVerticalOffsetFactorFor(key) { c -> RowGeometry.hasRowBelow(layoutKind, showNumberRow, c) }
     }
     
     /**
@@ -1839,12 +1839,46 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * *upward* drift, mirroring [downwardOffsetFactorFor]'s own reasoning - Backspace sits directly above it
      * at the same column, one row up, and was reported bleeding into it the same way the bottom letter row
      * bled into the space bar (D-109/D-133).
-     * 
-     * @return the tighter upward factor for Enter, or null (meaning "use the model's own
-     *         [OffsetModel.maxOffsetFactor]") otherwise
+     *
+     * @return the tighter upward factor for Enter; failing that, D-397's generic
+     *         [GENERIC_VERTICAL_OFFSET_FACTOR] for any char key with a genuine row above it
+     *         ([RowGeometry.hasRowAbove] - the persistent number row counts here exactly like any other row,
+     *         when [showNumberRow] is on); or null (meaning "use the model's own [OffsetModel.maxOffsetFactor]")
+     *         otherwise
      */
     private fun upwardOffsetFactorFor(key: Key): Double? {
-        return if (key.code == KeyCode.ENTER) ENTER_BACKSPACE_OFFSET_FACTOR else null
+        if (key.code == KeyCode.ENTER) {
+            return ENTER_BACKSPACE_OFFSET_FACTOR
+        }
+        return genericVerticalOffsetFactorFor(key) { c -> RowGeometry.hasRowAbove(layoutKind, showNumberRow, c) }
+    }
+    
+    /**
+     * D-397: the shared generic-cap check both [downwardOffsetFactorFor] and [upwardOffsetFactorFor] fall
+     * through to once their own tighter, hand-confirmed special cases don't match - a char key (letter or
+     * digit) whose active layout geometry ([RowGeometry]) genuinely has another row on the queried side gets
+     * [GENERIC_VERTICAL_OFFSET_FACTOR] instead of the model's full isotropic [OffsetModel.maxOffsetFactor],
+     * so a key's learned zone reaches less far into whichever row happens to sit next to it - on every
+     * layout this app builds, present or future, with no per-key/per-language list to maintain (unlike the
+     * hand-picked overrides above, each added for one specific device-reported pair).
+     *
+     * Only ever consulted for [KeyCode.CHAR] keys - the symbol/calculator surfaces reuse some of the same
+     * characters (digits especially) in an entirely different, unrelated grid that [RowGeometry] knows
+     * nothing about, so this is scoped to [InputSurface.LETTERS] (which url/email mode also stays on, per
+     * [KeyboardLayout]/[GreekLayout]/etc. - their letter rows are unchanged, only the bottom control row
+     * differs).
+     *
+     * @param key the candidate key
+     * @param hasNeighborRow [RowGeometry.hasRowAbove] or [RowGeometry.hasRowBelow], whichever direction is
+     *        being asked about
+     * @return [GENERIC_VERTICAL_OFFSET_FACTOR] when applicable, otherwise null
+     */
+    private fun genericVerticalOffsetFactorFor(key: Key, hasNeighborRow: (Char) -> Boolean): Double? {
+        val char = key.char
+        if (surface != InputSurface.LETTERS || key.code != KeyCode.CHAR || char == null) {
+            return null
+        }
+        return if (hasNeighborRow(char)) GENERIC_VERTICAL_OFFSET_FACTOR else null
     }
     
     /**
@@ -2094,6 +2128,15 @@ class AdaptKeyboardView @JvmOverloads constructor(
         // did vertically (D-231). `m` is capped rightward (toward Backspace), Backspace leftward (toward
         // `m`); same considered-starting-point value and reasoning as the other two offset-cap constants.
         private const val M_BACKSPACE_OFFSET_FACTOR = 0.25
+        
+        // D-397: the generic cap for any char key with a genuine row above/below it on the active layout
+        // (RowGeometry) that has no tighter, hand-confirmed override of its own above - e.g. the top row's
+        // own downward drift into the middle row (reported: `q` reaching far enough down to register as `a`).
+        // Deliberately looser than the three device-confirmed 0.25 overrides above (those are each tuned
+        // against a specific reported over-drift into a specific neighbour), tighter than D-109's own general
+        // 0.5 isotropic cap. A considered starting point, not yet device-tuned, easy to retune later - same
+        // precedent as every other threshold constant in this file.
+        private const val GENERIC_VERTICAL_OFFSET_FACTOR = 0.3
         
         // D-361: how far isWithinBackspaceStickyZone() reaches into an adjacent key's own near side while
         // the sticky window is active. D-361-followup (v5): widened from 0.35 - real device feedback ("klebt

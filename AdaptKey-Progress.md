@@ -740,9 +740,11 @@ non-trivial changes).
     the L-05 popup-open cue removed as redundant, popup-accept given the one it was genuinely missing;
     `CORRECTION`'s amplitude lowered once it started firing for that same frequent accept-a-selection case).
     User's own closing word: "So ist der Effekt perfekt! Wir können den Punkt abschließen."
-  - **D-397 - OPEN.** Touch zones should generally bleed less into neighbouring rows, not only the bottom
-    letter row's already-capped case - named example: `q` currently reaches far enough down to frequently
-    produce an unwanted `q` instead of the intended `a` below it.
+  - **D-397 - RESOLVED (§453, v1.2.13).** A new generic 0.3 vertical-drift cap now applies to any letter or
+    digit key with a genuine row above/below it on the active layout (derived from the same shared
+    `RowGeometry` model `KeyboardProximity` already uses for typo adjacency), wherever no tighter,
+    hand-confirmed override already applies - see §453 in Current State for the full mechanism and the
+    design discussion that led to it.
   - **D-440 - RESOLVED and device-confirmed (2026-09-04, §411 display fix v1.1.50 + §412 commit fix**
     **v1.1.51).** The §410 diagnostic log the user captured cleared `SqliteDictionaryStore.canonicalWordFor()`
     outright (it already resolved "grüße"/"fröhlich" correctly) - both real bugs were one step later, at the
@@ -1005,6 +1007,52 @@ non-trivial changes).
   out unrelated to D-455/D-357 - both real suspects given the timing, neither actually involved.
 
 ## Current State
+
+- **§453 (v1.2.13): D-397 - a generic, layout-derived vertical touch-drift cap, replacing "wait for the**
+  **next reported pair" with one rule covering every row boundary.** T-03's existing tighter caps (D-133
+  bottom-row-into-space-bar, D-231/D-233 Enter/Backspace) were each a one-off, hand-picked pair added after a
+  specific device report - every other row boundary (the reported case: `q`'s own downward drift registering
+  as `a`) sat at the model's full isotropic 0.5 cap with no protection at all. Discussed directly (design
+  options A/B/C) before implementing, per this project's own convention for non-trivial touch-model changes:
+  the user picked the geometry-derived option (C) once it became clear the row/column position data it needs
+  already exists in the repo for a related purpose.
+
+  **Mechanism.** New `RowGeometry` (`keyboard/RowGeometry.kt`, pure/Android-free, JVM-tested) is the single
+  shared row/column position model - one letter-row list per `LayoutKind` plus the shared digit row -
+  extracted from `KeyboardProximity`'s own per-layout `ROWS` lists (D-442), which duplicated this exact
+  geometry purely for typo-adjacency scoring (D-28/D-38) until now. All eight `KeyboardProximity*` objects
+  now build their `ROWS` from `RowGeometry.rowsFor(...)` instead of a hand-duplicated literal string - zero
+  behaviour change there, confirmed by the existing `KeyboardProximity*Test` suites passing unchanged (they
+  only exercise the public `adjacent()`/`neighboursOf()` API).
+
+  `AdaptKeyboardView.downwardOffsetFactorFor()`/`upwardOffsetFactorFor()` now fall through to a new shared
+  `genericVerticalOffsetFactorFor()` once their own existing special cases don't match: a `KeyCode.CHAR` key
+  on `InputSurface.LETTERS` (URL/email mode included - only their bottom control row differs) gets the new
+  `GENERIC_VERTICAL_OFFSET_FACTOR = 0.3` in a direction whenever `RowGeometry.hasRowAbove()`/`hasRowBelow()`
+  says the active layout genuinely has another row there - looser than the three existing 0.25 special cases
+  (which are checked first and still win), tighter than the model's own general 0.5. Scoped to
+  `InputSurface.LETTERS` deliberately: the symbol/calculator surfaces reuse some of the same characters
+  (digits especially) in an unrelated grid `RowGeometry` knows nothing about.
+
+  **The persistent number row is treated exactly like any other row, per explicit user instruction** - no
+  exception carved out for it: shown, it participates in the row list like the three letter rows do (the top
+  letter row gets the same generic upward cap toward it, the digit row itself gets the same generic downward
+  cap toward the top letter row); hidden, the top letter row simply has no row above it, same as before.
+
+  **Deliberately not modelled**: the third-letter-row/space-bar boundary - it already has its own tighter,
+  device-confirmed D-133 override, checked first, so `RowGeometry.hasRowBelow()` correctly stays out of scope
+  for that specific boundary rather than silently loosening an already-tuned value (see that function's own
+  KDoc). 0.3 is the user's own confirmed value for the generic cap - a considered starting point, not yet
+  device-tuned beyond that sign-off, same status as every other threshold constant in this file.
+
+  New `RowGeometryTest` (8 cases): row-index lookup with/without the digit row, the named `q`/`a` repro
+  directly, the digit-row-is-not-special assertion, the bottom-row boundary staying out of this model's own
+  scope, and reachability across a second/third layout (AZERTY, Greek, Serbian). No test exists (or is
+  expected) for `AdaptKeyboardView`'s own private dispatch functions themselves - Android View glue stays
+  untested by this project's own established convention; `RowGeometry` is the pure, testable half.
+
+  1568 unit tests (1560 -> 1568, +8 new). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
+  508 -> 509, `versionName` `"1.2.12"` -> `"1.2.13"`.
 
 - **§452 (v1.2.12): D-457-followup - the full lowercase spelling of a learned acronym (typing the whole word,**
   **not just its prefix) still resolved to a mangled casing; plus D-455/D-457/D-458's own temporary**
@@ -2217,209 +2265,10 @@ non-trivial changes).
   language this round, plus a genuinely novel positional-data-shape finding resolved by design. Not
   device-confirmed either. Hungarian and Romanian continue next.
 
-- **§428 (v1.1.67): D-450 (continued) - first Czech language pack, fifth of the 18-language round, first of**
-  **the cs/sk/hu/ro group.** Added `Language.CZECH` (`"cs"`, `"Čeština"`) to the enum. Czech DOES have a
-  native Wiktionary edition (Wikislovník) - one of only 3 of the 18 languages this round with real native
-  coverage (with Indonesian/Malay still to come) - `cs-extract.jsonl.gz` (38.4MB, correctly bigger than the
-  wrong file's 19.7MB).
+## Older Rounds (§1-§428, v0.7.6 through v1.1.67) - Pruned From This File
 
-  A real, honestly documented source characteristic (not a bug): this native edition's own proper-noun
-  coverage is unusually thin - only 7 raw "name" entries in the whole file (3 survived to real tagged rows).
-  Czech Wikislovník evidently does not catalogue proper nouns the way the English Wiktionary's own broader
-  fallback coverage does for other languages here.
-
-  The entire `cswiki-latest-pages-articles.xml.bz2` (1.30GB compressed) was processed via the same
-  multiprocessing/hapax-pruning extractor - 597,792 real pages, 229,425,091 real tokens, 3,247,211 distinct
-  words, 5,450,935 raw (>=3) bigram rows. Multi-word-form shape verified directly: no space-containing forms
-  found in a real verb's own conjugation table - Czech's own periphrastic past tense is apparently not
-  documented as a single multi-word forms[] entry in this edition.
-
-  **Net result**: `dict.tsv` 521,940 rows (353,591 initial + 168,349 from Wortfamilien completion;
-  calibration ratios noun=0.3019 (n=46,061), verb=0.5556 (n=13,467), adjective=0.4478 (n=27,947), all sane).
-  POS tagging: 321,624 words kept unrecognised-by-kaikki (tagged `OTHER` only), 2,879,028 dropped, 14,592
-  removed as common-English-word contamination. Wiktionary matching: 32,140 lemmas tagged, 4,667 unmatched;
-  89,122 existing forms linked, 168,349 generated. Proper-noun handling: 3 tagged, 0 unmatched, 0 skipped.
-  Mandatory bare-noun safety check: 0 bare-NOUN rows. `bigram.tsv`: 1,974,855 rows (>=10 cutoff) from
-  5,450,935 raw. Quality gate: 0 case-insensitive duplicates, 0 non-positive frequencies, 0 orphaned lemma
-  links, 0 bare-NOUN rows - PASS.
-
-  Being native-sourced, Czech does not carry the fallback-language "what's thinner" documentation
-  requirement - 32,140 lemmas + 3 proper nouns of 353,591 base entries (~9.1%) carry a real POS/lemma link,
-  broadly comparable to the Nordic fallback languages' own ratios despite being native-sourced, since Czech
-  Wikislovník's own coverage breadth (not richness per documented word) is the limiting factor here.
-
-  `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Czech's own: 13 base letters carry a real diacritic
-  (`a=á, c=č, d=ď, e=é/ě, i=í, n=ň, o=ó, r=ř, s=š, t=ť, u=ú/ů, y=ý, z=ž`) - the most of any language this
-  project has built so far, filling all 26 letter slots with no room for a currency symbol. `g=„`/`h="`
-  (Czech's own low-quote convention). `abbreviations.tsv`: a hand-curated 23-entry list.
-
-  `CzechRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`=null,
-  `bundledConfusablesBlacklist`=empty - `confusables_scan.py` found 1,897 candidate pairs, left deliberately
-  uncurated.
-
-  New tests: `LanguageRulesTest` gained a `Czech resolves to CzechRules` case plus its own mirroring test
-  block.
-
-  **Honesty gate (step 11) - deliberately NOT claimed satisfied**: not reviewed by anyone who actually speaks
-  Czech. Real, full-dump corpus scale (229.43M real tokens) and a genuinely native-sourced edition - but
-  still "pretty good", not native-reviewed, with a confirmed, honestly documented proper-noun coverage gap
-  specific to this source. Not device-confirmed either. Slovak, Hungarian, and Romanian continue next.
-
-- **§427 (v1.1.66): D-450 (continued) - first Finnish language pack, fourth and final of the Nordic batch -**
-  **a genuine paradigm-size structural finding (13.46M raw generated forms, 570MB), surfaced via**
-  **`AskUserQuestion` and resolved by capping to core case forms per the user's own decision.** Added
-  `Language.FINNISH` (`"fi"`, `"Suomi"`) to the enum. No native Finnish edition exists - built from the
-  English Wiktionary's own coverage instead (268.7MB, by far the largest fallback source checked so far,
-  and unusually rich: 125,244/125,814 noun lemmas have real forms).
-
-  The entire `fiwiki-latest-pages-articles.xml.bz2` (983MB compressed, the largest dump of this round) was
-  processed via the same multiprocessing/hapax-pruning extractor - 624,121 real pages, 129,787,537 real
-  tokens, 2,794,769 distinct words, 3,518,226 raw (>=3) bigram rows. Finnish's own `postp` tag is clean and
-  unambiguous (unlike Turkish's own structural gap) - mapped directly to `PREPOSITION`, 256 tagged.
-
-  **Structural finding - a real paradigm-size decision point, not guessed at**: an unfiltered first pass
-  generated 13.46 million noun/adjective family forms (~158 real forms per noun lemma - the full case x
-  number paradigm PLUS six possessive-suffix combinations, confirmed directly against real raw JSON for
-  "talo"/"house": 28 case+number forms plus ~130 possessive-suffix forms like "taloni"/"talollani") - a
-  dict.tsv that would have been 570MB raw, 20-40x bigger than any other pack in this project (5-32MB range).
-  Surfaced to the user via `AskUserQuestion` as a genuine structural fork; the user chose to cap generation
-  to the core case x number paradigm only. Possessive-suffix forms are unambiguously identified by the
-  `"possessive"`/`"singular-possessive"`/`"plural-possessive"` tags - confirmed these never co-occur with
-  ordinary verb personal-conjugation forms, so the exclusion cannot strip real verb data, only the
-  genuinely-possessive-suffixed forms (including a handful of possessive-suffixed non-finite verb forms, the
-  same bloat class, dropped for the same reason). Re-run after the cap: 2.83M noun form rows (down from
-  18.46M).
-
-  **Net result (after the cap)**: `dict.tsv` 2,537,125 rows (380,516 initial + 2,156,609 from capped
-  Wortfamilien completion; calibration ratios noun=0.3846 (n=93,590), verb=0.4438 (n=19,875),
-  adjective=0.2105 (n=23,512), all sane). POS tagging: 285,052 words kept unrecognised-by-kaikki (tagged
-  `OTHER` only), 2,400,125 dropped, 14,128 removed as common-English-word contamination. Wiktionary
-  matching: 89,509 lemmas tagged, 51,437 unmatched; 169,408 existing forms linked, 2,156,609 generated.
-  Proper-noun handling: 7,260 tagged, 196 unmatched, 1,316 skipped as collisions. Mandatory bare-noun safety
-  check: 0 bare-NOUN rows. `bigram.tsv`: 1,049,602 rows (>=10 cutoff) from 3,518,226 raw. Quality gate: 0
-  case-insensitive duplicates, 0 non-positive frequencies, 0 orphaned lemma links, 0 bare-NOUN rows - PASS.
-  Even after the cap, this pack (94MB raw dict.tsv, 18MB zipped) remains noticeably larger than any other
-  language pack - a genuine, honestly documented consequence of Finnish's own real morphological richness,
-  not an extraction defect.
-
-  **What exactly is thinner, and its concrete app-level effect**: only 89,509 lemmas + 7,260 proper nouns
-  (~25.5% of the 380,516 pre-Wortfamilien base entries - the richest tagged-lemma ratio of any fallback-
-  sourced language this round) carry a real kaikki-derived POS tag and `lemma`/form link; the remaining
-  285,052 rows are real words by corpus frequency alone. Same two mechanisms weakened: (1) A-05's
-  split-safety gate cannot veto a wrong compound split built from any untagged word - practically relevant
-  since Finnish is a genuinely compound-forming language. (2) D-404 Tier 2's family-match ratio override
-  cannot fire for a correct-but-rarer untagged word. A third, separate limitation from the deliberate
-  paradigm cap: even for tagged lemmas, the family-match override will not recognise a real possessive-
-  suffixed form (e.g. "taloni") as belonging to its lemma's family, since those forms were deliberately not
-  generated - a real, bounded scope limit, not a bug.
-
-  `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Finnish's own: `a=ä, o=ö` (matching Swedish), `s=€`
-  (Finland is the only Eurozone country of this Nordic batch, unlike Sweden/Norway/Denmark's own `t=kr`),
-  `g=«`/`r=»` (matching Swedish/Norwegian). `abbreviations.tsv`: a hand-curated 15-entry list.
-
-  `FinnishRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`=null,
-  `bundledConfusablesBlacklist`=empty - `confusables_scan.py` found 2,466 candidate pairs, left deliberately
-  uncurated.
-
-  New tests: `LanguageRulesTest` gained a `Finnish resolves to FinnishRules` case plus its own mirroring
-  test block.
-
-  **Honesty gate (step 11) - deliberately NOT claimed satisfied**: not reviewed by anyone who actually
-  speaks Finnish. Real, full-dump corpus scale (129.79M real tokens) and an unusually rich fallback source
-  for its class - but still thinner POS/lemma coverage than a native-edition language, plus a deliberate,
-  user-approved paradigm-size cap. Not device-confirmed either. **This closes the four-language Nordic batch
-  of the larger 18-language round** - Czech, Slovak, Hungarian, Romanian, Croatian, Bosnian, Serbian,
-  Estonian, Latvian, Lithuanian, Indonesian, Malay, Swahili, and Tagalog remain.
-
-- **§426 (v1.1.65): D-450 (continued) - first Danish language pack, third of the 18-language round.**
-  Added `Language.DANISH` (`"da"`, `"Dansk"`) to the enum. No native Danish Wiktionary edition exists -
-  built from the English Wiktionary's own coverage instead (11.0MB).
-
-  The entire `dawiki-latest-pages-articles.xml.bz2` (455MB compressed) was processed via the same
-  multiprocessing/hapax-pruning extractor - 315,686 real pages, 80,803,420 real tokens, 1,846,772 distinct
-  words, 2,355,076 raw (>=3) bigram rows. Multi-word-form shape verified directly: the same marker-first
-  "mere X"/"mest X" pattern as Swedish/Norwegian, same reject-whitespace-outright rule applies unmodified.
-  `EXCLUDE_FORM_TAGS` gained a new `"error-unknown-tag"` entry, found in Danish's own adjective data.
-
-  **Net result**: `dict.tsv` 208,383 rows (138,330 initial + 70,053 from Wortfamilien completion; calibration
-  ratios noun=0.2604 (n=13,575), verb=0.9031 (n=7,282), adjective=0.9791 (n=2,761), all sane). POS tagging:
-  118,631 words kept unrecognised-by-kaikki (tagged `OTHER` only), 1,694,172 dropped, 14,270 removed as
-  common-English-word contamination. Wiktionary matching: 18,715 lemmas tagged, 1,080 unmatched; 24,402
-  existing forms linked, 70,053 generated. Prepositions: 60 tagged, 1 unmatched. Proper-noun handling: 1,553
-  tagged, 15 unmatched, 103 skipped as collisions. Mandatory bare-noun safety check: 0 bare-NOUN rows.
-  `bigram.tsv`: 702,019 rows (>=10 cutoff) from 2,355,076 raw. Quality gate: 0 case-insensitive duplicates,
-  0 non-positive frequencies, 0 orphaned lemma links, 0 bare-NOUN rows - PASS.
-
-  **What exactly is thinner, and its concrete app-level effect**: only 18,715 lemmas + 1,553 proper nouns
-  (~14.7% of the 138,330 pre-Wortfamilien base entries - the richest ratio of the three Nordic languages so
-  far) carry a real kaikki-derived POS tag and `lemma`/form link; the remaining 118,631 rows are real words
-  by corpus frequency alone. Same two mechanisms weakened: (1) A-05's split-safety gate cannot veto a wrong
-  compound split built from any untagged word. (2) D-404 Tier 2's family-match ratio override cannot fire
-  for a correct-but-rarer untagged word.
-
-  `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Danish's own: `a=å, o=ø` (same pattern as Swedish/
-  Norwegian), `t=kr` (same krone abbreviation), `g=„`/`r="` (Danish's own German-style low-quote convention,
-  unlike Swedish/Norwegian's guillemets - verified directly). `abbreviations.tsv`: a hand-curated 20-entry
-  list.
-
-  `DanishRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`=null,
-  `bundledConfusablesBlacklist`=empty - `confusables_scan.py` found 2,544 candidate pairs, left deliberately
-  uncurated.
-
-  New tests: `LanguageRulesTest` gained a `Danish resolves to DanishRules` case plus its own mirroring test
-  block.
-
-  **Honesty gate (step 11) - deliberately NOT claimed satisfied**: not reviewed by anyone who actually speaks
-  Danish. Real, full-dump corpus scale (80.80M real tokens) but thinner Wortfamilien/POS coverage than every
-  native-edition language. Not device-confirmed either. Finnish continues next, the last of the Nordic batch.
-
-- **§425 (v1.1.64): D-450 (continued) - first Norwegian Bokmål language pack, second of the 18-language**
-  **round - Bokmål only, per explicit user decision (Nynorsk not built).** Added `Language.NORWEGIAN`
-  (`"nb"`, `"Norsk bokmål"`) to the enum. No native Norwegian Bokmål Wiktionary edition exists on
-  kaikki.org - built from the English Wiktionary's own coverage instead (9.68MB, the smallest fallback
-  source of this round so far).
-
-  The entire `nowiki-latest-pages-articles.xml.bz2` (831MB compressed) was processed via the same
-  multiprocessing/hapax-pruning extractor - 689,377 real pages, 150,939,253 real tokens, 2,902,707 distinct
-  words, 3,546,745 raw (>=3) bigram rows. Multi-word-form shape verified directly (not assumed to carry over
-  from Swedish): the same marker-first "mer X"/"mest X" pattern, the same reject-whitespace-outright rule
-  applies unmodified.
-
-  **Net result**: `dict.tsv` 250,821 rows (220,865 initial + 29,956 from Wortfamilien completion; calibration
-  ratios noun=0.3571 (n=16,394), verb=1.0000 (n=7,283), adjective=0.7846 (n=3,271), all sane). POS tagging:
-  201,380 words kept unrecognised-by-kaikki (tagged `OTHER` only), 2,666,944 dropped, 14,898 removed as
-  common-English-word contamination. Wiktionary matching: 18,794 lemmas tagged, 775 unmatched; 27,253
-  existing forms linked, 29,956 generated. Prepositions: 78 tagged, 1 unmatched. Proper-noun handling: 1,138
-  tagged, 17 unmatched, 41 skipped as collisions. Mandatory bare-noun safety check: 0 bare-NOUN rows.
-  `bigram.tsv`: 1,169,388 rows (>=10 cutoff) from 3,546,745 raw. Quality gate: 0 case-insensitive duplicates,
-  0 non-positive frequencies, 0 orphaned lemma links, 0 bare-NOUN rows - PASS.
-
-  **What exactly is thinner, and its concrete app-level effect** (same mandatory documentation as Swedish's
-  own §424 entry, Norwegian's own real numbers): only 18,794 lemmas + 1,138 proper nouns (~9.0% of the
-  220,865 pre-Wortfamilien base entries) carry a real kaikki-derived POS tag and `lemma`/form link; the
-  remaining 201,380 rows are real words by corpus frequency alone, with no part-of-speech data. Same two
-  mechanisms weakened: (1) A-05's split-safety gate cannot veto a wrong compound split built from any
-  untagged word (no `NOUN` tag to check). (2) D-404 Tier 2's family-match ratio override cannot fire for a
-  correct-but-rarer untagged word, so a more frequent, merely-related inflected sibling could wrongly out-
-  rank it.
-
-  `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Norwegian Bokmål's own: `a=å, o=ø` (same pattern as
-  Swedish, `diacritics.tsv` additionally keeps `a -> å,æ`), `t=kr` (krone currency, shared with Swedish/
-  Danish), `g=«`/`r=»` (same guillemet convention as Swedish). `abbreviations.tsv`: a hand-curated 20-entry
-  list.
-
-  `NorwegianRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`=null,
-  `bundledConfusablesBlacklist`=empty - `confusables_scan.py` found 1,896 candidate pairs, left deliberately
-  uncurated.
-
-  New tests: `LanguageRulesTest` gained a `Norwegian resolves to NorwegianRules` case plus its own mirroring
-  test block.
-
-  **Honesty gate (step 11) - deliberately NOT claimed satisfied**: not reviewed by anyone who actually speaks
-  Norwegian. Real, full-dump corpus scale (150.94M real tokens) but thinner Wortfamilien/POS coverage than
-  every native-edition language. Not device-confirmed either. Danish and Finnish continue next in this round.
-
-## Older Rounds (§1-§424, v0.7.6 through v1.1.63) - Pruned From This File
+D-397 (§453): seventh pruning pass - §425-§428 removed (all four already logged verbatim in History.md, no
+backfill needed), cutoff moved from §425 to §429, keeping the working set at 25 rounds (§429-§453).
 
 This file only tracks the current status plus the recent working set - it is not a lossy summary of the
 rounds removed below. Every pruned round's full detail (root cause, rejected alternatives, real device-log

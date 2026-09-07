@@ -257,7 +257,10 @@ expected point contributes less to the mean (weight floored at 0.1, so a sustain
 off-taps still eventually moves the zone, just more gradually than an ordinary running mean). The isotropic
 offset is capped (`maxOffsetFactor = 0.5` of key size); the bottom row (`c v b n m`) additionally has a
 tighter, direction-specific downward cap (0.25) so a key's zone can never drift down into the space bar's
-territory. A tap flagged as T-05-ambiguous is never used as training data. The model exposes an exact
+territory. D-397 (§43) adds a further, generic 0.3 cap on any letter or digit key's drift toward whichever
+row genuinely sits above or below it on the active layout, wherever no tighter hand-confirmed override
+(the space-bar case above, or Enter/Backspace's own D-231/D-233 pair) already applies. A tap flagged as
+T-05-ambiguous is never used as training data. The model exposes an exact
 algebraic inverse (`unrecord()`) of a single weighted update, used narrowly by A-07's undo to reverse one
 specific raw-coordinate correction. The model makes no assumption about handedness or finger beyond its
 T-04 seed and continues to adapt from every confirmed word.
@@ -2691,6 +2694,57 @@ but with its own `minSystemLevel` of 1 rather than `KEY_PRESS`'s own 3, so it st
 OS's "Haptic feedback" slider turned down to its lowest setting, the same way `MODE_SWITCH` already does.
 Gated on the ordinary `hapticsEnabled` toggle, exactly like `KEY_PRESS` - conceptually still an ordinary
 key-touch confirmation, not a setting of its own.
+
+---
+
+## 43. Generic Row-Crossing Vertical Touch-Drift Cap (D-397)
+
+D-397: the T-03 personal offset model's existing tighter direction-specific caps (D-133's bottom-row-into-
+space-bar case, D-231/D-233's Enter/Backspace pair) were each added individually, for one specific
+device-reported over-drift - every other row boundary was left at the model's full isotropic 0.5 cap, so a
+key with no reported problem of its own (the named example: `q` reaching far enough downward to register as
+`a`) had no protection at all. Discussed directly rather than adding one more hand-picked pair: a genuinely
+*generic* rule was preferred - "reach less into whichever row happens to be there," for every key, on every
+layout, present or future, without a per-character list to maintain per layout.
+
+**Mechanism.** [`RowGeometry`](app/src/main/kotlin/de/froehlichmedia/adaptkey/keyboard/RowGeometry.kt) is a
+new, purely static, Android-free row/column position model - one `List<String>` of letter rows per
+[`LayoutKind`](app/src/main/kotlin/de/froehlichmedia/adaptkey/keyboard/LayoutRegistry.kt), plus the shared
+digit row - extracted from [`KeyboardProximity`](app/src/main/kotlin/de/froehlichmedia/adaptkey/suggestion/KeyboardProximity.kt)'s
+own per-layout `ROWS` lists (D-442), which used to duplicate this exact geometry purely for typo-adjacency
+scoring (D-28/D-38). Both purposes now read from this one shared source, so the two can never silently
+disagree about a layout's own row geometry; `KeyboardProximity`'s eight per-layout objects were updated to
+build their `ROWS` from `RowGeometry.rowsFor(...)` instead of a hand-duplicated literal, with no change to
+their own observable adjacency behaviour (confirmed by the existing `KeyboardProximity*Test` suites, which
+exercise only the public `adjacent()`/`neighboursOf()` API and pass unchanged).
+
+`AdaptKeyboardView`'s `downwardOffsetFactorFor()`/`upwardOffsetFactorFor()` (the functions T-03's
+per-candidate cap already dispatches through) now fall through to a new, shared
+`genericVerticalOffsetFactorFor()` once their own existing tighter special cases don't match: for a
+[`KeyCode.CHAR`] key on the ordinary letters surface (`InputSurface.LETTERS` - which URL/email mode also
+stays on, since only their bottom control row differs, per L-01/E-01/U-01), if `RowGeometry.hasRowAbove()`/
+`hasRowBelow()` says the active layout genuinely has another row on that side, the key's own drift in that
+direction is capped at a new `GENERIC_VERTICAL_OFFSET_FACTOR = 0.3` (looser than the three existing
+0.25-tuned special cases, tighter than the model's own general 0.5) instead of the full isotropic cap.
+Deliberately scoped to `InputSurface.LETTERS` only - the symbol/calculator surfaces reuse some of the same
+characters (digits especially) in an entirely different, unrelated grid `RowGeometry` knows nothing about.
+
+**The persistent number row (L-06/C-09) is treated exactly like any other row, per explicit user
+instruction** - when shown, it participates in `RowGeometry`'s row list like the three letter rows do, so
+the top letter row gets the same generic upward cap toward it that any other row boundary gets, and the
+digit row itself gets the same generic downward cap toward the top letter row; when the number row is
+hidden (C-09 off), the top letter row simply has no row above it and gets no upward cap, exactly as before.
+
+**Deliberately not modelled**: the boundary between the third letter row and the space bar below it - that
+boundary already has its own tighter, device-confirmed 0.25 override (D-133), checked first, so
+`RowGeometry.hasRowBelow()` for the third letter row correctly stays out of scope for it (see that
+function's own KDoc) rather than silently loosening an already-tuned value. The three existing 0.25
+special cases (D-133, D-231, D-233) are all unchanged, and continue to win over this generic rule wherever
+they apply, since they are each checked first.
+
+0.3 is a considered starting point (explicit user sign-off on the value, not yet device-tuned beyond that),
+the same status every other threshold constant in this file already carries - easy to retune later, a
+single constant.
 
 ---
 

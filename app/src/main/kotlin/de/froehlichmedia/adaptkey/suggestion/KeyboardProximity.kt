@@ -3,6 +3,8 @@
 
 package de.froehlichmedia.adaptkey.suggestion
 
+import de.froehlichmedia.adaptkey.keyboard.LayoutKind
+import de.froehlichmedia.adaptkey.keyboard.RowGeometry
 import kotlin.math.abs
 
 /**
@@ -73,7 +75,8 @@ internal object RowKeyboardProximity {
 /** German's QWERTZ geometry ([de.froehlichmedia.adaptkey.keyboard.LayoutKind.LATIN_QWERTZ]). */
 object KeyboardProximityQwertz : KeyboardProximity {
     
-    private val ROWS = listOf("1234567890", "qwertzuiop", "asdfghjkl", "yxcvbnm")
+    // D-397: the row list itself now lives in the shared RowGeometry, not duplicated here.
+    private val ROWS = RowGeometry.rowsFor(LayoutKind.LATIN_QWERTZ, includeDigitRow = true)
     private val neighbours: Map<Char, Set<Char>> = RowKeyboardProximity.build(ROWS)
     
     override fun adjacent(a: Char, b: Char): Boolean {
@@ -94,7 +97,7 @@ object KeyboardProximityQwertz : KeyboardProximity {
  */
 object KeyboardProximityQwerty : KeyboardProximity {
     
-    private val ROWS = listOf("1234567890", "qwertyuiop", "asdfghjkl", "zxcvbnm")
+    private val ROWS = RowGeometry.rowsFor(LayoutKind.LATIN_QWERTY, includeDigitRow = true)
     private val neighbours: Map<Char, Set<Char>> = RowKeyboardProximity.build(ROWS)
     
     override fun adjacent(a: Char, b: Char): Boolean {
@@ -114,7 +117,7 @@ object KeyboardProximityQwerty : KeyboardProximity {
  */
 object KeyboardProximityAzerty : KeyboardProximity {
     
-    private val ROWS = listOf("1234567890", "azertyuiop", "qsdfghjklm", "wxcvbn")
+    private val ROWS = RowGeometry.rowsFor(LayoutKind.LATIN_AZERTY, includeDigitRow = true)
     private val neighbours: Map<Char, Set<Char>> = RowKeyboardProximity.build(ROWS)
     
     override fun adjacent(a: Char, b: Char): Boolean {
@@ -133,7 +136,7 @@ object KeyboardProximityAzerty : KeyboardProximity {
  */
 object KeyboardProximityGreek : KeyboardProximity {
     
-    private val ROWS = listOf("1234567890", "ςερτυθιοπ", "ασδφγηξκλ", "ζχψωβνμ")
+    private val ROWS = RowGeometry.rowsFor(LayoutKind.GREEK, includeDigitRow = true)
     private val neighbours: Map<Char, Set<Char>> = RowKeyboardProximity.build(ROWS)
     
     override fun adjacent(a: Char, b: Char): Boolean {
@@ -153,7 +156,7 @@ object KeyboardProximityGreek : KeyboardProximity {
  */
 object KeyboardProximitySerbianCyrillic : KeyboardProximity {
     
-    private val ROWS = listOf("1234567890", "љњертзуиопшђж", "асдфгхјклчћ", "џцвбнм")
+    private val ROWS = RowGeometry.rowsFor(LayoutKind.SERBIAN_CYRILLIC, includeDigitRow = true)
     private val neighbours: Map<Char, Set<Char>> = RowKeyboardProximity.build(ROWS)
     
     override fun adjacent(a: Char, b: Char): Boolean {
@@ -174,7 +177,7 @@ object KeyboardProximitySerbianCyrillic : KeyboardProximity {
  */
 object KeyboardProximityRussianCyrillic : KeyboardProximity {
     
-    private val ROWS = listOf("1234567890", "йцукенгшщзхъ", "фывапролджэ", "ячсмитьбю")
+    private val ROWS = RowGeometry.rowsFor(LayoutKind.RUSSIAN_CYRILLIC, includeDigitRow = true)
     private val neighbours: Map<Char, Set<Char>> = RowKeyboardProximity.build(ROWS)
     
     override fun adjacent(a: Char, b: Char): Boolean {
@@ -197,7 +200,7 @@ object KeyboardProximityRussianCyrillic : KeyboardProximity {
  */
 object KeyboardProximityUkrainianCyrillic : KeyboardProximity {
     
-    private val ROWS = listOf("1234567890", "йцукенгшщзхї", "фівапролджє", "ґячсмитьбю")
+    private val ROWS = RowGeometry.rowsFor(LayoutKind.UKRAINIAN_CYRILLIC, includeDigitRow = true)
     private val neighbours: Map<Char, Set<Char>> = RowKeyboardProximity.build(ROWS)
     
     override fun adjacent(a: Char, b: Char): Boolean {
@@ -219,7 +222,7 @@ object KeyboardProximityUkrainianCyrillic : KeyboardProximity {
  */
 object KeyboardProximityAzerbaijani : KeyboardProximity {
     
-    private val ROWS = listOf("1234567890", "püşudbmyohxj", "gısarnəlicğ", "çfvtkeqzö")
+    private val ROWS = RowGeometry.rowsFor(LayoutKind.LATIN_AZERBAIJANI, includeDigitRow = true)
     private val neighbours: Map<Char, Set<Char>> = RowKeyboardProximity.build(ROWS)
     
     override fun adjacent(a: Char, b: Char): Boolean {
