@@ -1208,13 +1208,26 @@ behaviour (Addendum to G-05). The undo also:
 D-403/D-359: the revert itself learns nothing towards the originally-typed word - not the unigram, not even
 its n-gram context (the next confirmed retry, below, learns that anyway, so nothing is lost by not doing it
 twice). Instead, exactly one further commit of that same, unchanged text is granted a single unimpeded
-attempt: every correction mechanism (autocorrect, diacritic restoration, A-05 split, A-06 merge) is bypassed
-for it, so it reaches the ordinary commit-time learning pipeline uncorrected - an ordinary +1 towards
-promotion, identical to any other first-time, never-corrected word, never a shortcut around W-02's usual
-threshold. This one-shot protection is consumed by the very next commit regardless of whether it actually
-matches the reverted text - typing anything different in the meantime simply is not protected, and ordinary
-correction rules apply to it immediately. (This exception is scoped to an ordinary corrected-word revert; a
-revert of a wrongly-applied A-05 split still force-learns the rejoined word immediately, as it always has.)
+attempt: every correction mechanism (autocorrect, diacritic restoration, A-05 split, A-06/D-391 merge/fusion,
+**and §6 capitalisation itself**) is bypassed for it, so it reaches the ordinary commit-time learning
+pipeline uncorrected - an ordinary +1 towards promotion, identical to any other first-time, never-corrected
+word, never a shortcut around W-02's usual threshold. This one-shot protection is consumed by the very next
+commit regardless of whether it actually matches the reverted text - typing anything different in the
+meantime simply is not protected, and ordinary correction rules apply to it immediately. (This exception is
+scoped to an ordinary corrected-word revert; a revert of a wrongly-applied A-05 split still force-learns the
+rejoined word immediately, as it always has.)
+
+D-403/D-359-followup: **the retry was not actually protected against §6 capitalisation** until this
+follow-up - root-caused from a real device log, not guessed: typing `"abt"`, auto-capitalised to `"Abt"`
+(a real `NOUN,PROPER_NOUN` dictionary entry - §6 rule 3 fires unconditionally for a pure noun, entirely
+independent of `suppressAutocorrect`), reverted via this very mechanism - the very next retry of `"abt"` was
+silently re-capitalised to `"Abt"` again, every time, since `capitalisation.capitalise()` was never actually
+part of the "every correction mechanism is bypassed" promise above, only the dictionary-substitution side
+was. Every substitution mechanism already forces `corrected == typed` for a confirmed retry, so the fix
+commits `typed` verbatim in that case, skipping `capitalise()` entirely - mirroring how a case-locked word
+already bypasses "autocorrect, capitalisation (§6) and single-word correction entirely" (G-05) for the
+identical "the user has hand-finished this" reason. Explicit user confirmation: a confirmed revert-retry
+must be treated exactly like an autocorrect in this respect.
 
 This mechanism depends on the `onUpdateSelection` self-recognition guiding principle (§1) and on a correct
 single-character delete immediately after a mid-word reclaim (never deleting the whole reclaimed word) - both

@@ -1012,6 +1012,36 @@ non-trivial changes).
 
 ## Current State
 
+- **§455 (v1.2.15): D-403/D-359-followup - a confirmed revert-retry (A-07) was not actually protected**
+  **against §6 capitalisation, only against dictionary substitution.** Found while the user was chasing a
+  different bug, with a real device log to root-cause it - not guessed: typing `"abt"` auto-capitalised to
+  `"Abt"` (a real `NOUN,PROPER_NOUN` dictionary entry - §6 rule 3 fires unconditionally for a pure noun,
+  confirmed directly against `dictionaries/de/dict.tsv`), reverted via the existing A-07 mechanism - the very
+  next retry of `"abt"` was silently re-capitalised to `"Abt"` again, every single time. The log's own
+  `suppressAutocorrect=true`/`autocorrected=null` lines proved this was never the dictionary-correction path
+  re-firing at all (that side was correctly and consistently bypassed, on every attempt, for an unrelated
+  reason - D-106 stage 2's cross-language protection) - `capitalisation.capitalise()` itself, called
+  unconditionally at `finalizeAndCommit()`'s own line regardless of `revertConfirmed`, was simply never part
+  of the "every correction mechanism is bypassed for this one retry" promise D-403/D-359 originally made.
+
+  Discussed directly before fixing (per this project's own convention): is this the deliberate, documented
+  §6 behaviour (D-405 explicitly scoped rule 1's own symmetric "explicit input wins" protection to the
+  sentence-start mechanism alone, leaving pure/proper-noun capitalisation deliberately unconditional), or
+  should the revert-protection's own promise now extend to cover it too? Explicit user answer: yes, treat it
+  exactly like an autocorrect.
+
+  **Fix.** Every substitution mechanism already forces `corrected == typed` whenever `revertConfirmed` is
+  true (each is individually gated on `suppressAutocorrect`/`revertConfirmed`), so `finalWord` now commits
+  `typed` verbatim in that case, skipping `capitalisation.capitalise()` entirely - one line change
+  ([AdaptKeyService.kt:4272](app/src/main/kotlin/de/froehlichmedia/adaptkey/AdaptKeyService.kt:4272)),
+  mirroring how a case-locked word already bypasses "autocorrect, capitalisation (§6) and single-word
+  correction entirely" (G-05) for the identical "the user has hand-finished this" reason. No new test - this
+  is `AdaptKeyService`'s own Android-glue commit path, untested by this project's own established convention;
+  `revertConfirmed`/`suppressAutocorrect`'s own derivation (pure logic elsewhere) was already covered.
+
+  1586 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
+  510 -> 511, `versionName` `"1.2.14"` -> `"1.2.15"`.
+
 - **§454 (v1.2.14): D-391 - cross-word fusion across a spurious space, generalising A-06 beyond its own**
   **narrow, tap-evidence-gated scope.** Real motivating example, discussed and designed with the user before
   implementing (per this project's own convention for non-trivial correction mechanisms): typing
@@ -2222,78 +2252,16 @@ non-trivial changes).
   device-confirmed either. **This closes the cs/sk/hu/ro group** - Croatian, Bosnian, Serbian, Estonian,
   Latvian, Lithuanian, Indonesian, Malay, Swahili, and Tagalog remain.
 
-- **§430 (v1.1.69): D-450 (continued) - first Hungarian language pack, seventh of the 18-language round -**
-  **the same possessive-suffix paradigm cap already decided for Finnish applied consistently (no re-pause**
-  **needed, real scale confirmed sane), plus a real tag-vocabulary collision found and fixed before it could**
-  **silently drop the entire informal-address verb paradigm.** Added `Language.HUNGARIAN` (`"hu"`, `"Magyar"`)
-  to the enum. No native edition exists - built from the English Wiktionary's own coverage instead (53.4MB).
-
-  **Finding 1**: Hungarian, like Finnish, is agglutinative and its own noun table also carries genuine
-  possessive-suffix forms on top of its ~18-case paradigm (confirmed: "fa"/"tree" has 12 real possessive-
-  suffix forms like "fam"/"fád"/"fája" on top of ~36 case x number forms). Per the user's own Finnish
-  decision, the same cap was applied proactively (`EXCLUDE_FORM_TAGS` excludes `"possessive"`/
-  `"possessed-single"`/`"possessed-many"`) rather than re-asking - and since Hungarian's own possessive
-  paradigm here was NOT crossed with the full case system (~12 forms, not ~130), the resulting `dict.tsv`
-  stayed at a normal scale (985,299 rows, 31MB, comparable to Polish's own), confirmed real before moving on
-  rather than assumed safe - no second `AskUserQuestion` needed.
-
-  **Finding 2**: Hungarian verb conjugation uses `"formal"`/`"informal"` tags for a REAL grammatical
-  distinction (T-V polite/informal address, e.g. formal "van" vs informal "vagy" for "you are") - not a
-  slang-register marker the way every other language's own `"informal"` tag has meant. Blindly reusing the
-  shared `EXCLUDE_QUALIFIERS` (which excludes `"informal"` elsewhere) would have silently dropped the entire
-  informal-address conjugation paradigm for every Hungarian verb - caught before it happened; Hungarian's own
-  copy omits `"informal"`.
-
-  The entire `huwiki-latest-pages-articles.xml.bz2` (1.25GB compressed) was processed via the same
-  multiprocessing/hapax-pruning extractor - 573,285 real pages, 193,365,986 real tokens, 2,918,360 distinct
-  words, 4,765,421 raw (>=3) bigram rows. Hungarian's own `postp` tag is clean and unambiguous, like
-  Finnish's - mapped directly to `PREPOSITION`, 112 tagged. Multi-word check: a genuine English-prose noise
-  pattern ("intransitive verb", "definite forms are not used") caught for free by the whitespace-rejection
-  rule.
-
-  **Net result**: `dict.tsv` 985,299 rows (362,799 initial + 622,500 from capped Wortfamilien completion;
-  calibration ratios noun=0.0612 (n=56,615), verb=0.0290 (n=258, a thin sample, honestly noted),
-  adjective=0.0263 (n=7,348) - all low but sane, consistent with rich case-suffixed forms being naturally
-  rarer than their bare lemma, the same pattern Turkish's own entry documented). POS tagging: 335,543 words
-  kept unrecognised-by-kaikki (tagged `OTHER` only), 2,540,708 dropped, 14,853 removed as common-English-word
-  contamination. Wiktionary matching: 26,115 lemmas tagged, 4,551 unmatched; 96,547 existing forms linked,
-  622,500 generated. Proper-noun handling: 2,435 tagged, 20 unmatched, 221 skipped as collisions. Mandatory
-  bare-noun safety check: 0 bare-NOUN rows. `bigram.tsv`: 1,590,443 rows (>=10 cutoff) from 4,765,421 raw.
-  Quality gate: 0 case-insensitive duplicates, 0 non-positive frequencies, 0 orphaned lemma links, 0
-  bare-NOUN rows - PASS.
-
-  **What exactly is thinner, and its concrete app-level effect**: only 26,115 lemmas + 2,435 proper nouns
-  (~7.4% of the 362,799 pre-Wortfamilien base entries) carry a real kaikki-derived POS tag and `lemma`/form
-  link. Same two mechanisms weakened: (1) A-05's split-safety gate cannot veto a wrong compound split built
-  from any untagged word. (2) D-404 Tier 2's family-match ratio override cannot fire for a correct-but-rarer
-  untagged word. A third limitation shared with Finnish: even tagged lemmas' possessive-suffixed forms (e.g.
-  "fám" - "my tree") are not family-matched, since those forms were deliberately not generated.
-
-  `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Hungarian's own: only 5 base letters carry a real
-  diacritic, but `o`/`u` each host THREE real distinct variants (`a=á, e=é, i=í, o=ó/ö/ő, u=ú/ü/ű` - `ő`/`ű`
-  genuinely unique to Hungarian). 21 free letters left room for a real currency assignment (`t=Ft`, forint)
-  plus `g=„`/`h="` (same low-quote convention as Czech/Slovak). `abbreviations.tsv`: a hand-curated 16-entry
-  list.
-
-  `HungarianRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`=null,
-  `bundledConfusablesBlacklist`=empty - `confusables_scan.py` found only 484 candidate pairs, the lowest
-  count of any language scan so far, left deliberately uncurated.
-
-  New tests: `LanguageRulesTest` gained a `Hungarian resolves to HungarianRules` case plus its own mirroring
-  test block.
-
-  **Honesty gate (step 11) - deliberately NOT claimed satisfied**: not reviewed by anyone who actually speaks
-  Hungarian. Real, full-dump corpus scale (193.37M real tokens) but thinner Wortfamilien/POS coverage than a
-  native-edition language, plus the same possessive-suffix scope limit Finnish's own entry documents. Not
-  device-confirmed either. Romanian continues next, the last of the cs/sk/hu/ro group.
-
-## Older Rounds (§1-§429, v0.7.6 through v1.1.68) - Pruned From This File
+## Older Rounds (§1-§430, v0.7.6 through v1.1.69) - Pruned From This File
 
 D-397 (§453): seventh pruning pass - §425-§428 removed (all four already logged verbatim in History.md, no
 backfill needed), cutoff moved from §425 to §429, keeping the working set at 25 rounds (§429-§453).
 
 D-391 (§454): eighth pruning pass - §429 removed (already logged verbatim in History.md), cutoff moved from
 §429 to §430, keeping the working set at 25 rounds (§430-§454).
+
+D-403/D-359-followup (§455): ninth pruning pass - §430 removed (already logged verbatim in History.md),
+cutoff moved from §430 to §431, keeping the working set at 25 rounds (§431-§455).
 
 This file only tracks the current status plus the recent working set - it is not a lossy summary of the
 rounds removed below. Every pruned round's full detail (root cause, rejected alternatives, real device-log

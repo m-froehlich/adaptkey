@@ -4269,7 +4269,20 @@ class AdaptKeyService : InputMethodService() {
         val tier3Result = lastTier3Result
         val contextWord = previousWord
         val tier1KnewCorrected = provider.isKnownWord(corrected)
-        val finalWord = capitalisation.capitalise(corrected, contextFor(typed), llmForcesUpper)
+        // D-403/D-359-followup: a confirmed revert-retry (revertConfirmed) already forces corrected == typed
+        // (every substitution mechanism above is gated on suppressAutocorrect/revertConfirmed) - but
+        // capitalisation.capitalise() itself was never part of that protection, and §6 rules 3/4 (pure/proper
+        // noun) fire completely unconditionally, regardless of suppressAutocorrect. Root-caused from a real
+        // device log: typing "abt", auto-capitalised to "Abt" (a real NOUN,PROPER_NOUN dictionary entry, per
+        // §6 rule 3), reverted via A-07 - the very next retry of "abt" was silently re-capitalised to "Abt"
+        // again, every single time, defeating the revert entirely even though the dictionary-correction side
+        // was correctly bypassed throughout. The spec's own promise ("every correction mechanism is bypassed"
+        // for this one retry) must cover §6 capitalisation too, not just dictionary/diacritic/split/merge/
+        // fusion - explicit user confirmation: this must be treated exactly like an autocorrect. Commits
+        // typed verbatim, mirroring how a case-locked word already bypasses "autocorrect, capitalisation
+        // (§6) and single-word correction entirely" (G-05) for the identical "the user has hand-finished
+        // this" reason.
+        val finalWord = if (revertConfirmed) typed else capitalisation.capitalise(corrected, contextFor(typed), llmForcesUpper)
         // D-139 (temporary diagnostic): the actual permanent write to the field - typed vs. what got
         // committed, so a scramble that only shows up in the final text (not just while composing) is
         // still caught here.
