@@ -1527,7 +1527,19 @@ A settings screen (reachable at any time, not only during onboarding) lists ever
 hosted pack, shows whether it is currently installed, and offers install/remove per language; installing or
 removing one takes effect immediately, without restarting the keyboard. First-run onboarding offers the same
 install step, pre-suggesting a language purely from the device's own configured system languages (no network
-call - the app already knows in code which languages it could ever offer). See
+call - the app already knows in code which languages it could ever offer).
+
+D-385-followup: the onboarding language-selection step's own action button is no longer the same generic
+"Add a language" regardless of context - when the device's system locales suggest a real, matching pack, the
+button itself names it directly (e.g. "Download Français") and opens the language-pack screen scrolled and
+visually highlighted straight to that one row, instead of the plain alphabetical list of every language.
+Generalises what D-385 originally discussed only for German to every installable pack alike, exactly the way
+[`SuggestedLanguages`](../app/src/main/kotlin/de/froehlichmedia/adaptkey/language/SuggestedLanguages.kt) (the
+underlying locale-matching mechanism, unchanged) already always worked. Where the device's locales match more
+than one installable pack, only the top-ranked suggestion is highlighted this way - every other match stays
+reachable exactly as before, one tap into the ordinary list, not hidden or demoted. The `INTERNET`-permission
+constraint above still applies unchanged: this shortens the path to the right language's own Download/Import
+buttons, it does not turn install into a single tap. See
 [`AdaptKey-Language-Contribution-Guide.md`](AdaptKey-Language-Contribution-Guide.md) for exactly what a new
 language needs (a dictionary and hint set always; a new compiled keyboard layout only when no existing row
 geometry - QWERTY, QWERTZ, ... - is suitable, e.g. a language expecting AZERTY or a non-Latin alphabet - see

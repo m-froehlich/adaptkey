@@ -239,6 +239,7 @@
     <string name="onboarding_language_body">Englisch funktioniert sofort. Jede weitere Sprache - Deutsch, Griechisch und weitere, sobald die Community sie beisteuert - ist ein kleiner, optionaler Download, damit die App für alle klein bleibt. Sprachen kannst du jederzeit später in den Einstellungen hinzufügen oder entfernen.</string>
     <string name="onboarding_language_suggested">Basierend auf deinem Gerät könntest du gebrauchen: %1$s.</string>
     <string name="onboarding_language_action">Sprache hinzufügen</string>
+    <string name="onboarding_language_action_suggested">%1$s herunterladen</string>
     <string name="onboarding_model_title">Optionale Mini-KI</string>
     <string name="onboarding_model_body">Optional kann eine kleine KI (Mini-LLM) die Vorschläge verbessern, wenn das normale Modell unsicher ist – ausschließlich auf dem Gerät. Das Modell (~273 MB) ist nicht enthalten: du lädst es einmalig über den Browser herunter und importierst es. Danach bleibt alles offline. Du kannst das jetzt überspringen und jederzeit später nachholen.</string>
     <string name="onboarding_model_action">Modell einrichten</string>

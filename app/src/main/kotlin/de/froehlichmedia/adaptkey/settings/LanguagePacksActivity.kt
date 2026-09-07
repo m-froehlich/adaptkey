@@ -12,11 +12,13 @@ import android.provider.DocumentsContract
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import de.froehlichmedia.adaptkey.R
@@ -51,9 +53,22 @@ import java.text.Collator
  */
 class LanguagePacksActivity : AppCompatActivity() {
     
+    private lateinit var scrollRoot: ScrollView
     private lateinit var container: LinearLayout
     private var pendingImportEntry: LanguagePackCatalog.Entry? = null
     private var busy = false
+    
+    /**
+     * D-385-followup: the language named by [EXTRA_HIGHLIGHT_LANGUAGE_CODE] on the launching [Intent], if
+     * any - onboarding's own language-selection step passes its top device-locale suggestion here so this
+     * screen can jump straight to that one row instead of opening on the full alphabetical list. An
+     * unresolvable/absent code (a plain "open the language list" launch, e.g. from Settings) leaves this
+     * null and the screen behaves exactly as it always has.
+     */
+    private var highlightLanguage: Language? = null
+    
+    /** The one row [buildRow] built for [highlightLanguage], captured so [onCreate] can scroll to it. */
+    private var highlightedRow: View? = null
     
     private val openDocument = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val uri = result.data?.data
@@ -70,9 +85,9 @@ class LanguagePacksActivity : AppCompatActivity() {
         title = getString(R.string.d280_title)
         
         // D-188: same edge-to-edge inset fix as BlacklistActivity's own K-01-derived fix (§13).
-        val root = findViewById<View>(R.id.language_packs_root)
-        val basePadding = root.paddingTop
-        ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
+        scrollRoot = findViewById(R.id.language_packs_root)
+        val basePadding = scrollRoot.paddingTop
+        ViewCompat.setOnApplyWindowInsetsListener(scrollRoot) { v, insets ->
             val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
             val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
             val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
@@ -86,8 +101,13 @@ class LanguagePacksActivity : AppCompatActivity() {
             insets
         }
         
+        highlightLanguage = intent.getStringExtra(EXTRA_HIGHLIGHT_LANGUAGE_CODE)?.let { Language.fromCode(it) }
         container = findViewById(R.id.language_packs_container)
         rebuild()
+        // D-385-followup: scroll straight to the suggested row once it has been laid out - only on this
+        // initial build, never on a later rebuild() triggered by an in-progress install (setBusy), which
+        // would otherwise yank the scroll position out from under the user mid-interaction.
+        highlightedRow?.let { row -> scrollRoot.post { scrollRoot.smoothScrollTo(0, row.top) } }
     }
     
     /**
@@ -168,6 +188,15 @@ class LanguagePacksActivity : AppCompatActivity() {
             orientation = LinearLayout.VERTICAL
             layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).apply {
                 topMargin = dp(16)
+            }
+            // D-385-followup: the one row named by highlightLanguage (onboarding's own top device-locale
+            // suggestion, see EXTRA_HIGHLIGHT_LANGUAGE_CODE) gets its own background tint and inner padding
+            // so it visually stands out from the plain alphabetical list around it, plus is captured for the
+            // caller's own post-layout scroll-to.
+            if (entry.language == highlightLanguage) {
+                setBackgroundColor(ContextCompat.getColor(this@LanguagePacksActivity, R.color.language_pack_suggested_background))
+                setPadding(dp(12), dp(8), dp(12), dp(8))
+                highlightedRow = this
             }
         }
         row.addView(TextView(this).apply {
@@ -335,6 +364,13 @@ class LanguagePacksActivity : AppCompatActivity() {
     private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
     
     companion object {
+        
+        /**
+         * D-385-followup: the [Intent] extra key onboarding's own language-selection step uses to name its
+         * top device-locale suggestion ([Language.code]) when launching this activity - see
+         * [highlightLanguage].
+         */
+        const val EXTRA_HIGHLIGHT_LANGUAGE_CODE = "highlight_language_code"
         
         /**
          * D-454: one editorially-chosen flag per language (two for [Language.ENGLISH], the user's own

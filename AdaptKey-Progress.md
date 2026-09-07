@@ -674,16 +674,16 @@ non-trivial changes).
     composing-state is this project's own most fragile area (spec §1's guiding principle; D-373/D-378/D-421 all
     needed multiple real-device-log rounds to fully nail down), not worth the added surface area for a
     convenience this small. User's own call, not implemented.
-  - **D-385 - RESOLVED (2026-08-31, no code change - a deliberate decision, not an implementation).** "German
-    should go back to being a bundled language, not an installable pack" - discussed for/against directly
-    with the user; decided **against** bundling (would permanently privilege the maintainer's own language for
-    every future non-German install, and the current architecture has no "installed but deactivated" state
-    at all - not even English can be turned off, so bundling German today would not even satisfy the user's
-    own "must be at least deactivatable" requirement without first building that capability separately).
-    Instead: a locale-aware first-run prompt (detect system locale `de`, prominently offer the German pack
-    immediately) was agreed as the better-targeted fix for the *actual* pain point - not yet implemented,
-    worth its own future backlog item if picked up. D-385's own "nothing may be lost" constraint is moot
-    given this outcome (no migration ever happens).
+  - **D-385 - RESOLVED (2026-08-31 decision + §458/v1.2.18 implementation).** "German should go back to being
+    a bundled language, not an installable pack" - discussed for/against directly with the user; decided
+    **against** bundling (would permanently privilege the maintainer's own language for every future
+    non-German install, and the current architecture has no "installed but deactivated" state at all - not
+    even English can be turned off, so bundling German today would not even satisfy the user's own "must be
+    at least deactivatable" requirement without first building that capability separately). Instead: a
+    locale-aware first-run prompt was agreed as the better-targeted fix - **the follow-up (D-385-followup,
+    §458) generalised this to every installable pack, not German alone**, per the user's own explicit
+    instruction when finally picking this up. D-385's own "nothing may be lost" constraint is moot given the
+    no-bundling outcome (no migration ever happens).
   - **D-386 - SUPERSEDED BY D-413 (2026-08-31, no version bump - a decision, not new code).** The
     `(1)`-suffixed-duplicate folder resolution (§327 v1.0.79) is gone again - see D-413 below: the
     `ACTION_OPEN_DOCUMENT_TREE` folder grant it depended on turned out to be refused outright for the
@@ -1049,6 +1049,48 @@ non-trivial changes).
   if the user raises it again, ideally with its own dedicated repro.
 
 ## Current State
+
+- **§458 (v1.2.18): D-385-followup - the locale-aware first-run language suggestion, agreed in principle**
+  **back at D-385's own closure but never implemented, generalised to every installable pack rather than**
+  **scoped to German alone, per the user's own explicit instruction when finally picking it up.** The
+  underlying locale-matching mechanism (`SuggestedLanguages.from(locales, available)`) already worked this
+  way since D-280 - it was never German-specific - but the onboarding UI built on top of it only ever
+  surfaced the match as a plain sentence ("Based on your device, you might want: Deutsch.") behind a generic
+  "Add a language" button that opened the full ~30-language alphabetical catalog with no further guidance.
+  That gap, not the locale-matching itself, is what this round closes.
+
+  **Design discussed first, per this project's own convention** (`AskUserQuestion`, two real trade-offs):
+  (1) how to handle multiple simultaneous locale matches (device configured with more than one language this
+  app has a pack for) - agreed to highlight only the top-ranked suggestion (`SuggestedLanguages`'s own
+  existing preference order), leaving every other match reachable exactly as before rather than cluttering the
+  list with several highlighted rows; (2) whether to move Download/Import into the onboarding panel itself or
+  deep-link into the existing `LanguagePacksActivity` - agreed to deep-link, avoiding a second copy of the
+  install logic (`LanguagePacksActivity` already owns the app's only browser-download-plus-SAF-import flow,
+  D-280/D-413) for a screen transition that costs nothing given onboarding already opens `CalibrationActivity`/
+  `Tier3ModelActivity` the same way.
+
+  **Mechanism.** `OnboardingView` gained `topSuggestedLanguageCode: String?` alongside the existing
+  `suggestedLanguageNames` (both derived from the same ordered `SuggestedLanguages.from()` call in
+  `AdaptKeyService`, so they always agree) - when set, the language-selection step's action button reads a
+  direct "Download %1$s" (new string `onboarding_language_action_suggested`, localised `de`/`el` alongside
+  the existing `en`) instead of the generic fallback, and `onOpenLanguagePacks`'s own callback signature grew
+  a `String?` parameter carrying the code through. `AdaptKeyService` forwards it as a new `Intent` extra
+  (`LanguagePacksActivity.EXTRA_HIGHLIGHT_LANGUAGE_CODE`) via a small addition to the existing
+  `launchFromKeyboard()` helper (an optional `Intent.() -> Unit` configuration block, every other call site
+  unaffected). `LanguagePacksActivity` resolves the extra back to a `Language`, tints that one row's
+  background (new `language_pack_suggested_background` colour, a light tint of the app's own established
+  accent blue) and scrolls straight to it once laid out (`ScrollView.post { smoothScrollTo(...) }`) - only on
+  the initial `onCreate()` build, not on a later `rebuild()` mid-install (`setBusy`), which would otherwise
+  yank the scroll position out from under the user.
+
+  New `OnboardingRoboTest` cases (Robolectric, matching this file's own existing house style for onboarding):
+  the suggested-language path shows the direct download label and forwards the right code when tapped; the
+  no-suggestion path falls back to the plain label and forwards `null`. `LanguagePacksActivity` itself stays
+  outside unit-test coverage, consistent with its own existing KDoc ("Android-view glue, covered by
+  instrumented rather than unit tests") - not a new gap this round introduces.
+
+  1589 unit tests (1587 -> 1589, +2 new). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+  `versionCode` 513 -> 514, `versionName` `"1.2.17"` -> `"1.2.18"`.
 
 - **§457 (v1.2.17): D-442's own two-item backlog (frequency-correction + noise audit for**
   **`en/dict.tsv`, both named-but-not-started in Progress.md) - both closed in one round, data-only, no code**
@@ -2242,56 +2284,10 @@ non-trivial changes).
   device-confirmed. **This closes the Estonian/Latvian/Lithuanian Baltic trio.** Indonesian, Malay, Swahili,
   and Tagalog remain in this 18-language round.
 
-- **§433 (v1.1.72): D-450 (continued) - first Bosnian language pack, tenth of the 18-language round,**
-  **closing the Croatian/Bosnian pair - reuses the identical shared Serbo-Croatian Wiktionary extraction.**
-  Added `Language.BOSNIAN` (`"bs"`, `"Bosanski"`) to the enum. Bosnian uses the identical Latin-script
-  `wiktionary_*.tsv` files as Croatian (copied, not regenerated) - see §432's own entry for the shared
-  structural context (pitch-accent recovery, the `"error-unrecognized-form"` exception, sparse verb tables,
-  and the deferred Serbian decision).
+## Older Rounds (§1-§433, v0.7.6 through v1.1.72) - Pruned From This File
 
-  The entire `bswiki-latest-pages-articles.xml.bz2` (178MB compressed, smallest corpus of the trio) was
-  processed via the same extractor - 98,698 real pages, 31,462,803 real tokens, 996,635 distinct words,
-  1,205,156 raw (>=3) bigram rows.
-
-  **Calibration spot-check**: verb ratio (3.1847, n=1,058) sat at the edge of the sanity-check warning zone
-  - investigated directly rather than assumed sane: the highest-ratio pairs are all genuine words where a
-  common deverbative noun/grammaticalised participle vastly outstrips its own rare source verb (e.g.
-  "zahvaljivati" freq 2 -> "zahvaljujući"/"thanks to" freq 1,646) - real language, not a bug, consistent with
-  this shared source's own broad "verb family" concept.
-
-  **Net result**: `dict.tsv` 185,506 rows (88,637 initial + 96,869 from Wortfamilien completion; calibration
-  ratios noun=0.4609 (n=13,069), verb=3.1847 (n=1,058, verified sane), adjective=0.8000 (n=10,334)). POS
-  tagging: 70,913 words kept unrecognised-by-kaikki, 900,556 dropped, 7,442 removed as common-English-word
-  contamination. Wiktionary matching: 15,953 lemmas tagged, 5,836 unmatched; 25,048 existing forms linked,
-  96,869 generated. Proper-noun handling: 1,931 tagged, 261 unmatched, 169 skipped as collisions. Mandatory
-  bare-noun safety check: 0 bare-NOUN rows. `bigram.tsv`: 279,223 rows (>=10 cutoff) from 1,205,156 raw.
-  Quality gate: 0 case-insensitive duplicates, 0 non-positive frequencies, 0 orphaned lemma links, 0
-  bare-NOUN rows - PASS.
-
-  **What exactly is thinner, and its concrete app-level effect**: only 15,953 lemmas + 1,931 proper nouns
-  (~18.0% of the 88,637 pre-Wortfamilien base entries, richer than Croatian's own despite sharing the
-  identical Wiktionary source - a consequence of Bosnian's own smaller, more core-vocabulary-weighted
-  Wikipedia corpus) carry a real kaikki-derived POS tag and `lemma`/form link. Same two mechanisms weakened
-  as Croatian's own entry documents, plus the same sparse-verb-table source limitation.
-
-  `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Bosnian's own: identical diacritics to Croatian
-  (`c=č/ć, d=đ, s=š, z=ž`), but `t=KM` (Bosnia's own convertible-mark abbreviation, genuinely different from
-  Croatia's `t=€` since Bosnia has not adopted the Euro). Same 12-entry abbreviation list as Croatian.
-
-  `BosnianRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`=null,
-  `bundledConfusablesBlacklist`=empty - `confusables_scan.py` found 3,741 candidate pairs, left deliberately
-  uncurated.
-
-  New tests: `LanguageRulesTest` gained a `Bosnian resolves to BosnianRules` case plus its own mirroring
-  test block.
-
-  **Honesty gate (step 11) - deliberately NOT claimed satisfied**: not reviewed by anyone who actually
-  speaks Bosnian. Real, full-dump corpus scale (31.46M real tokens) but thinner Wortfamilien/POS coverage
-  than a native-edition language, plus the same sparse-verb-table limitation. Not device-confirmed either.
-  **This closes the Croatian/Bosnian pair** - Serbian remains explicitly deferred. Estonian, Latvian,
-  Lithuanian, Indonesian, Malay, Swahili, and Tagalog remain.
-
-## Older Rounds (§1-§432, v0.7.6 through v1.1.71) - Pruned From This File
+D-385-followup (§458): twelfth pruning pass - §433 removed (already logged verbatim in History.md), cutoff
+moved from §433 to §434, keeping the working set at 25 rounds (§434-§458).
 
 D-442-followup (§457): eleventh pruning pass - §432 removed (already logged verbatim in History.md), cutoff
 moved from §432 to §433, keeping the working set at 25 rounds (§433-§457).

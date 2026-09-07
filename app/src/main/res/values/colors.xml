@@ -34,4 +34,9 @@
          blue (already means "keep as typed") or suggestion_search_query_text's muted grey (too subtle, the
          whole reason this bullet existed). -->
     <color name="suggestion_loading_text">#F57C00</color>
+    <!-- D-385-followup: the background tint behind a device-locale-suggested language's own row in
+         LanguagePacksActivity - a light tint of the app's own established accent blue (link_text/
+         caps_lock_border's #1565C0), distinct enough to draw the eye toward the one row worth noticing
+         without needing its own new accent colour. -->
+    <color name="language_pack_suggested_background">#E3F2FD</color>
 </resources>

@@ -252,6 +252,7 @@
     <string name="onboarding_language_body">English works right away. Every other language - German, Greek, and more as the community adds them - is a small, optional download, so the app stays small for everyone. You can add or remove languages any time later from Settings.</string>
     <string name="onboarding_language_suggested">Based on your device, you might want: %1$s.</string>
     <string name="onboarding_language_action">Add a language</string>
+    <string name="onboarding_language_action_suggested">Download %1$s</string>
     <string name="onboarding_model_title">Optional mini-AI</string>
     <string name="onboarding_model_body">Optionally, a small AI (mini-LLM) can improve the suggestions when the normal model is unsure — entirely on the device. The model (~273 MB) is not included: you download it once via the browser and import it. Afterwards everything stays offline. You can skip this now and add it any time later.</string>
     <string name="onboarding_model_action">Set up model</string>

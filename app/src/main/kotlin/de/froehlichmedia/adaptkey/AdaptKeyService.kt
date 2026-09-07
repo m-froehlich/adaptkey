@@ -1134,16 +1134,25 @@ class AdaptKeyService : InputMethodService() {
         inputRoot = root
         val onboarding = OnboardingView(this)
         onboarding.onFinished = { hideOnboarding() }
-        onboarding.onOpenLanguagePacks = { launchFromKeyboard(LanguagePacksActivity::class.java) }
+        onboarding.onOpenLanguagePacks = { code ->
+            launchFromKeyboard(LanguagePacksActivity::class.java) {
+                if (code != null) {
+                    putExtra(LanguagePacksActivity.EXTRA_HIGHLIGHT_LANGUAGE_CODE, code)
+                }
+            }
+        }
         onboarding.onOpenModelImport = { launchFromKeyboard(Tier3ModelActivity::class.java) }
         onboarding.onOpenCalibration = { launchFromKeyboard(CalibrationActivity::class.java) }
         // D-280: purely offline - the device's own configured locales against the languages that actually
         // have a real pack (LanguagePackCatalog), so the language-selection step can name a concrete
-        // suggestion (e.g. "Deutsch") instead of a generic prompt.
-        onboarding.suggestedLanguageNames = SuggestedLanguages.from(
+        // suggestion (e.g. "Deutsch") instead of a generic prompt. D-385-followup: also drives a direct,
+        // per-language "Download X" action (topSuggestedLanguageCode) instead of only the plain sentence.
+        val suggestedLanguages = SuggestedLanguages.from(
             resources.configuration.locales.let { list -> (0 until list.size()).map { list[it] } },
             LanguagePackCatalog.ENTRIES.map { it.language }
-        ).map { it.endonym }
+        )
+        onboarding.suggestedLanguageNames = suggestedLanguages.map { it.endonym }
+        onboarding.topSuggestedLanguageCode = suggestedLanguages.firstOrNull()?.code
         onboardingView = onboarding
         
         // Suggestion bar (S-01…S-06) embedded as a row directly above the keyboard, rather than the
@@ -1303,9 +1312,13 @@ class AdaptKeyService : InputMethodService() {
     
     /**
      * Launches one of the app's activities from the keyboard (a service context needs a new task).
+     * D-385-followup: an optional [configureIntent] block can add extras (e.g. a language code to highlight)
+     * before the intent is dispatched - every existing call site without one is unaffected.
      */
-    private fun launchFromKeyboard(activity: Class<*>) {
-        startActivity(Intent(this, activity).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+    private fun launchFromKeyboard(activity: Class<*>, configureIntent: (Intent.() -> Unit)? = null) {
+        val intent = Intent(this, activity).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        configureIntent?.invoke(intent)
+        startActivity(intent)
     }
     
     /**

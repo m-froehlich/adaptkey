@@ -26,8 +26,12 @@ class OnboardingView(context: Context) : LinearLayout(context) {
     /** Invoked when the user opens the mini-LLM model import from the model step. */
     var onOpenModelImport: (() -> Unit)? = null
     
-    /** D-280: invoked when the user opens the language-pack screen from the language-selection step. */
-    var onOpenLanguagePacks: (() -> Unit)? = null
+    /**
+     * D-280: invoked when the user opens the language-pack screen from the language-selection step.
+     * D-385-followup: carries [topSuggestedLanguageCode] along (null when there is no suggestion), so the
+     * destination screen can jump straight to that one language instead of opening on the full list.
+     */
+    var onOpenLanguagePacks: ((String?) -> Unit)? = null
     
     /** Invoked when the user starts the calibration from the calibration step. */
     var onOpenCalibration: (() -> Unit)? = null
@@ -40,6 +44,22 @@ class OnboardingView(context: Context) : LinearLayout(context) {
      * that step is already showing.
      */
     var suggestedLanguageNames: List<String> = emptyList()
+        set(value) {
+            field = value
+            if (step == OnboardingStep.LANGUAGE_SELECTION) {
+                render()
+            }
+        }
+    
+    /**
+     * D-385-followup: the top-ranked device-locale-suggested language's own [de.froehlichmedia.adaptkey.
+     * language.Language.code] (the same rank [suggestedLanguageNames]'s own first element names), or null
+     * when there is no suggestion - the caller derives both from the same ordered
+     * [de.froehlichmedia.adaptkey.language.SuggestedLanguages.from] result, so they always agree. Drives the
+     * action button's own label (a direct, per-language "Download X" replacing the generic fallback) and the
+     * code forwarded to [onOpenLanguagePacks].
+     */
+    var topSuggestedLanguageCode: String? = null
         set(value) {
             field = value
             if (step == OnboardingStep.LANGUAGE_SELECTION) {
@@ -119,7 +139,11 @@ class OnboardingView(context: Context) : LinearLayout(context) {
                     context.getString(R.string.onboarding_language_body) + "\n\n" +
                         context.getString(R.string.onboarding_language_suggested, suggestedLanguageNames.joinToString(", "))
                 }
-                actionButton.setText(R.string.onboarding_language_action)
+                actionButton.text = if (topSuggestedLanguageCode != null && suggestedLanguageNames.isNotEmpty()) {
+                    context.getString(R.string.onboarding_language_action_suggested, suggestedLanguageNames.first())
+                } else {
+                    context.getString(R.string.onboarding_language_action)
+                }
                 actionButton.visibility = View.VISIBLE
             }
             
@@ -142,7 +166,7 @@ class OnboardingView(context: Context) : LinearLayout(context) {
     
     private fun onAction() {
         when (step) {
-            OnboardingStep.LANGUAGE_SELECTION -> onOpenLanguagePacks?.invoke()
+            OnboardingStep.LANGUAGE_SELECTION -> onOpenLanguagePacks?.invoke(topSuggestedLanguageCode)
             OnboardingStep.MODEL_IMPORT -> onOpenModelImport?.invoke()
             OnboardingStep.CALIBRATION -> onOpenCalibration?.invoke()
             OnboardingStep.WELCOME -> Unit
