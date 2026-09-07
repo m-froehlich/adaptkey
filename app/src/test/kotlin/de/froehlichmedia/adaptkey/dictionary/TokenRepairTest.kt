@@ -467,7 +467,7 @@ class TokenRepairTest {
     fun `D-122 a non-over-space letter is never treated as a connector`() {
         store.putWord(WordEntry("test", frequency = 500L))
         store.putWord(WordEntry("wort", frequency = 4_084L))
-        // 'q' is not one of TokenRepair.OVER_SPACE_LETTERS, unlike 'v'/'x'.
+        // 'q' is not one of QWERTZ's own space-row letters (D-397's RowGeometry), unlike 'v'/'x'.
         assertNull(repair.splitAtUnresolvedConnector("testqwort"))
     }
     
@@ -506,5 +506,60 @@ class TokenRepairTest {
         store.putWord(WordEntry("st", frequency = 5_939L, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
         
         assertNull(repair.splitAtUnresolvedConnector("meinst"))
+    }
+    
+    @Test
+    fun `D-391 the reported case - neither fragment alone makes sense, the fused word does`() {
+        // "Ar" is deliberately a real (if obscure) dictionary word of its own - tryFuseAcrossSpace must not
+        // veto on that alone (see its own KDoc); "eitstag" resolves to nothing on its own.
+        store.putWord(WordEntry("ar", frequency = 20L))
+        store.putWord(WordEntry("arbeitstag", frequency = 1_000L))
+        
+        val result = repair.tryFuseAcrossSpace("Ar", "eitstag")
+        
+        assertEquals("arbeitstag", result?.fused)
+        assertEquals(1.0, result?.confidence ?: 0.0, 0.0001)
+    }
+    
+    @Test
+    fun `D-391 no fusion when the current token is already a known word`() {
+        store.putWord(WordEntry("bald", frequency = 10L))
+        store.putWord(WordEntry("aberbald", frequency = 1_000L)) // exists, but must never be reached
+        
+        assertNull(repair.tryFuseAcrossSpace("aber", "bald"))
+    }
+    
+    @Test
+    fun `D-391 no fusion when no connector letter yields a real word`() {
+        assertNull(repair.tryFuseAcrossSpace("xyz", "qqq"))
+    }
+    
+    @Test
+    fun `D-391 a blacklisted fused candidate is skipped`() {
+        store.putWord(WordEntry("arbeitstag", frequency = 1_000L))
+        store.blacklist("arbeitstag", BlacklistCategory.USER)
+        
+        assertNull(repair.tryFuseAcrossSpace("Ar", "eitstag"))
+    }
+    
+    @Test
+    fun `D-391 the highest-confidence candidate wins among several matching connectors`() {
+        // Both "arxeitstag" (via 'x') and "arbeitstag" (via 'b') are QWERTZ space-row connectors; the far
+        // more frequent one must win regardless of iteration order.
+        store.putWord(WordEntry("arxeitstag", frequency = 5L))
+        store.putWord(WordEntry("arbeitstag", frequency = 1_000L))
+        
+        assertEquals("arbeitstag", repair.tryFuseAcrossSpace("Ar", "eitstag")?.fused)
+    }
+    
+    @Test
+    fun `D-391 the connector set is layout-dependent, not a fixed QWERTZ list`() {
+        // 'y' sits in QWERTZ's own third row but not QWERTY's (which has 'z' there instead, see
+        // RowGeometry) - the identical fusion must succeed on QWERTZ and fail on QWERTY.
+        store.putWord(WordEntry("ayb", frequency = 1_000L))
+        val qwerty = TokenRepair(store, layoutKind = de.froehlichmedia.adaptkey.keyboard.LayoutKind.LATIN_QWERTY)
+        
+        assertEquals("ayb", repair.tryFuseAcrossSpace("a", "b")?.fused)
+        assertNull(qwerty.tryFuseAcrossSpace("a", "b"))
     }
 }

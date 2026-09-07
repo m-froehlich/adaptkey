@@ -1164,10 +1164,19 @@ exhaustive.
 ### A-06 - Retroactive Word Merge on Spurious Space
 The inverse of A-05. When a space was registered from a letter-ambiguous tap (T-05) and the following token is not a valid word, the system tests whether removing that space and prepending the letter inferred from the tap's x-coordinate yields a valid or high-probability word. If so, the spurious space is removed and the reconstructed word is committed (e.g. `aber  ald` -> `aber bald`, where the intended `b` landed on the space bar). As with A-05, a valid linguistic result is mandatory; the spatial signal only nominates the candidate.
 
+D-391 (§44) generalises this beyond A-06's own narrow, tap-evidence-gated scope: at the ordinary commit of
+any token that is not itself already a valid word, every letter physically sitting in the row above the
+space bar on the active layout is tried as a connector between the *previously committed* word and the
+current one - not just one inferred letter, and the two words genuinely fuse into a single result rather
+than only ever repairing the right-hand one (e.g. `Ar eitstag` -> `Arbeitstag`, where neither fragment makes
+sense alone but the fused word does). Gated by its own confidence measure and a dedicated, off-by-default
+setting - see §44 for the full mechanism.
+
 ### A-07 - Post-Commit Autocorrect Undo
-After a commit that involved any correction - spelling autocorrect, diacritic/umlaut restoration, or an A-05
-split - a backspace issued after the commit restores the originally typed text, including rejoining a split
-back into one word. One deliberate exception widens this beyond "a correction": accepting a B-03
+After a commit that involved any correction - spelling autocorrect, diacritic/umlaut restoration, an A-05
+split, or a D-391 cross-word fusion (§44) - a backspace issued after the commit restores the originally
+typed text, including rejoining a split back into one word or a fusion back into its two original words.
+One deliberate exception widens this beyond "a correction": accepting a B-03
 hyphen-compound chip also arms this same window, even though it replaces typed text with something the user
 chose rather than something the app silently changed - see B-03 for why. The undo window survives any number
 of intervening **whitespace** keystrokes (Space,
@@ -1184,7 +1193,10 @@ behaviour (Addendum to G-05). The undo also:
 
 - **Un-learns the dictionary side** exactly, symmetrically reversing whatever unigram/bigram reinforcement
   or brand-new-entry creation that commit had just caused, deleting an entry outright if its count reaches
-  zero rather than leaving a zero-frequency ghost. A split's undo reverses both halves.
+  zero rather than leaving a zero-frequency ghost. A split's undo reverses both halves. A D-391 fusion's
+  undo reverses the fused word's own learning and, symmetrically, re-teaches whichever of the two original
+  fragments the fusion itself had un-learned (see §44) - a fragment that independently resolved as a real
+  word (never un-learned by the fusion in the first place) is simply left untouched either way.
 - **Un-learns the touch model, but only narrowly:** only if the correction came from the raw-coordinate
   fallback (T-02) is the one substituted tap position reversed via T-03's exact algebraic inverse. An
   ordinary spelling/diacritic/split correction never touches T-03, since it carries no information about
@@ -1877,6 +1889,7 @@ Unconditionally excludes any content typed into a password field, regardless of 
 | C-22 | Autocorrect (A-01, §36, D-353/D-407) | Off / Cautious / Medium / Aggressive | Medium |
 | C-23 | Automatic language switch threshold (G-01, D-130/D-398) | Consecutive foreign words (0-8, 0 = off) | 5 |
 | C-24 | Learned-word expiry window (W-05, D-389) | 1 month / 4 months / 1 year / Never | Never |
+| C-25 | Cross-word merge across space (A-06, D-391, §44) | Off / Cautious / Medium / Aggressive | Off |
 
 Individual feature sections above also document domain-specific, non-configurable defaults (e.g. the
 calculator layout's fixed key weights) that intentionally are not exposed here.
@@ -2745,6 +2758,79 @@ they apply, since they are each checked first.
 0.3 is a considered starting point (explicit user sign-off on the value, not yet device-tuned beyond that),
 the same status every other threshold constant in this file already carries - easy to retune later, a
 single constant.
+
+---
+
+## 44. Cross-Word Fusion Across a Spurious Space (D-391)
+
+D-391: A-06 (§7) only ever repairs a spurious space evidenced by a real T-05 letter-ambiguous tap, and only
+ever by prepending one inferred letter to the *following* word - the *preceding* word is never itself
+examined, and the two never genuinely merge into one committed word. Real motivating example, discussed
+directly with the user before design: typing `"Ar eitstag"` - neither `"Ar"` (itself a real, if obscure,
+German word - a unit of area) nor `"eitstag"` (nonsense on its own) is a sensible reading, but inserting
+`"b"` between them spells the everyday compound `"Arbeitstag"`. Because the evidence this needs (the second
+word already committed) only exists *after* that commit, a suggestion-bar chip is not a realistic UI for
+it - by the time enough evidence exists, chip-and-tap is already too late, unlike A-05's own chip mode
+(C-21), which still has a genuinely composing token to offer a chip for. The mechanism is therefore always
+either silent or nothing at all, never a suggestion.
+
+**Trigger and candidate search.** At the ordinary commit of a token that is not itself already a valid word
+(mirrors A-05/A-06's own gate), `TokenRepair.tryFuseAcrossSpace()` tries every letter physically sitting in
+the row directly above the space bar *on the active layout* (D-397's `RowGeometry`, not a fixed character
+list - the same shared row model D-397 built for the touch-drift cap) as a connector between the
+*immediately preceding already-committed word* and the current token, testing whether the fused result
+resolves to a real dictionary or learned word (through the same diacritic-aware lookup A-05's own halves
+use). Deliberately broader than A-06 in every respect: no raw-tap evidence is required at all (any ordinary
+space qualifies), every connector letter is tried rather than one inferred one, and the winning candidate
+replaces *both* original words with one fused result rather than only ever correcting the right-hand one.
+The preceding word being itself a real word (like `"Ar"`) is deliberately **not** a veto - see the next
+paragraph for why a confidence measure, not a hard precondition, is the right gate.
+
+**Confidence, not a "must not already resolve" precondition.** A rare-but-real preceding word must still be
+overridable by a dramatically more common fused reading, the same "confidence beats a bare existence check"
+philosophy A-01's own known-word-override ratio already established. `MergeConfidence` (mirroring
+`CorrectionConfidence`'s own noun/non-noun reference-frequency split, D-227's finding that a rare noun is
+disproportionately a corpus artefact, reused here for the identical reason) scores the fused candidate's own
+frequency against a considered reference point - deliberately higher than `CorrectionConfidence`'s own
+equivalent, since a wrong fusion rewrites already-committed, finished text, a materially higher-stakes
+mistake than an ordinary same-token autocorrect substitution, and there is no edit-cost signal here to lean
+on alongside frequency the way an ordinary correction has.
+
+**A dedicated setting (C-25), not C-21 or C-22.** Discussed directly and agreed: this is *not* folded into
+A-05's own C-21 (Automatic/Chip only/Off - the "Chip only" tier makes no sense here, see above) nor into
+C-22's ordinary autocorrect aggressiveness, even though both are graduated-confidence mechanisms of the same
+general shape - this mechanism's risk profile is genuinely different (it reaches backward into already-
+committed, finished text, not the still-composing current token), so it gets its own axis, placed directly
+beneath C-21 in the settings screen. Shaped like C-22 (Off/Cautious/Medium/Aggressive, a `LabeledSeekBarPreference`
+slider), but **defaults to Off** - deliberately the opposite fail-safe direction from C-22's own fail-open
+default, since this is a brand-new, undevice-tested mechanism silently rewriting text the user has already
+finished typing, unlike the already-mature ordinary autocorrect toggle.
+
+**Learning reversal is symmetric and derived from the same validity check that gates the fusion itself.**
+When the fusion applies, each of the two original words is independently checked against the dictionary: a
+fragment that resolves as a real word (like `"Ar"`) is left completely untouched, exactly as if it had never
+been consumed by the fusion at all; a fragment that does *not* resolve (nonsense, e.g. `"eitstag"`, or - the
+case this was actually designed to close - a nonsense fragment that had nonetheless accumulated real
+pending/learned progress through a habitual, identically-repeated typo) has that progress reversed. The
+already-committed preceding word's own learning happened at its own, separate, earlier commit - reaching
+back to reverse it reuses A-11's existing `recentLearnRecords` mechanism (the same reach-back buffer A-11
+already uses to un-teach a recently-learned word on a plain Backspace return) rather than inventing new
+bookkeeping.
+
+**Full A-07 undo**, exactly like an A-05 split: a Backspace immediately after a fusion restores the original
+two-word text (with its original space) and reverses the fused word's own learning; if the fusion had
+un-learned a fragment, that fragment is re-taught via `learnWordStrong()` on undo - the same authoritative,
+threshold-bypassing treatment D-13 already gives a rejected split's rejoined word, since a deliberate
+Backspace right after a fusion is exactly the same kind of "the user just confirmed this is right" signal.
+
+**Shared infrastructure with D-397 (§43).** `KeyboardProximity`'s per-layout adjacency and this mechanism's
+own connector-letter search both need "which letters sit in which row for the active layout" - both now
+read from the one shared `RowGeometry`, rather than each maintaining its own copy. As a side effect, A-05's
+own long-standing `OVER_SPACE_LETTERS` (a hardcoded QWERTZ-only six-letter set, silently wrong for AZERTY/
+Greek/Cyrillic layouts, and missing `y`/`z` even for QWERTZ/QWERTY themselves) was replaced by the same
+layout-derived row at the same time, rather than leaving that inconsistency to be fixed in a later,
+separate pass - the user's own explicit call, made once it became clear the fix would otherwise touch the
+same code twice.
 
 ---
 

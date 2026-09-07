@@ -4,6 +4,7 @@
 package de.froehlichmedia.adaptkey.settings
 
 import de.froehlichmedia.adaptkey.capitalisation.Abbreviations
+import de.froehlichmedia.adaptkey.dictionary.AutoMergeAggressiveness
 import de.froehlichmedia.adaptkey.dictionary.AutoSplitMode
 import de.froehlichmedia.adaptkey.dictionary.AutocorrectAggressiveness
 import de.froehlichmedia.adaptkey.dictionary.LearnedWordExpiryWindow
@@ -52,6 +53,7 @@ data class RawSettings(
     val backspaceStickyEnabled: Boolean = true,
     val autoSplitModeKey: String? = null,
     val autocorrectAggressivenessKey: String? = null,
+    val autoMergeAggressivenessKey: String? = null,
     val sustainedLanguageSwitchThreshold: Int = AdaptSettings.DEFAULT_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD,
     val learnedWordExpiryWindowKey: String? = null
 )
@@ -208,6 +210,34 @@ object SettingsMapper {
     }
     
     /**
+     * Resolves the D-391 auto-merge aggressiveness, falling back to the spec default for an unknown, blank
+     * or missing stored value (the validation point for this enum-valued setting) - the same fallback
+     * [AutoMergeAggressiveness.OFF_KEY] itself resolves to, since [toAutoMergeEnabled] is the single place
+     * that decides whether the mechanism runs at all.
+     *
+     * @param raw the raw stored values
+     * @return the resolved [AutoMergeAggressiveness]
+     */
+    fun toAutoMergeAggressiveness(raw: RawSettings): AutoMergeAggressiveness {
+        return AutoMergeAggressiveness.fromKey(raw.autoMergeAggressivenessKey)
+    }
+    
+    /**
+     * D-391: whether the cross-word fusion mechanism may ever silently apply - true only for an explicit,
+     * real level ([AutoMergeAggressiveness.CAUTIOUS]/`MEDIUM`/`AGGRESSIVE`). Deliberately the *opposite*
+     * fail-safe direction from [toAutocorrectEnabled]: a missing/null stored value here means "never
+     * touched this setting", which must default to **off** (a brand-new, undevice-tested mechanism that
+     * rewrites already-committed text), not silently on - see [AutoMergeAggressiveness]'s own KDoc.
+     *
+     * @param raw the raw stored values
+     * @return true only when the stored value names a real level, never for null/blank/"off"/unrecognised
+     */
+    fun toAutoMergeEnabled(raw: RawSettings): Boolean {
+        val key = raw.autoMergeAggressivenessKey?.trim()
+        return key != null && !key.equals(AutoMergeAggressiveness.OFF_KEY, ignoreCase = true)
+    }
+    
+    /**
      * Resolves the D-389 learned-word expiry window, falling back to the spec default for an unknown,
      * blank or missing stored value (the validation point for this enum-valued setting).
      *
@@ -270,6 +300,8 @@ object SettingsMapper {
             backspaceStickyEnabled = raw.backspaceStickyEnabled,
             autoSplitMode = toAutoSplitMode(raw),
             autocorrectAggressiveness = toAutocorrectAggressiveness(raw),
+            autoMergeEnabled = toAutoMergeEnabled(raw),
+            autoMergeAggressiveness = toAutoMergeAggressiveness(raw),
             sustainedLanguageSwitchThreshold = raw.sustainedLanguageSwitchThreshold.coerceIn(
                 MIN_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD, MAX_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD
             ),

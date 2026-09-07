@@ -122,6 +122,8 @@
     <string name="d353_autocorrect_aggressiveness_cautious">Vorsichtig</string>
     <string name="d353_autocorrect_aggressiveness_medium">Mittel</string>
     <string name="d353_autocorrect_aggressiveness_aggressive">Aggressiv</string>
+    <string name="d391_auto_merge_aggressiveness_title">Verschmelzen über Leerzeichen</string>
+    <string name="d391_auto_merge_aggressiveness_summary">Wenn zwei bereits getippte Wörter für sich allein keinen Sinn ergeben, aber das Einfügen eines Buchstabens dazwischen ein echtes Wort ergibt (z. B. „Ar eitstag“ &#8594; „Arbeitstag“), werden sie verschmolzen. Standardmäßig aus - das verändert bereits committeten Text.</string>
     <string name="d348_double_tap_backspace_undo_title">Doppel Backspace zum Zurücksetzen</string>
     <string name="d348_double_tap_backspace_undo_summary">Wenn aktiv, löscht ein einzelner Backspace nach einer Autokorrektur nur ein Zeichen; drücke Backspace zweimal schnell hintereinander, um die Korrektur zurückzunehmen.</string>
     <string name="c04_color_title">Highlight-Farbe</string>

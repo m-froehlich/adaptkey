@@ -63,6 +63,10 @@ object SettingsStore {
     // D-407: the former, separate D-234 "d234_autocorrect_enabled" toggle is gone - merged into this one
     // slider's own "Off" position (AutocorrectAggressiveness.OFF_KEY), no migration of any old stored value.
     const val KEY_AUTOCORRECT_AGGRESSIVENESS = "d353_autocorrect_aggressiveness"
+    // D-391: the cross-word fusion mechanism's own dedicated setting, deliberately separate from C-22 - see
+    // AutoMergeAggressiveness's own KDoc for why. Defaults to "off" in settings_preferences.xml, matching
+    // AdaptSettings.autoMergeEnabled's own fail-closed default for a never-touched preference.
+    const val KEY_AUTO_MERGE_AGGRESSIVENESS = "d391_auto_merge_aggressiveness"
     const val KEY_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD = "d398_sustained_language_switch_threshold"
     const val KEY_LEARNED_WORD_EXPIRY_WINDOW = "d389_learned_word_expiry_window"
     
@@ -183,6 +187,7 @@ object SettingsStore {
             backspaceStickyEnabled = p.getBoolean(KEY_BACKSPACE_STICKY_ENABLED, DEF_BACKSPACE_STICKY_ENABLED),
             autoSplitModeKey = p.getString(KEY_AUTO_SPLIT_MODE, null),
             autocorrectAggressivenessKey = p.getString(KEY_AUTOCORRECT_AGGRESSIVENESS, null),
+            autoMergeAggressivenessKey = p.getString(KEY_AUTO_MERGE_AGGRESSIVENESS, null),
             sustainedLanguageSwitchThreshold = p.getInt(
                 KEY_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD, DEF_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD
             ),
@@ -301,6 +306,7 @@ object SettingsStore {
         KEY_CONTACTS_SUGGESTIONS_ENABLED,
         KEY_AUTO_SPLIT_MODE,
         KEY_AUTOCORRECT_AGGRESSIVENESS,
+        KEY_AUTO_MERGE_AGGRESSIVENESS,
         KEY_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD,
         KEY_DOUBLE_TAP_BACKSPACE_UNDO,
         KEY_HIGHLIGHT_COLOR,

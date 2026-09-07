@@ -146,6 +146,12 @@
             android:summary="@string/d352_auto_split_mode_summary"
             android:defaultValue="automatic" />
 
+        <de.froehlichmedia.adaptkey.settings.LabeledSeekBarPreference
+            android:key="d391_auto_merge_aggressiveness"
+            android:title="@string/d391_auto_merge_aggressiveness_title"
+            android:summary="@string/d391_auto_merge_aggressiveness_summary"
+            android:defaultValue="off" />
+
         <SwitchPreferenceCompat
             android:key="d348_double_tap_backspace_undo"
             android:title="@string/d348_double_tap_backspace_undo_title"

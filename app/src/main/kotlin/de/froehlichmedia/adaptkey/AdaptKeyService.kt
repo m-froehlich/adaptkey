@@ -62,6 +62,7 @@ import de.froehlichmedia.adaptkey.credential.CredentialStore
 import de.froehlichmedia.adaptkey.credential.LoginFieldDetector
 import de.froehlichmedia.adaptkey.diagnostics.DiagnosticLog
 import de.froehlichmedia.adaptkey.credential.LoginFieldKind
+import de.froehlichmedia.adaptkey.dictionary.AutoMergeAggressiveness
 import de.froehlichmedia.adaptkey.dictionary.AutoSplitMode
 import de.froehlichmedia.adaptkey.dictionary.AutocorrectAggressiveness
 import de.froehlichmedia.adaptkey.dictionary.BlacklistCategory
@@ -95,6 +96,7 @@ import de.froehlichmedia.adaptkey.keyboard.InlineSuggestionsBarView
 import de.froehlichmedia.adaptkey.keyboard.InputSurface
 import de.froehlichmedia.adaptkey.keyboard.Key
 import de.froehlichmedia.adaptkey.keyboard.KeyCode
+import de.froehlichmedia.adaptkey.keyboard.LayoutKind
 import de.froehlichmedia.adaptkey.keyboard.LayoutRegistry
 import de.froehlichmedia.adaptkey.keyboard.PanelNavigation
 import de.froehlichmedia.adaptkey.keyboard.ExtraRowView
@@ -571,6 +573,17 @@ class AdaptKeyService : InputMethodService() {
     // or shift the bigram context onto it the way the ordinary/split branches do (see that function's own
     // KDoc). Only ever set by onSuggestionClicked()'s Kind.COMPOUND branch.
     private var undoWasCompound = false
+    // D-391: set when the armed undo would revert a cross-word fusion (applyFusion) - unlike an ordinary
+    // correction/split, the restored text spans two words (previousWord's own text plus the current token,
+    // joined by a real space), so performAutocorrectUndo() must split undoTyped back apart and re-derive
+    // previousWord/previousPreviousWord itself, rather than treating the whole restored text as one word the
+    // way the plain/split branches do.
+    private var undoWasFusion = false
+    // D-391: the fragment applyFusion() actually un-learned (because it did not independently resolve as a
+    // real word), if any - re-learned on undo via learnWordStrong(), mirroring undoWasSplit's own
+    // learnWordStrong(typed) precedent. Null when the fusion touched no such fragment (e.g. "Ar" in the
+    // reported "Ar eitstag" -> "Arbeitstag" example, which is itself a real word and was left untouched).
+    private var undoFusionUnlearntWord: String? = null
     // D-140: exactly what learnWord() did for the committed word(s) - one entry for a plain correction,
     // two (left, right) for a split - so performAutocorrectUndo() can precisely un-learn it, rather than
     // leaving the rejected commit's dictionary/bigram reinforcement in place forever.
@@ -970,9 +983,23 @@ class AdaptKeyService : InputMethodService() {
         provider = providers.getValue(Language.ENGLISH)
         capitalisation = engines.getValue(Language.ENGLISH)
         tokenRepair = TokenRepair(
-            english, LanguageRulesRegistry.rulesFor(Language.ENGLISH), SettingsStore.loadDiacriticFolding(this, Language.ENGLISH)
+            english, LanguageRulesRegistry.rulesFor(Language.ENGLISH), SettingsStore.loadDiacriticFolding(this, Language.ENGLISH),
+            activeLayoutKind()
         )
         newStores.forEach { (language, store) -> seedBundledBlacklist(language, store) }
+    }
+    
+    /**
+     * D-391/D-397: the physical row geometry actually being typed on right now
+     * ([AdaptKeyboardView.layoutKind], D-400 - pinned to the system language, independent of whichever
+     * dictionary language is active for suggestion purposes) - deliberately *not* re-derived from
+     * [choice].language at [selectActiveDictionary]'s own call site, since [TokenRepair]'s space-row
+     * connector letters must always match the keys physically rendered, not whichever language a single
+     * token happens to route to. Falls back to [LayoutKind.LATIN_QWERTZ] (mirroring [TokenRepair]'s own
+     * default) before the view exists yet, e.g. during [installStores]'s initial bootstrap.
+     */
+    private fun activeLayoutKind(): LayoutKind {
+        return keyboardView?.layoutKind ?: LayoutKind.LATIN_QWERTZ
     }
     
     /**
@@ -4092,6 +4119,24 @@ class AdaptKeyService : InputMethodService() {
             }
         }
         
+        // D-391: a broader cross-word fusion with the previously-committed word - unlike A-06 above, tries
+        // every space-row connector unconditionally (no single evidence-gated inferred letter needed) and
+        // genuinely merges both words into one, rather than only ever repairing the right-hand one. Gated on
+        // its own dedicated setting (deliberately separate from C-21/C-22, see AutoMergeAggressiveness's own
+        // KDoc for why) plus the same suppressAutocorrect this function's other silent-correction mechanisms
+        // already respect.
+        val previousWordForFusion = previousWord
+        if (settings.autoMergeEnabled && !suppressAutocorrect && previousWordForFusion != null) {
+            val fusion = tokenRepair.tryFuseAcrossSpace(previousWordForFusion, typed)
+            if (fusion != null && fusion.confidence >= settings.autoMergeAggressiveness.autoApplyThreshold) {
+                val committedLength = applyFusion(ic, previousWordForFusion, typed, fusion.fused, delimiter)
+                if (committedLength != null) {
+                    armShiftForNextWordUnlessOpener(ic, delimiter)
+                    return committedLength
+                }
+            }
+        }
+        
         // A-05: split the token at a space-ambiguous tap or a fully missed space, when valid. D-48: a token
         // that is a real word once its German diacritics are restored (umlauts / ß are first-class
         // characters) is never split - "konnen" is "können", not "ko nen". D-67 generalises this: a split
@@ -4243,6 +4288,7 @@ class AdaptKeyService : InputMethodService() {
             undoDelimiter = delimiter
             undoWasSplit = false
             undoWasCompound = false
+            undoWasFusion = false
             undoLearnRecords = listOf(learnRecord)
             undoRawCorrection = rawCorrectionUndo
             // D-88: the word actually changed - this is an accepted correction, not a plain commit.
@@ -4521,6 +4567,94 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
+     * D-391: capitalisation context for a fusion's own committed word - deliberately its own function, not
+     * [contextFor], since that one reads *this token's own* live context fields ([tokenSentenceStart] etc.),
+     * which describe the position where [typed] (the just-committed right-hand word) started, not where
+     * [previousWordText] (already committed, potentially several actions ago) started. That earlier
+     * position's own real context (was it a genuine sentence start?) is not retained anywhere - the
+     * pragmatic, honestly-approximate choice here is Rule 1 (explicit input always wins, read from
+     * [previousWordText]'s own already-typed first character) plus the ordinary linguistic rules (a pure
+     * noun still capitalises, an editor's field mandate still applies); [sentenceStart] is conservatively
+     * assumed false, since a genuine sentence start immediately followed by another already-committed word
+     * that then gets fused is a rare edge case, and the fallback (no forced capital) is the safe direction.
+     *
+     * @param previousWordText the already-committed word whose own first character now leads the fused word
+     * @return the context [capitalisation.capitalise] should use for the fused word
+     */
+    private fun fusionContext(previousWordText: String): CapitalisationContext {
+        val effectiveCaps = if (fieldMandateOverridden) CapsMode.NONE else capsMode
+        return CapitalisationContext(
+            explicitFirstUpper = previousWordText.firstOrNull()?.isUpperCase() == true,
+            sentenceStart = false,
+            capsMode = effectiveCaps,
+            afterHyphen = false
+        )
+    }
+    
+    /**
+     * D-391: applies a cross-word fusion - [previousWordText] (already committed) and [typed] (the current
+     * token, still composing) are replaced together by [fused], the reverse of [applySplit]. Unlike every
+     * other `apply*` function in this class, this one reaches *backward* past the composing token's own
+     * anchor into already-committed text, so the expected span is verified against the real document first
+     * (mirrors [performAutocorrectUndo]'s own "verify against ground truth before touching anything"
+     * discipline) - [previousWord] is instance-tracked state, never re-read from the document at the moment
+     * it was set, so it must not be trusted blindly for a deletion reaching this far back.
+     *
+     * @param previousWordText the word committed immediately before [typed] (any case, as it actually reads
+     *        in the document)
+     * @param typed the just-composed current token, exactly as typed (restored on undo)
+     * @param fused [TokenRepair.FusionCandidate.fused] - the reconstructed word, lower-case
+     * @param delimiter the delimiter [typed] is committing with
+     * @return the net number of characters committed, accounting for the deleted previous word and space
+     *         (mirrors [applyMerge]'s own "accounting for what was deleted" contract), or null when the real
+     *         document text right before the caret does not actually match `"$previousWordText "` - the
+     *         fusion is silently abandoned rather than risking corrupting unrelated text
+     */
+    private fun applyFusion(ic: InputConnection, previousWordText: String, typed: String, fused: String, delimiter: String): Int? {
+        val deleteLen = previousWordText.length + 1
+        if (ic.getTextBeforeCursor(deleteLen, 0)?.toString() != "$previousWordText ") {
+            return null
+        }
+        val cased = capitalisation.capitalise(fused, fusionContext(previousWordText))
+        resetWordEndShift()
+        ic.beginBatchEdit()
+        try {
+            ic.setComposingText("", 1)
+            ic.finishComposingText()
+            clearComposing()
+            ic.deleteSurroundingText(deleteLen, 0)
+            ic.commitText(cased + delimiter, 1)
+        } finally {
+            ic.endBatchEdit()
+        }
+        // D-391: previousWordText's own already-applied learning (from its own, separate, earlier commit) is
+        // reversed here whenever it does not independently resolve as a real word - "Ar" (a genuine word)
+        // stays untouched even though it is consumed by the fusion; a nonsense fragment that had
+        // nonetheless accumulated pending/learned progress (e.g. through a habitual, identically-repeated
+        // typo) has that progress un-learned, exactly like A-11's own reach-back mechanism.
+        val previousRecord = recentLearnRecords.lastOrNull { it.word == previousWordText }
+        val unlearntWord = if (previousRecord != null && !dictionaryStore.isKnownWord(previousWordText.lowercase())) {
+            unlearnWord(previousRecord)
+            recentLearnRecords.remove(previousRecord)
+            previousWordText
+        } else {
+            null
+        }
+        val fusedRecord = learnWord(cased)
+        undoTyped = "$previousWordText $typed"
+        undoCommitted = cased
+        undoDelimiter = delimiter
+        undoWasSplit = false
+        undoWasCompound = false
+        undoWasFusion = true
+        undoFusionUnlearntWord = unlearntWord
+        undoLearnRecords = listOf(fusedRecord)
+        undoRawCorrection = null
+        showNextWordPredictions(fusedRecord.word.takeIf { fusedRecord.outcome == LearnOutcome.PROMOTED })
+        return cased.length + delimiter.length - deleteLen
+    }
+    
+    /**
      * Applies an A-05 split: drops the composing token and commits the two words (each cased per §6)
      * separated by a space, followed by [delimiter]. A-07: the split is armed for undo, so a single
      * backspace immediately after rejoins the two words back into the originally typed token.
@@ -4575,6 +4709,11 @@ class AdaptKeyService : InputMethodService() {
         undoDelimiter = delimiter
         // D-13: mark this as a split, so undoing it trains the rejoined word.
         undoWasSplit = true
+        // D-391: explicitly cleared here (unlike undoWasCompound, a pre-existing gap this change does not
+        // otherwise touch) since this flag is new - left stale, a prior fusion's armed undo could otherwise
+        // wrongly survive into this split's own undo state once undoCommitted/undoDelimiter happen to still
+        // pass performAutocorrectUndo's tailPresent check.
+        undoWasFusion = false
         // D-140: precisely un-learn both halves on undo, see performAutocorrectUndo. A split never
         // involves the D-39 raw-coordinate path, so there is no touch-model sample to un-train here.
         undoLearnRecords = listOf(leftRecord, rightRecord)
@@ -4677,6 +4816,8 @@ class AdaptKeyService : InputMethodService() {
         val typed = undoTyped ?: return false
         val wasSplit = undoWasSplit
         val wasCompound = undoWasCompound
+        val wasFusion = undoWasFusion
+        val fusionUnlearntWord = undoFusionUnlearntWord
         val learnRecords = undoLearnRecords
         val rawCorrection = undoRawCorrection
         val expectedTail = undoCommitted + undoDelimiter
@@ -4709,7 +4850,7 @@ class AdaptKeyService : InputMethodService() {
         clearUndo()
         // D-331 (temporary diagnostic): log the revert so the user can confirm the fix on-device -
         // whether the undo actually fired, what was re-learned, and the pending count afterwards.
-        diag("AdaptKeyJitter", "performAutocorrectUndo: typed=\"$typed\" committedWas=\"$undoCommitted\" wasSplit=$wasSplit wasCompound=$wasCompound")
+        diag("AdaptKeyJitter", "performAutocorrectUndo: typed=\"$typed\" committedWas=\"$undoCommitted\" wasSplit=$wasSplit wasCompound=$wasCompound wasFusion=$wasFusion")
         // D-140: un-learn exactly what the rejected commit persisted (whether it reinforced an
         // already-known word or newly promoted/counted an unknown one) before re-learning what the user
         // insisted on - otherwise a wrong correction/pairing keeps being reinforced every time it is
@@ -4728,6 +4869,27 @@ class AdaptKeyService : InputMethodService() {
                 rawCorrection.y,
                 rawCorrection.weight
             )
+        }
+        if (wasFusion) {
+            // D-391: typed here is "$previousWordText $currentToken" (the two original words, joined by the
+            // real space applyFusion() verified before deleting it) - split back apart so previousWord/
+            // previousPreviousWord are restored to genuine single-word values, not the whole two-word string
+            // the generic (non-fusion) branches below would otherwise assign via `previousWord = typed`.
+            val spaceIndex = typed.indexOf(' ')
+            val left = if (spaceIndex >= 0) typed.substring(0, spaceIndex) else typed
+            val right = if (spaceIndex >= 0) typed.substring(spaceIndex + 1) else ""
+            // D-391: re-teaches the fragment applyFusion() had un-learned (if any), mirroring undoWasSplit's
+            // own learnWordStrong(typed) precedent below - a deliberate user rejection of the fusion is
+            // exactly the same kind of authoritative "the user just confirmed this is right" signal D-13
+            // already treats a rejected split's rejoined word with.
+            if (fusionUnlearntWord != null) {
+                learnWordStrong(fusionUnlearntWord)
+            }
+            previousWord = right
+            previousPreviousWord = left
+            showNextWordPredictions()
+            armShiftForNextWordUnlessOpener(ic, undoDelimiter)
+            return true
         }
         if (wasCompound) {
             // D-289: unlike the ordinary/split cases below, `typed` here is only the partial prefix that
@@ -5524,7 +5686,7 @@ class AdaptKeyService : InputMethodService() {
     /**
      * D-122: while the user is actively re-editing an existing word mid-word ([isEditingMidWord] - a much
      * stronger "please fix this word" signal than ordinary forward typing), offers a would-be split at an
-     * unresolved [TokenRepair.OVER_SPACE_LETTERS] connector even without [TokenRepair.trySplit]'s usual
+     * unresolved space-row connector even without [TokenRepair.trySplit]'s usual
      * bigram-co-occurrence requirement (relaxing that gate for *ordinary* typing would reopen the exact
      * "any two known fragments get cut apart" false-positive problem §45 fixed - restricting it to this
      * deliberate re-edit moment is what makes it safe). Suggestion-only, exactly like D-116's compound
@@ -6419,6 +6581,7 @@ class AdaptKeyService : InputMethodService() {
                 undoDelimiter = trailingSpace
                 undoWasSplit = false
                 undoWasCompound = true
+                undoWasFusion = false
                 undoLearnRecords = listOf(learnRecord)
                 undoRawCorrection = null
                 showNextWordPredictions()
@@ -6694,7 +6857,8 @@ class AdaptKeyService : InputMethodService() {
         capitalisation = engines.getValue(choice.language)
         dictionaryStore = stores.getValue(choice.language)
         tokenRepair = TokenRepair(
-            dictionaryStore, LanguageRulesRegistry.rulesFor(choice.language), SettingsStore.loadDiacriticFolding(this, choice.language)
+            dictionaryStore, LanguageRulesRegistry.rulesFor(choice.language), SettingsStore.loadDiacriticFolding(this, choice.language),
+            activeLayoutKind()
         )
         return choice
     }
@@ -7056,6 +7220,8 @@ class AdaptKeyService : InputMethodService() {
         undoDelimiter = ""
         undoWasSplit = false
         undoWasCompound = false
+        undoWasFusion = false
+        undoFusionUnlearntWord = null
         undoLearnRecords = emptyList()
         undoRawCorrection = null
     }

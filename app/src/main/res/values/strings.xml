@@ -124,6 +124,8 @@
     <string name="d353_autocorrect_aggressiveness_cautious">Cautious</string>
     <string name="d353_autocorrect_aggressiveness_medium">Medium</string>
     <string name="d353_autocorrect_aggressiveness_aggressive">Aggressive</string>
+    <string name="d391_auto_merge_aggressiveness_title">Merge across space</string>
+    <string name="d391_auto_merge_aggressiveness_summary">When two already-typed words alone make no sense, but inserting one letter between them spells a real word (e.g. \"Ar eitstag\" -&#8594; \"Arbeitstag\"), merge them. Off by default - this rewrites text already committed.</string>
     <string name="c04_color_title">Highlight colour</string>
     <string name="c02_title">Re-sort delay</string>
     <string name="c02_summary">Pause without input after which the suggestion bar re-sorts (0–600 ms).</string>

@@ -145,6 +145,11 @@ class SettingsActivity : AppCompatActivity() {
                 R.array.d352_auto_split_mode_labels,
                 R.array.d352_auto_split_mode_values
             )
+            setupLabeledSlider(
+                SettingsStore.KEY_AUTO_MERGE_AGGRESSIVENESS,
+                R.array.d391_auto_merge_aggressiveness_labels,
+                R.array.d391_auto_merge_aggressiveness_values
+            )
             
             // Read live from the actual installed package rather than a hand-maintained string resource,
             // which would inevitably drift out of sync with the real versionName in app/build.gradle.kts.
@@ -216,7 +221,8 @@ class SettingsActivity : AppCompatActivity() {
         /**
          * D-407/D-408: wires a [LabeledSeekBarPreference]'s [LabeledSeekBarPreference.labels]/
          * [LabeledSeekBarPreference.values] from the given string-array resources - shared by every such
-         * slider in this screen (C-22 autocorrect, D-352 word splitting) rather than duplicated per site.
+         * slider in this screen (C-22 autocorrect, D-352 word splitting, D-391 cross-word merge) rather than
+         * duplicated per site.
          *
          * @param key the preference's own key
          * @param labelsRes the localised, displayed labels array (slider order)

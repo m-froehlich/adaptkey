@@ -4,6 +4,7 @@
 package de.froehlichmedia.adaptkey.settings
 
 import de.froehlichmedia.adaptkey.capitalisation.Abbreviations
+import de.froehlichmedia.adaptkey.dictionary.AutoMergeAggressiveness
 import de.froehlichmedia.adaptkey.dictionary.AutoSplitMode
 import de.froehlichmedia.adaptkey.dictionary.AutocorrectAggressiveness
 import de.froehlichmedia.adaptkey.dictionary.LearnedWordExpiryWindow
@@ -108,6 +109,11 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  *           only ever resolves to one of the three real levels ([AutocorrectAggressiveness.OFF_KEY] falls
  *           back to [AutocorrectAggressiveness.DEFAULT] here), so suggestion ranking stays sensible even
  *           while [autocorrectEnabled] is off.
+ * @property autoMergeEnabled D-391: whether [de.froehlichmedia.adaptkey.dictionary.TokenRepair.
+ *           tryFuseAcrossSpace]'s cross-word fusion may ever silently apply (default **off** - see
+ *           [AutoMergeAggressiveness]'s own KDoc for why this, unlike [autocorrectEnabled], fails closed).
+ * @property autoMergeAggressiveness D-391: how eagerly the fusion applies once [autoMergeEnabled] is on
+ *           (default [AutoMergeAggressiveness.DEFAULT] - only consulted while [autoMergeEnabled] is true).
  * @property sustainedLanguageSwitchThreshold D-398: how many consecutive commits routed to a foreign
  *           language (A-03's per-token routing, D-130) promote that to a real active-language switch
  *           (default [DEFAULT_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD], the former hardcoded value); a stored
@@ -143,6 +149,8 @@ data class AdaptSettings(
     val backspaceStickyEnabled: Boolean = true,
     val autoSplitMode: AutoSplitMode = AutoSplitMode.DEFAULT,
     val autocorrectAggressiveness: AutocorrectAggressiveness = AutocorrectAggressiveness.DEFAULT,
+    val autoMergeEnabled: Boolean = false,
+    val autoMergeAggressiveness: AutoMergeAggressiveness = AutoMergeAggressiveness.DEFAULT,
     val sustainedLanguageSwitchThreshold: Int = DEFAULT_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD,
     val learnedWordExpiryWindow: LearnedWordExpiryWindow = LearnedWordExpiryWindow.DEFAULT
 ) {

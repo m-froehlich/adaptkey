@@ -3,6 +3,8 @@
 
 package de.froehlichmedia.adaptkey.dictionary
 
+import de.froehlichmedia.adaptkey.keyboard.LayoutKind
+import de.froehlichmedia.adaptkey.keyboard.RowGeometry
 import de.froehlichmedia.adaptkey.language.GermanRules
 import de.froehlichmedia.adaptkey.language.LanguageRules
 import de.froehlichmedia.adaptkey.suggestion.DiacriticFolding
@@ -44,6 +46,16 @@ data class SplitResult(
         return (0 until left.length) to (rightStart until rightStart + right.length)
     }
 }
+
+/**
+ * D-391: the winning candidate from [TokenRepair.tryFuseAcrossSpace] - two already-committed words replaced
+ * by one.
+ *
+ * @property fused the reconstructed word, lower-case (the caller applies §6 capitalisation)
+ * @property confidence [MergeConfidence]'s own `[0, 1]` score for this candidate, compared against
+ *           [AutoMergeAggressiveness]'s threshold by the caller
+ */
+data class FusionCandidate(val fused: String, val confidence: Double)
 
 /**
  * Retroactive token repair for the space/letter confusion bands (T-05): word split (A-05) and word merge
@@ -89,12 +101,26 @@ data class SplitResult(
  *           diacritic. Unlike [languageRules], defaults to [NoOpDiacriticFolding] - see
  *           [DictionarySuggestionProvider]'s own identical property for why German is never a sensible
  *           fallback for another language.
+ * @property layoutKind D-397/D-391: the active physical row geometry - resolves [spaceRowLetters] via
+ *           [RowGeometry], the same shared model [de.froehlichmedia.adaptkey.suggestion.KeyboardProximity]
+ *           builds its own per-layout adjacency from. Defaults to [LayoutKind.LATIN_QWERTZ], mirroring
+ *           [languageRules]'s own German-shaped default for every existing caller that does not pass one.
  */
 class TokenRepair(
     private val store: DictionaryStore,
     private val languageRules: LanguageRules = GermanRules,
-    private val diacriticFolding: DiacriticFolding = NoOpDiacriticFolding
+    private val diacriticFolding: DiacriticFolding = NoOpDiacriticFolding,
+    private val layoutKind: LayoutKind = LayoutKind.LATIN_QWERTZ
 ) {
+    
+    /**
+     * D-391 (was the hardcoded `OVER_SPACE_LETTERS` companion constant, QWERTZ-only regardless of
+     * [layoutKind]): the letters physically sitting in the row directly above the space bar on the *active*
+     * layout ([RowGeometry]'s own third letter row) - a plausible letter-for-space mis-tap (A-05's drop
+     * strategy, D-122's connector split) or fusion connector (D-391's [tryFuseAcrossSpace]) is only ever one
+     * of these, whatever they are for the layout actually being typed on.
+     */
+    private val spaceRowLetters: Set<Char> = RowGeometry.rowsFor(layoutKind, includeDigitRow = false).last().toSet()
     
     /**
      * Attempts to split [token] into two words (A-05).
@@ -102,7 +128,7 @@ class TokenRepair(
      * D-69 / §45: two split strategies are tried and the higher-scoring result wins overall - neither one
      * gets an unconditional priority over the other. A "hit a letter instead of space" mis-tap drops one
      * character and replaces it with a space: the character must be either a T-05 space-ambiguous tap or a
-     * letter that physically sits over the space bar ([OVER_SPACE_LETTERS], so it works even without touch
+     * letter that physically sits over the space bar ([spaceRowLetters], so it works even without touch
      * calibration), e.g. {@code "und<c>das" -> "und" + "das"}. A fully missed space is tried by inserting a
      * space without dropping a character. Both strategies require each half to clear [candidateAt]'s own
      * gates (§128 / D-203) - not merely both individually be *any* known word, which alone let almost any
@@ -135,10 +161,11 @@ class TokenRepair(
         }
         
         // Drop-a-character split: the removed character is either a T-05 space-ambiguous tap or a letter
-        // that physically sits over the space bar (c/v/b/n/m/x on QWERTZ) — both are plausible "hit a letter
-        // instead of space" mis-taps. The over-space set makes this work even without touch calibration,
-        // where the T-05 flags are unreliable. Each half must still clear candidateAt's own gates.
-        val dropIndices = (spaceAmbiguousIndices + t.indices.filter { t[it] in OVER_SPACE_LETTERS })
+        // that physically sits over the space bar on the active layout (spaceRowLetters) — both are
+        // plausible "hit a letter instead of space" mis-taps. The over-space set makes this work even
+        // without touch calibration, where the T-05 flags are unreliable. Each half must still clear
+        // candidateAt's own gates.
+        val dropIndices = (spaceAmbiguousIndices + t.indices.filter { t[it] in spaceRowLetters })
             .filter { it in MIN_PART..t.length - 1 - MIN_PART }
             .toSet()
         val candidates = ArrayList<Pair<SplitResult, Double>>()
@@ -159,7 +186,7 @@ class TokenRepair(
     }
     
     /**
-     * D-122: an unresolved [OVER_SPACE_LETTERS] connector split - unlike [trySplit], considers only the
+     * D-122: an unresolved [spaceRowLetters] connector split - unlike [trySplit], considers only the
      * connector-letter-drop strategy, never the missed-space one, and only ever consulted while the user is
      * actively re-editing an existing word mid-word ([AdaptKeyService.isEditingMidWord] - a much stronger
      * intent signal ("I came back to fix this specific word") than ordinary forward typing). Since §128 /
@@ -179,7 +206,7 @@ class TokenRepair(
             return null
         }
         return t.indices
-            .filter { it in MIN_PART..t.length - 1 - MIN_PART && t[it] in OVER_SPACE_LETTERS }
+            .filter { it in MIN_PART..t.length - 1 - MIN_PART && t[it] in spaceRowLetters }
             .mapNotNull { i -> candidateAt(t.substring(0, i), t.substring(i + 1), previousWord) }
             .maxByOrNull { it.second }
             ?.first
@@ -212,6 +239,51 @@ class TokenRepair(
             return candidate
         }
         return null
+    }
+    
+    /**
+     * D-391: attempts to fuse [previousWord] (already committed) and [currentToken] (just committed) into a
+     * single word by inserting one of the active layout's own [spaceRowLetters] between them - the reverse
+     * of [trySplit]'s own missed-space repair (one token becomes two), and a broader generalisation of
+     * [tryMerge] (which only ever repairs the *right*-hand word, gated on a specific T-05 letter-ambiguous
+     * tap): here every connector letter is tried unconditionally, with no raw-coordinate evidence needed,
+     * and the two original words genuinely fuse into one rather than staying separate.
+     *
+     * Real example this was designed against: `"Ar eitstag"` -> `"Arbeitstag"` - neither `"Ar"` (itself a
+     * real, if obscure, dictionary word - an area unit) nor `"eitstag"` (nonsense) makes sense as the
+     * intended text on its own, but inserting `"b"` between them spells a common, everyday compound.
+     * [previousWord] being itself a real word is deliberately *not* a veto here (unlike [tryMerge]'s own
+     * `store.isKnownWord(t)` gate on the right-hand token) - see [MergeConfidence]'s own KDoc for why
+     * frequency-based confidence, not a hard "must not already resolve" precondition, is the right gate: a
+     * rare real word must still be overridable by a dramatically more common fused reading.
+     *
+     * Deliberately does not itself decide whether [previousWord] should be un-learned when it does not
+     * independently resolve as a real word - the caller already has its own reach-back mechanism for a
+     * recently-learned word's record (A-11) and is better placed to decide that; this function is pure
+     * dictionary-lookup logic only, mirroring [trySplit]/[tryMerge]'s own scope.
+     *
+     * @param previousWord the word committed immediately before [currentToken] (any case); never merged
+     *        across anything but a plain space, mirroring [tryMerge]'s own scope
+     * @param currentToken the just-committed token (any case); only attempted when this is not itself
+     *        already a known word (or a plausible inflection of one) - mirrors [trySplit]'s own gate
+     * @return the best-scoring fusion candidate and its [MergeConfidence] score, or null when either word is
+     *         empty, [currentToken] is already fine on its own, or no connector letter yields a real word
+     */
+    fun tryFuseAcrossSpace(previousWord: String, currentToken: String): FusionCandidate? {
+        val left = previousWord.lowercase()
+        val right = currentToken.lowercase()
+        if (left.isEmpty() || right.isEmpty() || isAlreadyRecognised(right)) {
+            return null
+        }
+        var best: FusionCandidate? = null
+        for (connector in spaceRowLetters) {
+            val entry = resolveWord(left + connector + right) ?: continue
+            val confidence = MergeConfidence.forFusedCandidate(entry.frequency, isNoun(entry))
+            if (best == null || confidence > best.confidence) {
+                best = FusionCandidate(entry.word.lowercase(), confidence)
+            }
+        }
+        return best
     }
     
     /**
@@ -411,9 +483,6 @@ class TokenRepair(
          * already established, rather than inventing a new threshold.
          */
         const val MIN_SPLIT_ACRONYM_FREQUENCY = 300L
-        
-        /** QWERTZ letters that physically sit over the space bar; a plausible letter-for-space mis-tap (A-05). */
-        val OVER_SPACE_LETTERS = setOf('c', 'v', 'b', 'n', 'm', 'x')
         
         private const val BIGRAM_WEIGHT = 10.0
     }

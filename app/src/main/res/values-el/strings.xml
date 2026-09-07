@@ -122,6 +122,8 @@
     <string name="d353_autocorrect_aggressiveness_cautious">Προσεκτικό</string>
     <string name="d353_autocorrect_aggressiveness_medium">Μεσαίο</string>
     <string name="d353_autocorrect_aggressiveness_aggressive">Επιθετικό</string>
+    <string name="d391_auto_merge_aggressiveness_title">Συγχώνευση πάνω από κενό</string>
+    <string name="d391_auto_merge_aggressiveness_summary">Όταν δύο ήδη πληκτρολογημένες λέξεις δεν βγάζουν νόημα μόνες τους, αλλά η εισαγωγή ενός γράμματος ανάμεσά τους σχηματίζει μια πραγματική λέξη, συγχωνεύονται. Ανενεργό από προεπιλογή - αυτό αλλάζει κείμενο που έχει ήδη καταχωριστεί.</string>
     <string name="d348_double_tap_backspace_undo_title">Διπλό πάτημα Backspace για αναίρεση</string>
     <string name="d348_double_tap_backspace_undo_summary">Όταν είναι ενεργό, ένα απλό Backspace μετά από αυτόματη διόρθωση διαγράφει μόνο έναν χαρακτήρα· πατήστε Backspace δύο φορές γρήγορα για να αναιρέσετε τη διόρθωση.</string>
     <string name="c04_color_title">Χρώμα επισήμανσης</string>

@@ -4,6 +4,7 @@
 package de.froehlichmedia.adaptkey.settings
 
 import de.froehlichmedia.adaptkey.capitalisation.Abbreviations
+import de.froehlichmedia.adaptkey.dictionary.AutoMergeAggressiveness
 import de.froehlichmedia.adaptkey.dictionary.AutoSplitMode
 import de.froehlichmedia.adaptkey.dictionary.AutocorrectAggressiveness
 import de.froehlichmedia.adaptkey.dictionary.LearnedWordExpiryWindow
@@ -173,6 +174,35 @@ class SettingsMapperTest {
         assertEquals(
             AutocorrectAggressiveness.DEFAULT,
             SettingsMapper.toAutocorrectAggressiveness(RawSettings(autocorrectAggressivenessKey = "bogus"))
+        )
+    }
+    
+    @Test
+    fun `D-391 autoMergeEnabled defaults to off, unlike the fail-open C-22 autocorrectEnabled`() {
+        assertFalse(SettingsMapper.toAdaptSettings(RawSettings()).autoMergeEnabled)
+        assertFalse(SettingsMapper.toAdaptSettings(RawSettings(autoMergeAggressivenessKey = "off")).autoMergeEnabled)
+        assertTrue(SettingsMapper.toAdaptSettings(RawSettings(autoMergeAggressivenessKey = "cautious")).autoMergeEnabled)
+        assertTrue(SettingsMapper.toAdaptSettings(RawSettings(autoMergeAggressivenessKey = "  AGGRESSIVE ")).autoMergeEnabled)
+    }
+    
+    @Test
+    fun `D-391 autoMergeAggressiveness resolves from the stored key, defaulting to MEDIUM`() {
+        assertEquals(AutoMergeAggressiveness.MEDIUM, SettingsMapper.toAdaptSettings(RawSettings()).autoMergeAggressiveness)
+        assertEquals(
+            AutoMergeAggressiveness.CAUTIOUS,
+            SettingsMapper.toAdaptSettings(RawSettings(autoMergeAggressivenessKey = "cautious")).autoMergeAggressiveness
+        )
+        assertEquals(
+            AutoMergeAggressiveness.AGGRESSIVE,
+            SettingsMapper.toAutoMergeAggressiveness(RawSettings(autoMergeAggressivenessKey = "aggressive"))
+        )
+    }
+    
+    @Test
+    fun `D-391 an unknown autoMergeAggressiveness key falls back to the default`() {
+        assertEquals(
+            AutoMergeAggressiveness.DEFAULT,
+            SettingsMapper.toAutoMergeAggressiveness(RawSettings(autoMergeAggressivenessKey = "bogus"))
         )
     }
     

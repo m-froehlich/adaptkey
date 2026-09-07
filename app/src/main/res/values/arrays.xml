@@ -96,4 +96,21 @@
         <item>automatic</item>
     </string-array>
 
+    <!-- D-391 auto-merge aggressiveness (label / stored value): reuses the same Off/Cautious/Medium/
+         Aggressive strings d353's own labels already define (identical words in every locale), matching
+         AutoMergeAggressiveness's own enum names; "off" is its own OFF_KEY sentinel, not a member. -->
+    <string-array name="d391_auto_merge_aggressiveness_labels">
+        <item>@string/d353_autocorrect_aggressiveness_off</item>
+        <item>@string/d353_autocorrect_aggressiveness_cautious</item>
+        <item>@string/d353_autocorrect_aggressiveness_medium</item>
+        <item>@string/d353_autocorrect_aggressiveness_aggressive</item>
+    </string-array>
+
+    <string-array name="d391_auto_merge_aggressiveness_values">
+        <item>off</item>
+        <item>cautious</item>
+        <item>medium</item>
+        <item>aggressive</item>
+    </string-array>
+
 </resources>

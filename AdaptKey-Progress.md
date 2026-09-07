@@ -712,10 +712,14 @@ non-trivial changes).
     directly. User's own call: with D-405/D-416 already in place, typing straight through in lower-case is
     simply not auto-corrected back any more either, so "p. a." has no effective problem left to fix - only
     slightly more effort to type deliberately, judged acceptable. Dropped rather than designed further.
-  - **D-391 - OPEN.** A-05's retroactive split extended to the reverse direction (mirrors the same auto/
-    chip-only setting D-352 got): if the current or preceding word makes no sense alone, but inserting a
-    bottom-row connector letter (`y x c v b n m`) between them produces a sensible combined word, recognise
-    it - a generalisation of A-06 merge beyond its current scope.
+  - **D-391 - RESOLVED (§454, v1.2.14).** A-06 generalised beyond its own narrow, tap-evidence-gated scope:
+    at ordinary commit, every space-row connector letter of the *active layout* (D-397's `RowGeometry`, not
+    a fixed character list) is tried between the previously-committed word and the current token, and the
+    two genuinely fuse into one word (e.g. `"Ar eitstag"` -> `"Arbeitstag"`) rather than only the right-hand
+    one being repaired. Gated by a new confidence measure and its own dedicated, off-by-default setting
+    (C-25) - never C-21/C-22, a "chip" tier makes no sense here - with full A-07 undo and symmetric
+    learning-reversal for whichever original fragment did not independently resolve as a real word. See §454
+    in Current State and spec §44 for the full mechanism and design discussion.
   - **D-392 - RESOLVED (§353, v1.0.105).** Releasing Caps Lock now re-derives Shift fresh from the real
     caret position (D-313/D-406's own [armShiftForNextWord] mechanism) instead of unconditionally clearing
     it. See Current State for the mechanism.
@@ -1007,6 +1011,80 @@ non-trivial changes).
   out unrelated to D-455/D-357 - both real suspects given the timing, neither actually involved.
 
 ## Current State
+
+- **§454 (v1.2.14): D-391 - cross-word fusion across a spurious space, generalising A-06 beyond its own**
+  **narrow, tap-evidence-gated scope.** Real motivating example, discussed and designed with the user before
+  implementing (per this project's own convention for non-trivial correction mechanisms): typing
+  `"Ar eitstag"` - neither `"Ar"` (a real, if obscure, German word) nor `"eitstag"` (nonsense) makes sense
+  alone, but inserting `"b"` between them spells the everyday compound `"Arbeitstag"`.
+
+  **Design decisions made explicitly with the user, in order:** (1) a genuine single-word fusion (both
+  original words replaced by one), not merely repairing the right-hand word the way A-06 already does; (2)
+  no suggestion-chip mode at all - by the time enough evidence exists (the second word already committed), a
+  chip is already too late, so the mechanism is either silent or nothing; (3) the connector-letter set is
+  derived from the *active layout* (reusing D-397's `RowGeometry`), not a fixed character list - "es macht
+  viel mehr Sinn, das aus dem Layout auszulesen"; (4) reach is deliberately just one word back, never a
+  deliberate re-edit trigger - "damit wächst auch die Gefahr für falsche Treffer... halten wir es etwas
+  konservativer"; (5) its own dedicated setting (C-25), placed directly beneath C-21, rather than folding
+  into C-21 or C-22 - the user's own first instinct was reusing C-21, then agreed a separate axis was
+  cleaner once the risk-profile difference (rewriting already-committed text) was named directly; (6)
+  learning reversal is symmetric and derived from the same validity check that gates the fusion itself - a
+  fragment that independently resolves as a real word (like `"Ar"`) is never touched, only a genuinely
+  nonsensical one that had accumulated real learning progress is un-taught; (7) full A-07 undo, exactly like
+  a split.
+
+  **Mechanism.** `RowGeometry` (D-397) - already the shared row/column model - now also backs `TokenRepair`'s
+  own `spaceRowLetters` (replacing the old, QWERTZ-hardcoded `OVER_SPACE_LETTERS` companion constant, which
+  was wrong for AZERTY/Greek/Cyrillic layouts and even missed `y`/`z` for QWERTZ/QWERTY themselves - folded
+  into this same change per the user's own explicit call, rather than left for a separate pass that would
+  touch `TokenRepair` twice). New `TokenRepair.tryFuseAcrossSpace(previousWord, currentToken)` tries every
+  connector letter, resolves each fused candidate through the same diacritic-aware lookup A-05's own halves
+  use, and returns the highest-scoring real match as a new `FusionCandidate(fused, confidence)`.
+
+  New `MergeConfidence` (mirrors `CorrectionConfidence`'s own noun/non-noun reference-frequency split,
+  D-227's finding reused for the identical reason) scores the fused candidate's own frequency - deliberately
+  higher reference points than `CorrectionConfidence`'s own (300/8,000 vs. 25/2,000), since there is no
+  edit-cost signal here and a wrong fusion rewrites already-finished text. New `AutoMergeAggressiveness`
+  (Cautious/Medium/Aggressive, thresholds 0.90/0.75/0.55) mirrors `AutocorrectAggressiveness`'s shape but is
+  its own enum/setting (C-25, `d391_auto_merge_aggressiveness`) - **defaults to off** (`SettingsMapper.
+  toAutoMergeEnabled`'s fail-closed direction, the deliberate opposite of C-22's fail-open default), shown as
+  a `LabeledSeekBarPreference` directly beneath C-21 in the Capitalisation settings category.
+
+  `AdaptKeyService.finalizeAndCommit()` tries the fusion right after A-06's own block, gated on
+  `settings.autoMergeEnabled` and the same `suppressAutocorrect` every other silent-correction mechanism here
+  already respects. New `applyFusion()` (mirrors `applySplit()`) is the one function in this class that
+  reaches *backward* past the composing token's own anchor into already-committed text - the expected
+  `"$previousWord "` span is verified against the real document first (mirrors `performAutocorrectUndo()`'s
+  own "verify against ground truth before touching anything" discipline), and the fusion is silently
+  abandoned (falls through to A-05's own split) if the document does not actually match. Capitalisation uses
+  a new `fusionContext()` - deliberately not `contextFor()`, which reads the *current* token's own live
+  `tokenSentenceStart` etc., not `previousWord`'s (already-committed, potentially several actions earlier)
+  real context; Rule 1 (explicit input) and the ordinary noun/proper-noun rules still apply, `sentenceStart`
+  is conservatively assumed false (a genuine sentence start immediately followed by another already-
+  committed word that then gets fused is a rare edge case, and no forced capital is the safe direction).
+
+  Un-teaching the previous word reuses A-11's existing `recentLearnRecords` reach-back buffer directly - no
+  new bookkeeping - matched by word text, reversed via the same `unlearnWord()` A-07/A-11 already share,
+  skipped entirely when `dictionaryStore.isKnownWord(previousWord)` is true. Full A-07 undo: three new fields
+  (`undoWasFusion`, `undoFusionUnlearntWord`, plus explicit `= false`/`null` resets at every other undo-arming
+  call site - a new flag needs the same defensive reset `undoWasCompound`/`undoWasSplit` already get, or a
+  stale fusion flag could wrongly survive into an unrelated later correction's own undo). `performAutocorrectUndo()`
+  gained its own `wasFusion` branch: restores the original two-word text, re-teaches the un-learned fragment
+  (if any) via `learnWordStrong()` - the same authoritative treatment D-13 already gives a rejected split's
+  rejoined word - and splits the restored text back into `previousWord`/`previousPreviousWord` itself (the
+  generic `previousWord = typed` the plain/split branches use would wrongly treat the whole two-word restored
+  text as one word).
+
+  New tests: `TokenRepairTest` gained six `tryFuseAcrossSpace` cases (the reported example, already-known-
+  current-token gate, no-match, blacklisted-candidate, highest-confidence-wins-among-several, and layout-
+  dependence via a QWERTY instance); `MergeConfidenceTest` (5 cases) and `AutoMergeAggressivenessTest` (4
+  cases) mirror their `CorrectionConfidence`/`AutocorrectAggressiveness` counterparts; `SettingsMapperTest`
+  gained three cases for the new fail-closed enable/aggressiveness/fallback resolution. No test exists for
+  `AdaptKeyService`'s own `applyFusion()`/`performAutocorrectUndo()` wiring itself - Android `InputConnection`
+  glue stays untested by this project's own established convention.
+
+  1586 unit tests (1568 -> 1586, +18 new). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
+  509 -> 510, `versionName` `"1.2.13"` -> `"1.2.14"`.
 
 - **§453 (v1.2.13): D-397 - a generic, layout-derived vertical touch-drift cap, replacing "wait for the**
   **next reported pair" with one rule covering every row boundary.** T-03's existing tighter caps (D-133
@@ -2209,66 +2287,13 @@ non-trivial changes).
   native-edition language, plus the same possessive-suffix scope limit Finnish's own entry documents. Not
   device-confirmed either. Romanian continues next, the last of the cs/sk/hu/ro group.
 
-- **§429 (v1.1.68): D-450 (continued) - first Slovak language pack, sixth of the 18-language round - a**
-  **genuinely new positional/untagged noun-table data shape, found and resolved by design.** Added
-  `Language.SLOVAK` (`"sk"`, `"Slovenčina"`) to the enum. No native Slovak edition exists - built from the
-  English Wiktionary's own coverage instead (5.3MB, the SMALLEST fallback source checked so far this
-  project).
-
-  **Structural finding**: Slovak noun entries encode their declension table as a flat, positional stream of
-  `forms[]` entries with NO `tags` key at all - English case/number LABEL WORDS ("singular", "nominative",
-  ...) appear as their own untagged entries interleaved among the real word forms, and the raw form COUNT
-  following a label cannot be trusted to reliably encode which number a form belongs to (confirmed: one real
-  noun's "accusative" label was followed by zero forms, "instrumental" by only one instead of two). Since
-  this project's dict.tsv format only ever needs the SET of real forms per lemma (case/number tags are
-  discarded downstream anyway), `usable_forms()` was rewritten to not require a `tags` key, instead excluding
-  a small, closed English label vocabulary - verified no real Slovak word collides with any of them. Verbs
-  and adjectives checked separately and do NOT share this shape (fully tagged, ordinary format). A second,
-  smaller finding: a real abbreviation ("aug") needed an explicit `"abbreviation"` qualifier exclusion not
-  already covered by the shared set.
-
-  The entire `skwiki-latest-pages-articles.xml.bz2` (355MB compressed) was processed via the same
-  multiprocessing/hapax-pruning extractor - 261,162 real pages, 57,454,537 real tokens, 1,486,293 distinct
-  words, 2,050,500 raw (>=3) bigram rows.
-
-  **Net result**: `dict.tsv` 184,403 rows (144,615 initial + 39,788 from Wortfamilien completion; calibration
-  ratios noun=0.3406 (n=11,838), verb=0.8061 (n=2,117), adjective=0.4727 (n=5,136), all sane despite the
-  small source). POS tagging: 135,406 words kept unrecognised-by-kaikki (tagged `OTHER` only), 1,327,896
-  dropped, 13,782 removed as common-English-word contamination. Wiktionary matching: 6,314 lemmas tagged,
-  490 unmatched; 19,230 existing forms linked, 39,788 generated. Proper-noun handling: 3,044 tagged, 471
-  unmatched, 249 skipped as collisions. Mandatory bare-noun safety check: 0 bare-NOUN rows. `bigram.tsv`:
-  527,103 rows (>=10 cutoff) from 2,050,500 raw. Quality gate: 0 case-insensitive duplicates, 0 non-positive
-  frequencies, 0 orphaned lemma links, 0 bare-NOUN rows - PASS.
-
-  **What exactly is thinner, and its concrete app-level effect**: only 6,314 lemmas + 3,044 proper nouns
-  (~6.5% of the 144,615 pre-Wortfamilien base entries - the LOWEST ratio of any fallback-sourced language
-  this round, directly reflecting the smallest source size) carry a real kaikki-derived POS tag and
-  `lemma`/form link. Same two mechanisms weakened, more acutely than any prior language: (1) A-05's
-  split-safety gate cannot veto a wrong compound split built from any untagged word. (2) D-404 Tier 2's
-  family-match ratio override cannot fire for a correct-but-rarer untagged word. Slovak should need the most
-  manual curation follow-up of any language in this round so far.
-
-  `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Slovak's own: 14 base letters carry a real diacritic
-  (`a=á/ä, c=č, d=ď, e=é, i=í, l=ĺ/ľ, n=ň, o=ó/ô, r=ŕ, s=š, t=ť, u=ú, y=ý, z=ž`), second-most of any language
-  built so far (after Czech's 13). `g=„`/`h="` (same low-quote convention as Czech). `abbreviations.tsv`: a
-  hand-curated 17-entry list.
-
-  `SlovakRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`=null,
-  `bundledConfusablesBlacklist`=empty - `confusables_scan.py` found 1,426 candidate pairs, left deliberately
-  uncurated.
-
-  New tests: `LanguageRulesTest` gained a `Slovak resolves to SlovakRules` case plus its own mirroring test
-  block.
-
-  **Honesty gate (step 11) - deliberately NOT claimed satisfied**: not reviewed by anyone who actually speaks
-  Slovak. Real, full-dump corpus scale (57.45M real tokens) but the thinnest fallback-source coverage of any
-  language this round, plus a genuinely novel positional-data-shape finding resolved by design. Not
-  device-confirmed either. Hungarian and Romanian continue next.
-
-## Older Rounds (§1-§428, v0.7.6 through v1.1.67) - Pruned From This File
+## Older Rounds (§1-§429, v0.7.6 through v1.1.68) - Pruned From This File
 
 D-397 (§453): seventh pruning pass - §425-§428 removed (all four already logged verbatim in History.md, no
 backfill needed), cutoff moved from §425 to §429, keeping the working set at 25 rounds (§429-§453).
+
+D-391 (§454): eighth pruning pass - §429 removed (already logged verbatim in History.md), cutoff moved from
+§429 to §430, keeping the working set at 25 rounds (§430-§454).
 
 This file only tracks the current status plus the recent working set - it is not a lossy summary of the
 rounds removed below. Every pruned round's full detail (root cause, rejected alternatives, real device-log
