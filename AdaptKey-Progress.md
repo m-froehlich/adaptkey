@@ -1066,6 +1066,77 @@ non-trivial changes).
 
 ## Current State
 
+- **§462 (v1.2.22): D-401-followup - four real, device-reported problems with the cursor/selection-control**
+  **gesture fixed the same session it first went out, across two feedback rounds.** All from direct usage
+  ("das funktioniert schon außerordentlich gut" overall) - none guessed at, each with a concrete root cause;
+  two of the four (the checkmark chip and the line-clamp) only reached their real fix on a second report,
+  once the first attempt turned out incomplete.
+
+  1. **"Tippen beendet" (a tap ends the mode) did not actually work in Stage 2 - "ich kann den Modus nur**
+     **durch warten beenden."** Root cause, confirmed by re-reading the code rather than assumed: the original
+     tap check ("zero movement since this touch-down began") was essentially unreachable in practice -
+     reaching Stage 2 at all, and extending a selection there, both already require dragging, so by the time
+     a real touch lifts its own applied-step counters are almost never still zero. Fixed by dropping the
+     zero-movement requirement entirely: **any** release while Stage 2 is active now ends the mode and
+     collapses the selection - `AdaptKeyboardView`'s own `onCursorControlTap()` callback renamed to
+     `onCursorControlSelectionReleased()` to match what it now actually means. Stage 1 releases are
+     unaffected - still the ordinary re-touch grace window. Confirmed working on the user's own re-test.
+  2. **No reclaim, no suggestion-chip computation while the gesture is active - explicit user request**
+     **("das verwirrt und macht die Sache nicht schneller und kann auch dazu führen, dass ungewollt Wörter**
+     **verstümmelt werden").** First pass only gated `scheduleReclaimAndChipRefresh()` (the D-62 reactive-
+     reclaim dispatcher, already known from D-347/D-350 to mis-fire on many fast intermediate caret positions
+     in quick succession - a cursor-handle drag being the exact precedent case) behind a new
+     `cursorControlSessionActive` check. Confirmed working on the user's own re-test ("das hat geklappt") -
+     but a second, independent problem surfaced alongside it (item 4 below), fixed with the same field.
+  3. **Dragging the cursor to the start/end of a line and continuing must not flip to the previous/next**
+     **line - explicit user request: "Ich bewege den Cursor hiermit bereits zweidimensional. Es gibt keinen**
+     **Grund für eine Weiterbewegung im Textfluss."** A plain absolute-document-offset `setSelection()` call
+     naturally crosses a real newline once the target goes far enough, which is exactly the flip the user does
+     not want given vertical movement is already its own separate, deliberate DPAD step (spec G-08).
+     **First attempt (reverted): a `clampToCurrentLine()` reading a bounded window via `getExtractedText()`**
+     - still crossed the boundary on the user's own re-test ("das Flippen des Cursors im Textflow ist
+     immernoch da"), described precisely down to the direction ("flippt der Cursor nach rechts in die Zeile
+     darüber"). `getExtractedText()`'s real-world reliability across arbitrary third-party apps was the
+     suspected weak point (a silent `null`/failed read there fell back to no clamping at all, indistinguishable
+     from the reported symptom) - this app already has a proven, simpler mechanism
+     (`getTextBeforeCursor()`/`getTextAfterCursor()`, `flipSignBeforeCaret()`'s own precedent) that was not
+     used the first time specifically because of Stage 2's own selection-relative reading ambiguity (these two
+     calls read relative to the *live selection's* start/end, not necessarily the gesture's own moving end,
+     once Stage 2 drags that end backward past its own anchor). **Rewritten**: `leftBoundary()`/
+     `rightBoundary()` now check only the one boundary actually at risk for the current `characterDelta`'s own
+     sign (never both at once), using the direct, proven calls whenever the moving end is on the expected side
+     (always true in Stage 1, where anchor and position coincide) and falling back to searching
+     `getSelectedText()` - the span between anchor and position - for the rarer case where Stage 2 has
+     already dragged past the anchor. Not yet re-confirmed by the user at time of writing.
+  4. **The new "done" checkmark chip (added in response to the user's own mid-session suggestion, see below)**
+     **was only ever visible right when the gesture armed, then disappeared during use - "ich kann ihn also**
+     **nicht drücken, um zu beenden."** Root cause, traced (not guessed) once reported: `resortRunnable`
+     (S-04's deferred re-sort) and `reclaimEnabledRunnable` (D-414-followup's own debounced chip-visibility
+     refresh) both call `showSuggestions()` **directly**, bypassing `refreshSuggestions()` entirely - neither
+     was covered by item 2's own gate, so a resort/reclaim-chip-refresh left pending from typing right before
+     the long-press would silently overwrite the gesture's own bar content once its own delay elapsed
+     mid-gesture. Fixed at the one real rendering choke point both of them (and everything inside
+     `refreshSuggestions()`) actually share: `showSuggestions()` itself now also gates on
+     `cursorControlSessionActive` - `showCursorControlHint()` never reaches it at all (pushes directly via
+     `setSuggestionBarItems()`), so this cannot suppress the gesture's own content, only every other, now-stale
+     caller. `onCursorControlArmed()` additionally now cancels `resortRunnable`/`reclaimEnabledRunnable`/
+     `reclaimWordAtCaretRunnable`/`expensiveSuggestionRunnable` outright (the user's own "keine Chips berechnet
+     werden" taken literally - avoids the now-pointless background computation entirely, not merely its
+     display). Not yet re-confirmed by the user at time of writing.
+
+  **Also added, on the user's own follow-up suggestion mid-session**: a green checkmark chip
+  (`SuggestionController.Kind.CURSOR_CONTROL_DONE`, `AdaptKeyboardView.dismissCursorControl()`) pinned first
+  in the suggestion bar's own hint slot in both stages - an explicit, discoverable way to end the gesture on
+  tap, on top of (not instead of) the gesture-only fixes above. Reuses the same green already used for the
+  Stage 2 crosshair (`suggestion_learned_text`). See item 4 above for why the first version of this chip did
+  not actually stay usable.
+
+  1596 unit tests unchanged (every fix this round is Android-glue behaviour - `CursorControlGesture` itself
+  untouched). `:app:assembleRelease`/`:app:testDebugUnitTest` green throughout. `versionCode` 517 -> 518,
+  `versionName` `"1.2.21"` -> `"1.2.22"`. Items 1/2 confirmed working; items 3/4 (the reworked line-clamp and
+  the checkmark-visibility fix) not yet re-confirmed - the calibration constants from §460 also remain
+  untested.
+
 - **§461 (v1.2.21): D-401-followup - `cursorControlEnabled` flipped to default ON.** User's own explicit
   call, right after §460 shipped it default-off: genuine accidental activation is unlikely (G-01's own
   space-bar language switch is a plain swipe, not a long-press, so the two gestures never actually compete
@@ -2172,65 +2243,10 @@ non-trivial changes).
   coverage concern, not yet investigated further. Neither language was added to the `Language` enum or built
   this round - this was a prerequisites check only, not a go-ahead to build.
 
-- **§437 (v1.1.76): D-450 - first Swahili and Tagalog language packs, closing the entire 18-language**
-  **autonomous round begun with Swedish.** Added `Language.SWAHILI` (`"sw"`, `"Kiswahili"`) and
-  `Language.TAGALOG` (`"tl"`, `"Tagalog"`) to the enum. Neither has a native Wiktionary edition - both built
-  from the English Wiktionary's own fallback coverage (7.0MB/14.7MB).
+## Older Rounds (§1-§437, v0.7.6 through v1.1.76) - Pruned From This File
 
-  **Swahili**: real Bantu noun-class system documented correctly (e.g. "tao" -> "matao", class-vi plural).
-  Verb canonical forms carry a bound-root leading hyphen ("-soma") - already excluded via the `"canonical"`
-  tag, `entry["word"]` itself always clean. A genuine English-prose noise pattern ("positive subject concord
-  + -lisoma") caught for free by whitespace rejection. Like Malay, Swahili's own main countries (Kenya,
-  Tanzania) are former British territories and do NOT use a comma decimal separator - verified directly.
-
-  A real, honestly-investigated calibration finding: the adjective ratio (68.08x, n=10) is genuinely elevated
-  but reflects real grammar, not a bug - "ote" ("all", bare citation form) is dominated by its own real
-  noun-class-agreement variants (yote/wote/zote/kote/vyote/nyote/mote/lote, all correctly-spelled, agreeing
-  with Swahili's 15+ noun classes), which are individually far more common than the abstract bare stem since
-  Swahili grammar requires the agreement prefix in real usage. Verified every pair before accepting it as
-  sane rather than flagging it as a bug.
-
-  `swwiki` (70MB compressed, smallest corpus this round): 125,849 pages, 16,086,920 tokens. `dict.tsv`
-  27,677 -> 52,979 rows (+25,302 generated; ratios noun=0.8805 (n=1,080), verb=4.1482 (n=1,184, elevated but
-  plausible given Swahili's rich conjugation), adjective=68.0769 (n=10, verified sane above)). Only 7,059
-  lemmas + 406 proper nouns of 27,677 base entries (~27.0%) carry a real link - a comparatively rich ratio.
-  `bigram.tsv` 118,034 rows. `confusables_scan.py`: 1,813 pairs.
-
-  **Tagalog**: entries carry an alternative Baybayin-script spelling (historical pre-colonial script),
-  excluded explicitly (same pattern as Malay's Jawi). The `"canonical"` headword carries a stress accent
-  ("basín") - already excluded, and the real completive/progressive/contemplative aspect forms are
-  confirmed clean (no accent marks, no `links`-recovery needed unlike Serbo-Croatian/Lithuanian). Like Malay
-  and Swahili, the Philippines follows the American period-decimal convention, NOT a comma - verified
-  directly.
-
-  `tlwiki` (88MB compressed): 49,336 pages, 15,950,161 tokens. `dict.tsv` 36,957 -> 53,745 rows (+16,788
-  generated; ratios noun=0.8719 (n=46), verb=1.2778 (n=1,739), adjective=0.2173 (n=59), all sane). Only
-  15,498 lemmas + 3,027 proper nouns of 36,957 base entries (~41.9%) carry a real link - the RICHEST ratio of
-  any fallback-sourced language in this entire round.
-
-  Both: mandatory bare-noun safety check 0; quality gate clean. `hints.tsv`/`diacritics.tsv`: neither
-  language has any diacritic letters (plain 26-letter Latin alphabets), so both `diacritics.tsv` files are
-  deliberately empty; `t=Sh` (Swahili, generic East African shilling) / `t=₱` (Tagalog, Philippine peso).
-  `abbreviations.tsv`: 8-entry hand-curated lists each.
-
-  `SwahiliRules`/`TagalogRules` (`LanguageRulesRegistry`): both `decimalCommaGluesDigits`=**false** (see
-  findings above), `timeSuggestionWord`=null, `bundledConfusablesBlacklist`=empty -
-  `confusables_scan.py` found 1,813 (Swahili) / 1,001 (Tagalog) candidate pairs, left deliberately
-  uncurated. New tests: `LanguageRulesTest` gained `Swahili resolves to SwahiliRules` and `Tagalog resolves
-  to TagalogRules` cases plus their own mirroring test blocks (both asserting `false` for the decimal-comma
-  test).
-
-  **Honesty gate (step 11) - deliberately NOT claimed satisfied for either**: neither pack reviewed by a
-  native speaker; both thinner-than-native-edition Wortfamilien/POS coverage; Swahili's own much larger
-  Bantu noun-class/verb-affixation grammar and Tagalog's own much larger focus/trigger verb-affixation
-  system are not implemented as dedicated grammar hooks this round. Neither device-confirmed.
-
-  **This closes the entire 18-language autonomous round begun with Swedish (D-450).** 17 packs built and
-  shipped this round (Swedish, Norwegian Bokmål, Danish, Finnish, Czech, Slovak, Hungarian, Romanian,
-  Croatian, Bosnian, Estonian, Latvian, Lithuanian, Malay, Indonesian, Swahili, Tagalog) - Serbian remains
-  the one explicitly deferred exception, pending its own dedicated Cyrillic-keyboard-layout discussion.
-
-## Older Rounds (§1-§436, v0.7.6 through v1.1.75) - Pruned From This File
+D-401-followup (§462): sixteenth pruning pass - §437 removed (already logged verbatim in History.md), cutoff
+moved from §437 to §438, keeping the working set at 25 rounds (§438-§462).
 
 D-401-followup (§461): fifteenth pruning pass - §436 removed (already logged verbatim in History.md), cutoff
 moved from §436 to §437, keeping the working set at 25 rounds (§437-§461).

@@ -511,10 +511,20 @@ own origin.
   no reliable way to know a target field's real line-wrap layout across every app, the same reliability gap
   already named for `CursorAnchorInfo` elsewhere; letting the target field's own text layout decide what "one
   line up" means is the robust choice). Holding still for 800 ms promotes to Stage 2 (a second vibration, the
-  crosshair changes colour, the hint text updates).
-- **Stage 2 - selection.** Dragging instead extends a text selection from wherever Stage 1 left the caret. A
-  tap ends the mode outright and collapses the selection to the current position - the one lift that skips
-  the grace window below.
+  crosshair changes colour, the hint text updates). D-401-followup: a horizontal character move never crosses
+  into the previous/next line on its own, even at the very start/end of the current line - the user's own
+  explicit call: this gesture already positions the cursor in two independent dimensions (a separate vertical
+  step moves lines), so a horizontal drag reaching a line boundary has no reason to also flip line the way a
+  plain document-wide character offset naturally would once it crosses a real newline. Only the one boundary
+  actually at risk for the current drag direction is checked at a time, via this app's own already-proven
+  `getTextBeforeCursor()`/`getTextAfterCursor()` mechanism (`getExtractedText()`, tried first, proved
+  unreliable enough on a real device that the flip still happened).
+- **Stage 2 - selection.** Dragging instead extends a text selection from wherever Stage 1 left the caret.
+  D-401-followup: **any** release while Stage 2 is active ends the mode outright and collapses the selection
+  to the current position - the original "only a strict zero-movement tap ends it" reading was reported as
+  effectively unreachable in practice (reaching Stage 2, and extending a selection there, both already require
+  dragging, so the touch that arrived at Stage 2 essentially never lifts with zero movement recorded) and left
+  the user with no working way to end the mode short of waiting out the grace window below.
 - **Lifting and re-touching.** Lifting the finger keeps the gesture armed for ~1000 ms, during which the
   crosshair fades (250 ms) back to the space key's own geometric centre. Re-touching within that window -
   anywhere on the keyboard, not only the space key - jumps the crosshair straight to the new point (a fresh
@@ -523,6 +533,22 @@ own origin.
   appear on its own (not explicitly triggered by this app - a real `InputConnection.setSelection()` call with
   a genuine range is normally enough for the target view's own floating toolbar, though - like any
   `InputConnection` behaviour - this has not been confirmed identical across every app).
+- **Explicit "done" chip (D-401-followup).** A green checkmark is pinned first in the suggestion bar's own
+  hint slot, in both stages - an explicit, discoverable way to end the gesture on tap, on top of (not instead
+  of) the gesture-only ways above. Its first version was only ever visible right when the gesture armed, then
+  disappeared during use (a resort/reclaim-chip refresh left pending from typing right before the long-press
+  silently overwrote it once its own delay elapsed) - fixed by extending the suppression below to the actual
+  rendering choke point every such stale caller shares, not only the reclaim dispatcher itself.
+- **No reactive reclaim or suggestion-chip computation (or display) while armed (D-401-followup).** The
+  user's own explicit call: the D-62 reactive reclaim (already known to mis-fire on many fast intermediate
+  caret positions in quick succession, per its own D-347/D-350 history) is suppressed for the gesture's entire
+  duration, not only the composing-state protection above - it "verwirrt und macht die Sache nicht schneller
+  und kann auch dazu führen, dass ungewollt Wörter verstümmelt werden." Every path that could otherwise touch
+  the suggestion bar mid-gesture is gated the same way, including ones that bypass the ordinary suggestion
+  pipeline entirely (a deferred re-sort, a reclaim chip's own visibility refresh) - and every such pending
+  background computation is cancelled outright the moment the gesture arms, not merely hidden. A genuinely
+  still-relevant reclaim/suggestion is picked up again from the very next ordinary caret move or keystroke
+  once the gesture ends.
 
 **Deliberately does not touch composing state.** Unlike every other long-press action in this app (L-05/L-06,
 which finalise the current token first), arming this gesture leaves whatever word is currently composing

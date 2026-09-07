@@ -1788,9 +1788,20 @@ class AdaptKeyService : InputMethodService() {
      * (composing may already have been empty with nothing to commit), so a flag that is only ever cleared by
      * the echo it is waiting for could otherwise stay wrongly armed and swallow the next genuine caret move
      * indefinitely. A short, self-expiring time window degrades safely either way.
+     *
+     * D-401-followup: also a no-op for as long as [cursorControlSessionActive] is true - the user's own
+     * explicit call, reported directly ("verwirrt und macht die Sache nicht schneller und kann auch dazu
+     * führen, dass ungewollt Wörter verstümmelt werden"). The gesture already leaves composing state
+     * untouched by design (its own class KDoc), but this reactive reclaim is a *second*, independent path
+     * that would otherwise still fire on every intermediate caret position the gesture passes through - the
+     * exact same "many intermediate positions in quick succession" shape [reclaimWordAtCaretRunnable] was
+     * already found to corrupt/stall for a cursor-handle drag (D-347/D-350's own Gemini finding), just from
+     * a different trigger this time. [onCursorControlEnded] resyncs the suggestion bar itself once the
+     * gesture ends; a genuinely still-relevant reclaim is picked up again from the very next ordinary caret
+     * move or keystroke after that, same as it always would be.
      */
     private fun scheduleReclaimAndChipRefresh() {
-        if (SystemClock.uptimeMillis() < reclaimChipRefreshSuppressedUntil) {
+        if (cursorControlSessionActive || SystemClock.uptimeMillis() < reclaimChipRefreshSuppressedUntil) {
             return
         }
         if (!reclaimOnCaretMoveSuppressed) {
@@ -3059,6 +3070,15 @@ class AdaptKeyService : InputMethodService() {
             cursorControlSessionActive = true
             cursorControlPosition = liveSelectionEnd
             cursorControlAnchor = cursorControlPosition
+            // D-401-followup: cancels whatever was left over from typing right before the long-press - the
+            // refreshSuggestions()/showSuggestions() gates below already stop any of these from ever
+            // touching the bar while the gesture is active, but there is no reason to still let the
+            // now-pointless background computation run at all (the user's own "keine Chips berechnet
+            // werden" request, taken literally).
+            handler.removeCallbacks(resortRunnable)
+            handler.removeCallbacks(reclaimEnabledRunnable)
+            handler.removeCallbacks(reclaimWordAtCaretRunnable)
+            handler.removeCallbacks(expensiveSuggestionRunnable)
             showCursorControlHint(CursorControlGesture.Stage.CURSOR)
         }
         
@@ -3073,7 +3093,7 @@ class AdaptKeyService : InputMethodService() {
             showCursorControlHint(stage)
         }
         
-        override fun onCursorControlTap() {
+        override fun onCursorControlSelectionReleased() {
             val ic = currentInputConnection ?: return
             ic.setSelection(cursorControlPosition, cursorControlPosition)
         }
@@ -3116,7 +3136,8 @@ class AdaptKeyService : InputMethodService() {
         if (characterDelta == 0) {
             return
         }
-        cursorControlPosition = (cursorControlPosition + characterDelta).coerceAtLeast(0)
+        val target = (cursorControlPosition + characterDelta).coerceAtLeast(0)
+        cursorControlPosition = clampToCurrentLine(ic, target, characterDelta)
         when (stage) {
             CursorControlGesture.Stage.CURSOR -> ic.setSelection(cursorControlPosition, cursorControlPosition)
             CursorControlGesture.Stage.SELECTION -> ic.setSelection(cursorControlAnchor, cursorControlPosition)
@@ -3124,12 +3145,91 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
+     * D-401-followup: clamps [target] so a horizontal character move can never cross into the previous or
+     * next line - the user's own explicit call: this gesture already positions the cursor in two full
+     * dimensions (a separate vertical DPAD step for line movement, see [applyCursorControlMove]'s own
+     * KDoc), so a horizontal drag reaching the start/end of the current line has no reason to also flip
+     * line the way a plain absolute-offset `setSelection()` naturally would once the target crosses a real
+     * newline character in the document.
+     *
+     * Only the one boundary actually at risk for [characterDelta]'s own sign is checked - never both - via
+     * [leftBoundary]/[rightBoundary], which read text through `getTextBeforeCursor()`/`getTextAfterCursor()`
+     * (this app's own already-proven `InputConnection` text-reading mechanism, see [flipSignBeforeCaret])
+     * rather than `getExtractedText()`, whose real-world reliability across arbitrary third-party apps is
+     * less certain and was the first, reverted approach here.
+     *
+     * @return [target], pinned to the current line's own start (a negative [characterDelta]) or end (a
+     *         positive one) if it would otherwise cross it; unclamped (never widened) for [characterDelta]
+     *         `== 0`, or when the relevant boundary could not be determined at all
+     */
+    private fun clampToCurrentLine(ic: InputConnection, target: Int, characterDelta: Int): Int {
+        if (characterDelta < 0) {
+            val lineStart = leftBoundary(ic) ?: return target
+            return target.coerceAtLeast(lineStart)
+        }
+        if (characterDelta > 0) {
+            val lineEnd = rightBoundary(ic) ?: return target
+            return target.coerceAtMost(lineEnd)
+        }
+        return target
+    }
+    
+    /**
+     * D-401-followup: the current line's own start, relative to [cursorControlPosition] - correct
+     * regardless of stage. `getTextBeforeCursor()`/`getTextAfterCursor()` read relative to the *live*
+     * selection's own start/end, not necessarily [cursorControlPosition] itself, once Stage 2 has dragged
+     * the moving end backward past its own [cursorControlAnchor] (the common case, [cursorControlPosition]
+     * at or before the anchor - true unconditionally in Stage 1, where the two always coincide - reads
+     * directly; the rarer case searches the live selection's own text instead, since that is exactly the
+     * span between the two). A selection that has not yet crossed into a further line beyond the anchor is
+     * the only case that matters in practice - the drag's own direction of travel updates
+     * [cursorControlPosition] relative to the anchor again on the very next step regardless.
+     *
+     * @return the absolute offset of the current line's first character, or null if it could not be
+     *         determined (an `InputConnection` read failed) - the caller leaves [target] unclamped then
+     */
+    private fun leftBoundary(ic: InputConnection): Int? {
+        val position = cursorControlPosition
+        val anchor = cursorControlAnchor
+        if (position <= anchor) {
+            val before = ic.getTextBeforeCursor(CURSOR_CONTROL_LINE_SCAN_WINDOW, 0)?.toString() ?: return null
+            val newlineBefore = before.lastIndexOf('\n')
+            return position - (before.length - (newlineBefore + 1))
+        }
+        val selected = ic.getSelectedText(0)?.toString() ?: return null
+        val newlineBefore = selected.lastIndexOf('\n')
+        return if (newlineBefore == -1) null else anchor + newlineBefore + 1
+    }
+    
+    /** D-401-followup: the mirror image of [leftBoundary] - the current line's own end. */
+    private fun rightBoundary(ic: InputConnection): Int? {
+        val position = cursorControlPosition
+        val anchor = cursorControlAnchor
+        if (position >= anchor) {
+            val after = ic.getTextAfterCursor(CURSOR_CONTROL_LINE_SCAN_WINDOW, 0)?.toString() ?: return null
+            val newlineAfter = after.indexOf('\n')
+            return position + if (newlineAfter == -1) after.length else newlineAfter
+        }
+        val selected = ic.getSelectedText(0)?.toString() ?: return null
+        val newlineAfter = selected.indexOf('\n')
+        return if (newlineAfter == -1) null else position + newlineAfter
+    }
+    
+    /**
      * D-401: swaps the suggestion bar to the gesture's own short explanation text for [stage] - S-01's
      * already-established "alternate content in the same slot" shape (Autofill/credentials/emoji search).
+     * D-401-followup: a green checkmark chip is pinned first, ahead of the hint text - an explicit,
+     * discoverable way to end the gesture on tap (the user's own report: the gesture-only ways to end it,
+     * waiting out the lift-grace window or releasing a Stage 2 drag, were not obvious on their own).
      */
     private fun showCursorControlHint(stage: CursorControlGesture.Stage) {
         val textRes = if (stage == CursorControlGesture.Stage.SELECTION) R.string.d401_hint_stage2 else R.string.d401_hint_stage1
-        setSuggestionBarItems(listOf(SuggestionController.DisplayItem(getString(textRes), SuggestionController.Kind.CURSOR_CONTROL_HINT, "")))
+        setSuggestionBarItems(
+            listOf(
+                SuggestionController.DisplayItem(text = "✓", kind = SuggestionController.Kind.CURSOR_CONTROL_DONE, word = ""),
+                SuggestionController.DisplayItem(text = getString(textRes), kind = SuggestionController.Kind.CURSOR_CONTROL_HINT, word = "")
+            )
+        )
     }
     
     /**
@@ -5486,6 +5586,17 @@ class AdaptKeyService : InputMethodService() {
         if (!includeExpensiveFallbacks) {
             expensiveSuggestionSeq.incrementAndGet()
         }
+        // D-401-followup: the cursor/selection-control gesture's own explicit request - no suggestion
+        // computation at all (dictionary lookups, chip refresh) while it is active, not merely a hidden
+        // bar - this is the single choke point every trigger (reclaim, the deferred/expensive background
+        // search's own re-entrant call, a stray tier3 callback) ultimately funnels through, so gating here
+        // covers all of them regardless of which one fires mid-gesture. The sequence bump just above still
+        // runs first, so a background search already in flight when the gesture armed correctly recognises
+        // itself as stale instead of silently overwriting the gesture's own hint chip once it completes.
+        // onCursorControlEnded() resyncs everything with a fresh call once the gesture ends.
+        if (cursorControlSessionActive) {
+            return
+        }
         // D-143: a URL is not natural-language prose - no dictionary word or autocorrect candidate is ever
         // useful while entering one, so the bar simply stays empty. D-293: a field explicitly opted out of
         // suggestions (TYPE_TEXT_FLAG_NO_SUGGESTIONS) gets the identical bare-bar treatment.
@@ -5882,6 +5993,17 @@ class AdaptKeyService : InputMethodService() {
     }
     
     private fun showSuggestions() {
+        // D-401-followup: the same gate refreshSuggestions() has, repeated here as the actual rendering
+        // choke point - resortRunnable (S-04's deferred re-sort, scheduled *before* the gesture armed) calls
+        // straight into this function without going through refreshSuggestions() at all, so a resort left
+        // over from typing right before the long-press was overwriting the gesture's own hint/checkmark chip
+        // once its own delay elapsed mid-gesture (confirmed device-reported: "der Häkchen Button wird nur
+        // ganz am Anfang... angezeigt"). showCursorControlHint() itself never reaches this function - it
+        // pushes directly via setSuggestionBarItems() - so this gate cannot suppress the gesture's own bar
+        // content, only every other, now-stale caller.
+        if (cursorControlSessionActive) {
+            return
+        }
         // D-452 (temporary diagnostic): total wall time for this function - see refreshSuggestions()'s own
         // timing note right above it. Remove once D-452 is closed.
         val showSuggestionsStartedAt = SystemClock.uptimeMillis()
@@ -6856,6 +6978,11 @@ class AdaptKeyService : InputMethodService() {
             
             // D-401: purely informational (the gesture's own explanation text) - a tap does nothing.
             SuggestionController.Kind.CURSOR_CONTROL_HINT -> Unit
+            
+            // D-401-followup: the explicit "done" chip - ends the gesture the same way the grace-window
+            // timeout or a Stage 2 release already do (dismissCursorControl() is a no-op if the gesture
+            // somehow already ended, e.g. a stale tap racing the timeout).
+            SuggestionController.Kind.CURSOR_CONTROL_DONE -> keyboardView?.dismissCursorControl()
         }
     }
     
@@ -7497,6 +7624,11 @@ class AdaptKeyService : InputMethodService() {
         // there is real evidence of a pause. Longer than the gap between keystrokes of fluent typing, short
         // enough that the bar/preview still fills at any natural pause. A starting value, easy to retune.
         private const val EXPENSIVE_SUGGESTION_DELAY_MS = 200L
+        
+        // D-401-followup: the text-window size clampToCurrentLine() requests via getExtractedText() to find
+        // the current line's own start/end newlines - generous enough for any realistic single line/
+        // paragraph on a mobile field without requesting the whole document.
+        private const val CURSOR_CONTROL_LINE_SCAN_WINDOW = 2000
         
         // D-347/D-350: how long the caret must sit still (composing empty) before reclaimWordAtCaret() runs -
         // see reclaimWordAtCaretRunnable's own field KDoc. Shorter than EXPENSIVE_SUGGESTION_DELAY_MS at the

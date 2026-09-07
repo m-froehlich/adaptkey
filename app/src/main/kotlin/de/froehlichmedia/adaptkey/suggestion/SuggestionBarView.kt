@@ -204,6 +204,9 @@ class SuggestionBarView @JvmOverloads constructor(
         val colorRes = when {
             verbatim -> R.color.suggestion_verbatim_text
             item.kind == SuggestionController.Kind.LEARNED -> R.color.suggestion_learned_text
+            // D-401-followup: the same green as the gesture's own Stage 2 crosshair colour (AdaptKeyboardView)
+            // - "confirmed/active", reused rather than a new dedicated colour.
+            item.kind == SuggestionController.Kind.CURSOR_CONTROL_DONE -> R.color.suggestion_learned_text
             query -> R.color.suggestion_search_query_text
             loading -> R.color.suggestion_loading_text
             else -> R.color.suggestion_text

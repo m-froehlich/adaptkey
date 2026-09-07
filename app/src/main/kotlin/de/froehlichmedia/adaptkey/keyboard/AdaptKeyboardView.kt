@@ -160,10 +160,14 @@ class AdaptKeyboardView @JvmOverloads constructor(
         
         fun onCursorControlStageChanged(stage: CursorControlGesture.Stage)
         
-        /** A tap while [CursorControlGesture.Stage.SELECTION] is active - collapses the selection (D-401). */
-        fun onCursorControlTap()
+        /**
+         * D-401-followup: any release while [CursorControlGesture.Stage.SELECTION] is active - collapses
+         * the selection to its current end. Named for what actually ends Stage 2 now (any lift, not only a
+         * strict zero-movement tap - see the call site's own note for why).
+         */
+        fun onCursorControlSelectionReleased()
         
-        /** The gesture has ended (grace window expired with no re-touch, or a Stage 2 tap) - restore the ordinary bar. */
+        /** The gesture has ended (grace window expired with no re-touch, or a Stage 2 release) - restore the ordinary bar. */
         fun onCursorControlEnded()
     }
     
@@ -1480,14 +1484,17 @@ class AdaptKeyboardView @JvmOverloads constructor(
             
             MotionEvent.ACTION_UP -> {
                 longPressHandler.removeCallbacks(cursorControlStillnessRunnable)
-                // D-401: a genuine tap (no movement applied during this touch-down segment) while Stage 2 is
-                // active ends the mode immediately and collapses the selection - the one case the spec calls
-                // out explicitly; every other lift (Stage 1, or a Stage-2 touch that did move) instead waits
-                // out the ordinary re-touch grace window below.
-                if (cursorControlStage == CursorControlGesture.Stage.SELECTION &&
-                    cursorControlAppliedChars == 0 && cursorControlAppliedLines == 0
-                ) {
-                    onCursorControlListener?.onCursorControlTap()
+                // D-401-followup: any release while Stage 2 is active ends the mode outright and collapses
+                // the selection - device-reported: the original "zero movement since touch-down" reading of
+                // "a tap ends the mode" was almost never reachable in practice (reaching Stage 2 at all
+                // normally means the user already dragged to get there and/or to extend the selection, so
+                // this touch-down's own applied-step counters are essentially never still zero by the time
+                // it lifts) - the user's own report was "I can only end it by waiting". Releasing after
+                // extending a selection reads as "I'm done" far more naturally than requiring a second,
+                // separate zero-movement tap the user has no way to discover. Stage 1 is unaffected - a
+                // lift there still waits out the ordinary re-touch grace window below.
+                if (cursorControlStage == CursorControlGesture.Stage.SELECTION) {
+                    onCursorControlListener?.onCursorControlSelectionReleased()
                     endCursorControl()
                 } else {
                     beginCursorControlLiftGrace()
@@ -1530,7 +1537,18 @@ class AdaptKeyboardView @JvmOverloads constructor(
         animator.start()
     }
     
-    /** D-401: ends the cursor-control gesture outright - the grace window expired, or a Stage 2 tap. */
+    /**
+     * D-401-followup: ends the cursor-control gesture from outside this view's own touch handling - the
+     * suggestion bar's own explicit checkmark chip (`Kind.CURSOR_CONTROL_DONE`), tapped through the normal
+     * suggestion-bar/InputConnection path in `AdaptKeyService`. A no-op while no gesture is active.
+     */
+    fun dismissCursorControl() {
+        if (cursorControlActive) {
+            endCursorControl()
+        }
+    }
+    
+    /** D-401: ends the cursor-control gesture outright - the grace window expired, or a Stage 2 release. */
     private fun endCursorControl() {
         longPressHandler.removeCallbacks(cursorControlStillnessRunnable)
         longPressHandler.removeCallbacks(cursorControlGraceRunnable)

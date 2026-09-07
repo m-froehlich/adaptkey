@@ -101,7 +101,12 @@ class SuggestionController(private val config: SuggestionConfig) {
          * long as the gesture stays armed - purely informational, like [LOADING]; a tap does nothing. Built
          * and pushed directly to the suggestion bar, the same "built outside SuggestionController" shape
          * [LOADING]/[EMOJI_SEARCH_QUERY] already use - there is no composing token to rank it against. */
-        CURSOR_CONTROL_HINT
+        CURSOR_CONTROL_HINT,
+        
+        /** D-401-followup: a green checkmark chip shown alongside [CURSOR_CONTROL_HINT] - an explicit,
+         * discoverable way to end the gesture on tap, since the user reported the gesture-only ways to end
+         * it (waiting out the lift-grace window, or releasing a Stage 2 drag) were not obvious on their own. */
+        CURSOR_CONTROL_DONE
     }
     
     /**
