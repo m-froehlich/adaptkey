@@ -145,18 +145,28 @@ class AdaptKeyboardView @JvmOverloads constructor(
     
     /**
      * D-401: callbacks for the space-bar cursor/selection-control gesture (see [CursorControlGesture] for
-     * the underlying stage/timing policy). [onCursorControlMove]'s deltas are always the *incremental* step
-     * count since the last call (already deduped by this view against its own running total), never a
-     * cumulative offset - the caller applies them directly against wherever the target field's own current
-     * caret now is.
+     * the underlying stage/timing policy). D-401-followup: [onCursorControlMove]'s own `characters`/`lines`
+     * are the *total* signed offset from the gesture's own origin (this view's own running "already sent"
+     * comparison only ever decides whether to call at all, purely to avoid redundant no-op calls) - the
+     * caller re-derives its own absolute target position fresh from these totals every time, never by
+     * accumulating a delta, per this gesture's own new direct-positioning model (see
+     * [CursorControlGesture]'s own class KDoc).
      */
     interface OnCursorControlListener {
         
         /** The gesture just armed (its long-press fired) - e.g. show the bar's own Stage 1 hint text. */
         fun onCursorControlArmed()
         
-        /** @param characterDelta horizontal step count to apply now; @param lineDelta vertical step count (as a DPAD up/down count), both since the last call */
-        fun onCursorControlMove(stage: CursorControlGesture.Stage, characterDelta: Int, lineDelta: Int)
+        /**
+         * D-401-followup: a re-touch within the lift-grace window - a fresh drag origin (this view's own
+         * `downX`/`downY` reset to the new touch point), so the listener's own "total offset from origin"
+         * reference must reset here too, to wherever the caret actually is right now - otherwise the very
+         * next move would jump the caret back to whatever the *original* touch-down's own reference implied.
+         */
+        fun onCursorControlReTouched()
+        
+        /** @param characters total horizontal offset from the gesture's own origin; @param lines total vertical (line) offset, both absolute, never a delta */
+        fun onCursorControlMove(stage: CursorControlGesture.Stage, characters: Int, lines: Int)
         
         fun onCursorControlStageChanged(stage: CursorControlGesture.Stage)
         
@@ -605,8 +615,11 @@ class AdaptKeyboardView @JvmOverloads constructor(
     // redundant pair of fields.
     private var cursorControlActive = false
     private var cursorControlStage = CursorControlGesture.Stage.CURSOR
-    private var cursorControlAppliedChars = 0
-    private var cursorControlAppliedLines = 0
+    // D-401-followup: purely to skip redundant no-op onCursorControlMove() calls when a move event's own
+    // steps haven't actually changed since the last one sent - not used for any delta math (the listener
+    // always receives, and re-derives its own absolute target from, the *total* offset from origin).
+    private var cursorControlLastSentChars = 0
+    private var cursorControlLastSentLines = 0
     private var cursorControlGraceActive = false
     private var cursorControlCrosshairX = 0f
     private var cursorControlCrosshairY = 0f
@@ -1420,8 +1433,8 @@ class AdaptKeyboardView @JvmOverloads constructor(
         pressedKeyRect = null
         cursorControlActive = true
         cursorControlStage = CursorControlGesture.Stage.CURSOR
-        cursorControlAppliedChars = 0
-        cursorControlAppliedLines = 0
+        cursorControlLastSentChars = 0
+        cursorControlLastSentLines = 0
         cursorControlCrosshairX = downX
         cursorControlCrosshairY = downY
         longPressHandler.postDelayed(cursorControlStillnessRunnable, CursorControlGesture.HOLD_STILL_TO_SELECT_MS)
@@ -1447,10 +1460,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
                     cursorControlCrosshairAnimator?.cancel()
                     downX = event.x
                     downY = event.y
-                    cursorControlAppliedChars = 0
-                    cursorControlAppliedLines = 0
+                    cursorControlLastSentChars = 0
+                    cursorControlLastSentLines = 0
                     cursorControlCrosshairX = event.x
                     cursorControlCrosshairY = event.y
+                    // D-401-followup: the listener's own "offset from origin" reference must reset here too,
+                    // now that the origin itself just did - see onCursorControlReTouched()'s own KDoc.
+                    onCursorControlListener?.onCursorControlReTouched()
                     invalidate()
                 }
                 return true
@@ -1463,22 +1479,20 @@ class AdaptKeyboardView @JvmOverloads constructor(
                     return true
                 }
                 val steps = CursorControlGesture.stepsFor(dx, dy, resources.displayMetrics.density)
-                val deltaChars = steps.characters - cursorControlAppliedChars
-                val deltaLines = steps.lines - cursorControlAppliedLines
-                if (deltaChars != 0 || deltaLines != 0) {
+                if (steps.characters != cursorControlLastSentChars || steps.lines != cursorControlLastSentLines) {
                     // D-401-followup (temporary diagnostic): every real move step, with enough state to
-                    // reconstruct exactly what was sent - the last two "fix" rounds produced no observable
-                    // change and a genuinely chaotic-looking onUpdateSelection log, so guessing again is not
-                    // the right move; this traces the actual dx/dy/steps/deltas at the source instead. Remove
-                    // once D-401's cursor movement is confirmed correct on a real device.
+                    // reconstruct exactly what was sent - several rounds of guessing at the clamp/threshold
+                    // logic produced no observable change and genuinely chaotic-looking device logs, so this
+                    // traces the actual dx/dy/steps at the source instead. Remove once D-401's cursor
+                    // movement is confirmed correct on a real device.
                     logTouch(
                         "cursorControlMove: dx=$dx dy=$dy density=${resources.displayMetrics.density} " +
-                            "steps=[${steps.characters},${steps.lines}] appliedBefore=[$cursorControlAppliedChars,$cursorControlAppliedLines] " +
-                            "delta=[$deltaChars,$deltaLines] stage=$cursorControlStage"
+                            "steps=[${steps.characters},${steps.lines}] lastSent=[$cursorControlLastSentChars,$cursorControlLastSentLines] " +
+                            "stage=$cursorControlStage"
                     )
-                    cursorControlAppliedChars = steps.characters
-                    cursorControlAppliedLines = steps.lines
-                    onCursorControlListener?.onCursorControlMove(cursorControlStage, deltaChars, deltaLines)
+                    cursorControlLastSentChars = steps.characters
+                    cursorControlLastSentLines = steps.lines
+                    onCursorControlListener?.onCursorControlMove(cursorControlStage, steps.characters, steps.lines)
                 }
                 // D-401: genuine movement (beyond slop, checked above) resets the "holding still" clock -
                 // only reached while still in Stage 1, matching CursorControlGesture's own class KDoc.

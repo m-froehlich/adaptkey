@@ -506,38 +506,44 @@ suggestion bar's own slot switches to a short explanation of the current stage (
 "alternate content in the same slot" mechanism), and a crosshair appears under the finger as the gesture's
 own origin.
 
-- **Stage 1 - cursor.** Dragging moves the text caret, horizontally by character and vertically by line -
-  both computed entirely from this field's own text via `getTextBeforeCursor()`/`getTextAfterCursor()`
-  (`getExtractedText()`, tried first, proved unreliable enough on a real device) and applied with a direct
-  `setSelection()`, preserving the horizontal column as closely as possible across a line move. D-401-followup:
-  line movement originally used synthetic `KEYCODE_DPAD_UP`/`DOWN` key events instead, letting the target
-  field's own text layout decide what "one line up" means - confirmed real on a device (Google Keep) that this
-  does not always stay within the current field at all: at the top of a multi-field note editor's body,
-  `KEYCODE_DPAD_UP` moved system focus to an entirely different sibling field (the note's own Title), which
-  traced back to essentially every symptom reported against this gesture at once - the caret "flipping"
-  unpredictably, and the clipboard chip/missing checkmark chip below, since the resulting spurious field-focus
-  change re-triggered ordinary field-open bar content mid-gesture. Computing the line move purely from this
-  field's own text instead can never leave it, by construction. Holding still for 800 ms promotes to Stage 2 (a
-  second vibration, the crosshair changes colour, the hint text updates). A horizontal character move never
-  crosses into the previous/next line on its own, even at the very start/end of the current line - the user's
-  own explicit call: this gesture already positions the cursor in two independent dimensions, so a horizontal
-  drag reaching a line boundary has no reason to also flip line the way a plain document-wide character offset
-  naturally would once it crosses a real newline. Only the one boundary actually at risk for the current drag
-  direction is checked at a time, with no exception - including a genuinely zero-width (empty) line, whose
-  own start and end are the exact same offset: a character move there clamps to that single point regardless
-  of direction, so the caret cannot leave a blank line via horizontal dragging at all, only via a vertical
-  (line) move. **D-401-followup, tried and reverted twice**: a blank line clamping this way was first read as
-  a bug ("sticking", only escaping by accident once an unrelated vertical move fired in the same drag,
-  perceived as an involuntary flip) and "fixed" by unclamping it - confirmed on the very next device test to
-  reopen the original flip outright, since a genuinely empty line cannot be told apart from the caret simply
-  sitting at the very start/end of an ordinary line by checking only one direction at a time (both look
-  identical from either side alone). A second attempt added a proper two-sided check (both the character
-  immediately before *and* immediately after the caret must be a newline or the field's own start/end) -
-  correctly told the two cases apart, but a further device test showed the underlying premise itself was
-  wrong: the user's own original, repeated, explicit requirement is that a horizontal drag must never cross a
-  line boundary under any circumstances, not even from an empty line. "Getting stuck" on a blank line until a
-  vertical move actually leaves it is the correct, intended behaviour, not a bug - both unclamping attempts
-  are reverted outright.
+- **Stage 1 - cursor.** D-401-followup: rearchitected around the user's own direct correction of this whole
+  gesture's mental model, after three earlier rounds of incremental-stepping bugs, echo races, and clamp
+  edge cases (each fixing a real symptom without ever landing on a stable whole): **the caret is positioned
+  directly and absolutely, never by moving it through the document's own text flow.** Dragging horizontally
+  always means "put the caret as far right/left within the *current* line as this drag distance allows,
+  however far that is" - the total horizontal offset from the gesture's own origin is added to the column
+  the caret started at and re-clamped fresh to whichever line is currently active on every single move,
+  never accumulated as a running delta (eliminating the whole earlier class of incremental-state bugs at
+  once: nothing is ever "applied" and later found inconsistent, since every move recomputes the absolute
+  target from scratch). A line change is a distinct action, never a side effect of horizontal dragging: it
+  only ever happens when the drag's own vertical distance from origin genuinely *dominates* the horizontal
+  one (see `CursorControlGesture.stepsFor()`'s own dominant-axis gate) - a real device log had shown a line
+  change firing from vertical hand-wobble that was small in absolute terms but still large enough to cross
+  the line-step threshold, in the middle of a drag that was overwhelmingly horizontal (514px sideways
+  against 42px of drift) - wobble that accumulates over any sufficiently long horizontal drag, not
+  deliberate vertical intent. Once a line change is under way, it is still walked one real line at a time
+  (`InputConnection` has no way to jump to an arbitrary line directly - every read is relative to wherever
+  the real caret currently is) via `getTextBeforeCursor()`/`getTextAfterCursor()`, never a synthetic
+  `KEYCODE_DPAD_UP`/`DOWN` key event (confirmed real on a device, Google Keep: a DPAD event moved system
+  focus to an entirely different sibling field at the top of a multi-field note editor's body, not merely an
+  imprecise vertical jump); the exact same direct column computation then settles the final position once
+  the caret has landed on the target line, so "preserve column across a line change" falls out of the model
+  for free rather than needing its own dedicated logic. Holding still for 800 ms promotes to Stage 2 (a
+  second vibration, the crosshair changes colour, the hint text updates).
+
+  A horizontal drag can never cross into the previous/next line on its own, with no exception - including a
+  genuinely zero-width (empty) line, whose own start and end are the exact same offset: the column clamp
+  collapses to that single point regardless of direction, so the caret cannot leave a blank line via
+  horizontal dragging at all, only via a genuine line change. This is the user's own explicit, repeated
+  requirement (dragging right never means "wander further right in the document's own text flow, wherever
+  that leads") - "getting stuck" on a blank line until a vertical drag actually leaves it is correct,
+  intended behaviour, not a bug. Two earlier rounds tried unclamping this one case specifically, to avoid
+  exactly that "stuck" feeling, and both reopened the flip this whole mechanism exists to prevent - a
+  single-sided boundary check cannot reliably tell a genuinely empty line apart from the caret simply
+  sitting at the very start/end of an ordinary line (both look identical from one direction alone), and even
+  a corrected two-sided check was still the wrong fix for the wrong problem: a device test right after
+  showed the caret still flipping between ordinary lines during plainly horizontal drags, which is what
+  led to the dominant-axis gate above and, from there, to this whole rearchitecture.
 - **Stage 2 - selection.** Dragging instead extends a text selection from wherever Stage 1 left the caret.
   D-401-followup: **any** release while Stage 2 is active ends the mode outright and collapses the selection
   to the current position - the original "only a strict zero-movement tap ends it" reading was reported as
@@ -593,15 +599,10 @@ chance to reject it.
 **Calibration status, stated plainly.** The drag-distance-per-character/per-line constants are a first-pass
 value carried over from Gboard's own spacebar cursor glide, adopted deliberately as the starting point (the
 user's own explicit call: "ich muss es benutzen, um zu sagen, was ich anders haben will") rather than
-independently invented - expected to be retuned once tried on a real device, not claimed to be final.
-**D-401-followup**: the line-step distance needed exactly that retuning - a device log showed a cumulative
-vertical drift of only 16dp from the gesture's own origin (half of the original 32dp threshold) was already
-enough to register a full, unintended line step in the middle of an otherwise purely horizontal drag,
-trivially crossed by ordinary hand wobble over any drag long enough to cover more than a few characters, and
-reported as the caret "just flipping through lines" regardless of drag direction. Raised to 200dp (a real,
-deliberate vertical drag, not incidental drift) - the character-step distance is untouched, since only line
-movement had this failure mode: an unwanted character move is immediately visible and self-correcting, but
-an unwanted line jump silently teleports the caret somewhere else entirely.
+independently invented - expected to be retuned once tried on a real device, not claimed to be final. The
+per-line distance was raised from an original 32dp to 200dp during tuning, and D-401-followup's
+dominant-axis gate (above) was added on top of that same constant, not instead of it - both work together to
+keep an ordinary horizontal drag from ever being misread as a line change.
 
 ---
 

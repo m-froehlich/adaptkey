@@ -59,12 +59,45 @@ class CursorControlGestureTest {
     }
     
     @Test
-    fun stepsForCombinesHorizontalAndVerticalIndependently() {
+    fun stepsForCombinesHorizontalAndVerticalWhenVerticalDominates() {
         val density = 1.5f
         val dx = CursorControlGesture.DP_PER_CHARACTER_STEP * density * 4f
         val dy = -CursorControlGesture.DP_PER_LINE_STEP * density * 1f
         val steps = CursorControlGesture.stepsFor(dx, dy, density)
         assertEquals(4, steps.characters)
         assertEquals(-1, steps.lines)
+    }
+    
+    @Test
+    fun stepsForSuppressesLineWhenHorizontalDragDominates() {
+        // D-401-followup: the exact real-device shape that caused an unintended line change - a large
+        // horizontal distance with only a modest amount of vertical drift, which would round to a nonzero
+        // line step if evaluated on its own (dy is a full line step here) but must not fire while dx is the
+        // larger of the two.
+        val density = 1f
+        val dx = CursorControlGesture.DP_PER_LINE_STEP * density * 3f
+        val dy = CursorControlGesture.DP_PER_LINE_STEP * density * 1f
+        val steps = CursorControlGesture.stepsFor(dx, dy, density)
+        assertEquals(0, steps.lines)
+    }
+    
+    @Test
+    fun stepsForAllowsLineWhenVerticalDragDominates() {
+        val density = 1f
+        val dx = CursorControlGesture.DP_PER_LINE_STEP * density * 0.5f
+        val dy = CursorControlGesture.DP_PER_LINE_STEP * density * 2f
+        val steps = CursorControlGesture.stepsFor(dx, dy, density)
+        assertEquals(2, steps.lines)
+    }
+    
+    @Test
+    fun stepsForGateComparesMagnitudeNotSign() {
+        // A negative dx (dragging left) must not itself allow a small dy to sneak past the gate just
+        // because a raw dy > dx comparison (rather than |dy| > |dx|) would have been satisfied.
+        val density = 1f
+        val dx = -CursorControlGesture.DP_PER_LINE_STEP * density * 3f
+        val dy = CursorControlGesture.DP_PER_LINE_STEP * density * 1f
+        val steps = CursorControlGesture.stepsFor(dx, dy, density)
+        assertEquals(0, steps.lines)
     }
 }

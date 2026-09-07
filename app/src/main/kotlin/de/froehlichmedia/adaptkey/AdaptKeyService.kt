@@ -3090,21 +3090,35 @@ class AdaptKeyService : InputMethodService() {
         }
     }
     
-    // D-401: the space-bar cursor/selection-control gesture's own tracked state. cursorControlPosition is
-    // an optimistic running caret offset - seeded from the live caret when the gesture arms, updated
-    // synchronously after every setSelection() this mechanism itself issues (character-based or, since
-    // D-401-followup's DPAD removal, line-based too) and never overwritten by a later onUpdateSelection
-    // echo - see that callback's own note on why that raced. cursorControlAnchor is the fixed end of the
-    // selection range, frozen the moment Stage 2 begins.
+    // D-401-followup: complete rearchitecture around the user's own direct correction - this gesture
+    // positions the caret directly and absolutely, never by stepping it incrementally through the
+    // document's own text flow (see CursorControlGesture's own class KDoc for the full reasoning; three
+    // earlier rounds of incremental-delta bugs, echo races, and clamp edge cases all trace back to the old
+    // "apply a delta, clamp, hope it stays consistent" model). cursorControlOriginColumn is the column
+    // (characters from line start) the caret was actually at when the gesture last established its own
+    // origin (arm time, or any later re-touch) - characters (the *total* signed offset from that same
+    // origin, from CursorControlGesture.stepsFor()) is added to it fresh on every single move and
+    // re-clamped to whichever line is currently active, never accumulated. cursorControlAppliedLines is the
+    // one piece of real incremental state left, and only because a line change genuinely has to walk the
+    // real InputConnection one line at a time to discover each line's own bounds - it tracks how many of
+    // the gesture's own total line-offset have actually been walked so far. cursorControlPosition is simply
+    // "where is the real caret right now" (needed since every InputConnection text read is relative to it,
+    // never to an arbitrary offset), never overwritten by a later onUpdateSelection echo - see that
+    // callback's own note on why that raced. cursorControlAnchor is the fixed end of the selection range,
+    // frozen the moment Stage 2 begins.
     private var cursorControlSessionActive = false
     private var cursorControlPosition = 0
     private var cursorControlAnchor = 0
+    private var cursorControlOriginColumn = 0
+    private var cursorControlAppliedLines = 0
     
     private val cursorControlListener = object : AdaptKeyboardView.OnCursorControlListener {
         override fun onCursorControlArmed() {
             cursorControlSessionActive = true
             cursorControlPosition = liveSelectionEnd
             cursorControlAnchor = cursorControlPosition
+            cursorControlAppliedLines = 0
+            currentInputConnection?.let { cursorControlOriginColumn = currentColumn(it) }
             // D-401-followup: cancels whatever was left over from typing right before the long-press - the
             // refreshSuggestions()/showSuggestions() gates below already stop any of these from ever
             // touching the bar while the gesture is active, but there is no reason to still let the
@@ -3117,8 +3131,16 @@ class AdaptKeyService : InputMethodService() {
             showCursorControlHint(CursorControlGesture.Stage.CURSOR)
         }
         
-        override fun onCursorControlMove(stage: CursorControlGesture.Stage, characterDelta: Int, lineDelta: Int) {
-            applyCursorControlMove(stage, characterDelta, lineDelta)
+        override fun onCursorControlReTouched() {
+            // D-401-followup: a fresh drag origin - the column/line-offset reference this mechanism adds
+            // the gesture's own total (dx, dy)-derived offset to must reset here too, to wherever the caret
+            // actually is right now, exactly like onCursorControlArmed() establishes it the first time.
+            cursorControlAppliedLines = 0
+            currentInputConnection?.let { cursorControlOriginColumn = currentColumn(it) }
+        }
+        
+        override fun onCursorControlMove(stage: CursorControlGesture.Stage, characters: Int, lines: Int) {
+            applyCursorControlMove(stage, characters, lines)
         }
         
         override fun onCursorControlStageChanged(stage: CursorControlGesture.Stage) {
@@ -3143,54 +3165,50 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * D-401: applies one incremental cursor-control step, both dimensions computed purely from this field's
-     * own text via `getTextBeforeCursor()`/`getTextAfterCursor()` and applied with a direct `setSelection()`
-     * - collapsed for Stage 1, or against the frozen [cursorControlAnchor] for Stage 2.
+     * D-401-followup: applies the gesture's own current total offset directly and absolutely - never as an
+     * incremental delta - matching the user's own explicit correction of this whole mechanism's mental
+     * model: dragging right always means "as far right as the current line allows," independent of how far
+     * that ends up being, and a line change is a distinct action ([CursorControlGesture.stepsFor]'s own
+     * dominant-axis gate already keeps it from ever being a side effect of horizontal dragging) rather than
+     * something layered on top of the same incremental character-stepping this used to share.
      *
-     * D-401-followup: a vertical (line) delta was originally sent as a synthetic `KEYCODE_DPAD_UP`/
-     * `KEYCODE_DPAD_DOWN` key event, letting the target app's own text layout decide what "one line up"
-     * means. Confirmed real on a device (Google Keep) that this does not always mean "move within this
-     * field" at all: at the top of a multi-field note editor's body, `KEYCODE_DPAD_UP` moved system focus to
-     * an entirely different sibling field (the note's own Title), not merely an imprecise vertical jump -
-     * every symptom reported against this gesture ("Textfluss-Flipping", the clipboard chip and missing
-     * checkmark chip both reappearing mid-gesture) traced back to this: the resulting spurious
-     * `onStartInput`/`onStartInputView` calls reset keyboard state and overwrote the gesture's own bar
-     * content (now also directly gated in `onStartInputView`, belt-and-suspenders). [moveOneLine] replaces
-     * the DPAD event with the same text-scanning approach [clampToCurrentLine] already uses horizontally,
-     * which by construction can never leave this field's own text. This also removes the entire async
-     * echo-race class the DPAD approach needed `cursorControlAwaitingLineSync` for (see
-     * [onUpdateSelection]'s own note) - a line move is now exactly as synchronous and self-trusting as a
-     * character move already was.
-     *
-     * The two are deliberately never combined in the same call - see [CursorControlGesture.stepsFor]'s own
-     * KDoc for why a diagonal drag essentially never produces both in the same event at ordinary speeds.
+     * A line change is still walked one real line at a time via [adjacentLineStart] - `InputConnection` has
+     * no way to jump to an arbitrary line directly, every read is relative to wherever the real caret
+     * currently is - but no longer needs to preserve "column" itself: once however many line-steps [lines]
+     * calls for have been walked, the exact same direct column computation below re-clamps
+     * [cursorControlOriginColumn] `+` [characters] to whichever line was landed on, exactly as it would for
+     * an ordinary horizontal-only move. This also removes the need to ever combine or sequence the two axes
+     * specially - a line change and a column fix simply both apply, in that order, every time.
      */
-    private fun applyCursorControlMove(stage: CursorControlGesture.Stage, characterDelta: Int, lineDelta: Int) {
+    private fun applyCursorControlMove(stage: CursorControlGesture.Stage, characters: Int, lines: Int) {
         val ic = currentInputConnection ?: return
         // D-401-followup (temporary diagnostic): every call, mirroring AdaptKeyboardView's own logTouch() -
         // see that call site's own note for why. Remove once D-401's cursor movement is confirmed correct.
         diag(
             "AdaptKeyJitter",
-            "applyCursorControlMove: stage=$stage characterDelta=$characterDelta lineDelta=$lineDelta " +
-                "positionBefore=$cursorControlPosition anchor=$cursorControlAnchor"
+            "applyCursorControlMove: stage=$stage characters=$characters lines=$lines " +
+                "positionBefore=$cursorControlPosition anchor=$cursorControlAnchor originColumn=$cursorControlOriginColumn " +
+                "appliedLines=$cursorControlAppliedLines"
         )
-        if (lineDelta != 0) {
-            repeat(abs(lineDelta)) {
-                cursorControlPosition = moveOneLine(ic, up = lineDelta < 0) ?: return@repeat
+        val lineStepsNeeded = lines - cursorControlAppliedLines
+        if (lineStepsNeeded != 0) {
+            repeat(abs(lineStepsNeeded)) {
+                val next = adjacentLineStart(ic, up = lineStepsNeeded < 0) ?: return@repeat
+                cursorControlPosition = next
+                commitCursorControlSelection(ic, stage)
             }
-            diag("AdaptKeyJitter", "applyCursorControlMove: line move settled at $cursorControlPosition")
-            commitCursorControlSelection(ic, stage)
+            cursorControlAppliedLines = lines
+            diag("AdaptKeyJitter", "applyCursorControlMove: line steps settled at $cursorControlPosition")
+        }
+        val lineStart = leftBoundary(ic, stage)
+        val lineEnd = rightBoundary(ic, stage)
+        if (lineStart == null || lineEnd == null) {
+            diag("AdaptKeyJitter", "applyCursorControlMove: line bounds unavailable - column unchanged")
             return
         }
-        if (characterDelta == 0) {
-            return
-        }
-        val target = (cursorControlPosition + characterDelta).coerceAtLeast(0)
-        cursorControlPosition = clampToCurrentLine(ic, target, characterDelta, stage)
-        diag(
-            "AdaptKeyJitter",
-            "applyCursorControlMove: target=$target clampedPosition=$cursorControlPosition"
-        )
+        val targetColumn = (cursorControlOriginColumn + characters).coerceIn(0, lineEnd - lineStart)
+        cursorControlPosition = lineStart + targetColumn
+        diag("AdaptKeyJitter", "applyCursorControlMove: lineStart=$lineStart lineEnd=$lineEnd targetColumn=$targetColumn clampedPosition=$cursorControlPosition")
         commitCursorControlSelection(ic, stage)
     }
     
@@ -3203,28 +3221,42 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * D-401-followup: computes the absolute offset one line above/below [cursorControlPosition], preserving
-     * its own column within the line as closely as possible - entirely from text read via
-     * `getTextBeforeCursor()`/`getTextAfterCursor()`, never a synthetic DPAD key event (see
-     * [applyCursorControlMove]'s own KDoc for why that was a real bug, not merely an imprecision).
-     *
-     * @return the new absolute offset, or null if there is no further line in that direction within
-     *         [CURSOR_CONTROL_LINE_SCAN_WINDOW] (including an `InputConnection` read failure) - the caller
-     *         then leaves [cursorControlPosition] unchanged, exactly like [clampToCurrentLine] already does
-     *         at a horizontal boundary
+     * D-401-followup: the column (characters from line start) of [cursorControlPosition] within its own
+     * current line - [applyCursorControlMove]'s own reference point, re-established fresh on arm and on
+     * every re-touch, never incremented. Falls back to 0 (line start) on a read failure, the safest default
+     * for a value only ever used as an addend.
      */
-    private fun moveOneLine(ic: InputConnection, up: Boolean): Int? {
+    private fun currentColumn(ic: InputConnection): Int {
+        val before = ic.getTextBeforeCursor(CURSOR_CONTROL_LINE_SCAN_WINDOW, 0)?.toString() ?: return 0
+        val newlineBefore = before.lastIndexOf('\n')
+        return before.length - (newlineBefore + 1)
+    }
+    
+    /**
+     * D-401-followup: the absolute offset of the start of the line immediately above/below
+     * [cursorControlPosition] - entirely from text read via `getTextBeforeCursor()`/`getTextAfterCursor()`,
+     * never a synthetic DPAD key event (confirmed real on a device, Google Keep: a DPAD event moved system
+     * focus to an entirely different sibling field at the top of a multi-field note editor's body, not
+     * merely an imprecise vertical jump - every symptom reported against this gesture at the time traced
+     * back to that). Deliberately does not compute or preserve "column" itself any more - the caller's own
+     * subsequent, always-direct column clamp in [applyCursorControlMove] settles the exact position once
+     * the caret has actually landed on the target line.
+     *
+     * @return the target line's own start offset, or null if there is no further line in that direction
+     *         within [CURSOR_CONTROL_LINE_SCAN_WINDOW] (including an `InputConnection` read failure) - the
+     *         caller then leaves [cursorControlPosition] on whichever line it already reached
+     */
+    private fun adjacentLineStart(ic: InputConnection, up: Boolean): Int? {
         val position = cursorControlPosition
-        val before = ic.getTextBeforeCursor(CURSOR_CONTROL_LINE_SCAN_WINDOW, 0)?.toString()
-        if (before == null) {
-            diag("AdaptKeyJitter", "moveOneLine: getTextBeforeCursor returned null - unmoved")
-            return null
-        }
-        val currentLineStartInBefore = before.lastIndexOf('\n') + 1
-        val column = before.length - currentLineStartInBefore
         if (up) {
+            val before = ic.getTextBeforeCursor(CURSOR_CONTROL_LINE_SCAN_WINDOW, 0)?.toString()
+            if (before == null) {
+                diag("AdaptKeyJitter", "adjacentLineStart(up): getTextBeforeCursor returned null - unmoved")
+                return null
+            }
+            val currentLineStartInBefore = before.lastIndexOf('\n') + 1
             if (currentLineStartInBefore == 0) {
-                diag("AdaptKeyJitter", "moveOneLine(up): no newline within window - unmoved")
+                diag("AdaptKeyJitter", "adjacentLineStart(up): no newline within window - unmoved")
                 return null
             }
             val previousLineStartInBefore = if (currentLineStartInBefore <= 1) {
@@ -3232,62 +3264,23 @@ class AdaptKeyService : InputMethodService() {
             } else {
                 before.lastIndexOf('\n', currentLineStartInBefore - 2) + 1
             }
-            val previousLineStartAbs = position - (before.length - previousLineStartInBefore)
-            val previousLineLength = (currentLineStartInBefore - 1) - previousLineStartInBefore
-            val result = previousLineStartAbs + minOf(column, previousLineLength)
-            diag("AdaptKeyJitter", "moveOneLine(up): column=$column previousLineLength=$previousLineLength result=$result")
+            val result = position - (before.length - previousLineStartInBefore)
+            diag("AdaptKeyJitter", "adjacentLineStart(up): result=$result")
             return result
         }
         val after = ic.getTextAfterCursor(CURSOR_CONTROL_LINE_SCAN_WINDOW, 0)?.toString()
         if (after == null) {
-            diag("AdaptKeyJitter", "moveOneLine: getTextAfterCursor returned null - unmoved")
+            diag("AdaptKeyJitter", "adjacentLineStart(down): getTextAfterCursor returned null - unmoved")
             return null
         }
         val currentLineEndInAfter = after.indexOf('\n')
         if (currentLineEndInAfter == -1) {
-            diag("AdaptKeyJitter", "moveOneLine(down): no newline within window - unmoved")
+            diag("AdaptKeyJitter", "adjacentLineStart(down): no newline within window - unmoved")
             return null
         }
-        val nextLineStartAbs = position + currentLineEndInAfter + 1
-        val nextLineEndInAfter = after.indexOf('\n', currentLineEndInAfter + 1)
-        val nextLineLength = if (nextLineEndInAfter == -1) {
-            after.length - (currentLineEndInAfter + 1)
-        } else {
-            nextLineEndInAfter - (currentLineEndInAfter + 1)
-        }
-        val result = nextLineStartAbs + minOf(column, nextLineLength)
-        diag("AdaptKeyJitter", "moveOneLine(down): column=$column nextLineLength=$nextLineLength result=$result")
+        val result = position + currentLineEndInAfter + 1
+        diag("AdaptKeyJitter", "adjacentLineStart(down): result=$result")
         return result
-    }
-    
-    /**
-     * D-401-followup: clamps [target] so a horizontal character move can never cross into the previous or
-     * next line - the user's own explicit call: this gesture already positions the cursor in two full
-     * dimensions (a separate vertical DPAD step for line movement, see [applyCursorControlMove]'s own
-     * KDoc), so a horizontal drag reaching the start/end of the current line has no reason to also flip
-     * line the way a plain absolute-offset `setSelection()` naturally would once the target crosses a real
-     * newline character in the document.
-     *
-     * Only the one boundary actually at risk for [characterDelta]'s own sign is checked - never both - via
-     * [leftBoundary]/[rightBoundary], which read text through `getTextBeforeCursor()`/`getTextAfterCursor()`
-     * (this app's own already-proven `InputConnection` text-reading mechanism, see [flipSignBeforeCaret])
-     * rather than `getExtractedText()`, whose real-world reliability across arbitrary third-party apps is
-     * less certain and was the first, reverted approach here.
-     *
-     * @return [target], pinned to the current line's own start (a negative [characterDelta]) or end (a
-     *         positive one) if it would otherwise cross it; unclamped (never widened) for [characterDelta]
-     *         `== 0`, or when the relevant boundary could not be determined at all
-     */
-    private fun clampToCurrentLine(ic: InputConnection, target: Int, characterDelta: Int, stage: CursorControlGesture.Stage): Int {
-        if (characterDelta < 0) {
-            val lineStart = leftBoundary(ic, stage) ?: return target
-            return target.coerceAtLeast(lineStart)
-        }
-        if (characterDelta > 0) {
-            val lineEnd = rightBoundary(ic, stage) ?: return target
-            return target.coerceAtMost(lineEnd)
-        }
-        return target
     }
     
     /**
@@ -3297,23 +3290,23 @@ class AdaptKeyService : InputMethodService() {
      * the moving end backward past its own [cursorControlAnchor] (the common case, [cursorControlPosition]
      * at or before the anchor - true unconditionally in Stage 1, where the two always coincide - reads
      * directly; the rarer case searches the live selection's own text instead, since that is exactly the
-     * span between the two). A selection that has not yet crossed into a further line beyond the anchor is
-     * the only case that matters in practice - the drag's own direction of travel updates
-     * [cursorControlPosition] relative to the anchor again on the very next step regardless.
+     * span between the two).
      *
-     * D-401-followup: a zero-width (empty) line's own start and end are the exact same offset, so a
-     * character move there clamps to that single point regardless of direction - the caret cannot leave a
-     * blank line via horizontal dragging at all, only via a vertical (line) move. An earlier round briefly
-     * unclamped this case instead, to avoid the caret "getting stuck" there - confirmed on a real device to
-     * reopen exactly the flip this whole mechanism exists to prevent (a single-sided `result == position`
-     * check cannot tell a blank line apart from the caret legitimately sitting at the very start/end of an
-     * ordinary, non-empty line, since both look identical from one direction alone). Reverted: the user's
-     * own original, repeated, explicit requirement is that a horizontal drag must never cross a line
-     * boundary under any circumstances - "getting stuck" on a blank line until a vertical move actually
-     * leaves it is the correct, intended behaviour, not a bug.
+     * D-401-followup: now called unconditionally on *every* move (alongside [rightBoundary]), regardless of
+     * which direction the caret is actually moving - [applyCursorControlMove]'s own direct-positioning
+     * model needs both the line's start and end every time, to clamp [cursorControlOriginColumn] `+`
+     * `characters` into whichever line is active, not only the one boundary a signed delta would have been
+     * at risk of crossing under the old incremental model.
+     *
+     * A zero-width (empty) line's own start and end are the exact same offset, so the caret cannot leave a
+     * blank line via horizontal dragging at all, only via a vertical (line) move - the user's own explicit,
+     * repeated requirement that a horizontal drag must never cross a line boundary under any circumstances;
+     * "getting stuck" on a blank line until a vertical move actually leaves it is correct, intended
+     * behaviour, not a bug (two earlier rounds tried unclamping this case specifically and both reopened
+     * the flip this whole mechanism exists to prevent).
      *
      * @return the absolute offset of the current line's first character, or null if it could not be
-     *         determined (an `InputConnection` read failed) - the caller leaves [target] unclamped then
+     *         determined (an `InputConnection` read failed)
      */
     private fun leftBoundary(ic: InputConnection, stage: CursorControlGesture.Stage): Int? {
         val position = cursorControlPosition
@@ -7784,9 +7777,9 @@ class AdaptKeyService : InputMethodService() {
         // enough that the bar/preview still fills at any natural pause. A starting value, easy to retune.
         private const val EXPENSIVE_SUGGESTION_DELAY_MS = 200L
         
-        // D-401-followup: the text-window size clampToCurrentLine() requests via getExtractedText() to find
-        // the current line's own start/end newlines - generous enough for any realistic single line/
-        // paragraph on a mobile field without requesting the whole document.
+        // D-401-followup: the text-window size leftBoundary()/rightBoundary()/adjacentLineStart() request
+        // via getTextBeforeCursor()/getTextAfterCursor() to find line-boundary newlines - generous enough
+        // for any realistic single line/paragraph on a mobile field without requesting the whole document.
         private const val CURSOR_CONTROL_LINE_SCAN_WINDOW = 2000
         
         // D-347/D-350: how long the caret must sit still (composing empty) before reclaimWordAtCaret() runs -

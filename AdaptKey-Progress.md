@@ -1074,7 +1074,48 @@ non-trivial changes).
   regression of that existing fix or a related race it does not fully cover. Needs a real device log to
   root-cause properly, per this project's own convention - not attempted blind.
 
-## Current State
+- **§471 (v1.2.31): D-401-followup - complete rearchitecture, prompted by the user directly correcting this**
+  **gesture's own mental model rather than reporting another symptom.** After a 7th round still showed
+  flipping and a "stuck at the empty line, then stuck at the left edge - unbenutzbar" report, the user
+  rejected further incremental tuning and instead restated the actual intent from scratch: the caret is
+  positioned *directly and absolutely*, never by moving it through the document's own text flow. Dragging
+  right must always mean "as far right as the current line allows, however far that is" - never "wander
+  further right in the text, wherever that leads." A line change is a separate action, driven only by
+  genuinely vertical motion.
+
+  **This reframes the whole D-401 saga (§462-§470) as symptoms of the wrong mental model, not a string of
+  unrelated bugs**: the old design tracked an *incremental* running caret offset, updated by a signed delta
+  each move and clamped after the fact - every round's fix (the DPAD-focus bug, the arm-time seeding bug,
+  the empty-line clamp flip-flop, the line-step threshold) patched a real symptom of that model without
+  ever addressing that the model itself, not any one clamp or threshold, was the actual source of fragility.
+
+  **Rearchitected around direct, stateless positioning**: `applyCursorControlMove()` no longer accumulates
+  characters as a delta at all - `cursorControlOriginColumn` (the column at arm time or the last re-touch)
+  plus the gesture's own *total* signed horizontal offset from origin is recomputed and re-clamped to
+  whichever line is active on every single move, never accumulated. `CursorControlGesture.stepsFor()`
+  gained a dominant-axis gate: a line change (`lines`) is now forced to zero whenever the horizontal
+  distance is at least as large as the vertical one, directly preventing the exact real-device shape that
+  caused an unwanted line change in §470's own log (514px sideways against only 42px of drift) - a line
+  change can now only ever come from motion that is recognisably more "up/down" than "left/right" at the
+  moment it fires. `moveOneLine()` (which used to compute and preserve "column" itself) is replaced by a
+  simpler `adjacentLineStart()` that only finds the target line's own start; the same direct column
+  computation then settles the exact position once the caret has landed there, so column preservation
+  across a line change now falls out of the model for free. New `onCursorControlReTouched()` listener
+  callback (a real, previously-missing gap) refreshes `cursorControlOriginColumn` on every lift/re-touch,
+  not just at arm time, so resuming a drag after a re-touch doesn't snap the caret back to wherever it
+  started at the very beginning of the whole gesture.
+
+  The empty-line "stuck" behaviour is unchanged and is now, finally, framed correctly in the spec as
+  intentional, not a defect: a zero-width line clamps to a single column in both directions by construction
+  (start == end), so a horizontal drag genuinely cannot leave it - only a real line change can, exactly
+  matching the user's own restated intent.
+
+  1599 unit tests (was 1596: 3 new `CursorControlGestureTest` cases for the dominant-axis gate).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 526 -> 527, `versionName`
+  "1.2.30" -> "1.2.31". Spec (`G-08`) rewritten (not merely amended) for Stage 1 and the calibration
+  section, to describe the new model on its own terms rather than as a patch history. Diagnostic logging
+  (§465) still kept in place - this is now genuinely new logic, not a re-verification of old logic, so a
+  fresh device log matters more than ever for the next round.
 
 - **§470 (v1.2.30): D-401-followup - the sixth log finally isolated the real mechanism: this was never a**
   **clamp bug at all, it was gesture-calibration sensitivity.** §469's revert compiled clean, and this log
@@ -2035,65 +2076,10 @@ non-trivial changes).
   :app:testDebugUnitTest`, both green, no new unit tests needed or possible here) rather than a device check,
   per this project's own established convention for this class of screen.
 
-- **§446 (v1.2.6): D-450-followup - Cyrillic-vs-Cyrillic auto-detection, closing the Open TODO §441 first**
-  **flagged.** Explicit user request, made once Russian/Ukrainian's own §442/§443 dictionaries had already
-  built real `language_profiles.tsv` data - the one remaining piece, Serbian's own profile (deliberately
-  skipped when its pack shipped, §440), was built specifically to unblock this
-  (`dictionaries/build_language_profiles.py sr`, appended to the bundled asset - now 6,000 lines / 30
-  languages total).
+## Older Rounds (§1-§446, v0.7.6 through v1.2.6) - Pruned From This File
 
-  **The actual mechanism needed almost no new logic** - `LanguageClassifier` was already fully generic
-  (picks the smallest out-of-place n-gram distance among whatever profiles it is given; nothing in it
-  assumes Latin script). `LayoutRegistry` gained a real `CYRILLIC_LANGUAGES` set (the `Script.CYRILLIC`
-  subset of `NON_LATIN_LANGUAGES`, replacing the inline `.filter{}` the old gap-documenting canary test
-  used). `LanguageProfileLoader` gained `loadProfiles()` (exposing the parsed map, not just a ready-made
-  classifier) so `AdaptKeyService.onCreate()` could build a SECOND `LanguageClassifier` instance -
-  `cyrillicClassifier` - scoped to exactly `CYRILLIC_LANGUAGES`'s own profiles, alongside the existing
-  all-languages `languageClassifier`.
-
-  `resolveDict()` gained a new branch, checked before the old "trust the active non-Latin language
-  unconditionally" fallback: when `activeLanguage` is itself a Cyrillic language, `cyrillicClassifier`
-  classifies the recent context; a confident (`>= CYRILLIC_SIBLING_MARGIN`, reusing `isForeign()`'s own
-  0.15 default rather than inventing a new number), currently-INSTALLED, different sibling routes that
-  token to its own dictionary (`suppressAutocorrect = false`, mirroring the existing English-routing case -
-  the sibling's own dictionary is perfectly usable, nothing about the text is actually foreign to it). The
-  installed-check matters: unlike English (always bundled), Russian/Ukrainian/Serbian are all optional
-  downloads - routing to an uninstalled sibling would crash `providers.getValue(...)` in
-  `selectActiveDictionary()`, so the new branch checks `providers.containsKey(...)` first.
-
-  **Real active-language promotion, not just per-token routing** - the user's own wording ("ein paar
-  Worte tippen... muss das Wörterbuch switchen") asked for the same sustained-usage-promotes-to-a-real-
-  switch behaviour D-130 already gives English, not just a silent per-token dictionary override.
-  `trackSustainedEnglishUsage`/`consecutiveEnglishWords` generalised to
-  `trackSustainedLanguageUsage`/`consecutiveForeignWords`+`consecutiveForeignLanguage` (the language being
-  accumulated now needs tracking too, since it is not always the same target the way it was always English
-  before) - confirmed this is a strict superset of the old behaviour for the pre-existing English case, not
-  a change to it: `tokenLanguage` there was always either `activeLanguage` itself or `Language.ENGLISH`,
-  never a third value.
-
-  **One real, substantive difference from the English case, not just a rename**: the promotion now calls
-  `applyActiveLanguageToView()` (D-130's own English-only version deliberately did not, since English needs
-  no layout of its own - "the layout... is already correct and simply stays exactly as it was"). A
-  Russian-to-Ukrainian promotion genuinely needs the physical keys to change (`JcukenLayout`'s own
-  `ukrainian` flag), so this call is no longer a no-op for every possible promotion target. Verified safe
-  for the English case too: `LayoutRegistry.kindFor` already pins the layout to the system language
-  whenever `activeLanguage` is not itself non-Latin, so calling it during an English promotion re-derives
-  the identical layout the old code left untouched, just computed instead of assumed.
-
-  New tests: `LayoutRegistryTest` gained `CYRILLIC_LANGUAGES` coverage (replacing the old gap-documenting
-  canary, which is retired now that the gap it named is closed); `LanguageClassifierTest` gained a direct
-  demonstration that the already-generic classifier discriminates three real Cyrillic siblings from each
-  other (not just from Latin text) using real short Russian/Ukrainian/Serbian sample sentences. `resolveDict()`
-  itself stays untested directly, same as every other Android-Service-internal branch in this file.
-  `versionCode` 501 -> 502, `versionName` "1.2.5" -> "1.2.6". Build + full test suite green.
-
-  Also done same session: `CREDITS.md`'s language-dictionary and language-detection-profile sections,
-  stale since long before this round (still described only the original German/English/Greek bundled trio
-  and a UDHR-only profile source), rewritten to name all 30 downloadable languages plus bundled English and
-  to correctly split the two real profile sources (UDHR for the original 8, real Wikipedia `dict.tsv` data
-  for every D-450-round addition since).
-
-## Older Rounds (§1-§445, v0.7.6 through v1.2.5) - Pruned From This File
+D-401-followup (§471): twenty-fifth pruning pass - §446 removed (already logged verbatim in History.md),
+cutoff moved from §446 to §447, keeping the working set at 25 rounds (§447-§471).
 
 D-401-followup (§470): twenty-fourth pruning pass - §445 removed (already logged verbatim in History.md),
 cutoff moved from §445 to §446, keeping the working set at 25 rounds (§446-§470).
