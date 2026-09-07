@@ -2634,7 +2634,13 @@ class AdaptKeyService : InputMethodService() {
                 it.kind == SuggestionController.Kind.CLIPBOARD_FIRST_CODE
         }
         clearClipboardButtonView?.visibility = if (showsClipboard) View.VISIBLE else View.GONE
-        clipboardPeekButtonView?.visibility = if (!showsClipboard && clipboardPeekAvailable) View.VISIBLE else View.GONE
+        // D-401-followup: the peek button never shows while the cursor-control gesture is active - explicit
+        // user request ("die müssen innerhalb des Tools genauso wie andere Chips unterdrückt werden"): it
+        // competes for the same bar area as the gesture's own checkmark/hint content, and tapping it
+        // (openClipboardPeek()) would replace that content with clipboard chips exactly like every other
+        // suppressed trigger already gated elsewhere for this gesture.
+        clipboardPeekButtonView?.visibility =
+            if (!cursorControlSessionActive && !showsClipboard && clipboardPeekAvailable) View.VISIBLE else View.GONE
     }
     
     /**
@@ -3137,7 +3143,7 @@ class AdaptKeyService : InputMethodService() {
             return
         }
         val target = (cursorControlPosition + characterDelta).coerceAtLeast(0)
-        cursorControlPosition = clampToCurrentLine(ic, target, characterDelta)
+        cursorControlPosition = clampToCurrentLine(ic, target, characterDelta, stage)
         when (stage) {
             CursorControlGesture.Stage.CURSOR -> ic.setSelection(cursorControlPosition, cursorControlPosition)
             CursorControlGesture.Stage.SELECTION -> ic.setSelection(cursorControlAnchor, cursorControlPosition)
@@ -3162,13 +3168,13 @@ class AdaptKeyService : InputMethodService() {
      *         positive one) if it would otherwise cross it; unclamped (never widened) for [characterDelta]
      *         `== 0`, or when the relevant boundary could not be determined at all
      */
-    private fun clampToCurrentLine(ic: InputConnection, target: Int, characterDelta: Int): Int {
+    private fun clampToCurrentLine(ic: InputConnection, target: Int, characterDelta: Int, stage: CursorControlGesture.Stage): Int {
         if (characterDelta < 0) {
-            val lineStart = leftBoundary(ic) ?: return target
+            val lineStart = leftBoundary(ic, stage) ?: return target
             return target.coerceAtLeast(lineStart)
         }
         if (characterDelta > 0) {
-            val lineEnd = rightBoundary(ic) ?: return target
+            val lineEnd = rightBoundary(ic, stage) ?: return target
             return target.coerceAtMost(lineEnd)
         }
         return target
@@ -3188,10 +3194,18 @@ class AdaptKeyService : InputMethodService() {
      * @return the absolute offset of the current line's first character, or null if it could not be
      *         determined (an `InputConnection` read failed) - the caller leaves [target] unclamped then
      */
-    private fun leftBoundary(ic: InputConnection): Int? {
+    private fun leftBoundary(ic: InputConnection, stage: CursorControlGesture.Stage): Int? {
         val position = cursorControlPosition
         val anchor = cursorControlAnchor
-        if (position <= anchor) {
+        // D-401-followup (bug fix): [cursorControlAnchor] is only ever updated when Stage 2 begins - it
+        // stays frozen at the gesture's own arm-time position throughout Stage 1, while [cursorControlPosition]
+        // moves freely. Comparing the two to decide which InputConnection call to use was therefore wrong for
+        // Stage 1 the moment the drag passed that frozen point in either direction: it wrongly fell into the
+        // "past the anchor" branch below, found no real (Stage 1 is always collapsed) selection to read via
+        // getSelectedText(), and silently gave up clamping altogether - the exact "still flips" symptom
+        // reported on a real device. Stage 1 has no such ambiguity to begin with (the selection is always
+        // collapsed at `position` itself) and must always take the direct path.
+        if (stage == CursorControlGesture.Stage.CURSOR || position <= anchor) {
             val before = ic.getTextBeforeCursor(CURSOR_CONTROL_LINE_SCAN_WINDOW, 0)?.toString() ?: return null
             val newlineBefore = before.lastIndexOf('\n')
             return position - (before.length - (newlineBefore + 1))
@@ -3202,10 +3216,10 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /** D-401-followup: the mirror image of [leftBoundary] - the current line's own end. */
-    private fun rightBoundary(ic: InputConnection): Int? {
+    private fun rightBoundary(ic: InputConnection, stage: CursorControlGesture.Stage): Int? {
         val position = cursorControlPosition
         val anchor = cursorControlAnchor
-        if (position >= anchor) {
+        if (stage == CursorControlGesture.Stage.CURSOR || position >= anchor) {
             val after = ic.getTextAfterCursor(CURSOR_CONTROL_LINE_SCAN_WINDOW, 0)?.toString() ?: return null
             val newlineAfter = after.indexOf('\n')
             return position + if (newlineAfter == -1) after.length else newlineAfter

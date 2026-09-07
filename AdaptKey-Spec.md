@@ -546,9 +546,11 @@ own origin.
   und kann auch dazu führen, dass ungewollt Wörter verstümmelt werden." Every path that could otherwise touch
   the suggestion bar mid-gesture is gated the same way, including ones that bypass the ordinary suggestion
   pipeline entirely (a deferred re-sort, a reclaim chip's own visibility refresh) - and every such pending
-  background computation is cancelled outright the moment the gesture arms, not merely hidden. A genuinely
-  still-relevant reclaim/suggestion is picked up again from the very next ordinary caret move or keystroke
-  once the gesture ends.
+  background computation is cancelled outright the moment the gesture arms, not merely hidden. The D-36
+  clipboard-peek button is included too - it lives outside the ordinary suggestion pipeline as its own
+  dedicated view, so needed its own explicit suppression rather than being caught by the gates above. A
+  genuinely still-relevant reclaim/suggestion is picked up again from the very next ordinary caret move or
+  keystroke once the gesture ends.
 
 **Deliberately does not touch composing state.** Unlike every other long-press action in this app (L-05/L-06,
 which finalise the current token first), arming this gesture leaves whatever word is currently composing

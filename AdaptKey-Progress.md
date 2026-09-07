@@ -1064,7 +1064,63 @@ non-trivial changes).
   Channels section). Deferred, not abandoned - "vielleicht nutzt es uns später noch einmal" - revisit only
   if the user raises it again, ideally with its own dedicated repro.
 
+- **D-460 - OPEN, real, reported but not yet root-caused (2026-09-07, no code change).** Tapping the D-36
+  clipboard-peek button while the caret touches an existing word shows the clipboard chips only briefly
+  before the word gets reclaimed and the chips disappear again - reported as reproducing independently of the
+  D-401 cursor-control gesture (§463), and confirmed here not to trace to anything that session touched.
+  `openClipboardPeek()`'s own KDoc already documents a `reclaimChipRefreshSuppressedUntil` window
+  (`RECLAIM_DEBOUNCE_MS` + `CLIPBOARD_PEEK_ECHO_GUARD_MARGIN_MS`, 350 ms total) built specifically for "the
+  chips flashed and immediately vanished again" - the identical symptom now reported again, either a
+  regression of that existing fix or a related race it does not fully cover. Needs a real device log to
+  root-cause properly, per this project's own convention - not attempted blind.
+
 ## Current State
+
+- **§463 (v1.2.23): D-401-followup - the real bug behind the still-open line-clamp (§462's own fix did not**
+  **work), plus the clipboard peek button suppressed inside the gesture, plus a separate pre-existing**
+  **clipboard bug flagged (not fixed) for its own investigation.**
+
+  **The line-clamp bug, found by re-reading `leftBoundary()`/`rightBoundary()` line by line rather than**
+  **guessing again**: `cursorControlAnchor` is only ever updated at Stage 2's own start (`onCursorControl-
+  StageChanged`) - it stays frozen at the gesture's arm-time position throughout the whole of Stage 1, while
+  `cursorControlPosition` moves freely as the drag continues. §462's own `position <= anchor`/`position >=
+  anchor` check (added specifically to disambiguate Stage 2's live-selection-relative
+  `getTextBeforeCursor()`/`getTextAfterCursor()` reads) was silently wrong for Stage 1 the moment the drag
+  passed that frozen point in either direction: it fell into the "past the anchor" branch meant for Stage 2,
+  found no real selection to read via `getSelectedText()` (Stage 1 is always collapsed), and gave up clamping
+  entirely - exactly the reported "still flips" symptom, confirmed as a real logic bug, not merely another
+  reliability gap in the underlying `InputConnection` calls. Fixed by threading `stage` through
+  `clampToCurrentLine()`/`leftBoundary()`/`rightBoundary()`: Stage 1 now always takes the direct
+  `getTextBeforeCursor()`/`getTextAfterCursor()` path unconditionally (correct by construction - the
+  selection is never anything but collapsed at `cursorControlPosition` itself there), and only Stage 2 still
+  compares against the anchor to decide. Not yet re-confirmed by the user at time of writing.
+
+  **The checkmark chip's own remaining disappearance, traced to a second competing UI element**: the D-36
+  clipboard-peek button (`clipboardPeekButtonView`, a dedicated square next to the bar, not a suggestion
+  chip) is shown by `setSuggestionBarItems()` - the same single choke point `showCursorControlHint()` itself
+  calls - whenever the bar's own content isn't already clipboard chips and the clipboard holds something
+  peek-worthy, entirely independently of §462's own `showSuggestions()`/`refreshSuggestions()` gates (neither
+  of which this button's visibility ever went through). With clipboard content present, the button reappeared
+  right alongside the gesture's own checkmark/hint on every `showCursorControlHint()` call, and tapping it
+  (`openClipboardPeek()`) replaced the bar with clipboard chips - the user's own precise report ("weil die
+  Chips dort immer wieder eingeblendet werden"). Fixed at that same choke point: the peek button (and, by the
+  same reasoning, nothing new needed for `clearClipboardButtonView`, which only ever shows *for* clipboard
+  chips already being displayed) now also stays hidden for as long as `cursorControlSessionActive` is true.
+
+  **A separate, pre-existing clipboard bug flagged, not fixed**: tapping the peek button while the caret
+  touches an existing word shows the clipboard chips only briefly before the word gets reclaimed and the
+  chips disappear again - explicitly reported as reproducing **outside** this gesture too ("das passiert
+  völlig unabhängig von dem neuen Tool"), and confirmed here not to trace to anything touched this session
+  (`cursorControlSessionActive` is false throughout ordinary use, so none of this round's new gates apply).
+  `openClipboardPeek()`'s own KDoc already documents a `reclaimChipRefreshSuppressedUntil` window
+  (`RECLAIM_DEBOUNCE_MS` + `CLIPBOARD_PEEK_ECHO_GUARD_MARGIN_MS`, 350 ms total) built specifically for "the
+  chips flashed and immediately vanished again" - the identical symptom now reported again, either a
+  regression of that existing fix or a related race it does not fully cover. Left open rather than guessed at
+  - needs its own real device log to root-cause properly, per this project's own convention, not attempted
+  blind in the middle of an already-large round.
+
+  1596 unit tests unchanged. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 518 -> 519,
+  `versionName` `"1.2.22"` -> `"1.2.23"`.
 
 - **§462 (v1.2.22): D-401-followup - four real, device-reported problems with the cursor/selection-control**
   **gesture fixed the same session it first went out, across two feedback rounds.** All from direct usage
@@ -2196,54 +2252,10 @@ non-trivial changes).
   measured 0.864) might still pass. 1,462 unit tests green (was 1,461).
   `:app:assembleDebug`/`:app:testDebugUnitTest` green.
 
-- **§438 (v1.1.77): D-449-followup - Turkish's dotted/dotless İ/I capitalisation, closing the "still-open**
-  **design question" named at the end of D-449 (§423/v1.1.62).** `CapitalisationEngine` gained a new,
-  deliberately separate seam - `capitalisation/CasingRules` (interface + `DefaultCasingRules` + a
-  `CasingRulesRegistry` keyed by `Language`, mirroring `LanguageRules`/`DiacriticFolding`'s identical D-410/
-  D-435 "delegate to the active language, default to doing nothing special" shape) - rather than a tenth hook
-  on `LanguageRules` itself: every existing `LanguageRules` hook encodes German compounding/inflection
-  grammar with no bearing on single-character case mapping, and `CapitalisationEngine` is the only reader, so
-  the two seams are kept apart on purpose. `CapitalisationEngine` now takes an optional
-  `casing: CasingRules = DefaultCasingRules` constructor param (default preserves every existing caller's/
-  test's behaviour byte-for-byte); its three `word.uppercase()`/`replaceFirstChar { it.uppercaseChar() }`/
-  `replaceFirstChar { it.lowercaseChar() }` call sites now go through `casing.uppercaseAll`/`uppercaseFirst`/
-  `lowercaseFirst`. `AdaptKeyService.installStores()` resolves `CasingRulesRegistry.rulesFor(language)` per
-  language the same way it already resolves `LanguageRulesRegistry`/`KeyboardProximityRegistry`.
-  
-  `TurkishCasingRules` (`capitalisation/`, not `language/` - a character-casing convention, not a
-  compounding/inflection grammar rule) implements the real Turkic dotted/dotless pair, verified directly
-  against Unicode's own `SpecialCasing.txt` `tr`/`az` section rather than guessed: of its four Turkish-
-  specific case-mapping lines, only two actually differ from Kotlin's locale-invariant default - `'ı'`
-  already uppercases to `'I'` and `'İ'` already lowercases to `'i'` under the ordinary Unicode simple-case
-  tables, so the implementation is a genuinely minimal two-character override: uppercasing plain `'i'` yields
-  `'İ'` (not the ordinary `'I'`), and lowercasing plain `'I'` yields `'ı'` (not the ordinary `'i'`). Every
-  other character defers to `Char.uppercaseChar()`/`lowercaseChar()` unchanged.
-  
-  New tests: `CasingRulesTest` (7 cases: `DefaultCasingRules` matches historical behaviour incl. NOT dotting
-  Turkish `i`, registry resolution for Turkish vs. every other language incl. `UNKNOWN`) and
-  `TurkishCasingRulesTest` (7 cases: `istanbul`->`İstanbul`, `Işık`->`ışık`, `ışık`->`IŞIK`, `İstanbul`->
-  `istanbul`, whole-word `izmir`->`İZMİR`, non-i letters unaffected, empty-string no-op). 1461 unit tests
-  green (was 1454). `:app:assembleDebug`/`:app:testDebugUnitTest` green.
-  
-  **Scope note, asked and answered the same session**: the user asked whether Azerbaijani/Uzbek (both
-  deferred as Turkish-related, not yet in the `Language` enum) have further prerequisites now that this
-  casing seam exists. Researched, not guessed: **Azerbaijani** shares the identical dotted/dotless İ/I pair
-  with Turkish (Unicode's own `SpecialCasing.txt` groups `tr`/`az` under the same rule) - `TurkishCasingRules`
-  would apply unchanged once `Language.AZERBAIJANI` exists (just add a registry entry, no new logic), but its
-  real-world standard keyboard is **not** plain QWERTY - the "QÜERTY" layout (Ü replaces W, W not directly
-  reachable) - so a dedicated layout is a real prerequisite, the same shape as Serbian's Cyrillic layout gap
-  below, not a data-only round; decimal separator is comma, like every language implemented so far; kaikki.org
-  has no native `az.wiktionary.org` edition, only the (thin) English-Wiktionary-derived extraction - coverage
-  depth unverified, would need direct measurement before committing to a round. **Uzbek** does **not** have
-  the dotted/dotless distinction at all in its modern Latin alphabet (confirmed - only Turkish, Azerbaijani,
-  Crimean Tatar, Gagauz, Kazakh and Tatar use it) - `TurkishCasingRules` would not apply to it; its standard
-  layout is QWERTY-compatible (the two special letters `oʻ`/`gʻ` use a modifier-letter apostrophe, typically
-  typed via AltGr or a plain apostrophe substitute - no new layout class needed, unlike Azerbaijani); kaikki.org's
-  own Uzbek dictionary is tiny (~4,174 words in the English-Wiktionary-derived extraction) - a real, verified
-  coverage concern, not yet investigated further. Neither language was added to the `Language` enum or built
-  this round - this was a prerequisites check only, not a go-ahead to build.
+## Older Rounds (§1-§438, v0.7.6 through v1.1.77) - Pruned From This File
 
-## Older Rounds (§1-§437, v0.7.6 through v1.1.76) - Pruned From This File
+D-401-followup (§463): seventeenth pruning pass - §438 removed (already logged verbatim in History.md),
+cutoff moved from §438 to §439, keeping the working set at 25 rounds (§439-§463).
 
 D-401-followup (§462): sixteenth pruning pass - §437 removed (already logged verbatim in History.md), cutoff
 moved from §437 to §438, keeping the working set at 25 rounds (§438-§462).
