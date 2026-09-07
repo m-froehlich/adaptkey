@@ -509,6 +509,39 @@ class DictionarySuggestionProvider(
     }
     
     /**
+     * D-356: the exact, *unfolded* weighted distance between the literally typed [token] and
+     * [candidateLower]'s own real spelling - the same substitution-cost shape [correctionCost] uses
+     * (adjacent-key/other), just without any diacritic folding on either side, and with no cost ceiling
+     * (real regression case: a candidate's own literal cost against a typo containing an actual umlaut can
+     * exceed [correctionCost]'s own tight [MAX_CORRECTION_COST] band, e.g. the reported `"gedrücjz"` ->
+     * `"gedruckt"` pairing costs `SUB_COST + 2 * ADJACENT_SUB_COST` here - well above the folded search's own
+     * ceiling - so this must never be banded to that same budget or it would collapse to an uninformative
+     * "exceeds" sentinel instead of a real, comparable magnitude).
+     *
+     * Deliberately whole-string, not a per-character positional check - `ß` folds to a two-character `"ss"`
+     * ([suggestion.Umlaut.fold]), so a fixed 1:1 character comparison could never handle it cleanly; a
+     * genuine edit distance already resolves an `ß`-vs-`"ss"` difference via its own insert/delete step,
+     * with no special case needed here at all.
+     *
+     * Used only as [CandidateCost.literalCost], itself only ever a tie-break between candidates that
+     * already share the same [correctionCost] - never a gate, and never capable of out-ranking a candidate
+     * with a genuinely lower folded cost.
+     *
+     * @param token the literally typed token, lower-cased, *not* diacritic-folded
+     * @param candidateLower the candidate's own real spelling, lower-cased, *not* diacritic-folded
+     * @return the exact weighted edit distance between the two literal spellings
+     */
+    private fun literalDistance(token: String, candidateLower: String): Int {
+        return EditDistance.weightedDistance(token, candidateLower, INDEL_COST) { x, y ->
+            when {
+                x == y -> 0
+                keyboardProximity.adjacent(x, y) -> ADJACENT_SUB_COST
+                else -> SUB_COST
+            }
+        }
+    }
+    
+    /**
      * The known word [input] becomes by restoring only its German diacritics - a word whose umlaut/ß-folded
      * form equals the folded token but that carries the diacritics the user omitted (D-48: umlauts are
      * first-class characters): `konnen` → `können`, `russ` → `ruß`. Returns null when the token is already a
@@ -651,7 +684,18 @@ class DictionarySuggestionProvider(
      * D-207: returns the winning candidate's own edit cost alongside it (not just the word) - lets
      * [bestCorrectionFor] answer the high-confidence question from this one search's own result, instead
      * of running a second, narrower search over the same candidates purely to re-derive it.
-     * 
+     *
+     * D-356: candidates tied on [correctionCost] (folded on both sides, so an umlaut/ß difference costs
+     * nothing there) are now additionally ranked by [literalDistance] - the *unfolded* distance to what was
+     * actually typed - before frequency ever gets a vote. Real reported case: typing `"gedrücjz"` (a genuine
+     * `ü`, not a lazy `u`) ties `"gedrückt"` and `"gedruckt"` at the same folded cost, and `"gedruckt"`
+     * (unrelated to the umlaut at all - "printed" vs. "pressed") then won purely on being the more frequent
+     * word in the corpus - discarding the fact that the user had gone to the trouble of actually typing a
+     * real `ü`, not a plain `u`, which is itself real evidence of intent. [literalDistance] only ever
+     * *reorders ties* - it can never change which candidates qualify or beat a candidate with a genuinely
+     * lower folded cost, so it cannot reopen any of [CorrectionConfidence]'s own calibrated regression cases
+     * (see [AutocorrectAggressiveness]), which never tie in the first place.
+     *
      * @param input the current composing token
      * @param previousWord the most recently committed word for n-gram context, or null at a fresh start
      * @param maxCost the inclusive edit-cost ceiling a candidate must stay within
@@ -692,9 +736,13 @@ class DictionarySuggestionProvider(
                     return@mapNotNull null
                 }
                 val frequency = store.entryOf(candidate)?.frequency ?: store.frequencyOf(candidate)
-                CandidateCost(candidate, cost, score(candidate, frequency, previousWord))
+                // D-356: only ever consulted as a tie-break (see compareBy below) - computed here, once per
+                // already cost-filtered candidate, rather than inside the comparator itself, which would
+                // otherwise re-run this DP on every pairwise comparison minWithOrNull makes.
+                val literalCost = literalDistance(token, candidate.lowercase())
+                CandidateCost(candidate, cost, literalCost, score(candidate, frequency, previousWord))
             }
-            .minWithOrNull(compareBy({ it.cost }, { -it.score }))
+            .minWithOrNull(compareBy({ it.cost }, { it.literalCost }, { -it.score }))
             ?: return null
         // A-01: a valid word is never overwritten - except (§44/D-113) when the candidate is both a
         // single adjacent-key-level edit away (cost <= ADJACENT_SUB_COST, not the full two-edit
@@ -820,7 +868,12 @@ class DictionarySuggestionProvider(
     }
     
     /** A correction candidate with its edit cost and n-gram score, for the D-38 cost-first ranking. */
-    private data class CandidateCost(val candidate: String, val cost: Int, val score: Double)
+    /**
+     * @property cost the folded (umlaut/ß-insensitive) edit cost - the primary ranking key
+     * @property literalCost D-356: the unfolded distance to what was literally typed - a tie-break only,
+     *           consulted purely to order candidates that already share the same [cost]
+     */
+    private data class CandidateCost(val candidate: String, val cost: Int, val literalCost: Int, val score: Double)
     
     /**
      * D-411: [frequency] (the caller's own already-merged bundled+learned figure, e.g. from [DictionaryStore.

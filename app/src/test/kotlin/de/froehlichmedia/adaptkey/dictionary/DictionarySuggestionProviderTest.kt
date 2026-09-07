@@ -667,6 +667,18 @@ class DictionarySuggestionProviderTest {
     }
     
     @Test
+    fun `D-356 a literally-typed umlaut breaks a folded-cost tie in its own favour, even against a more frequent rival`() {
+        // Real reported case: "gedrücjz" (a genuine ü, not a lazy u) is a 2-adjacent-edit typo of both
+        // "gedrückt" (fix j->k, z->t) and "gedruckt" (fix j->k, z->t, plus fold ü->u) - identical folded
+        // cost. "gedruckt" ("printed") is deliberately made far more frequent than "gedrückt" ("pressed") to
+        // confirm the literal-distance tie-break wins over frequency, not merely happens to agree with it.
+        store.putWord(WordEntry("gedrückt", 20L))
+        store.putWord(WordEntry("gedruckt", 5_000L))
+        
+        assertEquals("gedrückt", provider.autocorrectFor("gedrücjz", null))
+    }
+    
+    @Test
     fun `fuzzy neighbours are not offered for a one or two letter token`() {
         store.putWord(WordEntry("mit", 100L))
         

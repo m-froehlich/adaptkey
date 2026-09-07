@@ -52,6 +52,10 @@ exactly one ASCII substitution, its own base letter). No language beyond German 
 content yet; adding one is D-387's originally-requested extension, now a normal content contribution rather
 than an open architecture question.
 
+D-356 (§45): a literal diacritic the user actually typed - not an ASCII stand-in - is itself real evidence
+of intent, and autocorrect's own candidate ranking must not silently discard it in favour of a same-cost
+rival that happens to be more frequent. See §45 for the concrete case and mechanism.
+
 ### Guiding Principle - `onUpdateSelection`'s Self-Recognition Mechanism Is Foundational
 
 Getting `AdaptKeyService.onUpdateSelection()` to correctly recognise the IME's own edits took three full
@@ -2844,6 +2848,50 @@ Greek/Cyrillic layouts, and missing `y`/`z` even for QWERTZ/QWERTY themselves) w
 layout-derived row at the same time, rather than leaving that inconsistency to be fixed in a later,
 separate pass - the user's own explicit call, made once it became clear the fix would otherwise touch the
 same code twice.
+
+---
+
+## 45. A Literally-Typed Umlaut Breaks an Autocorrect Tie in Its Own Favour (D-356)
+
+D-356: finally got a concrete, real example after being open since §277 with no repro to design against.
+Typing `"gedrücjz"` (intending `"gedrückt"`, a genuine `ü` actually typed, not a lazy `u`) was silently
+autocorrected to `"gedruckt"` instead - both `"gedruckt"` ("printed") and `"gedrückt"` ("pressed") were
+correctly offered as chips, but the wrong one was the one silently applied.
+
+**Root cause.** `DictionarySuggestionProvider.correctionCost()` folds *both* the typed token and every
+candidate (umlaut/ß -> ASCII) before computing edit distance (D-12/D-28's own established mechanism, needed
+so a diacritic-free typing like `"grun"` still finds `"grün"` at zero cost). Folding both sides means a
+candidate that keeps the umlaut (`"gedrückt"`) and one that discards it (`"gedruckt"`) become
+edit-cost-*identical* - the fact that the token actually contained a real `ü`, not a plain `u`, is folded
+away before it can ever influence the comparison. With costs tied, the ranking fell through to raw
+dictionary frequency alone, and the unrelated, more common word won.
+
+**Fix - a literal-spelling tie-break, not a change to the primary cost model.** A new
+`DictionarySuggestionProvider.literalDistance()` computes the *unfolded* weighted edit distance between what
+was actually typed and each candidate's own real spelling (no folding on either side) - deliberately a
+whole-string comparison, not a per-character positional check, so `ß`'s own two-character fold (`"ss"`) is
+handled by the edit distance's ordinary insert/delete step, with no special case needed. `CandidateCost`
+gained this as `literalCost`, consulted as a second sort key - `compareBy({ cost }, { literalCost }, { -score
+})` - strictly *between* the existing folded cost and frequency, never replacing either. Because it is
+compared only after the primary (folded) cost, it can never change which candidates qualify or let a
+candidate with a genuinely lower folded cost lose to one with a higher folded cost but a "better" literal
+spelling - it only ever reorders candidates that already tie exactly, which is precisely (and only) the
+shape of the reported bug. This makes it structurally incapable of reopening any of `CorrectionConfidence`'s
+own calibrated regression cases (Ohren/Ihren, ddr/der, due/die, ...) - none of those tie on cost with a
+rival candidate in the first place.
+
+**A deeper alternative was discussed and deliberately declined.** The user's own first instinct: bake a real
+keyboard-reachability cost into the *primary* cost model itself - a character only reachable via long-press/
+AltGr on the active layout would carry a cost surcharge there, reflecting that producing it took genuine
+extra effort and is therefore stronger evidence of intent than a bare frequency comparison. Confirmed
+plausible in principle, but declined for now: it would need an entirely new, currently-nonexistent per-
+layout/per-language character-reachability cost table, and it would touch the same primary cost computation
+`CorrectionConfidence`/`AutocorrectAggressiveness` already calibrated against a real regression corpus -
+risking reopening one of those confirmed-good/confirmed-bad cases for a benefit that remains, so far, purely
+hypothetical (no confirmed case exists where the tie-break above is actually insufficient). Recorded as a
+Reserve Idea (`AdaptKey-Progress.md`) rather than implemented - revisit only if a future concrete report
+shows a diacritic-preserving candidate losing *outright* (not merely tied) to a diacritic-discarding rival at
+a genuinely different folded cost, a case the tie-break cannot reach by construction.
 
 ---
 

@@ -247,6 +247,23 @@ History.md's append-only log) so they are not lost if the situation that would j
   current on-device character-trigram classifier (A-03), if language-detection accuracy ever becomes the
   bottleneck. Purely optional - no known accuracy problem has actually motivated this yet.
 
+- **Keyboard-reachability-weighted typing cost, baked into the *primary* correction-cost computation itself**
+  (the user's own idea, discussed while designing D-356's tie-break fix). The thought: a character only
+  reachable via long-press/AltGr on the active layout is real, independent evidence of deliberate intent -
+  more so than a plain primary-key tap - so it could carry a real cost surcharge (the user's own suggestion:
+  "vielleicht äquivalent zu vier einfachen Buchstaben") inside [CorrectionConfidence]'s own cost model, not
+  merely as a tie-break. Confirmed technically real in principle, but explicitly **not** pursued: it would
+  need a wholly new, currently-nonexistent per-layout/per-language "character reachability" cost table
+  (derived from `letterHints`/each layout's own long-press alternatives), and - more importantly - it would
+  touch the same primary cost computation `CorrectionConfidence`/`AutocorrectAggressiveness` already
+  calibrated against a real regression corpus (D-353's own worked numbers: Ohren/Ihren, ddr/der, due/die,
+  komplett, ...), risking reopening one of those for a benefit that, so far, is entirely hypothetical - no
+  confirmed case exists where D-356's own tie-break (below) is actually insufficient. **Status: not needed
+  yet.** D-356's tie-break-only fix (never able to out-rank a candidate with a genuinely lower folded cost,
+  by construction) fully closed the one confirmed real case. Revisit only if a future concrete report shows
+  a diacritic-preserving candidate losing *outright* (not merely tied) against a diacritic-discarding rival
+  with a genuinely different folded cost - a case the tie-break structurally cannot reach.
+
 ## Open TODOs / Known Limitations (Not Yet Actioned)
 
 Confirmed real, deliberately not fixed yet - flagged here so a future session does not have to rediscover
@@ -519,8 +536,13 @@ non-trivial changes).
     fixed ("längst erledigt"). No dedicated fix identified as the cause (most likely folded into D-405's own
     rule-2 rework, which removed commit-time re-derivation from sentence position entirely) - not
     root-caused further since there is nothing left to fix.
-  - **D-356 - OPEN, awaiting a concrete example.** A typed umlaut should not be carelessly reverted by
-    autocorrect. Per §277: no concrete repro has been supplied yet to design against.
+  - **D-356 - RESOLVED (§456, v1.2.16).** A typed umlaut should not be carelessly reverted by autocorrect -
+    finally got a concrete, real example: typing `"gedrücjz"` (a genuine `ü`) autocorrected to `"gedruckt"`
+    instead of `"gedrückt"`, purely because both tied on the existing folded edit cost and the more frequent
+    word then won on raw frequency alone, discarding the fact that a real `ü` (not a lazy `u`) was actually
+    typed. Fixed with a literal-spelling tie-break, consulted only between candidates that already share the
+    same folded cost - see §456 in Current State and the design discussion above (a deeper, cost-model-level
+    "keyboard reachability" idea was also discussed and deliberately deferred - see Reserve Ideas).
   - **D-357 - REOPENED then RESOLVED for real, device-confirmed (§449, v1.2.9).** The 2026-09-01 "no longer
     reproducible" closure did not hold - the user captured a real device log reproducing it in Google Keep
     and asked for it to be re-investigated. See §449 in Current State for the real root cause (traced from
@@ -1034,6 +1056,49 @@ non-trivial changes).
   if the user raises it again, ideally with its own dedicated repro.
 
 ## Current State
+
+- **§456 (v1.2.16): D-356 - a literally-typed umlaut now breaks an autocorrect tie in its own favour,**
+  **finally closed with a real, concrete repro after being open since §277.** Typing `"gedrücjz"` (a genuine
+  `ü`, intending `"gedrückt"`) was silently autocorrected to `"gedruckt"` instead - both real German words,
+  both correctly offered as chips, but the wrong one silently applied.
+
+  **Root cause, confirmed directly in code, not guessed**: `DictionarySuggestionProvider.correctionCost()`
+  folds *both* the typed token and every candidate (umlaut/ß -> ASCII) before computing edit distance - the
+  mechanism D-12/D-28 need so a diacritic-free typing (`"grun"`) still finds `"grün"` at zero cost. Folding
+  both sides means `"gedrückt"` (keeps the real `ü`) and `"gedruckt"` (discards it) become edit-cost-
+  *identical* to the folded token - the fact that a real `ü`, not a plain `u`, was actually typed is folded
+  away before it can ever count. Tied on cost, the ranking fell through to raw frequency alone, and the more
+  common but unrelated word ("printed" vs. "pressed") won.
+
+  **Design discussed directly before implementing** (per this project's own convention): agreed a tie-break,
+  not a change to the primary cost model, is the right scope - see spec §45 for the full write-up including
+  the deeper "keyboard-reachability cost baked into the primary model" alternative the user raised and both
+  of us agreed to defer (recorded as a Reserve Idea above, not implemented - real but currently-hypothetical
+  benefit, real risk of touching `CorrectionConfidence`'s own calibrated regression corpus for it). One real,
+  useful side-confirmation surfaced while designing it: `Umlaut.foldToHostKey()`/`foldVariants()` (D-204)
+  already fold `ß` to a bare `s` for exactly the same "how do you reach it on the keyboard" reasoning this
+  fix needed - the user's own direct check confirmed the mechanism already existed, and confirmed a
+  whole-string (not per-character) comparison handles `ß`'s two-character fold (`"ss"`) cleanly with no
+  special case, precisely because it never tries to align characters 1:1 itself.
+
+  **Mechanism.** New `DictionarySuggestionProvider.literalDistance()` - the same weighted-distance shape
+  `correctionCost()` already uses (adjacent-key/other substitution costs), just unfolded on both sides, and
+  unbounded (no `maxCost` band - `EditDistance.weightedDistance()` already defaults to the exact, unbounded
+  distance when omitted, needed here since a literal umlaut mismatch can cost more than the folded search's
+  own tight ceiling). `CandidateCost` gained a `literalCost` field, computed once per already cost-filtered
+  candidate (not inside the comparator, which would otherwise re-run the DP on every pairwise comparison);
+  `bestCorrection()`'s own `minWithOrNull` now sorts by `compareBy({ cost }, { literalCost }, { -score })` -
+  the new key sits strictly between the existing two, so it only ever reorders candidates already tied on
+  the primary (folded) cost, structurally unable to change which candidate wins when costs genuinely differ.
+
+  New `DictionarySuggestionProviderTest` case: the exact reported pairing, with `"gedruckt"` deliberately
+  given a *much higher* frequency than `"gedrückt"` (5,000 vs. 20) to confirm the tie-break genuinely beats
+  frequency, not merely happens to agree with it once tried.
+
+  1587 unit tests (1586 -> 1587, +1 new). `:app:assembleRelease`/`:app:testDebugUnitTest` green - every
+  existing `CorrectionConfidence`/`AutocorrectAggressiveness` regression case (Ohren/Ihren, ddr/der, due/die,
+  komplett, ...) still passes unchanged, confirming the tie-break never touched their own outcomes.
+  `versionCode` 511 -> 512, `versionName` `"1.2.15"` -> `"1.2.16"`.
 
 - **§455 (v1.2.15): D-403/D-359-followup - a confirmed revert-retry (A-07) was not actually protected**
   **against §6 capitalisation, only against dictionary substitution.** Found while the user was chasing a
@@ -2224,58 +2289,7 @@ non-trivial changes).
   native-edition language, plus a source-wide sparse-verb-table limitation. Not device-confirmed either.
   Bosnian continues next, reusing the identical shared Wiktionary extraction with its own Wikipedia corpus.
 
-- **§431 (v1.1.70): D-450 (continued) - first Romanian language pack, eighth of the 18-language round,**
-  **closing the cs/sk/hu/ro group - the richest fallback-source coverage ratio of any language this round.**
-  Added `Language.ROMANIAN` (`"ro"`, `"Română"`) to the enum. No native edition exists - built from the
-  English Wiktionary's own coverage instead (28.5MB).
-
-  A real script-standard check, per direct inspection rather than assumption: modern comma-below Ș/Ț
-  (U+0218/U+0219, U+021A/U+021B) confirmed as this source's own standard (25,970 real words use it; only one
-  stray legacy cedilla entry, negligible).
-
-  The entire `rowiki-latest-pages-articles.xml.bz2` (776MB compressed) was processed via the same
-  multiprocessing/hapax-pruning extractor - 547,539 real pages, 145,503,966 real tokens, 1,804,278 distinct
-  words, 3,461,652 raw (>=3) bigram rows. Multi-word-form shape verified directly: Romanian's own infinitive
-  ("a abate") and subjunctive/negative-imperative moods ("să abat"/"nu abate") use leading marker words, the
-  same marker-first pattern as every Nordic language and Turkish - reject-whitespace-outright rule applies
-  unmodified.
-
-  **Net result**: `dict.tsv` 437,905 rows (210,494 initial + 227,411 from Wortfamilien completion;
-  calibration ratios noun=0.4667 (n=33,172), verb=1.0000 (n=10,803), adjective=0.7143 (n=12,641), all sane).
-  POS tagging: 150,909 words kept unrecognised-by-kaikki (tagged `OTHER` only), 1,579,761 dropped, 14,023
-  removed as common-English-word contamination. Wiktionary matching: 46,888 lemmas tagged, 18,295 unmatched;
-  59,407 existing forms linked, 227,411 generated. Proper-noun handling: 14,200 tagged (richest of any
-  fallback-sourced language this round), 3,221 unmatched, 1,736 skipped as collisions. Mandatory bare-noun
-  safety check: 0 bare-NOUN rows. `bigram.tsv`: 1,128,439 rows (>=10 cutoff) from 3,461,652 raw. Quality
-  gate: 0 case-insensitive duplicates, 0 non-positive frequencies, 0 orphaned lemma links, 0 bare-NOUN rows
-  - PASS.
-
-  **What exactly is thinner, and its concrete app-level effect**: only 46,888 lemmas + 14,200 proper nouns
-  (~29.1% of the 210,494 pre-Wortfamilien base entries - the RICHEST ratio of any fallback-sourced language
-  this entire round, ahead even of Finnish's own unusually rich source) carry a real kaikki-derived POS tag
-  and `lemma`/form link; the remaining 150,909 rows are real words by corpus frequency alone. Same two
-  mechanisms weakened, though less acutely than most other fallback languages this round given the strong
-  ratio: (1) A-05's split-safety gate. (2) D-404 Tier 2's family-match ratio override.
-
-  `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Romanian's own: only 4 base letters carry a real
-  diacritic, `a` hosting two variants (`a=ă/â, i=î, s=ș, t=ț`, modern comma-below standard). 22 free letters
-  left room for generic typography; `g=„`/`h="` (same low-quote convention as Czech/Slovak/Hungarian).
-  `abbreviations.tsv`: a hand-curated 14-entry list.
-
-  `RomanianRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`=null,
-  `bundledConfusablesBlacklist`=empty - `confusables_scan.py` found 1,834 candidate pairs, left deliberately
-  uncurated.
-
-  New tests: `LanguageRulesTest` gained a `Romanian resolves to RomanianRules` case plus its own mirroring
-  test block.
-
-  **Honesty gate (step 11) - deliberately NOT claimed satisfied**: not reviewed by anyone who actually speaks
-  Romanian. Real, full-dump corpus scale (145.50M real tokens) and the richest fallback-source coverage ratio
-  of any language this round - but still thinner than any native-edition language's own full coverage. Not
-  device-confirmed either. **This closes the cs/sk/hu/ro group** - Croatian, Bosnian, Serbian, Estonian,
-  Latvian, Lithuanian, Indonesian, Malay, Swahili, and Tagalog remain.
-
-## Older Rounds (§1-§430, v0.7.6 through v1.1.69) - Pruned From This File
+## Older Rounds (§1-§431, v0.7.6 through v1.1.70) - Pruned From This File
 
 D-397 (§453): seventh pruning pass - §425-§428 removed (all four already logged verbatim in History.md, no
 backfill needed), cutoff moved from §425 to §429, keeping the working set at 25 rounds (§429-§453).
@@ -2285,6 +2299,9 @@ D-391 (§454): eighth pruning pass - §429 removed (already logged verbatim in H
 
 D-403/D-359-followup (§455): ninth pruning pass - §430 removed (already logged verbatim in History.md),
 cutoff moved from §430 to §431, keeping the working set at 25 rounds (§431-§455).
+
+D-356 (§456): tenth pruning pass - §431 removed (already logged verbatim in History.md), cutoff moved from
+§431 to §432, keeping the working set at 25 rounds (§432-§456).
 
 This file only tracks the current status plus the recent working set - it is not a lossy summary of the
 rounds removed below. Every pruned round's full detail (root cause, rejected alternatives, real device-log
