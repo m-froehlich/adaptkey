@@ -536,7 +536,7 @@ non-trivial changes).
     fixed ("längst erledigt"). No dedicated fix identified as the cause (most likely folded into D-405's own
     rule-2 rework, which removed commit-time re-derivation from sentence position entirely) - not
     root-caused further since there is nothing left to fix.
-  - **D-356 - RESOLVED (§456, v1.2.16).** A typed umlaut should not be carelessly reverted by autocorrect -
+  - **D-356 - RESOLVED, device-confirmed (§456, v1.2.16).** A typed umlaut should not be carelessly reverted by autocorrect -
     finally got a concrete, real example: typing `"gedrücjz"` (a genuine `ü`) autocorrected to `"gedruckt"`
     instead of `"gedrückt"`, purely because both tied on the existing folded edit cost and the more frequent
     word then won on raw frequency alone, discarding the fact that a real `ü` (not a lazy `u`) was actually
@@ -1099,6 +1099,9 @@ non-trivial changes).
   existing `CorrectionConfidence`/`AutocorrectAggressiveness` regression case (Ohren/Ihren, ddr/der, due/die,
   komplett, ...) still passes unchanged, confirming the tie-break never touched their own outcomes.
   `versionCode` 511 -> 512, `versionName` `"1.2.15"` -> `"1.2.16"`.
+
+  **Device-confirmed** (2026-09-07): the user re-tested the exact reported case on-device and confirmed the
+  fix works as intended.
 
 - **§455 (v1.2.15): D-403/D-359-followup - a confirmed revert-retry (A-07) was not actually protected**
   **against §6 capitalisation, only against dictionary substitution.** Found while the user was chasing a
