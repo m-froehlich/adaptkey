@@ -506,19 +506,24 @@ suggestion bar's own slot switches to a short explanation of the current stage (
 "alternate content in the same slot" mechanism), and a crosshair appears under the finger as the gesture's
 own origin.
 
-- **Stage 1 - cursor.** Dragging moves the text caret, horizontally by character and vertically by line
-  (via synthetic `KEYCODE_DPAD_UP`/`DOWN` key events - deliberately not a computed offset, since this app has
-  no reliable way to know a target field's real line-wrap layout across every app, the same reliability gap
-  already named for `CursorAnchorInfo` elsewhere; letting the target field's own text layout decide what "one
-  line up" means is the robust choice). Holding still for 800 ms promotes to Stage 2 (a second vibration, the
-  crosshair changes colour, the hint text updates). D-401-followup: a horizontal character move never crosses
-  into the previous/next line on its own, even at the very start/end of the current line - the user's own
-  explicit call: this gesture already positions the cursor in two independent dimensions (a separate vertical
-  step moves lines), so a horizontal drag reaching a line boundary has no reason to also flip line the way a
-  plain document-wide character offset naturally would once it crosses a real newline. Only the one boundary
-  actually at risk for the current drag direction is checked at a time, via this app's own already-proven
-  `getTextBeforeCursor()`/`getTextAfterCursor()` mechanism (`getExtractedText()`, tried first, proved
-  unreliable enough on a real device that the flip still happened).
+- **Stage 1 - cursor.** Dragging moves the text caret, horizontally by character and vertically by line -
+  both computed entirely from this field's own text via `getTextBeforeCursor()`/`getTextAfterCursor()`
+  (`getExtractedText()`, tried first, proved unreliable enough on a real device) and applied with a direct
+  `setSelection()`, preserving the horizontal column as closely as possible across a line move. D-401-followup:
+  line movement originally used synthetic `KEYCODE_DPAD_UP`/`DOWN` key events instead, letting the target
+  field's own text layout decide what "one line up" means - confirmed real on a device (Google Keep) that this
+  does not always stay within the current field at all: at the top of a multi-field note editor's body,
+  `KEYCODE_DPAD_UP` moved system focus to an entirely different sibling field (the note's own Title), which
+  traced back to essentially every symptom reported against this gesture at once - the caret "flipping"
+  unpredictably, and the clipboard chip/missing checkmark chip below, since the resulting spurious field-focus
+  change re-triggered ordinary field-open bar content mid-gesture. Computing the line move purely from this
+  field's own text instead can never leave it, by construction. Holding still for 800 ms promotes to Stage 2 (a
+  second vibration, the crosshair changes colour, the hint text updates). A horizontal character move never
+  crosses into the previous/next line on its own, even at the very start/end of the current line - the user's
+  own explicit call: this gesture already positions the cursor in two independent dimensions, so a horizontal
+  drag reaching a line boundary has no reason to also flip line the way a plain document-wide character offset
+  naturally would once it crosses a real newline. Only the one boundary actually at risk for the current drag
+  direction is checked at a time.
 - **Stage 2 - selection.** Dragging instead extends a text selection from wherever Stage 1 left the caret.
   D-401-followup: **any** release while Stage 2 is active ends the mode outright and collapses the selection
   to the current position - the original "only a strict zero-movement tap ends it" reading was reported as
@@ -548,9 +553,20 @@ own origin.
   pipeline entirely (a deferred re-sort, a reclaim chip's own visibility refresh) - and every such pending
   background computation is cancelled outright the moment the gesture arms, not merely hidden. The D-36
   clipboard-peek button is included too - it lives outside the ordinary suggestion pipeline as its own
-  dedicated view, so needed its own explicit suppression rather than being caught by the gates above. A
-  genuinely still-relevant reclaim/suggestion is picked up again from the very next ordinary caret move or
-  keystroke once the gesture ends.
+  dedicated view, so needed its own explicit suppression rather than being caught by the gates above.
+  D-401-followup: `onStartInputView`'s own credential-list/clipboard-paste chip is gated the same way too -
+  belt-and-suspenders against the DPAD-driven field-focus-change bug above, which could otherwise re-trigger it
+  mid-gesture regardless of every other gate here. A genuinely still-relevant reclaim/suggestion is picked up
+  again from the very next ordinary caret move or keystroke once the gesture ends.
+
+**Arm-time caret seeding (D-401-followup).** The gesture's own starting position is seeded from the last
+caret position this app has actually observed - which, like S-01's own `selectionCollapsed` state, is only
+ever guaranteed fresh via `EditorInfo`'s initial-selection fields on field focus, never a subsequent
+`onUpdateSelection` callback (not every field re-reports its already-current caret position on focus).
+Left unseeded on field focus the way `selectionCollapsed` already was, a long-press struck soon after
+focusing a field with existing text could arm from a stale position (0, or wherever the *previous* field's
+caret happened to be) and warp the real caret there on the gesture's very first move - a second, independent
+real cause behind the reported unpredictable caret jumps, on top of the DPAD field-focus bug above.
 
 **Deliberately does not touch composing state.** Unlike every other long-press action in this app (L-05/L-06,
 which finalise the current token first), arming this gesture leaves whatever word is currently composing

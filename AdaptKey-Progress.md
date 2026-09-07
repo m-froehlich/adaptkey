@@ -1076,6 +1076,51 @@ non-trivial changes).
 
 ## Current State
 
+- **§466 (v1.2.26): D-401-followup - the real root cause(s), found from §465's own instrumented device log,**
+  **not another guess.** The user reproduced the drag again in Google Keep and attached the full log. Two
+  genuine, independent bugs, both confirmed directly against the log rather than inferred:
+
+  **Bug 1 - the DPAD-driven line move could leave the field entirely, and this explains all three still-open**
+  **symptoms at once, not only the caret "flip".** The log showed `onStartInput`/`onStartInputView` firing
+  *mid-gesture*, alternating `hintText=Titel` and `hintText=Notiz` - Google Keep's Title and Body are separate
+  `EditText` fields, and `KEYCODE_DPAD_UP` sent at the top of the Body was moving **system input focus** to the
+  sibling Title field, not just an imprecise vertical jump within the same field. This is the real reason
+  three previously-separate-looking symptoms never resolved despite three rounds of real fixes: (a) the caret
+  "flipping" (§462/§463's own line-clamp work only ever guarded *within* one field's own text, powerless
+  against a focus change to a different field entirely), (b) the clipboard chip repeatedly reappearing and (c)
+  the checkmark chip never staying, both because `onStartInputView` unconditionally calls
+  `showClipboardChipIfAvailable()`/`showCredentialSuggestions()` on every field focus - each spurious
+  Title/Body bounce silently overwrote the gesture's own checkmark/hint bar content with ordinary field-open
+  content. **Fixed at the actual source, not by patching around it**: line movement no longer sends any DPAD
+  key event at all. New `moveOneLine()` (`AdaptKeyService.kt`) computes the target line purely from this
+  field's own text via `getTextBeforeCursor()`/`getTextAfterCursor()` - the same text-scanning approach
+  `clampToCurrentLine()` already used horizontally - finds the previous/next line's start and length by
+  scanning for newlines, and preserves the horizontal column as closely as possible; by construction this can
+  never move focus to a different view. This also fully removes the entire async-echo-race class §464 was
+  fighting: a line move is now exactly as synchronous and self-trusting as a character move already was, so
+  `cursorControlAwaitingLineSync` is deleted outright and `onUpdateSelection`'s own resync branch is now
+  diagnostic-only (never mutates `cursorControlPosition`). **Belt-and-suspenders**: `onStartInputView`'s own
+  credential-list/clipboard-chip calls are now also directly gated on `!cursorControlSessionActive`, so even a
+  genuinely different cause of a mid-gesture field-focus event can no longer stomp the bar.
+
+  **Bug 2 - a separate, independent seeding bug**, found by re-reading `onCursorControlArmed()` against the
+  log's very first move: `cursorControlPosition` is seeded from `liveSelectionEnd`, which - exactly like
+  `selectionCollapsed` already had its own documented D-152 fix for - is only ever updated by
+  `onUpdateSelection`, never guaranteed to fire again once a field is simply refocused with an already-existing
+  caret position (that initial position is delivered via `EditorInfo` instead). The log's very first
+  `applyCursorControlMove` call showed `positionBefore=0` while the field's own `getTextBeforeCursor()` read
+  back 67 real characters - the tracked position and the field's real caret were never the same value to begin
+  with, so the gesture's first move warped the real caret to a wrong location before any drag-clamping logic
+  even ran. Fixed the same way D-152 was: `onStartInput` now seeds `liveSelectionEnd` from
+  `info.initialSelEnd` (falling back to 0 only when the field reports none) instead of leaving it stale from
+  whatever the *previous* field's last callback happened to report.
+
+  1596 unit tests unchanged (Android-glue logic, no new pure-logic units). `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green. `versionCode` 521 -> 522, `versionName` `"1.2.25"` -> `"1.2.26"`. Diagnostic
+  logging (§465) deliberately kept in place one more round, not yet stripped - not independently re-confirmed
+  by the user on a real device yet. Spec (`G-08`) updated to describe the computed line move and the arm-time
+  seeding fix.
+
 - **§465 (v1.2.25): D-401-followup - diagnostic-only round, no fix attempted.** User reported v1.2.24 (§464's**
   **own async-echo-race fix) STILL produced "no observable change at all"** - the third consecutive report of
   that exact phrasing across three logically-reasoned, verified-compiling fixes (§462's tap/reclaim/clamp
@@ -2088,80 +2133,10 @@ non-trivial changes).
   `versionCode` 497 -> 498, `versionName` "1.2.1" -> "1.2.2". Next: Ukrainian, then Azerbaijani, then Uzbek
   (same D-450-followup round).
 
-- **§441 (v1.2.1): D-450-followup - keyboard layouts (only - no dictionaries yet) for Russian, Ukrainian,**
-  **Azerbaijani, and Uzbek, in preparation for building all four as real language packs in a future session.**
-  Added `Language.RUSSIAN`/`UKRAINIAN`/`AZERBAIJANI`/`UZBEK` to the enum. Uzbek needs no new layout code at
-  all - its own real standard is Latin-QWERTY-compatible (confirmed via research: the two special letters
-  `oʻ`/`gʻ` use a modifier-letter apostrophe, handled the same way any other Latin diacritic's `hints.tsv`
-  entry would be - dictionary-round work, not layout work).
-  
-  **Russian + Ukrainian share ONE new `JcukenLayout.kt`, mirroring `KeyboardLayout`'s own QWERTY/QWERTZ**
-  **variant-flag pattern - a real architectural question the user raised mid-session, verified letter-by-**
-  **letter before answering it.** Both researched against the real Microsoft standards (`KBDRU`/`KBDUR`,
-  `kbdlayout.info`/`learn.microsoft.com`) - confirmed the two are the SAME real historical ЙЦУКЕН keyboard
-  with only three substituted letters plus one added key, not two unrelated standards: top row differs only
-  in its last letter (`ъ` vs. `ї`), middle row differs in position 2 (`ы` vs. `і`) and its last letter (`э`
-  vs. `є`), and Ukrainian's own bottom row adds a leading `ґ` where Russian's own leading slot is punctuation
-  (a real desktop ISO-key artifact, not a letter either way). `JcukenLayout.rows(..., ukrainian: Boolean)`
-  captures this with one shared implementation and two row-string constants per row, exactly like
-  `KeyboardLayout.rows(qwerty: Boolean)` does for Latin. Russian's own `ё` (a real, distinct letter with no
-  slot in this app's mobile row shape, same practical constraint every desktop-only extra key already has
-  here) is offered as a long-press secondary on `е` instead, mirroring `GreekLayout`'s own accent-on-vowel
-  convention - Ukrainian does not get this secondary at all, since `ё` is not part of its alphabet.
-  
-  **The user also asked whether the already-built Serbian layout could be refolded into this same
-  Russian-based "variant" pattern - verified directly and answered no, with the real evidence, not just
-  reasserting the original design call:** Serbian's own JUSCII-descended layout (see its own D-450-followup
-  entry above) is phonetically mapped onto the LATIN QWERTZ physical grid (its own `з`/`у`/`и`/`о`/`п` sit
-  exactly where Latin `z`/`u`/`i`/`o`/`p` do) - a completely different historical lineage from Russian's own
-  ЙЦУКЕН, which has its own independent typewriter-derived arrangement unrelated to Latin key positions at
-  all. The two share no meaningful structural overlap (`у` appears in both, but at column 7 in Serbian vs.
-  column 3 in Russian) - `SerbianLayout` correctly stays its own independent object.
-  
-  **A real gap in the D-450-followup Cyrillic generalisation, found and fixed while wiring these two in, not**
-  **before shipping**: `LayoutRegistry.NON_LATIN_LANGUAGES`'s own canary test (added for Serbian, see above)
-  checked for a shared `LayoutKind`, not a shared *script* - Russian and Ukrainian each correctly get their
-  own distinct `LayoutKind` (real, different physical layouts), so that test would have kept silently passing
-  even though they - and Serbian - are all genuinely Cyrillic and share the exact same "AdaptKeyService.
-  resolveDict() cannot yet tell these apart" concern the canary existed to catch. Fixed properly, not
-  patched: added a real `Script` enum (`LATIN`/`GREEK`/`CYRILLIC`) and a `LayoutRegistry.scriptFor(Language)`
-  function, and rewrote the canary to check for a shared `Script` instead. It now correctly documents the
-  real, deliberate state: Serbian/Russian/Ukrainian **do** share a script, `resolveDict()` still trusts
-  whichever is active unconditionally (unchanged, no code needed there), and this is a conscious decision,
-  not a silent gap - because no per-language Cyrillic `language_profiles.tsv` trigram data exists yet for
-  any of the three to build a real same-script classifier from (dictionary-pipeline work, added to Open
-  TODOs below).
-  
-  **Azerbaijani needed its own full `AzerbaijaniLayout.kt` - the real standard turned out to be a much**
-  **bigger restructuring than an earlier casual description suggested, caught by pulling the real Microsoft**
-  **table instead of trusting a summary.** An earlier web-search summary (from the session's own prerequisites
-  check) described it as "QÜERTY - Ü replaces W", implying a single-letter QWERTZ-style swap; the real
-  `KBDAZST` standard (`learn.microsoft.com/en-us/globalization/keyboards/kbdazst.html`) shows `q`/`w` do not
-  even sit at their ordinary QWERTY positions at all (`q` is on the bottom row, `w` is dropped from the
-  primary rows entirely) - a genuine cross-row restructuring, the same "AZERTY" category (D-314) as French's
-  own layout, not a same-row variant flag. All 32 letters of the Azerbaijani Latin alphabet (including the
-  dotted/dotless İ/I pair - `TurkishCasingRules`'s own Unicode `SpecialCasing.txt` `tr`/`az` rule applies
-  unchanged here, needing only a future registry entry) sit directly on the three primary rows with no AltGr
-  dependency, matching the real standard. Still genuinely Latin script, so it keeps the L-05/C-08
-  `letterHints` AltGr overlay and reuses `KeyboardLayout.topRowKey`/`letterKey` so `p`/`o`/`a`/`e`/`n` keep
-  their existing math-symbol popups (D-99) wherever they land - confirmed this lookup is keyed by character,
-  not row/column position, so it works unchanged for a fully rearranged layout.
-  
-  New `KeyboardProximityRussianCyrillic`/`UkrainianCyrillic`/`Azerbaijani` (each matching its own layout's
-  rows exactly - three separate grids, not shared, since the real letter positions genuinely differ even
-  where Russian/Ukrainian share most of their skeleton). New tests: `JcukenLayoutTest` (12 cases covering
-  both variants + the real 33/33-letter completeness check), `AzerbaijaniLayoutTest` (9 cases), three new
-  `KeyboardProximity*Test` files, `LayoutRegistryTest` additions (`scriptFor` coverage, the rewritten canary,
-  Uzbek's own QWERTY-default case). 1,526 unit tests green (was 1,487).
-  `:app:assembleDebug`/`:app:testDebugUnitTest` green.
-  
-  **Explicitly out of scope this round, by the user's own direction**: no `LanguageRules`/dictionary/catalog
-  work for any of the four - layouts only, so the actual language packs (full Wikipedia-dump extraction,
-  Wiktionary-based Wortfamilien completion, calibration/quality-gate/confusables-scan checks, catalog
-  entries) are a deliberately separate, future session's work. New Open TODO added below for the real
-  Cyrillic-vs-Cyrillic classifier gap this round's own `resolveDict()` KDoc update documents.
+## Older Rounds (§1-§441, v0.7.6 through v1.2.1) - Pruned From This File
 
-## Older Rounds (§1-§440, v0.7.6 through v1.2.0) - Pruned From This File
+D-401-followup (§466): twentieth pruning pass - §441 removed (already logged verbatim in History.md), cutoff
+moved from §441 to §442, keeping the working set at 25 rounds (§442-§466).
 
 D-401-followup (§465): nineteenth pruning pass - §440 removed (already logged verbatim in History.md), cutoff
 moved from §440 to §441, keeping the working set at 25 rounds (§441-§465).

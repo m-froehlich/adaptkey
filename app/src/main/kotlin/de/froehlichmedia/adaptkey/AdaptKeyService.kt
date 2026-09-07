@@ -1553,6 +1553,17 @@ class AdaptKeyService : InputMethodService() {
         // character. A fresh field is assumed collapsed until its own onUpdateSelection says otherwise,
         // matching every other real editor's default caret state.
         selectionCollapsed = true
+        // D-401-followup: the exact same staleness gap as selectionCollapsed above, just for
+        // liveSelectionEnd - a fresh field's own initial caret is delivered via EditorInfo only, never
+        // guaranteed through a subsequent onUpdateSelection callback (D-421's own note on this same fact,
+        // right below in onStartInputView). Left unseeded, liveSelectionEnd kept whatever the *previous*
+        // field's last reported position happened to be (or its 0 default on the very first field this
+        // session) - confirmed real on a device: the cursor-control gesture arms from liveSelectionEnd, and
+        // a long-press right after focusing a field with existing text (no intervening onUpdateSelection
+        // yet) seeded a wildly wrong starting position, then immediately warped the real caret there on the
+        // gesture's very first move - the actual root cause behind the reported "cursor jumps/flips
+        // unpredictably", not (only) a clamping bug. initialSelEnd is -1 when the field does not report one.
+        liveSelectionEnd = if (info != null && info.initialSelEnd >= 0) info.initialSelEnd else 0
         capsMode = capsModeFor(info)
         clearUndo()
         revertSuppressedWord = null
@@ -1625,27 +1636,20 @@ class AdaptKeyService : InputMethodService() {
         // reflects the most recently confirmed reality regardless of how this particular call is handled.
         selectionCollapsed = newSelStart == newSelEnd
         liveSelectionEnd = newSelEnd
-        // D-401-followup (bug fix): only resynced right after a DPAD-driven line jump, whose resulting
-        // absolute offset this code genuinely cannot compute itself - never unconditionally on every
-        // callback, which was the bug. A character-based move already sets cursorControlPosition itself,
-        // synchronously and correctly (including the D-401-followup line-clamp fix); resyncing it from this
-        // callback regardless raced against it, since onUpdateSelection is asynchronous and its callbacks
-        // are not guaranteed to arrive in the same order a fast drag's own rapid-fire setSelection() calls
-        // were issued in - a stale echo from *before* the clamp took effect could land after a newer,
-        // already-correct one and silently stomp it, undoing the clamp for the very next delta's own
-        // baseline. Confirmed as the real reason the reported clamp fix produced no observable change at all
-        // on a real device (not merely another logic bug in the clamp itself, which was independently found
-        // and fixed the same round). cursorControlAwaitingLineSync is the one-shot flag set right before the
-        // DPAD events are sent and consumed here, the only case this resync is actually needed for.
-        if (cursorControlSessionActive && cursorControlAwaitingLineSync) {
-            diag("AdaptKeyJitter", "cursorControl: line-sync resync $cursorControlPosition -> $newSelEnd")
-            cursorControlPosition = newSelEnd
-            cursorControlAwaitingLineSync = false
-        } else if (cursorControlSessionActive) {
-            // D-401-followup (temporary diagnostic): confirms the race fix actually holds - this line
-            // appearing with newSelEnd != cursorControlPosition would mean something *else* is still
-            // changing the real document selection independently of this mechanism's own tracked value.
-            diag("AdaptKeyJitter", "cursorControl: echo ignored (not awaiting line sync), tracked=$cursorControlPosition echo=$newSelEnd")
+        // D-401-followup (bug fix, superseded): every setSelection() this gesture issues - character-based
+        // or, since D-401-followup's DPAD removal, line-based too - is applied synchronously and computed
+        // entirely by this code itself, so cursorControlPosition is never resynced from this callback at
+        // all; onUpdateSelection is asynchronous and not guaranteed to arrive in the order a fast drag's own
+        // rapid-fire setSelection() calls were issued in, and an earlier round resyncing unconditionally on
+        // every callback raced against its own already-correct value this exact way (confirmed as the real
+        // reason that round's clamp fix produced no observable change on a real device). The DPAD-driven line
+        // jump this resync originally existed for is gone entirely now (see applyCursorControlMove()'s own
+        // KDoc) - nothing left needs it.
+        if (cursorControlSessionActive) {
+            // D-401-followup (temporary diagnostic): confirms this echo is genuinely just an echo of our own
+            // setSelection() - newSelEnd should always equal cursorControlPosition here. Remove once D-401's
+            // cursor movement is confirmed correct.
+            diag("AdaptKeyJitter", "cursorControl: echo (session active), tracked=$cursorControlPosition echo=$newSelEnd")
         }
         // D-139 (temporary diagnostic): every call, with enough state to reconstruct what happened -
         // `adb logcat -s AdaptKeyJitter:D` while typing, to finally catch the reported "text jitters,
@@ -1975,7 +1979,16 @@ class AdaptKeyService : InputMethodService() {
         // D-142: a recognised login field shows its own credential suggestions immediately, even before
         // anything is typed (the user's usual identifiers, most-used first) - takes priority over the
         // generic D-36 paste chip below, which would otherwise compete for the same bar slot.
-        val showedSpecialInitialChip = if (loginFieldKind == LoginFieldKind.USERNAME || loginFieldKind == LoginFieldKind.EMAIL) {
+        // D-401-followup: both skipped entirely while the cursor-control gesture is active - this device-
+        // confirmed real: onStartInputView can fire *mid-gesture* in a multi-field editor (Google Keep's
+        // Title/Body are separate fields; the gesture's own line movement briefly focused one, then the
+        // other), and either call would silently overwrite the gesture's own checkmark/hint bar content with
+        // a credential list or the clipboard paste chip - the exact "clipboard chips keep reappearing, the
+        // checkmark never stays" symptom reported on a real device. Neither special chip is worth showing
+        // over the gesture's own content regardless - see showCursorControlHint()'s own KDoc for why.
+        val showedSpecialInitialChip = if (cursorControlSessionActive) {
+            true
+        } else if (loginFieldKind == LoginFieldKind.USERNAME || loginFieldKind == LoginFieldKind.EMAIL) {
             showCredentialSuggestions()
             true
         } else {
@@ -3079,22 +3092,19 @@ class AdaptKeyService : InputMethodService() {
     
     // D-401: the space-bar cursor/selection-control gesture's own tracked state. cursorControlPosition is
     // an optimistic running caret offset - seeded from the live caret when the gesture arms, updated
-    // synchronously after every character-based setSelection() this mechanism itself issues (trusted as-is,
-    // never overwritten by a later echo - see onUpdateSelection's own note on why that raced), and resynced
-    // from onUpdateSelection's own live echo only after a DPAD-driven line jump (cursorControlAwaitingLineSync),
-    // whose resulting absolute offset this code has no way to compute itself. cursorControlAnchor is the
-    // fixed end of the selection range, frozen the moment Stage 2 begins.
+    // synchronously after every setSelection() this mechanism itself issues (character-based or, since
+    // D-401-followup's DPAD removal, line-based too) and never overwritten by a later onUpdateSelection
+    // echo - see that callback's own note on why that raced. cursorControlAnchor is the fixed end of the
+    // selection range, frozen the moment Stage 2 begins.
     private var cursorControlSessionActive = false
     private var cursorControlPosition = 0
     private var cursorControlAnchor = 0
-    private var cursorControlAwaitingLineSync = false
     
     private val cursorControlListener = object : AdaptKeyboardView.OnCursorControlListener {
         override fun onCursorControlArmed() {
             cursorControlSessionActive = true
             cursorControlPosition = liveSelectionEnd
             cursorControlAnchor = cursorControlPosition
-            cursorControlAwaitingLineSync = false
             // D-401-followup: cancels whatever was left over from typing right before the long-press - the
             // refreshSuggestions()/showSuggestions() gates below already stop any of these from ever
             // touching the bar while the gesture is active, but there is no reason to still let the
@@ -3133,20 +3143,27 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * D-401: applies one incremental cursor-control step. A vertical (line) delta is sent as synthetic
-     * `KEYCODE_DPAD_UP`/`KEYCODE_DPAD_DOWN` key events - this app has no reliable way to know a target
-     * field's real line height/wrap positions (the same gap already named for `CursorAnchorInfo` elsewhere
-     * in this project), so the target app's own text layout decides what "one line up" means, exactly like
-     * a hardware d-pad would. A horizontal (character) delta instead calls `setSelection()` directly at
-     * [cursorControlPosition] plus the delta - collapsed for Stage 1, or against the frozen
-     * [cursorControlAnchor] for Stage 2.
+     * D-401: applies one incremental cursor-control step, both dimensions computed purely from this field's
+     * own text via `getTextBeforeCursor()`/`getTextAfterCursor()` and applied with a direct `setSelection()`
+     * - collapsed for Stage 1, or against the frozen [cursorControlAnchor] for Stage 2.
      *
-     * The two are deliberately never combined in the same call: after a DPAD event the resulting absolute
-     * document offset is unknown here until a fresh [onUpdateSelection] call reports it back (resynced onto
-     * [cursorControlPosition] there), so a character delta arriving in the very same tick as a line delta is
-     * simply not applied yet - it is picked up on the next move once the position is fresh. At ordinary drag
-     * speeds the two thresholds essentially never cross in the exact same event, so this is not a
-     * perceptible gap in practice.
+     * D-401-followup: a vertical (line) delta was originally sent as a synthetic `KEYCODE_DPAD_UP`/
+     * `KEYCODE_DPAD_DOWN` key event, letting the target app's own text layout decide what "one line up"
+     * means. Confirmed real on a device (Google Keep) that this does not always mean "move within this
+     * field" at all: at the top of a multi-field note editor's body, `KEYCODE_DPAD_UP` moved system focus to
+     * an entirely different sibling field (the note's own Title), not merely an imprecise vertical jump -
+     * every symptom reported against this gesture ("Textfluss-Flipping", the clipboard chip and missing
+     * checkmark chip both reappearing mid-gesture) traced back to this: the resulting spurious
+     * `onStartInput`/`onStartInputView` calls reset keyboard state and overwrote the gesture's own bar
+     * content (now also directly gated in `onStartInputView`, belt-and-suspenders). [moveOneLine] replaces
+     * the DPAD event with the same text-scanning approach [clampToCurrentLine] already uses horizontally,
+     * which by construction can never leave this field's own text. This also removes the entire async
+     * echo-race class the DPAD approach needed `cursorControlAwaitingLineSync` for (see
+     * [onUpdateSelection]'s own note) - a line move is now exactly as synchronous and self-trusting as a
+     * character move already was.
+     *
+     * The two are deliberately never combined in the same call - see [CursorControlGesture.stepsFor]'s own
+     * KDoc for why a diagonal drag essentially never produces both in the same event at ordinary speeds.
      */
     private fun applyCursorControlMove(stage: CursorControlGesture.Stage, characterDelta: Int, lineDelta: Int) {
         val ic = currentInputConnection ?: return
@@ -3158,12 +3175,11 @@ class AdaptKeyService : InputMethodService() {
                 "positionBefore=$cursorControlPosition anchor=$cursorControlAnchor"
         )
         if (lineDelta != 0) {
-            val keyCode = if (lineDelta > 0) KeyEvent.KEYCODE_DPAD_DOWN else KeyEvent.KEYCODE_DPAD_UP
-            cursorControlAwaitingLineSync = true
             repeat(abs(lineDelta)) {
-                ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
-                ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, keyCode))
+                cursorControlPosition = moveOneLine(ic, up = lineDelta < 0) ?: return@repeat
             }
+            diag("AdaptKeyJitter", "applyCursorControlMove: line move settled at $cursorControlPosition")
+            commitCursorControlSelection(ic, stage)
             return
         }
         if (characterDelta == 0) {
@@ -3175,10 +3191,73 @@ class AdaptKeyService : InputMethodService() {
             "AdaptKeyJitter",
             "applyCursorControlMove: target=$target clampedPosition=$cursorControlPosition"
         )
+        commitCursorControlSelection(ic, stage)
+    }
+    
+    /** D-401-followup: the one `setSelection()` call both branches of [applyCursorControlMove] end with. */
+    private fun commitCursorControlSelection(ic: InputConnection, stage: CursorControlGesture.Stage) {
         when (stage) {
             CursorControlGesture.Stage.CURSOR -> ic.setSelection(cursorControlPosition, cursorControlPosition)
             CursorControlGesture.Stage.SELECTION -> ic.setSelection(cursorControlAnchor, cursorControlPosition)
         }
+    }
+    
+    /**
+     * D-401-followup: computes the absolute offset one line above/below [cursorControlPosition], preserving
+     * its own column within the line as closely as possible - entirely from text read via
+     * `getTextBeforeCursor()`/`getTextAfterCursor()`, never a synthetic DPAD key event (see
+     * [applyCursorControlMove]'s own KDoc for why that was a real bug, not merely an imprecision).
+     *
+     * @return the new absolute offset, or null if there is no further line in that direction within
+     *         [CURSOR_CONTROL_LINE_SCAN_WINDOW] (including an `InputConnection` read failure) - the caller
+     *         then leaves [cursorControlPosition] unchanged, exactly like [clampToCurrentLine] already does
+     *         at a horizontal boundary
+     */
+    private fun moveOneLine(ic: InputConnection, up: Boolean): Int? {
+        val position = cursorControlPosition
+        val before = ic.getTextBeforeCursor(CURSOR_CONTROL_LINE_SCAN_WINDOW, 0)?.toString()
+        if (before == null) {
+            diag("AdaptKeyJitter", "moveOneLine: getTextBeforeCursor returned null - unmoved")
+            return null
+        }
+        val currentLineStartInBefore = before.lastIndexOf('\n') + 1
+        val column = before.length - currentLineStartInBefore
+        if (up) {
+            if (currentLineStartInBefore == 0) {
+                diag("AdaptKeyJitter", "moveOneLine(up): no newline within window - unmoved")
+                return null
+            }
+            val previousLineStartInBefore = if (currentLineStartInBefore <= 1) {
+                0
+            } else {
+                before.lastIndexOf('\n', currentLineStartInBefore - 2) + 1
+            }
+            val previousLineStartAbs = position - (before.length - previousLineStartInBefore)
+            val previousLineLength = (currentLineStartInBefore - 1) - previousLineStartInBefore
+            val result = previousLineStartAbs + minOf(column, previousLineLength)
+            diag("AdaptKeyJitter", "moveOneLine(up): column=$column previousLineLength=$previousLineLength result=$result")
+            return result
+        }
+        val after = ic.getTextAfterCursor(CURSOR_CONTROL_LINE_SCAN_WINDOW, 0)?.toString()
+        if (after == null) {
+            diag("AdaptKeyJitter", "moveOneLine: getTextAfterCursor returned null - unmoved")
+            return null
+        }
+        val currentLineEndInAfter = after.indexOf('\n')
+        if (currentLineEndInAfter == -1) {
+            diag("AdaptKeyJitter", "moveOneLine(down): no newline within window - unmoved")
+            return null
+        }
+        val nextLineStartAbs = position + currentLineEndInAfter + 1
+        val nextLineEndInAfter = after.indexOf('\n', currentLineEndInAfter + 1)
+        val nextLineLength = if (nextLineEndInAfter == -1) {
+            after.length - (currentLineEndInAfter + 1)
+        } else {
+            nextLineEndInAfter - (currentLineEndInAfter + 1)
+        }
+        val result = nextLineStartAbs + minOf(column, nextLineLength)
+        diag("AdaptKeyJitter", "moveOneLine(down): column=$column nextLineLength=$nextLineLength result=$result")
+        return result
     }
     
     /**
