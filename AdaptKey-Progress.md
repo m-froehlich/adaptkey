@@ -475,20 +475,13 @@ non-trivial changes).
   neighbour-typo correction signal (D-28/D-38/S-09) now genuinely scores against the layout actually being
   typed on. See §414 for the full mechanism.
 
-- **D-442's own English confusables-scan side-effects, deliberately not fixed in that round (two separate**
-  **open items, split out so neither gets lost inside a mechanism-focused round's own write-up):**
-  1. **A real frequency-correction backlog for `en/dict.tsv`.** The QWERTY confusables scan (§414) found
-     dozens of genuine, real, but rare English words (`fir`/`otter`/`nave`/`hut`/`cab`/`bye`, and more -
-     `dictionaries/confusables_scan.py app/src/main/assets/en/dict.tsv qwerty 30` reproduces the full list)
-     sitting at real silent-autocorrect risk against a much more frequent QWERTY-adjacent neighbour
-     (`for`/`other`/`have`/`but`/`can`). The correct fix, per German's own D-330 `dein`/`sein` precedent, is
-     raising each risky word's own frequency past the risk threshold, not blacklisting - a real, careful,
-     one-word-at-a-time round of its own, not started.
-  2. **Possible genuine noise already living in `en/dict.tsv`, never audited English's own equivalent of**
-     **German's §301 sweep.** The same scan surfaced a few implausibly-high-frequency entries that do not
-     look like real English words at all (`ases`/95431, `mored`/17953, `bys`/76263) - found incidentally,
-     not confirmed noise via a real review, and English has never had a dedicated noise-removal pass the
-     way German (§301) and Greek (§371/D-425) did. Worth its own dedicated round if picked up.
+- **D-442's own English confusables-scan side-effects - BOTH RESOLVED (§457, v1.2.17).** The
+  frequency-correction backlog (121 real auto-apply-risk pairs, fixed) and the `en/dict.tsv` noise audit (140
+  bogus generator-artifact entries removed, 1 retagged) were both closed in one round - see §457 in Current
+  State for the full method, the root-caused generator bug behind the noise, and the real numbers. The
+  chip-offer-only tier (1176 pairs) was deliberately left as-is on explicit user agreement, once the real
+  frequency-bump sizes needed to clear it fully turned out grossly disproportionate to these words' actual
+  corpus rarity.
 
 - **D-280/D-281 follow-up - RESOLVED, all four languages now have real, hosted packs.** `SPANISH` moved out
   via D-443 (§416); `PORTUGUESE` via D-445 (§418); `ITALIAN` via D-446 (§419); `DUTCH` via D-447 (§420) - see
@@ -1056,6 +1049,77 @@ non-trivial changes).
   if the user raises it again, ideally with its own dedicated repro.
 
 ## Current State
+
+- **§457 (v1.2.17): D-442's own two-item backlog (frequency-correction + noise audit for**
+  **`en/dict.tsv`, both named-but-not-started in Progress.md) - both closed in one round, data-only, no code**
+  **change.** Ran `dictionaries/confusables_scan.py` against `en/dict.tsv` (QWERTY, min-frequency 30) for
+  real, current numbers rather than trusting the old "dozens" estimate in the backlog note: 1384 candidate
+  pairs, 126 at genuine silent-autocorrect risk (score >= 0.75, `CorrectionConfidence.forKnownWordOverride`'s
+  own threshold).
+
+  **Noise audit (item 2) done first, per explicit user instruction, since several of the scan's own top hits**
+  **turned out to be noise, not genuinely rare real words.** Root-caused rather than removed by inspection
+  alone: every flagged entry's own `lemma` column (D-412) pointed back to an ordinary function word/participle
+  (`on`, `by`, `more`, `most`, `you`, `special`, `French`, `Dutch`, `trans`, ...) - confirming these are not
+  independent corpus noise but a systematic over-generation bug in the same lemma-linked inflection pipeline
+  D-404 Tier 1/D-412's Wortfamilien project uses: it generated `-ed`/`-ing`/`-s`/`-er` inflections for base
+  words that are not grammatically eligible for them at all (prepositions, degree adverbs, pronouns, already-
+  inflected irregular forms), several inheriting implausibly high frequencies (`ases` 95431, `oned` 77326,
+  `bys` 76263). Querying every dictionary row sharing one of these confirmed-bad lemmas (not just the ones
+  that happened to collide in the confusables scan) surfaced the full generated family - 212 rows total, each
+  individually reviewed against its real English-word status (native-level judgement, no wordlist available
+  locally): **140 removed** as having no legitimate reading in any standard/technical/dialectal register
+  (`ases`, `oned`, `bys`, `mored`, `newed`, `mosts`, `youed`, `youing`, `justs`, `specialer`, `Frenched`,
+  `Dutcher`, `transing`, and 128 more); **1 retagged, not deleted** (`mores` - the real word for "societal
+  customs" shared its dictionary's only row, per-spelling, with the bogus generated verb form of `more`, so it
+  was re-tagged `NOUN,OTHER` with the bogus `lemma` link dropped rather than losing the spelling entirely).
+  Every other family member (`bearing`, `better`, `engines`, `graves`, `refugees`, `Yankees`, and ~70 more)
+  confirmed as a real, independently legitimate word and left untouched, despite matching the same suspicious
+  lemma pattern - conservative by design, matching this project's established "confirmed real, not guessed"
+  standard for dictionary curation (cf. German's §301/§368). `dict.tsv` 116,388 -> 116,248 rows.
+
+  **A related, deliberately-declined side-finding**: `better` (2959), `news` (2414), and `evening` (659) also
+  came from the same generation pipeline and looked suspiciously low at first glance (compared against
+  general English intuition, not this corpus). Checked against real, unquestionably genuine sibling words
+  already in the same dictionary before touching anything - `evening` sits cleanly between `afternoon` (250)
+  and `morning` (900); `better` sits cleanly among `smaller`/`longer`/`greater`/`larger`/`earlier`
+  (3152-3943); `news` sits cleanly among `weather`/`report`/`story`/`information` (1060-5757). All three are
+  plausible for this specific Wikipedia-derived corpus's own register (which uses time-of-day words and
+  comparatives far less than everyday conversational English) - inventing a "corrected" number without real
+  corpus data to back it would have been exactly the kind of guessing this project's history explicitly
+  avoids, so all three were left unchanged, on the user's own explicit acceptance of this reasoning.
+
+  **Frequency correction (item 1) on the 126 auto-apply-risk pairs, re-scanned to 121 after the noise pass**
+  **removed a few outright.** Same mechanism D-330-followup's `dein`/`sein` fix used: raise the rarer, genuine
+  word's own frequency past the risk threshold, never blacklist. Computed the exact minimum bump per word from
+  the scan's own `ratio_factor` formula (clear margin below 0.75), applied to 111 words; re-scanning surfaced
+  a small cascade (bumping `im`/`ij`/`ln` high enough incidentally put them at risk against three previously-
+  unflagged short fragments, `ik`/`um`/`lb`) - one further small pass closed those too, converging to 0
+  remaining auto-apply-risk pairs.
+
+  **A real conflict caught before finalising, not after**: `EnglishRules.kt`'s own
+  `BUNDLED_CONFUSABLES_BLACKLIST` (`ij`, `iz`, `iy`, `ae`, `ne` - spec A-04's own D-442 note) had already
+  confirmed these five specific tokens are *not* real standalone English words, in an earlier round using this
+  exact scan. The blacklist mechanism only ever suppresses a word from being *offered* as a suggestion to
+  someone else - it does not, and was never meant to, protect a confirmed non-word from losing to a real
+  neighbour under `forKnownWordOverride`, unlike a genuinely real-but-rare word. The mechanical bump step
+  above touched all five anyway (it has no knowledge of the blacklist), silently reintroducing exactly the
+  protection the earlier round had deliberately decided against - caught by cross-checking `EnglishRules.kt`
+  before writing this entry, not discovered later. Reverted the bump for these five specific words back to
+  their original frequencies; the resulting 7 pairs they now correctly re-flag as at-risk are the intended,
+  already-decided outcome, not a gap.
+
+  **`chip-offer-only` tier (the remaining 1176 pairs, score 0.30-0.75) deliberately left untouched, on**
+  **explicit user agreement after seeing the real numbers.** Computed what fully clearing this tier too would
+  actually require: several hundred words would need frequency bumps into the thousands-to-hundred-thousands
+  range purely to satisfy the ratio formula (`wax` to 38750, `ln` to 118478) - grossly disproportionate to
+  their real corpus rarity, and would itself introduce new frequency-ranking distortions elsewhere. A
+  dismissible suggestion chip for a genuinely rare word is the correct, proportionate behaviour this tier
+  already provides, not a bug needing a fix.
+
+  Quality gate (`dictionaries/quality_gate.py`): 0 duplicates, 0 non-positive frequencies, 0 orphaned lemma
+  links, 0 bare-NOUN rows - PASS. No code touched, 1587 unit tests unchanged, `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green. `versionCode` 512 -> 513, `versionName` `"1.2.16"` -> `"1.2.17"`.
 
 - **§456 (v1.2.16): D-356 - a literally-typed umlaut now breaks an autocorrect tie in its own favour,**
   **finally closed with a real, concrete repro after being open since §277.** Typing `"gedrücjz"` (a genuine
@@ -2227,72 +2291,10 @@ non-trivial changes).
   **This closes the Croatian/Bosnian pair** - Serbian remains explicitly deferred. Estonian, Latvian,
   Lithuanian, Indonesian, Malay, Swahili, and Tagalog remain.
 
-- **§432 (v1.1.71): D-450 (continued) - first Croatian language pack, ninth of the 18-language round,**
-  **starting the Croatian/Bosnian/Serbian trio - shared Wiktionary source, pitch-accent recovery, and a**
-  **real structural fork on Serbian's own script that led to deferring it this round.** Added
-  `Language.CROATIAN` (`"hr"`, `"Hrvatski"`) to the enum.
+## Older Rounds (§1-§432, v0.7.6 through v1.1.71) - Pruned From This File
 
-  **Structural pre-round finding**: kaikki.org treats Croatian/Bosnian/Serbian as ONE shared "Serbo-Croatian"
-  Wiktionary edition (`lang_code == "sh"`, confirmed against all 70,075 entries) - no native or per-country
-  fallback exists. Per the user's own decision, this ONE shared source
-  (`kaikki.org/dictionary/Serbo-Croatian/kaikki.org-dictionary-SerboCroatian.jsonl`, 276.5MB uncompressed,
-  marked DEPRECATED by kaikki.org - downloaded and archived before removal) feeds all three packs, each
-  still built from its own Wikipedia corpus.
-
-  **Two real data-shape findings in the shared source**: (1) inflection-table forms use traditional
-  pitch-accent dictionary notation (e.g. "kȕća" for "kuća") outside the ordinary alphabet - would have been
-  silently rejected and lost entirely, except each such form carries a `links` field whose second element is
-  the real plain spelling; `usable_forms()` now prefers that recovered spelling. (2) the `"error-unrecognized-
-  form"` tag (noise everywhere else) here marks entries that ARE real words the parser just couldn't
-  recognise the template for - deliberately not excluded for this shared source. A real, honestly documented
-  richness limitation: this source's own verb tables are unusually sparse (only infinitive + 2 participles +
-  1 deverbative noun per verb, no personal conjugation at all).
-
-  The entire `hrwiki-latest-pages-articles.xml.bz2` (348MB compressed) was processed via the same
-  multiprocessing/hapax-pruning extractor - 221,828 real pages, 65,675,004 real tokens, 1,375,544 distinct
-  words, 2,310,181 raw (>=3) bigram rows.
-
-  **Net result**: `dict.tsv` 248,453 rows (149,011 initial + 99,442 from Wortfamilien completion;
-  calibration ratios noun=0.3732 (n=18,737), verb=1.6286 (n=1,569, a small sample given the sparse source,
-  still sane), adjective=0.6667 (n=15,919)). POS tagging: 129,278 words kept unrecognised-by-kaikki, 1,218,746
-  dropped, 7,787 removed as common-English-word contamination. Wiktionary matching: 17,856 lemmas tagged,
-  3,933 unmatched; 36,707 existing forms linked, 99,442 generated. Proper-noun handling: 2,013 tagged, 179
-  unmatched, 169 skipped as collisions. Mandatory bare-noun safety check: 0 bare-NOUN rows. `bigram.tsv`:
-  636,290 rows (>=10 cutoff) from 2,310,181 raw. Quality gate: 0 case-insensitive duplicates, 0 non-positive
-  frequencies, 0 orphaned lemma links, 0 bare-NOUN rows - PASS.
-
-  **What exactly is thinner, and its concrete app-level effect**: only 17,856 lemmas + 2,013 proper nouns
-  (~12.0% of the 149,011 pre-Wortfamilien base entries) carry a real kaikki-derived POS tag and `lemma`/form
-  link. Same two mechanisms weakened: (1) A-05's split-safety gate. (2) D-404 Tier 2's family-match ratio
-  override. A separate gap, more acute here given the source's own sparse verb tables: Croatian's own rich
-  verb-aspect system is only thinly represented in the family-match data even for tagged verb lemmas.
-
-  `hints.tsv`/`diacritics.tsv`/`abbreviations.tsv` are Croatian's own: `c=č/ć, d=đ, s=š, z=ž`. `t=€` (Croatia
-  adopted the Euro in 2023). `g=„`/`h="` (Croatian's own low-quote convention). `abbreviations.tsv`: a
-  hand-curated 12-entry list.
-
-  `CroatianRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true, `timeSuggestionWord`=null,
-  `bundledConfusablesBlacklist`=empty - `confusables_scan.py` found 4,171 candidate pairs, left deliberately
-  uncurated.
-
-  New tests: `LanguageRulesTest` gained a `Croatian resolves to CroatianRules` case plus its own mirroring
-  test block.
-
-  **A genuine structural fork, surfaced rather than guessed at**: Serbian - the third of this originally-
-  planned trio - was found to need a real, from-scratch Cyrillic keyboard layout (this app's only prior
-  non-Latin script, Greek, required a genuine ~140-line feature addition, not a data-pipeline change) -
-  confirmed directly that Serbian's own real-world usage is overwhelmingly Cyrillic (839,282 vs. 151,666
-  Latin characters sampled, ~5.5:1). Presented via `AskUserQuestion` with four options; **the user chose to
-  skip Serbian this round entirely**, deferring it to its own dedicated discussion. The already-downloaded
-  Serbian Wikipedia dump's own frequency work was not done, but the shared Wiktionary source's own
-  Cyrillic-tagged extraction remains archived locally for later.
-
-  **Honesty gate (step 11) - deliberately NOT claimed satisfied**: not reviewed by anyone who actually speaks
-  Croatian. Real, full-dump corpus scale (65.68M real tokens) but thinner Wortfamilien/POS coverage than a
-  native-edition language, plus a source-wide sparse-verb-table limitation. Not device-confirmed either.
-  Bosnian continues next, reusing the identical shared Wiktionary extraction with its own Wikipedia corpus.
-
-## Older Rounds (§1-§431, v0.7.6 through v1.1.70) - Pruned From This File
+D-442-followup (§457): eleventh pruning pass - §432 removed (already logged verbatim in History.md), cutoff
+moved from §432 to §433, keeping the working set at 25 rounds (§433-§457).
 
 D-397 (§453): seventh pruning pass - §425-§428 removed (all four already logged verbatim in History.md, no
 backfill needed), cutoff moved from §425 to §429, keeping the working set at 25 rounds (§429-§453).
