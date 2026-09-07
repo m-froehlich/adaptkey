@@ -523,7 +523,14 @@ own origin.
   own explicit call: this gesture already positions the cursor in two independent dimensions, so a horizontal
   drag reaching a line boundary has no reason to also flip line the way a plain document-wide character offset
   naturally would once it crosses a real newline. Only the one boundary actually at risk for the current drag
-  direction is checked at a time.
+  direction is checked at a time. **Exception, D-401-followup**: a genuinely zero-width line (an empty line
+  between two newlines) has its own start and end at the exact same offset - clamping there literally traps
+  the caret on it forever, since neither direction could ever produce a different position. Reported on a
+  real device as the caret "sticking" indefinitely on a blank line and only escaping by accident once an
+  unrelated vertical move happened to fire in the same drag (perceived as an involuntary "flip"). A move that
+  would otherwise clamp to the caret's own current position is left unclamped instead, crossing into the
+  adjacent line by exactly the drag's own delta - the same thing an ordinary text editor's arrow key already
+  does from an empty line.
 - **Stage 2 - selection.** Dragging instead extends a text selection from wherever Stage 1 left the caret.
   D-401-followup: **any** release while Stage 2 is active ends the mode outright and collapses the selection
   to the current position - the original "only a strict zero-movement tap ends it" reading was reported as

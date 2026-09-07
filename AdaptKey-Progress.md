@@ -1076,6 +1076,40 @@ non-trivial changes).
 
 ## Current State
 
+- **§467 (v1.2.27): D-401-followup - user confirmed §466's own two fixes both hold on device**
+  **("Das hat definitiv geklappt" - chip suppression reliable, checkmark tap ends the mode), plus one more**
+  **real bug found from a third device log.** User reported the caret now "sticks stubbornly" at what looked
+  like the end of the text block, was hard to move away from, and occasionally "flipped" into the next line
+  when finally dragged out.
+
+  **Root cause, found directly in the log, not guessed**: the field's real content contains a genuinely
+  empty line (two adjacent newlines - a blank paragraph break). At that exact offset, `leftBoundary()` and
+  `rightBoundary()` both resolve to the caret's own current position (an empty line has zero width - there is
+  nothing to its left *within the line* and nothing to its right either), so `clampToCurrentLine()` clamped
+  every character move straight back to where the caret already was, in *both* directions at once - the log
+  showed `target=109 clampedPosition=108` and `target=107 clampedPosition=108` for dozens of consecutive
+  moves in a row. This is a real, previously-unconsidered edge case of the D-401-followup no-flip clamp
+  (§462/§463): the clamp assumed a line always has positive width to move around within, true for every
+  earlier test but not for a blank line. The caret was not "stuck" by any timer or debounce - it was
+  mathematically unable to satisfy `target != position` via a character move alone. Escaping only ever
+  happened by accident, when the same drag's accumulated vertical distance coincidentally crossed a line-move
+  threshold too - which is also exactly the "flip" the user reported, since that vertical move could land
+  anywhere, not where a further horizontal drag was actually aimed.
+
+  **Fixed by recognising the degenerate case explicitly**: when a computed boundary equals the caret's own
+  current position, `leftBoundary()`/`rightBoundary()` now return `null` (this project's own existing
+  "unclamped" signal) instead of that self-referential result - the character move is then applied without
+  clamping, crossing into the adjacent line by exactly the drag's own delta, matching what an ordinary text
+  editor's arrow key already does from an empty line. The very next move re-reads a fresh boundary from
+  wherever it landed, so this does not reopen the original flip bug for any line with real width - only a
+  genuinely zero-width line is affected.
+
+  1596 unit tests unchanged (Android-glue logic, no new pure logic - both changed functions are already
+  Android-glue-only, per their own existing KDoc). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+  `versionCode` 522 -> 523, `versionName` "1.2.26" -> "1.2.27". Spec (`G-08`) updated with this exception.
+  Diagnostic logging (§465) still kept in place, one more round - not yet independently re-confirmed on
+  device for this specific fix.
+
 - **§466 (v1.2.26): D-401-followup - the real root cause(s), found from §465's own instrumented device log,**
   **not another guess.** The user reproduced the drag again in Google Keep and attached the full log. Two
   genuine, independent bugs, both confirmed directly against the log rather than inferred:
@@ -2081,59 +2115,10 @@ non-trivial changes).
   the thin Wiktionary source makes this one more likely than Russian's to need follow-up curation.
   `versionCode` 498 -> 499, `versionName` "1.2.2" -> "1.2.3". Next: Azerbaijani, then Uzbek.
 
-- **§442 (v1.2.2): D-450-followup - first Russian language pack, first of the four §441 keyboard-layout-only**
-  **languages to get a real dictionary.** Full Language Contribution Guide §8 pipeline. By far the largest
-  corpus this project has processed: the entire `ruwiki-latest-pages-articles.xml.bz2`
-  (5,986,059,762 bytes compressed, ~5x the previous largest, Serbian's own) - live-verified before
-  downloading. Free RAM checked first (~6.6GB of 16GB) and the extractor tuned down from Serbian's own
-  settings rather than reused unchanged: 3 workers (not 5), more aggressive hapax-pruning triggers (2M/4M,
-  not 4M/8M). Real result: 2,116,244 pages (matching `ru.wikipedia.org`'s own live `siteinfo` article count,
-  2,116,865, almost exactly), 756,562,343 tokens, 2,410,579 distinct words, 9,687,936 raw bigram rows (>=3).
-  RAM stayed stable throughout, never climbing unboundedly.
+## Older Rounds (§1-§442, v0.7.6 through v1.2.2) - Pruned From This File
 
-  **Wiktionary: Russian has a genuinely native edition** (`kaikki.org/dictionary/downloads/ru/ru-extract.jsonl.gz`,
-  290,531,383 bytes - directly verified bigger than the wrong English-coverage file's 88,879,732 bytes) - the
-  richest native Wiktionary source this project has processed (175,567 nouns, 187,834 verbs, 52,561
-  adjectives, 136 prepositions, 21,282 proper nouns).
-
-  **A real, serious bug found and fixed via the Guide's own mandatory calibration-ratio sanity check - not
-  dismissed as "the pipeline ran cleanly, so it's probably fine."** The first pass's adjective ratio came
-  back 21.0x (n=449), a stark outlier next to noun/verb's own ~0.4x/~0.97x. Pulling the real matched pairs
-  directly showed the lemma side was corrupted: extremely common adjectives ("новый"/"new", "другой"/"other",
-  "последний"/"last") had lost their trailing й, becoming the wrong but still valid-LOOKING words "новыи"/
-  "другои"/"последнии" - the plain-Cyrillic-letters validation regex never caught it, which is exactly why
-  this needed the ratio check to surface at all. Root cause: `strip_stress()` (added to remove the source's
-  own combining stress marks, e.g. "дома́") NFD-normalised the whole string and dropped every Unicode
-  category-Mn character, on an assumption ("no Russian letter decomposes under NFD") that was never actually
-  verified and turned out false - й (U+0439) canonically decomposes to и (U+0438) + COMBINING BREVE (U+0306,
-  also Mn), ё (U+0451) to е (U+0435) + COMBINING DIAERESIS (U+0308, also Mn), confirmed directly with
-  Python's own `unicodedata.normalize`. Fixed by not normalising at all - the source text is already NFC, so
-  `strip_stress()` now strips only the two specific stress-mark codepoints (U+0301/U+0300) directly, leaving
-  й/ё untouched. Re-extracted from scratch; ratios came back sane (noun 0.3684, verb 0.6875, adjective
-  0.6316) and the pure-`ADJECTIVE` tag count alone jumped 601 -> 23,172 in the initial kaikki merge, showing
-  how much real data the bug had silently been losing.
-
-  Also verified before writing the extractor, not assumed: Russian's periphrastic imperfective future is
-  documented as one literal placeholder row ("бу́ду/бу́дешь… де́лать", tagged just "future") - excluded via the
-  established "reject any form containing whitespace" rule (Turkish/Dutch precedent); no dotted/dotless-I
-  casing quirk; genuinely prepositional (no Turkish-style prep-tag gap).
-
-  **Net result**: `dict.tsv` 789,336 initial rows -> 1,581,888 after Wortfamilien completion (+792,552:
-  154,897 lemmas tagged, 339,224 forms linked, 792,552 generated; ratios noun 0.3684/verb 0.6875/adjective
-  0.6316, all sane). Proper nouns: 14,543 tagged, 4,944 unmatched, 1,795 collision-skipped. Bare-noun safety
-  check: 0. `bigram.tsv`: 4,349,059 rows (>=10 cutoff, largest of any pack so far) from 9,687,936 raw.
-  Quality gate: 0 duplicates/non-positive/orphaned-lemma/bare-NOUN - PASS. No `hints.tsv`/`diacritics.tsv`
-  (Cyrillic letters are standalone code points, same as Serbian/Greek); `abbreviations.tsv` hand-drafted
-  (26 entries). `RussianRules`: `decimalCommaGluesDigits`=true (GOST 8.417), `timeSuggestionWord`=null,
-  `bundledConfusablesBlacklist`=empty - `confusables_scan.py` gained `"russian_jcuken"`/`"ukrainian_jcuken"`
-  row layouts (Ukrainian's own added now too, since it's next) and found 1,166 candidate pairs, left
-  uncurated for the usual no-native-fluency reason. `language_profiles.tsv` gained a real 200-ngram Russian
-  profile. Capitalisation: does not capitalise common nouns, like every other non-German language.
-  **Honesty gate (step 11) NOT satisfied**: not reviewed by a Russian speaker, not device-confirmed.
-  `versionCode` 497 -> 498, `versionName` "1.2.1" -> "1.2.2". Next: Ukrainian, then Azerbaijani, then Uzbek
-  (same D-450-followup round).
-
-## Older Rounds (§1-§441, v0.7.6 through v1.2.1) - Pruned From This File
+D-401-followup (§467): twenty-first pruning pass - §442 removed (already logged verbatim in History.md),
+cutoff moved from §442 to §443, keeping the working set at 25 rounds (§443-§467).
 
 D-401-followup (§466): twentieth pruning pass - §441 removed (already logged verbatim in History.md), cutoff
 moved from §441 to §442, keeping the working set at 25 rounds (§442-§466).

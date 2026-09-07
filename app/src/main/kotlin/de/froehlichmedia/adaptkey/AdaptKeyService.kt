@@ -3302,7 +3302,9 @@ class AdaptKeyService : InputMethodService() {
      * [cursorControlPosition] relative to the anchor again on the very next step regardless.
      *
      * @return the absolute offset of the current line's first character, or null if it could not be
-     *         determined (an `InputConnection` read failed) - the caller leaves [target] unclamped then
+     *         determined (an `InputConnection` read failed) or the current line has zero width (the
+     *         boundary would equal [cursorControlPosition] itself) - the caller leaves [target] unclamped
+     *         in either case
      */
     private fun leftBoundary(ic: InputConnection, stage: CursorControlGesture.Stage): Int? {
         val position = cursorControlPosition
@@ -3324,7 +3326,15 @@ class AdaptKeyService : InputMethodService() {
             val newlineBefore = before.lastIndexOf('\n')
             val result = position - (before.length - (newlineBefore + 1))
             diag("AdaptKeyJitter", "leftBoundary: direct path before.length=${before.length} newlineBefore=$newlineBefore result=$result")
-            return result
+            // D-401-followup (bug fix): a zero-width line (an empty line between two newlines) has its own
+            // start and end at the exact same offset - clamping there for real would trap the cursor on it
+            // permanently, since neither a left nor a right character move could ever satisfy
+            // target != position. Reported on a real device as the cursor "sticking" indefinitely at a blank
+            // line, escaping only by accident once an unrelated vertical (line) delta happened to fire in the
+            // same drag. Leaving the move unclamped here instead lets it cross into the adjacent line by
+            // exactly the drag's own delta, the same way an ordinary text editor's Left arrow already would
+            // from an empty line - the very next move re-reads a fresh boundary from wherever it landed.
+            return if (result == position) null else result
         }
         val selected = ic.getSelectedText(0)?.toString()
         if (selected == null) {
@@ -3350,7 +3360,9 @@ class AdaptKeyService : InputMethodService() {
             val newlineAfter = after.indexOf('\n')
             val result = position + if (newlineAfter == -1) after.length else newlineAfter
             diag("AdaptKeyJitter", "rightBoundary: direct path after.length=${after.length} newlineAfter=$newlineAfter result=$result")
-            return result
+            // D-401-followup (bug fix): the mirror of leftBoundary's own zero-width-line fix above - see
+            // that KDoc.
+            return if (result == position) null else result
         }
         val selected = ic.getSelectedText(0)?.toString()
         if (selected == null) {
