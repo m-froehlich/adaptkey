@@ -4,6 +4,7 @@
 package de.froehlichmedia.adaptkey.keyboard
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 class CursorControlGestureTest {
@@ -99,5 +100,28 @@ class CursorControlGestureTest {
         val dy = CursorControlGesture.DP_PER_LINE_STEP * density * 1f
         val steps = CursorControlGesture.stepsFor(dx, dy, density)
         assertEquals(0, steps.lines)
+    }
+    
+    @Test
+    fun targetPointForScalesBothAxesByTheGain() {
+        val target = CursorControlGesture.targetPointFor(100f, 200f, 40f, -60f, gain = 0.5f)
+        assertEquals(120f, target.x, 0.001f)
+        assertEquals(170f, target.y, 0.001f)
+    }
+    
+    @Test
+    fun targetPointForMovesTheCaretLessThanTheFinger() {
+        // The user's own explicit requirement: 1:1 would make the gesture no better than tapping directly.
+        val fingerTravel = 200f
+        val target = CursorControlGesture.targetPointFor(0f, 0f, fingerTravel, 0f)
+        assertTrue(target.x < fingerTravel)
+        assertTrue(target.x > 0f)
+    }
+    
+    @Test
+    fun targetPointForWithoutTravelIsTheOriginItself() {
+        val target = CursorControlGesture.targetPointFor(37f, 91f, 0f, 0f)
+        assertEquals(37f, target.x, 0.001f)
+        assertEquals(91f, target.y, 0.001f)
     }
 }

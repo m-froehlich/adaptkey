@@ -544,16 +544,27 @@ own origin.
   a corrected two-sided check was still the wrong fix for the wrong problem: a device test right after
   showed the caret still flipping between ordinary lines during plainly horizontal drags, which is what
   led to the dominant-axis gate above and, from there, to this whole rearchitecture.
-  **Known limitation - "line" currently means paragraph, not visible line (device-confirmed, D-401-followup).**
-  Everything above operates on real `'\n'` characters, the only line structure `InputConnection` exposes at
-  all. A long paragraph that the target app soft-wraps across several *visible* lines is therefore one single
-  line to this gesture: dragging horizontally runs the full width of the whole paragraph, and a line change
-  jumps to the next real paragraph rather than the next visible line. On a note consisting of one 107-character
-  paragraph plus one empty line, that is precisely the reported "the caret flips" / "changing lines is nearly
-  impossible" behaviour. This is a genuine structural limitation of the current model, not a tuning problem;
-  whether it can be lifted at all depends on whether target apps report the caret's own drawn coordinates via
-  `CursorAnchorInfo` (which would make a soft wrap observable as a jump in the caret's y coordinate) - being
-  probed as of v1.2.32, see Progress §472.
+  **Screen-space positioning where the editor reports caret coordinates (v1.2.33, D-401-followup).** The
+  description above is the *fallback*. Its structural limitation is that `'\n'` is the only line structure
+  `InputConnection` exposes, so a paragraph the target app soft-wraps across several visible lines is one
+  single line to it - dragging horizontally then runs the full width of the whole paragraph, and a line
+  change jumps to the next paragraph rather than the next visible line. That is exactly the reported "the
+  caret flips" / "changing lines is nearly impossible" behaviour.
+
+  Where the app reports the caret's own drawn position (`CursorAnchorInfo`/`requestCursorUpdates` -
+  device-confirmed in Google Keep), Stage 1 instead works in screen space: the finger's travel, scaled by a
+  gain **deliberately below 1** (the caret must move *less* than the finger - the gesture exists for
+  precision, and reach is restored by lifting and re-touching, like lifting a mouse), names a target point,
+  and the caret is driven towards it in a feedback loop - each applied move is reported back, and the error
+  refines the next one. A soft wrap is observable there as a jump in the caret's own y coordinate, so a
+  *visible* line becomes a real line. The two rules then follow from geometry rather than thresholds:
+  dragging sideways names a point on the same row and so cannot change lines (the row's own offset range is
+  learned from real reports, not guessed), and dragging down names a point one row height lower and so moves
+  exactly one visible line. Column is preserved across a line change for free, since the target point
+  carries it.
+
+  Stage 2 (selection) keeps the fallback model in every app: the reported insertion marker is only
+  unambiguous while the selection is collapsed, and only that case has been confirmed on a device.
 
 - **Stage 2 - selection.** Dragging instead extends a text selection from wherever Stage 1 left the caret.
   D-401-followup: **any** release while Stage 2 is active ends the mode outright and collapses the selection

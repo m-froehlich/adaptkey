@@ -106,6 +106,7 @@ import de.froehlichmedia.adaptkey.keyboard.ExtraRowView
 import de.froehlichmedia.adaptkey.keyboard.HapticTier
 import de.froehlichmedia.adaptkey.keyboard.SignFlip
 import de.froehlichmedia.adaptkey.keyboard.SymbolLayout
+import de.froehlichmedia.adaptkey.keyboard.VisualCaretServo
 import de.froehlichmedia.adaptkey.language.ActiveLanguageStore
 import de.froehlichmedia.adaptkey.language.InstalledLanguagesStore
 import de.froehlichmedia.adaptkey.language.Language
@@ -3118,6 +3119,37 @@ class AdaptKeyService : InputMethodService() {
     // probe is for. Remove together with the probe itself.
     private var cursorControlAnchorInfoSeen = false
     
+    // D-401-followup (§473): the screen-space model's own state - see driveCursorControlServo() for the
+    // loop and VisualCaretServo's own class KDoc for why it is a loop at all. cursorControlOrigin{X,Y} is
+    // where the caret was *drawn* when the current drag began (arm time, or any later re-touch), which the
+    // finger's own travel is added to; it is only knowable once the editor has actually reported a caret
+    // position, hence the separate "known" flag rather than a sentinel value. cursorControlTarget{X,Y} is
+    // the point the caret is currently being driven towards, kept between moves so that a report arriving
+    // while the finger holds still can carry on converging on it. cursorControlServoPasses caps how many
+    // proposals one target may produce, so a pathological editor cannot turn the loop into a livelock.
+    private val cursorControlServo = VisualCaretServo()
+    private var cursorControlOriginX = 0f
+    private var cursorControlOriginY = 0f
+    private var cursorControlOriginKnown = false
+    private var cursorControlTargetX = 0f
+    private var cursorControlTargetY = 0f
+    private var cursorControlTargetActive = false
+    private var cursorControlServoPasses = 0
+    
+    // D-401-followup: the newline-based fallback path's own de-duplication, now that the view reports every
+    // motion event rather than only the ones that changed these totals (the screen-space path needs the
+    // unquantised ones in between). Purely an optimisation - applying the same totals twice is harmless by
+    // construction in the direct-positioning model, just pointless work and log noise.
+    private var cursorControlLastAppliedCharacters = Int.MIN_VALUE
+    private var cursorControlLastAppliedLines = Int.MIN_VALUE
+    
+    // D-401-followup: the newest totals the view has reported, whichever path consumed them - needed only
+    // to hand a drag over from the screen-space path to the newline-based one when Stage 2 begins mid-drag.
+    // The fallback's own formula is "origin column + total characters", so its origin has to be re-based
+    // onto wherever the servo actually left the caret, or the handover would jump.
+    private var cursorControlLatestCharacters = 0
+    private var cursorControlLatestLines = 0
+    
     private val cursorControlAnchorInfoProbeRunnable = Runnable {
         if (!cursorControlAnchorInfoSeen) {
             diag(
@@ -3136,6 +3168,7 @@ class AdaptKeyService : InputMethodService() {
             cursorControlAnchor = cursorControlPosition
             cursorControlAppliedLines = 0
             currentInputConnection?.let { cursorControlOriginColumn = currentColumn(it) }
+            resetCursorControlServo(forgetLayout = true)
             // D-401-followup: cancels whatever was left over from typing right before the long-press - the
             // refreshSuggestions()/showSuggestions() gates below already stop any of these from ever
             // touching the bar while the gesture is active, but there is no reason to still let the
@@ -3155,15 +3188,32 @@ class AdaptKeyService : InputMethodService() {
             // actually is right now, exactly like onCursorControlArmed() establishes it the first time.
             cursorControlAppliedLines = 0
             currentInputConnection?.let { cursorControlOriginColumn = currentColumn(it) }
+            // D-401-followup: a re-touch re-anchors *where the finger started*, exactly like lifting and
+            // re-placing a mouse - but deliberately keeps everything the servo has learned about this
+            // field's own layout (forgetLayout = false), since that is a property of the text on screen and
+            // not of any one drag. Re-touching therefore now makes the gesture more accurate rather than
+            // resetting its knowledge, the opposite of the newline-based model, where each re-touch
+            // re-established a guessed column reference from scratch.
+            resetCursorControlServo(forgetLayout = false)
         }
         
-        override fun onCursorControlMove(stage: CursorControlGesture.Stage, characters: Int, lines: Int) {
-            applyCursorControlMove(stage, characters, lines)
+        override fun onCursorControlMove(stage: CursorControlGesture.Stage, characters: Int, lines: Int, dx: Float, dy: Float) {
+            applyCursorControlMove(stage, characters, lines, dx, dy)
         }
         
         override fun onCursorControlStageChanged(stage: CursorControlGesture.Stage) {
             if (stage == CursorControlGesture.Stage.SELECTION) {
                 cursorControlAnchor = cursorControlPosition
+                // D-401-followup (§473): Stage 2 runs on the newline-based path even when Stage 1 ran on the
+                // screen-space one, so its "origin column + total characters" reference is re-based here onto
+                // wherever the caret actually ended up - the drag's own totals keep counting from the touch
+                // origin, and without this the first Stage 2 move would jump back to what those totals meant
+                // under the other model.
+                currentInputConnection?.let { cursorControlOriginColumn = currentColumn(it) - cursorControlLatestCharacters }
+                cursorControlAppliedLines = cursorControlLatestLines
+                cursorControlLastAppliedCharacters = Int.MIN_VALUE
+                cursorControlLastAppliedLines = Int.MIN_VALUE
+                cursorControlTargetActive = false
             }
             showCursorControlHint(stage)
         }
@@ -3176,6 +3226,7 @@ class AdaptKeyService : InputMethodService() {
         override fun onCursorControlEnded() {
             cursorControlSessionActive = false
             stopCursorAnchorInfoProbe()
+            resetCursorControlServo(forgetLayout = true)
             // D-401: the user's own explicit call - the gesture never touches composing state itself, so
             // ending it simply resyncs the ordinary suggestion bar from whatever composing/caret state
             // already is, exactly like any other external caret move already would.
@@ -3266,9 +3317,98 @@ class AdaptKeyService : InputMethodService() {
                 "rtl=${(flags and CursorAnchorInfo.FLAG_IS_RTL) != 0} " +
                 "composingStart=${info.composingTextStart}"
         )
+        // D-401-followup (§473): the same report, now actually consumed. Only a collapsed selection is fed
+        // in - the reported insertion marker is unambiguous exactly then, and Stage 2 deliberately keeps the
+        // newline-based path for that reason (see applyCursorControlMove()'s own KDoc).
+        if (info.selectionStart != info.selectionEnd || markerX.isNaN() || markerTop.isNaN() || markerBottom.isNaN()) {
+            return
+        }
+        cursorControlServo.observe(info.selectionStart, screen[0], screen[1], screen[1] + (markerBottom - markerTop))
+        if (!cursorControlOriginKnown) {
+            cursorControlServo.currentObservation()?.let {
+                cursorControlOriginX = it.x
+                cursorControlOriginY = it.top + (it.bottom - it.top) / 2f
+                cursorControlOriginKnown = true
+            }
+        }
+        // D-401-followup: what makes this a closed loop rather than a one-shot estimate - a fresh report is
+        // exactly the new information the previous proposal was missing, so the target is re-approached
+        // here too, not only when the finger next moves. That is what lets the caret settle onto a target
+        // while the finger is held completely still.
+        if (cursorControlTargetActive) {
+            driveCursorControlServo()
+        }
     }
     
     /**
+     * D-401-followup (§473): clears the screen-space model's own per-drag state. [forgetLayout] separates
+     * the two genuinely different resets: a re-touch only re-anchors where the finger started, while arming
+     * or ending the gesture also discards everything learned about the field's own text layout, which may
+     * belong to an entirely different field by the time the gesture next arms.
+     */
+    private fun resetCursorControlServo(forgetLayout: Boolean) {
+        if (forgetLayout) {
+            cursorControlServo.reset()
+        }
+        cursorControlOriginKnown = false
+        cursorControlTargetActive = false
+        cursorControlServoPasses = 0
+        cursorControlLastAppliedCharacters = Int.MIN_VALUE
+        cursorControlLastAppliedLines = Int.MIN_VALUE
+    }
+    
+    /**
+     * D-401-followup (§473): one pass of the screen-space loop - ask [cursorControlServo] where the caret
+     * should go to get closer to the target point, and put it there. Proposing nothing means "already
+     * there", which is the loop's own termination condition; [CURSOR_CONTROL_SERVO_MAX_PASSES] is the
+     * safety net for an editor whose reports never converge, so a pathological one costs a few wasted
+     * `setSelection()` calls rather than a livelock.
+     *
+     * The addressable range is derived from what can actually be read around the caret rather than assumed:
+     * `getTextBeforeCursor()`/`getTextAfterCursor()` return however much text exists, so their lengths bound
+     * the document exactly whenever it is shorter than the scan window, and harmlessly under-report it when
+     * it is longer (the caret simply cannot be driven more than one window's worth in a single pass).
+     */
+    private fun driveCursorControlServo() {
+        val ic = currentInputConnection ?: return
+        val observed = cursorControlServo.currentObservation() ?: return
+        if (cursorControlServoPasses >= CURSOR_CONTROL_SERVO_MAX_PASSES) {
+            return
+        }
+        val before = ic.getTextBeforeCursor(CURSOR_CONTROL_LINE_SCAN_WINDOW, 0)?.length ?: return
+        val after = ic.getTextAfterCursor(CURSOR_CONTROL_LINE_SCAN_WINDOW, 0)?.length ?: return
+        val next = cursorControlServo.targetOffset(
+            cursorControlTargetX,
+            cursorControlTargetY,
+            observed.offset - before,
+            observed.offset + after
+        ) ?: return
+        cursorControlServoPasses++
+        cursorControlServo.expect(next)
+        cursorControlPosition = next
+        diag(
+            "AdaptKeyJitter",
+            "cursorControlServo: target=[$cursorControlTargetX,$cursorControlTargetY] from=${observed.offset} " +
+                "at=[${observed.x},${observed.top}] charWidth=${cursorControlServo.averageCharWidth()} -> $next"
+        )
+        ic.setSelection(next, next)
+    }
+    
+    /**
+     * D-401-followup (§473): routes the drag to whichever of the two models can actually serve it.
+     *
+     * **The screen-space model** ([VisualCaretServo]) applies whenever the target app reports caret
+     * coordinates and this drag has an origin to measure from - then the finger's own travel, scaled by
+     * [CursorControlGesture.SCREEN_SPACE_GAIN], names a point on screen and the caret is driven towards it.
+     * That is the only one of the two that can express a *visible* line, so it is the one that matches what
+     * the user is actually dragging against.
+     *
+     * **The newline-based model below** is the fallback, unchanged, for an editor that reports nothing (and,
+     * deliberately, for Stage 2 in every editor: the reported insertion marker is only unambiguous while the
+     * selection is collapsed, and this round has device evidence for the collapsed case only - extending a
+     * selection in screen space needs its own probe rather than an assumption, which is precisely the
+     * mistake that cost rounds §462-§470).
+     *
      * D-401-followup: applies the gesture's own current total offset directly and absolutely - never as an
      * incremental delta - matching the user's own explicit correction of this whole mechanism's mental
      * model: dragging right always means "as far right as the current line allows," independent of how far
@@ -3284,8 +3424,26 @@ class AdaptKeyService : InputMethodService() {
      * an ordinary horizontal-only move. This also removes the need to ever combine or sequence the two axes
      * specially - a line change and a column fix simply both apply, in that order, every time.
      */
-    private fun applyCursorControlMove(stage: CursorControlGesture.Stage, characters: Int, lines: Int) {
+    private fun applyCursorControlMove(stage: CursorControlGesture.Stage, characters: Int, lines: Int, dx: Float, dy: Float) {
         val ic = currentInputConnection ?: return
+        cursorControlLatestCharacters = characters
+        cursorControlLatestLines = lines
+        if (stage == CursorControlGesture.Stage.CURSOR && cursorControlOriginKnown && cursorControlServo.isReady()) {
+            val target = CursorControlGesture.targetPointFor(cursorControlOriginX, cursorControlOriginY, dx, dy)
+            if (target.x != cursorControlTargetX || target.y != cursorControlTargetY) {
+                cursorControlServoPasses = 0
+            }
+            cursorControlTargetX = target.x
+            cursorControlTargetY = target.y
+            cursorControlTargetActive = true
+            driveCursorControlServo()
+            return
+        }
+        if (characters == cursorControlLastAppliedCharacters && lines == cursorControlLastAppliedLines) {
+            return
+        }
+        cursorControlLastAppliedCharacters = characters
+        cursorControlLastAppliedLines = lines
         // D-401-followup (temporary diagnostic): every call, mirroring AdaptKeyboardView's own logTouch() -
         // see that call site's own note for why. Remove once D-401's cursor movement is confirmed correct.
         diag(
@@ -7891,6 +8049,12 @@ class AdaptKeyService : InputMethodService() {
         // at all. Deliberately generous - a negative result must be trustworthy, and this only ever delays a
         // log line, never anything the user can perceive. Remove together with the probe itself.
         private const val CURSOR_CONTROL_ANCHOR_PROBE_MS = 500L
+        
+        // D-401-followup (§473): how many proposals driveCursorControlServo() may make for one target point
+        // before giving up on it. Only ever reached by an editor whose reported caret positions do not
+        // converge (one that reports a stale position indefinitely, say); an ordinary drag settles in two or
+        // three, and the counter resets the moment the finger names a new target anyway.
+        private const val CURSOR_CONTROL_SERVO_MAX_PASSES = 12
         
         // D-347/D-350: how long the caret must sit still (composing empty) before reclaimWordAtCaret() runs -
         // see reclaimWordAtCaretRunnable's own field KDoc. Shorter than EXPENSIVE_SUGGESTION_DELAY_MS at the

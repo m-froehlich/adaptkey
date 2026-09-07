@@ -57,6 +57,44 @@ object CursorControlGesture {
      */
     const val DP_PER_LINE_STEP = 200f
     
+    /**
+     * D-401-followup: how far the caret travels per unit of finger travel in the screen-space model
+     * ([VisualCaretServo]) - the user's own explicit requirement, and the whole reason the gesture is worth
+     * having: "moving the finger 5 mm must move the caret less, at least horizontally - otherwise you may
+     * as well tap in the text directly." Below 1 the gesture buys precision and costs reach, and reach is
+     * exactly what the lift-and-re-touch window ([LIFT_GRACE_MS]) already restores, the same way lifting a
+     * mouse does.
+     *
+     * A starting value, expected to be tuned against real use - but for the first time a *meaningful* one:
+     * it is a plain ratio between two distances on the same screen, not a dp-per-character constant that
+     * silently depended on the target app's own font. For reference, [DP_PER_CHARACTER_STEP] worked out to
+     * roughly 0.6 against the character advances a real device reported.
+     */
+    const val SCREEN_SPACE_GAIN = 0.5f
+    
+    /** The screen point the caret is being driven towards, in the same coordinates the editor reports. */
+    data class TargetPoint(val x: Float, val y: Float)
+    
+    /**
+     * D-401-followup: where the caret should end up, given where it was when this drag began and how far
+     * the finger has travelled since. The whole of the screen-space model's own geometry - both axes scaled
+     * by [gain], nothing quantised, no thresholds.
+     *
+     * The absence of a per-axis special case is the point: the previous model needed a dominant-axis gate
+     * to stop a long horizontal drag's incidental vertical wobble from changing lines, because its two axes
+     * were separate counters. Here 40 px of wobble against a ~53 px row height simply names a point on the
+     * same row, so the rule "dragging sideways never changes the line" is geometry rather than a threshold.
+     *
+     * @param originX the caret's own horizontal position when this drag began
+     * @param originY the caret's own vertical position when this drag began
+     * @param dx how far the finger has travelled horizontally since, in raw pixels
+     * @param dy how far the finger has travelled vertically since, in raw pixels
+     * @param gain the finger-to-caret ratio, defaulting to [SCREEN_SPACE_GAIN]
+     */
+    fun targetPointFor(originX: Float, originY: Float, dx: Float, dy: Float, gain: Float = SCREEN_SPACE_GAIN): TargetPoint {
+        return TargetPoint(originX + dx * gain, originY + dy * gain)
+    }
+    
     /** Which half of the gesture is currently active. */
     enum class Stage {
         /** Dragging moves the caret; holding still for [HOLD_STILL_TO_SELECT_MS] promotes to [SELECTION]. */

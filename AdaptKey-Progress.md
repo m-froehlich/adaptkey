@@ -1074,6 +1074,62 @@ non-trivial changes).
   regression of that existing fix or a related race it does not fully cover. Needs a real device log to
   root-cause properly, per this project's own convention - not attempted blind.
 
+- **§473 (v1.2.33): D-401-followup - the probe came back positive, so the gesture's Stage 1 is now a**
+  **screen-space model: the caret is driven towards a *point*, and a soft-wrapped line is finally a real line.**
+
+  **The device log settled all three questions §472 asked** (Google Keep, one note = three paragraphs across
+  five visible rows). (1) Callbacks arrive: `accepted=true`, then a dense stream, one per applied
+  `setSelection()`. (2) Coordinates are real: never `NaN`, `visible=true` throughout. (3) **y genuinely
+  changes across a soft wrap**: within the 107-character paragraph that contains no `'\n'` at all, offset 0
+  was drawn at screen y 539 and offsets 55-80 at y 596 - one row lower, in the same paragraph. The visible
+  line is observable after all; the conclusion recorded in §472 that it was not is now definitively closed.
+
+  Three further facts the same log gave for free, each of which shaped the design:
+  - **The font is proportional.** Per-character advances between offsets 55 and 80 ranged from 11 to 24 px.
+    No fixed character width could ever have placed the caret correctly, which is why this is a *feedback
+    loop* and not a calculation.
+  - **Reports lag by one step.** `trackedOffset=68 reportedSel=[67,67]` recurs throughout, followed by the
+    settled report. So a report must be paired with the offset it actually names, never with whatever this
+    app currently believes - `VisualCaretServo.expect()` exists exactly for that.
+  - **The old line-step constant was wildly out.** `DP_PER_LINE_STEP` = 200 dp = 525 px of finger travel per
+    line against a 53 px row - the mechanical reason "changing lines is nearly impossible" was a fair report.
+
+  **What was built.** New pure, fully unit-tested `keyboard/VisualCaretServo` (18 tests): it accumulates
+  reported "offset N is drawn at (x, y)" facts, learns the average character advance and each row's own
+  offset range from them, and proposes the next offset to move to in order to get closer to a target point.
+  The caller applies it, the editor reports back, and the error feeds the next proposal - so holding the
+  finger still settles the caret within a few frames instead of needing the first estimate to be right. The
+  test fixture is a synthetic proportional, soft-wrapping layout, so the whole loop runs to convergence in a
+  plain JVM test; the soft-wrap cases are the ones the newline-based model could not express at all.
+
+  **The user's own two rules now fall out of the geometry instead of being enforced by thresholds.** A
+  sideways drag names a point on the same row, so it cannot change lines - and the row an offset belongs to
+  is *learned from real reports* (`rowBounds()`), so the clamp is exact rather than guessed. A downward drag
+  names a point one row height lower, so it moves one *visible* line. `stepsFor()`'s dominant-axis gate and
+  both `DP_PER_*` constants are therefore unnecessary on this path: 40 px of hand wobble against a 53 px row
+  simply names the same row, with nothing to tune. Re-touching now *keeps* everything learned about the
+  field's layout and only re-anchors where the finger started - the opposite of the newline-based model,
+  where every re-touch re-derived a guessed column reference (§472's first finding).
+
+  **The gain is now a real parameter.** `CursorControlGesture.SCREEN_SPACE_GAIN` = 0.5, the user's explicit
+  requirement that the caret move *less* than the finger ("otherwise you may as well tap in the text
+  directly"). For the first time it is a plain ratio between two distances on the same screen rather than a
+  dp-per-character constant that silently depended on the target app's font - and for reference, the old
+  `DP_PER_CHARACTER_STEP` worked out to roughly 0.6 against the advances the device actually reported.
+  Expect to tune it; it is one constant.
+
+  **Deliberately scoped out, with the reason.** Stage 2 (selection extension) keeps the newline-based path in
+  every editor: the reported insertion marker is only unambiguous while the selection is *collapsed*, and
+  this round has device evidence for the collapsed case only. Assuming otherwise is precisely the mistake
+  that cost rounds §462-§470, so the existing probe logging will answer it on the next device round instead.
+  The handover is explicit - when Stage 2 begins, the fallback's "origin column + total characters" reference
+  is re-based onto wherever the servo actually left the caret, so the drag continues rather than jumping.
+  The newline-based path also remains the full fallback for any editor that reports no coordinates at all.
+
+  1620 unit tests (1599 -> 1620: +18 `VisualCaretServoTest`, +3 `CursorControlGestureTest`).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 528 -> 529, `versionName` `"1.2.32"`
+  -> `"1.2.33"`. **Not yet device-confirmed** - the mechanism is new and the gain is a first guess.
+
 - **§472 (v1.2.32): D-401-followup - a premise probe, not a fix: does the target editor report the caret's**
   **own drawn coordinates?** No behaviour change at all; nothing reads the probed values yet.
 

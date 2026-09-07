@@ -165,8 +165,19 @@ class AdaptKeyboardView @JvmOverloads constructor(
          */
         fun onCursorControlReTouched()
         
-        /** @param characters total horizontal offset from the gesture's own origin; @param lines total vertical (line) offset, both absolute, never a delta */
-        fun onCursorControlMove(stage: CursorControlGesture.Stage, characters: Int, lines: Int)
+        /**
+         * D-401-followup: the drag's own current state, reported on every motion event past the touch slop.
+         * Both descriptions of the same drag, for the listener to pick between: [characters]/[lines] are the
+         * document-relative totals the newline-based model needs, [dx]/[dy] the raw finger travel the
+         * screen-space model ([VisualCaretServo]) needs - which one applies depends on whether the target
+         * app reports caret coordinates at all, and only the listener knows that.
+         *
+         * @param characters total horizontal offset from the gesture's own origin, absolute, never a delta
+         * @param lines total vertical (line) offset from the gesture's own origin, likewise absolute
+         * @param dx raw horizontal finger travel since the origin, in pixels, unquantised and unscaled
+         * @param dy raw vertical finger travel since the origin, in pixels, unquantised and unscaled
+         */
+        fun onCursorControlMove(stage: CursorControlGesture.Stage, characters: Int, lines: Int, dx: Float, dy: Float)
         
         fun onCursorControlStageChanged(stage: CursorControlGesture.Stage)
         
@@ -1492,8 +1503,14 @@ class AdaptKeyboardView @JvmOverloads constructor(
                     )
                     cursorControlLastSentChars = steps.characters
                     cursorControlLastSentLines = steps.lines
-                    onCursorControlListener?.onCursorControlMove(cursorControlStage, steps.characters, steps.lines)
                 }
+                // D-401-followup: reported on *every* move past the slop, not only when the quantised step
+                // totals change - the screen-space model works in raw pixels and would otherwise only ever
+                // see the drag in whole-character jumps, throwing away exactly the precision it exists for.
+                // The listener's own newline-based fallback path still de-duplicates on the step totals
+                // above, so nothing changed for it; only the logging is still gated, to keep the volume of
+                // the diagnostic above readable.
+                onCursorControlListener?.onCursorControlMove(cursorControlStage, steps.characters, steps.lines, dx, dy)
                 // D-401: genuine movement (beyond slop, checked above) resets the "holding still" clock -
                 // only reached while still in Stage 1, matching CursorControlGesture's own class KDoc.
                 if (cursorControlStage == CursorControlGesture.Stage.CURSOR) {
