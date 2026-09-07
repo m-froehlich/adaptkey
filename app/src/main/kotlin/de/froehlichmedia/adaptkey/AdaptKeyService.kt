@@ -3291,6 +3291,26 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
+     * D-401-followup: true only when [cursorControlPosition] sits on a genuinely empty line - the character
+     * immediately before the caret is a newline (or there is none: the very start of the field) *and* the
+     * character immediately after is also a newline (or there is none: the very end of the field). Deciding
+     * this from [leftBoundary]/[rightBoundary]'s own `result == position` check alone (the first, reverted
+     * attempt) could not tell an empty line apart from the caret simply sitting at the very start/end of an
+     * ordinary, non-empty line - both produce `result == position` on that one side alone, but only the
+     * empty-line case is genuinely stuck (unclampable in *both* directions). Confirmed real on a device: the
+     * reverted version unclamped every ordinary line boundary too, reopening the original flip bug outright.
+     * Two single-character `InputConnection` reads, only ever performed once a boundary has actually been
+     * hit (not on every move).
+     */
+    private fun isOnZeroWidthLine(ic: InputConnection): Boolean {
+        val before = ic.getTextBeforeCursor(1, 0)?.toString()
+        val after = ic.getTextAfterCursor(1, 0)?.toString()
+        val beforeIsNewlineOrStart = before.isNullOrEmpty() || before == "\n"
+        val afterIsNewlineOrEnd = after.isNullOrEmpty() || after == "\n"
+        return beforeIsNewlineOrStart && afterIsNewlineOrEnd
+    }
+    
+    /**
      * D-401-followup: the current line's own start, relative to [cursorControlPosition] - correct
      * regardless of stage. `getTextBeforeCursor()`/`getTextAfterCursor()` read relative to the *live*
      * selection's own start/end, not necessarily [cursorControlPosition] itself, once Stage 2 has dragged
@@ -3302,9 +3322,8 @@ class AdaptKeyService : InputMethodService() {
      * [cursorControlPosition] relative to the anchor again on the very next step regardless.
      *
      * @return the absolute offset of the current line's first character, or null if it could not be
-     *         determined (an `InputConnection` read failed) or the current line has zero width (the
-     *         boundary would equal [cursorControlPosition] itself) - the caller leaves [target] unclamped
-     *         in either case
+     *         determined (an `InputConnection` read failed) or the current line is a genuinely empty one
+     *         (see [isOnZeroWidthLine]) - the caller leaves [target] unclamped in either case
      */
     private fun leftBoundary(ic: InputConnection, stage: CursorControlGesture.Stage): Int? {
         val position = cursorControlPosition
@@ -3326,15 +3345,13 @@ class AdaptKeyService : InputMethodService() {
             val newlineBefore = before.lastIndexOf('\n')
             val result = position - (before.length - (newlineBefore + 1))
             diag("AdaptKeyJitter", "leftBoundary: direct path before.length=${before.length} newlineBefore=$newlineBefore result=$result")
-            // D-401-followup (bug fix): a zero-width line (an empty line between two newlines) has its own
-            // start and end at the exact same offset - clamping there for real would trap the cursor on it
-            // permanently, since neither a left nor a right character move could ever satisfy
-            // target != position. Reported on a real device as the cursor "sticking" indefinitely at a blank
-            // line, escaping only by accident once an unrelated vertical (line) delta happened to fire in the
-            // same drag. Leaving the move unclamped here instead lets it cross into the adjacent line by
-            // exactly the drag's own delta, the same way an ordinary text editor's Left arrow already would
-            // from an empty line - the very next move re-reads a fresh boundary from wherever it landed.
-            return if (result == position) null else result
+            // D-401-followup (bug fix): result == position here also fires for the ordinary, correct case of
+            // sitting at the very start of a real (non-empty) line - unclamping unconditionally there was
+            // itself a real regression (device-reported: "man flippt einfach durch die Zeilen"), reopening
+            // exactly the flip this whole mechanism exists to prevent. Only a genuinely zero-width line (see
+            // isOnZeroWidthLine()'s own KDoc) must stay unclamped; every other case keeps clamping to
+            // `result`, i.e. to `position` itself, correctly blocking further movement in this direction.
+            return if (result == position && isOnZeroWidthLine(ic)) null else result
         }
         val selected = ic.getSelectedText(0)?.toString()
         if (selected == null) {
@@ -3361,8 +3378,8 @@ class AdaptKeyService : InputMethodService() {
             val result = position + if (newlineAfter == -1) after.length else newlineAfter
             diag("AdaptKeyJitter", "rightBoundary: direct path after.length=${after.length} newlineAfter=$newlineAfter result=$result")
             // D-401-followup (bug fix): the mirror of leftBoundary's own zero-width-line fix above - see
-            // that KDoc.
-            return if (result == position) null else result
+            // that KDoc and isOnZeroWidthLine()'s own KDoc.
+            return if (result == position && isOnZeroWidthLine(ic)) null else result
         }
         val selected = ic.getSelectedText(0)?.toString()
         if (selected == null) {

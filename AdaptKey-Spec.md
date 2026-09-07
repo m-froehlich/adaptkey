@@ -530,7 +530,14 @@ own origin.
   unrelated vertical move happened to fire in the same drag (perceived as an involuntary "flip"). A move that
   would otherwise clamp to the caret's own current position is left unclamped instead, crossing into the
   adjacent line by exactly the drag's own delta - the same thing an ordinary text editor's arrow key already
-  does from an empty line.
+  does from an empty line. **The exception's own first attempt was itself a real regression, caught on the
+  very next device test**: unclamping *any* "boundary equals the caret's current position" result, without
+  checking the *other* direction too, also fired for the ordinary, correct case of the caret simply sitting
+  at the very start or end of a normal (non-empty) line - reopening the original flip bug outright ("man
+  flippt einfach durch die Zeilen"). Only a line confirmed empty in *both* directions (the character
+  immediately before the caret is a newline or the field's own start, *and* the character immediately after
+  is a newline or the field's own end) is genuinely stuck and gets unclamped; every ordinary line boundary
+  keeps clamping exactly as before.
 - **Stage 2 - selection.** Dragging instead extends a text selection from wherever Stage 1 left the caret.
   D-401-followup: **any** release while Stage 2 is active ends the mode outright and collapses the selection
   to the current position - the original "only a strict zero-movement tap ends it" reading was reported as

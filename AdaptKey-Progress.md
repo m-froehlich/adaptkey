@@ -1076,6 +1076,34 @@ non-trivial changes).
 
 ## Current State
 
+- **§468 (v1.2.28): D-401-followup - §467's own empty-line fix was itself a real regression, caught on the**
+  **very next device test.** User reported: "Jetzt ist es wieder wie vorher... man flippt einfach durch die
+  Zeilen" (back to flipping through lines again) - the fourth log in this saga, and it pinpointed the exact
+  mistake immediately.
+
+  **Root cause**: §467's own `result == position` check could not tell a genuinely empty line apart from the
+  caret simply sitting at the very start or end of an ordinary, *non-empty* line - both produce
+  `result == position` when only ONE direction is checked (which is all `leftBoundary()`/`rightBoundary()`
+  ever compute per call). The log showed this precisely: at position 109 - the real, content-bearing start of
+  a genuine third line - `leftBoundary()` correctly computed `result = 109 = position`, and §467's fix
+  unclamped it exactly as it would a true empty line, letting the caret cross straight back into the previous
+  (actually empty) line and beyond - the reopened flip.
+
+  **Fixed by actually distinguishing the two cases**, not by another single-direction check: new
+  `isOnZeroWidthLine()` reads one character before and one character after the caret directly - true only
+  when *both* are a newline (or the field's own start/end respectively). Only then does the boundary
+  actually get left unclamped; every ordinary line boundary (content on at least one side) keeps clamping to
+  `result` exactly as it did before §466/§467, correctly blocking the flip again. Verified against the same
+  device log line by line: position 109 (real line start) is no longer treated as zero-width (character
+  after the caret is real content, not a newline) and stays clamped; position 108 (the log's own confirmed
+  empty line) still reads as zero-width on both sides and still escapes correctly.
+
+  1596 unit tests unchanged (Android-glue logic only). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+  `versionCode` 523 -> 524, `versionName` "1.2.27" -> "1.2.28". Spec (`G-08`) updated to describe the
+  corrected two-sided detection and name the regression explicitly, so a future round does not repeat the
+  same single-direction mistake. Diagnostic logging (§465) still kept in place - not yet independently
+  re-confirmed by the user on device for this specific fix.
+
 - **§467 (v1.2.27): D-401-followup - user confirmed §466's own two fixes both hold on device**
   **("Das hat definitiv geklappt" - chip suppression reliable, checkmark tap ends the mode), plus one more**
   **real bug found from a third device log.** User reported the caret now "sticks stubbornly" at what looked
@@ -2087,35 +2115,10 @@ non-trivial changes).
   currency/punctuation choices are a first draft not a verified fact, not device-confirmed.
   `versionCode` 499 -> 500, `versionName` "1.2.3" -> "1.2.4". Next and last: Uzbek.
 
-- **§443 (v1.2.3): D-450-followup - first Ukrainian language pack, second of the four §441 keyboard-layout-**
-  **only languages to get a real dictionary.** Full Guide §8 pipeline. `ukwiki-latest-pages-articles.xml.bz2`
-  (2,689,611,157 bytes, live-verified) -> 1,433,142 pages (matching `uk.wikipedia.org`'s own live `siteinfo`
-  count, 1,433,512), 389,701,751 tokens, 2,397,542 distinct words. Extractor settings reasoned from the real
-  size ratio to Russian's own dump (2.69GB vs. 5.99GB): 4 workers, 3M/6M hapax-pruning triggers. Ukrainian's
-  apostrophe (e.g. "п'ять"/"five") is a genuine letter-boundary marker, not punctuation - tokeniser allows it
-  inside a run of letters like "-" for compounds.
+## Older Rounds (§1-§443, v0.7.6 through v1.2.3) - Pruned From This File
 
-  **No native Wiktionary edition** (`kaikki.org/dictionary/downloads/uk/` 404s, confirmed against
-  `rawdata.html`) - used the English-Wiktionary-coverage fallback (27,908,333 bytes), genuinely thinner than
-  Russian's own native source (11,250 nouns/5,348 verbs/5,126 adjectives vs. Russian's 175,567/187,834/
-  52,561) - flagged explicitly in the catalog entry as needing more future curation than Russian's round.
-  Learned proactively from Russian's own real bug: this fallback carries the identical combining-stress-mark
-  shape, so the already-fixed `strip_stress()` (strip only U+0301/U+0300 directly, never NFD-normalise) was
-  applied from the first pass - calibration ratios came back sane immediately (noun 0.2708, verb 0.5833,
-  adjective 0.4667), no second debugging round needed this time.
-
-  **Net result**: `dict.tsv` 471,516 -> 606,723 rows (+135,207 from Wortfamilien completion, all ratios sane).
-  Bare-noun safety check: 0. `bigram.tsv`: 2,700,448 rows (>=10 cutoff) from 6,370,404 raw. Quality gate PASS.
-  No `hints.tsv`/`diacritics.tsv` (standalone Cyrillic code points). `abbreviations.tsv`: 22 hand-drafted
-  entries. `UkrainianRules`: `decimalCommaGluesDigits`=true (DSTU), `timeSuggestionWord`=null,
-  `bundledConfusablesBlacklist`=empty - `confusables_scan.py` gained `"ukrainian_jcuken"` (found 3,832
-  candidates, left uncurated, usual no-native-fluency reason). `language_profiles.tsv` gained a real
-  200-ngram Ukrainian profile. Capitalisation: does not capitalise common nouns.
-  **Honesty gate (step 11) NOT satisfied**: not reviewed by a Ukrainian speaker, not device-confirmed, and
-  the thin Wiktionary source makes this one more likely than Russian's to need follow-up curation.
-  `versionCode` 498 -> 499, `versionName` "1.2.2" -> "1.2.3". Next: Azerbaijani, then Uzbek.
-
-## Older Rounds (§1-§442, v0.7.6 through v1.2.2) - Pruned From This File
+D-401-followup (§468): twenty-second pruning pass - §443 removed (already logged verbatim in History.md),
+cutoff moved from §443 to §444, keeping the working set at 25 rounds (§444-§468).
 
 D-401-followup (§467): twenty-first pruning pass - §442 removed (already logged verbatim in History.md),
 cutoff moved from §442 to §443, keeping the working set at 25 rounds (§443-§467).
