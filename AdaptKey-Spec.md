@@ -498,8 +498,9 @@ address bar) still submits, via a real `KEYCODE_ENTER` key event rather than `pe
 fields typically treat the raw key event itself as their own submit trigger.
 
 ### G-08 - Space-Bar Cursor/Selection Control (D-401)
-A long-press on the space bar (opt-in, off by default - a Settings toggle, since it is a new,
-screen-consuming gesture on the app's most-tapped key) arms a two-stage touch-driven cursor mode, reached
+A long-press on the space bar (a Settings toggle, default **on** - D-401-followup: genuine accidental
+activation is unlikely, since G-01's own language-switch gesture is a plain swipe, not a long-press, so the
+two never actually compete) arms a two-stage touch-driven cursor mode, reached
 without leaving the keyboard: a short vibration confirms the arm, every key dims to 30% opacity, the
 suggestion bar's own slot switches to a short explanation of the current stage (S-01's established
 "alternate content in the same slot" mechanism), and a crosshair appears under the finger as the gesture's

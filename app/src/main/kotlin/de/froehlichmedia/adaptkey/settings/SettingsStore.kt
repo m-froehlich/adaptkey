@@ -133,8 +133,8 @@ object SettingsStore {
     /** Default stored boolean for the D-361 Backspace sticky-zone toggle (on). */
     const val DEF_BACKSPACE_STICKY_ENABLED = true
     
-    /** Default stored boolean for the D-401 cursor-control gesture toggle (off - see AdaptSettings' own KDoc). */
-    const val DEF_CURSOR_CONTROL_ENABLED = false
+    /** Default stored boolean for the D-401 cursor-control gesture toggle (on - see AdaptSettings' own KDoc). */
+    const val DEF_CURSOR_CONTROL_ENABLED = true
     
     /** Default stored integer for the D-177 pending-blacklist expiry slider (7 days). */
     const val DEF_PENDING_BLACKLIST_EXPIRY_DAYS = AdaptSettings.DEFAULT_PENDING_BLACKLIST_EXPIRY_DAYS

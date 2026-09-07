@@ -123,8 +123,10 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  *           [de.froehlichmedia.adaptkey.dictionary.LearnedWordExpirySweep] un-learns it (default
  *           [LearnedWordExpiryWindow.DEFAULT]) - a coarse früh/mittel/spät choice, not a raw duration.
  * @property cursorControlEnabled D-401: whether a long-press on the space bar arms the cursor/selection
- *           control gesture (default **off** - a new, screen-consuming gesture on the app's most-tapped key
- *           needs an explicit opt-in rather than risking an accidental hold during ordinary typing).
+ *           control gesture (default **on**, D-401-followup - the user's own explicit call: genuine
+ *           accidental activation is unlikely (G-01's own language swipe is a plain swipe, not a long-press,
+ *           so the two do not actually compete) and a useful feature should default to discoverable rather
+ *           than hidden behind an opt-in).
  */
 data class AdaptSettings(
     val keyProportions: KeyProportions = KeyProportions.DEFAULT,
@@ -156,7 +158,7 @@ data class AdaptSettings(
     val autoMergeAggressiveness: AutoMergeAggressiveness = AutoMergeAggressiveness.DEFAULT,
     val sustainedLanguageSwitchThreshold: Int = DEFAULT_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD,
     val learnedWordExpiryWindow: LearnedWordExpiryWindow = LearnedWordExpiryWindow.DEFAULT,
-    val cursorControlEnabled: Boolean = false
+    val cursorControlEnabled: Boolean = true
 ) {
     
     companion object {

@@ -248,7 +248,7 @@
             android:key="d401_cursor_control"
             android:title="@string/d401_cursor_control_title"
             android:summary="@string/d401_cursor_control_summary"
-            android:defaultValue="false" />
+            android:defaultValue="true" />
 
     </PreferenceCategory>
 

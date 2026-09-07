@@ -40,8 +40,8 @@ android {
         // D-450-followup: explicit user request bumped 1.1.78 -> 1.2.0 - a minor-version milestone marker,
         // not a further third-digit step, requested on the same commit that adds the first Cyrillic-script
         // language pack (Serbian) and the non-Latin-layout generalisation it required.
-        versionCode = 516
-        versionName = "1.2.20"
+        versionCode = 517
+        versionName = "1.2.21"
         
         // The ONNX Runtime native libs (tier-3 mini-LLM) ship per ABI; keep only the ones real phones
         // use (arm64 + 32-bit arm), dropping the emulator-only x86/x86_64 libs (~43 MB). Device testing

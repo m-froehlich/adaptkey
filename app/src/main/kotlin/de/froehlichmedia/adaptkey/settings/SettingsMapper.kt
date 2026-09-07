@@ -56,7 +56,7 @@ data class RawSettings(
     val autoMergeAggressivenessKey: String? = null,
     val sustainedLanguageSwitchThreshold: Int = AdaptSettings.DEFAULT_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD,
     val learnedWordExpiryWindowKey: String? = null,
-    val cursorControlEnabled: Boolean = false
+    val cursorControlEnabled: Boolean = true
 )
 
 /**
