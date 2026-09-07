@@ -1010,6 +1010,29 @@ non-trivial changes).
   suggestion from the second word onward. See §451 in Current State for the exact mechanism and fix. Turned
   out unrelated to D-455/D-357 - both real suspects given the timing, neither actually involved.
 
+- **D-459 - WON'T FIX for now, deliberately deferred (2026-09-07, no code change).** While chasing an
+  unrelated, still-unreproduced bug (a Backspace positioned right after a letter mid-word deleting the
+  letter *before* it too - not caught in this session's own log), the user found and reported a second,
+  real effect in the same log: typing `"Wie Abt ist der da?"`, repeatedly editing the word at the "Abt"
+  position down to `"at"` with the caret left *mid-word* (between the two letters, not at the true end), a
+  `SPACE` tap classified `LETTER_AMBIGUOUS` (T-05 - the raw tap coordinate sat in the ambiguous zone near
+  the top of the space bar, plausibly a genuine light mistouch) landed there. Root-caused precisely from the
+  log, not guessed: `finalizeAndCommit: typed="a"` (not `"at"`) is D-119/D-120's own documented mid-word-
+  delimiter-split mechanism firing correctly on its own terms - the space arrived while `composingCursor !=
+  composing.length`, so it split `"at"` into `"a"` + space + a freshly re-seeded `"t"` composing token,
+  exactly as that mechanism is specified to. Not a corruption bug - the user's own very next Backspace
+  correctly undid it (deleted the space, reclaimed `"a"`+`"t"` back into one token via the ordinary
+  reclaim-on-adjacent-word path), and typing continued normally to a correct final `"alt"`.
+  **The real, still-open design question**: should a `SPACE` tap already flagged `LETTER_AMBIGUOUS` be
+  treated more conservatively when `composingCursor` is genuinely mid-word (biased toward *not* splitting,
+  since the tap itself is already flagged as plausibly not a real space) - a narrower, more targeted change
+  than touching D-119/D-120's own mid-word-split behavior for a clean, unambiguous space tap. Explicit user
+  call: not worth the risk right now - this touches exactly the composing-state/`onUpdateSelection` area
+  spec §1's guiding principle already flags as historically fragile, and the priority right now is getting
+  the base stable for an upcoming F-Droid release (real maintainer feedback has come in - see the Release
+  Channels section). Deferred, not abandoned - "vielleicht nutzt es uns später noch einmal" - revisit only
+  if the user raises it again, ideally with its own dedicated repro.
+
 ## Current State
 
 - **§455 (v1.2.15): D-403/D-359-followup - a confirmed revert-retry (A-07) was not actually protected**
