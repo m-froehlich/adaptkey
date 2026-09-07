@@ -1638,8 +1638,14 @@ class AdaptKeyService : InputMethodService() {
         // and fixed the same round). cursorControlAwaitingLineSync is the one-shot flag set right before the
         // DPAD events are sent and consumed here, the only case this resync is actually needed for.
         if (cursorControlSessionActive && cursorControlAwaitingLineSync) {
+            diag("AdaptKeyJitter", "cursorControl: line-sync resync $cursorControlPosition -> $newSelEnd")
             cursorControlPosition = newSelEnd
             cursorControlAwaitingLineSync = false
+        } else if (cursorControlSessionActive) {
+            // D-401-followup (temporary diagnostic): confirms the race fix actually holds - this line
+            // appearing with newSelEnd != cursorControlPosition would mean something *else* is still
+            // changing the real document selection independently of this mechanism's own tracked value.
+            diag("AdaptKeyJitter", "cursorControl: echo ignored (not awaiting line sync), tracked=$cursorControlPosition echo=$newSelEnd")
         }
         // D-139 (temporary diagnostic): every call, with enough state to reconstruct what happened -
         // `adb logcat -s AdaptKeyJitter:D` while typing, to finally catch the reported "text jitters,
@@ -3144,6 +3150,13 @@ class AdaptKeyService : InputMethodService() {
      */
     private fun applyCursorControlMove(stage: CursorControlGesture.Stage, characterDelta: Int, lineDelta: Int) {
         val ic = currentInputConnection ?: return
+        // D-401-followup (temporary diagnostic): every call, mirroring AdaptKeyboardView's own logTouch() -
+        // see that call site's own note for why. Remove once D-401's cursor movement is confirmed correct.
+        diag(
+            "AdaptKeyJitter",
+            "applyCursorControlMove: stage=$stage characterDelta=$characterDelta lineDelta=$lineDelta " +
+                "positionBefore=$cursorControlPosition anchor=$cursorControlAnchor"
+        )
         if (lineDelta != 0) {
             val keyCode = if (lineDelta > 0) KeyEvent.KEYCODE_DPAD_DOWN else KeyEvent.KEYCODE_DPAD_UP
             cursorControlAwaitingLineSync = true
@@ -3158,6 +3171,10 @@ class AdaptKeyService : InputMethodService() {
         }
         val target = (cursorControlPosition + characterDelta).coerceAtLeast(0)
         cursorControlPosition = clampToCurrentLine(ic, target, characterDelta, stage)
+        diag(
+            "AdaptKeyJitter",
+            "applyCursorControlMove: target=$target clampedPosition=$cursorControlPosition"
+        )
         when (stage) {
             CursorControlGesture.Stage.CURSOR -> ic.setSelection(cursorControlPosition, cursorControlPosition)
             CursorControlGesture.Stage.SELECTION -> ic.setSelection(cursorControlAnchor, cursorControlPosition)
@@ -3220,13 +3237,25 @@ class AdaptKeyService : InputMethodService() {
         // reported on a real device. Stage 1 has no such ambiguity to begin with (the selection is always
         // collapsed at `position` itself) and must always take the direct path.
         if (stage == CursorControlGesture.Stage.CURSOR || position <= anchor) {
-            val before = ic.getTextBeforeCursor(CURSOR_CONTROL_LINE_SCAN_WINDOW, 0)?.toString() ?: return null
+            val before = ic.getTextBeforeCursor(CURSOR_CONTROL_LINE_SCAN_WINDOW, 0)?.toString()
+            if (before == null) {
+                diag("AdaptKeyJitter", "leftBoundary: getTextBeforeCursor returned null - unclamped")
+                return null
+            }
             val newlineBefore = before.lastIndexOf('\n')
-            return position - (before.length - (newlineBefore + 1))
+            val result = position - (before.length - (newlineBefore + 1))
+            diag("AdaptKeyJitter", "leftBoundary: direct path before.length=${before.length} newlineBefore=$newlineBefore result=$result")
+            return result
         }
-        val selected = ic.getSelectedText(0)?.toString() ?: return null
+        val selected = ic.getSelectedText(0)?.toString()
+        if (selected == null) {
+            diag("AdaptKeyJitter", "leftBoundary: past-anchor path, getSelectedText returned null - unclamped")
+            return null
+        }
         val newlineBefore = selected.lastIndexOf('\n')
-        return if (newlineBefore == -1) null else anchor + newlineBefore + 1
+        val result = if (newlineBefore == -1) null else anchor + newlineBefore + 1
+        diag("AdaptKeyJitter", "leftBoundary: past-anchor path selected.length=${selected.length} newlineBefore=$newlineBefore result=$result")
+        return result
     }
     
     /** D-401-followup: the mirror image of [leftBoundary] - the current line's own end. */
@@ -3234,13 +3263,25 @@ class AdaptKeyService : InputMethodService() {
         val position = cursorControlPosition
         val anchor = cursorControlAnchor
         if (stage == CursorControlGesture.Stage.CURSOR || position >= anchor) {
-            val after = ic.getTextAfterCursor(CURSOR_CONTROL_LINE_SCAN_WINDOW, 0)?.toString() ?: return null
+            val after = ic.getTextAfterCursor(CURSOR_CONTROL_LINE_SCAN_WINDOW, 0)?.toString()
+            if (after == null) {
+                diag("AdaptKeyJitter", "rightBoundary: getTextAfterCursor returned null - unclamped")
+                return null
+            }
             val newlineAfter = after.indexOf('\n')
-            return position + if (newlineAfter == -1) after.length else newlineAfter
+            val result = position + if (newlineAfter == -1) after.length else newlineAfter
+            diag("AdaptKeyJitter", "rightBoundary: direct path after.length=${after.length} newlineAfter=$newlineAfter result=$result")
+            return result
         }
-        val selected = ic.getSelectedText(0)?.toString() ?: return null
+        val selected = ic.getSelectedText(0)?.toString()
+        if (selected == null) {
+            diag("AdaptKeyJitter", "rightBoundary: past-anchor path, getSelectedText returned null - unclamped")
+            return null
+        }
         val newlineAfter = selected.indexOf('\n')
-        return if (newlineAfter == -1) null else position + newlineAfter
+        val result = if (newlineAfter == -1) null else position + newlineAfter
+        diag("AdaptKeyJitter", "rightBoundary: past-anchor path selected.length=${selected.length} newlineAfter=$newlineAfter result=$result")
+        return result
     }
     
     /**

@@ -1076,6 +1076,33 @@ non-trivial changes).
 
 ## Current State
 
+- **§465 (v1.2.25): D-401-followup - diagnostic-only round, no fix attempted.** User reported v1.2.24 (§464's**
+  **own async-echo-race fix) STILL produced "no observable change at all"** - the third consecutive report of
+  that exact phrasing across three logically-reasoned, verified-compiling fixes (§462's tap/reclaim/clamp
+  attempt, §463's anchor-comparison rewrite, §464's echo-race fix), this time accompanied by a real device
+  log (Google Keep) showing chaotic, non-monotonic `onUpdateSelection` position jumps during a cursor-control
+  drag that don't match any hypothesis formed by reading the code alone.
+
+  Per this project's own established convention (root-cause from real device data, never guess repeatedly -
+  the same discipline D-452's own stall investigation already used successfully), stopped attempting a fourth
+  blind fix and instead added comprehensive diagnostic logging at every point in the pipeline a real log could
+  distinguish between competing explanations: `AdaptKeyboardView.handleCursorControlTouch()`'s ACTION_MOVE
+  branch now logs raw `dx`/`dy`/density, the computed `Steps`, the applied-before counters and the resulting
+  delta, and the active stage (`AdaptKeyTouch`); `AdaptKeyService.applyCursorControlMove()` logs its own entry
+  parameters and the position both before and after clamping; `leftBoundary()`/`rightBoundary()` log which
+  branch was taken, the read text length, the found newline index (or its absence) and the computed result;
+  and `onUpdateSelection()`'s own resync decision now logs explicitly which of its two outcomes fired -
+  `"line-sync resync"` (the one-shot flag consumed) vs. `"echo ignored"` (an echo arriving while not awaiting
+  one) - so a fresh log can show directly whether §464's own guard is actually preventing echo-driven
+  stomping, or whether the chaos has some other, still-unidentified source entirely (all tagged
+  `AdaptKeyJitter`, this project's own established tag for this exact historically-fragile race class).
+
+  1596 unit tests unchanged (diagnostic Android-glue additions only, no logic changed). `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green. `versionCode` 520 -> 521, `versionName` `"1.2.24"` -> `"1.2.25"`. Deliberately
+  no spec-prose update this round - no user-facing behaviour changed. Next step is the user reproducing the
+  issue again on this build so a fully-instrumented log can actually explain the chaotic jumps, rather than
+  another guess.
+
 - **§464 (v1.2.24): D-401-followup - the real reason §462/§463's own fixes produced no observable change at**
   **all ("es ist als hättest du gar nichts gemacht"), found only after first ruling out a deployment gap.**
   User confirmed the Settings screen's own live `PackageManager`-read version showed `1.2.23` - the fix
@@ -2134,102 +2161,10 @@ non-trivial changes).
   entries) are a deliberately separate, future session's work. New Open TODO added below for the real
   Cyrillic-vs-Cyrillic classifier gap this round's own `resolveDict()` KDoc update documents.
 
-- **§440 (v1.2.0): D-450-followup - first Serbian language pack, closing the one deferred exception from**
-  **the 18-language D-450 round: a real Cyrillic keyboard layout.** Added `LayoutKind.SERBIAN_CYRILLIC` +
-  `keyboard/SerbianLayout.kt`, researched (not guessed) against the real, established standard - Microsoft's
-  own `KBDYCC` "Serbian (Cyrillic)" layout, the JUSCII-descended QWERTZ-based physical layout every Serbian
-  Windows/Linux install ships (verified directly against `kbdlayout.info/KBDYCC` and
-  `learn.microsoft.com/.../kbdycc.html`). The 30-letter Vuk Karadžić alphabet maps unevenly onto the QWERTZ
-  grid - 13 letters top row, 11 middle, 6 bottom - kept faithfully asymmetric rather than rebalanced for a
-  tidier mobile look, since matching genuine muscle memory is the whole point; the historical `Ѕ` (Macedonian
-  dze) filler at the desktop layout's own ISO-only key is correctly dropped (not part of the real Serbian
-  alphabet at all). Unlike every Latin-script language, no `letterHints`/`hints.tsv`/`diacritics.tsv` -
-  Serbian Cyrillic's five letters not shared with Russian/Bulgarian Cyrillic (Ђ/Љ/Њ/Ћ/Џ) are standalone code
-  points, not diacritic composites, the same reasoning [GreekLayout.kt](app/src/main/kotlin/de/froehlichmedia/adaptkey/keyboard/GreekLayout.kt)
-  already established for the only other non-Latin-script pack. New `KeyboardProximitySerbianCyrillic`
-  (matches the layout's own rows exactly) and a `"serbian_cyrillic"` row layout added to
-  `confusables_scan.py`.
-  
-  **A real architectural generalisation, not just a new layout**: `LayoutRegistry.NON_LATIN_LANGUAGES` was
-  Greek-only by construction (`filterValues { it == GREEK }`) - generalised to `filterValues { it !in
-  LATIN_KINDS }` so any future non-Latin script gets the same treatment automatically.
-  `AdaptKeyService.resolveDict()`'s own Greek-only unconditional-trust branch (`if (activeLanguage ==
-  Language.GREEK) ...`) was generalised the same way, for a real correctness reason found while wiring
-  Serbian in, not merely for symmetry: `LanguageClassifier.isForeign()`'s n-gram profiles are exclusively
-  Latin-script and its own guard specifically measures GERMAN's margin (a known, already-documented
-  simplification) - running Cyrillic text through it while Serbian is active would almost certainly misfire,
-  silently suppressing Serbian's own autocorrect. **Deliberately NOT built**: real Cyrillic-vs-Cyrillic
-  switching logic - there is only one Cyrillic language today, nothing to distinguish from, and building
-  speculative same-script classification with no second real profile to verify it against would be pure
-  guesswork. Instead, a new `LayoutRegistryTest` canary test asserts no two languages share a non-Latin
-  `LayoutKind` yet - it is designed to **fail** the moment a second Cyrillic language joins Serbian, forcing
-  that future round back to this exact spot rather than letting the gap survive silently. (Session note: the
-  user asked mid-session whether restructuring the check to "look at other installed same-layout languages"
-  would avoid a future code change - the answer, recorded here for continuity, is no: with zero Cyrillic
-  profiles existing today, any such branch would be dead code with identical behaviour; the canary test
-  achieves the actual goal - a loud, automatic reminder - without speculative branching.) Also: `Language
-  .SERBIAN`'s own `endonym` corrected `"Srpski"` -> `"Српски"` (Cyrillic, matching this pack's own script
-  commitment, the same convention Greek's `"Ελληνικά"` already follows).
-  
-  **Two real bugs found and fixed in the shared `dictionaries/sh/extract_wiktionary.py` extractor** (the
-  Croatian/Bosnian/Serbian shared "sh" Wiktionary source, per kaikki.org's own single-edition treatment of
-  all three) - both found via direct data inspection and the Guide's own mandatory calibration-ratio check,
-  neither caught during the original hr/bs round since both use the unaffected Latin path:
-  1. `usable_forms()`'s Cyrillic branch originally kept a form only when explicitly `"Cyrillic"`-tagged - but
-     a Cyrillic-headword entry (e.g. "жена") documents its OWN paradigm in Cyrillic by default, tagging the
-     rare Latin alternate `"romanization"` instead (confirmed: "жена" has 20 real forms, 0 tagged
-     `"Cyrillic"`) - the exact mirror of a Latin-headword entry's own tagging. Nearly every Serbian word got
-     zero usable forms as a direct, mechanical consequence. Fixed by making the exclusion tag
-     direction-dependent; no transliteration needed since the source already provides genuine native-script
-     forms either way.
-  2. After fixing (1), the calibration check still measured an implausible verb ratio, traced to
-     "клечати"[freq 1] pairing with "био"/"буде"/"били"/"буду" at up to 54,830x: a periphrastic/compound-tense
-     raw form (e.g. "будем клечао") carries one `links` pair PER WORD, and `resolve_form_string()` naively
-     read only `links[0]` - always the auxiliary verb's own form, never the actual content verb. Same
-     symptom-class as French's D-444-followup/Dutch's D-447 (different root cause each time). Fixed Dutch's
-     way: skip the whole form when its raw string is multi-word, checked BEFORE any `links` substitution.
-     Directly spot-checked (not assumed) that the already-shipped Croatian pack shows no auxiliary-linked
-     absurd ratios in practice, so no republish was needed there - the fix is shared going forward regardless.
-  
-  Script confirmed the same way D-450's own Croatian entry already recorded: a direct 500-page sample of
-  this pack's own Wikipedia dump measured 839,282 Cyrillic letters vs. 151,666 Latin (~5.5:1) - Cyrillic
-  matches both the dominant real corpus content and Serbia's own constitutional primary script.
-  `srwiki-latest-pages-articles.xml.bz2` (1.16GB compressed, re-downloaded this round - the previous
-  session's own copy had been cleaned up) was processed via the same multiprocessing/hapax-pruning
-  extractor - 708,165 real pages, 152,283,830 real tokens, the largest single-language token count of any
-  D-450-family round so far (ahead of Turkish's 136.69M).
-  
-  **Net result**: `dict.tsv` 315,689 rows (217,476 initial Wikipedia-frequency + kaikki-POS merge + 98,213
-  from Wortfamilien completion; calibration ratios noun=0.3333 (n=26,769), verb=3.3333 (n=1,982 - elevated
-  but explicable: productive "noun-from-verb" deverbal nouns like "питање"/"question" from "питати"/"to ask"
-  genuinely out-frequency their own parent infinitive, consistent with the Balkan-Sprachbund
-  infinitive-avoidance feature Serbian shares with Bulgarian/Macedonian/Romanian), adjective=0.6512
-  (n=19,975) - all sane, verified pair-by-pair). POS tagging: 198,290 unrecognised-by-kaikki kept (`OTHER`),
-  1,711,924 dropped, 0 common-English-word contamination (structurally impossible, Cyrillic vs. Latin
-  script). Wiktionary matching: 18,293 lemmas tagged, 3,047 unmatched; 49,220 existing forms linked, 98,213
-  generated. Proper nouns: 1,018 tagged, 92 unmatched, 62 skipped as collisions. Mandatory bare-noun safety
-  check: 0. `bigram.tsv`: 1,144,589 rows (>=10 cutoff) from 3,595,744 at the raw >=3 floor. Quality gate
-  clean (0 duplicates, 0 non-positive frequencies, 0 orphaned lemma links, 0 bare-NOUN rows).
-  
-  `abbreviations.tsv`: a 12-entry list transliterated directly from Croatian's own already-vetted one (same
-  South Slavic convention, same shared Wiktionary source language family), not drafted from scratch.
-  `SerbianRules` (`LanguageRulesRegistry`): `decimalCommaGluesDigits`=true (directly verified - Serbia uses
-  a decimal comma), `timeSuggestionWord`=null, `bundledConfusablesBlacklist`=empty -
-  `confusables_scan.py sr/dict.tsv serbian_cyrillic 30` found 2,621 candidate pairs, left deliberately
-  uncurated per the same reasoning every non-German round documents. Capitalisation (Guide step 8): does NOT
-  capitalise common nouns like German - `merge_dict.py`'s own `resolve_tags()` already guarantees this
-  structurally (a bare `NOUN` gains `OTHER` too), the same default every non-German language built via this
-  template shares. New tests: `SerbianLayoutTest`, `KeyboardProximitySerbianCyrillicTest`,
-  `LanguageRulesTest`'s `Serbian resolves to SerbianRules` block, `LayoutRegistryTest` additions incl. the
-  canary test above. 1,487 unit tests green (was 1,462). `:app:assembleDebug`/`:app:testDebugUnitTest` green.
-  
-  **Honesty gate (step 11) - deliberately NOT claimed satisfied**: this pack has not been reviewed by anyone
-  who actually speaks Serbian. Real, full-dump corpus scale (152.28M real tokens, the largest of any
-  language this project has built) and a real, freshly-fixed Wortfamilien pipeline - but the same "pretty
-  good, not done" ceiling as every other pipeline-built language. Not device-confirmed either. **This closes**
-  **the Cyrillic-keyboard-layout gap named at the end of the 18-language D-450 round.**
+## Older Rounds (§1-§440, v0.7.6 through v1.2.0) - Pruned From This File
 
-## Older Rounds (§1-§439, v0.7.6 through v1.1.78) - Pruned From This File
+D-401-followup (§465): nineteenth pruning pass - §440 removed (already logged verbatim in History.md), cutoff
+moved from §440 to §441, keeping the working set at 25 rounds (§441-§465).
 
 D-401-followup (§464): eighteenth pruning pass - §439 removed (already logged verbatim in History.md), cutoff
 moved from §439 to §440, keeping the working set at 25 rounds (§440-§464).

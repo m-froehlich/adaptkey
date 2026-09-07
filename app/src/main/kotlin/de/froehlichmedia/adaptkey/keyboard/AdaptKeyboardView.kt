@@ -1466,6 +1466,16 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 val deltaChars = steps.characters - cursorControlAppliedChars
                 val deltaLines = steps.lines - cursorControlAppliedLines
                 if (deltaChars != 0 || deltaLines != 0) {
+                    // D-401-followup (temporary diagnostic): every real move step, with enough state to
+                    // reconstruct exactly what was sent - the last two "fix" rounds produced no observable
+                    // change and a genuinely chaotic-looking onUpdateSelection log, so guessing again is not
+                    // the right move; this traces the actual dx/dy/steps/deltas at the source instead. Remove
+                    // once D-401's cursor movement is confirmed correct on a real device.
+                    logTouch(
+                        "cursorControlMove: dx=$dx dy=$dy density=${resources.displayMetrics.density} " +
+                            "steps=[${steps.characters},${steps.lines}] appliedBefore=[$cursorControlAppliedChars,$cursorControlAppliedLines] " +
+                            "delta=[$deltaChars,$deltaLines] stage=$cursorControlStage"
+                    )
                     cursorControlAppliedChars = steps.characters
                     cursorControlAppliedLines = steps.lines
                     onCursorControlListener?.onCursorControlMove(cursorControlStage, deltaChars, deltaLines)
