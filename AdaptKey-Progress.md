@@ -962,18 +962,38 @@ non-trivial changes).
   confirmation again, reversing D-396-followup (v3)'s earlier removal - see §448 in Current State for the
   mechanism.
 
-- **D-452 - REOPENED, still not root-caused - timing diagnostics added (§451, v1.2.11).** Originally closed
-  WON'T FIX as not reproducible; the user later sent a real device log describing it as "das immer
-  wiederkehrende Performance-Problem" (the recurring performance problem), captured incidentally while typing
-  in Gemini. That specific log showed no smoking gun - `showSuggestions()` fired redundantly 2-4x in a row for
-  an identical, already-empty result around a field restart, but that call does no dictionary work and cannot
-  plausibly cost anything perceptible; the multi-second gaps between logged events show no activity at all
-  during them, consistent with either a genuine user pause or a real, still-unlogged stall - not
-  distinguishable from the log alone. Per this project's own diagnosis convention, nothing was guessed at or
-  changed based on that log alone. See §451: real wall-clock timing (`tookMs=`) was added to
-  `refreshSuggestions()`'s own dictionary-lookup call and to `showSuggestions()`'s total duration - the next
-  captured log, ideally taken at the exact moment something feels slow, should show directly whether either
-  is the real cost or whether the stall (if real) lies somewhere else entirely.
+- **D-452 - REOPENED, still not root-caused - narrowed further by a second real log, more timing**
+  **diagnostics added (§451 v1.2.11 + §459 v1.2.19).** Originally closed WON'T FIX as not reproducible; the
+  user later sent a real device log describing it as "das immer wiederkehrende Performance-Problem" (the
+  recurring performance problem), captured incidentally while typing in Gemini. That specific log showed no
+  smoking gun - `showSuggestions()` fired redundantly 2-4x in a row for an identical, already-empty result
+  around a field restart, but that call does no dictionary work and cannot plausibly cost anything perceptible;
+  the multi-second gaps between logged events show no activity at all during them, consistent with either a
+  genuine user pause or a real, still-unlogged stall - not distinguishable from the log alone. Per this
+  project's own diagnosis convention, nothing was guessed at or changed based on that log alone. §451: real
+  wall-clock timing (`tookMs=`) was added to `refreshSuggestions()`'s own dictionary-lookup call and to
+  `showSuggestions()`'s total duration - the next captured log, ideally taken at the exact moment something
+  feels slow, should show directly whether either is the real cost or whether the stall (if real) lies
+  somewhere else entirely.
+
+  **§459 (v1.2.19): that next log arrived - a real ~1.3s gap while long-pressing the full-stop key's own**
+  **`!`/`.`/`?` popup, right as the deferred/expensive-fallback suggestion search (D-160/D-208/D-211) for an**
+  **unknown word ("Habeck") returned.** Both of §451's own timers (`candidates=`/`tookMs=` and
+  `showSuggestions()`'s own total) came back fast in this log too - confirming, this time with a concrete
+  case, that the stall genuinely sits somewhere else inside `refreshSuggestions()`, between those two already-
+  measured points. Traced (not guessed) to the strongest remaining suspect in that gap:
+  `ambiguousCasingChips()` calls `dictionaryStore.partsOfSpeech()` once per candidate, and each such call runs
+  two full, uncached SQLite queries (`SqliteDictionaryStore.entryOf()`'s own bundled+learned lookup) - up to
+  24 synchronous main-thread round-trips for the 12 candidates this specific case had, right at the exact
+  moment the background executor's own heaviest search (compound-split/wide-fuzzy/raw-coordinate) hands its
+  result back. The same class of cost ("redundant per-candidate queries") the D-207-D-221 investigation
+  already named once for a different call site, apparently never covered here since `ambiguousCasingChips()`
+  itself was added later (D-404-followup). Not yet device-confirmed as the actual cause - the evidence is a
+  traced code path, not a live measurement, so three new temporary timers (`ambiguousCasingMs`,
+  `extrasMs`, `pendingMs`, plus `tier3InlineMs` for the `!tier3Async` inline path) were added right where the
+  gap was narrowed to, mirroring §451's own diagnostic style exactly. Waiting on the user's next captured log
+  from a real repro to confirm or rule this out with an actual number, per this project's own convention -
+  nothing changed behaviourally, diagnostic-only.
 
 - **D-453 - RESOLVED (§448, v1.2.8).** Double-consonant "unfold" for autocorrect/chip suggestion
   (`"bite"` → `"bitte"`, `"tipen"` → `"tippen"`), implemented exactly as agreed - an extension of S-09's
@@ -1049,6 +1069,33 @@ non-trivial changes).
   if the user raises it again, ideally with its own dedicated repro.
 
 ## Current State
+
+- **§459 (v1.2.19): D-452-followup - diagnostic-only, no behaviour change.** A real device log the user sent
+  (see §459's own D-452 backlog entry above for the full narration) narrowed the still-open "recurring
+  performance problem" to a ~1.3s gap sitting inside `refreshSuggestions()`, between the two points §451
+  already instrumented - both fast in this log too, confirming the stall is genuinely elsewhere in that
+  function. Traced through the code (not guessed) to the strongest remaining suspect: `ambiguousCasingChips()`
+  calls `dictionaryStore.partsOfSpeech()` once per candidate, each doing two uncached SQLite queries
+  (`SqliteDictionaryStore.entryOf()`), up to 24 synchronous main-thread round-trips for a 12-candidate case -
+  right at the exact moment the background deferred/expensive-fallback search (D-160/D-208/D-211) hands its
+  result back for re-entry. The same "redundant per-candidate queries" cost class D-207-D-221 already fixed
+  once elsewhere, apparently never covered for this specific, later-added (D-404-followup) call site.
+
+  Three new temporary timers added exactly where the gap was narrowed to, mirroring §451's own diagnostic
+  style: `ambiguousCasingMs` (wraps the suspect call directly), `extrasMs` (the split/raw-coordinate/
+  autocorrect-chip/speed-unit/missed-backspace block), `pendingMs` (the capitalised-preview computation), and
+  `tier3InlineMs` (the `!tier3Async` inline `tier3.predict()` call, verifying its own "the orchestrator is
+  instant" comment directly rather than trusting it). All four logged via the same `diag("AdaptKeySuggest",
+  ...)` channel §451/§452 already use.
+
+  **Not yet device-confirmed** - the evidence is a traced, plausible code path, not a live measurement; per
+  this project's own diagnosis convention, nothing was changed behaviourally and no fix was attempted before
+  a real number confirms it. Waiting on the user's next captured log from an actual repro (they will report
+  back once it happens again).
+
+  1589 unit tests unchanged (diagnostic-only, no new logic branch worth a dedicated test - same as §451's own
+  first round of timers). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 514 -> 515,
+  `versionName` `"1.2.18"` -> `"1.2.19"`.
 
 - **§458 (v1.2.18): D-385-followup - the locale-aware first-run language suggestion, agreed in principle**
   **back at D-385's own closure but never implemented, generalised to every installable pack rather than**
@@ -2236,55 +2283,10 @@ non-trivial changes).
   real, honestly documented Wortfamilien scope limit for verbs/adjectives specifically. Not device-confirmed
   either. Indonesian continues next, the same language family with a richer native edition.
 
-- **§434 (v1.1.73): D-450 (continued) - Estonian, Latvian, and Lithuanian language packs, closing the**
-  **Baltic trio (fourteenth/fifteenth/sixteenth languages of the 18-language round) - a real calibration**
-  **bug found and fixed in Latvian (16.16x verb ratio from bare pronoun-subject table headers).** Added
-  `Language.ESTONIAN`/`LATVIAN`/`LITHUANIAN` (`"et"`/`"Eesti"`, `"lv"`/`"Latviešu"`, `"lt"`/`"Lietuvių"`) to
-  the enum. None has a native Wiktionary edition - all three built from the English Wiktionary's own
-  coverage (5.2MB/16.5MB/8.7MB respectively).
+## Older Rounds (§1-§434, v0.7.6 through v1.1.73) - Pruned From This File
 
-  **Estonian**: checked directly (not assumed) that unlike Finnish, Estonian's noun paradigm has no
-  possessive-suffix forms (uses separate possessive pronouns instead) - no paradigm-size cap needed. Its own
-  `postp` tag is clean, mapped to `PREPOSITION` like Finnish's. `etwiki` (307MB compressed): 261,738 pages,
-  55,645,450 tokens. `dict.tsv` 301,216 rows (165,557 initial + 135,659 generated; ratios noun=0.1519
-  (n=18,376), verb=1.6062 (n=5,120), adjective=0.1361 (n=3,607), all sane). Only 5,362 lemmas + 1,394 proper
-  nouns of 165,557 base entries (~4.1%) carry a real POS/lemma link - one of the lowest ratios this round.
-  `bigram.tsv` 488,694 rows. `confusables_scan.py`: 4,841 pairs.
-
-  **Latvian - a real calibration bug, caught by the mandatory ratio sanity check**: the first verb pass found
-  an impossible 16.16x ratio. Investigated directly: this source's own verb table includes the row-header
-  PRONOUN SUBJECT as its own genuinely tagged forms[] entry on every verb (e.g. `viņš`/"he", freq 74,031,
-  linked as a spurious "form" of dozens of unrelated rare verbs - a real Latvian verb inflection can never
-  literally equal a personal pronoun). Fixed with a literal-value exclusion (es/tu/viņš/viņa/mēs/jūs/viņi/
-  viņas); re-run confirmed 0 remaining contamination, ratio corrected to a real 0.7647x. `lvwiki` (206MB
-  compressed): 145,425 pages, 30,794,845 tokens. `dict.tsv` 150,796 rows (88,979 initial + 61,817 generated;
-  ratios noun=0.6818 (n=11,587), verb=0.7647 (n=3,213, post-fix), adjective=0.9514 (n=4,968)). Only 7,534
-  lemmas + 1,156 proper nouns of 88,979 base entries (~8.5%) carry a real link. `bigram.tsv` 309,403 rows.
-  `confusables_scan.py`: 2,712 pairs.
-
-  **Lithuanian**: two findings already known from other sources this round, independently reconfirmed rather
-  than assumed to transfer - (1) the same pitch-accent notation as the shared Serbo-Croatian source
-  (`links`-based recovery applies unmodified), (2) the same `"error-unrecognized-form"` tag marking real,
-  valid words here too (deliberately not excluded). `ltwiki` (243MB compressed): 224,117 pages, 37,246,517
-  tokens. `dict.tsv` 180,032 rows (113,936 initial + 66,096 generated; ratios noun=0.3764 (n=13,261),
-  verb=0.5671 (n=2,140), adjective=0.2945 (n=5,908), all sane). Only 5,274 lemmas + 1,614 proper nouns of
-  113,936 base entries (~6.0%) carry a real link. `bigram.tsv` 335,409 rows. `confusables_scan.py`: 2,322
-  pairs.
-
-  All three: mandatory bare-noun safety check 0; quality gate clean (0 duplicates, 0 non-positive
-  frequencies, 0 orphaned lemma links, 0 bare-NOUN rows). `hints.tsv`/`diacritics.tsv` reflect each
-  language's own real diacritic set (Estonian `a=ä,o=õ/ö,u=ü`; Latvian 11 single-variant diacritic letters;
-  Lithuanian 7 letters with `e`/`u` each hosting two variants) with `t=€` for all three (Baltic states all
-  use the Euro) and a Baltic-region `g=„`/`h="` low-quote convention (Latvian's own `g` is taken by `ģ`, so
-  uses `f=„`/`h="` instead). Each got its own `*Rules` object (`decimalCommaGluesDigits`=true,
-  `timeSuggestionWord`=null, `bundledConfusablesBlacklist`=empty) and `LanguageRulesTest` mirroring blocks.
-
-  **Honesty gate (step 11) - deliberately NOT claimed satisfied for any of the three**: none reviewed by a
-  native speaker; all thinner-than-native-edition Wortfamilien/POS coverage, honestly quantified above. Not
-  device-confirmed. **This closes the Estonian/Latvian/Lithuanian Baltic trio.** Indonesian, Malay, Swahili,
-  and Tagalog remain in this 18-language round.
-
-## Older Rounds (§1-§433, v0.7.6 through v1.1.72) - Pruned From This File
+D-452-followup (§459): thirteenth pruning pass - §434 removed (already logged verbatim in History.md), cutoff
+moved from §434 to §435, keeping the working set at 25 rounds (§435-§459).
 
 D-385-followup (§458): twelfth pruning pass - §433 removed (already logged verbatim in History.md), cutoff
 moved from §433 to §434, keeping the working set at 25 rounds (§434-§458).

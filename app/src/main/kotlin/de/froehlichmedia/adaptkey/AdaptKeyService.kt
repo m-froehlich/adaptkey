@@ -5434,7 +5434,16 @@ class AdaptKeyService : InputMethodService() {
         // see ambiguousCasingChips()'s own KDoc. showSuggestions() reads the stored result; the matching
         // word(s) are excluded from the ordinary candidate list at every controller.update() call site below
         // so the same word is never also shown a second time, wrongly single-cased.
+        // D-452 (temporary diagnostic): ambiguousCasingChips() calls dictionaryStore.partsOfSpeech() per
+        // candidate, and that call does two uncached SQLite queries every time (SqliteDictionaryStore.
+        // entryOf()) - a real device log (§457/D-452-followup) found a ~1.3s unaccounted-for gap in exactly
+        // this function, right between the already-instrumented candidates= and showSuggestions() timings
+        // above/below, with the deferred/expensive-fallback pass (includeExpensiveFallbacks=true) as the
+        // trigger - this is the strongest suspect traced so far, not yet device-confirmed. Remove alongside
+        // the other D-452 timers once closed.
+        val ambiguousCasingStartedAt = SystemClock.uptimeMillis()
         pendingAmbiguousCasingChips = if (duringRepeat) emptyList() else ambiguousCasingChips(input, candidates)
+        val ambiguousCasingMs = SystemClock.uptimeMillis() - ambiguousCasingStartedAt
         // D-160/D-208/D-211/D-215: schedule the deferred pass (fuzzy neighbours plus, once those also find
         // nothing, the expensive last-resort fallbacks) whenever the hot path ran without them - no longer
         // gated on candidates.isEmpty(): D-208 moved fuzzy matching itself into this tier, so a prefix
@@ -5457,6 +5466,9 @@ class AdaptKeyService : InputMethodService() {
         // list's own maximum, so one inflated synthetic entry would compress every real candidate's
         // contribution toward zero) - added only to what is actually displayed, at every
         // controller.update() call site below (see extraSuggestions()).
+        // D-452 (temporary diagnostic): the whole extras block below (split/raw-coordinate/autocorrect-chip/
+        // speed-unit/missed-backspace) as one combined measurement - see ambiguousCasingMs's own note above.
+        val extrasStartedAt = SystemClock.uptimeMillis()
         val splitSuggestion = if (duringRepeat) null else midWordConnectorSplitSuggestion(input)
         // D-131: D-39's raw-coordinate fallback becomes a live, incremental signal instead of only ever
         // resolving at the final delimiter - reuses rawCoordinateCorrection() exactly as finalizeAndCommit()
@@ -5545,6 +5557,7 @@ class AdaptKeyService : InputMethodService() {
         val extras = listOfNotNull(
             splitSuggestion, rawCoordinateSuggestion, autocorrectSplitChip, autocorrectMergeChip, speedUnitSuggestion, missedBackspaceSuggestion
         )
+        val extrasMs = SystemClock.uptimeMillis() - extrasStartedAt
         // §125 / D-194: duringRepeat used to still call provider.autocorrectFor() here unconditionally -
         // the exact same expensive bestCorrection() search (a store query plus a banded edit-distance scan
         // per candidate) this function's own KDoc already gates everything else behind, simply missed when
@@ -5561,6 +5574,8 @@ class AdaptKeyService : InputMethodService() {
         // dispatchExpensiveSuggestionSearch() has actually searched for one on the background executor and
         // supplied it as [precomputedPendingCandidate] - exactly as imperceptible mid-burst as every other
         // expensive search this investigation already deferred.
+        // D-452 (temporary diagnostic): see ambiguousCasingMs's own note above.
+        val pendingStartedAt = SystemClock.uptimeMillis()
         val pending = if (duringRepeat) {
             null
         } else {
@@ -5575,6 +5590,11 @@ class AdaptKeyService : InputMethodService() {
             val capitalizedPreview = capitalisation.capitalise(precomputedPendingCandidate ?: input, contextFor(input))
             capitalizedPreview.takeIf { it != input }
         }
+        val pendingMs = SystemClock.uptimeMillis() - pendingStartedAt
+        diag(
+            "AdaptKeySuggest",
+            "refreshSuggestions: timing ambiguousCasingMs=$ambiguousCasingMs extrasMs=$extrasMs pendingMs=$pendingMs"
+        )
         val previous = previousWord
         val sentence = "$tokenContextBefore$input"
         // §9 / C-06: consult tier 3 when the tier-1 confidence is below the threshold (never with the
@@ -5583,12 +5603,12 @@ class AdaptKeyService : InputMethodService() {
         val seq = ++tier3RequestSeq
         if (!tier3Async) {
             // No-op (or absent) backend: the orchestrator is instant, run it inline.
-            applyTier3Outcome(
-                input,
-                pending,
-                tier3.predict(input, previous, sentence, candidates, settings.llmActivationThreshold, config.maxSuggestions),
-                extras
-            )
+            // D-452 (temporary diagnostic): confirms or rules out the "instant" assumption above directly,
+            // rather than trusting the comment - see ambiguousCasingMs's own note.
+            val tier3StartedAt = SystemClock.uptimeMillis()
+            val outcome = tier3.predict(input, previous, sentence, candidates, settings.llmActivationThreshold, config.maxSuggestions)
+            diag("AdaptKeySuggest", "refreshSuggestions: timing tier3InlineMs=${SystemClock.uptimeMillis() - tier3StartedAt}")
+            applyTier3Outcome(input, pending, outcome, extras)
             return
         }
         // A real backend runs the LLM: show the tier-1 suggestions immediately, then refine off-thread so
