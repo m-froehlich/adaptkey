@@ -1625,11 +1625,21 @@ class AdaptKeyService : InputMethodService() {
         // reflects the most recently confirmed reality regardless of how this particular call is handled.
         selectionCollapsed = newSelStart == newSelEnd
         liveSelectionEnd = newSelEnd
-        // D-401: while a session is active, also resyncs its own optimistic running offset from this same
-        // ground truth - including after a DPAD-driven line jump this code cannot compute itself (see
-        // cursorControlPosition's own note in applyCursorControlMove()).
-        if (cursorControlSessionActive) {
+        // D-401-followup (bug fix): only resynced right after a DPAD-driven line jump, whose resulting
+        // absolute offset this code genuinely cannot compute itself - never unconditionally on every
+        // callback, which was the bug. A character-based move already sets cursorControlPosition itself,
+        // synchronously and correctly (including the D-401-followup line-clamp fix); resyncing it from this
+        // callback regardless raced against it, since onUpdateSelection is asynchronous and its callbacks
+        // are not guaranteed to arrive in the same order a fast drag's own rapid-fire setSelection() calls
+        // were issued in - a stale echo from *before* the clamp took effect could land after a newer,
+        // already-correct one and silently stomp it, undoing the clamp for the very next delta's own
+        // baseline. Confirmed as the real reason the reported clamp fix produced no observable change at all
+        // on a real device (not merely another logic bug in the clamp itself, which was independently found
+        // and fixed the same round). cursorControlAwaitingLineSync is the one-shot flag set right before the
+        // DPAD events are sent and consumed here, the only case this resync is actually needed for.
+        if (cursorControlSessionActive && cursorControlAwaitingLineSync) {
             cursorControlPosition = newSelEnd
+            cursorControlAwaitingLineSync = false
         }
         // D-139 (temporary diagnostic): every call, with enough state to reconstruct what happened -
         // `adb logcat -s AdaptKeyJitter:D` while typing, to finally catch the reported "text jitters,
@@ -3062,20 +3072,23 @@ class AdaptKeyService : InputMethodService() {
     }
     
     // D-401: the space-bar cursor/selection-control gesture's own tracked state. cursorControlPosition is
-    // an optimistic running caret offset - seeded from the live caret when the gesture arms, updated after
-    // every setSelection() this mechanism itself issues, and resynced from onUpdateSelection's own live
-    // echo (see that callback's own note) - including after a DPAD-driven line jump, whose resulting
-    // absolute offset this code has no way to compute itself. cursorControlAnchor is the fixed end of the
-    // selection range, frozen the moment Stage 2 begins.
+    // an optimistic running caret offset - seeded from the live caret when the gesture arms, updated
+    // synchronously after every character-based setSelection() this mechanism itself issues (trusted as-is,
+    // never overwritten by a later echo - see onUpdateSelection's own note on why that raced), and resynced
+    // from onUpdateSelection's own live echo only after a DPAD-driven line jump (cursorControlAwaitingLineSync),
+    // whose resulting absolute offset this code has no way to compute itself. cursorControlAnchor is the
+    // fixed end of the selection range, frozen the moment Stage 2 begins.
     private var cursorControlSessionActive = false
     private var cursorControlPosition = 0
     private var cursorControlAnchor = 0
+    private var cursorControlAwaitingLineSync = false
     
     private val cursorControlListener = object : AdaptKeyboardView.OnCursorControlListener {
         override fun onCursorControlArmed() {
             cursorControlSessionActive = true
             cursorControlPosition = liveSelectionEnd
             cursorControlAnchor = cursorControlPosition
+            cursorControlAwaitingLineSync = false
             // D-401-followup: cancels whatever was left over from typing right before the long-press - the
             // refreshSuggestions()/showSuggestions() gates below already stop any of these from ever
             // touching the bar while the gesture is active, but there is no reason to still let the
@@ -3133,6 +3146,7 @@ class AdaptKeyService : InputMethodService() {
         val ic = currentInputConnection ?: return
         if (lineDelta != 0) {
             val keyCode = if (lineDelta > 0) KeyEvent.KEYCODE_DPAD_DOWN else KeyEvent.KEYCODE_DPAD_UP
+            cursorControlAwaitingLineSync = true
             repeat(abs(lineDelta)) {
                 ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
                 ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, keyCode))

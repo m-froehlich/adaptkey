@@ -1076,6 +1076,36 @@ non-trivial changes).
 
 ## Current State
 
+- **§464 (v1.2.24): D-401-followup - the real reason §462/§463's own fixes produced no observable change at**
+  **all ("es ist als hättest du gar nichts gemacht"), found only after first ruling out a deployment gap.**
+  User confirmed the Settings screen's own live `PackageManager`-read version showed `1.2.23` - the fix
+  genuinely had reached the device, so the problem was real code, not staleness.
+
+  **Root cause, found by re-reading the whole D-401 caret-tracking mechanism end to end rather than the**
+  **clamp function alone again**: `onUpdateSelection` resynced `cursorControlPosition` from its own
+  `newSelEnd` **unconditionally** on every single callback while a session was active - originally added so
+  a DPAD-driven line jump's own (otherwise uncomputable) resulting offset would be picked up. `onUpdateSelection`
+  is asynchronous and its callbacks are **not** guaranteed to arrive in the order a fast drag's own rapid-fire
+  `setSelection()` calls were issued in - this project's own extensively-documented history of exactly this
+  class of race (spec §1's guiding principle, D-139/D-149) applied here too, just not yet connected to this
+  gesture specifically. A stale echo from *before* a clamp had taken effect could land after a newer,
+  already-correctly-clamped one and silently stomp `cursorControlPosition` back, so the very next delta's own
+  baseline was wrong - defeating §463's own (independently correct) `leftBoundary()`/`rightBoundary()` fix
+  completely, on every single character move, not merely at the boundary. This is why nothing appeared to
+  change at all, not only the line-clamp.
+
+  Fixed by only ever trusting the echo when actually needed: new one-shot `cursorControlAwaitingLineSync` flag,
+  armed right before the DPAD events are sent and consumed only by the very next `onUpdateSelection` call.
+  Every character-based move now keeps trusting its own synchronous, already-clamped result unconditionally,
+  exactly like it always should have - `cursorControlPosition` is now written from exactly one of two places
+  at any given moment: the clamp function itself (character moves), or this one gated echo (line moves), never
+  both racing for the same field.
+
+  1596 unit tests unchanged (Android-glue timing behaviour, no new pure logic). `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green. `versionCode` 519 -> 520, `versionName` `"1.2.23"` -> `"1.2.24"`. Not yet
+  re-confirmed by the user - the checkmark-visibility fix from §463 is a logically separate mechanism from
+  this race and was not obviously implicated by it, but has also not been independently re-verified since.
+
 - **§463 (v1.2.23): D-401-followup - the real bug behind the still-open line-clamp (§462's own fix did not**
   **work), plus the clipboard peek button suppressed inside the gesture, plus a separate pre-existing**
   **clipboard bug flagged (not fixed) for its own investigation.**
@@ -2199,60 +2229,10 @@ non-trivial changes).
   good, not done" ceiling as every other pipeline-built language. Not device-confirmed either. **This closes**
   **the Cyrillic-keyboard-layout gap named at the end of the 18-language D-450 round.**
 
-- **§439 (v1.1.78): D-450-followup - `language_profiles.tsv` (A-03 trigram language detection) built for**
-  **all seventeen D-450-round languages, closing a gap named as an "accepted, named gap" in every one of**
-  **their own §422-§437 entries.** The original builder (a throwaway scratchpad script that worked from a
-  small UDHR sentence corpus, 80/20 train/eval split) is confirmed gone from this repo, per the existing
-  Progress.md note - reconstructed as a real, **committed** script this time (`dictionaries/
-  build_language_profiles.py`, not scratchpad, since a future language will need it again), working from a
-  much bigger real source than the original ever had: each language's own already-extracted, already-shipped
-  `dict.tsv` word-frequency table (a whole Wikipedia dump's worth of real word frequencies). Byte-for-byte
-  parity with `language.CharNgrams.normalize()`/`rankedProfile()` was the one correctness-critical point
-  (same as A-03's original Python/Kotlin parity requirement) - lowercase, non-letter runs collapse to a
-  single space, trim, wrap with one leading/trailing space, top-200 bi+trigrams by weighted count, ties
-  broken by the n-gram ascending; each `dict.tsv` row's own frequency is the weight (equivalent to treating
-  every dictionary word as that many independent, space-wrapped occurrences - reconstructs the true n-gram
-  frequency distribution for every n-gram that does not straddle two different words, which is the dominant
-  majority of any top-200 profile). Added: Swedish, Norwegian Bokmål, Danish, Finnish, Czech, Slovak,
-  Hungarian, Romanian, Croatian, Bosnian, Estonian, Latvian, Lithuanian, Malay, Indonesian, Swahili, Tagalog
-  (`sv`/`nb`/`da`/`fi`/`cs`/`sk`/`hu`/`ro`/`hr`/`bs`/`et`/`lv`/`lt`/`ms`/`id`/`sw`/`tl`) - 17 x 200 = 3,400 new
-  lines appended after the existing 8 languages' 1,600 (never touched), `language_profiles.tsv` now 5,000
-  lines / 25 languages total.
+## Older Rounds (§1-§439, v0.7.6 through v1.1.78) - Pruned From This File
 
-  **Real verification against the A-03 classifier, not just a build-and-ship**: extended
-  `app/src/test/resources/language_eval.tsv` (116 -> 478 lines) with independent held-out real text for all
-  17 - UDHR translations (`eric-muller/udhr`, same source the original 8 used) for the 16 that have one
-  (confirmed directly via the repo's own file tree; Norwegian's is `nob`, Romanian's newest is `ron_2006`,
-  Bosnian's is `bos_latn` not the Cyrillic `bos_cyrl` variant), and - **Malay has no UDHR translation at
-  all**, a real, confirmed gap in that source, not an oversight - five real Malay Wikipedia article extracts
-  (`ms.wikipedia.org`, topics: Malaysia, Bahasa Melayu, Kuala Lumpur, Bola sepak, Matematik) instead, clearly
-  documented as a different-source exception in `LanguageDetectionEvaluationTest`'s own KDoc. This is
-  actually a **cleaner** split than the original 8 languages' own same-domain 80/20 UDHR split: profiles are
-  now built from one real corpus (Wikipedia word frequencies) and evaluated against a genuinely independent
-  one (UDHR / Wikipedia article prose), not different slices of the same small source.
-
-  **A real, fully-explained accuracy finding, not a silently-lowered bar**: with 25 languages the held-out
-  suite's accuracy came in at 0.864, below the original 8-language 0.90 floor. Diagnosed directly (a
-  standalone Python re-implementation of the exact same normalize/rank/distance algorithm, cross-checked
-  byte-for-byte against the real Gradle failure's own reported accuracy number before being trusted) rather
-  than just loosening the assertion: **every single misclassification in the whole 478-sentence corpus lands
-  on a specific, named, explicable confusable language, never a random unrelated one.** Four groups, all
-  genuinely near-identical or closely-related national-standard language pairs: Bosnian/Croatian, Czech/
-  Slovak, Indonesian/Malay, Lithuanian/Latvian (one-directional - Latvian was never mistaken for Lithuanian),
-  plus the Scandinavian trio Swedish/Danish/Norwegian-Bokmål and a single stray Romanian/Portuguese instance
-  (two Romance languages). One further, less obvious empirical finding, not a known linguistic-relatedness
-  fact: Swahili is measurably confusable with Tagalog/Indonesian/Malay specifically, most likely because all
-  four share a simple open-CV-syllable shape despite belonging to unrelated language families (Bantu vs.
-  Austronesian) - confirmed by inspecting every Swahili miss individually, all landing in that exact set,
-  never elsewhere. `LanguageDetectionEvaluationTest` now encodes this as a real, lasting regression guard
-  rather than just a lower number: a new `CONFUSABLE_GROUPS` table plus a new test
-  (`misclassifications never escape a known closely-related-language group`) asserts every miss across all
-  25 languages lands inside its own group - a future stray miss to an unrelated language fails this test
-  even though the (honestly, evidence-based) lowered blanket floor (0.90 -> 0.85, real headroom above the
-  measured 0.864) might still pass. 1,462 unit tests green (was 1,461).
-  `:app:assembleDebug`/`:app:testDebugUnitTest` green.
-
-## Older Rounds (§1-§438, v0.7.6 through v1.1.77) - Pruned From This File
+D-401-followup (§464): eighteenth pruning pass - §439 removed (already logged verbatim in History.md), cutoff
+moved from §439 to §440, keeping the working set at 25 rounds (§440-§464).
 
 D-401-followup (§463): seventeenth pruning pass - §438 removed (already logged verbatim in History.md),
 cutoff moved from §438 to §439, keeping the working set at 25 rounds (§439-§463).
