@@ -78,9 +78,15 @@ class CapitalisationEngine(private val store: DictionaryStore, private val casin
         
         val pos = store.partsOfSpeech(word)
         val isProper = pos.contains(PartOfSpeech.PROPER_NOUN)
-        val hasNoun = pos.contains(PartOfSpeech.NOUN)
-        val isPureNoun = hasNoun && pos.all { it == PartOfSpeech.NOUN || it == PartOfSpeech.PROPER_NOUN }
-        val isAmbiguousNoun = hasNoun && !isPureNoun
+        // D-461: rules 3 and 4 collapsed into one condition - a word is force-capitalised exactly when it
+        // has no reading at all beyond noun/proper noun. Before this, `isProper` was its own independent
+        // branch ranking *above* the pure-noun check, so a PROPER_NOUN tag silently overrode an otherwise
+        // correct ambiguity: "Weg" (NOUN,VERB,PROPER_NOUN) was force-capitalised despite D-368 having
+        // retagged it precisely so that "weg sein" would not be, and "wir waren" committed as "wir Waren".
+        // A proper noun that is also a verb (or adjective, or anything else) is exactly as ambiguous as a
+        // common noun that is - so it gets rule 5's treatment, not rule 4's.
+        val isNounOnly = isNounOnly(pos)
+        val isAmbiguousNoun = (pos.contains(PartOfSpeech.NOUN) || isProper) && !isNounOnly
         
         // D-405: context.sentenceStart deliberately never appears in this decision any more. Before this
         // change, a token starting a sentence/line was force-capitalised here unconditionally, regardless of
@@ -101,9 +107,11 @@ class CapitalisationEngine(private val store: DictionaryStore, private val casin
         val upper = when {
             context.explicitFirstUpper -> true
             context.capsMode == CapsMode.WORDS -> true
-            context.afterHyphen -> isProper || previousSegmentPropagates(context) // B-02 / D-373
-            isProper -> true
-            isPureNoun -> true
+            // B-02 / D-373. D-461: still the proper-noun exception specifically, never `isNounOnly` on its
+            // own - B-02's default after a hyphen is lower-case for an ordinary noun too, so widening this
+            // to every noun-only word would capitalise the second half of any plain compound ("Haus-tür").
+            context.afterHyphen -> (isProper && isNounOnly) || previousSegmentPropagates(context)
+            isNounOnly -> true // §6 rules 3+4 (D-461)
             llmForcesUpper -> true // §6 rule 6: high-certainty LLM nominal exception
             isAmbiguousNoun -> false
             else -> false
@@ -132,10 +140,10 @@ class CapitalisationEngine(private val store: DictionaryStore, private val casin
      *
      * - if the previous segment was itself at a sentence start, a bare capital there proves nothing about
      *   its own grammatical status (any word can open a sentence) - only propagate when it is independently
-     *   a known noun/proper noun in the dictionary, the same signal [isProper]/[isPureNoun] already use for
+     *   a known noun/proper noun in the dictionary, the same signal [isNounOnly] already uses for
      *   the *current* word;
      * - otherwise, the previous segment's capital is trusted directly (whatever put it there - B-02's own
-     *   [isProper] exception, an earlier D-373 propagation further back in the same chain, or an explicit
+     *   proper-noun exception, an earlier D-373 propagation further back in the same chain, or an explicit
      *   user choice - already answered the "should this be capitalised" question once; a hyphen chain reads
      *   as one unit, so the next segment should agree).
      *
@@ -155,25 +163,36 @@ class CapitalisationEngine(private val store: DictionaryStore, private val casin
     companion object {
         
         /**
-         * D-404-followup: whether [pos] is genuinely ambiguous under §6 rule 5 - a noun tag alongside at
-         * least one non-noun/non-proper-noun tag ("Weg" `NOUN,OTHER`), so [capitalise] applies neither its
-         * rule 3 (pure noun) nor its rule 4 ([PartOfSpeech.PROPER_NOUN]) force. Mirrors [capitalise]'s own
-         * `isAmbiguousNoun` computation exactly (kept in sync deliberately, not re-derived independently) -
-         * `!isProper` matters here even though it is redundant inside [capitalise] itself (whose `when` chain
-         * already checks `isProper` first, before ever reaching `isAmbiguousNoun`): a caller like
-         * [de.froehlichmedia.adaptkey.AdaptKeyService]'s own dual-casing suggestion chips (D-404-followup)
-         * has no such ordering to lean on, so the exclusion must be explicit here instead - a
-         * `NOUN,PROPER_NOUN,OTHER` word (e.g. a place name that also happens to be a common noun) must still
-         * always force upper-case, never be offered as "ambiguous, pick either casing".
+         * D-461: whether [pos] carries no reading at all beyond noun/proper noun - the single condition
+         * §6's rules 3 and 4 now share. An empty tag set (an unknown word) is deliberately false: nothing
+         * is known about it, so nothing may force a capital.
          *
          * @param pos the word's own dictionary tags
-         * @return true when neither the pure-noun nor the proper-noun rule would force a casing
+         * @return true when the word is a noun and/or proper noun and nothing else
+         */
+        fun isNounOnly(pos: Set<PartOfSpeech>): Boolean {
+            return pos.isNotEmpty() &&
+                pos.all { it == PartOfSpeech.NOUN || it == PartOfSpeech.PROPER_NOUN }
+        }
+        
+        /**
+         * D-404-followup: whether [pos] is genuinely ambiguous under §6 rule 5 - a noun or proper-noun tag
+         * alongside at least one other reading ("Weg" `NOUN,VERB,PROPER_NOUN`), so [capitalise] forces no
+         * casing and both spellings are offered as their own chips (S-11) instead. Mirrors [capitalise]'s
+         * own `isAmbiguousNoun` computation exactly, deliberately kept in sync rather than re-derived.
+         *
+         * D-461: a `PROPER_NOUN` tag no longer suppresses this. It used to, on the reasoning that a place
+         * name which also happens to be a common noun must still always force upper-case - but that reading
+         * is what silently defeated D-368's own retags ("Weg", "waren", "Arbeit"), since the corpus hands a
+         * proper-noun tag to almost any word that ever appeared as a surname or place. A proper noun with a
+         * second real reading is ambiguous in exactly the way a common noun with one is.
+         *
+         * @param pos the word's own dictionary tags
+         * @return true when neither rule 3 nor rule 4 would force a casing, but a nominal reading exists
          */
         fun isAmbiguousCasing(pos: Set<PartOfSpeech>): Boolean {
-            val hasNoun = pos.contains(PartOfSpeech.NOUN)
-            val isProper = pos.contains(PartOfSpeech.PROPER_NOUN)
-            val isPureNoun = hasNoun && pos.all { it == PartOfSpeech.NOUN || it == PartOfSpeech.PROPER_NOUN }
-            return hasNoun && !isPureNoun && !isProper
+            val hasNominal = pos.contains(PartOfSpeech.NOUN) || pos.contains(PartOfSpeech.PROPER_NOUN)
+            return hasNominal && !isNounOnly(pos)
         }
     }
 }

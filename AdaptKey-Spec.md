@@ -970,7 +970,7 @@ context and silently discard the very choice the chip exists to offer).
 1. **Explicit user input always wins.** The token's own first character, exactly as it stands once typed, is never changed by any rule below - symmetric in both directions (D-405): an explicit uppercase is never lowercased, and an explicit lowercase is never uppercased either.
 2. **Sentence start is a *live* typing aid only, never a commit-time correction (D-405).** The first word after `.`, `!`, or `?` followed by a space - or after a deliberate line break, which also begins a new sentence (see the comma-terminated-line exception below) - has Shift pre-armed *before* the word is typed, so an ordinary "forgot to capitalise" keystroke already lands upper-case without any further action. This is the entire mechanism: once a token reaches commit, whatever casing it already carries **is** the answer, under rule 1 above - there is no second, independent re-derivation from sentence position at commit time any more. A user who explicitly Shift-disarms the pre-armed capital and types lower-case on purpose gets exactly that, permanently, not silently overwritten back. (Before D-405, this rule doubled as a commit-time override with no protection for a deliberate lower-case choice - the change is a bug fix, not a new feature: rule 1's "explicit input always wins" was never actually symmetric until now.)
 3. **Pure nouns:** A word that exists exclusively as a noun (no verb, adjective, or preposition form) is capitalised automatically.
-4. **Known proper nouns:** Are capitalised.
+4. **Known proper nouns:** Are capitalised - but only under the same condition rule 3 imposes on a common noun. D-461: a proper noun carrying any *other* reading (`"Weg"` `NOUN,VERB,PROPER_NOUN`, `"Recht"` `NOUN,PROPER_NOUN,OTHER`) is exactly as ambiguous as a common noun that does, and falls to rule 5 instead. Rules 3 and 4 are therefore one condition in the code, not two ranked branches - see §46.
 5. **Ambiguous words** (existing as both a noun and another part of speech): No automatic correction. Capitalisation is offered as a suggestion in the bar (S-06). Example: "gegenüber" (opposite/facing) - its prepositional use is far more frequent than its nominal use, so no intervention occurs.
 6. **LLM exception:** If the sentence context is unambiguously nominal and LLM confidence is high, the LLM may capitalise - never as a default, only at high certainty.
 
@@ -3042,6 +3042,67 @@ hypothetical (no confirmed case exists where the tie-break above is actually ins
 Reserve Idea (`AdaptKey-Progress.md`) rather than implemented - revisit only if a future concrete report
 shows a diacritic-preserving candidate losing *outright* (not merely tied) to a diacritic-discarding rival at
 a genuinely different folded cost, a case the tie-break cannot reach by construction.
+
+---
+
+## 46. Automatic Capitalisation Requires Genuine Unambiguity (D-461)
+
+D-461: §6's rules 3 (pure noun) and 4 (proper noun) used to be two independent branches, with the
+proper-noun check ranked *above* the pure-noun one. That ordering meant a `PROPER_NOUN` tag overrode an
+otherwise correctly-detected ambiguity outright, which silently defeated D-368's own retagging work: `"Weg"`
+was given `NOUN,VERB` precisely so that `"weg sein"` would stop being capitalised, a later corpus pass added
+`PROPER_NOUN` to the same row, and the force-capitalisation came back unnoticed. `"wir waren"` committed as
+`"wir Waren"` for the same reason. The corpus hands a proper-noun tag to almost any word that ever appeared
+as a surname or a place name, so this was not a rare edge case - 159 German rows, including everyday ones
+(`Arbeit`, `Rolle`, `Bau`, `Band`, `Park`, `Liebe`, `Recht`, `Alter`).
+
+**The rule now, stated once:** a word is automatically capitalised exactly when it has **no reading at all
+beyond noun and/or proper noun**. Anything else - a verb reading, an adjective reading, a preposition
+reading - makes it ambiguous, and an ambiguous word is never auto-capitalised; both spellings are offered
+as their own chips instead (S-11). This is the user's own formulation: automatic capitalisation is for
+cases with genuinely no doubt, because a wrongly forced capital on a word the user deliberately typed
+lower-case is worse than one chip tap - it is the kind of error that makes people switch autocorrect off
+entirely.
+
+Implemented as a single `CapitalisationEngine.isNounOnly(pos)` predicate replacing the former separate
+`isProper`/`isPureNoun` branches. An empty tag set (an unknown word) is deliberately false - nothing is
+known about it, so nothing may force a capital.
+
+**Rule 1 is unaffected and still wins outright:** an explicitly typed capital is never lowercased, so
+`"Weg"` typed with a capital stays capitalised. Editor-mandated capitalisation (`CAP_WORDS`/`CAP_CHARACTERS`)
+also still ranks above this. A-05's own split gate (`contains(NOUN)`) and `CorrectionConfidence`'s
+`isNounLike` (`NOUN || PROPER_NOUN`) read different questions and were not touched.
+
+**B-02 is deliberately *not* widened.** The hyphen branch still tests the proper-noun exception
+specifically (`isProper && isNounOnly`), never `isNounOnly` on its own: B-02's default after a hyphen is
+lower-case for an ordinary noun too, so using the general rule there would capitalise the second half of
+any plain compound (`"Haus-tür"` → `"Haus-Tür"`).
+
+**S-11's own gate was corrected in lockstep.** `isAmbiguousCasing` previously excluded `isProper` outright,
+on the reasoning that a place name which also happens to be a common noun must always force upper-case -
+the same premise this section removes. Without that correction the newly-freed words would have lost their
+automatic capital *and* gained no chips.
+
+### Per-language data consequence
+
+`CapitalisationEngine` is shared across every language, and the languages disagree about which readings
+justify a capital. German writes no adjective capitalised; English capitalises nationality adjectives. The
+engine rule stays language-neutral and the exception is expressed in each language's own dictionary, exactly
+as D-441 already established for common nouns:
+
+- German is the only language whose every `PROPER_NOUN` row also carries `NOUN`, so nothing there depends on
+  the removed branch. 57 genuine proper nouns (`Ben`, `Nova`, `Terra`, `Ella`, `Papa`, ...) carried a
+  spurious `OTHER` tag from corpus noise and had it removed, so the new rule still capitalises them.
+- English needed five rows corrected the other way (`German`, `Jewish`, `Mussolini`, `Lindy`, `Frenchy`):
+  their `ADJECTIVE` tag is either outright wrong or, for `German`/`Jewish`, linguistically right but
+  irrelevant to English capitalisation, so it is dropped to let the rule reach the correct outcome.
+- Every other language keeps bare `PROPER_NOUN` rows (English 29,458, Greek 29,963, French 24,854), which
+  `isNounOnly` covers unchanged - removing the proper-noun branch entirely, as first considered, would have
+  disabled proper-noun capitalisation everywhere but German.
+
+A surname that is genuinely also an ordinary word (`Ehrlich`, `Rau`, `Kühn`, `Jung`, `Kluge`, `Wunderlich`,
+`Treuen`, `Frechen`) is deliberately left ambiguous rather than "fixed" in either direction - that is the
+intended outcome of this rule, not a gap. W-04 then learns the user's own preferred casing from real use.
 
 ---
 

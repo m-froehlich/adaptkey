@@ -21580,4 +21580,153 @@ existing `AdaptKeyService` test harness, this project's own accepted, establishe
 code; verification is the device repro itself. **Device-confirmed** against the exact repro parcours
 derived from the user's own log ("hat funktioniert").
 
+## §450 - D-455 (Gemini Shift re-derivation) + D-457 (mangled learned-acronym casing), plus D-458's own temporary diagnostic logging for a new, not-yet-root-caused report.
 
+**D-455**: `AdaptKeyService` gained `rearmShiftForCaretMove(ic, preserveShiftAfterOpener)` - the exact
+Shift/Caps re-derivation core `reclaimWordAtCaret()` already had inline (`captureTokenContext`/
+`resetWordEndShift`/the `shiftArmedByDelete`/`tokenShiftLiveArmed`/`preserveShiftAfterOpener` decision),
+extracted verbatim rather than rewritten so the ordinary (non-suppressed) path stays byte-identical. A new
+`rearmShiftForCaretMoveWhenReclaimSuppressed()` calls it standalone - own flag consumption, own
+`composing.isNotEmpty()` guard, own `ic.beginBatchEdit()`, mirroring `reclaimWordAtCaret()`'s own structure
+exactly rather than the IPC calls migrating outside a batch edit. `scheduleReclaimAndChipRefresh()`'s
+`reclaimOnCaretMoveSuppressed` branch now schedules a new debounced `rearmShiftForCaretMoveRunnable` instead
+of doing nothing, mirroring `reclaimEnabledRunnable`'s own existing "runs unconditionally regardless of
+suppression" precedent (D-414-followup) - cancelled in `clearComposing()` for the identical stale-callback
+reason `reclaimWordAtCaretRunnable` already is. See spec's new G-05 addendum.
+
+**D-457**: root-caused by tracing three separate layers with real (throwaway, later replaced by permanent
+assertions) diagnostic tests rather than guessing from the original hypothesis, which turned out wrong -
+`DictionarySuggestionProvider.suggestionsFor()` and `SuggestionController.displayed()` both already handle a
+differently-cased learned candidate correctly (confirmed directly, not assumed); the real bug was in
+`CapitalisationEngine.capitalise()`'s own "no signal, lowercase it" branch, which only ever touches a word's
+first character (`casing.lowercaseFirst()`) - correct for an ordinary word, but silently mangling a
+deliberately all-caps, not-noun-tagged learned acronym into a nonsensical hybrid (`"LLM"` -> `"lLM"`) instead
+of leaving it alone. Fixed with a new branch reusing the already-established `Acronym.isAcronym()` signal
+(D-403/D-404-followup) ahead of the plain lowercase fallback: `word` is returned completely unchanged
+whenever it is a genuine acronym, since the "upper" branch right above it already produces the correct,
+no-op result for one (`uppercaseFirst("LLM") == "LLM"`), so only the lowercase branch ever needed the guard.
+Two new `CapitalisationEngineTest` cases (the confirmed-broken untagged case, plus the already-working
+NOUN-tagged case as a non-regression check) plus one each in `DictionarySuggestionProviderTest`/
+`SuggestionControllerTest` (converted from the exploratory diagnostics into permanent assertions once they
+had done their job) - see spec's new §6 addendum.
+
+**D-458 (new, not part of this fix - see its own Open TODos entry)**: while implementing the two rounds
+above, the user reported a real, more severe, not-yet-root-caused regression ("ab dem zweiten Wort keine
+Chips mehr") and asked for diagnostic logging rather than a guessed fix - a new `"AdaptKeySuggest"` `diag()`
+tag now covers `refreshSuggestions()`'s own early-return branches and final candidate count,
+`showSuggestions()`'s item-count pipeline, and the D-455 functions' own early returns. Temporary, to be
+removed once a real device log pins down the actual cause.
+
+1557 unit tests green (was 1553). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
+505 -> 506, `versionName` `"1.2.9"` -> `"1.2.10"`.
+
+## §451 - D-458 root-caused and fixed - a spurious double space in the A-03 context string wrongly suppressed every suggestion from the second word onward - plus D-452's own timing diagnostics.
+
+**D-458**: the user's device log, captured typing `"Test llm"`, showed it directly:
+`refreshSuggestions: cleared - suppressAutocorrect from selectActiveDictionary("Test  l")` - a literal
+double space between the previous word and the new token. `tokenContextBefore` is real document text
+(`captureTokenContext()` sets it straight from `getTextBeforeCursor()`), already ending in whatever real
+whitespace precedes the caret (`"Test "` right after committing "Test" + its trailing space) - both
+`finalizeAndCommit()` and `refreshSuggestions()` then concatenated a *further* literal space before the
+typed token (`"$tokenContextBefore $typed"`/`"$tokenContextBefore $input"`), producing `"Test  l"` from the
+second word onward. Never on a field's first word (`tokenContextBefore == ""` there, so only ever a
+harmless single leading space resulted) - exactly why this silently escaped notice until a real log caught
+it. The extra space confused `LanguageClassifier`'s own n-gram matching enough to misread the context as
+foreign, setting `suppressAutocorrect = true` and clearing the bar for every keystroke of the second word
+onward. Fixed at both call sites (`"$tokenContextBefore$typed"`/`"$tokenContextBefore$input"`, no
+space) - matching the already-correct convention `refreshSuggestions()`'s own tier-3 prompt-sentence string
+used a few hundred lines below all along. No new unit test - both call sites are inside
+`AdaptKeyService`/`InputConnection`-glue with no existing test harness, this project's own accepted,
+established gap for this class of code; verification is the device repro itself, per D-357's own identical
+precedent just before this round.
+
+**D-452**: real wall-clock timing (mirroring D-217/D-220's own established `SystemClock.uptimeMillis()`
+before/after pattern) added to `refreshSuggestions()`'s own `provider.suggestionsFor()` call (the one D-153/
+D-207/D-211 already name as the per-keystroke cost driver) and to `showSuggestions()`'s total duration -
+both logged under the same `"AdaptKeySuggest"` tag D-458's own diagnostics already use. The device log the
+user sent for this item showed no smoking gun (no dictionary work fired repeatedly, only cheap, already-
+empty `showSuggestions()` re-renders around a field restart) - still open, needs a log that actually
+captures the perceived-slow moment with this new timing data to make further progress.
+
+1557 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
+506 -> 507, `versionName` `"1.2.10"` -> `"1.2.11"`.
+
+## §452 - D-457-followup - the full lowercase spelling of a learned acronym (typing the whole word, not just its prefix) still resolved to a mangled casing; plus D-455/D-457/D-458's own temporary diagnostic logging removed now that all three are device-confirmed fixed.
+
+**The deeper D-457 gap**: §450's own fix only covered `capitalise()` being called with `word` already
+spelled as the acronym itself (e.g. the ordinary ranked suggestion, already correctly cased by
+`unigramsByPrefix()`'s own casing-merge). A real device log then showed typing the *entire* word `"llm"`
+lower-case (not just "ll") still produced `"Llm"`: `isPureNoun` correctly decided "uppercase" (the learned
+entry carries a `NOUN` tag), but every branch of the hierarchy can only ever touch `word`'s own first
+character (`uppercaseFirst`/`lowercaseFirst`) - none of them could ever reconstruct the real multi-capital
+`"LLM"` from a fully lower-case `"llm"`, tagged or not. Root cause is structurally different from §450's -
+not a missing veto, but `capitalise()` never having a way to learn the *real* canonical spelling of the
+word it was asked to case in the first place.
+
+**Fix**: a new check right after the `CapsMode.CHARACTERS` special case - `store.entryOf(word)` resolves
+case-insensitively and returns the entry's own real casing regardless of the query's own case, so if `word`
+is not already acronym-shaped but its canonical dictionary/learned entry *is* (`Acronym.isAcronym`), that
+canonical form is returned directly, skipping the whole per-first-character hierarchy for it entirely.
+Deliberately narrow: skipped whenever `context.explicitFirstUpper` is true, so rule 1 (explicit user input
+always wins) keeps its existing absolute priority unchanged - this is a later-priority fallback for the
+reported all-lowercase-typing case specifically, not a new standing exception to rule 1. Three new
+`CapitalisationEngineTest` cases: the confirmed-broken full-lowercase-typing case, explicit input still
+winning over it, and an ordinary lowercase word with no acronym-shaped entry staying unaffected (regression
+safety). Device-confirmed by the user ("Ja, ich bestätige, dass 'LLM' jetzt als Chip kommt").
+
+**Diagnostic cleanup**: D-455/D-457/D-458 are now all device-confirmed fixed, so their own temporary
+`"AdaptKeySuggest"` logging (`scheduleReclaimAndChipRefresh`'s suppression-state line,
+`reclaimWordAtCaret`'s three early-return/success lines, and every early-return branch inside
+`refreshSuggestions()`) is removed - only D-452's own two `tookMs=` timing lines (`refreshSuggestions`'s
+`provider.suggestionsFor()` call and `showSuggestions`'s total duration) remain, since that item is still
+open and still needs them for its next capture.
+
+1560 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
+507 -> 508, `versionName` `"1.2.11"` -> `"1.2.12"`.
+
+## §453 - D-397 - a generic, layout-derived vertical touch-drift cap, replacing "wait for the next reported pair" with one rule covering every row boundary.
+
+T-03's existing tighter caps (D-133
+bottom-row-into-space-bar, D-231/D-233 Enter/Backspace) were each a one-off, hand-picked pair added after a
+specific device report - every other row boundary (the reported case: `q`'s own downward drift registering
+as `a`) sat at the model's full isotropic 0.5 cap with no protection at all. Discussed directly (design
+options A/B/C) before implementing, per this project's own convention for non-trivial touch-model changes:
+the user picked the geometry-derived option (C) once it became clear the row/column position data it needs
+already exists in the repo for a related purpose.
+
+**Mechanism.** New `RowGeometry` (`keyboard/RowGeometry.kt`, pure/Android-free, JVM-tested) is the single
+shared row/column position model - one letter-row list per `LayoutKind` plus the shared digit row -
+extracted from `KeyboardProximity`'s own per-layout `ROWS` lists (D-442), which duplicated this exact
+geometry purely for typo-adjacency scoring (D-28/D-38) until now. All eight `KeyboardProximity*` objects
+now build their `ROWS` from `RowGeometry.rowsFor(...)` instead of a hand-duplicated literal string - zero
+behaviour change there, confirmed by the existing `KeyboardProximity*Test` suites passing unchanged (they
+only exercise the public `adjacent()`/`neighboursOf()` API).
+
+`AdaptKeyboardView.downwardOffsetFactorFor()`/`upwardOffsetFactorFor()` now fall through to a new shared
+`genericVerticalOffsetFactorFor()` once their own existing special cases don't match: a `KeyCode.CHAR` key
+on `InputSurface.LETTERS` (URL/email mode included - only their bottom control row differs) gets the new
+`GENERIC_VERTICAL_OFFSET_FACTOR = 0.3` in a direction whenever `RowGeometry.hasRowAbove()`/`hasRowBelow()`
+says the active layout genuinely has another row there - looser than the three existing 0.25 special cases
+(which are checked first and still win), tighter than the model's own general 0.5. Scoped to
+`InputSurface.LETTERS` deliberately: the symbol/calculator surfaces reuse some of the same characters
+(digits especially) in an unrelated grid `RowGeometry` knows nothing about.
+
+**The persistent number row is treated exactly like any other row, per explicit user instruction** - no
+exception carved out for it: shown, it participates in the row list like the three letter rows do (the top
+letter row gets the same generic upward cap toward it, the digit row itself gets the same generic downward
+cap toward the top letter row); hidden, the top letter row simply has no row above it, same as before.
+
+**Deliberately not modelled**: the third-letter-row/space-bar boundary - it already has its own tighter,
+device-confirmed D-133 override, checked first, so `RowGeometry.hasRowBelow()` correctly stays out of scope
+for that specific boundary rather than silently loosening an already-tuned value (see that function's own
+KDoc). 0.3 is the user's own confirmed value for the generic cap - a considered starting point, not yet
+device-tuned beyond that sign-off, same status as every other threshold constant in this file.
+
+New `RowGeometryTest` (8 cases): row-index lookup with/without the digit row, the named `q`/`a` repro
+directly, the digit-row-is-not-special assertion, the bottom-row boundary staying out of this model's own
+scope, and reachability across a second/third layout (AZERTY, Greek, Serbian). No test exists (or is
+expected) for `AdaptKeyboardView`'s own private dispatch functions themselves - Android View glue stays
+untested by this project's own established convention; `RowGeometry` is the pure, testable half.
+
+1568 unit tests (1560 -> 1568, +8 new). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
+508 -> 509, `versionName` `"1.2.12"` -> `"1.2.13"`.

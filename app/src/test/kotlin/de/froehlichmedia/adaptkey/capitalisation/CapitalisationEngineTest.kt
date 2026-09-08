@@ -217,4 +217,69 @@ class CapitalisationEngineTest {
     fun `D-457-followup an ordinary lowercase word with no acronym-shaped entry is unaffected`() {
         assertEquals("Haus", engine.capitalise("haus", ctx(explicit = false)))
     }
+    
+    /**
+     * D-461: the store the proper-noun-ambiguity cases below run against. "Weg" is the real, confirmed
+     * regression - D-368 retagged it `NOUN,VERB` precisely so "weg sein" would stop being capitalised, and
+     * a later corpus pass added `PROPER_NOUN`, which silently reinstated the force-capitalisation.
+     */
+    private val properStore = InMemoryDictionaryStore().apply {
+        putWord(WordEntry("Weg", 10L, setOf(PartOfSpeech.NOUN, PartOfSpeech.VERB, PartOfSpeech.PROPER_NOUN)))
+        putWord(WordEntry("Recht", 10L, setOf(PartOfSpeech.NOUN, PartOfSpeech.PROPER_NOUN, PartOfSpeech.OTHER)))
+        putWord(WordEntry("Ben", 10L, setOf(PartOfSpeech.NOUN, PartOfSpeech.PROPER_NOUN)))
+        putWord(WordEntry("London", 10L, setOf(PartOfSpeech.PROPER_NOUN)))
+    }
+    private val properEngine = CapitalisationEngine(properStore)
+    
+    @Test
+    fun `D-461 a proper noun that is also a verb is not force-capitalised`() {
+        assertEquals("weg", properEngine.capitalise("weg", ctx()))
+    }
+    
+    @Test
+    fun `D-461 a proper noun with any other reading is not force-capitalised`() {
+        assertEquals("recht", properEngine.capitalise("recht", ctx()))
+    }
+    
+    @Test
+    fun `D-461 a proper noun with no other reading is still capitalised`() {
+        assertEquals("Ben", properEngine.capitalise("ben", ctx()))
+        assertEquals("London", properEngine.capitalise("london", ctx()))
+    }
+    
+    @Test
+    fun `D-461 explicit user input still wins over the noun-only rule`() {
+        assertEquals("Weg", properEngine.capitalise("Weg", ctx(explicit = true)))
+    }
+    
+    @Test
+    fun `D-461 a noun-only proper noun after a hyphen still capitalises`() {
+        assertEquals("Ben", properEngine.capitalise("ben", ctx(afterHyphen = true)))
+    }
+    
+    @Test
+    fun `D-461 an ambiguous proper noun after a hyphen does not capitalise`() {
+        assertEquals("weg", properEngine.capitalise("weg", ctx(afterHyphen = true)))
+    }
+    
+    @Test
+    fun `D-461 B-02 still lowercases an ordinary noun after a hyphen`() {
+        // The noun-only rule must never leak into B-02 itself - widening the hyphen branch beyond the
+        // proper-noun exception would capitalise the second half of any plain compound ("Haus-tür").
+        assertEquals("haus", engine.capitalise("haus", ctx(afterHyphen = true)))
+    }
+    
+    @Test
+    fun `D-461 isNounOnly is false for an unknown word`() {
+        assertEquals(false, CapitalisationEngine.isNounOnly(emptySet()))
+    }
+    
+    @Test
+    fun `D-461 isAmbiguousCasing now covers a proper noun with a second reading`() {
+        val ambiguous = setOf(PartOfSpeech.NOUN, PartOfSpeech.VERB, PartOfSpeech.PROPER_NOUN)
+        assertEquals(true, CapitalisationEngine.isAmbiguousCasing(ambiguous))
+        assertEquals(true, CapitalisationEngine.isAmbiguousCasing(setOf(PartOfSpeech.NOUN, PartOfSpeech.OTHER)))
+        assertEquals(false, CapitalisationEngine.isAmbiguousCasing(setOf(PartOfSpeech.NOUN, PartOfSpeech.PROPER_NOUN)))
+        assertEquals(false, CapitalisationEngine.isAmbiguousCasing(setOf(PartOfSpeech.PROPER_NOUN)))
+    }
 }

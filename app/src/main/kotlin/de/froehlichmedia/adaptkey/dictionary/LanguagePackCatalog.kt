@@ -344,7 +344,25 @@ object LanguagePackCatalog {
             // actually asked. `dictionaries/de/version.txt` 36 -> 37, pack rebuilt and verified byte-identical
             // after unzip, `LanguagePackCatalog` version 36 -> 37. No new tests (data-only). Not yet
             // device-confirmed.
-            version = 37
+            //
+            // §478 (v1.2.38): D-461 - the German verb/proper-noun tagging round. 349 attested infinitives
+            // that the §306-§315 sweep never reached gained their VERB tag (schreiben/treffen/fehlen/
+            // messen/sitzen/feiern/...), applied only where isPureNoun was already false so no
+            // capitalisation outcome could change; 98 noun/verb homographs retagged NOUN,VERB per explicit
+            // user instruction to tag every real double reading rather than weigh it against typing
+            // comfort (Weise/Messe/Sitze/Gewinne/Verlasse/Fahrt/... plus the whole bare-stem imperative
+            // family Vertrag/Stich/Ertrag/Kopier). 57 genuine proper nouns lost a spurious OTHER tag so
+            // D-461's new isNounOnly rule still capitalises them (Ben/Nova/Terra/Ella/Papa/...); the
+            // surnames that are also real words (Ehrlich/Rau/Kühn/Jung/Kluge/Wunderlich) were deliberately
+            // left ambiguous instead. "ines" (261120, ADJECTIVE,NOUN,PROPER_NOUN, lemma "in") corrected to
+            // "Ines" 60 NOUN,PROPER_NOUN, calibrated between Monika (45) and Ilse (80). 8 generated
+            // non-words removed - inem/inen/iner (261120 each, lemma "in") and zue/zuem/zuen/zuer/zues
+            // (97088 each, lemma "zu"), declension forms of prepositions, the same over-generation bug
+            // §457 already fixed for English; the ADJECTIVE tags on "in"/"zu" themselves are kept ("das
+            // ist in", "die Tür ist zu" are real adjectival uses, they simply do not decline).
+            // `dictionaries/de/version.txt` 37 -> 38, pack rebuilt and verified byte-identical after
+            // unzip, `LanguagePackCatalog` version 37 -> 38. Not yet device-confirmed.
+            version = 38
         ),
         Entry(
             Language.GREEK,

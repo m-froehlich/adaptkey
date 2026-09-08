@@ -365,26 +365,36 @@ non-trivial changes).
     round, discarded after use); if the dictionary content changes materially in the future, re-running the
     same scan from scratch would be the way to check for new candidates, not resuming from a saved list.
 
-    **New, explicitly deferred follow-up from the user, unrelated to the above**: the nominalised-infinitive
-    pattern (`lachen`/`Lachen`, and by the same logic `essen`/`Essen`, `leben`/`Leben`, and others) was
-    deliberately left as a single example - "später können wir dann die anderen Beugungsformen davon und von
-    anderen Wörtern hinzufügen." Not started.
+    **The nominalised-infinitive follow-up - RESOLVED, mostly before anyone got round to it (§478).** The
+    user's own deferred ask ("später können wir dann die anderen Beugungsformen davon und von anderen
+    Wörtern hinzufügen") named `lachen`/`Lachen` as the single worked example, with `essen`/`Essen`,
+    `leben`/`Leben` and others left open. Checked directly rather than assumed: `Lachen`, `Essen`, `Leben`
+    and `Denken` all already carry `NOUN,VERB` today. §478 then closed the general case the ask was really
+    about - every remaining pure-noun row colliding with an attested verb form was found and retagged, and
+    the candidate scan now runs out at 0. Nothing specific to nominalised infinitives is left.
 
     Still not an exhaustive sweep of the whole ~210k-row combined dictionary for every possible homograph
     *type* (only the weak-verb-infinitive-vs-noun pattern has been systematically scanned at all) - that
     remains its own, much larger future project (same "needs better tooling" shape as D-306-followup).
 
-  - **The German dictionary carried zero `VERB` tags anywhere, across all ~120,000 rows, before D-368**
-    **started this session** - a genuine, standalone structural data-quality finding from the original
-    Wikipedia-corpus extraction, not merely a footnote to the homograph work above. All 210 `NOUN,VERB`
-    entries that exist today are ones added across D-368's eight rounds. This does **not** mean ordinary verbs
-    are missing as words - `gehen`/`kommen`/`haben`/`können`/`machen`/`sprechen` (checked directly) are all
-    present with real frequencies, just tagged the catch-all `OTHER` instead of `VERB` specifically, since
-    they have no noun collision to resolve. D-368 only ever tags `VERB` where a homograph exists to
-    disambiguate - giving every genuine German verb its own `VERB` tag regardless of collision is a separate,
-    larger, not-yet-started question, and would only matter once some future feature actually reads `VERB`
-    for a purpose beyond this one. Worth keeping in mind for *any* future feature that might want to rely on
-    a `VERB` tag meaning something for German - today, outside of these 210 words, it simply never does.
+  - **German `VERB` tagging - REWRITTEN 2026-09-08 (§478/D-461); the previous text here was materially**
+    **wrong and had been since §322.** It claimed the dictionary "carried zero `VERB` tags anywhere" and
+    that `gehen`/`kommen`/`haben`/`können`/`machen`/`sprechen` were tagged `OTHER`. That described the state
+    *before* the §306-§315 verb-retagging sweep and §322's Wortfamilien project, and was never revisited
+    afterwards; a reader acting on it would have drawn the wrong conclusion about the whole dictionary.
+    Measured directly (2026-09-08, after §478): **10,712 VERB-bearing rows, 1,372 of them `NOUN,VERB`**, and
+    every one of those six verbs is `VERB`-tagged. Never quote this paragraph's numbers from memory either -
+    re-derive them with `awk -F'\t' '$3 ~ /(^|,)VERB(,|$)/' dictionaries/de/dict.tsv | wc -l`.
+
+    What *is* still true, and is the useful part to carry forward: **no code path anywhere reads `VERB` to
+    make a decision.** Every consumer asks only `contains(NOUN)` / `contains(PROPER_NOUN)` / "are all tags
+    noun-ish" - `CapitalisationEngine` (§6), A-05's own not-both-nouns split gate, and
+    `CorrectionConfidence`'s `isNounLike`. So `NOUN,VERB` and `NOUN,OTHER` are behaviourally identical
+    today; D-368's retags were never "tagging verbs", they were flipping `isPureNoun` to false. A future
+    feature that genuinely wants to read `VERB` should first check coverage rather than assume it: of
+    14,373 single-word infinitives in `wiktionary_verben.tsv` only 2,250 have their infinitive in
+    `dict.tsv` at all, and 114,162 conjugated forms are absent entirely - see the separate B1/B2 bullet
+    below for the measured cost of closing that.
 
   D-402's own original convention (list every candidate for explicit user confirmation before touching the
   file) was the default until §301, where the user explicitly asked for the noise-removal pass specifically
@@ -958,7 +968,8 @@ non-trivial changes).
   confirmation again, reversing D-396-followup (v3)'s earlier removal - see §448 in Current State for the
   mechanism.
 
-- **D-452 - RESOLVED, device-confirmed (§477, v1.2.37).** Originally closed WON'T FIX as not reproducible; the
+- **D-452 - RESOLVED, device-confirmed by the user on 2026-09-08 (§477, v1.2.37) - including the long-token**
+  **`"hqllervoorden"` case §477 itself had flagged as not yet verified.** Originally closed WON'T FIX as not reproducible; the
   user later sent a real device log describing it as "das immer wiederkehrende Performance-Problem" (the
   recurring performance problem), captured incidentally while typing in Gemini. That specific log showed no
   smoking gun - `showSuggestions()` fired redundantly 2-4x in a row for an identical, already-empty result
@@ -1026,8 +1037,14 @@ non-trivial changes).
   D-351), moving the caret between existing words now correctly re-derives Shift/Caps fresh, independent of
   the composing-region reclaim itself staying suppressed there - see §450 in Current State for the mechanism.
 
-- **D-456 - OPEN, likely already substantially covered by an existing mechanism - needs a real repro before**
-  **further action (2026-09-06).** User's ask: with D-348 (double-tap-Backspace-undo) enabled, when a word
+- **D-456 - CLOSED, device-confirmed working (2026-09-08, no code change).** The user confirmed on device
+  that the behaviour is already correct, so the existing D-248/D-140 mechanism
+  (`rememberForBackspaceUnlearn`/`recentLearnRecords`/`maybeUnlearnOnBackspaceReturn`) does cover this
+  case after all - the analysis below had already concluded it probably did, and the two open questions it
+  raised (does the punctuation-committed case land the caret in time; is `RECENT_LEARN_HISTORY_SIZE = 5`
+  ever exhausted in practice) are answered by that confirmation rather than by a test. Kept for the
+  reasoning, which stays the right starting point if it is ever reported again.
+  Original ask: with D-348 (double-tap-Backspace-undo) enabled, when a word
   committed *without* any autocorrect firing (so it was only ever plain-learned/counted-up, never protected by
   the A-07 undo window), backspacing back into it and changing it should un-learn the original word - "sonst
   wird ein Tippfehler dauerhaft mitgelernt, nur weil kein Autocorrect dagegen lief." An existing, closely
@@ -1086,7 +1103,13 @@ non-trivial changes).
   Channels section). Deferred, not abandoned - "vielleicht nutzt es uns später noch einmal" - revisit only
   if the user raises it again, ideally with its own dedicated repro.
 
-- **D-460 - OPEN, real, reported but not yet root-caused (2026-09-07, no code change).** Tapping the D-36
+- **D-460 - CLOSED, device-confirmed (2026-09-08); no dedicated fix was ever written, so the mechanism**
+  **below is inferred rather than proven.** The user confirmed the symptom is gone. Nothing ever targeted
+  it directly, so the most plausible explanation is §477's own fix: the chips vanishing was a
+  reclaim/render race against a 350 ms guard window, and §477 removed a multi-second main-thread block
+  (two full `hasObviousCandidate()` searches per keystroke) that would have made exactly that race fire
+  reliably. Recorded as inference, not fact - if it ever returns, treat the analysis below as still
+  current and capture a real log rather than assuming this closure explained it. Original report: tapping the D-36
   clipboard-peek button while the caret touches an existing word shows the clipboard chips only briefly
   before the word gets reclaimed and the chips disappear again - reported as reproducing independently of the
   D-401 cursor-control gesture (§463), and confirmed here not to trace to anything that session touched.
@@ -1095,6 +1118,149 @@ non-trivial changes).
   chips flashed and immediately vanished again" - the identical symptom now reported again, either a
   regression of that existing fix or a related race it does not fully cover. Needs a real device log to
   root-cause properly, per this project's own convention - not attempted blind.
+
+- **D-461 - RESOLVED (§478, v1.2.38), not yet device-confirmed.** Automatic capitalisation now fires only
+  for a word with no reading beyond noun/proper noun - §6's rules 3 and 4 collapsed into one `isNounOnly`
+  predicate, closing a live bug where a `PROPER_NOUN` tag silently overrode a correctly-detected ambiguity
+  and re-broke D-368's own retags (`Weg`, `waren`, `Arbeit`, `Rolle`, `Recht`, `Alter` - 159 German rows).
+  User's own framing, worth keeping because it is the standing principle for this whole area rather than one
+  decision: automatic capitalisation is only for cases with genuinely no doubt, since a wrongly forced
+  capital on a deliberately lower-cased word is what makes people switch autocorrect off entirely - one chip
+  tap is the cheaper failure. See spec §46 and §478 in Current State. The one class this deliberately does
+  **not** fix: a surname that is also an ordinary word (`Ehrlich`, `Jung`, `Kluge`) stays ambiguous by
+  design, with W-04 learning the user's own casing from real use.
+
+- **D-462 - OPEN, decision pending, but already measured (2026-09-08, §478).** German's verb coverage is
+  far thinner than every comparable language's, and this is a **deliberate §322 decision that the later
+  language packs silently abandoned**, not an oversight. §322 explicitly rejected importing vocabulary the
+  Wikipedia corpus never attested ("the project stayed scoped to completing existing lemmas' paradigms, not
+  growing the vocabulary itself") because such rows carry no real frequency signal. Every pack built from
+  D-441 onwards ignored that rule. The result, measured: Spanish 269,508 VERB rows (64.2% of its
+  dictionary, 77.6% of them at frequency <= 3 - i.e. generated, not attested), French 51.8%, Portuguese
+  43.7%, against **German 5.5%** with a mean VERB-row frequency of 166.5. 114,162 German conjugated forms
+  documented in `wiktionary_verben.tsv` are absent from `dict.tsv` entirely.
+
+  The regression cost of closing that was measured against `CorrectionConfidence.forKnownWordOverride`'s
+  own formula (a new word blocks an existing correction when `freq_target / freq_new < 500^0.75 ~ 105.7`),
+  and the result **inverts the obvious intuition**:
+  - **B1** (complete the paradigms of the 2,250 verbs already in the dictionary, using §322's own
+    lemma-derived frequency): 9,079 new forms, 354 regressions, **38 of them against a target with
+    frequency >= 500** - real losses like `befundet`->`befindet`(7567), `begingt`->`beginnt`(2011),
+    `lieft`->`liegt`(12420).
+  - **B2** (additionally import the 12,123 verbs missing entirely, at a floor frequency of 2): 110,549 new
+    forms, 3,667 regressions, **0 against a target with frequency >= 500** - every one is against a word
+    below frequency 212, which nobody types.
+
+  So the risk is driven by the *assigned frequency*, not the word count: a floor frequency keeps A-01's
+  ratio override firing, a lemma-derived one blocks it. The safe shape of a broad import is therefore the
+  one Spanish/French already use, and §322's own frequency rule is the part to drop - the opposite of what
+  the conservative framing suggests. **Not started, and not a data-only change:** the dictionary would go
+  188,244 -> ~308,000 rows, so given §477's stall history this needs a real runtime measurement (prefix
+  scan, D-328/D-453 escalation cost) before shipping, not just a quality-gate pass.
+
+- **S-11 dual-casing chips: "immer beide Chips anbieten" - OPEN, instructed but not implemented**
+  **(2026-09-08).** Explicit user instruction given mid-round and parked. Today `ambiguousCasingChips()`
+  returns `emptyList()` outright for an empty `input`, so a next-word prediction never offers both casings -
+  D-440 closed with exactly this as its named open design question ("dual chips before anything is even
+  typed, vs. a single best-guess reading"), and the user has now answered it: always offer both. One point
+  still to settle before implementing: whether "immer" also drops the existing S-02 carve-out (once the
+  token exactly matches, only the *other* casing is offered today), or only extends the mechanism to the
+  `composing.isEmpty()` case. This became more valuable with §478 - far more words are now genuinely
+  ambiguous, so the chips are the primary way their casing gets chosen at all.
+
+- **`dictionaries/quality_gate.py` is not language-aware and reports German as FAIL - OPEN, cosmetic but**
+  **misleading (2026-09-08).** Its "0 bare-NOUN rows" check encodes D-441's convention for languages that
+  do *not* capitalise common nouns (English tags them `NOUN,OTHER`). German's bare `NOUN` is exactly what
+  drives its own auto-capitalisation, so running the gate the Language Contribution Guide documents against
+  `dictionaries/de/dict.tsv` prints `QUALITY GATE: FAIL` with 108,779 "violations", every one of them
+  correct. The other three checks pass. Needs a per-language flag ("this language capitalises common
+  nouns") rather than dropping the check - it is genuinely right for every other language.
+
+- **§478 (v1.2.38): D-461 - automatic capitalisation now requires genuine unambiguity, plus the German**
+  **verb-tagging gap behind it.** Started as a question about this file's own point 7 below ("the German
+  dictionary carries zero VERB tags") - which turned out to be **materially wrong**, and chasing why
+  surfaced a live capitalisation bug that had been silently reverting D-368's work for months.
+
+  **What point 7 actually got wrong.** It described the state *before* §322's Wortfamilien project, and was
+  never revisited afterwards. Measured directly: 10,265 VERB-bearing rows (not 210), 1,089 `NOUN,VERB` (not
+  210), and `gehen`/`kommen`/`haben`/`können`/`machen`/`sprechen` are all `VERB`-tagged, not `OTHER` as the
+  text claimed. The §306-§315 sweep had done that work properly across every frequency band. Point 7 is
+  rewritten below rather than patched.
+
+  **The real gap it was hiding.** Of 14,373 single-word infinitives in `wiktionary_verben.tsv`, only 2,250
+  have their infinitive in `dict.tsv` at all, and 392 of those carried no VERB tag - the §306-§315 sweep
+  targeted pure-`OTHER` rows and never reached them. 349 were tagged (`schreiben`, `treffen`, `fehlen`,
+  `geschehen`, `lernen`, `messen`, `sitzen`, `feiern`, `prüfen`, `singen`, ... down to `decodieren`),
+  applying only where `isPureNoun` was **already false**, so no capitalisation outcome could change - the
+  safety is a property of the transformation, asserted per row, not a per-word judgement. 43 were held back
+  by a mechanical filter (the spelling is also an attested adjective form: `freien`, `langen`, `festen`,
+  `gesunden`, ...) rather than guessed at.
+
+  **A naive "tag every verb form" pass would have been a disaster, and the measurement is why it was not**
+  **attempted.** Run against the real conjugation tables, 1,955 bare-`NOUN` rows collide with an attested
+  verb form - `Gebiet`, `Werk`, `Tag`, `Wasser`, `Vater`, `Mutter`, `Grenze`, `Schule`. Tagging those would
+  have silently switched off auto-capitalisation for ordinary German nouns. The noise is not a paradigm-slot
+  artefact (`praes1` is as noisy as `imp_sg`, checked) but marginal denominal verbs in the Wiktionary source
+  itself (`vatern`, `muttern`, `wassern`, `berlinern`). Restricting propagation to infinitives the
+  dictionary *already* accepts as verbs cut the candidate set to 98 reviewable rows.
+
+  **All 98 retagged `NOUN,VERB`, per explicit user instruction to tag every real double reading.** The
+  original proposal split them into "everyday finite forms" (35) / "unclear" (10) / "bare-stem imperatives"
+  (53) and recommended only the first two, since a bare-stem imperative collides with a noun by
+  construction and `Vertrag`(2329)/`Stich`/`Ertrag` would lose their automatic capital for a reading used
+  once a month. The user overrode that deliberately and it is worth recording verbatim: *"die automatische
+  Großschreibung soll nur dann gemacht werden, wenn es wirklich keine Zweifel gibt ... Es ist viel besser,
+  einmal einen Chip zu akzeptieren als dass ich wenn auch nur gelegentlich falsche
+  Auto-korrekt-Großschreibungen erlebe. die führen nur dazu, dass Leute die Autokorrektur ausschalten."*
+  The candidate scan now runs out at 0.
+
+  **Then the actual bug (D-461, spec §46).** `CapitalisationEngine.capitalise()` ranked `isProper -> true`
+  *above* `isPureNoun -> true`, so a `PROPER_NOUN` tag overrode a correctly-detected ambiguity outright.
+  `Weg` is `NOUN,VERB,PROPER_NOUN`: D-368 gave it the VERB tag precisely so `"weg sein"` would stop being
+  capitalised, a later corpus pass added `PROPER_NOUN`, and the force-capitalisation came back unnoticed.
+  `waren`(31549) committed as `"wir Waren"`. 159 German rows were affected including `Arbeit`, `Rolle`,
+  `Bau`, `Band`, `Park`, `Liebe`, `Recht`, `Alter`. Fixed by collapsing rules 3 and 4 into one
+  `isNounOnly(pos)` predicate - capitalise exactly when the word has no reading beyond noun/proper noun.
+  `isAmbiguousCasing` lost its own `!isProper` exclusion in lockstep (otherwise the freed words would have
+  lost the capital *and* gained no S-11 chips). B-02 was deliberately **not** widened - its hyphen branch
+  still tests `isProper && isNounOnly`, since using the general rule there would capitalise the second half
+  of any plain compound (`"Haus-tür"`).
+
+  **The literal user proposal ("Eigennamen braucht es nie") was checked and would have broken 31**
+  **languages.** German is the only language whose every `PROPER_NOUN` row also carries `NOUN`; everywhere
+  else bare `PROPER_NOUN` rows are the norm (English 29,458, Greek 29,963, French 24,854) and `isProper`
+  is the only thing capitalising them. The generalised `isNounOnly` formulation achieves the user's stated
+  rule without that cost.
+
+  **Data corrections in both directions.** 57 genuine German proper nouns carried a spurious `OTHER` from
+  corpus noise and would have lost their capital under the new rule - tag removed (`Ben`, `Nova`, `Terra`,
+  `Ella`, `Papa`, `Felicitas`, `Wikimedia`, ...). Five English rows needed the opposite fix (`German`,
+  `Jewish`, `Mussolini`, `Lindy`, `Frenchy`): English capitalises nationality adjectives, German does not,
+  so the `ADJECTIVE` tag is dropped there - the same per-language data decision D-441 already established.
+  Surnames that are genuinely also ordinary words (`Ehrlich`, `Rau`, `Kühn`, `Jung`, `Kluge`, `Wunderlich`,
+  `Treuen`, `Frechen`) were deliberately **left** ambiguous; W-04 learns the user's own casing from real use.
+
+  **Two unrelated finds, both fixed.** `ines` sat in the dictionary at frequency **261,120** (higher than
+  `Jahr`, 33,028) as `ADJECTIVE,NOUN,PROPER_NOUN` with `lemma = in` - a generated "declension" of the
+  preposition *in*, the exact over-generation bug §457 fixed for English, unnoticed here. Corrected to
+  `Ines 60 NOUN,PROPER_NOUN`, calibrated against real siblings in the same corpus (`Monika` 45, `Ilse` 80),
+  not an invented number. Its siblings were worse and are simply not words: `inem`/`inen`/`iner` (261,120
+  each) and `zue`/`zuem`/`zuen`/`zuer`/`zues` (97,088 each) - all eight removed. The `ADJECTIVE` tags on
+  `in`/`zu` themselves are kept: *"das ist in"* / *"die Tür ist zu"* are real adjectival uses, they simply
+  do not decline.
+
+  **`SeedData.kt` + `SeedDataTest.kt` deleted.** 34 hardcoded German words and 5 bigrams whose only caller
+  was its own test; its KDoc described a replacement ("in a later session") that happened at D-280. English
+  is bundled and every pack ships its own dictionary, so the "no dictionary at all" state it guarded against
+  does not exist.
+
+  1646 unit tests (1640 -> 1637 after removing `SeedDataTest`, -> 1646 with 9 new `CapitalisationEngineTest`
+  cases covering the verb-homograph proper noun, the noun-only proper noun, B-02 both ways, and
+  `isAmbiguousCasing`'s widened contract). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+  `dictionaries/de/version.txt` 37 -> 38, pack rebuilt and verified byte-identical after unzip,
+  `LanguagePackCatalog` version 37 -> 38. `versionCode` 533 -> 534, `versionName` `"1.2.37"` ->
+  `"1.2.38"`. **Not yet device-confirmed** - the capitalisation change is broad and only real typing will
+  show whether any word now feels under-capitalised.
 
 - **§477 (v1.2.37): D-452-followup - the ~1.3s "Habeck" suggestion-bar stall, root-caused and fixed.** User
   pasted a real device log for a genuinely unknown word ("Habeck", tapped for autocorrect) with §459's own
@@ -2083,263 +2249,19 @@ non-trivial changes).
   1586 unit tests (1568 -> 1586, +18 new). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
   509 -> 510, `versionName` `"1.2.13"` -> `"1.2.14"`.
 
-- **§453 (v1.2.13): D-397 - a generic, layout-derived vertical touch-drift cap, replacing "wait for the**
-  **next reported pair" with one rule covering every row boundary.** T-03's existing tighter caps (D-133
-  bottom-row-into-space-bar, D-231/D-233 Enter/Backspace) were each a one-off, hand-picked pair added after a
-  specific device report - every other row boundary (the reported case: `q`'s own downward drift registering
-  as `a`) sat at the model's full isotropic 0.5 cap with no protection at all. Discussed directly (design
-  options A/B/C) before implementing, per this project's own convention for non-trivial touch-model changes:
-  the user picked the geometry-derived option (C) once it became clear the row/column position data it needs
-  already exists in the repo for a related purpose.
+## Older Rounds (§1-§453, v0.7.6 through v1.2.13) - Pruned From This File
 
-  **Mechanism.** New `RowGeometry` (`keyboard/RowGeometry.kt`, pure/Android-free, JVM-tested) is the single
-  shared row/column position model - one letter-row list per `LayoutKind` plus the shared digit row -
-  extracted from `KeyboardProximity`'s own per-layout `ROWS` lists (D-442), which duplicated this exact
-  geometry purely for typo-adjacency scoring (D-28/D-38) until now. All eight `KeyboardProximity*` objects
-  now build their `ROWS` from `RowGeometry.rowsFor(...)` instead of a hand-duplicated literal string - zero
-  behaviour change there, confirmed by the existing `KeyboardProximity*Test` suites passing unchanged (they
-  only exercise the public `adjacent()`/`neighboursOf()` API).
-
-  `AdaptKeyboardView.downwardOffsetFactorFor()`/`upwardOffsetFactorFor()` now fall through to a new shared
-  `genericVerticalOffsetFactorFor()` once their own existing special cases don't match: a `KeyCode.CHAR` key
-  on `InputSurface.LETTERS` (URL/email mode included - only their bottom control row differs) gets the new
-  `GENERIC_VERTICAL_OFFSET_FACTOR = 0.3` in a direction whenever `RowGeometry.hasRowAbove()`/`hasRowBelow()`
-  says the active layout genuinely has another row there - looser than the three existing 0.25 special cases
-  (which are checked first and still win), tighter than the model's own general 0.5. Scoped to
-  `InputSurface.LETTERS` deliberately: the symbol/calculator surfaces reuse some of the same characters
-  (digits especially) in an unrelated grid `RowGeometry` knows nothing about.
-
-  **The persistent number row is treated exactly like any other row, per explicit user instruction** - no
-  exception carved out for it: shown, it participates in the row list like the three letter rows do (the top
-  letter row gets the same generic upward cap toward it, the digit row itself gets the same generic downward
-  cap toward the top letter row); hidden, the top letter row simply has no row above it, same as before.
-
-  **Deliberately not modelled**: the third-letter-row/space-bar boundary - it already has its own tighter,
-  device-confirmed D-133 override, checked first, so `RowGeometry.hasRowBelow()` correctly stays out of scope
-  for that specific boundary rather than silently loosening an already-tuned value (see that function's own
-  KDoc). 0.3 is the user's own confirmed value for the generic cap - a considered starting point, not yet
-  device-tuned beyond that sign-off, same status as every other threshold constant in this file.
-
-  New `RowGeometryTest` (8 cases): row-index lookup with/without the digit row, the named `q`/`a` repro
-  directly, the digit-row-is-not-special assertion, the bottom-row boundary staying out of this model's own
-  scope, and reachability across a second/third layout (AZERTY, Greek, Serbian). No test exists (or is
-  expected) for `AdaptKeyboardView`'s own private dispatch functions themselves - Android View glue stays
-  untested by this project's own established convention; `RowGeometry` is the pure, testable half.
-
-  1568 unit tests (1560 -> 1568, +8 new). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
-  508 -> 509, `versionName` `"1.2.12"` -> `"1.2.13"`.
-
-- **§452 (v1.2.12): D-457-followup - the full lowercase spelling of a learned acronym (typing the whole word,**
-  **not just its prefix) still resolved to a mangled casing; plus D-455/D-457/D-458's own temporary**
-  **diagnostic logging removed now that all three are device-confirmed fixed.**
-
-  **The deeper D-457 gap**: §450's own fix only covered `capitalise()` being called with `word` already
-  spelled as the acronym itself (e.g. the ordinary ranked suggestion, already correctly cased by
-  `unigramsByPrefix()`'s own casing-merge). A real device log then showed typing the *entire* word `"llm"`
-  lower-case (not just "ll") still produced `"Llm"`: `isPureNoun` correctly decided "uppercase" (the learned
-  entry carries a `NOUN` tag), but every branch of the hierarchy can only ever touch `word`'s own first
-  character (`uppercaseFirst`/`lowercaseFirst`) - none of them could ever reconstruct the real multi-capital
-  `"LLM"` from a fully lower-case `"llm"`, tagged or not. Root cause is structurally different from §450's -
-  not a missing veto, but `capitalise()` never having a way to learn the *real* canonical spelling of the
-  word it was asked to case in the first place.
-
-  **Fix**: a new check right after the `CapsMode.CHARACTERS` special case - `store.entryOf(word)` resolves
-  case-insensitively and returns the entry's own real casing regardless of the query's own case, so if `word`
-  is not already acronym-shaped but its canonical dictionary/learned entry *is* (`Acronym.isAcronym`), that
-  canonical form is returned directly, skipping the whole per-first-character hierarchy for it entirely.
-  Deliberately narrow: skipped whenever `context.explicitFirstUpper` is true, so rule 1 (explicit user input
-  always wins) keeps its existing absolute priority unchanged - this is a later-priority fallback for the
-  reported all-lowercase-typing case specifically, not a new standing exception to rule 1. Three new
-  `CapitalisationEngineTest` cases: the confirmed-broken full-lowercase-typing case, explicit input still
-  winning over it, and an ordinary lowercase word with no acronym-shaped entry staying unaffected (regression
-  safety). Device-confirmed by the user ("Ja, ich bestätige, dass 'LLM' jetzt als Chip kommt").
-
-  **Diagnostic cleanup**: D-455/D-457/D-458 are now all device-confirmed fixed, so their own temporary
-  `"AdaptKeySuggest"` logging (`scheduleReclaimAndChipRefresh`'s suppression-state line,
-  `reclaimWordAtCaret`'s three early-return/success lines, and every early-return branch inside
-  `refreshSuggestions()`) is removed - only D-452's own two `tookMs=` timing lines (`refreshSuggestions`'s
-  `provider.suggestionsFor()` call and `showSuggestions`'s total duration) remain, since that item is still
-  open and still needs them for its next capture.
-
-  1560 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
-  507 -> 508, `versionName` `"1.2.11"` -> `"1.2.12"`.
-
-- **§451 (v1.2.11): D-458 root-caused and fixed - a spurious double space in the A-03 context string**
-  **wrongly suppressed every suggestion from the second word onward - plus D-452's own timing diagnostics.**
-
-  **D-458**: the user's device log, captured typing `"Test llm"`, showed it directly:
-  `refreshSuggestions: cleared - suppressAutocorrect from selectActiveDictionary("Test  l")` - a literal
-  double space between the previous word and the new token. `tokenContextBefore` is real document text
-  (`captureTokenContext()` sets it straight from `getTextBeforeCursor()`), already ending in whatever real
-  whitespace precedes the caret (`"Test "` right after committing "Test" + its trailing space) - both
-  `finalizeAndCommit()` and `refreshSuggestions()` then concatenated a *further* literal space before the
-  typed token (`"$tokenContextBefore $typed"`/`"$tokenContextBefore $input"`), producing `"Test  l"` from the
-  second word onward. Never on a field's first word (`tokenContextBefore == ""` there, so only ever a
-  harmless single leading space resulted) - exactly why this silently escaped notice until a real log caught
-  it. The extra space confused `LanguageClassifier`'s own n-gram matching enough to misread the context as
-  foreign, setting `suppressAutocorrect = true` and clearing the bar for every keystroke of the second word
-  onward. Fixed at both call sites (`"$tokenContextBefore$typed"`/`"$tokenContextBefore$input"`, no
-  space) - matching the already-correct convention `refreshSuggestions()`'s own tier-3 prompt-sentence string
-  used a few hundred lines below all along. No new unit test - both call sites are inside
-  `AdaptKeyService`/`InputConnection`-glue with no existing test harness, this project's own accepted,
-  established gap for this class of code; verification is the device repro itself, per D-357's own identical
-  precedent just before this round.
-
-  **D-452**: real wall-clock timing (mirroring D-217/D-220's own established `SystemClock.uptimeMillis()`
-  before/after pattern) added to `refreshSuggestions()`'s own `provider.suggestionsFor()` call (the one D-153/
-  D-207/D-211 already name as the per-keystroke cost driver) and to `showSuggestions()`'s total duration -
-  both logged under the same `"AdaptKeySuggest"` tag D-458's own diagnostics already use. The device log the
-  user sent for this item showed no smoking gun (no dictionary work fired repeatedly, only cheap, already-
-  empty `showSuggestions()` re-renders around a field restart) - still open, needs a log that actually
-  captures the perceived-slow moment with this new timing data to make further progress.
-
-  1557 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
-  506 -> 507, `versionName` `"1.2.10"` -> `"1.2.11"`.
-
-- **§450 (v1.2.10): D-455 (Gemini Shift re-derivation) + D-457 (mangled learned-acronym casing), plus D-458's**
-  **own temporary diagnostic logging for a new, not-yet-root-caused report.**
-
-  **D-455**: `AdaptKeyService` gained `rearmShiftForCaretMove(ic, preserveShiftAfterOpener)` - the exact
-  Shift/Caps re-derivation core `reclaimWordAtCaret()` already had inline (`captureTokenContext`/
-  `resetWordEndShift`/the `shiftArmedByDelete`/`tokenShiftLiveArmed`/`preserveShiftAfterOpener` decision),
-  extracted verbatim rather than rewritten so the ordinary (non-suppressed) path stays byte-identical. A new
-  `rearmShiftForCaretMoveWhenReclaimSuppressed()` calls it standalone - own flag consumption, own
-  `composing.isNotEmpty()` guard, own `ic.beginBatchEdit()`, mirroring `reclaimWordAtCaret()`'s own structure
-  exactly rather than the IPC calls migrating outside a batch edit. `scheduleReclaimAndChipRefresh()`'s
-  `reclaimOnCaretMoveSuppressed` branch now schedules a new debounced `rearmShiftForCaretMoveRunnable` instead
-  of doing nothing, mirroring `reclaimEnabledRunnable`'s own existing "runs unconditionally regardless of
-  suppression" precedent (D-414-followup) - cancelled in `clearComposing()` for the identical stale-callback
-  reason `reclaimWordAtCaretRunnable` already is. See spec's new G-05 addendum.
-
-  **D-457**: root-caused by tracing three separate layers with real (throwaway, later replaced by permanent
-  assertions) diagnostic tests rather than guessing from the original hypothesis, which turned out wrong -
-  `DictionarySuggestionProvider.suggestionsFor()` and `SuggestionController.displayed()` both already handle a
-  differently-cased learned candidate correctly (confirmed directly, not assumed); the real bug was in
-  `CapitalisationEngine.capitalise()`'s own "no signal, lowercase it" branch, which only ever touches a word's
-  first character (`casing.lowercaseFirst()`) - correct for an ordinary word, but silently mangling a
-  deliberately all-caps, not-noun-tagged learned acronym into a nonsensical hybrid (`"LLM"` -> `"lLM"`) instead
-  of leaving it alone. Fixed with a new branch reusing the already-established `Acronym.isAcronym()` signal
-  (D-403/D-404-followup) ahead of the plain lowercase fallback: `word` is returned completely unchanged
-  whenever it is a genuine acronym, since the "upper" branch right above it already produces the correct,
-  no-op result for one (`uppercaseFirst("LLM") == "LLM"`), so only the lowercase branch ever needed the guard.
-  Two new `CapitalisationEngineTest` cases (the confirmed-broken untagged case, plus the already-working
-  NOUN-tagged case as a non-regression check) plus one each in `DictionarySuggestionProviderTest`/
-  `SuggestionControllerTest` (converted from the exploratory diagnostics into permanent assertions once they
-  had done their job) - see spec's new §6 addendum.
-
-  **D-458 (new, not part of this fix - see its own Open TODos entry)**: while implementing the two rounds
-  above, the user reported a real, more severe, not-yet-root-caused regression ("ab dem zweiten Wort keine
-  Chips mehr") and asked for diagnostic logging rather than a guessed fix - a new `"AdaptKeySuggest"` `diag()`
-  tag now covers `refreshSuggestions()`'s own early-return branches and final candidate count,
-  `showSuggestions()`'s item-count pipeline, and the D-455 functions' own early returns. Temporary, to be
-  removed once a real device log pins down the actual cause.
-
-  1557 unit tests green (was 1553). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
-  505 -> 506, `versionName` `"1.2.9"` -> `"1.2.10"`.
-
-- **§449 (v1.2.9): D-357 reopened and fixed for real, device-confirmed - mid-word edit + double-tap Shift**
-  **capitalising the wrong letter.** Closed once (2026-09-01) as not reproducible; the user captured a real
-  Google Keep device log reproducing it and asked for a fresh look, per this project's own "re-derive from
-  real logs, don't
-  guess" convention for exactly this class of bug (spec §1's guiding principle).
-  
-  **Root cause, traced line-by-line against the log**: reclaim "bar" (caret between b/a) → Backspace deletes
-  'b' (composing "ar", `composingCursor` now 0) → a second Backspace has nothing left inside composing to
-  remove, so `deleteComposingChar()`'s own `composingCursor == 0` branch
-  ([AdaptKeyService.kt:3576](app/src/main/kotlin/de/froehlichmedia/adaptkey/AdaptKeyService.kt:3576)) reaches
-  past composing's own start and deletes the character immediately before it via `deleteOneBefore` - the log
-  showed `composingAnchor` shift from 100 to 99 while composing's own text stayed exactly "ar". That branch
-  only ever shifted `composingAnchor` to match - correct when the deleted character was an ordinary
-  word-boundary delimiter, but the user's own real note had no space there at all: deleting it exposed a
-  *letter* of a directly-adjacent word now glued to "ar" with nothing between them (the document reads one
-  continuous word), which the old code never absorbed into composing. Retyping 'b' afterward only ever grew
-  the still-too-short composing token back to "bar" - not the now-actually-longer real word - so
-  `flipFirstInComposing` (G-05's double-tap-Shift toggle) correctly flipped composing's own first character,
-  which was by then no longer the true word's first letter. The user's own hunch that this connects to Gemini
-  (`reclaimOnCaretMoveSuppressed`) doesn't hold for the mechanism itself - this exact code path fires
-  regardless of that flag, and the captured log is from Google Keep, not Gemini - but Gemini's suppression
-  plausibly makes the *preconditions* (several plain Backspaces reaching past a short reclaimed token's own
-  start) more common in practice, since a suppressed field leans more on explicit Backspace-driven reclaims
-  than the ordinary reactive one.
-  
-  **Fix**: the `composingCursor == 0` branch now checks, *after* `deleteOneBefore` runs, whether the newly
-  exposed character (not the deleted one - checked before, this was tried first and found to be the wrong
-  character to inspect, see the code's own KDoc) is a letter, using exactly
-  [`WordExtent.reclaim`](app/src/main/kotlin/de/froehlichmedia/adaptkey/gesture/WordExtent.kt)'s own
-  boundary. A letter means composing must absorb the newly-adjacent word - handled by tearing composing down
-  (`finishComposingText` + `clearComposing`) and calling `reclaimWordAtCaret()`, the same mechanism a fresh
-  tap into a word already uses, rather than hand-rolling a character-by-character merge of composing's own
-  per-character bookkeeping (`composingFlags`/`composingTaps`). `reclaimWordAtCaret()` already correctly
-  defers to `applyShiftAfterDelete`'s own `shiftArmedByDelete` result from the deletion just above (D-335),
-  confirmed by reading that existing interaction rather than assumed, so Shift state is unaffected by going
-  through it here. A non-letter newly exposed (the ordinary case) keeps the original, simpler
-  `composingAnchor`-only behaviour unchanged. No new unit test - this is `InputConnection`-glue logic with no
-  existing `AdaptKeyService` test harness, this project's own accepted, established gap for this class of
-  code; verification is the device repro itself. **Device-confirmed** against the exact repro parcours
-  derived from the user's own log ("hat funktioniert").
-
-- **§448 (v1.2.8): D-451 (AltGr popup haptic, reinstated) + D-453 (double-consonant unfold), one small round.**
-  
-  **D-451**: `HapticTier` gained a fourth value, `POPUP_OPEN(1)` - plays the identical click effect
-  `KEY_PRESS` does (`fireHaptic()`'s own `when (tier)` branch now matches both together), so it is the
-  literal "same system-standard click with fallback" the user asked for, but with `minSystemLevel = 1`
-  instead of `KEY_PRESS`'s own 3 - it still fires even with the OS's "Haptic feedback" slider at its lowest
-  setting. A new `AdaptKeyboardView.playPopupOpenHaptic()` (gated on `hapticsEnabled`, mirroring
-  `playKeyFeedback()`) is called from `scheduleLongPress()`'s own `when` block for the one branch that was
-  previously silent - a key whose long-press opens a real L-05 alternatives popup (not Shift's Caps Lock,
-  not the popup-less listener-callback case). Reverses D-396-followup (v3)'s "beim Aufpoppen braucht es
-  keins" call on the user's own later reconsideration - see spec §42's new D-451 note.
-  
-  **D-453**: `DictionarySuggestionProvider` gained a second D-328-shaped escalation,
-  `doubledConsonantPrefixVariants()` - the insertion counterpart of `neighbourPrefixVariants()`'s own
-  substitution, run directly after it in `obviousCandidates()` under the identical
-  `candidates.isEmpty()`-gated shape. Tries, for every position holding one of `DOUBLING_ELIGIBLE_CONSONANTS`
-  (`b d f g k l m n p r s t` - the German-orthography doubling set) not already doubled there, the variant
-  with that consonant doubled, fed through the same `diacriticFolding.unfoldCandidates` +
-  `unigramsByPrefix` loop as every other prefix variant. `MIN_DOUBLING_PREFIX_LENGTH = 3` (lower than D-328's
-  own 5) since the shortest real example ("bite", 4 characters) is well below it, and - unlike a neighbour
-  substitution, which multiplies by every adjacent key - this variant set is already naturally bounded by the
-  token's own length, so a lower minimum does not risk the same combinatorial blow-up; confirmed the reason a
-  shorter typed prefix of the same word (e.g. "bit" for "bitte") never needed this escalation in the first
-  place: it is still a genuine literal prefix match on its own; only once the user types *past* the missed
-  double does the mismatch - and the need for this escalation - actually arise. Not language-gated, same as
-  D-328 itself - a pure keyboard/spelling heuristic, self-limiting by whatever the active language's own real
-  dictionary actually contains. Four new `DictionarySuggestionProviderTest` cases (two positive - the user's
-  own two examples - plus the length-gate's boundary and just-below-it) - see spec S-09's own D-453 addendum.
-  
-  Both closed the same round; `AdaptKeyboardView`/`DictionarySuggestionProvider` are unrelated files, no
-  shared mechanism between the two beyond both reusing an existing pattern (`HapticTier`'s own tier-per-event
-  gating; D-328's own escalation shape) rather than inventing a new one.
-
-- **§447 (v1.2.7): D-454 - Language Packs settings screen restructured**, per the user's own six-point list
-  (see the now-closed backlog entry above for the full original ask). `d280_intro` no longer mentions English
-  at all - it now gets its own row (`LanguagePacksActivity.buildBuiltInRow()`), identical in shape to every
-  other language's (flag glyph + bold endonym heading) but with one permanently-disabled "Built-in" button in
-  place of the usual status text + install/remove/download buttons. `rebuild()` now builds one combined,
-  sorted list (English plus every `LanguagePackCatalog.ENTRIES` row) instead of iterating the catalog in its
-  raw declared order: available-for-typing-right-now (English, or an installed pack) sorts before everything
-  else, each half then alphabetical by `Language.endonym` via a locale-independent `Collator.getInstance()`
-  (deliberately not a per-language one - this list mixes many languages/scripts at once, so no single
-  language's own collation rules are more "correct" here than any other's). `removePack()` now goes through a
-  new `confirmRemove()` first - a plain `AlertDialog`, mirroring `BlacklistActivity.confirmRemove()`'s own
-  existing pattern exactly rather than inventing a new one.
-  
-  **The flag glyphs are a new `LANGUAGE_FLAGS: Map<Language, String>`** (companion object, `LanguagePacksActivity`
-  itself - UI-only data, deliberately not added to the pure/testable `Language` enum). One glyph per language,
-  chosen editorially per the design discussed with the user (usually the language's own eponymous country -
-  e.g. `🇩🇪` German, `🇫🇷` French, `🇪🇸` Spanish, `🇵🇹` Portuguese - see spec's own D-454 note for why a single
-  "correct" choice does not exist for every language), with two deliberate exceptions worth naming: `🇬🇧🇺🇸`
-  for English (the user's own explicit call - both flags shown together, not one), and `🇹🇿` for Swahili
-  (Tanzania, not Kenya - the only one of the two where Swahili is the *sole* official national language,
-  rather than sharing that role with English, the more defensible single-country pick between real
-  alternatives). Every `Language` enum value this app currently ships a layout or pack for has an entry;
-  `flagFor()` falls back to an empty string for anything missing one (`UNKNOWN` only, today).
-  
-  Android-view glue (`LanguagePacksActivity`) - covered by the existing build (`:app:assembleRelease
-  :app:testDebugUnitTest`, both green, no new unit tests needed or possible here) rather than a device check,
-  per this project's own established convention for this class of screen.
-
-## Older Rounds (§1-§446, v0.7.6 through v1.2.6) - Pruned From This File
+D-461 (§478): twenty-sixth pruning pass - §447-§453 removed, cutoff moved from §447 to §454, bringing the
+working set back to exactly 25 rounds (§454-§478) from 31. History.md was current only through §449, so
+§450-§453 were backfilled first (verbatim, reformatted from this file's own bullet shape into History.md's
+heading+paragraph style, exactly the method every earlier pass used), then removed here. The backfill was
+verified by token-counting each round's Progress.md block against its new History.md entry - all four came
+back at delta 0, so nothing was summarised or dropped. Worth recording because two earlier attempts in this
+same pass silently lost content and had to be reverted: these rounds' titles are wrapped across lines as
+*two adjacent bold runs*, and a naive "take the first `**...**`" title extraction swallowed real body text
+into the heading. Any future backfill script must consume consecutive bold runs while they sit in the same
+paragraph, and must stop at the first blank line - otherwise it eats the round's own first sub-heading
+(`**D-455**: ...`) instead.
 
 D-401-followup (§471): twenty-fifth pruning pass - §446 removed (already logged verbatim in History.md),
 cutoff moved from §446 to §447, keeping the working set at 25 rounds (§447-§471).
