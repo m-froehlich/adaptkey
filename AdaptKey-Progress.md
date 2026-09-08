@@ -1074,6 +1074,40 @@ non-trivial changes).
   regression of that existing fix or a related race it does not fully cover. Needs a real device log to
   root-cause properly, per this project's own convention - not attempted blind.
 
+- **§475 (v1.2.35): D-401-followup - Stage 2 (selection) froze after its very first move; a real bug in the**
+  **newline-based line-boundary logic, not in the new screen-space model.** Device report: "the selection
+  mode on hold no longer works." The log names the failure directly - `applyCursorControlMove: line bounds
+  unavailable - column unchanged`, repeated for every single move after the first, in both drag directions.
+
+  **Root cause.** `getTextBeforeCursor()` returns the text before the *selection's start* and
+  `getTextAfterCursor()` the text after its *end* - both anchored to the selection, not to the gesture's
+  moving end. So in Stage 2 the selection's own text sits between the moving end and the surrounding text on
+  one side, and has to be stitched back in there. The old `leftBoundary()`/`rightBoundary()` instead searched
+  **only the selection** for a line break on that side and returned null when they found none - abandoning
+  the move outright. A selection almost never spans a line break, so that was the normal case: the first move
+  worked (still collapsed, other branch), and every one after it did nothing. Stage 1 was never affected,
+  which is why this survived §471-§474 unnoticed.
+
+  **Fix.** Both functions replaced by one `lineBoundsFor()` that reads all three pieces of text and hands
+  them to a new pure `keyboard/CursorLineBounds` (13 tests, including both freeze directions as explicit
+  regression cases). Getting this stitching wrong is demonstrably not hypothetical, which is why the
+  reasoning was extracted somewhere it can actually be tested rather than left in the Android glue. A null
+  `getSelectedText()` now degrades to treating the selection as empty rather than abandoning the move - the
+  clamp then misses by the selection's length instead of freezing, a far better failure mode.
+
+  **Bonus finding, and it closes an open question with evidence rather than assumption.** §473 deliberately
+  kept Stage 2 on the newline model because it was not known whether `CursorAnchorInfo` reports anything
+  usable during a selection. This log answers it: **it reports the insertion marker at the selection's
+  anchor, never at the moving end.** Three independent confirmations - `reportedSel=[66,67]` with
+  `markerX=474.4961` (offset 66's own x), `reportedSel=[67,61]` and `reportedSel=[67,133]` both with
+  `markerX=484.4961` (offset 67's). The moving end is therefore *not observable*, so the screen-space servo
+  structurally cannot drive Stage 2, and Stage 2 staying on the newline model is now a documented
+  consequence rather than a deferred decision.
+
+  1640 unit tests (1627 -> 1640, +13 `CursorLineBoundsTest`).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 530 -> 531, `versionName` `"1.2.34"`
+  -> `"1.2.35"`.
+
 - **§474 (v1.2.34): D-401-followup - vertical tuning after the first device round on the screen-space model.**
   User verdict on §473: "already quite good, not perfect - but let's leave it rather than doing 20 more
   rounds." One concrete complaint: 0.5 is **"exactly right" horizontally**, but vertically the caret still

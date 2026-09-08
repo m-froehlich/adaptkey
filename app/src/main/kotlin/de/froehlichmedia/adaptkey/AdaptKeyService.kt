@@ -95,6 +95,7 @@ import de.froehlichmedia.adaptkey.keyboard.AdaptKeyboardView
 import de.froehlichmedia.adaptkey.keyboard.AlternativeScript
 import de.froehlichmedia.adaptkey.keyboard.BackspaceRepeat
 import de.froehlichmedia.adaptkey.keyboard.CursorControlGesture
+import de.froehlichmedia.adaptkey.keyboard.CursorLineBounds
 import de.froehlichmedia.adaptkey.keyboard.InlineSuggestionsBarView
 import de.froehlichmedia.adaptkey.keyboard.InputSurface
 import de.froehlichmedia.adaptkey.keyboard.Key
@@ -3469,12 +3470,13 @@ class AdaptKeyService : InputMethodService() {
             cursorControlAppliedLines = lines
             diag("AdaptKeyJitter", "applyCursorControlMove: line steps settled at $cursorControlPosition")
         }
-        val lineStart = leftBoundary(ic, stage)
-        val lineEnd = rightBoundary(ic, stage)
-        if (lineStart == null || lineEnd == null) {
+        val bounds = lineBoundsFor(ic, stage)
+        if (bounds == null) {
             diag("AdaptKeyJitter", "applyCursorControlMove: line bounds unavailable - column unchanged")
             return
         }
+        val lineStart = bounds.first
+        val lineEnd = bounds.last
         val targetColumn = (cursorControlOriginColumn + characters).coerceIn(0, lineEnd - lineStart)
         cursorControlPosition = lineStart + targetColumn
         diag("AdaptKeyJitter", "applyCursorControlMove: lineStart=$lineStart lineEnd=$lineEnd targetColumn=$targetColumn clampedPosition=$cursorControlPosition")
@@ -3553,19 +3555,23 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * D-401-followup: the current line's own start, relative to [cursorControlPosition] - correct
-     * regardless of stage. `getTextBeforeCursor()`/`getTextAfterCursor()` read relative to the *live*
-     * selection's own start/end, not necessarily [cursorControlPosition] itself, once Stage 2 has dragged
-     * the moving end backward past its own [cursorControlAnchor] (the common case, [cursorControlPosition]
-     * at or before the anchor - true unconditionally in Stage 1, where the two always coincide - reads
-     * directly; the rarer case searches the live selection's own text instead, since that is exactly the
-     * span between the two).
+     * D-401-followup: the start and end of the line [cursorControlPosition] currently sits on - both at
+     * once, since [applyCursorControlMove]'s direct-positioning model needs both on every move to clamp
+     * [cursorControlOriginColumn] `+` `characters` into whichever line is active.
      *
-     * D-401-followup: now called unconditionally on *every* move (alongside [rightBoundary]), regardless of
-     * which direction the caret is actually moving - [applyCursorControlMove]'s own direct-positioning
-     * model needs both the line's start and end every time, to clamp [cursorControlOriginColumn] `+`
-     * `characters` into whichever line is active, not only the one boundary a signed delta would have been
-     * at risk of crossing under the old incremental model.
+     * All this does is read the three pieces of text `InputConnection` can supply and hand them to
+     * [CursorLineBounds], which owns the actual reasoning (and its unit tests). The one non-obvious part is
+     * *which* piece is which: both read calls are anchored to the selection's own ends, not to the moving
+     * end - `getTextBeforeCursor()` returns the text before the selection's start and
+     * `getTextAfterCursor()` the text after its end - so in Stage 2 the selection's own content sits
+     * between the moving end and one of the two, and has to be stitched back in on that side.
+     *
+     * **Fixes a device-reported freeze (§475).** The previous version split this into two functions that
+     * searched *only* the selection for a line break on that side, and returned null - abandoning the move
+     * outright - whenever it found none. Since a selection almost never spans a line break, Stage 2 stopped
+     * responding after its very first move, in both directions ("line bounds unavailable - column
+     * unchanged", repeated for every subsequent move in the log). Stage 1 was never affected: its selection
+     * is always collapsed, so it always took the other branch.
      *
      * A zero-width (empty) line's own start and end are the exact same offset, so the caret cannot leave a
      * blank line via horizontal dragging at all, only via a vertical (line) move - the user's own explicit,
@@ -3574,66 +3580,32 @@ class AdaptKeyService : InputMethodService() {
      * behaviour, not a bug (two earlier rounds tried unclamping this case specifically and both reopened
      * the flip this whole mechanism exists to prevent).
      *
-     * @return the absolute offset of the current line's first character, or null if it could not be
-     *         determined (an `InputConnection` read failed)
+     * @return the line's own first and last addressable offset, or null if the text could not be read at
+     *         all (in which case the caller leaves the caret where it is)
      */
-    private fun leftBoundary(ic: InputConnection, stage: CursorControlGesture.Stage): Int? {
+    private fun lineBoundsFor(ic: InputConnection, stage: CursorControlGesture.Stage): IntRange? {
         val position = cursorControlPosition
-        val anchor = cursorControlAnchor
-        // D-401-followup (bug fix): [cursorControlAnchor] is only ever updated when Stage 2 begins - it
-        // stays frozen at the gesture's own arm-time position throughout Stage 1, while [cursorControlPosition]
-        // moves freely. Comparing the two to decide which InputConnection call to use was therefore wrong for
-        // Stage 1 the moment the drag passed that frozen point in either direction: it wrongly fell into the
-        // "past the anchor" branch below, found no real (Stage 1 is always collapsed) selection to read via
-        // getSelectedText(), and silently gave up clamping altogether - the exact "still flips" symptom
-        // reported on a real device. Stage 1 has no such ambiguity to begin with (the selection is always
-        // collapsed at `position` itself) and must always take the direct path.
-        if (stage == CursorControlGesture.Stage.CURSOR || position <= anchor) {
-            val before = ic.getTextBeforeCursor(CURSOR_CONTROL_LINE_SCAN_WINDOW, 0)?.toString()
-            if (before == null) {
-                diag("AdaptKeyJitter", "leftBoundary: getTextBeforeCursor returned null - unclamped")
-                return null
-            }
-            val newlineBefore = before.lastIndexOf('\n')
-            val result = position - (before.length - (newlineBefore + 1))
-            diag("AdaptKeyJitter", "leftBoundary: direct path before.length=${before.length} newlineBefore=$newlineBefore result=$result")
-            return result
-        }
-        val selected = ic.getSelectedText(0)?.toString()
-        if (selected == null) {
-            diag("AdaptKeyJitter", "leftBoundary: past-anchor path, getSelectedText returned null - unclamped")
+        // Stage 1's selection is always collapsed at `position` itself, so its direction never matters;
+        // taking the forward branch there keeps the anchor - which stays frozen at arm time throughout
+        // Stage 1 - from being consulted at all, the mistake behind an earlier round's "still flips" report.
+        val movingEndIsSelectionEnd = stage == CursorControlGesture.Stage.CURSOR || position >= cursorControlAnchor
+        val before = ic.getTextBeforeCursor(CURSOR_CONTROL_LINE_SCAN_WINDOW, 0)?.toString()
+        val after = ic.getTextAfterCursor(CURSOR_CONTROL_LINE_SCAN_WINDOW, 0)?.toString()
+        if (before == null || after == null) {
+            diag("AdaptKeyJitter", "lineBounds: surrounding text unavailable - unclamped", warn = true)
             return null
         }
-        val newlineBefore = selected.lastIndexOf('\n')
-        val result = if (newlineBefore == -1) null else anchor + newlineBefore + 1
-        diag("AdaptKeyJitter", "leftBoundary: past-anchor path selected.length=${selected.length} newlineBefore=$newlineBefore result=$result")
-        return result
-    }
-    
-    /** D-401-followup: the mirror image of [leftBoundary] - the current line's own end. */
-    private fun rightBoundary(ic: InputConnection, stage: CursorControlGesture.Stage): Int? {
-        val position = cursorControlPosition
-        val anchor = cursorControlAnchor
-        if (stage == CursorControlGesture.Stage.CURSOR || position >= anchor) {
-            val after = ic.getTextAfterCursor(CURSOR_CONTROL_LINE_SCAN_WINDOW, 0)?.toString()
-            if (after == null) {
-                diag("AdaptKeyJitter", "rightBoundary: getTextAfterCursor returned null - unclamped")
-                return null
-            }
-            val newlineAfter = after.indexOf('\n')
-            val result = position + if (newlineAfter == -1) after.length else newlineAfter
-            diag("AdaptKeyJitter", "rightBoundary: direct path after.length=${after.length} newlineAfter=$newlineAfter result=$result")
-            return result
-        }
-        val selected = ic.getSelectedText(0)?.toString()
-        if (selected == null) {
-            diag("AdaptKeyJitter", "rightBoundary: past-anchor path, getSelectedText returned null - unclamped")
-            return null
-        }
-        val newlineAfter = selected.indexOf('\n')
-        val result = if (newlineAfter == -1) null else position + newlineAfter
-        diag("AdaptKeyJitter", "rightBoundary: past-anchor path selected.length=${selected.length} newlineAfter=$newlineAfter result=$result")
-        return result
+        // Only ever non-empty in Stage 2; a null here (an editor that declines to hand over its selection)
+        // degrades to treating it as empty rather than abandoning the move, which is the far better failure
+        // mode - the clamp then simply misses by the selection's own length instead of freezing outright.
+        val selected = if (stage == CursorControlGesture.Stage.SELECTION) ic.getSelectedText(0)?.toString().orEmpty() else ""
+        val bounds = CursorLineBounds.of(position, before, selected, after, movingEndIsSelectionEnd)
+        diag(
+            "AdaptKeyJitter",
+            "lineBounds: position=$position before=${before.length} selected=${selected.length} after=${after.length} " +
+                "movingEndIsSelectionEnd=$movingEndIsSelectionEnd -> [${bounds.first},${bounds.last}]"
+        )
+        return bounds
     }
     
     /**
@@ -8046,7 +8018,7 @@ class AdaptKeyService : InputMethodService() {
         // enough that the bar/preview still fills at any natural pause. A starting value, easy to retune.
         private const val EXPENSIVE_SUGGESTION_DELAY_MS = 200L
         
-        // D-401-followup: the text-window size leftBoundary()/rightBoundary()/adjacentLineStart() request
+        // D-401-followup: the text-window size lineBoundsFor()/adjacentLineStart() request
         // via getTextBeforeCursor()/getTextAfterCursor() to find line-boundary newlines - generous enough
         // for any realistic single line/paragraph on a mobile field without requesting the whole document.
         private const val CURSOR_CONTROL_LINE_SCAN_WINDOW = 2000

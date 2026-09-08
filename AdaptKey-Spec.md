@@ -570,8 +570,10 @@ own origin.
   the caret is never left balanced on a boundary. Sideways movement stays continuous - the caret follows the
   finger smoothly.
 
-  Stage 2 (selection) keeps the fallback model in every app: the reported insertion marker is only
-  unambiguous while the selection is collapsed, and only that case has been confirmed on a device.
+  Stage 2 (selection) keeps the fallback model in every app, and this is structural rather than a deferral:
+  device-confirmed, the reported insertion marker sits at the selection's **anchor**, never at the end being
+  dragged - so the moving end is not observable, and there is nothing for the screen-space model to steer
+  towards. Selection therefore still works in real paragraphs, not visible lines.
 
 - **Stage 2 - selection.** Dragging instead extends a text selection from wherever Stage 1 left the caret.
   D-401-followup: **any** release while Stage 2 is active ends the mode outright and collapses the selection
