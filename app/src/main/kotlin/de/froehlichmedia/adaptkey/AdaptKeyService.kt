@@ -5861,12 +5861,30 @@ class AdaptKeyService : InputMethodService() {
      * @param precomputedExpensiveCandidates D-211: the background search's own already-computed result,
      *        supplied only by its own re-entrant call below - used in place of calling
      *        `provider.suggestionsFor()` a second time. Every other caller leaves this null.
+     * @param precomputedHasObviousCandidate D-452-followup: the background search's own already-computed
+     *        `hasObviousCandidate()` result, supplied only by its own re-entrant call below - used in place
+     *        of calling `provider.hasObviousCandidate()` synchronously on the main thread. Device-confirmed
+     *        (§ real log, `input="Habeck"`) as the actual extrasMs=1335 stall D-452's own diagnostic
+     *        instrumentation flagged, superseding that round's own ambiguousCasingChips()/partsOfSpeech()
+     *        suspicion (ambiguousCasingMs was 1ms in the same log): the extras block below used to call
+     *        `provider.hasObviousCandidate()` twice - once for [rawCoordinateSuggestion]'s own gate, once
+     *        more for [missedBackspaceSuggestion]'s - and each call independently re-ran the *entire*
+     *        expensive candidate search (prefix + D-328 neighbour-prefix + D-453 doubled-consonant
+     *        escalation + D-12 fuzzy + D-116 compound) from scratch, synchronously, on the main thread - for
+     *        a token nothing matches (a rare surname, an unknown compound) every escalation stage runs to
+     *        completion, and it ran twice. [dispatchExpensiveSuggestionSearch] already computes this exact
+     *        value once on [expensiveSuggestionExecutor] anyway (moved there for exactly this reason, see
+     *        [includeExpensiveFallbacks]'s own KDoc) - passing it through here removes both synchronous
+     *        main-thread calls entirely rather than merely deduplicating them. Every other caller leaves
+     *        this null, in which case the one synchronous call below is unavoidable (there is no background
+     *        result to reuse) but still runs at most once, not twice.
      */
     private fun refreshSuggestions(
         duringRepeat: Boolean = false,
         includeExpensiveFallbacks: Boolean = false,
         precomputedExpensiveCandidates: List<Suggestion>? = null,
-        precomputedPendingCandidate: String? = null
+        precomputedPendingCandidate: String? = null,
+        precomputedHasObviousCandidate: Boolean? = null
     ) {
         // D-211: any fresh (non-deferred) refresh reflects a state change that supersedes a background
         // expensive-fallback search already in flight - bumping the sequence here (before every early
@@ -5947,13 +5965,16 @@ class AdaptKeyService : InputMethodService() {
         // see ambiguousCasingChips()'s own KDoc. showSuggestions() reads the stored result; the matching
         // word(s) are excluded from the ordinary candidate list at every controller.update() call site below
         // so the same word is never also shown a second time, wrongly single-cased.
-        // D-452 (temporary diagnostic): ambiguousCasingChips() calls dictionaryStore.partsOfSpeech() per
-        // candidate, and that call does two uncached SQLite queries every time (SqliteDictionaryStore.
-        // entryOf()) - a real device log (§457/D-452-followup) found a ~1.3s unaccounted-for gap in exactly
-        // this function, right between the already-instrumented candidates= and showSuggestions() timings
-        // above/below, with the deferred/expensive-fallback pass (includeExpensiveFallbacks=true) as the
-        // trigger - this is the strongest suspect traced so far, not yet device-confirmed. Remove alongside
-        // the other D-452 timers once closed.
+        // D-452-followup: ambiguousCasingChips() was this round's own leading suspect (dictionaryStore.
+        // partsOfSpeech() runs two uncached SQLite queries per candidate) for the ~1.3s unaccounted-for gap
+        // a real device log (§457) found between the already-instrumented candidates= and showSuggestions()
+        // timings, with includeExpensiveFallbacks=true as the trigger - device-DISPROVEN by a second log
+        // (input="Habeck", a genuinely unknown surname): ambiguousCasingMs measured 1ms there, not the
+        // culprit. extrasMs measured 1335ms in that same log instead - see refreshSuggestions()'s own extras
+        // block further down (and [precomputedHasObviousCandidate]'s own KDoc) for the actual cause, now
+        // fixed: `provider.hasObviousCandidate()` was being called twice there, each call independently
+        // re-running the entire expensive candidate search from scratch. Timers kept in place (cheap) to
+        // confirm the fix on the next real device log, same as this project's own standing convention.
         val ambiguousCasingStartedAt = SystemClock.uptimeMillis()
         pendingAmbiguousCasingChips = if (duringRepeat) emptyList() else ambiguousCasingChips(input, candidates)
         val ambiguousCasingMs = SystemClock.uptimeMillis() - ambiguousCasingStartedAt
@@ -5982,6 +6003,15 @@ class AdaptKeyService : InputMethodService() {
         // D-452 (temporary diagnostic): the whole extras block below (split/raw-coordinate/autocorrect-chip/
         // speed-unit/missed-backspace) as one combined measurement - see ambiguousCasingMs's own note above.
         val extrasStartedAt = SystemClock.uptimeMillis()
+        // D-452-followup: computed at most once, and only when actually needed by a gate below (both gates
+        // already short-circuit past this on duringRepeat/!includeExpensiveFallbacks, so the expensive call
+        // itself is skipped entirely on the hot path) - see [precomputedHasObviousCandidate]'s own KDoc for
+        // why this replaced two independent, full-cost calls to `provider.hasObviousCandidate()`.
+        val hasObviousCandidate = if (duringRepeat || !includeExpensiveFallbacks) {
+            true // Unused: both consumers below already short-circuit on duringRepeat/!includeExpensiveFallbacks first.
+        } else {
+            precomputedHasObviousCandidate ?: provider.hasObviousCandidate(input, previousWord, previousPreviousWord)
+        }
         val splitSuggestion = if (duringRepeat) null else midWordConnectorSplitSuggestion(input)
         // D-131: D-39's raw-coordinate fallback becomes a live, incremental signal instead of only ever
         // resolving at the final delimiter - reuses rawCoordinateCorrection() exactly as finalizeAndCommit()
@@ -5994,9 +6024,7 @@ class AdaptKeyService : InputMethodService() {
         // either, even though (unlike A-13) the actual commit-time application of this same correction was
         // never affected, since finalizeAndCommit()'s own call site gates on autocorrected == null (the
         // tight bestCorrection() search), not on this candidates list at all.
-        val rawCoordinateSuggestion = if (duringRepeat || !includeExpensiveFallbacks ||
-            provider.hasObviousCandidate(input, previousWord, previousPreviousWord)
-        ) {
+        val rawCoordinateSuggestion = if (duringRepeat || !includeExpensiveFallbacks || hasObviousCandidate) {
             null
         } else {
             rawCoordinateCorrection(input)?.let { word -> Suggestion(word, MAX_PRIORITY_SUGGESTION_SCORE) }
@@ -6010,9 +6038,7 @@ class AdaptKeyService : InputMethodService() {
         // concrete "welxmche" repro this closes) to this narrower, "was anything obvious found" check.
         // Whatever wideFuzzyNeighbours separately, coincidentally also found stays in candidates/the bar
         // regardless - deliberately not suppressed, both chips are simply offered together.
-        val missedBackspaceSuggestion = if (duringRepeat || !includeExpensiveFallbacks ||
-            provider.hasObviousCandidate(input, previousWord, previousPreviousWord)
-        ) {
+        val missedBackspaceSuggestion = if (duringRepeat || !includeExpensiveFallbacks || hasObviousCandidate) {
             null
         } else {
             missedBackspaceCorrection(input)?.let { word -> Suggestion(word, MAX_PRIORITY_SUGGESTION_SCORE) }
@@ -6180,6 +6206,11 @@ class AdaptKeyService : InputMethodService() {
                 seq != expensiveSuggestionSeq.get()
             }
             val pendingCandidate = pendingCorrectionCandidate(input, previous, language)
+            // D-452-followup: computed here, on this same background executor, rather than left for
+            // refreshSuggestions()'s own extras block to call synchronously on the main thread (twice, per
+            // its own prior form) - see [precomputedHasObviousCandidate]'s own KDoc for the device-confirmed
+            // cost this removes.
+            val hasObviousCandidate = provider.hasObviousCandidate(input, previous, previousPrevious)
             handler.post {
                 if (seq == expensiveSuggestionSeq.get() && composing.toString() == input) {
                     // D-346: the deferred search's result is about to be applied - the loading placeholder
@@ -6188,7 +6219,8 @@ class AdaptKeyService : InputMethodService() {
                     refreshSuggestions(
                         includeExpensiveFallbacks = true,
                         precomputedExpensiveCandidates = expanded,
-                        precomputedPendingCandidate = pendingCandidate
+                        precomputedPendingCandidate = pendingCandidate,
+                        precomputedHasObviousCandidate = hasObviousCandidate
                     )
                 }
             }

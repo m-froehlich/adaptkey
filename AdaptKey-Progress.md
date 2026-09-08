@@ -958,8 +958,7 @@ non-trivial changes).
   confirmation again, reversing D-396-followup (v3)'s earlier removal - see §448 in Current State for the
   mechanism.
 
-- **D-452 - REOPENED, still not root-caused - narrowed further by a second real log, more timing**
-  **diagnostics added (§451 v1.2.11 + §459 v1.2.19).** Originally closed WON'T FIX as not reproducible; the
+- **D-452 - RESOLVED, device-confirmed (§477, v1.2.37).** Originally closed WON'T FIX as not reproducible; the
   user later sent a real device log describing it as "das immer wiederkehrende Performance-Problem" (the
   recurring performance problem), captured incidentally while typing in Gemini. That specific log showed no
   smoking gun - `showSuggestions()` fired redundantly 2-4x in a row for an identical, already-empty result
@@ -990,6 +989,29 @@ non-trivial changes).
   gap was narrowed to, mirroring §451's own diagnostic style exactly. Waiting on the user's next captured log
   from a real repro to confirm or rule this out with an actual number, per this project's own convention -
   nothing changed behaviourally, diagnostic-only.
+
+  **§477 (v1.2.37): that confirming log arrived - a second "Habeck" repro, this time with the §459 timers**
+  **actually populated - and it DISPROVED §459's own suspect.** `ambiguousCasingMs=1` (not the culprit);
+  `extrasMs=1335` instead, pinpointing `refreshSuggestions()`'s own extras block (split/raw-coordinate/
+  autocorrect-chip/speed-unit/missed-backspace). Root cause, found by reading the code at that exact point:
+  `provider.hasObviousCandidate()` was called twice there - once for `rawCoordinateSuggestion`'s own gate,
+  once more for `missedBackspaceSuggestion`'s - and each call independently re-ran the *entire* expensive
+  candidate search (prefix completion + D-328 neighbour-prefix escalation ×24 variants + D-453 doubled-
+  consonant escalation ×24 variants + D-12 fuzzy neighbours + D-116 compound-split) from scratch,
+  synchronously, on the main thread. For a genuinely unknown word ("Habeck", a surname) every one of those
+  escalation stages runs to completion since nothing short-circuits it early - and it ran twice. Worse:
+  `dispatchExpensiveSuggestionSearch()` (D-211) already computes this identical value once, on the
+  background executor, specifically to keep expensive work off the main thread - the extras block's own two
+  calls quietly defeated that by recomputing it synchronously anyway. Fixed by threading the background
+  result through as a new `precomputedHasObviousCandidate` parameter (the same shape as the three existing
+  `precomputed*` parameters `refreshSuggestions()` already had for exactly this reason), removing both
+  synchronous main-thread calls entirely for the deferred-pass case; the one remaining caller-supplied-null
+  fallback path now also computes it at most once, not twice, sharing a single local between both gates.
+  [AdaptKeyService.kt](app/src/main/kotlin/de/froehlichmedia/adaptkey/AdaptKeyService.kt). The §459 comment
+  naming `ambiguousCasingChips()`/`partsOfSpeech()` as the suspect was corrected in place rather than left
+  stale, since the new log actively disproves it (`ambiguousCasingMs=1`) rather than merely superseding it.
+  Diagnostic timers kept in place (cheap, `SystemClock.uptimeMillis()` only) to confirm the fix on the next
+  real device log, per this project's own standing convention - build green, 1640 tests green.
 
 - **D-453 - RESOLVED (§448, v1.2.8).** Double-consonant "unfold" for autocorrect/chip suggestion
   (`"bite"` → `"bitte"`, `"tipen"` → `"tippen"`), implemented exactly as agreed - an extension of S-09's
@@ -1073,6 +1095,24 @@ non-trivial changes).
   chips flashed and immediately vanished again" - the identical symptom now reported again, either a
   regression of that existing fix or a related race it does not fully cover. Needs a real device log to
   root-cause properly, per this project's own convention - not attempted blind.
+
+- **§477 (v1.2.37): D-452-followup - the ~1.3s "Habeck" suggestion-bar stall, root-caused and fixed.** User
+  pasted a real device log for a genuinely unknown word ("Habeck", tapped for autocorrect) with §459's own
+  timing diagnostics finally populated: `ambiguousCasingMs=1` (§459's own suspect, disproved) but
+  `extrasMs=1335` - the real cost sits in `refreshSuggestions()`'s own extras block. Cause: `provider.
+  hasObviousCandidate()` was called twice there (once per gate, `rawCoordinateSuggestion` and
+  `missedBackspaceSuggestion`), each call independently re-running the entire expensive candidate search
+  (prefix + D-328 neighbour-prefix + D-453 doubled-consonant + D-12 fuzzy + D-116 compound) from scratch on
+  the main thread - for a token nothing matches, every escalation stage runs to completion, twice.
+  `dispatchExpensiveSuggestionSearch()` (D-211) already computes this exact value once, on the background
+  executor - the extras block's own two calls silently defeated that. Fix: a fourth `precomputed*` parameter
+  (`precomputedHasObviousCandidate`, matching the shape of the three `refreshSuggestions()` already had)
+  threads the background result through, removing both synchronous main-thread calls for the deferred-pass
+  case entirely; the remaining direct-call fallback (no precomputed value supplied) now also computes it at
+  most once, shared between both gates, not twice. §459's own "ambiguousCasingChips()/partsOfSpeech() is the
+  strongest suspect" comment corrected in place - the new log actively disproves it, not merely supersedes
+  it. See D-452 in Current State (above) for the full before/after story. Build green, 1640 tests green,
+  -0/+~35 lines (mostly KDoc explaining the precomputed-value shape and why it replaced two full-cost calls).
 
 - **§476 (v1.2.36): D-401 closed - the gesture's temporary diagnostics removed, no behaviour change.** User's
   own call after §475: "so lassen wir das, das Thema können wir abhaken" plus an explicit request to remove
