@@ -626,11 +626,6 @@ class AdaptKeyboardView @JvmOverloads constructor(
     // redundant pair of fields.
     private var cursorControlActive = false
     private var cursorControlStage = CursorControlGesture.Stage.CURSOR
-    // D-401-followup: purely to skip redundant no-op onCursorControlMove() calls when a move event's own
-    // steps haven't actually changed since the last one sent - not used for any delta math (the listener
-    // always receives, and re-derives its own absolute target from, the *total* offset from origin).
-    private var cursorControlLastSentChars = 0
-    private var cursorControlLastSentLines = 0
     private var cursorControlGraceActive = false
     private var cursorControlCrosshairX = 0f
     private var cursorControlCrosshairY = 0f
@@ -1444,8 +1439,6 @@ class AdaptKeyboardView @JvmOverloads constructor(
         pressedKeyRect = null
         cursorControlActive = true
         cursorControlStage = CursorControlGesture.Stage.CURSOR
-        cursorControlLastSentChars = 0
-        cursorControlLastSentLines = 0
         cursorControlCrosshairX = downX
         cursorControlCrosshairY = downY
         longPressHandler.postDelayed(cursorControlStillnessRunnable, CursorControlGesture.HOLD_STILL_TO_SELECT_MS)
@@ -1471,8 +1464,6 @@ class AdaptKeyboardView @JvmOverloads constructor(
                     cursorControlCrosshairAnimator?.cancel()
                     downX = event.x
                     downY = event.y
-                    cursorControlLastSentChars = 0
-                    cursorControlLastSentLines = 0
                     cursorControlCrosshairX = event.x
                     cursorControlCrosshairY = event.y
                     // D-401-followup: the listener's own "offset from origin" reference must reset here too,
@@ -1489,27 +1480,11 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 if (dx * dx + dy * dy <= touchSlopPx * touchSlopPx) {
                     return true
                 }
+                // D-401-followup: reported on *every* move past the slop, unquantised - the screen-space
+                // model works in raw pixels and would otherwise only ever see the drag in whole-character
+                // jumps, throwing away exactly the precision it exists for. The listener's own newline-based
+                // fallback path de-duplicates the step totals on its own side instead.
                 val steps = CursorControlGesture.stepsFor(dx, dy, resources.displayMetrics.density)
-                if (steps.characters != cursorControlLastSentChars || steps.lines != cursorControlLastSentLines) {
-                    // D-401-followup (temporary diagnostic): every real move step, with enough state to
-                    // reconstruct exactly what was sent - several rounds of guessing at the clamp/threshold
-                    // logic produced no observable change and genuinely chaotic-looking device logs, so this
-                    // traces the actual dx/dy/steps at the source instead. Remove once D-401's cursor
-                    // movement is confirmed correct on a real device.
-                    logTouch(
-                        "cursorControlMove: dx=$dx dy=$dy density=${resources.displayMetrics.density} " +
-                            "steps=[${steps.characters},${steps.lines}] lastSent=[$cursorControlLastSentChars,$cursorControlLastSentLines] " +
-                            "stage=$cursorControlStage"
-                    )
-                    cursorControlLastSentChars = steps.characters
-                    cursorControlLastSentLines = steps.lines
-                }
-                // D-401-followup: reported on *every* move past the slop, not only when the quantised step
-                // totals change - the screen-space model works in raw pixels and would otherwise only ever
-                // see the drag in whole-character jumps, throwing away exactly the precision it exists for.
-                // The listener's own newline-based fallback path still de-duplicates on the step totals
-                // above, so nothing changed for it; only the logging is still gated, to keep the volume of
-                // the diagnostic above readable.
                 onCursorControlListener?.onCursorControlMove(cursorControlStage, steps.characters, steps.lines, dx, dy)
                 // D-401: genuine movement (beyond slop, checked above) resets the "holding still" clock -
                 // only reached while still in Stage 1, matching CursorControlGesture's own class KDoc.

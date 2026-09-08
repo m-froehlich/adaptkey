@@ -1074,6 +1074,36 @@ non-trivial changes).
   regression of that existing fix or a related race it does not fully cover. Needs a real device log to
   root-cause properly, per this project's own convention - not attempted blind.
 
+- **§476 (v1.2.36): D-401 closed - the gesture's temporary diagnostics removed, no behaviour change.** User's
+  own call after §475: "so lassen wir das, das Thema können wir abhaken" plus an explicit request to remove
+  the jitter log and tidy up around Stage 2. -186/+51 lines.
+
+  **Removed**: every `AdaptKeyJitter` line this feature added - the view's per-move `cursorControlMove` trace
+  (and the two `cursorControlLastSentChars`/`Lines` fields that existed *only* to gate it, now that the
+  listener is called on every move anyway), `applyCursorControlMove`'s entry/settle/clamp traces,
+  `adjacentLineStart`'s four, `lineBoundsFor`'s two, `driveCursorControlServo`'s one, and
+  `onUpdateSelection`'s "echo (session active)" line. The 29 remaining `diag()` calls in the service all
+  belong to other features (D-139, D-347, autocorrect, clipboard) and were left untouched.
+
+  **Kept, deliberately**: `requestCursorUpdates()` itself. It began life as §472's probe but is now
+  load-bearing - it is what makes the caret's drawn position observable at all - so only the probe's
+  *scaffolding* went (`cursorControlAnchorInfoSeen`, its 500 ms "nothing arrived" runnable, and
+  `CURSOR_CONTROL_ANCHOR_PROBE_MS`). Renamed `start`/`stopCursorAnchorInfoProbe()` to
+  `start`/`stopCursorAnchorInfoUpdates()` to stop the name implying a diagnostic, and rewrote both KDocs
+  around what they now do (request per gesture, not permanently: an editor that honours this recomputes on
+  every caret move, scroll and layout pass, which is real work for the target app and useless to this
+  keyboard between gestures).
+
+  **Stage 2 comments corrected to match §475's evidence.** Two places still described Stage 2's exclusion as
+  "we only have evidence for the collapsed case, extending a selection needs its own probe" - written before
+  the log answered it. It now reads as what it is: while a selection exists the reported insertion marker
+  sits at its *anchor*, so the moving end is not observable and there is nothing to steer towards. A
+  structural property, not a deferral.
+
+  1640 unit tests (unchanged - pure logging and comment removal).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green, no warnings. `versionCode` 531 -> 532, `versionName`
+  `"1.2.35"` -> `"1.2.36"`.
+
 - **§475 (v1.2.35): D-401-followup - Stage 2 (selection) froze after its very first move; a real bug in the**
   **newline-based line-boundary logic, not in the new screen-space model.** Device report: "the selection
   mode on hold no longer works." The log names the failure directly - `applyCursorControlMove: line bounds

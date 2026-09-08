@@ -1648,12 +1648,6 @@ class AdaptKeyService : InputMethodService() {
         // reason that round's clamp fix produced no observable change on a real device). The DPAD-driven line
         // jump this resync originally existed for is gone entirely now (see applyCursorControlMove()'s own
         // KDoc) - nothing left needs it.
-        if (cursorControlSessionActive) {
-            // D-401-followup (temporary diagnostic): confirms this echo is genuinely just an echo of our own
-            // setSelection() - newSelEnd should always equal cursorControlPosition here. Remove once D-401's
-            // cursor movement is confirmed correct.
-            diag("AdaptKeyJitter", "cursorControl: echo (session active), tracked=$cursorControlPosition echo=$newSelEnd")
-        }
         // D-139 (temporary diagnostic): every call, with enough state to reconstruct what happened -
         // `adb logcat -s AdaptKeyJitter:D` while typing, to finally catch the reported "text jitters,
         // characters get scrambled" glitch in the act. Remove once D-139 is closed for good.
@@ -3115,11 +3109,6 @@ class AdaptKeyService : InputMethodService() {
     private var cursorControlOriginColumn = 0
     private var cursorControlAppliedLines = 0
     
-    // D-401-followup (temporary probe, §472): whether this gesture session has seen a single
-    // onUpdateCursorAnchorInfo() callback yet - see startCursorAnchorInfoProbe()'s own KDoc for what the
-    // probe is for. Remove together with the probe itself.
-    private var cursorControlAnchorInfoSeen = false
-    
     // D-401-followup (§473): the screen-space model's own state - see driveCursorControlServo() for the
     // loop and VisualCaretServo's own class KDoc for why it is a loop at all. cursorControlOrigin{X,Y} is
     // where the caret was *drawn* when the current drag began (arm time, or any later re-touch), which the
@@ -3151,17 +3140,6 @@ class AdaptKeyService : InputMethodService() {
     private var cursorControlLatestCharacters = 0
     private var cursorControlLatestLines = 0
     
-    private val cursorControlAnchorInfoProbeRunnable = Runnable {
-        if (!cursorControlAnchorInfoSeen) {
-            diag(
-                "AdaptKeyJitter",
-                "cursorAnchorInfo: NO callback within ${CURSOR_CONTROL_ANCHOR_PROBE_MS}ms - this editor " +
-                    "reports no caret coordinates, visual line layout is not observable here",
-                warn = true
-            )
-        }
-    }
-    
     private val cursorControlListener = object : AdaptKeyboardView.OnCursorControlListener {
         override fun onCursorControlArmed() {
             cursorControlSessionActive = true
@@ -3179,7 +3157,7 @@ class AdaptKeyService : InputMethodService() {
             handler.removeCallbacks(reclaimEnabledRunnable)
             handler.removeCallbacks(reclaimWordAtCaretRunnable)
             handler.removeCallbacks(expensiveSuggestionRunnable)
-            startCursorAnchorInfoProbe()
+            startCursorAnchorInfoUpdates()
             showCursorControlHint(CursorControlGesture.Stage.CURSOR)
         }
         
@@ -3226,7 +3204,7 @@ class AdaptKeyService : InputMethodService() {
         
         override fun onCursorControlEnded() {
             cursorControlSessionActive = false
-            stopCursorAnchorInfoProbe()
+            stopCursorAnchorInfoUpdates()
             resetCursorControlServo(forgetLayout = true)
             // D-401: the user's own explicit call - the gesture never touches composing state itself, so
             // ending it simply resyncs the ordinary suggestion bar from whatever composing/caret state
@@ -3236,94 +3214,57 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * D-401-followup (temporary probe, §472): asks the target editor to report the caret's own real drawn
-     * coordinates for the duration of one cursor-control gesture, and logs whatever comes back. Changes no
-     * behaviour whatsoever - nothing reads the reported values yet.
+     * D-401-followup: asks the target editor to report where it actually *draws* the caret, for as long as
+     * one cursor-control gesture is running - the single piece of information the screen-space model is
+     * built on, since it makes a soft wrap observable (as a jump in the caret's own y coordinate) without
+     * the app's text layout ever being exposed.
      *
-     * Why this exists: this gesture's one remaining structural problem is that it can only recognise a
-     * *paragraph* (a real `'\n'`, found by [adjacentLineStart]'s own text scan), while the user drags
-     * against the *visual* line they actually see, which a long paragraph soft-wraps into several of. An
-     * earlier analysis concluded that gap was simply unbridgeable, since `InputConnection` cannot be asked
-     * for the target app's own text layout - true, but not the whole picture: [CursorAnchorInfo] does not
-     * expose the layout, yet it does expose where the caret is *drawn*, and a soft wrap is directly
-     * observable there as a jump in the caret's own y coordinate. If these callbacks arrive with real
-     * coordinates, a screen-space rearchitecture of this gesture becomes possible (positioning the caret by
-     * driving it towards a target *point*, with the visual line falling out for free); if they do not, that
-     * whole direction is closed and the gesture's line handling has to be honestly re-scoped instead.
+     * Requested per gesture rather than permanently: an editor that honours this recomputes and reports on
+     * every caret move, scroll and layout pass, which is real work for the target app and is of no use to
+     * this keyboard at any other time.
      *
-     * Deliberately a probe of its own rather than part of that rearchitecture: three earlier rounds of this
-     * feature were built on premises that only failed on a real device, so this one tests its premise first
-     * - whether the callback arrives at all, whether the coordinates are real (not `NaN`), and whether y
-     * genuinely changes across a soft wrap within a single paragraph. [cursorControlAnchorInfoProbeRunnable]
-     * makes a negative answer explicit instead of leaving it as silence in the log, and a `false` return
-     * below already answers it for an editor that declines outright.
+     * Not every editor honours it (the return value says whether this one accepted at all, and some accept
+     * and then report nothing). That needs no handling here - [applyCursorControlMove] simply keeps using
+     * the newline-based model for as long as [cursorControlServo] has been told nothing.
      */
-    private fun startCursorAnchorInfoProbe() {
-        cursorControlAnchorInfoSeen = false
-        val ic = currentInputConnection
-        if (ic == null) {
-            diag("AdaptKeyJitter", "cursorAnchorInfo: no InputConnection at arm time - probe not started", warn = true)
-            return
-        }
-        val accepted = ic.requestCursorUpdates(InputConnection.CURSOR_UPDATE_IMMEDIATE or InputConnection.CURSOR_UPDATE_MONITOR)
-        diag("AdaptKeyJitter", "cursorAnchorInfo: requestCursorUpdates(IMMEDIATE|MONITOR) accepted=$accepted")
-        handler.postDelayed(cursorControlAnchorInfoProbeRunnable, CURSOR_CONTROL_ANCHOR_PROBE_MS)
+    private fun startCursorAnchorInfoUpdates() {
+        val ic = currentInputConnection ?: return
+        ic.requestCursorUpdates(InputConnection.CURSOR_UPDATE_IMMEDIATE or InputConnection.CURSOR_UPDATE_MONITOR)
     }
     
-    /**
-     * D-401-followup (temporary probe, §472): the mirror of [startCursorAnchorInfoProbe] - cancels the
-     * pending "nothing arrived" verdict and, more importantly, stops the editor reporting cursor updates
-     * again, so the probe costs nothing at all outside an active gesture.
-     */
-    private fun stopCursorAnchorInfoProbe() {
-        handler.removeCallbacks(cursorControlAnchorInfoProbeRunnable)
+    /** D-401-followup: stops those reports again, so they cost the target app nothing between gestures. */
+    private fun stopCursorAnchorInfoUpdates() {
         currentInputConnection?.requestCursorUpdates(0)
     }
     
     /**
-     * D-401-followup (temporary probe, §472): logs every reported caret position while a cursor-control
-     * gesture is active, alongside this app's own tracked offset, so the log can be read as "text offset N
-     * is drawn at screen point (x, y)" - exactly the correspondence a screen-space rearchitecture would
-     * need. Ignored entirely outside an active gesture, since [startCursorAnchorInfoProbe] is the only
-     * caller that ever requests these updates in the first place.
+     * D-401-followup: feeds each reported caret position into [cursorControlServo] as one "text offset N is
+     * drawn at screen point (x, y)" fact, and drives the loop a step further towards its target.
+     *
+     * **Only a collapsed selection is usable here, and that is a device-confirmed property of the reports
+     * rather than caution** (§475): while a selection exists, the reported insertion marker sits at its
+     * *anchor*, not at the end being dragged - so Stage 2's moving end is not observable at all, which is
+     * why it stays on the newline-based model (see [applyCursorControlMove]).
+     *
+     * Ignored entirely outside an active gesture, since [startCursorAnchorInfoUpdates] is the only caller
+     * that ever asks for these reports in the first place.
      */
     override fun onUpdateCursorAnchorInfo(cursorAnchorInfo: CursorAnchorInfo?) {
         super.onUpdateCursorAnchorInfo(cursorAnchorInfo)
         if (!cursorControlSessionActive) {
             return
         }
-        val info = cursorAnchorInfo
-        if (info == null) {
-            diag("AdaptKeyJitter", "cursorAnchorInfo: callback arrived with null info", warn = true)
-            return
-        }
-        cursorControlAnchorInfoSeen = true
+        val info = cursorAnchorInfo ?: return
         val markerX = info.insertionMarkerHorizontal
         val markerTop = info.insertionMarkerTop
         val markerBottom = info.insertionMarkerBottom
-        // The reported marker is in the editor view's own coordinates; info.matrix maps it to screen
-        // coordinates, which is the space this gesture's own finger deltas already live in.
-        val screen = floatArrayOf(markerX, markerTop)
-        if (!markerX.isNaN() && !markerTop.isNaN()) {
-            info.matrix.mapPoints(screen)
-        }
-        val flags = info.insertionMarkerFlags
-        diag(
-            "AdaptKeyJitter",
-            "cursorAnchorInfo: trackedOffset=$cursorControlPosition reportedSel=[${info.selectionStart},${info.selectionEnd}] " +
-                "markerX=$markerX top=$markerTop bottom=$markerBottom baseline=${info.insertionMarkerBaseline} " +
-                "lineHeight=${markerBottom - markerTop} screen=[${screen[0]},${screen[1]}] " +
-                "visible=${(flags and CursorAnchorInfo.FLAG_HAS_VISIBLE_REGION) != 0} " +
-                "invisible=${(flags and CursorAnchorInfo.FLAG_HAS_INVISIBLE_REGION) != 0} " +
-                "rtl=${(flags and CursorAnchorInfo.FLAG_IS_RTL) != 0} " +
-                "composingStart=${info.composingTextStart}"
-        )
-        // D-401-followup (§473): the same report, now actually consumed. Only a collapsed selection is fed
-        // in - the reported insertion marker is unambiguous exactly then, and Stage 2 deliberately keeps the
-        // newline-based path for that reason (see applyCursorControlMove()'s own KDoc).
         if (info.selectionStart != info.selectionEnd || markerX.isNaN() || markerTop.isNaN() || markerBottom.isNaN()) {
             return
         }
+        // The reported marker is in the editor view's own coordinates; info.matrix maps it to screen
+        // coordinates, which is the space this gesture's own finger deltas already live in.
+        val screen = floatArrayOf(markerX, markerTop)
+        info.matrix.mapPoints(screen)
         cursorControlServo.observe(info.selectionStart, screen[0], screen[1], screen[1] + (markerBottom - markerTop))
         if (!cursorControlOriginKnown) {
             cursorControlServo.currentObservation()?.let {
@@ -3387,11 +3328,6 @@ class AdaptKeyService : InputMethodService() {
         cursorControlServoPasses++
         cursorControlServo.expect(next)
         cursorControlPosition = next
-        diag(
-            "AdaptKeyJitter",
-            "cursorControlServo: target=[$cursorControlTargetX,$cursorControlTargetY] from=${observed.offset} " +
-                "at=[${observed.x},${observed.top}] charWidth=${cursorControlServo.averageCharWidth()} -> $next"
-        )
         ic.setSelection(next, next)
     }
     
@@ -3406,10 +3342,10 @@ class AdaptKeyService : InputMethodService() {
      * the user is actually dragging against.
      *
      * **The newline-based model below** is the fallback, unchanged, for an editor that reports nothing (and,
-     * deliberately, for Stage 2 in every editor: the reported insertion marker is only unambiguous while the
-     * selection is collapsed, and this round has device evidence for the collapsed case only - extending a
-     * selection in screen space needs its own probe rather than an assumption, which is precisely the
-     * mistake that cost rounds §462-§470).
+     * deliberately, for Stage 2 in every editor: while a selection exists, the reported insertion marker
+     * sits at its *anchor* rather than at the end being dragged - device-confirmed in §475 - so Stage 2's
+     * moving end is not observable and there is nothing for the screen-space model to steer towards. That
+     * is a structural property of the reports, not a deferral).
      *
      * D-401-followup: applies the gesture's own current total offset directly and absolutely - never as an
      * incremental delta - matching the user's own explicit correction of this whole mechanism's mental
@@ -3452,14 +3388,6 @@ class AdaptKeyService : InputMethodService() {
         }
         cursorControlLastAppliedCharacters = characters
         cursorControlLastAppliedLines = lines
-        // D-401-followup (temporary diagnostic): every call, mirroring AdaptKeyboardView's own logTouch() -
-        // see that call site's own note for why. Remove once D-401's cursor movement is confirmed correct.
-        diag(
-            "AdaptKeyJitter",
-            "applyCursorControlMove: stage=$stage characters=$characters lines=$lines " +
-                "positionBefore=$cursorControlPosition anchor=$cursorControlAnchor originColumn=$cursorControlOriginColumn " +
-                "appliedLines=$cursorControlAppliedLines"
-        )
         val lineStepsNeeded = lines - cursorControlAppliedLines
         if (lineStepsNeeded != 0) {
             repeat(abs(lineStepsNeeded)) {
@@ -3468,18 +3396,10 @@ class AdaptKeyService : InputMethodService() {
                 commitCursorControlSelection(ic, stage)
             }
             cursorControlAppliedLines = lines
-            diag("AdaptKeyJitter", "applyCursorControlMove: line steps settled at $cursorControlPosition")
         }
-        val bounds = lineBoundsFor(ic, stage)
-        if (bounds == null) {
-            diag("AdaptKeyJitter", "applyCursorControlMove: line bounds unavailable - column unchanged")
-            return
-        }
-        val lineStart = bounds.first
-        val lineEnd = bounds.last
-        val targetColumn = (cursorControlOriginColumn + characters).coerceIn(0, lineEnd - lineStart)
-        cursorControlPosition = lineStart + targetColumn
-        diag("AdaptKeyJitter", "applyCursorControlMove: lineStart=$lineStart lineEnd=$lineEnd targetColumn=$targetColumn clampedPosition=$cursorControlPosition")
+        val bounds = lineBoundsFor(ic, stage) ?: return
+        val targetColumn = (cursorControlOriginColumn + characters).coerceIn(0, bounds.last - bounds.first)
+        cursorControlPosition = bounds.first + targetColumn
         commitCursorControlSelection(ic, stage)
     }
     
@@ -3520,14 +3440,9 @@ class AdaptKeyService : InputMethodService() {
     private fun adjacentLineStart(ic: InputConnection, up: Boolean): Int? {
         val position = cursorControlPosition
         if (up) {
-            val before = ic.getTextBeforeCursor(CURSOR_CONTROL_LINE_SCAN_WINDOW, 0)?.toString()
-            if (before == null) {
-                diag("AdaptKeyJitter", "adjacentLineStart(up): getTextBeforeCursor returned null - unmoved")
-                return null
-            }
+            val before = ic.getTextBeforeCursor(CURSOR_CONTROL_LINE_SCAN_WINDOW, 0)?.toString() ?: return null
             val currentLineStartInBefore = before.lastIndexOf('\n') + 1
             if (currentLineStartInBefore == 0) {
-                diag("AdaptKeyJitter", "adjacentLineStart(up): no newline within window - unmoved")
                 return null
             }
             val previousLineStartInBefore = if (currentLineStartInBefore <= 1) {
@@ -3535,23 +3450,14 @@ class AdaptKeyService : InputMethodService() {
             } else {
                 before.lastIndexOf('\n', currentLineStartInBefore - 2) + 1
             }
-            val result = position - (before.length - previousLineStartInBefore)
-            diag("AdaptKeyJitter", "adjacentLineStart(up): result=$result")
-            return result
+            return position - (before.length - previousLineStartInBefore)
         }
-        val after = ic.getTextAfterCursor(CURSOR_CONTROL_LINE_SCAN_WINDOW, 0)?.toString()
-        if (after == null) {
-            diag("AdaptKeyJitter", "adjacentLineStart(down): getTextAfterCursor returned null - unmoved")
-            return null
-        }
+        val after = ic.getTextAfterCursor(CURSOR_CONTROL_LINE_SCAN_WINDOW, 0)?.toString() ?: return null
         val currentLineEndInAfter = after.indexOf('\n')
         if (currentLineEndInAfter == -1) {
-            diag("AdaptKeyJitter", "adjacentLineStart(down): no newline within window - unmoved")
             return null
         }
-        val result = position + currentLineEndInAfter + 1
-        diag("AdaptKeyJitter", "adjacentLineStart(down): result=$result")
-        return result
+        return position + currentLineEndInAfter + 1
     }
     
     /**
@@ -3589,23 +3495,13 @@ class AdaptKeyService : InputMethodService() {
         // taking the forward branch there keeps the anchor - which stays frozen at arm time throughout
         // Stage 1 - from being consulted at all, the mistake behind an earlier round's "still flips" report.
         val movingEndIsSelectionEnd = stage == CursorControlGesture.Stage.CURSOR || position >= cursorControlAnchor
-        val before = ic.getTextBeforeCursor(CURSOR_CONTROL_LINE_SCAN_WINDOW, 0)?.toString()
-        val after = ic.getTextAfterCursor(CURSOR_CONTROL_LINE_SCAN_WINDOW, 0)?.toString()
-        if (before == null || after == null) {
-            diag("AdaptKeyJitter", "lineBounds: surrounding text unavailable - unclamped", warn = true)
-            return null
-        }
+        val before = ic.getTextBeforeCursor(CURSOR_CONTROL_LINE_SCAN_WINDOW, 0)?.toString() ?: return null
+        val after = ic.getTextAfterCursor(CURSOR_CONTROL_LINE_SCAN_WINDOW, 0)?.toString() ?: return null
         // Only ever non-empty in Stage 2; a null here (an editor that declines to hand over its selection)
         // degrades to treating it as empty rather than abandoning the move, which is the far better failure
         // mode - the clamp then simply misses by the selection's own length instead of freezing outright.
         val selected = if (stage == CursorControlGesture.Stage.SELECTION) ic.getSelectedText(0)?.toString().orEmpty() else ""
-        val bounds = CursorLineBounds.of(position, before, selected, after, movingEndIsSelectionEnd)
-        diag(
-            "AdaptKeyJitter",
-            "lineBounds: position=$position before=${before.length} selected=${selected.length} after=${after.length} " +
-                "movingEndIsSelectionEnd=$movingEndIsSelectionEnd -> [${bounds.first},${bounds.last}]"
-        )
-        return bounds
+        return CursorLineBounds.of(position, before, selected, after, movingEndIsSelectionEnd)
     }
     
     /**
@@ -8022,12 +7918,6 @@ class AdaptKeyService : InputMethodService() {
         // via getTextBeforeCursor()/getTextAfterCursor() to find line-boundary newlines - generous enough
         // for any realistic single line/paragraph on a mobile field without requesting the whole document.
         private const val CURSOR_CONTROL_LINE_SCAN_WINDOW = 2000
-        
-        // D-401-followup (temporary probe, §472): how long startCursorAnchorInfoProbe() waits for a first
-        // onUpdateCursorAnchorInfo() callback before recording that this editor reports no caret coordinates
-        // at all. Deliberately generous - a negative result must be trustworthy, and this only ever delays a
-        // log line, never anything the user can perceive. Remove together with the probe itself.
-        private const val CURSOR_CONTROL_ANCHOR_PROBE_MS = 500L
         
         // D-401-followup (§473): how many proposals driveCursorControlServo() may make for one target point
         // before giving up on it. Only ever reached by an editor whose reported caret positions do not
