@@ -1074,6 +1074,43 @@ non-trivial changes).
   regression of that existing fix or a related race it does not fully cover. Needs a real device log to
   root-cause properly, per this project's own convention - not attempted blind.
 
+- **§474 (v1.2.34): D-401-followup - vertical tuning after the first device round on the screen-space model.**
+  User verdict on §473: "already quite good, not perfect - but let's leave it rather than doing 20 more
+  rounds." One concrete complaint: 0.5 is **"exactly right" horizontally**, but vertically the caret still
+  slips into the neighbouring line too easily. The question asked was whether that needs a threshold or just
+  a lower vertical gain. **It needs both, and they belong in different places** - which is what makes this
+  worth writing down rather than just retuning a number.
+
+  **Why a gain alone is not enough.** The unwanted vertical movement is not noise, it is a systematic arc: a
+  thumb pivots rather than sliding straight, and §472's log shows vertical travel running at a fairly
+  consistent ~20% of horizontal travel throughout a sideways drag (dx 459 against dy -95). Since that drift
+  is *proportional* to the horizontal distance, no fixed threshold absorbs it on a long swipe - only
+  weighting the axis down does. Hence `SCREEN_SPACE_GAIN_VERTICAL` = 0.35 next to the horizontal 0.5, which
+  stays at the value the user confirmed.
+
+  **Why a gain alone is still not enough.** With plain rounding, the boundary to the next row sits half a
+  row away from wherever the caret is, so a drag only has to produce `rowHeight / (2 x gain)` of travel to
+  cross it - about 5 mm at 0.5, which is nothing. So vertical travel is now quantised into *whole rows* at
+  the input (`CursorControlGesture.targetPointFor` truncates towards zero): a line change costs a full row
+  of scaled travel measured from the drag's own origin, and the resulting target always lands on a row's
+  *centre*, so the caret is never balanced on a boundary where a pixel of drift tips it either way. That is
+  the whole deadband - no threshold constant was added. Together the two put a line change at roughly one
+  and a half row heights of vertical finger travel, beyond the arc of even a full-width sideways swipe.
+
+  **A real bug the tests caught, worth recording because the first attempt was wrong.** Truncation was
+  initially put in the *servo* instead, replacing its `roundToInt`. `VisualCaretServoTest` failed
+  immediately, and the failure was genuine rather than a fixture artefact: an early proposal in a loop that
+  has learned nothing yet can land a row or two out, and a truncating servo then refuses to come back
+  (0.8 rows of error truncates to zero), stranding the caret on the wrong row permanently. The distinction
+  the fix rests on: the deadband belongs where *intent* is read (a drag's own travel), while the end that
+  *corrects* must stay free to go to whichever row the target names. `VisualCaretServo` therefore keeps
+  rounding, and gained a regression test for exactly that overshoot-recovery case.
+
+  1627 unit tests (1620 -> 1627; `VisualCaretServoTest` 18 -> 19, `CursorControlGestureTest` 13 -> 19).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 529 -> 530, `versionName` `"1.2.33"`
+  -> `"1.2.34"`. Both gains and the quantisation are single, independent constants - the expected next
+  adjustment is one number, not another rearchitecture.
+
 - **§473 (v1.2.33): D-401-followup - the probe came back positive, so the gesture's Stage 1 is now a**
   **screen-space model: the caret is driven towards a *point*, and a soft-wrapped line is finally a real line.**
 

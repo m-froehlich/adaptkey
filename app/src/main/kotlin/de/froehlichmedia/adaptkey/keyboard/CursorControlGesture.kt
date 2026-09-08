@@ -70,29 +70,79 @@ object CursorControlGesture {
      * silently depended on the target app's own font. For reference, [DP_PER_CHARACTER_STEP] worked out to
      * roughly 0.6 against the character advances a real device reported.
      */
-    const val SCREEN_SPACE_GAIN = 0.5f
+    const val SCREEN_SPACE_GAIN_HORIZONTAL = 0.5f
+    
+    /**
+     * D-401-followup: the same ratio for the vertical axis, deliberately lower still - device feedback was
+     * that 0.5 is "exactly right" sideways, but that the caret still slips into the neighbouring line too
+     * easily.
+     *
+     * The two axes are genuinely asymmetric in use, which is why one number cannot serve both. A thumb
+     * pivots rather than sliding straight, so a long sideways drag arcs: the device log had vertical travel
+     * running at roughly 20% of the horizontal travel throughout (dx 459 against dy -95). That drift is
+     * *proportional* to the horizontal distance, so no fixed threshold can absorb it - only weighting the
+     * axis that is mostly noise less than the axis that is mostly intent.
+     *
+     * The main defence against an unwanted line change is [VisualCaretServo]'s own whole-row requirement
+     * rather than this constant; together they put a line change at roughly one and a half row heights of
+     * vertical finger travel, comfortably beyond the arc of even a full-width sideways swipe.
+     */
+    const val SCREEN_SPACE_GAIN_VERTICAL = 0.35f
     
     /** The screen point the caret is being driven towards, in the same coordinates the editor reports. */
     data class TargetPoint(val x: Float, val y: Float)
     
     /**
      * D-401-followup: where the caret should end up, given where it was when this drag began and how far
-     * the finger has travelled since. The whole of the screen-space model's own geometry - both axes scaled
-     * by [gain], nothing quantised, no thresholds.
+     * the finger has travelled since - the whole of the screen-space model's own geometry.
      *
-     * The absence of a per-axis special case is the point: the previous model needed a dominant-axis gate
-     * to stop a long horizontal drag's incidental vertical wobble from changing lines, because its two axes
-     * were separate counters. Here 40 px of wobble against a ~53 px row height simply names a point on the
-     * same row, so the rule "dragging sideways never changes the line" is geometry rather than a threshold.
+     * The two axes are deliberately not symmetric, and this is where that asymmetry lives.
+     *
+     * Sideways is continuous: the target is simply the origin plus the scaled travel, so the caret follows
+     * the finger smoothly and a wobble against a ~53 px row height still names a point on the same row.
+     * There is no *dominance* rule and none is needed - the previous model required one only because its
+     * two axes were separate counters rather than one point.
+     *
+     * Vertically the travel is turned into a whole number of rows first (device feedback: 0.5 is "exactly
+     * right" sideways, but vertically the caret still slipped into the neighbouring line too easily). A
+     * line change therefore costs a *whole* row of scaled travel measured from the drag's own origin, and
+     * the target always lands on a row's centre rather than somewhere between two - so the caret is never
+     * balanced on a boundary where a pixel of drift could tip it either way. That is the entire deadband:
+     * truncation towards zero, no separate threshold constant. Two things made it necessary: a thumb pivots
+     * rather than sliding straight, so a long sideways drag arcs (the device log had vertical travel at a
+     * fairly consistent ~20% of horizontal travel, dx 459 against dy -95, about a row's worth on a
+     * full-width swipe), and that drift is *proportional* to the horizontal distance, so weighting the axis
+     * alone could not have absorbed it.
+     *
+     * Row heights are assumed uniform here, which real editors only approximately are (the device log had
+     * 53 px rows next to 57 and 58 px ones). The error accumulates over a multi-row drag but stays far
+     * inside the half-row that [VisualCaretServo] tolerates for the few rows one drag covers before the
+     * finger lifts and re-anchors anyway.
      *
      * @param originX the caret's own horizontal position when this drag began
-     * @param originY the caret's own vertical position when this drag began
+     * @param originY the caret's own vertical position when this drag began - a row centre
      * @param dx how far the finger has travelled horizontally since, in raw pixels
      * @param dy how far the finger has travelled vertically since, in raw pixels
-     * @param gain the finger-to-caret ratio, defaulting to [SCREEN_SPACE_GAIN]
+     * @param rowHeightPx the height of a visible row as the editor reports it; zero or less disables the
+     *        vertical quantisation above, leaving that axis continuous like the horizontal one
+     * @param gainHorizontal the sideways finger-to-caret ratio, defaulting to [SCREEN_SPACE_GAIN_HORIZONTAL]
+     * @param gainVertical the vertical finger-to-caret ratio, defaulting to [SCREEN_SPACE_GAIN_VERTICAL]
      */
-    fun targetPointFor(originX: Float, originY: Float, dx: Float, dy: Float, gain: Float = SCREEN_SPACE_GAIN): TargetPoint {
-        return TargetPoint(originX + dx * gain, originY + dy * gain)
+    fun targetPointFor(
+        originX: Float,
+        originY: Float,
+        dx: Float,
+        dy: Float,
+        rowHeightPx: Float,
+        gainHorizontal: Float = SCREEN_SPACE_GAIN_HORIZONTAL,
+        gainVertical: Float = SCREEN_SPACE_GAIN_VERTICAL
+    ): TargetPoint {
+        val x = originX + dx * gainHorizontal
+        val scaledVertical = dy * gainVertical
+        if (rowHeightPx <= 0f) {
+            return TargetPoint(x, originY + scaledVertical)
+        }
+        return TargetPoint(x, originY + (scaledVertical / rowHeightPx).toInt() * rowHeightPx)
     }
     
     /** Which half of the gesture is currently active. */

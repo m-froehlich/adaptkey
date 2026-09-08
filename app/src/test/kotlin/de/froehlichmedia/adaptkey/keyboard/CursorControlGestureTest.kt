@@ -103,25 +103,71 @@ class CursorControlGestureTest {
     }
     
     @Test
-    fun targetPointForScalesBothAxesByTheGain() {
-        val target = CursorControlGesture.targetPointFor(100f, 200f, 40f, -60f, gain = 0.5f)
+    fun targetPointForScalesTheHorizontalAxisContinuously() {
+        val target = CursorControlGesture.targetPointFor(100f, 200f, 40f, 0f, rowHeightPx = 50f, gainHorizontal = 0.5f)
         assertEquals(120f, target.x, 0.001f)
-        assertEquals(170f, target.y, 0.001f)
+        assertEquals(200f, target.y, 0.001f)
+    }
+    
+    @Test
+    fun theVerticalAxisIsWeightedLessThanTheHorizontalOne() {
+        // A pivoting thumb arcs, so vertical travel during a sideways drag is mostly drift, not intent.
+        assertTrue(CursorControlGesture.SCREEN_SPACE_GAIN_VERTICAL < CursorControlGesture.SCREEN_SPACE_GAIN_HORIZONTAL)
     }
     
     @Test
     fun targetPointForMovesTheCaretLessThanTheFinger() {
         // The user's own explicit requirement: 1:1 would make the gesture no better than tapping directly.
         val fingerTravel = 200f
-        val target = CursorControlGesture.targetPointFor(0f, 0f, fingerTravel, 0f)
+        val target = CursorControlGesture.targetPointFor(0f, 0f, fingerTravel, 0f, rowHeightPx = 50f)
         assertTrue(target.x < fingerTravel)
         assertTrue(target.x > 0f)
     }
     
     @Test
     fun targetPointForWithoutTravelIsTheOriginItself() {
-        val target = CursorControlGesture.targetPointFor(37f, 91f, 0f, 0f)
+        val target = CursorControlGesture.targetPointFor(37f, 91f, 0f, 0f, rowHeightPx = 50f)
         assertEquals(37f, target.x, 0.001f)
         assertEquals(91f, target.y, 0.001f)
+    }
+    
+    @Test
+    fun targetPointForKeepsTheRowUntilAWholeRowOfTravelIsReached() {
+        val rowHeight = 50f
+        val justUnderOneRow = (rowHeight * 0.99f) / CursorControlGesture.SCREEN_SPACE_GAIN_VERTICAL
+        val target = CursorControlGesture.targetPointFor(0f, 200f, 0f, justUnderOneRow, rowHeightPx = rowHeight)
+        assertEquals(200f, target.y, 0.001f)
+    }
+    
+    @Test
+    fun targetPointForChangesRowOnceAWholeRowOfTravelIsReached() {
+        val rowHeight = 50f
+        val justOverOneRow = (rowHeight * 1.01f) / CursorControlGesture.SCREEN_SPACE_GAIN_VERTICAL
+        val target = CursorControlGesture.targetPointFor(0f, 200f, 0f, justOverOneRow, rowHeightPx = rowHeight)
+        assertEquals(250f, target.y, 0.001f)
+    }
+    
+    @Test
+    fun targetPointForQuantisesUpwardsTheSameWay() {
+        val rowHeight = 50f
+        val justOverOneRow = -(rowHeight * 1.01f) / CursorControlGesture.SCREEN_SPACE_GAIN_VERTICAL
+        val target = CursorControlGesture.targetPointFor(0f, 200f, 0f, justOverOneRow, rowHeightPx = rowHeight)
+        assertEquals(150f, target.y, 0.001f)
+    }
+    
+    @Test
+    fun targetPointForAlwaysLandsOnARowCentreNeverBetweenTwo() {
+        // The caret must never end up balanced on a boundary, where a pixel of drift could tip it either way.
+        val rowHeight = 50f
+        for (travel in 0..600 step 7) {
+            val target = CursorControlGesture.targetPointFor(0f, 200f, 0f, travel.toFloat(), rowHeightPx = rowHeight)
+            assertEquals(0f, (target.y - 200f) % rowHeight, 0.001f)
+        }
+    }
+    
+    @Test
+    fun targetPointForLeavesTheVerticalAxisContinuousWithoutAKnownRowHeight() {
+        val target = CursorControlGesture.targetPointFor(0f, 200f, 0f, 100f, rowHeightPx = 0f, gainVertical = 0.5f)
+        assertEquals(250f, target.y, 0.001f)
     }
 }

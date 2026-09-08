@@ -55,6 +55,13 @@ class VisualCaretServo(private val rowTolerancePx: Float = DEFAULT_ROW_TOLERANCE
     /** Whether enough has been reported for [targetOffset] to be able to propose anything at all. */
     fun isReady(): Boolean = current != null
     
+    /**
+     * @return the height of the row the caret is currently on, as the editor last reported it, or 0 while
+     *         nothing has been reported - the caller needs it to express a vertical drag in whole rows
+     *         ([CursorControlGesture.targetPointFor])
+     */
+    fun rowHeight(): Float = current?.let { it.bottom - it.top } ?: 0f
+    
     /** Forgets everything - a new gesture, or a new field, shares nothing with the previous one. */
     fun reset() {
         observations.clear()
@@ -131,6 +138,14 @@ class VisualCaretServo(private val rowTolerancePx: Float = DEFAULT_ROW_TOLERANCE
      * A proposal is clamped into whatever is *known* about the target row's own offset range, so a
      * horizontal drag can never leave its row even when the character-width estimate briefly overshoots -
      * and the bound tightens on its own as soon as an offset on a neighbouring row has been seen once.
+     *
+     * The row nearest [targetY] is always taken, deliberately including a row the caret has *overshot* onto
+     * - this must stay a plain "go to the row the target names", because an early proposal in a loop that
+     * has learned nothing yet can genuinely land a row or two out, and refusing to come back would leave
+     * the caret stranded there. The deadband that stops an *unintended* line change belongs at the input
+     * instead, where a drag's own vertical travel is turned into a row intention
+     * ([CursorControlGesture.targetPointFor]): once that has decided which row was asked for, this end must
+     * be free to correct its own way onto it.
      *
      * @param minOffset the lowest offset the caller can address (usually the start of the text window it
      *        can read); the proposal is clamped into `[minOffset, maxOffset]`

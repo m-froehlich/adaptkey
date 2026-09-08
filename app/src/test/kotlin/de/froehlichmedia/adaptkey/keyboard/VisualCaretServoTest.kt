@@ -168,7 +168,7 @@ class VisualCaretServoTest {
         assertFalse(text.contains('\n'))
         assertTrue(layout.rows.size >= 3)
         val targetX = layout.xOf(4)
-        val targetY = layout.rowHeight * 1.5f
+        val targetY = layout.rowHeight * 1.7f
         
         val settled = settle(servo, layout, 4, targetX, targetY)
         
@@ -182,12 +182,32 @@ class VisualCaretServoTest {
         val servo = VisualCaretServo()
         val startOffset = layout.rows[2].first + 2
         val targetX = layout.xOf(startOffset)
-        val targetY = layout.rowHeight * 1.5f
+        val targetY = layout.rowHeight * 1.3f
         
         val settled = settle(servo, layout, startOffset, targetX, targetY)
         
         assertEquals(1, layout.rowIndexOf(settled))
     }
+    
+    @Test
+    fun `comes back to the target row after an early proposal overshoots onto another one`() {
+        // The loop's first proposal knows nothing yet and can genuinely land a row or two out; refusing to
+        // return would strand the caret there. The deadband that prevents an *unintended* line change lives
+        // at the input instead - see CursorControlGesture.targetPointFor.
+        val layout = FakeLayout("first paragraph\n\nthird paragraph")
+        val servo = VisualCaretServo()
+        val targetRow = layout.rows[2]
+        servo.observe(0, layout.xOf(0), layout.topOf(0), layout.topOf(0) + layout.rowHeight)
+        val overshoot = layout.rows.last().last
+        servo.expect(overshoot)
+        servo.observe(overshoot, layout.xOf(overshoot), layout.topOf(overshoot), layout.topOf(overshoot) + layout.rowHeight)
+        
+        val settled = settle(servo, layout, overshoot, layout.leftEdge, layout.rowHeight * 2.5f)
+        
+        assertEquals(2, layout.rowIndexOf(settled))
+        assertEquals(targetRow.first, settled)
+    }
+    
     
     @Test
     fun `crosses several visible rows in one drag`() {
@@ -208,7 +228,7 @@ class VisualCaretServoTest {
         val emptyRow = layout.rows[1]
         assertEquals(emptyRow.first, emptyRow.last)
         
-        val settled = settle(servo, layout, 3, layout.leftEdge + 500f, layout.rowHeight * 1.5f)
+        val settled = settle(servo, layout, 3, layout.leftEdge + 500f, layout.rowHeight * 1.7f)
         
         assertEquals(emptyRow.first, settled)
     }
@@ -218,9 +238,9 @@ class VisualCaretServoTest {
         val layout = FakeLayout("first paragraph\n\nthird paragraph")
         val servo = VisualCaretServo()
         val emptyOffset = layout.rows[1].first
-        settle(servo, layout, 3, layout.leftEdge + 500f, layout.rowHeight * 1.5f)
+        settle(servo, layout, 3, layout.leftEdge + 500f, layout.rowHeight * 1.7f)
         
-        val settled = settle(servo, layout, emptyOffset, layout.leftEdge, layout.rowHeight * 2.5f)
+        val settled = settle(servo, layout, emptyOffset, layout.leftEdge, layout.rowHeight * 2.7f)
         
         assertEquals(2, layout.rowIndexOf(settled))
     }

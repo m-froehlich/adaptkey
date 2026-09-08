@@ -3399,7 +3399,8 @@ class AdaptKeyService : InputMethodService() {
      *
      * **The screen-space model** ([VisualCaretServo]) applies whenever the target app reports caret
      * coordinates and this drag has an origin to measure from - then the finger's own travel, scaled by
-     * [CursorControlGesture.SCREEN_SPACE_GAIN], names a point on screen and the caret is driven towards it.
+     * [CursorControlGesture.SCREEN_SPACE_GAIN_HORIZONTAL] and its own lower vertical counterpart, names a
+     * point on screen and the caret is driven towards it.
      * That is the only one of the two that can express a *visible* line, so it is the one that matches what
      * the user is actually dragging against.
      *
@@ -3429,7 +3430,13 @@ class AdaptKeyService : InputMethodService() {
         cursorControlLatestCharacters = characters
         cursorControlLatestLines = lines
         if (stage == CursorControlGesture.Stage.CURSOR && cursorControlOriginKnown && cursorControlServo.isReady()) {
-            val target = CursorControlGesture.targetPointFor(cursorControlOriginX, cursorControlOriginY, dx, dy)
+            val target = CursorControlGesture.targetPointFor(
+                cursorControlOriginX,
+                cursorControlOriginY,
+                dx,
+                dy,
+                cursorControlServo.rowHeight()
+            )
             if (target.x != cursorControlTargetX || target.y != cursorControlTargetY) {
                 cursorControlServoPasses = 0
             }

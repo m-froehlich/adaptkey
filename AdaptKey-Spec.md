@@ -554,7 +554,9 @@ own origin.
   Where the app reports the caret's own drawn position (`CursorAnchorInfo`/`requestCursorUpdates` -
   device-confirmed in Google Keep), Stage 1 instead works in screen space: the finger's travel, scaled by a
   gain **deliberately below 1** (the caret must move *less* than the finger - the gesture exists for
-  precision, and reach is restored by lifting and re-touching, like lifting a mouse), names a target point,
+  precision, and reach is restored by lifting and re-touching, like lifting a mouse; the vertical gain is
+  lower still than the horizontal one, because a pivoting thumb makes a long sideways drag arc, so vertical
+  travel during one is mostly drift rather than intent), names a target point,
   and the caret is driven towards it in a feedback loop - each applied move is reported back, and the error
   refines the next one. A soft wrap is observable there as a jump in the caret's own y coordinate, so a
   *visible* line becomes a real line. The two rules then follow from geometry rather than thresholds:
@@ -562,6 +564,11 @@ own origin.
   learned from real reports, not guessed), and dragging down names a point one row height lower and so moves
   exactly one visible line. Column is preserved across a line change for free, since the target point
   carries it.
+
+  Vertical travel is quantised into **whole rows** before it becomes a target: a line change costs a full
+  row's worth of scaled travel from the drag's own origin, and the target always lands on a row's centre, so
+  the caret is never left balanced on a boundary. Sideways movement stays continuous - the caret follows the
+  finger smoothly.
 
   Stage 2 (selection) keeps the fallback model in every app: the reported insertion marker is only
   unambiguous while the selection is collapsed, and only that case has been confirmed on a device.
