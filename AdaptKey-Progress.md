@@ -1114,6 +1114,22 @@ non-trivial changes).
   it. See D-452 in Current State (above) for the full before/after story. Build green, 1640 tests green,
   -0/+~35 lines (mostly KDoc explaining the precomputed-value shape and why it replaced two full-cost calls).
 
+  **Second log, same session: a "Ersetzungsproblem" (garbled final text) traced to the identical stall, not**
+  **a separate bug.** User typed `"hqllervoorden"` (a garbled `"Hallervorden"`) - the deferred search
+  correctly found it, but `extrasMs=3450` (worse than "Habeck"'s 1335ms, since the doubled escalation search
+  scales with token length: 13 characters vs. 6). For that whole multi-second window the main thread (and
+  therefore all key/touch dispatch) was blocked; Android still queued the user's frustrated `DELETE, DELETE,
+  'a', DELETE` taps and delivered all four in one burst the instant the block ended - visible in the log as
+  four `rawTap` lines sharing the identical `-13,0s` timestamp, landing right as the deferred result was also
+  being applied (`onUpdateSelection: EXTERNAL (expected=31, actual=[21,21])`, followed by `STALE ECHO`
+  entries as the tracked and real cursor positions fought to resync). The correctly-found `"Hallervorden"`
+  was lost and the composing token ended up mangled to `"hlervoorden"` instead. Analysis only, no further
+  code change: `rawCoordinateCorrection()`/`missedBackspaceCorrection()` (the extras block's only other
+  per-keystroke work in this path) are both O(token length) with no store-scanning cost of their own, so
+  §477's fix - both `hasObviousCandidate()` calls now served from the value already computed on the
+  background executor - should collapse this specific freeze close to zero, not merely halve it. Not yet
+  device-confirmed for a token this long; worth a fresh log on v1.2.37 with a similarly long unknown word.
+
 - **§476 (v1.2.36): D-401 closed - the gesture's temporary diagnostics removed, no behaviour change.** User's
   own call after §475: "so lassen wir das, das Thema können wir abhaken" plus an explicit request to remove
   the jitter log and tidy up around Stage 2. -186/+51 lines.
