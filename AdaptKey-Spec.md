@@ -3131,6 +3131,42 @@ intended outcome of this rule, not a gap. W-04 then learns the user's own prefer
 
 ---
 
+## 47. Prefix Lookup Is Index-Backed (D-465)
+
+D-465: the suggestion pipeline's own hottest query - "every word starting with this prefix, most frequent
+first" (`SqliteDictionaryStore.queryByPrefix`, behind `unigramsByPrefix`) - was written as
+`WHERE wkey LIKE 'prefix%'` and was therefore executing a **full scan of the entire lexicon on every
+keystroke**. SQLite's `LIKE` is case-insensitive by default, the table's own `PRIMARY KEY` index on `wkey`
+uses `BINARY` collation, and SQLite's well-known LIKE-to-range optimisation only applies when those agree -
+so the planner fell back to `SCAN words`. Confirmed with `EXPLAIN QUERY PLAN`, not inferred.
+
+This is per keystroke and then multiplied: S-09's own escalations (D-328's neighbour-prefix variants,
+D-453's doubled-consonant variants) each issue their own lookup, up to a couple of dozen per pass.
+
+Replaced by a half-open key range (`wkey >= prefix AND wkey < prefix + U+FFFF`), which the existing index
+does serve. Measured against the real German dictionary with the identical schema and query: `LIKE` cost the
+same ~12 ms for every prefix regardless of how many rows it actually matched (`"denk"`, 71 matches, as
+expensive as `"be"`, 6,002); the range form cost 0.04-1.9 ms - between 5.6x and 1045x less, and now
+proportional to what the prefix genuinely matches rather than to the dictionary's total size.
+
+Equivalent by construction, not by luck: `wkey` is always written as `word.lowercase()` (every insert path
+goes through one function), so a `BINARY` range over lower-cased keys selects exactly what the
+case-insensitive `LIKE` prefix did. Result equality was verified across every tested prefix before the
+replacement landed.
+
+**One documented limitation, deliberately accepted** (explicit user decision - "halten wir es einfach"): the
+upper bound appends `U+FFFF`, which is exact for every key inside the BMP but would miss a key whose very
+next character after the prefix sits above it (an emoji). Dictionary keys are words, so this is theoretical;
+the alternative - incrementing the last code point - buys only that case at the cost of real surrogate
+handling.
+
+**Why this belongs in the spec rather than only in the code**: it changes what "adding vocabulary" costs. A
+dictionary that grows by 64% used to make every keystroke 64% more expensive, because the scan was over the
+whole table; now the cost tracks the prefix's own match count. That is the standing constraint any future
+decision about importing more words (see `AdaptKey-Progress.md`'s own D-462) has to be weighed against.
+
+---
+
 ## Prerequisite
 
 Android Studio with a configured Android SDK.

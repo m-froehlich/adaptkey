@@ -21805,3 +21805,34 @@ glue stays untested by this project's own established convention.
 
 1586 unit tests (1568 -> 1586, +18 new). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
 509 -> 510, `versionName` `"1.2.13"` -> `"1.2.14"`.
+
+## §455 - D-403/D-359-followup - a confirmed revert-retry (A-07) was not actually protected against §6 capitalisation, only against dictionary substitution.
+
+Found while the user was chasing a
+different bug, with a real device log to root-cause it - not guessed: typing `"abt"` auto-capitalised to
+`"Abt"` (a real `NOUN,PROPER_NOUN` dictionary entry - §6 rule 3 fires unconditionally for a pure noun,
+confirmed directly against `dictionaries/de/dict.tsv`), reverted via the existing A-07 mechanism - the very
+next retry of `"abt"` was silently re-capitalised to `"Abt"` again, every single time. The log's own
+`suppressAutocorrect=true`/`autocorrected=null` lines proved this was never the dictionary-correction path
+re-firing at all (that side was correctly and consistently bypassed, on every attempt, for an unrelated
+reason - D-106 stage 2's cross-language protection) - `capitalisation.capitalise()` itself, called
+unconditionally at `finalizeAndCommit()`'s own line regardless of `revertConfirmed`, was simply never part
+of the "every correction mechanism is bypassed for this one retry" promise D-403/D-359 originally made.
+
+Discussed directly before fixing (per this project's own convention): is this the deliberate, documented
+§6 behaviour (D-405 explicitly scoped rule 1's own symmetric "explicit input wins" protection to the
+sentence-start mechanism alone, leaving pure/proper-noun capitalisation deliberately unconditional), or
+should the revert-protection's own promise now extend to cover it too? Explicit user answer: yes, treat it
+exactly like an autocorrect.
+
+**Fix.** Every substitution mechanism already forces `corrected == typed` whenever `revertConfirmed` is
+true (each is individually gated on `suppressAutocorrect`/`revertConfirmed`), so `finalWord` now commits
+`typed` verbatim in that case, skipping `capitalisation.capitalise()` entirely - one line change
+([AdaptKeyService.kt:4272](app/src/main/kotlin/de/froehlichmedia/adaptkey/AdaptKeyService.kt:4272)),
+mirroring how a case-locked word already bypasses "autocorrect, capitalisation (§6) and single-word
+correction entirely" (G-05) for the identical "the user has hand-finished this" reason. No new test - this
+is `AdaptKeyService`'s own Android-glue commit path, untested by this project's own established convention;
+`revertConfirmed`/`suppressAutocorrect`'s own derivation (pure logic elsewhere) was already covered.
+
+1586 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
+510 -> 511, `versionName` `"1.2.14"` -> `"1.2.15"`.

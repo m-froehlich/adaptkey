@@ -726,4 +726,73 @@ class SqliteDictionaryStoreRoboTest {
         assertTrue(store.learnedWords().isEmpty())
         store.close()
     }
+    
+    /**
+     * D-465: the prefix query became a half-open key range so SQLite can actually use its own index on
+     * wkey - `LIKE` could not, being case-insensitive against a BINARY-collated index, and fell back to a
+     * full scan of the whole lexicon on every keystroke. These cases pin the *behaviour* that replacement
+     * has to preserve, since the change is invisible to every existing test (they all pass either way).
+     */
+    @Test
+    fun unigramsByPrefixReturnsExactlyTheWordsCarryingThatPrefix() {
+        val store = store("prefix-range.db")
+        store.putWord(WordEntry("be", 5L))
+        store.putWord(WordEntry("beben", 4L))
+        store.putWord(WordEntry("bergen", 3L))
+        store.putWord(WordEntry("bd", 9L))
+        store.putWord(WordEntry("bf", 9L))
+        store.putWord(WordEntry("azubi", 9L))
+        
+        val words = store.unigramsByPrefix("be", 10).map { it.word }.sorted()
+        
+        // The prefix itself is a match; the immediate neighbours on either side must not leak in.
+        assertEquals(listOf("be", "beben", "bergen"), words)
+        store.close()
+    }
+    
+    @Test
+    fun unigramsByPrefixStaysCaseInsensitiveForTheQuery() {
+        val store = store("prefix-range-case.db")
+        store.putWord(WordEntry("Berlin", 7L))
+        
+        assertEquals(listOf("Berlin"), store.unigramsByPrefix("BER", 10).map { it.word })
+        assertEquals(listOf("Berlin"), store.unigramsByPrefix("ber", 10).map { it.word })
+        store.close()
+    }
+    
+    @Test
+    fun unigramsByPrefixFindsAWordWhoseNextCharacterIsHighInTheBmp() {
+        // The range's own upper bound is U+FFFF, so everything below it must still be reachable - an umlaut
+        // or ß right after the prefix is the everyday case this must never regress (see the guiding
+        // principle in spec §1).
+        val store = store("prefix-range-bmp.db")
+        store.putWord(WordEntry("straße", 6L))
+        store.putWord(WordEntry("stück", 5L))
+        store.putWord(WordEntry("stand", 4L))
+        
+        assertEquals(listOf("straße"), store.unigramsByPrefix("stra", 10).map { it.word })
+        assertEquals(listOf("stück"), store.unigramsByPrefix("stü", 10).map { it.word })
+        assertEquals(listOf("straße", "stück", "stand").sorted(), store.unigramsByPrefix("st", 10).map { it.word }.sorted())
+        store.close()
+    }
+    
+    @Test
+    fun unigramsByPrefixStillRanksByFrequencyAndHonoursTheLimit() {
+        val store = store("prefix-range-rank.db")
+        store.putWord(WordEntry("bau", 10L))
+        store.putWord(WordEntry("baum", 30L))
+        store.putWord(WordEntry("bauer", 20L))
+        
+        assertEquals(listOf("baum", "bauer"), store.unigramsByPrefix("bau", 2).map { it.word })
+        store.close()
+    }
+    
+    @Test
+    fun unigramsByPrefixReturnsNothingForAPrefixNoWordCarries() {
+        val store = store("prefix-range-empty.db")
+        store.putWord(WordEntry("haus", 4L))
+        
+        assertTrue(store.unigramsByPrefix("xyz", 10).isEmpty())
+        store.close()
+    }
 }

@@ -968,9 +968,29 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         val hasLemma = table == TABLE_WORDS
         val columns = if (hasLemma) "word, freq, pos, lemma" else "word, freq, pos"
         val result = ArrayList<WordEntry>()
+        // D-465: a half-open range, not `wkey LIKE 'prefix%'`. SQLite's LIKE is case-insensitive by default
+        // while this table's own PRIMARY KEY index on wkey uses BINARY collation, so the well-known LIKE
+        // index optimisation does not apply and the planner fell back to `SCAN <table>` - a full scan of the
+        // whole lexicon (188,244 rows for German) on *every* call, confirmed via EXPLAIN QUERY PLAN, not
+        // inferred. That is per keystroke, and D-328/D-453's own escalation issues up to two dozen of these
+        // per pass. Measured against the real German dictionary with the identical schema and query: every
+        // prefix cost the same ~12 ms regardless of how many rows it actually matched ("denk", 71 matches,
+        // as expensive as "be", 6,002), against 0.04-1.9 ms for the range form - 5.6x to 1045x, and the
+        // planner switches to `SEARCH <table> USING INDEX (wkey>? AND wkey<?)`.
+        //
+        // Equivalent by construction rather than by coincidence: wkey is always written as word.lowercase()
+        // (see putWordInternal), so a BINARY range over lower-cased keys selects exactly what a
+        // case-insensitive LIKE prefix did. Result equality was verified for every tested prefix before
+        // this replaced the LIKE, not assumed.
+        //
+        // The upper bound appends U+FFFF, deliberately the simple form (explicit user decision - "halten wir
+        // es einfach"). Exact for every key inside the BMP; a key whose very next character after the prefix
+        // sits *above* the BMP (an emoji, UTF-8 F0...) would sort past this bound and be missed. Dictionary
+        // keys are words, so this is theoretical - the alternative, incrementing the last code point, only
+        // buys that case at the cost of real surrogate/edge handling.
         db.rawQuery(
-            "SELECT $columns FROM $table WHERE wkey LIKE ? ORDER BY freq DESC LIMIT ?",
-            arrayOf(prefix.lowercase() + "%", limit.toString())
+            "SELECT $columns FROM $table WHERE wkey >= ? AND wkey < ? ORDER BY freq DESC LIMIT ?",
+            arrayOf(prefix.lowercase(), prefix.lowercase() + PREFIX_RANGE_END, limit.toString())
         ).use { cursor ->
             while (cursor.moveToNext()) {
                 val lemma = if (hasLemma) cursor.getString(3) else null
@@ -1409,6 +1429,10 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         // D-388: the gap between consecutive migration-seeded last_touched values - see
         // ensureLastTouchedColumn's own KDoc.
         private const val SEED_TIMESTAMP_STEP_MS = 1000L
+        
+        // D-465: exclusive upper bound for queryByPrefix's half-open key range - see its own comment for
+        // why a range replaced `LIKE 'prefix%'` and for this bound's one documented limitation.
+        private const val PREFIX_RANGE_END = "￿"
         private const val TABLE_WORDS = "words"
         private const val TABLE_BIGRAMS = "bigrams"
         private const val TABLE_BLACKLIST = "blacklist"

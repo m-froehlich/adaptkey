@@ -1155,8 +1155,19 @@ non-trivial changes).
   ratio override firing, a lemma-derived one blocks it. The safe shape of a broad import is therefore the
   one Spanish/French already use, and §322's own frequency rule is the part to drop - the opposite of what
   the conservative framing suggests. **Not started, and not a data-only change:** the dictionary would go
-  188,244 -> ~308,000 rows, so given §477's stall history this needs a real runtime measurement (prefix
+  188,244 -> ~308,000 rows, so given §477's stall history this needed a real runtime measurement (prefix
   scan, D-328/D-453 escalation cost) before shipping, not just a quality-gate pass.
+
+  **That measurement happened (§480) and largely dissolved this objection - but only because it found
+  something else first.** The prefix query was doing a full table scan on every keystroke (D-465), so
+  growth would indeed have cost proportionally. With the query now index-backed, cost tracks the
+  prefix's own match count rather than the dictionary's size: at 307,826 rows the same lookups measure
+  roughly **three times faster than today's 188,244 rows did before the fix**. Verb forms do cluster on
+  ge-/be-/ver-/ent-/sch- prefixes (2-3x more matches there, against 1.64x overall), so those specific
+  lookups do get dearer - from a far lower base. Remaining before a decision: D-465 is not yet
+  device-confirmed, and the import's own *benefit* is still unquantified (a floor-frequency form never
+  ranks into the top 8, so the gain is that genuinely-typed verb forms stop being unknown tokens that
+  trigger the whole escalation cascade - plausible, but not measured).
 
 - **S-11 dual-casing chips - RESOLVED (§479, v1.2.39), not yet device-confirmed.** Both open halves
   closed: next-word predictions now offer both casings (expanded in place, keeping the prediction's own
@@ -1178,6 +1189,47 @@ non-trivial changes).
   `dictionaries/de/dict.tsv` prints `QUALITY GATE: FAIL` with 108,779 "violations", every one of them
   correct. The other three checks pass. Needs a per-language flag ("this language capitalises common
   nouns") rather than dropping the check - it is genuinely right for every other language.
+
+- **§480 (v1.2.40): D-465 - the suggestion pipeline's hottest query was scanning the whole lexicon on**
+  **every keystroke.** Found while measuring D-462 (below), which asked what 110,000 extra rows would cost
+  the hot path. The measurement kept returning the same number for every prefix - ~12 ms whether the prefix
+  matched 71 rows or 6,002 - which is not what a working index looks like. `EXPLAIN QUERY PLAN` said why:
+  `SCAN words`, plus a temp B-tree for the ORDER BY.
+
+  **Root cause.** `queryByPrefix` used `WHERE wkey LIKE 'prefix%'`. SQLite's `LIKE` is case-insensitive by
+  default; the table's own `PRIMARY KEY` index on `wkey` is `BINARY`. SQLite's LIKE-to-range optimisation
+  only fires when those agree, so it did not, and every call fell back to a full scan of all 188,244 German
+  rows. That is *per keystroke*, and S-09's escalations (D-328 neighbour-prefix, D-453 doubled-consonant)
+  each issue their own lookup - up to a couple of dozen per pass.
+
+  **Fix**: a half-open key range (`wkey >= prefix AND wkey < prefix + U+FFFF`), which the existing index
+  serves. Measured on the real German dictionary with identical schema and query: 5.6x-1045x faster
+  depending on prefix, and now proportional to what the prefix actually matches instead of to the table's
+  size. Equivalent by construction rather than coincidence - `wkey` is always written as `word.lowercase()`
+  (every insert path funnels through `putWordInternal`, checked directly), so a BINARY range over
+  lower-cased keys selects exactly what the case-insensitive LIKE did; result equality was verified for
+  every tested prefix before the replacement landed.
+
+  **The upper bound is the simple form on the user's explicit call** ("halten wir es einfach"): exact for
+  the whole BMP, would miss a key whose next character after the prefix sits above it (an emoji).
+  Theoretical for a word dictionary; the alternative buys only that case at the cost of real surrogate
+  handling. Documented in the code and in spec §47 rather than left implicit.
+
+  **Honest limits of the measurement.** This is desktop SQLite, not Android's - absolute times do not
+  transfer, the ratios and the query plan do. And while a full scan multiplied by two dozen escalation
+  lookups fits D-452's long-running "recurring performance problem" description well, that remains a
+  hypothesis consistent with the evidence, not a proven cause; §459's own timers are still in place to
+  settle it on the next real device log.
+
+  **Genuinely testable, unlike most of this area.** `SqliteDictionaryStoreRoboTest` already runs real SQLite
+  under Robolectric, so this is not the untested Android-glue layer - 5 new cases pin the behaviour the
+  replacement has to preserve (exact prefix membership with neither neighbour leaking in, case-insensitive
+  queries, a high-BMP character right after the prefix per spec §1's umlaut principle, frequency ordering
+  plus limit, and the empty result). They pass against either implementation by design: they guard
+  correctness, and the performance property is what the code comment and §47 record.
+
+  1651 unit tests (1646 -> 1651, +5). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
+  535 -> 536, `versionName` `"1.2.39"` -> `"1.2.40"`. **Not yet device-confirmed.**
 
 - **§479 (v1.2.39): D-463 (S-11 for next-word predictions, plus a stale-chip lifecycle bug) and D-464**
   **(the quality gate reports German as FAIL by design).** Two of the three items the user asked to clear;
@@ -2194,37 +2246,10 @@ non-trivial changes).
   **Device-confirmed** (2026-09-07): the user re-tested the exact reported case on-device and confirmed the
   fix works as intended.
 
-- **§455 (v1.2.15): D-403/D-359-followup - a confirmed revert-retry (A-07) was not actually protected**
-  **against §6 capitalisation, only against dictionary substitution.** Found while the user was chasing a
-  different bug, with a real device log to root-cause it - not guessed: typing `"abt"` auto-capitalised to
-  `"Abt"` (a real `NOUN,PROPER_NOUN` dictionary entry - §6 rule 3 fires unconditionally for a pure noun,
-  confirmed directly against `dictionaries/de/dict.tsv`), reverted via the existing A-07 mechanism - the very
-  next retry of `"abt"` was silently re-capitalised to `"Abt"` again, every single time. The log's own
-  `suppressAutocorrect=true`/`autocorrected=null` lines proved this was never the dictionary-correction path
-  re-firing at all (that side was correctly and consistently bypassed, on every attempt, for an unrelated
-  reason - D-106 stage 2's cross-language protection) - `capitalisation.capitalise()` itself, called
-  unconditionally at `finalizeAndCommit()`'s own line regardless of `revertConfirmed`, was simply never part
-  of the "every correction mechanism is bypassed for this one retry" promise D-403/D-359 originally made.
+## Older Rounds (§1-§455, v0.7.6 through v1.2.15) - Pruned From This File
 
-  Discussed directly before fixing (per this project's own convention): is this the deliberate, documented
-  §6 behaviour (D-405 explicitly scoped rule 1's own symmetric "explicit input wins" protection to the
-  sentence-start mechanism alone, leaving pure/proper-noun capitalisation deliberately unconditional), or
-  should the revert-protection's own promise now extend to cover it too? Explicit user answer: yes, treat it
-  exactly like an autocorrect.
-
-  **Fix.** Every substitution mechanism already forces `corrected == typed` whenever `revertConfirmed` is
-  true (each is individually gated on `suppressAutocorrect`/`revertConfirmed`), so `finalWord` now commits
-  `typed` verbatim in that case, skipping `capitalisation.capitalise()` entirely - one line change
-  ([AdaptKeyService.kt:4272](app/src/main/kotlin/de/froehlichmedia/adaptkey/AdaptKeyService.kt:4272)),
-  mirroring how a case-locked word already bypasses "autocorrect, capitalisation (§6) and single-word
-  correction entirely" (G-05) for the identical "the user has hand-finished this" reason. No new test - this
-  is `AdaptKeyService`'s own Android-glue commit path, untested by this project's own established convention;
-  `revertConfirmed`/`suppressAutocorrect`'s own derivation (pure logic elsewhere) was already covered.
-
-  1586 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
-  510 -> 511, `versionName` `"1.2.14"` -> `"1.2.15"`.
-
-## Older Rounds (§1-§454, v0.7.6 through v1.2.14) - Pruned From This File
+D-465 (§480): twenty-eighth pruning pass - §455 removed, cutoff moved from §455 to §456, keeping the
+working set at 25 rounds (§456-§480). Backfilled into History.md first and token-count verified.
 
 D-463 (§479): twenty-seventh pruning pass - §454 removed, cutoff moved from §454 to §455, keeping the
 working set at 25 rounds (§455-§479). History.md was backfilled with §454 first, verified at an exact
