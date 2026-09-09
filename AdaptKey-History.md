@@ -21730,3 +21730,78 @@ untested by this project's own established convention; `RowGeometry` is the pure
 
 1568 unit tests (1560 -> 1568, +8 new). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
 508 -> 509, `versionName` `"1.2.12"` -> `"1.2.13"`.
+
+## §454 - D-391 - cross-word fusion across a spurious space, generalising A-06 beyond its own narrow, tap-evidence-gated scope.
+
+Real motivating example, discussed and designed with the user before
+implementing (per this project's own convention for non-trivial correction mechanisms): typing
+`"Ar eitstag"` - neither `"Ar"` (a real, if obscure, German word) nor `"eitstag"` (nonsense) makes sense
+alone, but inserting `"b"` between them spells the everyday compound `"Arbeitstag"`.
+
+**Design decisions made explicitly with the user, in order:** (1) a genuine single-word fusion (both
+original words replaced by one), not merely repairing the right-hand word the way A-06 already does; (2)
+no suggestion-chip mode at all - by the time enough evidence exists (the second word already committed), a
+chip is already too late, so the mechanism is either silent or nothing; (3) the connector-letter set is
+derived from the *active layout* (reusing D-397's `RowGeometry`), not a fixed character list - "es macht
+viel mehr Sinn, das aus dem Layout auszulesen"; (4) reach is deliberately just one word back, never a
+deliberate re-edit trigger - "damit wächst auch die Gefahr für falsche Treffer... halten wir es etwas
+konservativer"; (5) its own dedicated setting (C-25), placed directly beneath C-21, rather than folding
+into C-21 or C-22 - the user's own first instinct was reusing C-21, then agreed a separate axis was
+cleaner once the risk-profile difference (rewriting already-committed text) was named directly; (6)
+learning reversal is symmetric and derived from the same validity check that gates the fusion itself - a
+fragment that independently resolves as a real word (like `"Ar"`) is never touched, only a genuinely
+nonsensical one that had accumulated real learning progress is un-taught; (7) full A-07 undo, exactly like
+a split.
+
+**Mechanism.** `RowGeometry` (D-397) - already the shared row/column model - now also backs `TokenRepair`'s
+own `spaceRowLetters` (replacing the old, QWERTZ-hardcoded `OVER_SPACE_LETTERS` companion constant, which
+was wrong for AZERTY/Greek/Cyrillic layouts and even missed `y`/`z` for QWERTZ/QWERTY themselves - folded
+into this same change per the user's own explicit call, rather than left for a separate pass that would
+touch `TokenRepair` twice). New `TokenRepair.tryFuseAcrossSpace(previousWord, currentToken)` tries every
+connector letter, resolves each fused candidate through the same diacritic-aware lookup A-05's own halves
+use, and returns the highest-scoring real match as a new `FusionCandidate(fused, confidence)`.
+
+New `MergeConfidence` (mirrors `CorrectionConfidence`'s own noun/non-noun reference-frequency split,
+D-227's finding reused for the identical reason) scores the fused candidate's own frequency - deliberately
+higher reference points than `CorrectionConfidence`'s own (300/8,000 vs. 25/2,000), since there is no
+edit-cost signal here and a wrong fusion rewrites already-finished text. New `AutoMergeAggressiveness`
+(Cautious/Medium/Aggressive, thresholds 0.90/0.75/0.55) mirrors `AutocorrectAggressiveness`'s shape but is
+its own enum/setting (C-25, `d391_auto_merge_aggressiveness`) - **defaults to off** (`SettingsMapper.
+toAutoMergeEnabled`'s fail-closed direction, the deliberate opposite of C-22's fail-open default), shown as
+a `LabeledSeekBarPreference` directly beneath C-21 in the Capitalisation settings category.
+
+`AdaptKeyService.finalizeAndCommit()` tries the fusion right after A-06's own block, gated on
+`settings.autoMergeEnabled` and the same `suppressAutocorrect` every other silent-correction mechanism here
+already respects. New `applyFusion()` (mirrors `applySplit()`) is the one function in this class that
+reaches *backward* past the composing token's own anchor into already-committed text - the expected
+`"$previousWord "` span is verified against the real document first (mirrors `performAutocorrectUndo()`'s
+own "verify against ground truth before touching anything" discipline), and the fusion is silently
+abandoned (falls through to A-05's own split) if the document does not actually match. Capitalisation uses
+a new `fusionContext()` - deliberately not `contextFor()`, which reads the *current* token's own live
+`tokenSentenceStart` etc., not `previousWord`'s (already-committed, potentially several actions earlier)
+real context; Rule 1 (explicit input) and the ordinary noun/proper-noun rules still apply, `sentenceStart`
+is conservatively assumed false (a genuine sentence start immediately followed by another already-
+committed word that then gets fused is a rare edge case, and no forced capital is the safe direction).
+
+Un-teaching the previous word reuses A-11's existing `recentLearnRecords` reach-back buffer directly - no
+new bookkeeping - matched by word text, reversed via the same `unlearnWord()` A-07/A-11 already share,
+skipped entirely when `dictionaryStore.isKnownWord(previousWord)` is true. Full A-07 undo: three new fields
+(`undoWasFusion`, `undoFusionUnlearntWord`, plus explicit `= false`/`null` resets at every other undo-arming
+call site - a new flag needs the same defensive reset `undoWasCompound`/`undoWasSplit` already get, or a
+stale fusion flag could wrongly survive into an unrelated later correction's own undo). `performAutocorrectUndo()`
+gained its own `wasFusion` branch: restores the original two-word text, re-teaches the un-learned fragment
+(if any) via `learnWordStrong()` - the same authoritative treatment D-13 already gives a rejected split's
+rejoined word - and splits the restored text back into `previousWord`/`previousPreviousWord` itself (the
+generic `previousWord = typed` the plain/split branches use would wrongly treat the whole two-word restored
+text as one word).
+
+New tests: `TokenRepairTest` gained six `tryFuseAcrossSpace` cases (the reported example, already-known-
+current-token gate, no-match, blacklisted-candidate, highest-confidence-wins-among-several, and layout-
+dependence via a QWERTY instance); `MergeConfidenceTest` (5 cases) and `AutoMergeAggressivenessTest` (4
+cases) mirror their `CorrectionConfidence`/`AutocorrectAggressiveness` counterparts; `SettingsMapperTest`
+gained three cases for the new fail-closed enable/aggressiveness/fallback resolution. No test exists for
+`AdaptKeyService`'s own `applyFusion()`/`performAutocorrectUndo()` wiring itself - Android `InputConnection`
+glue stays untested by this project's own established convention.
+
+1586 unit tests (1568 -> 1586, +18 new). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
+509 -> 510, `versionName` `"1.2.13"` -> `"1.2.14"`.

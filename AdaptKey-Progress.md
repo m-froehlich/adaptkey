@@ -1158,7 +1158,10 @@ non-trivial changes).
   188,244 -> ~308,000 rows, so given §477's stall history this needs a real runtime measurement (prefix
   scan, D-328/D-453 escalation cost) before shipping, not just a quality-gate pass.
 
-- **S-11 dual-casing chips: "immer beide Chips anbieten" - OPEN, instructed but not implemented**
+- **S-11 dual-casing chips - RESOLVED (§479, v1.2.39), not yet device-confirmed.** Both open halves
+  closed: next-word predictions now offer both casings (expanded in place, keeping the prediction's own
+  rank), and the exact-match carve-out stays as it was on the user's own explicit reasoning. A stale-chip
+  lifecycle bug was found and fixed alongside it. Original entry:
   **(2026-09-08).** Explicit user instruction given mid-round and parked. Today `ambiguousCasingChips()`
   returns `emptyList()` outright for an empty `input`, so a next-word prediction never offers both casings -
   D-440 closed with exactly this as its named open design question ("dual chips before anything is even
@@ -1168,13 +1171,59 @@ non-trivial changes).
   `composing.isEmpty()` case. This became more valuable with §478 - far more words are now genuinely
   ambiguous, so the chips are the primary way their casing gets chosen at all.
 
-- **`dictionaries/quality_gate.py` is not language-aware and reports German as FAIL - OPEN, cosmetic but**
-  **misleading (2026-09-08).** Its "0 bare-NOUN rows" check encodes D-441's convention for languages that
+- **D-464 - RESOLVED (§479, v1.2.39).** `quality_gate.py` gained `--capitalises-nouns`; the Language
+  Contribution Guide's own now-false `isProper` claim was corrected in the same pass. Original entry: Its "0 bare-NOUN rows" check encodes D-441's convention for languages that
   do *not* capitalise common nouns (English tags them `NOUN,OTHER`). German's bare `NOUN` is exactly what
   drives its own auto-capitalisation, so running the gate the Language Contribution Guide documents against
   `dictionaries/de/dict.tsv` prints `QUALITY GATE: FAIL` with 108,779 "violations", every one of them
   correct. The other three checks pass. Needs a per-language flag ("this language capitalises common
   nouns") rather than dropping the check - it is genuinely right for every other language.
+
+- **§479 (v1.2.39): D-463 (S-11 for next-word predictions, plus a stale-chip lifecycle bug) and D-464**
+  **(the quality gate reports German as FAIL by design).** Two of the three items the user asked to clear;
+  the third (D-462) turned into a much larger finding and is held for a decision - see its own bullet above.
+
+  **D-463, the decision first.** The user's instruction was "immer beide Chips anbieten". Split into two
+  questions and answered separately: (1) a next-word prediction now offers both casings, previously skipped
+  outright (`ambiguousCasingChips()` returns early on an empty input) - the exact open question D-440 closed
+  with; (2) once the typed token *exactly* matches, only the other casing is still offered, unchanged. The
+  user's own reasoning for keeping (2): "Nein, das getippte brauchen wir nicht als Chip. Das hat man ja
+  schon getippt. Es wird in dem fall aber nie auto-committet, weil definitiv keine Eindeutigkeit besteht.
+  Deshalb wird ein Commit es nicht kaputt korrigieren." - which D-461 is exactly what guarantees.
+
+  **In place, not appended - and this is the part worth recording.** While typing, the dual chips are
+  deliberately appended at the back so a better ordinary suggestion can crowd them out (D-404-followup's own
+  explicit design). Reusing that shape for predictions would have been wrong: a prediction can itself be the
+  single best entry in the bar, so appending demotes it to last place while `excludeAmbiguousCasingWords()`
+  simultaneously removes it from its real rank. New `expandAmbiguousCasingInPlace()` replaces each ambiguous
+  prediction with its two casings at its own position instead, store-resolved casing first; the typing path
+  is untouched. Split on the same `composing.isEmpty()` discriminator D-440 already uses two lines above.
+
+  **A real lifecycle bug found while reading that code, not reported by anyone.**
+  `pendingAmbiguousCasingChips` is filled only in `refreshSuggestions()` and was emptied only in
+  `clearSuggestions()` - but the ordinary commit path is `clearComposing()` -> `showNextWordPredictions()`
+  -> `showSuggestions()`, and the middle step only reaches `clearSuggestions()` when there is no prediction
+  at all. So committing an ambiguous word with a real prediction following it left its chips standing,
+  appended to the *next* word's bar, while `excludeAmbiguousCasingWords()` dropped a legitimate prediction
+  for that same word from the ranked list. Conclusive from the state lifecycle, not a timing suspicion.
+  Fixed by clearing them in `clearComposing()`, where the token they describe actually ends. D-461 made this
+  considerably more visible - 1,372 ambiguous words now instead of 1,089.
+
+  **D-464:** `dictionaries/quality_gate.py` gained `--capitalises-nouns`. Its bare-NOUN check encodes
+  D-441's convention for languages that do *not* capitalise common nouns; for German a bare `NOUN` is
+  precisely what drives auto-capitalisation, so the documented command reported `FAIL` with 108,779
+  "violations", every one correct. The flag skips that one check and prints why; the other three are
+  unchanged, and an unknown option now exits 2 with a usage line instead of being ignored. The Language
+  Contribution Guide's step-8 passage was corrected in the same pass - it still claimed "a row already
+  carrying `PROPER_NOUN` is correctly unaffected either way (`isProper` forces capitalisation regardless of
+  language)", which D-461 made false; a contributor following it would have switched a proper noun's
+  capitalisation off by adding `OTHER`.
+
+  No new tests: both `ambiguousCasingChips()` and the new `expandAmbiguousCasingInPlace()` are
+  `AdaptKeyService` suggestion-bar glue, this project's own established untested layer (the pure part they
+  rest on, `CapitalisationEngine.isAmbiguousCasing`, gained its own cases in §478). 1646 unit tests
+  unchanged, `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 534 -> 535, `versionName`
+  `"1.2.38"` -> `"1.2.39"`. **Not yet device-confirmed.**
 
 - **§478 (v1.2.38): D-461 - automatic capitalisation now requires genuine unambiguity, plus the German**
   **verb-tagging gap behind it.** Started as a question about this file's own point 7 below ("the German
@@ -2175,81 +2224,11 @@ non-trivial changes).
   1586 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
   510 -> 511, `versionName` `"1.2.14"` -> `"1.2.15"`.
 
-- **§454 (v1.2.14): D-391 - cross-word fusion across a spurious space, generalising A-06 beyond its own**
-  **narrow, tap-evidence-gated scope.** Real motivating example, discussed and designed with the user before
-  implementing (per this project's own convention for non-trivial correction mechanisms): typing
-  `"Ar eitstag"` - neither `"Ar"` (a real, if obscure, German word) nor `"eitstag"` (nonsense) makes sense
-  alone, but inserting `"b"` between them spells the everyday compound `"Arbeitstag"`.
+## Older Rounds (§1-§454, v0.7.6 through v1.2.14) - Pruned From This File
 
-  **Design decisions made explicitly with the user, in order:** (1) a genuine single-word fusion (both
-  original words replaced by one), not merely repairing the right-hand word the way A-06 already does; (2)
-  no suggestion-chip mode at all - by the time enough evidence exists (the second word already committed), a
-  chip is already too late, so the mechanism is either silent or nothing; (3) the connector-letter set is
-  derived from the *active layout* (reusing D-397's `RowGeometry`), not a fixed character list - "es macht
-  viel mehr Sinn, das aus dem Layout auszulesen"; (4) reach is deliberately just one word back, never a
-  deliberate re-edit trigger - "damit wächst auch die Gefahr für falsche Treffer... halten wir es etwas
-  konservativer"; (5) its own dedicated setting (C-25), placed directly beneath C-21, rather than folding
-  into C-21 or C-22 - the user's own first instinct was reusing C-21, then agreed a separate axis was
-  cleaner once the risk-profile difference (rewriting already-committed text) was named directly; (6)
-  learning reversal is symmetric and derived from the same validity check that gates the fusion itself - a
-  fragment that independently resolves as a real word (like `"Ar"`) is never touched, only a genuinely
-  nonsensical one that had accumulated real learning progress is un-taught; (7) full A-07 undo, exactly like
-  a split.
-
-  **Mechanism.** `RowGeometry` (D-397) - already the shared row/column model - now also backs `TokenRepair`'s
-  own `spaceRowLetters` (replacing the old, QWERTZ-hardcoded `OVER_SPACE_LETTERS` companion constant, which
-  was wrong for AZERTY/Greek/Cyrillic layouts and even missed `y`/`z` for QWERTZ/QWERTY themselves - folded
-  into this same change per the user's own explicit call, rather than left for a separate pass that would
-  touch `TokenRepair` twice). New `TokenRepair.tryFuseAcrossSpace(previousWord, currentToken)` tries every
-  connector letter, resolves each fused candidate through the same diacritic-aware lookup A-05's own halves
-  use, and returns the highest-scoring real match as a new `FusionCandidate(fused, confidence)`.
-
-  New `MergeConfidence` (mirrors `CorrectionConfidence`'s own noun/non-noun reference-frequency split,
-  D-227's finding reused for the identical reason) scores the fused candidate's own frequency - deliberately
-  higher reference points than `CorrectionConfidence`'s own (300/8,000 vs. 25/2,000), since there is no
-  edit-cost signal here and a wrong fusion rewrites already-finished text. New `AutoMergeAggressiveness`
-  (Cautious/Medium/Aggressive, thresholds 0.90/0.75/0.55) mirrors `AutocorrectAggressiveness`'s shape but is
-  its own enum/setting (C-25, `d391_auto_merge_aggressiveness`) - **defaults to off** (`SettingsMapper.
-  toAutoMergeEnabled`'s fail-closed direction, the deliberate opposite of C-22's fail-open default), shown as
-  a `LabeledSeekBarPreference` directly beneath C-21 in the Capitalisation settings category.
-
-  `AdaptKeyService.finalizeAndCommit()` tries the fusion right after A-06's own block, gated on
-  `settings.autoMergeEnabled` and the same `suppressAutocorrect` every other silent-correction mechanism here
-  already respects. New `applyFusion()` (mirrors `applySplit()`) is the one function in this class that
-  reaches *backward* past the composing token's own anchor into already-committed text - the expected
-  `"$previousWord "` span is verified against the real document first (mirrors `performAutocorrectUndo()`'s
-  own "verify against ground truth before touching anything" discipline), and the fusion is silently
-  abandoned (falls through to A-05's own split) if the document does not actually match. Capitalisation uses
-  a new `fusionContext()` - deliberately not `contextFor()`, which reads the *current* token's own live
-  `tokenSentenceStart` etc., not `previousWord`'s (already-committed, potentially several actions earlier)
-  real context; Rule 1 (explicit input) and the ordinary noun/proper-noun rules still apply, `sentenceStart`
-  is conservatively assumed false (a genuine sentence start immediately followed by another already-
-  committed word that then gets fused is a rare edge case, and no forced capital is the safe direction).
-
-  Un-teaching the previous word reuses A-11's existing `recentLearnRecords` reach-back buffer directly - no
-  new bookkeeping - matched by word text, reversed via the same `unlearnWord()` A-07/A-11 already share,
-  skipped entirely when `dictionaryStore.isKnownWord(previousWord)` is true. Full A-07 undo: three new fields
-  (`undoWasFusion`, `undoFusionUnlearntWord`, plus explicit `= false`/`null` resets at every other undo-arming
-  call site - a new flag needs the same defensive reset `undoWasCompound`/`undoWasSplit` already get, or a
-  stale fusion flag could wrongly survive into an unrelated later correction's own undo). `performAutocorrectUndo()`
-  gained its own `wasFusion` branch: restores the original two-word text, re-teaches the un-learned fragment
-  (if any) via `learnWordStrong()` - the same authoritative treatment D-13 already gives a rejected split's
-  rejoined word - and splits the restored text back into `previousWord`/`previousPreviousWord` itself (the
-  generic `previousWord = typed` the plain/split branches use would wrongly treat the whole two-word restored
-  text as one word).
-
-  New tests: `TokenRepairTest` gained six `tryFuseAcrossSpace` cases (the reported example, already-known-
-  current-token gate, no-match, blacklisted-candidate, highest-confidence-wins-among-several, and layout-
-  dependence via a QWERTY instance); `MergeConfidenceTest` (5 cases) and `AutoMergeAggressivenessTest` (4
-  cases) mirror their `CorrectionConfidence`/`AutocorrectAggressiveness` counterparts; `SettingsMapperTest`
-  gained three cases for the new fail-closed enable/aggressiveness/fallback resolution. No test exists for
-  `AdaptKeyService`'s own `applyFusion()`/`performAutocorrectUndo()` wiring itself - Android `InputConnection`
-  glue stays untested by this project's own established convention.
-
-  1586 unit tests (1568 -> 1586, +18 new). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
-  509 -> 510, `versionName` `"1.2.13"` -> `"1.2.14"`.
-
-## Older Rounds (§1-§453, v0.7.6 through v1.2.13) - Pruned From This File
+D-463 (§479): twenty-seventh pruning pass - §454 removed, cutoff moved from §454 to §455, keeping the
+working set at 25 rounds (§455-§479). History.md was backfilled with §454 first, verified at an exact
+token-count match, using the corrected extraction the pass below documents.
 
 D-461 (§478): twenty-sixth pruning pass - §447-§453 removed, cutoff moved from §447 to §454, bringing the
 working set back to exactly 25 rounds (§454-§478) from 31. History.md was current only through §449, so

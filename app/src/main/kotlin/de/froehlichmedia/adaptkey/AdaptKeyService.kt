@@ -5611,6 +5611,14 @@ class AdaptKeyService : InputMethodService() {
         composingPreviewFor = null
         // D-346: no token left to search for - any pending deferred search is now moot.
         expensiveSuggestionPending = false
+        // D-463: these belong to the token that just ended. Only refreshSuggestions() ever fills this, and
+        // only clearSuggestions() used to empty it again - but the ordinary commit path runs
+        // clearComposing() -> showNextWordPredictions() -> showSuggestions(), and that middle step only
+        // reaches clearSuggestions() when there is no prediction at all. So committing an ambiguous word
+        // with a real prediction following it left its chips standing, appended to the next word's own bar,
+        // while excludeAmbiguousCasingWords() simultaneously dropped a legitimate prediction for the same
+        // word from the ranked list. Clearing here ends them with the token they describe.
+        pendingAmbiguousCasingChips = emptyList()
     }
     
     /**
@@ -6363,8 +6371,20 @@ class AdaptKeyService : InputMethodService() {
         // chip in this function (which are either always shown or shown only in an otherwise-empty bar).
         // Already pre-cased (see ambiguousCasingChips()) - never routed through the NORMAL re-capitalisation
         // above, which would collapse both variants back to the same ambiguous-default-lowercase text.
+        //
+        // D-463: that appended shape is right for typing and wrong for a next-word prediction, so the two
+        // cases are split here on the same `composing.isEmpty()` discriminator D-440 already uses directly
+        // above. While typing, the ambiguous word was pulled out of the ranked list
+        // (excludeAmbiguousCasingWords) and its two chips are appended at the back, where a better ordinary
+        // suggestion may crowd them out. A prediction, by contrast, can itself be the single best thing in
+        // the bar - appending would demote it to last place - so its two casings replace it in place, at its
+        // own rank, leaving every other prediction's position untouched.
         val remainingSlots = (config.maxSuggestions - items.size).coerceAtLeast(0)
-        val withAmbiguousCasing = items + pendingAmbiguousCasingChips.take(remainingSlots)
+        val withAmbiguousCasing = if (composing.isEmpty()) {
+            expandAmbiguousCasingInPlace(items)
+        } else {
+            items + pendingAmbiguousCasingChips.take(remainingSlots)
+        }
         // B-03/D-289: pinned ahead of everything else, the same "built outside SuggestionController, never
         // ranked against the ordinary candidates" shape CREDENTIAL/LEARNED already use - see
         // hyphenCompoundSuggestion()'s own KDoc for why a score-based approach could not reliably win here.
@@ -6438,7 +6458,15 @@ class AdaptKeyService : InputMethodService() {
      * - Once [input] exactly matches the ambiguous word (case-insensitively): only the *other* casing is
      *   offered - the one actually typed is never duplicated as its own suggestion (S-02), matching every
      *   other suggestion kind's "not the current input" rule, unconditionally (checked directly with the
-     *   user - no exception for the autocorrect setting being off).
+     *   user - no exception for the autocorrect setting being off). D-463 re-confirmed this deliberately
+     *   when the user asked for "always both": a chip for the spelling already on screen would only do what
+     *   Space already does, and - since an ambiguous word is by definition never force-cased at commit
+     *   (§6 rule 5, D-461) - simply typing on cannot corrupt the typed casing either, so nothing is lost by
+     *   leaving that slot to a real alternative.
+     * - While nothing is composing at all (a next-word prediction): handled by
+     *   [expandAmbiguousCasingInPlace] instead of here, because a prediction must keep its own rank rather
+     *   than be appended - see that function. The empty-[input] early return below is the boundary between
+     *   the two, not a gap.
      *
      * Scans [candidates] (this call's own already-fetched suggestion list) rather than issuing a separate
      * dictionary query - an ambiguous word only matters here if the ordinary search already considered it
@@ -6476,6 +6504,66 @@ class AdaptKeyService : InputMethodService() {
             }
         }
         return chips
+    }
+    
+    /**
+     * D-463: the next-word-prediction counterpart of [ambiguousCasingChips]. S-11's dual chips used to be
+     * skipped entirely while nothing is composing (that function returns early on an empty input), so a
+     * prediction for a §6-rule-5-ambiguous word only ever offered the single casing
+     * `SqliteDictionaryStore.canonicalWordFor()` happened to resolve - the open design question D-440
+     * closed with, now answered by the user directly: always offer both.
+     *
+     * Expands **in place** rather than appending, unlike the typing-time path. While typing, the ambiguous
+     * word is pulled out of the ranked list and its chips go to the back, where a better ordinary
+     * suggestion may crowd them out (D-404-followup's own explicit design). A prediction can itself be the
+     * single best entry in the bar, so appending would demote it to last place - here each ambiguous
+     * prediction is replaced by its two casings at its own rank instead, leaving every other prediction's
+     * position untouched.
+     *
+     * The store's own resolved casing keeps the original slot and the alternate follows directly after it,
+     * so the ranking's own best guess still reads first. Both are emitted as
+     * [SuggestionController.Kind.AMBIGUOUS_CASE] so a tap commits the chosen spelling verbatim - the
+     * `NORMAL` branch reaches the identical outcome for an empty `composing` (D-440-followup), but saying
+     * so in the kind keeps it from depending on that.
+     *
+     * @param items the already-rendered display items for this bar
+     * @return the same list with every ambiguous entry expanded into both casings, capped at C-03
+     */
+    private fun expandAmbiguousCasingInPlace(
+        items: List<SuggestionController.DisplayItem>
+    ): List<SuggestionController.DisplayItem> {
+        if (items.isEmpty()) {
+            return items
+        }
+        val out = mutableListOf<SuggestionController.DisplayItem>()
+        val emitted = HashSet<String>()
+        for (item in items) {
+            if (out.size >= config.maxSuggestions) {
+                break
+            }
+            val ambiguous = item.kind == SuggestionController.Kind.NORMAL &&
+                CapitalisationEngine.isAmbiguousCasing(dictionaryStore.partsOfSpeech(item.word))
+            if (!ambiguous) {
+                if (emitted.add(item.word)) {
+                    out += item
+                }
+                continue
+            }
+            val lower = item.word.replaceFirstChar { it.lowercaseChar() }
+            val upper = item.word.replaceFirstChar { it.uppercaseChar() }
+            val alternate = if (item.word == upper) lower else upper
+            for (word in listOf(item.word, alternate)) {
+                if (out.size >= config.maxSuggestions) {
+                    break
+                }
+                if (emitted.add(word)) {
+                    out += SuggestionController.DisplayItem(
+                        text = word, kind = SuggestionController.Kind.AMBIGUOUS_CASE, word = word
+                    )
+                }
+            }
+        }
+        return out
     }
     
     /**

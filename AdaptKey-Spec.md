@@ -961,6 +961,30 @@ slot-budget crowding as everything else, with no extra ranking logic of its own.
 already-cased word verbatim, never re-run through `capitalise()` (which would derive a different casing from
 context and silently discard the very choice the chip exists to offer).
 
+**D-463: this now covers next-word predictions too, and the "exact match" carve-out is confirmed
+deliberate.** Two separate questions, answered separately:
+
+- **Nothing composing (a next-word prediction).** Previously skipped entirely, so a prediction for an
+  ambiguous word only ever offered the single casing the store's own `canonicalWordFor()` resolved - the
+  open design question D-440 closed with. Both casings are now offered, but **expanded in place rather than
+  appended**: while typing, the chips go to the back where a better ordinary suggestion may crowd them out
+  (the deliberate D-404-followup design above), whereas a prediction can itself be the best entry in the
+  bar, so appending would demote it to last place. Each ambiguous prediction is therefore replaced by its
+  two casings at its own rank, the store-resolved casing first, leaving every other prediction's position
+  untouched. This became materially more visible with D-461, which made far more words genuinely ambiguous.
+- **The typed spelling is still never offered back to itself.** Once the token exactly matches, only the
+  *other* casing appears, unchanged. A chip for what is already on screen would do only what Space already
+  does, and - because an ambiguous word is by definition never force-cased at commit (§6 rule 5, D-461) -
+  simply typing on cannot corrupt the typed casing either. Nothing is lost by leaving that slot to a real
+  alternative.
+
+**A lifecycle bug fixed alongside it.** The stored chips were filled only while typing and emptied only by
+`clearSuggestions()`, but the ordinary commit path runs `clearComposing()` -> next-word predictions ->
+render, and that middle step only reaches `clearSuggestions()` when there is no prediction at all. So
+committing an ambiguous word with a real prediction after it left its chips standing, appended to the *next*
+word's bar, while the same word's legitimate prediction was simultaneously filtered out of the ranked list.
+The chips now end with the token they describe.
+
 ---
 
 ## 6. Capitalisation
@@ -987,11 +1011,12 @@ only tags are `NOUN`/`PROPER_NOUN`, in any active language's own dictionary. Ger
 noun is therefore not a special case the code recognises - it is simply the outcome of German's own `dict.tsv`
 tagging real common nouns as a bare `NOUN`. A language that does not share German's orthographic convention
 (French, like English, does not capitalise common nouns) must tag its own common nouns `NOUN,OTHER` instead
-of a bare `NOUN` - `isPureNoun` requires *every* tag to be `NOUN`/`PROPER_NOUN`, so pairing with `OTHER` keeps
+of a bare `NOUN` - `isNounOnly` requires *every* tag to be `NOUN`/`PROPER_NOUN`, so pairing with `OTHER` keeps
 the real `NOUN` signal for A-05's split-safety gate (`PartOfSpeech.contains(NOUN)` still true) while correctly
-falling through to rule 5's "ambiguous, no automatic correction" outcome instead of rule 3. A genuine proper
-noun is unaffected either way (`isProper` is checked ahead of `isPureNoun`, and proper-noun capitalisation is
-not German-specific). This is the concrete mechanism behind the Language Contribution Guide's own §8 step 8
+falling through to rule 5's "ambiguous, no automatic correction" outcome instead of rule 3. D-461: a genuine
+proper noun is unaffected by this *only while it carries no further tag* - the former "`isProper` is checked
+ahead of `isPureNoun`" exemption is gone (§46), so adding `OTHER` to a `PROPER_NOUN` row now switches its
+capitalisation off too. Apply the mechanical bare-`NOUN` widening to non-proper rows only. This is the concrete mechanism behind the Language Contribution Guide's own §8 step 8
 ("capitalisation-rule applicability is an explicit per-language decision, not a silent default") - see
 `dictionaries/fr/dict.tsv` for the first real non-German example.
 

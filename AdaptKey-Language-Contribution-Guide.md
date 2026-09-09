@@ -448,16 +448,34 @@ rather than silently treating it as equivalent to a language that does have its 
    46,608 in Greek's carried a bare `NOUN` tag this way, including ordinary function words with one genuine but
    vanishingly rare technical/archaic noun sense Wiktionary happens to document (`and`/`or` as logic-gate
    nouns, `he`/`it` as rare informal nouns, `were` as a homograph of an unrelated word, and more) -
-   `CapitalisationEngine`'s own rule 3 (`isPureNoun -> true`) reads *only* the tag set, never frequency or
+   `CapitalisationEngine`'s own rule 3 (`isNounOnly -> true`, D-461) reads *only* the tag set, never frequency or
    how central that sense actually is, so every one of these would auto-capitalise on ordinary typing. Enforce
    the fix as one unconditional, mechanical step over the *entire* output, not a per-word review: any row whose
    final tag set is exactly `{NOUN}` gets `OTHER` added (`{NOUN, OTHER}`) - safe and cheap, since it only ever
    suppresses rule 3's forced capitalisation and never removes the real `NOUN` signal A-05's split-safety gate
-   and this same step's own lemma-linking still depend on. A row already carrying `PROPER_NOUN` is correctly
-   unaffected either way (`isProper` forces capitalisation regardless of language - see `CapitalisationEngine`'s
-   own hierarchy). For a language whose step-8 decision *is* "capitalises common nouns like German" (rare -
-   German is the only one so far), this check does not apply; say which case you are in, explicitly, in your
-   PR, the same way step 8 already asks you to.
+   and this same step's own lemma-linking still depend on.
+
+   **D-461 changed how `PROPER_NOUN` interacts with this - read it before applying the step above to a
+   proper-noun row.** This guide used to say such a row was "correctly unaffected either way, since
+   `isProper` forces capitalisation regardless of language". That is no longer true: `isProper` is not an
+   independent branch any more. `CapitalisationEngine.isNounOnly` capitalises a word exactly when its tag
+   set contains nothing but `NOUN`/`PROPER_NOUN`, so a proper noun carrying any further tag falls through to
+   rule 5 like any other ambiguous word. Consequences for a contributor:
+   - Apply the mechanical `{NOUN}` -> `{NOUN, OTHER}` step **only** to rows without `PROPER_NOUN`. Adding
+     `OTHER` to a proper-noun row now switches its capitalisation off, which is almost never what you want.
+   - A genuine proper noun must end up tagged `PROPER_NOUN` (alone, or with `NOUN`) and nothing else. If your
+     extraction hands it a spurious `OTHER`/`ADJECTIVE` from corpus noise, strip that - German needed exactly
+     this for 57 rows (`Ben`, `Nova`, `Terra`, ...) and English for five (`German`, `Jewish`, `Mussolini`,
+     `Lindy`, `Frenchy`).
+   - A word that genuinely *is* both a proper noun and something else (a surname that is also an ordinary
+     adjective) is meant to stay ambiguous. Leave it; W-04 learns the user's own preferred casing from real
+     use. Do not "fix" it in either direction.
+
+   For a language whose step-8 decision *is* "capitalises common nouns like German" (rare - German is the
+   only one so far), the `{NOUN}` -> `{NOUN, OTHER}` step does not apply at all; say which case you are in,
+   explicitly, in your PR, the same way step 8 already asks you to. Such a language must also pass
+   `--capitalises-nouns` to `dictionaries/quality_gate.py`, whose bare-NOUN check encodes the *other*
+   convention and would otherwise report every correctly-tagged noun as a violation.
 
    **Mandatory, structural check, not a judgement call, added after D-447 (Dutch): sanity-check every
    calibration ratio's own magnitude before trusting the generated-form frequencies it drives - a ratio
