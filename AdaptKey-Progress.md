@@ -1119,7 +1119,7 @@ non-trivial changes).
   regression of that existing fix or a related race it does not fully cover. Needs a real device log to
   root-cause properly, per this project's own convention - not attempted blind.
 
-- **D-461 - RESOLVED (§478, v1.2.38), not yet device-confirmed.** Automatic capitalisation now fires only
+- **D-461 - RESOLVED, device-confirmed (§478, v1.2.38; confirmed 2026-09-09).** Automatic capitalisation now fires only
   for a word with no reading beyond noun/proper noun - §6's rules 3 and 4 collapsed into one `isNounOnly`
   predicate, closing a live bug where a `PROPER_NOUN` tag silently overrode a correctly-detected ambiguity
   and re-broke D-368's own retags (`Weg`, `waren`, `Arbeit`, `Rolle`, `Recht`, `Alter` - 159 German rows).
@@ -1169,7 +1169,7 @@ non-trivial changes).
   ranks into the top 8, so the gain is that genuinely-typed verb forms stop being unknown tokens that
   trigger the whole escalation cascade - plausible, but not measured).
 
-- **S-11 dual-casing chips - RESOLVED (§479, v1.2.39), not yet device-confirmed.** Both open halves
+- **S-11 dual-casing chips - RESOLVED, device-confirmed (§479, v1.2.39; confirmed 2026-09-09).** Both open halves
   closed: next-word predictions now offer both casings (expanded in place, keeping the prediction's own
   rank), and the exact-match carve-out stays as it was on the user's own explicit reasoning. A stale-chip
   lifecycle bug was found and fixed alongside it. Original entry:
@@ -1275,7 +1275,8 @@ non-trivial changes).
   `AdaptKeyService` suggestion-bar glue, this project's own established untested layer (the pure part they
   rest on, `CapitalisationEngine.isAmbiguousCasing`, gained its own cases in §478). 1646 unit tests
   unchanged, `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 534 -> 535, `versionName`
-  `"1.2.38"` -> `"1.2.39"`. **Not yet device-confirmed.**
+  `"1.2.38"` -> `"1.2.39"`. **D-463 device-confirmed (2026-09-09)**; D-464 is a tooling/data-only change
+  with no device-observable behaviour, nothing to confirm there.
 
 - **§478 (v1.2.38): D-461 - automatic capitalisation now requires genuine unambiguity, plus the German**
   **verb-tagging gap behind it.** Started as a question about this file's own point 7 below ("the German
@@ -1360,8 +1361,8 @@ non-trivial changes).
   `isAmbiguousCasing`'s widened contract). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
   `dictionaries/de/version.txt` 37 -> 38, pack rebuilt and verified byte-identical after unzip,
   `LanguagePackCatalog` version 37 -> 38. `versionCode` 533 -> 534, `versionName` `"1.2.37"` ->
-  `"1.2.38"`. **Not yet device-confirmed** - the capitalisation change is broad and only real typing will
-  show whether any word now feels under-capitalised.
+  `"1.2.38"`. **Device-confirmed (2026-09-09)** - the user confirmed the broad capitalisation change on
+  real typing, no word came back under-capitalised.
 
 - **§477 (v1.2.37): D-452-followup - the ~1.3s "Habeck" suggestion-bar stall, root-caused and fixed.** User
   pasted a real device log for a genuinely unknown word ("Habeck", tapped for autocorrect) with §459's own
