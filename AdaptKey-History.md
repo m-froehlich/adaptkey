@@ -21836,3 +21836,49 @@ is `AdaptKeyService`'s own Android-glue commit path, untested by this project's 
 
 1586 unit tests unchanged, all green. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
 510 -> 511, `versionName` `"1.2.14"` -> `"1.2.15"`.
+
+## §456 - D-356 - a literally-typed umlaut now breaks an autocorrect tie in its own favour, finally closed with a real, concrete repro after being open since §277.
+
+Typing `"gedrücjz"` (a genuine `ü`, intending `"gedrückt"`) was silently autocorrected to `"gedruckt"`
+instead - both real German words, both correctly offered as chips, but the wrong one silently applied.
+
+**Root cause, confirmed directly in code, not guessed**: `DictionarySuggestionProvider.correctionCost()`
+folds *both* the typed token and every candidate (umlaut/ß -> ASCII) before computing edit distance - the
+mechanism D-12/D-28 need so a diacritic-free typing (`"grun"`) still finds `"grün"` at zero cost. Folding
+both sides means `"gedrückt"` (keeps the real `ü`) and `"gedruckt"` (discards it) become edit-cost-
+*identical* to the folded token - the fact that a real `ü`, not a plain `u`, was actually typed is folded
+away before it can ever count. Tied on cost, the ranking fell through to raw frequency alone, and the more
+common but unrelated word ("printed" vs. "pressed") won.
+
+**Design discussed directly before implementing** (per this project's own convention): agreed a tie-break,
+not a change to the primary cost model, is the right scope - see spec §45 for the full write-up including
+the deeper "keyboard-reachability cost baked into the primary model" alternative the user raised and both
+of us agreed to defer (recorded as a Reserve Idea in Progress.md - not implemented - real but currently-
+hypothetical benefit, real risk of touching `CorrectionConfidence`'s own calibrated regression corpus for
+it). One real, useful side-confirmation surfaced while designing it: `Umlaut.foldToHostKey()`/
+`foldVariants()` (D-204) already fold `ß` to a bare `s` for exactly the same "how do you reach it on the
+keyboard" reasoning this fix needed - the user's own direct check confirmed the mechanism already existed,
+and confirmed a whole-string (not per-character) comparison handles `ß`'s two-character fold (`"ss"`)
+cleanly with no special case, precisely because it never tries to align characters 1:1 itself.
+
+**Mechanism.** New `DictionarySuggestionProvider.literalDistance()` - the same weighted-distance shape
+`correctionCost()` already uses (adjacent-key/other substitution costs), just unfolded on both sides, and
+unbounded (no `maxCost` band - `EditDistance.weightedDistance()` already defaults to the exact, unbounded
+distance when omitted, needed here since a literal umlaut mismatch can cost more than the folded search's
+own tight ceiling). `CandidateCost` gained a `literalCost` field, computed once per already cost-filtered
+candidate (not inside the comparator, which would otherwise re-run the DP on every pairwise comparison);
+`bestCorrection()`'s own `minWithOrNull` now sorts by `compareBy({ cost }, { literalCost }, { -score })` -
+the new key sits strictly between the existing two, so it only ever reorders candidates already tied on
+the primary (folded) cost, structurally unable to change which candidate wins when costs genuinely differ.
+
+New `DictionarySuggestionProviderTest` case: the exact reported pairing, with `"gedruckt"` deliberately
+given a *much higher* frequency than `"gedrückt"` (5,000 vs. 20) to confirm the tie-break genuinely beats
+frequency, not merely happens to agree with it once tried.
+
+1587 unit tests (1586 -> 1587, +1 new). `:app:assembleRelease`/`:app:testDebugUnitTest` green - every
+existing `CorrectionConfidence`/`AutocorrectAggressiveness` regression case (Ohren/Ihren, ddr/der, due/die,
+komplett, ...) still passes unchanged, confirming the tie-break never touched their own outcomes.
+`versionCode` 511 -> 512, `versionName` `"1.2.15"` -> `"1.2.16"`.
+
+**Device-confirmed** (2026-09-07): the user re-tested the exact reported case on-device and confirmed the
+fix works as intended.

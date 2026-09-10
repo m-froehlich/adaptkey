@@ -362,7 +362,20 @@ object LanguagePackCatalog {
             // ist in", "die Tür ist zu" are real adjectival uses, they simply do not decline).
             // `dictionaries/de/version.txt` 37 -> 38, pack rebuilt and verified byte-identical after
             // unzip, `LanguagePackCatalog` version 37 -> 38. Not yet device-confirmed.
-            version = 38
+            //
+            // §481 (v1.2.41): D-466 - "Gluck" (26, NOUN, no lemma links, the only row of its own spelling)
+            // removed outright. Reported case: typing "gluck" (intending "Glück") never got silently
+            // autocorrected (correctly, by design - A-01's frequency-ratio override needs ~500x, "Gluck" vs
+            // "Glück" (376) only clears ~14.5x, the same shape as the already-accepted "Ohren"/"Ihren" 70x
+            // case) and "Glück" was already the top-ranked suggestion chip - confirmed directly against the
+            // real corpus numbers via a throwaway diagnostic unit test before touching anything, not
+            // guessed. The word itself is not attested German vocabulary (user's own native-speaker call -
+            // not "Glucke", the hen) and carried no legitimate reading worth protecting, unlike the general
+            // rare-real-word case that mechanism exists to protect - curated out rather than touching
+            // CorrectionConfidence/diacriticRestoration's calibrated known-word protection for what was, on
+            // inspection, a single bogus dictionary row. `dictionaries/de/version.txt` 38 -> 39, pack
+            // rebuilt and verified byte-identical after unzip, `LanguagePackCatalog` version 38 -> 39.
+            version = 39
         ),
         Entry(
             Language.GREEK,

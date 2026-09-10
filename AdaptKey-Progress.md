@@ -1164,10 +1164,10 @@ non-trivial changes).
   prefix's own match count rather than the dictionary's size: at 307,826 rows the same lookups measure
   roughly **three times faster than today's 188,244 rows did before the fix**. Verb forms do cluster on
   ge-/be-/ver-/ent-/sch- prefixes (2-3x more matches there, against 1.64x overall), so those specific
-  lookups do get dearer - from a far lower base. Remaining before a decision: D-465 is not yet
-  device-confirmed, and the import's own *benefit* is still unquantified (a floor-frequency form never
-  ranks into the top 8, so the gain is that genuinely-typed verb forms stop being unknown tokens that
-  trigger the whole escalation cascade - plausible, but not measured).
+  lookups do get dearer - from a far lower base. D-465 is now device-confirmed (several days of smooth
+  real-device use, 2026-09-10). Remaining before a decision: the import's own *benefit* is still
+  unquantified (a floor-frequency form never ranks into the top 8, so the gain is that genuinely-typed verb
+  forms stop being unknown tokens that trigger the whole escalation cascade - plausible, but not measured).
 
 - **S-11 dual-casing chips - RESOLVED, device-confirmed (§479, v1.2.39; confirmed 2026-09-09).** Both open halves
   closed: next-word predictions now offer both casings (expanded in place, keeping the prediction's own
@@ -1189,6 +1189,42 @@ non-trivial changes).
   `dictionaries/de/dict.tsv` prints `QUALITY GATE: FAIL` with 108,779 "violations", every one of them
   correct. The other three checks pass. Needs a per-language flag ("this language capitalises common
   nouns") rather than dropping the check - it is genuinely right for every other language.
+
+- **§481 (v1.2.41): D-466 - "zum gluck" autocorrected to "Gluck" instead of "Glück"; root-caused to a**
+  **single bogus dictionary row, fixed by removing it, the correction mechanism itself left untouched.**
+  Reported case traced end-to-end before touching anything, per this project's own convention: a throwaway
+  diagnostic unit test against the real corpus numbers (`Gluck` 26, `Glück` 376, both `dictionaries/de/
+  dict.tsv`) confirmed `autocorrectFor("gluck")` correctly returns `null` - A-01's known-word override needs
+  roughly a 500x frequency ratio (log-scaled, `CorrectionConfidence.forKnownWordOverride`), and `Gluck`/
+  `Glück`'s ~14.5x sits even further below it than the already-accepted "Ohren"/"Ihren" case (70x, deliberately
+  kept blocked) - and `suggestionsFor("gluck")` already returned `["Glück", "Gluck"]`, "Glück" top-ranked. So
+  the mechanism was not "doing half the job" - it was correctly declining to silently guess and correctly
+  offering the right correction as a chip; the capitalisation to "Gluck" simply reflected what was literally
+  typed, a technically-valid but (per the user's own native-speaker judgement) unattested dictionary entry
+  that was never tapped away.
+  
+  The deeper reason the umlaut was not silently restored: [DictionarySuggestionProvider.diacriticRestoration]
+  (the dedicated, unconditional "typed without umlaut" mechanism, D-48) bails out whenever the bare ASCII
+  spelling is itself already a known word, deferring to the much stricter general A-01 ratio path - `"Gluck"`
+  existing in the dictionary at all was precisely what disabled the shortcut that would otherwise have fixed
+  this silently and correctly.
+  
+  **Design discussed first, per this project's own convention**: giving a pure-diacritic-fold match its own,
+  lower override bar than the general 500x one was considered (a fold-only difference is a narrower, stronger
+  signal than an arbitrary rare/common pair) but explicitly declined for now - real German homograph pairs
+  exist that differ *only* by umlaut and are both genuinely common with different meanings (e.g. "mochte"/
+  "möchte"), so loosening the unconditional `diacriticRestoration` path risked silently corrupting a
+  correctly-typed, common, different word, for a benefit that (on inspection) was really just one bad
+  dictionary row. User's own explicit call: leave `CorrectionConfidence`/`diacriticRestoration` alone,
+  curate the dictionary instead - "Gluck" is not attested German vocabulary (confirmed noise, not to be
+  confused with "Glucke", the hen), carried no lemma links or dependent inflected forms, and was the only row
+  of its own spelling - removed outright.
+  
+  `dictionaries/de/dict.tsv` 188,244 -> 188,243 rows; `quality_gate.py --capitalises-nouns`: PASS (0
+  duplicates, 0 non-positive frequencies, 0 orphaned lemma links). `dictionaries/de/version.txt` 38 -> 39,
+  pack rebuilt and verified byte-identical after unzip, `LanguagePackCatalog` version 38 -> 39. No code
+  touched, 1651 unit tests unchanged, `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
+  536 -> 537, `versionName` `"1.2.40"` -> `"1.2.41"`. Not yet device-confirmed.
 
 - **§480 (v1.2.40): D-465 - the suggestion pipeline's hottest query was scanning the whole lexicon on**
   **every keystroke.** Found while measuring D-462 (below), which asked what 110,000 extra rows would cost
@@ -1229,7 +1265,10 @@ non-trivial changes).
   correctness, and the performance property is what the code comment and §47 record.
 
   1651 unit tests (1646 -> 1651, +5). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
-  535 -> 536, `versionName` `"1.2.39"` -> `"1.2.40"`. **Not yet device-confirmed.**
+  535 -> 536, `versionName` `"1.2.39"` -> `"1.2.40"`.
+
+  **Device-confirmed** (2026-09-10): the user confirmed several days of real-device use running smoothly
+  ("läuft wie geschmiert seit ein paar Tagen") - no dedicated repro needed, closed on that basis.
 
 - **§479 (v1.2.39): D-463 (S-11 for next-word predictions, plus a stale-chip lifecycle bug) and D-464**
   **(the quality gate reports German as FAIL by design).** Two of the three items the user asked to clear;
@@ -2201,53 +2240,10 @@ non-trivial changes).
   links, 0 bare-NOUN rows - PASS. No code touched, 1587 unit tests unchanged, `:app:assembleRelease`/
   `:app:testDebugUnitTest` green. `versionCode` 512 -> 513, `versionName` `"1.2.16"` -> `"1.2.17"`.
 
-- **§456 (v1.2.16): D-356 - a literally-typed umlaut now breaks an autocorrect tie in its own favour,**
-  **finally closed with a real, concrete repro after being open since §277.** Typing `"gedrücjz"` (a genuine
-  `ü`, intending `"gedrückt"`) was silently autocorrected to `"gedruckt"` instead - both real German words,
-  both correctly offered as chips, but the wrong one silently applied.
+## Older Rounds (§1-§456, v0.7.6 through v1.2.16) - Pruned From This File
 
-  **Root cause, confirmed directly in code, not guessed**: `DictionarySuggestionProvider.correctionCost()`
-  folds *both* the typed token and every candidate (umlaut/ß -> ASCII) before computing edit distance - the
-  mechanism D-12/D-28 need so a diacritic-free typing (`"grun"`) still finds `"grün"` at zero cost. Folding
-  both sides means `"gedrückt"` (keeps the real `ü`) and `"gedruckt"` (discards it) become edit-cost-
-  *identical* to the folded token - the fact that a real `ü`, not a plain `u`, was actually typed is folded
-  away before it can ever count. Tied on cost, the ranking fell through to raw frequency alone, and the more
-  common but unrelated word ("printed" vs. "pressed") won.
-
-  **Design discussed directly before implementing** (per this project's own convention): agreed a tie-break,
-  not a change to the primary cost model, is the right scope - see spec §45 for the full write-up including
-  the deeper "keyboard-reachability cost baked into the primary model" alternative the user raised and both
-  of us agreed to defer (recorded as a Reserve Idea above, not implemented - real but currently-hypothetical
-  benefit, real risk of touching `CorrectionConfidence`'s own calibrated regression corpus for it). One real,
-  useful side-confirmation surfaced while designing it: `Umlaut.foldToHostKey()`/`foldVariants()` (D-204)
-  already fold `ß` to a bare `s` for exactly the same "how do you reach it on the keyboard" reasoning this
-  fix needed - the user's own direct check confirmed the mechanism already existed, and confirmed a
-  whole-string (not per-character) comparison handles `ß`'s two-character fold (`"ss"`) cleanly with no
-  special case, precisely because it never tries to align characters 1:1 itself.
-
-  **Mechanism.** New `DictionarySuggestionProvider.literalDistance()` - the same weighted-distance shape
-  `correctionCost()` already uses (adjacent-key/other substitution costs), just unfolded on both sides, and
-  unbounded (no `maxCost` band - `EditDistance.weightedDistance()` already defaults to the exact, unbounded
-  distance when omitted, needed here since a literal umlaut mismatch can cost more than the folded search's
-  own tight ceiling). `CandidateCost` gained a `literalCost` field, computed once per already cost-filtered
-  candidate (not inside the comparator, which would otherwise re-run the DP on every pairwise comparison);
-  `bestCorrection()`'s own `minWithOrNull` now sorts by `compareBy({ cost }, { literalCost }, { -score })` -
-  the new key sits strictly between the existing two, so it only ever reorders candidates already tied on
-  the primary (folded) cost, structurally unable to change which candidate wins when costs genuinely differ.
-
-  New `DictionarySuggestionProviderTest` case: the exact reported pairing, with `"gedruckt"` deliberately
-  given a *much higher* frequency than `"gedrückt"` (5,000 vs. 20) to confirm the tie-break genuinely beats
-  frequency, not merely happens to agree with it once tried.
-
-  1587 unit tests (1586 -> 1587, +1 new). `:app:assembleRelease`/`:app:testDebugUnitTest` green - every
-  existing `CorrectionConfidence`/`AutocorrectAggressiveness` regression case (Ohren/Ihren, ddr/der, due/die,
-  komplett, ...) still passes unchanged, confirming the tie-break never touched their own outcomes.
-  `versionCode` 511 -> 512, `versionName` `"1.2.15"` -> `"1.2.16"`.
-
-  **Device-confirmed** (2026-09-07): the user re-tested the exact reported case on-device and confirmed the
-  fix works as intended.
-
-## Older Rounds (§1-§455, v0.7.6 through v1.2.15) - Pruned From This File
+D-466 (§481): twenty-ninth pruning pass - §456 removed, cutoff moved from §456 to §457, keeping the
+working set at 25 rounds (§457-§481). Backfilled into History.md first and token-count verified.
 
 D-465 (§480): twenty-eighth pruning pass - §455 removed, cutoff moved from §455 to §456, keeping the
 working set at 25 rounds (§456-§480). Backfilled into History.md first and token-count verified.
