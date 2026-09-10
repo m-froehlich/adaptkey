@@ -390,7 +390,25 @@ object LanguagePackCatalog {
             // changed; word/frequency/POS columns byte-identical. New `dictionaries/lemma_check.py` passes.
             // `dictionaries/de/version.txt` 39 -> 40, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 39 -> 40.
-            version = 40
+            //
+            // §483 (v1.2.43): D-462 - the German verb-paradigm gap finally closed, at the conservative
+            // scope and after a real user review. 5,591 missing inflected forms of 1,976 attested verbs
+            // added at floor frequency 1 with a VERB tag. Floor 1, not the lemma-derived frequency §322
+            // used: A-01's ratio override keeps firing while freq_target/freq_new >= ~105.7, so the lowest
+            // possible floor protects existing corrections *most* - 438 affected, strongest affected target
+            // at frequency 105, and every one of those is a real word whose "correction" only ever fired
+            // because the word was missing (denkst->senkst, glühte->blühte, rauchten->tauchten).
+            // Two filters, both derived from the user's own review rather than guessed: the infinitive must
+            // carry a VERB tag or be prefixed (the original "infinitive exists in dict" test matched NOUN
+            // PLURALS spelled like infinitives - Arten, Osten, Ketten, Hosen, Socken, Linden - which is
+            // exactly what the user rejected), plus their named exclusion list of 70 non-verbs. Multi-word
+            // forms of separable verbs ("stürzt ab") are skipped; an earlier pass would have inserted 8,365
+            // of them. New rows get a lemma link to their infinitive only when that infinitive row does not
+            // already carry one - where it does, the row is really the noun plural (Abenteuern -> Abenteuer)
+            // and a link would either chain or assert that the verb form belongs to the noun's family.
+            // `dictionaries/de/version.txt` 40 -> 41, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 40 -> 41.
+            version = 41
         ),
         Entry(
             Language.GREEK,

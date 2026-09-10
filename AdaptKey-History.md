@@ -21953,3 +21953,45 @@ already provides, not a bug needing a fix.
 Quality gate (`dictionaries/quality_gate.py`): 0 duplicates, 0 non-positive frequencies, 0 orphaned lemma
 links, 0 bare-NOUN rows - PASS. No code touched, 1587 unit tests unchanged, `:app:assembleRelease`/
 `:app:testDebugUnitTest` green. `versionCode` 512 -> 513, `versionName` `"1.2.16"` -> `"1.2.17"`.
+
+## §458 - D-385-followup - the locale-aware first-run language suggestion, agreed in principle back at D-385's own closure but never implemented, generalised to every installable pack rather than scoped to German alone, per the user's own explicit instruction when finally picking it up.
+
+The
+underlying locale-matching mechanism (`SuggestedLanguages.from(locales, available)`) already worked this
+way since D-280 - it was never German-specific - but the onboarding UI built on top of it only ever
+surfaced the match as a plain sentence ("Based on your device, you might want: Deutsch.") behind a generic
+"Add a language" button that opened the full ~30-language alphabetical catalog with no further guidance.
+That gap, not the locale-matching itself, is what this round closes.
+
+**Design discussed first, per this project's own convention** (`AskUserQuestion`, two real trade-offs):
+(1) how to handle multiple simultaneous locale matches (device configured with more than one language this
+app has a pack for) - agreed to highlight only the top-ranked suggestion (`SuggestedLanguages`'s own
+existing preference order), leaving every other match reachable exactly as before rather than cluttering the
+list with several highlighted rows; (2) whether to move Download/Import into the onboarding panel itself or
+deep-link into the existing `LanguagePacksActivity` - agreed to deep-link, avoiding a second copy of the
+install logic (`LanguagePacksActivity` already owns the app's only browser-download-plus-SAF-import flow,
+D-280/D-413) for a screen transition that costs nothing given onboarding already opens `CalibrationActivity`/
+`Tier3ModelActivity` the same way.
+
+**Mechanism.** `OnboardingView` gained `topSuggestedLanguageCode: String?` alongside the existing
+`suggestedLanguageNames` (both derived from the same ordered `SuggestedLanguages.from()` call in
+`AdaptKeyService`, so they always agree) - when set, the language-selection step's action button reads a
+direct "Download %1$s" (new string `onboarding_language_action_suggested`, localised `de`/`el` alongside
+the existing `en`) instead of the generic fallback, and `onOpenLanguagePacks`'s own callback signature grew
+a `String?` parameter carrying the code through. `AdaptKeyService` forwards it as a new `Intent` extra
+(`LanguagePacksActivity.EXTRA_HIGHLIGHT_LANGUAGE_CODE`) via a small addition to the existing
+`launchFromKeyboard()` helper (an optional `Intent.() -> Unit` configuration block, every other call site
+unaffected). `LanguagePacksActivity` resolves the extra back to a `Language`, tints that one row's
+background (new `language_pack_suggested_background` colour, a light tint of the app's own established
+accent blue) and scrolls straight to it once laid out (`ScrollView.post { smoothScrollTo(...) }`) - only on
+the initial `onCreate()` build, not on a later `rebuild()` mid-install (`setBusy`), which would otherwise
+yank the scroll position out from under the user.
+
+New `OnboardingRoboTest` cases (Robolectric, matching this file's own existing house style for onboarding):
+the suggested-language path shows the direct download label and forwards the right code when tapped; the
+no-suggestion path falls back to the plain label and forwards `null`. `LanguagePacksActivity` itself stays
+outside unit-test coverage, consistent with its own existing KDoc ("Android-view glue, covered by
+instrumented rather than unit tests") - not a new gap this round introduces.
+
+1589 unit tests (1587 -> 1589, +2 new). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+`versionCode` 513 -> 514, `versionName` `"1.2.17"` -> `"1.2.18"`.

@@ -1130,7 +1130,12 @@ non-trivial changes).
   **not** fix: a surname that is also an ordinary word (`Ehrlich`, `Jung`, `Kluge`) stays ambiguous by
   design, with W-04 learning the user's own casing from real use.
 
-- **D-462 - OPEN, decision pending, but already measured (2026-09-08, §478).** German's verb coverage is
+- **D-462 - RESOLVED for the conservative scope (§483, v1.2.43), not yet device-confirmed; the wider**
+  **import stays open.** 5,591 forms of 1,976 attested verbs added at floor frequency 1 after a real user
+  review that turned 70 hand-rejections into a mechanical rule - see §483. What remains open is the ~100,000
+  forms of verbs the corpus never attested, including ordinary everyday ones the user named as legitimate
+  (`entarten`, `einbürgern`, `aufhellen`, `befeuchten`, `entkernen`, ...) that are simply absent from
+  `dict.tsv`. Original analysis: German's verb coverage is
   far thinner than every comparable language's, and this is a **deliberate §322 decision that the later
   language packs silently abandoned**, not an oversight. §322 explicitly rejected importing vocabulary the
   Wikipedia corpus never attested ("the project stayed scoped to completing existing lemmas' paradigms, not
@@ -1239,6 +1244,60 @@ non-trivial changes).
   nationality adjectives - essentially only English, already corrected in §479. **One residue this session
   could not settle honestly**: Greek's 15 rows (`Αγίου`, `Αγίας`, `Άγιο`, ...) need a native reader; a guess
   was deliberately not made.
+
+- **§483 (v1.2.43): D-462 - the German verb-paradigm gap closed, and the user's review turned a**
+  **hand-check into a rule.** 5,591 missing inflected forms of 1,976 attested verbs added at floor
+  frequency 1 with a `VERB` tag. Data only; no Kotlin touched.
+
+  **The review found a systematic flaw in the filter, not just 70 bad words.** The candidate set came from
+  "the infinitive exists in `dict.tsv`" - and that test was matching **noun plurals spelled like
+  infinitives**. `Arten`, `Osten`, `Tonnen`, `Kunden`, `Hosen`, `Socken`, `Ketten`, `Linden`, `Bullen` are
+  all ordinary noun rows, and the whole fake paradigm of each was queued for import. The user rejected 70
+  such verbs by hand; checking their dictionary rows showed **64 of the 70 carry no `VERB` tag at all**,
+  which turned the hand list into a mechanical rule instead of a one-off patch.
+
+  **The rule, and why it needs two arms.** Requiring a `VERB` tag alone was too strict: a real verb whose
+  infinitive coincides with a noun plural has the *noun* row (`Abstürzen`, `Abfragen`, `Abgleichen`), so it
+  is untagged too - and §478's Phase 1 could not tag those without switching off the noun's own
+  capitalisation. What separates them is exactly what the user's own remarks kept saying ("nur mit
+  Vorsilbe"): the rejects are bare stems, the real verbs are prefixed. So: **VERB tag, or a known verb
+  prefix plus at least four further characters**. Validated against the review rather than asserted - of the
+  70 rejections it would still admit only 7, and those are excluded by name.
+
+  **A real bug caught by spot-checking rather than by the gates.** Separable verbs come out of
+  `wiktionary_verben.tsv` as **multi-word** forms (`stürzt ab`, `stürze ab`). The first applied pass
+  inserted **8,365 of them** - rows a word dictionary can never match, since the tokeniser never sees a
+  space inside a token, and pure ballast for every prefix scan. Both gates passed anyway; only checking why
+  `abstürzt` was missing surfaced it. Reverted and refiltered to single-word forms, which is also why the
+  final count is 5,591 rather than the ~14,000 the naive pass produced. (Noted in passing: 333 multi-word
+  rows already existed before this round, from an earlier noun pass - `des Nord`, `(des) Französisch`. Not
+  touched here, but they are the same class of defect.)
+
+  **Floor frequency 1, not 2 and emphatically not §322's lemma-derived value.** A-01's override keeps firing
+  while `freq_target / freq_new >= ~105.7`, so the *lowest* floor protects existing corrections most: 438
+  affected corrections, strongest affected target at frequency 105. §322's formula would have put that at
+  12,420 (`lieft` -> `liegt`). And the 438 are overwhelmingly the good kind - `denkst` -> `senkst`,
+  `glühte` -> `blühte`, `rauchten` -> `tauchten`, `wettete` -> `wertete`: real words whose "correction" only
+  ever fired because the word itself was missing from the dictionary.
+
+  **Lemma links only where they can be honest.** A new form links to its infinitive unless that infinitive
+  row already carries a lemma of its own - in which case the row is really the noun plural
+  (`Abenteuern` -> `Abenteuer`), and a link would either build a chain or claim the verb form belongs to the
+  noun's family. The one-lemma schema cannot express "form of the verb reading of this row", so nothing is
+  asserted. `lemma_check.py` and `quality_gate.py` both PASS afterwards.
+
+  **What this round deliberately does not fix.** The prefixed verbs the user named as the legitimate
+  counterparts of the rejected bare stems - `entarten`, `ausarten`, `beschatten`, `einbürgern`, `bezwecken`,
+  `beurkunden`, `aussöhnen`, `beseelen`, `aufhellen`, `benetzen`, `befeuchten`, `ergrauen`, `entkernen`,
+  `begatten`, `anketten`, `verdingen` - are **not in `dict.tsv` at all** (16 of the 27 checked). They exist
+  in `wiktionary_verben.tsv`, so they would arrive with the wider D-462 B2 import, which stays out of scope.
+  Worth its own decision later: these are ordinary everyday verbs, and the corpus simply never contained
+  them.
+
+  Dictionary 188,243 -> 193,834 rows (+3.0%). 1651 unit tests unchanged, `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green. `dictionaries/de/version.txt` 40 -> 41, pack rebuilt and verified
+  byte-identical after unzip, `LanguagePackCatalog` version 40 -> 41. `versionCode` 538 -> 539,
+  `versionName` `"1.2.42"` -> `"1.2.43"`. **Not yet device-confirmed.**
 
 - **§482 (v1.2.42): D-467 - the `lemma` column had structural defects, and a new checker now catches**
   **them.** Started as the small half of the D-462 round (fix two German links the §480 survey had flagged)
@@ -2220,49 +2279,10 @@ non-trivial changes).
   first round of timers). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 514 -> 515,
   `versionName` `"1.2.18"` -> `"1.2.19"`.
 
-- **§458 (v1.2.18): D-385-followup - the locale-aware first-run language suggestion, agreed in principle**
-  **back at D-385's own closure but never implemented, generalised to every installable pack rather than**
-  **scoped to German alone, per the user's own explicit instruction when finally picking it up.** The
-  underlying locale-matching mechanism (`SuggestedLanguages.from(locales, available)`) already worked this
-  way since D-280 - it was never German-specific - but the onboarding UI built on top of it only ever
-  surfaced the match as a plain sentence ("Based on your device, you might want: Deutsch.") behind a generic
-  "Add a language" button that opened the full ~30-language alphabetical catalog with no further guidance.
-  That gap, not the locale-matching itself, is what this round closes.
+## Older Rounds (§1-§458, v0.7.6 through v1.2.18) - Pruned From This File
 
-  **Design discussed first, per this project's own convention** (`AskUserQuestion`, two real trade-offs):
-  (1) how to handle multiple simultaneous locale matches (device configured with more than one language this
-  app has a pack for) - agreed to highlight only the top-ranked suggestion (`SuggestedLanguages`'s own
-  existing preference order), leaving every other match reachable exactly as before rather than cluttering the
-  list with several highlighted rows; (2) whether to move Download/Import into the onboarding panel itself or
-  deep-link into the existing `LanguagePacksActivity` - agreed to deep-link, avoiding a second copy of the
-  install logic (`LanguagePacksActivity` already owns the app's only browser-download-plus-SAF-import flow,
-  D-280/D-413) for a screen transition that costs nothing given onboarding already opens `CalibrationActivity`/
-  `Tier3ModelActivity` the same way.
-
-  **Mechanism.** `OnboardingView` gained `topSuggestedLanguageCode: String?` alongside the existing
-  `suggestedLanguageNames` (both derived from the same ordered `SuggestedLanguages.from()` call in
-  `AdaptKeyService`, so they always agree) - when set, the language-selection step's action button reads a
-  direct "Download %1$s" (new string `onboarding_language_action_suggested`, localised `de`/`el` alongside
-  the existing `en`) instead of the generic fallback, and `onOpenLanguagePacks`'s own callback signature grew
-  a `String?` parameter carrying the code through. `AdaptKeyService` forwards it as a new `Intent` extra
-  (`LanguagePacksActivity.EXTRA_HIGHLIGHT_LANGUAGE_CODE`) via a small addition to the existing
-  `launchFromKeyboard()` helper (an optional `Intent.() -> Unit` configuration block, every other call site
-  unaffected). `LanguagePacksActivity` resolves the extra back to a `Language`, tints that one row's
-  background (new `language_pack_suggested_background` colour, a light tint of the app's own established
-  accent blue) and scrolls straight to it once laid out (`ScrollView.post { smoothScrollTo(...) }`) - only on
-  the initial `onCreate()` build, not on a later `rebuild()` mid-install (`setBusy`), which would otherwise
-  yank the scroll position out from under the user.
-
-  New `OnboardingRoboTest` cases (Robolectric, matching this file's own existing house style for onboarding):
-  the suggested-language path shows the direct download label and forwards the right code when tapped; the
-  no-suggestion path falls back to the plain label and forwards `null`. `LanguagePacksActivity` itself stays
-  outside unit-test coverage, consistent with its own existing KDoc ("Android-view glue, covered by
-  instrumented rather than unit tests") - not a new gap this round introduces.
-
-  1589 unit tests (1587 -> 1589, +2 new). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
-  `versionCode` 513 -> 514, `versionName` `"1.2.17"` -> `"1.2.18"`.
-
-## Older Rounds (§1-§457, v0.7.6 through v1.2.17) - Pruned From This File
+D-462 (§483): thirty-first pruning pass - §458 removed, cutoff moved to §459, keeping the working
+set at 25 rounds. Backfilled into History.md first, token-count verified.
 
 D-467 (§482): thirtieth pruning pass - §457 removed, cutoff moved from §457 to §458, keeping the
 working set at 25 rounds (§458-§482). Backfilled into History.md first, token-count verified.
