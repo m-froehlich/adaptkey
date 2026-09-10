@@ -21882,3 +21882,74 @@ komplett, ...) still passes unchanged, confirming the tie-break never touched th
 
 **Device-confirmed** (2026-09-07): the user re-tested the exact reported case on-device and confirmed the
 fix works as intended.
+
+## §457 - D-442's own two-item backlog (frequency-correction + noise audit for `en/dict.tsv`, both named-but-not-started in Progress.md) - both closed in one round, data-only, no code change.
+
+Ran `dictionaries/confusables_scan.py` against `en/dict.tsv` (QWERTY, min-frequency 30) for
+real, current numbers rather than trusting the old "dozens" estimate in the backlog note: 1384 candidate
+pairs, 126 at genuine silent-autocorrect risk (score >= 0.75, `CorrectionConfidence.forKnownWordOverride`'s
+own threshold).
+
+**Noise audit (item 2) done first, per explicit user instruction, since several of the scan's own top hits**
+**turned out to be noise, not genuinely rare real words.** Root-caused rather than removed by inspection
+alone: every flagged entry's own `lemma` column (D-412) pointed back to an ordinary function word/participle
+(`on`, `by`, `more`, `most`, `you`, `special`, `French`, `Dutch`, `trans`, ...) - confirming these are not
+independent corpus noise but a systematic over-generation bug in the same lemma-linked inflection pipeline
+D-404 Tier 1/D-412's Wortfamilien project uses: it generated `-ed`/`-ing`/`-s`/`-er` inflections for base
+words that are not grammatically eligible for them at all (prepositions, degree adverbs, pronouns, already-
+inflected irregular forms), several inheriting implausibly high frequencies (`ases` 95431, `oned` 77326,
+`bys` 76263). Querying every dictionary row sharing one of these confirmed-bad lemmas (not just the ones
+that happened to collide in the confusables scan) surfaced the full generated family - 212 rows total, each
+individually reviewed against its real English-word status (native-level judgement, no wordlist available
+locally): **140 removed** as having no legitimate reading in any standard/technical/dialectal register
+(`ases`, `oned`, `bys`, `mored`, `newed`, `mosts`, `youed`, `youing`, `justs`, `specialer`, `Frenched`,
+`Dutcher`, `transing`, and 128 more); **1 retagged, not deleted** (`mores` - the real word for "societal
+customs" shared its dictionary's only row, per-spelling, with the bogus generated verb form of `more`, so it
+was re-tagged `NOUN,OTHER` with the bogus `lemma` link dropped rather than losing the spelling entirely).
+Every other family member (`bearing`, `better`, `engines`, `graves`, `refugees`, `Yankees`, and ~70 more)
+confirmed as a real, independently legitimate word and left untouched, despite matching the same suspicious
+lemma pattern - conservative by design, matching this project's established "confirmed real, not guessed"
+standard for dictionary curation (cf. German's §301/§368). `dict.tsv` 116,388 -> 116,248 rows.
+
+**A related, deliberately-declined side-finding**: `better` (2959), `news` (2414), and `evening` (659) also
+came from the same generation pipeline and looked suspiciously low at first glance (compared against
+general English intuition, not this corpus). Checked against real, unquestionably genuine sibling words
+already in the same dictionary before touching anything - `evening` sits cleanly between `afternoon` (250)
+and `morning` (900); `better` sits cleanly among `smaller`/`longer`/`greater`/`larger`/`earlier`
+(3152-3943); `news` sits cleanly among `weather`/`report`/`story`/`information` (1060-5757). All three are
+plausible for this specific Wikipedia-derived corpus's own register (which uses time-of-day words and
+comparatives far less than everyday conversational English) - inventing a "corrected" number without real
+corpus data to back it would have been exactly the kind of guessing this project's history explicitly
+avoids, so all three were left unchanged, on the user's own explicit acceptance of this reasoning.
+
+**Frequency correction (item 1) on the 126 auto-apply-risk pairs, re-scanned to 121 after the noise pass**
+**removed a few outright.** Same mechanism D-330-followup's `dein`/`sein` fix used: raise the rarer, genuine
+word's own frequency past the risk threshold, never blacklist. Computed the exact minimum bump per word from
+the scan's own `ratio_factor` formula (clear margin below 0.75), applied to 111 words; re-scanning surfaced
+a small cascade (bumping `im`/`ij`/`ln` high enough incidentally put them at risk against three previously-
+unflagged short fragments, `ik`/`um`/`lb`) - one further small pass closed those too, converging to 0
+remaining auto-apply-risk pairs.
+
+**A real conflict caught before finalising, not after**: `EnglishRules.kt`'s own
+`BUNDLED_CONFUSABLES_BLACKLIST` (`ij`, `iz`, `iy`, `ae`, `ne` - spec A-04's own D-442 note) had already
+confirmed these five specific tokens are *not* real standalone English words, in an earlier round using this
+exact scan. The blacklist mechanism only ever suppresses a word from being *offered* as a suggestion to
+someone else - it does not, and was never meant to, protect a confirmed non-word from losing to a real
+neighbour under `forKnownWordOverride`, unlike a genuinely real-but-rare word. The mechanical bump step
+above touched all five anyway (it has no knowledge of the blacklist), silently reintroducing exactly the
+protection the earlier round had deliberately decided against - caught by cross-checking `EnglishRules.kt`
+before writing this entry, not discovered later. Reverted the bump for these five specific words back to
+their original frequencies; the resulting 7 pairs they now correctly re-flag as at-risk are the intended,
+already-decided outcome, not a gap.
+
+**`chip-offer-only` tier (the remaining 1176 pairs, score 0.30-0.75) deliberately left untouched, on**
+**explicit user agreement after seeing the real numbers.** Computed what fully clearing this tier too would
+actually require: several hundred words would need frequency bumps into the thousands-to-hundred-thousands
+range purely to satisfy the ratio formula (`wax` to 38750, `ln` to 118478) - grossly disproportionate to
+their real corpus rarity, and would itself introduce new frequency-ranking distortions elsewhere. A
+dismissible suggestion chip for a genuinely rare word is the correct, proportionate behaviour this tier
+already provides, not a bug needing a fix.
+
+Quality gate (`dictionaries/quality_gate.py`): 0 duplicates, 0 non-positive frequencies, 0 orphaned lemma
+links, 0 bare-NOUN rows - PASS. No code touched, 1587 unit tests unchanged, `:app:assembleRelease`/
+`:app:testDebugUnitTest` green. `versionCode` 512 -> 513, `versionName` `"1.2.16"` -> `"1.2.17"`.

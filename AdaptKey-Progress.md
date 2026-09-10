@@ -1169,6 +1169,19 @@ non-trivial changes).
   unquantified (a floor-frequency form never ranks into the top 8, so the gain is that genuinely-typed verb
   forms stop being unknown tokens that trigger the whole escalation cascade - plausible, but not measured).
 
+  **2026-09-10: scope settled with the user and the review list handed over.** The chosen shape is the
+  conservative one - complete the paradigms of the 2,250 verbs the corpus already attests (19,129 missing
+  forms, dictionary +10.2%), and leave the ~100,000 forms of verbs the corpus never saw alone, where §322's
+  own no-frequency-signal reasoning still holds and where the junk sits (`abbaken`, `abbahren`). **Floor
+  frequency 1, not 2**: the A-01 override keeps firing while `freq_target / freq_new >= 105.7`, so a lower
+  floor protects *more* - 893 affected corrections instead of 1,035, and the strongest affected target drops
+  from 211 to 105. The remaining 893 cases were written to a banded review list for the user (`denkst`,
+  `glühte`, `rauchten`, `hackt` and the like - real words whose correction only ever fired because the word
+  was missing). Awaiting that review before applying. A methodological correction worth keeping: the first
+  version of that list had 1,057 entries because it measured the strongest *blocked* competitor; the right
+  question is whether the strongest competitor overall still wins, since that is the correction that
+  actually existed before the import.
+
 - **S-11 dual-casing chips - RESOLVED, device-confirmed (§479, v1.2.39; confirmed 2026-09-09).** Both open halves
   closed: next-word predictions now offer both casings (expanded in place, keeping the prediction's own
   rank), and the exact-match carve-out stays as it was on the user's own explicit reasoning. A stale-chip
@@ -1189,6 +1202,86 @@ non-trivial changes).
   `dictionaries/de/dict.tsv` prints `QUALITY GATE: FAIL` with 108,779 "violations", every one of them
   correct. The other three checks pass. Needs a per-language flag ("this language capitalises common
   nouns") rather than dropping the check - it is genuinely right for every other language.
+
+- **D-467 - RESOLVED (§482, v1.2.42), not yet device-confirmed.** German's `lemma` column had two wrong
+  links plus 223 cyclic and 605 chained rows; all repaired mechanically, the cycle directions decided from
+  `wiktionary_verben.tsv` rather than guessed. New `dictionaries/lemma_check.py` guards the three structural
+  classes going forward. Data-only, no code touched.
+
+- **D-468 - OPEN, fully scoped and mechanically doable without any language knowledge (2026-09-10, §482).**
+  The same structural repair D-467 did for German applies to every other pack, and they are all far worse -
+  German's links came from the individually-reviewed §320/§321/§322 passes, everyone else's came
+  mechanically from kaikki.org. Measured across all 32 dictionaries: **415,808 chains and 151,953 cycles,
+  6.1% of all 9.27M lemma links.** Worst affected: Ukrainian 35%, Latvian 34%, Slovak 18%, Russian 13%,
+  Tagalog 12%, French 11%. Portuguese, Hungarian, Uzbek and Indonesian have no cycles at all.
+
+  **Why it needs no speaker of the language.** Chain flattening asserts nothing new - it resolves existing
+  data onto its own deepest root, exactly what §320/§321 already require, and matters because the family
+  resolver takes a single hop. Cycle direction is decidable from each pack's own retained Wiktionary
+  extracts: every language folder still carries `wiktionary_verbs.tsv`/`_nouns.tsv`/`_adjectives.tsv`/
+  `_allpos.tsv`, which is precisely how German's 27 pairs were settled. Where a pack's own extracts do not
+  decide a given cycle, the safe fallback is dropping both links, which fails open to pre-D-404-Tier-2
+  behaviour rather than asserting anything.
+
+  **What it is not.** The `--suspects` screen (4,055 hits across all languages, German only 8) is a
+  different, *content* question and genuinely does need a speaker - a suppletive paradigm is
+  indistinguishable from a mis-link by shape alone. Not part of this item.
+
+  **The real cost is blast radius, not difficulty**: 31 language packs would need a rebuild, a re-host and a
+  catalog version bump each. Worth doing as its own deliberate round, not folded into unrelated work.
+
+- **D-461 cross-language effect - CHECKED, no action needed (2026-09-10).** D-461 switched off forced
+  capitalisation for 1,295 rows across all languages (rows carrying `PROPER_NOUN` plus some other reading).
+  The frequency-strongest were sampled per language and the outcome is right almost everywhere, because
+  these are overwhelmingly ordinary lower-case words that picked up a spurious proper-noun tag from the
+  corpus: `grande`/`tous`/`telle` (fr), `italiana`/`romana` (it), `italieni`/`ruși` (ro), `hrvatska` (hr,
+  also the adjective), `andre` (nb, "other"). The structural exception is a language that capitalises
+  nationality adjectives - essentially only English, already corrected in §479. **One residue this session
+  could not settle honestly**: Greek's 15 rows (`Αγίου`, `Αγίας`, `Άγιο`, ...) need a native reader; a guess
+  was deliberately not made.
+
+- **§482 (v1.2.42): D-467 - the `lemma` column had structural defects, and a new checker now catches**
+  **them.** Started as the small half of the D-462 round (fix two German links the §480 survey had flagged)
+  and grew once the same check was pointed at the structure rather than the content.
+
+  **The two content fixes.** `waren`(31549) linked to `Ware`(263) - the dominant reading is the preterite
+  of `sein`, and because the store keys case-insensitively that single row carries *both* readings at once,
+  so no single lemma value can be right; the link was removed rather than re-pointed. `verlassen`(1569)
+  linked to `Verlass`(8), though `verlassen` is itself a base form. Removal, not invention: a null lemma is
+  explicitly valid under D-412.
+
+  **The structural finding.** A survey of all 32 shipped dictionaries turned up three defect classes that
+  are wrong *regardless of language* - self-links (0 everywhere, good), cycles (A is an inflection of B and
+  B of A), and chains (the lemma itself has a lemma). German had 223 cyclic rows and 605 chained ones.
+  Chains matter because `AdaptKeyService` resolves a family with exactly **one hop**
+  (`(entry.lemma ?: entry.word)`), so an intermediate link hands two members of the same real family two
+  different family keys and D-404 Tier 2's veto silently fails to fire. Checked before worrying: the
+  one-hop resolver also means a cycle can never hang the app - it is a correctness defect, not a liveness
+  one.
+
+  **Both fixed mechanically, neither guessed.** All 27 German cycle *pairs* turned out decidable from real
+  data: in every single one, exactly one side is an attested infinitive in `wiktionary_verben.tsv`, so that
+  side is the base (`bann` -> `bannen`, `besuch` -> `besuchen`). 652 chains flattened onto their deepest
+  root - `alte` -> `Alter` -> `alt` now points straight at `alt` - which is what §320/§321's own "resolve to
+  the true deepest root rather than an intermediate mechanical hop" always required. 679 rows changed;
+  word, frequency and POS columns verified byte-identical.
+
+  **A self-inflicted detour worth recording.** The first pass also normalised each lemma value's *casing* to
+  whatever casing that base row happens to carry, changing 60 further rows - `Dauer`'s base went from the
+  verb `dauern` to the noun `Dauern`. Behaviourally inert (the resolver lower-cases both sides, and so does
+  the quality gate's orphan check) but factually worse and never asked for, so it was reverted; the diff is
+  exactly the 27 + 652 intended rows.
+
+  **New `dictionaries/lemma_check.py`**, the companion to `quality_gate.py`: self-links, cycles and chains
+  as hard PASS/FAIL, plus an opt-in `--suspects` screen (a form an order of magnitude more frequent than
+  its own base is usually a mis-link). The screen is deliberately labelled as screening and never a verdict
+  - a suppletive paradigm looks identical to the defect (`is` <- `be`, `είναι` <- `είμαι`), so every hit
+  needs someone who reads the language. German now PASSes the hard checks; the wider cross-language picture
+  is tracked as its own item (D-468).
+
+  Data-only; no Kotlin touched, 1651 unit tests unchanged, `:app:assembleRelease`/`:app:testDebugUnitTest`
+  green. `dictionaries/de/version.txt` 39 -> 40, pack rebuilt and verified byte-identical after unzip,
+  `LanguagePackCatalog` version 39 -> 40. `versionCode` 537 -> 538, `versionName` `"1.2.41"` -> `"1.2.42"`.
 
 - **§481 (v1.2.41): D-466 - "zum gluck" autocorrected to "Gluck" instead of "Glück"; root-caused to a**
   **single bogus dictionary row, fixed by removing it, the correction mechanism itself left untouched.**
@@ -2169,78 +2262,10 @@ non-trivial changes).
   1589 unit tests (1587 -> 1589, +2 new). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
   `versionCode` 513 -> 514, `versionName` `"1.2.17"` -> `"1.2.18"`.
 
-- **§457 (v1.2.17): D-442's own two-item backlog (frequency-correction + noise audit for**
-  **`en/dict.tsv`, both named-but-not-started in Progress.md) - both closed in one round, data-only, no code**
-  **change.** Ran `dictionaries/confusables_scan.py` against `en/dict.tsv` (QWERTY, min-frequency 30) for
-  real, current numbers rather than trusting the old "dozens" estimate in the backlog note: 1384 candidate
-  pairs, 126 at genuine silent-autocorrect risk (score >= 0.75, `CorrectionConfidence.forKnownWordOverride`'s
-  own threshold).
+## Older Rounds (§1-§457, v0.7.6 through v1.2.17) - Pruned From This File
 
-  **Noise audit (item 2) done first, per explicit user instruction, since several of the scan's own top hits**
-  **turned out to be noise, not genuinely rare real words.** Root-caused rather than removed by inspection
-  alone: every flagged entry's own `lemma` column (D-412) pointed back to an ordinary function word/participle
-  (`on`, `by`, `more`, `most`, `you`, `special`, `French`, `Dutch`, `trans`, ...) - confirming these are not
-  independent corpus noise but a systematic over-generation bug in the same lemma-linked inflection pipeline
-  D-404 Tier 1/D-412's Wortfamilien project uses: it generated `-ed`/`-ing`/`-s`/`-er` inflections for base
-  words that are not grammatically eligible for them at all (prepositions, degree adverbs, pronouns, already-
-  inflected irregular forms), several inheriting implausibly high frequencies (`ases` 95431, `oned` 77326,
-  `bys` 76263). Querying every dictionary row sharing one of these confirmed-bad lemmas (not just the ones
-  that happened to collide in the confusables scan) surfaced the full generated family - 212 rows total, each
-  individually reviewed against its real English-word status (native-level judgement, no wordlist available
-  locally): **140 removed** as having no legitimate reading in any standard/technical/dialectal register
-  (`ases`, `oned`, `bys`, `mored`, `newed`, `mosts`, `youed`, `youing`, `justs`, `specialer`, `Frenched`,
-  `Dutcher`, `transing`, and 128 more); **1 retagged, not deleted** (`mores` - the real word for "societal
-  customs" shared its dictionary's only row, per-spelling, with the bogus generated verb form of `more`, so it
-  was re-tagged `NOUN,OTHER` with the bogus `lemma` link dropped rather than losing the spelling entirely).
-  Every other family member (`bearing`, `better`, `engines`, `graves`, `refugees`, `Yankees`, and ~70 more)
-  confirmed as a real, independently legitimate word and left untouched, despite matching the same suspicious
-  lemma pattern - conservative by design, matching this project's established "confirmed real, not guessed"
-  standard for dictionary curation (cf. German's §301/§368). `dict.tsv` 116,388 -> 116,248 rows.
-
-  **A related, deliberately-declined side-finding**: `better` (2959), `news` (2414), and `evening` (659) also
-  came from the same generation pipeline and looked suspiciously low at first glance (compared against
-  general English intuition, not this corpus). Checked against real, unquestionably genuine sibling words
-  already in the same dictionary before touching anything - `evening` sits cleanly between `afternoon` (250)
-  and `morning` (900); `better` sits cleanly among `smaller`/`longer`/`greater`/`larger`/`earlier`
-  (3152-3943); `news` sits cleanly among `weather`/`report`/`story`/`information` (1060-5757). All three are
-  plausible for this specific Wikipedia-derived corpus's own register (which uses time-of-day words and
-  comparatives far less than everyday conversational English) - inventing a "corrected" number without real
-  corpus data to back it would have been exactly the kind of guessing this project's history explicitly
-  avoids, so all three were left unchanged, on the user's own explicit acceptance of this reasoning.
-
-  **Frequency correction (item 1) on the 126 auto-apply-risk pairs, re-scanned to 121 after the noise pass**
-  **removed a few outright.** Same mechanism D-330-followup's `dein`/`sein` fix used: raise the rarer, genuine
-  word's own frequency past the risk threshold, never blacklist. Computed the exact minimum bump per word from
-  the scan's own `ratio_factor` formula (clear margin below 0.75), applied to 111 words; re-scanning surfaced
-  a small cascade (bumping `im`/`ij`/`ln` high enough incidentally put them at risk against three previously-
-  unflagged short fragments, `ik`/`um`/`lb`) - one further small pass closed those too, converging to 0
-  remaining auto-apply-risk pairs.
-
-  **A real conflict caught before finalising, not after**: `EnglishRules.kt`'s own
-  `BUNDLED_CONFUSABLES_BLACKLIST` (`ij`, `iz`, `iy`, `ae`, `ne` - spec A-04's own D-442 note) had already
-  confirmed these five specific tokens are *not* real standalone English words, in an earlier round using this
-  exact scan. The blacklist mechanism only ever suppresses a word from being *offered* as a suggestion to
-  someone else - it does not, and was never meant to, protect a confirmed non-word from losing to a real
-  neighbour under `forKnownWordOverride`, unlike a genuinely real-but-rare word. The mechanical bump step
-  above touched all five anyway (it has no knowledge of the blacklist), silently reintroducing exactly the
-  protection the earlier round had deliberately decided against - caught by cross-checking `EnglishRules.kt`
-  before writing this entry, not discovered later. Reverted the bump for these five specific words back to
-  their original frequencies; the resulting 7 pairs they now correctly re-flag as at-risk are the intended,
-  already-decided outcome, not a gap.
-
-  **`chip-offer-only` tier (the remaining 1176 pairs, score 0.30-0.75) deliberately left untouched, on**
-  **explicit user agreement after seeing the real numbers.** Computed what fully clearing this tier too would
-  actually require: several hundred words would need frequency bumps into the thousands-to-hundred-thousands
-  range purely to satisfy the ratio formula (`wax` to 38750, `ln` to 118478) - grossly disproportionate to
-  their real corpus rarity, and would itself introduce new frequency-ranking distortions elsewhere. A
-  dismissible suggestion chip for a genuinely rare word is the correct, proportionate behaviour this tier
-  already provides, not a bug needing a fix.
-
-  Quality gate (`dictionaries/quality_gate.py`): 0 duplicates, 0 non-positive frequencies, 0 orphaned lemma
-  links, 0 bare-NOUN rows - PASS. No code touched, 1587 unit tests unchanged, `:app:assembleRelease`/
-  `:app:testDebugUnitTest` green. `versionCode` 512 -> 513, `versionName` `"1.2.16"` -> `"1.2.17"`.
-
-## Older Rounds (§1-§456, v0.7.6 through v1.2.16) - Pruned From This File
+D-467 (§482): thirtieth pruning pass - §457 removed, cutoff moved from §457 to §458, keeping the
+working set at 25 rounds (§458-§482). Backfilled into History.md first, token-count verified.
 
 D-466 (§481): twenty-ninth pruning pass - §456 removed, cutoff moved from §456 to §457, keeping the
 working set at 25 rounds (§457-§481). Backfilled into History.md first and token-count verified.

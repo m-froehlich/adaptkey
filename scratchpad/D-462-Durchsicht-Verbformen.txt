@@ -1,0 +1,2041 @@
+AdaptKey / D-462 - Durchsicht: Verbformen mit Autokorrektur-Nebenwirkung
+==============================================================================
+
+Insgesamt 19,129 fehlende Formen belegter Verben werden mit Bodenfrequenz 1 ergaenzt.
+Bei 893 davon hoert eine heute feuernde Autokorrektur auf zu feuern.
+
+Lies das so: links das neue Wort, rechts die Korrektur, die es kuenftig NICHT mehr
+ausloest. Ist das neue Wort ein normales deutsches Wort, ist der Wegfall richtig -
+die Korrektur feuerte bisher nur, weil das Wort im Woerterbuch fehlte.
+
+Streiche einfach die Zeilen an, deren neues Wort du NICHT im Woerterbuch haben willst.
+
+
+------------------------------------------------------------------------------
+A  Verb sehr haeufig (>=1000) - zweifelsfrei normale Woerter   (37 Faelle)
+------------------------------------------------------------------------------
+
+  haben  (Verb-Frequenz 21983)
+      hattet                ihr/Prät       verhindert kuenftig: haftet (71)
+
+  rahmen  (Verb-Frequenz 5443)
+      rahmte                ich/Prät       verhindert kuenftig: rammte (8)
+
+  müssen  (Verb-Frequenz 4510)
+      müsst                 ihr            verhindert kuenftig: küsst (9)
+
+  arten  (Verb-Frequenz 4444)
+      artest                du             verhindert kuenftig: arrest (27)
+
+  führen  (Verb-Frequenz 4249)
+      führst                du             verhindert kuenftig: rührst (13)
+      führtest              du/Prät        verhindert kuenftig: rührtest (13)
+      führtet               ihr/Prät       verhindert kuenftig: rührtet (13)
+
+  osten  (Verb-Frequenz 4004)
+      ostet                 er/sie         verhindert kuenftig: oster (44)
+
+  sollen  (Verb-Frequenz 3303)
+      gesollt               Partizip II    verhindert kuenftig: gewollt (87)
+
+  gleichen  (Verb-Frequenz 3269)
+      geglichen             Partizip II    verhindert kuenftig: beglichen (24)
+
+  teilen  (Verb-Frequenz 3087)
+      teilst                du             verhindert kuenftig: heilst (38)
+      teiltest              du/Prät        verhindert kuenftig: heiltest (38)
+      teiltet               ihr/Prät       verhindert kuenftig: heiltet (38)
+
+  baden  (Verb-Frequenz 2782)
+      badet                 er/sie         verhindert kuenftig: bader (19)
+
+  gehen  (Verb-Frequenz 2337)
+      gingst                du/Prät        verhindert kuenftig: zingst (22)
+      gingt                 ihr/Prät       verhindert kuenftig: vingt (21)
+
+  geben  (Verb-Frequenz 2241)
+      gabt                  ihr/Prät       verhindert kuenftig: habt (37)
+
+  freien  (Verb-Frequenz 2234)
+      freitet               ihr/Prät       verhindert kuenftig: breitet (91)
+
+  halten  (Verb-Frequenz 2128)
+      haltet                ihr            verhindert kuenftig: halter (32)
+
+  übertragen  (Verb-Frequenz 2014)
+      übertrage             ich            verhindert kuenftig: übertrags (8)
+
+  fragen  (Verb-Frequenz 1839)
+      frag                  Imperativ Sg   verhindert kuenftig: drag (18)
+
+  kosten  (Verb-Frequenz 1787)
+      koste                 ich            verhindert kuenftig: moste (39)
+
+  frieden  (Verb-Frequenz 1759)
+      friedet               er/sie         verhindert kuenftig: frieder (8)
+      gefriedet             Partizip II    verhindert kuenftig: befriedet (12)
+
+  rechten  (Verb-Frequenz 1709)
+      gerechtet             Partizip II    verhindert kuenftig: gerechter (45)
+
+  tonnen  (Verb-Frequenz 1685)
+      tonn                  ich            verhindert kuenftig: tong (12)
+
+  verwenden  (Verb-Frequenz 1627)
+      verwendetet           ihr/Prät       verhindert kuenftig: verwendeter (71)
+
+  verlassen  (Verb-Frequenz 1569)
+      verlasst              ihr            verhindert kuenftig: verpasst (33)
+
+  treffen  (Verb-Frequenz 1531)
+      traft                 ihr/Prät       verhindert kuenftig: graft (8)
+
+  weisen  (Verb-Frequenz 1482)
+      wiest                 ihr/Prät       verhindert kuenftig: wirst (27)
+
+  grünen  (Verb-Frequenz 1464)
+      gegrünt               Partizip II    verhindert kuenftig: begrünt (13)
+
+  wollen  (Verb-Frequenz 1265)
+      wolltest              du/Prät        verhindert kuenftig: solltest (18)
+
+  nennen  (Verb-Frequenz 1236)
+      nanntest              du/Prät        verhindert kuenftig: banntest (4)
+      nanntet               ihr/Prät       verhindert kuenftig: banntet (4)
+
+  denken  (Verb-Frequenz 1175)
+      denkst                du             verhindert kuenftig: senkst (105)
+
+  filmen  (Verb-Frequenz 1041)
+      filmtest              du/Prät        verhindert kuenftig: filmfest (27)
+
+  unterstützen  (Verb-Frequenz 1013)
+      unterstütztet         ihr/Prät       verhindert kuenftig: unterstützter (16)
+
+------------------------------------------------------------------------------
+B  Verb haeufig (300-999)   (70 Faelle)
+------------------------------------------------------------------------------
+
+  festen  (Verb-Frequenz 979)
+      festete               ich/Prät       verhindert kuenftig: testete (31)
+      festeten              wir/Prät       verhindert kuenftig: testeten (10)
+
+  vergeben  (Verb-Frequenz 954)
+      vergebt               ihr            verhindert kuenftig: vergeht (30)
+
+  vermeiden  (Verb-Frequenz 926)
+      vermeidest            du             verhindert kuenftig: vermeldest (5)
+
+  ehren  (Verb-Frequenz 898)
+      ehrst                 du             verhindert kuenftig: ehret (20)
+
+  versehen  (Verb-Frequenz 885)
+      verseht               ihr            verhindert kuenftig: verweht (34)
+
+  lüften  (Verb-Frequenz 791)
+      gelüftet              Partizip II    verhindert kuenftig: belüftet (10)
+      lüftet                er/sie         verhindert kuenftig: lüfter (23)
+
+  zeugen  (Verb-Frequenz 747)
+      zeugst                du             verhindert kuenftig: zeigst (15)
+
+  umgeben  (Verb-Frequenz 746)
+      umgebt                ihr            verhindert kuenftig: umgeht (45)
+
+  kunden  (Verb-Frequenz 726)
+      gekundet              Partizip II    verhindert kuenftig: bekundet (40)
+
+  firmen  (Verb-Frequenz 702)
+      firmt                 er/sie         verhindert kuenftig: formt (55)
+      firmte                ich/Prät       verhindert kuenftig: formte (81)
+      firmten               wir/Prät       verhindert kuenftig: formten (49)
+
+  steuern  (Verb-Frequenz 699)
+      steuere               Imperativ Sg   verhindert kuenftig: steuers (83)
+
+  sichten  (Verb-Frequenz 697)
+      sichteten             wir/Prät       verhindert kuenftig: dichteten (10)
+
+  belegen  (Verb-Frequenz 694)
+      belegst               du             verhindert kuenftig: belebst (24)
+      belegtest             du/Prät        verhindert kuenftig: belebtest (24)
+      belegtet              ihr/Prät       verhindert kuenftig: belebtet (24)
+
+  laufen  (Verb-Frequenz 688)
+      lauft                 ihr            verhindert kuenftig: kauft (57)
+
+  empfangen  (Verb-Frequenz 664)
+      empfange              ich            verhindert kuenftig: empfangs (27)
+
+  lehren  (Verb-Frequenz 659)
+      lehrst                du             verhindert kuenftig: kehrst (38)
+      lehrtest              du/Prät        verhindert kuenftig: kehrtest (38)
+      lehrtet               ihr/Prät       verhindert kuenftig: kehrtet (38)
+
+  bergen  (Verb-Frequenz 658)
+      bergt                 ihr            verhindert kuenftig: bernt (16)
+
+  rennen  (Verb-Frequenz 658)
+      renne                 ich            verhindert kuenftig: tenne (11)
+
+  wellen  (Verb-Frequenz 605)
+      wellten               wir/Prät       verhindert kuenftig: weilten (13)
+
+  regen  (Verb-Frequenz 599)
+      regtet                ihr/Prät       verhindert kuenftig: rettet (71)
+
+  bahnen  (Verb-Frequenz 581)
+      bahnst                du             verhindert kuenftig: bannst (4)
+      bahnt                 er/sie         verhindert kuenftig: bannt (4)
+      bahnten               wir/Prät       verhindert kuenftig: bannten (4)
+      bahntest              du/Prät        verhindert kuenftig: banntest (4)
+      bahntet               ihr/Prät       verhindert kuenftig: banntet (4)
+      gebahnt               Partizip II    verhindert kuenftig: gebannt (37)
+
+  bürgern  (Verb-Frequenz 568)
+      bürgertest            du/Prät        verhindert kuenftig: bürgerfest (9)
+
+  vereinen  (Verb-Frequenz 560)
+      vereinst              du             verhindert kuenftig: dereinst (16)
+
+  gestalten  (Verb-Frequenz 533)
+      gestaltetet           ihr/Prät       verhindert kuenftig: gestalteter (32)
+
+  blauen  (Verb-Frequenz 528)
+      blaute                ich/Prät       verhindert kuenftig: flaute (18)
+      blauten               wir/Prät       verhindert kuenftig: flauten (6)
+
+  ziffern  (Verb-Frequenz 485)
+      geziffert             Partizip II    verhindert kuenftig: beziffert (80)
+
+  betragen  (Verb-Frequenz 461)
+      betragt               ihr            verhindert kuenftig: befragt (96)
+
+  hängen  (Verb-Frequenz 455)
+      hingst                du/Prät        verhindert kuenftig: zingst (22)
+
+  stufen  (Verb-Frequenz 454)
+      stuf                  Imperativ Sg   verhindert kuenftig: stug (12)
+      stuftest              du/Prät        verhindert kuenftig: stiftest (24)
+      stuftet               ihr/Prät       verhindert kuenftig: stiftet (23)
+
+  scheinen  (Verb-Frequenz 395)
+      geschienen            Partizip II    verhindert kuenftig: beschienen (13)
+      schient               ihr/Prät       verhindert kuenftig: schiebt (73)
+
+  schatten  (Verb-Frequenz 382)
+      schatte               ich            verhindert kuenftig: scharte (19)
+
+  bluten  (Verb-Frequenz 380)
+      blutet                er/sie         verhindert kuenftig: bluter (10)
+      geblutet              Partizip II    verhindert kuenftig: geflutet (41)
+
+  schulden  (Verb-Frequenz 360)
+      schulde               ich            verhindert kuenftig: schilde (36)
+
+  starten  (Verb-Frequenz 350)
+      starte                ich            verhindert kuenftig: starre (87)
+
+  hagen  (Verb-Frequenz 348)
+      hagst                 du             verhindert kuenftig: jagst (20)
+      hagtet                ihr/Prät       verhindert kuenftig: haftet (71)
+
+  modern  (Verb-Frequenz 342)
+      modere                Imperativ Sg   verhindert kuenftig: moders (3)
+      moderst               du             verhindert kuenftig: moderat (48)
+
+  gießen  (Verb-Frequenz 339)
+      gieße                 ich            verhindert kuenftig: hieße (20)
+
+  opfern  (Verb-Frequenz 331)
+      opfere                Imperativ Sg   verhindert kuenftig: opfers (78)
+      opfertest             du/Prät        verhindert kuenftig: opferfest (17)
+
+  schlagen  (Verb-Frequenz 327)
+      schlägst              du             verhindert kuenftig: schläfst (12)
+
+  binden  (Verb-Frequenz 326)
+      bindest               du             verhindert kuenftig: findest (15)
+
+  zwecken  (Verb-Frequenz 322)
+      gezweckt              Partizip II    verhindert kuenftig: bezweckt (18)
+
+  herzen  (Verb-Frequenz 318)
+      geherzt               Partizip II    verhindert kuenftig: gehetzt (9)
+      herze                 ich            verhindert kuenftig: hetze (28)
+
+  emden  (Verb-Frequenz 311)
+      geemdet               Partizip II    verhindert kuenftig: geendet (21)
+
+  fliehen  (Verb-Frequenz 309)
+      fliehe                ich            verhindert kuenftig: fliege (38)
+
+  urkunden  (Verb-Frequenz 309)
+      geurkundet            Partizip II    verhindert kuenftig: beurkundet (28)
+
+  streiten  (Verb-Frequenz 306)
+      streitest             du             verhindert kuenftig: streutest (14)
+      streitet              er/sie         verhindert kuenftig: streutet (14)
+
+  söhnen  (Verb-Frequenz 301)
+      gesöhnt               Partizip II    verhindert kuenftig: gewöhnt (30)
+
+------------------------------------------------------------------------------
+C  Verb mittel (100-299)   (186 Faelle)
+------------------------------------------------------------------------------
+
+  bedenken  (Verb-Frequenz 291)
+      bedachtest            du/Prät        verhindert kuenftig: bewachtest (11)
+      bedachtet             ihr/Prät       verhindert kuenftig: bewachtet (11)
+      bedenke               ich            verhindert kuenftig: gedenke (12)
+
+  blättern  (Verb-Frequenz 291)
+      blättere              Imperativ Sg   verhindert kuenftig: glättere (54)
+
+  dingen  (Verb-Frequenz 286)
+      dingtest              du/Prät        verhindert kuenftig: dingfest (8)
+
+  adeln  (Verb-Frequenz 280)
+      adelt                 er/sie         verhindert kuenftig: adept (11)
+      adelten               wir/Prät       verhindert kuenftig: adepten (20)
+
+  posen  (Verb-Frequenz 279)
+      postet                ihr/Prät       verhindert kuenftig: poster (39)
+
+  strahlen  (Verb-Frequenz 279)
+      gestrahlt             Partizip II    verhindert kuenftig: bestrahlt (34)
+      strahle               ich            verhindert kuenftig: strahls (29)
+
+  überzeugen  (Verb-Frequenz 273)
+      überzeugtet           ihr/Prät       verhindert kuenftig: überzeugter (44)
+
+  singen  (Verb-Frequenz 271)
+      sangt                 ihr/Prät       verhindert kuenftig: sanft (61)
+
+  tasten  (Verb-Frequenz 271)
+      getastet              Partizip II    verhindert kuenftig: gefastet (8)
+      tastete               ich/Prät       verhindert kuenftig: fastete (8)
+
+  verbreiten  (Verb-Frequenz 269)
+      verbreitetet          ihr/Prät       verhindert kuenftig: verbreiteter (104)
+
+  graben  (Verb-Frequenz 261)
+      grubt                 ihr/Prät       verhindert kuenftig: gruft (60)
+
+  umgehen  (Verb-Frequenz 260)
+      umgingt               ihr/Prät       verhindert kuenftig: umringt (16)
+
+  vergessen  (Verb-Frequenz 259)
+      vergiss               Imperativ Sg   verhindert kuenftig: verbiss (10)
+
+  gutachten  (Verb-Frequenz 257)
+      gegutachtet           Partizip II    verhindert kuenftig: begutachtet (25)
+      gutachtet             er/sie         verhindert kuenftig: gutachter (55)
+
+  greifen  (Verb-Frequenz 255)
+      griffst               du/Prät        verhindert kuenftig: triffst (15)
+
+  serben  (Verb-Frequenz 255)
+      serb                  Imperativ Sg   verhindert kuenftig: derb (19)
+      serbe                 ich            verhindert kuenftig: serge (41)
+
+  erlernen  (Verb-Frequenz 245)
+      erlern                ich            verhindert kuenftig: erkern (9)
+
+  treiben  (Verb-Frequenz 245)
+      triebt                ihr/Prät       verhindert kuenftig: trient (79)
+
+  ketten  (Verb-Frequenz 243)
+      kett                  Imperativ Sg   verhindert kuenftig: lett (12)
+
+  strafen  (Verb-Frequenz 237)
+      straft                er/sie         verhindert kuenftig: straff (32)
+      strafte               ich/Prät       verhindert kuenftig: straffe (19)
+      straften              wir/Prät       verhindert kuenftig: straffen (13)
+
+  werfen  (Verb-Frequenz 236)
+      warfst                du/Prät        verhindert kuenftig: darfst (45)
+
+  betten  (Verb-Frequenz 232)
+      bettet                er/sie         verhindert kuenftig: better (27)
+
+  sinken  (Verb-Frequenz 230)
+      sankst                du/Prät        verhindert kuenftig: dankst (8)
+
+  speisen  (Verb-Frequenz 225)
+      speiset               Imperativ Pl   verhindert kuenftig: speiser (12)
+
+  titeln  (Verb-Frequenz 224)
+      getitelt              Partizip II    verhindert kuenftig: betitelt (56)
+
+  malen  (Verb-Frequenz 220)
+      malst                 du             verhindert kuenftig: malat (11)
+
+  linden  (Verb-Frequenz 218)
+      lindet                er/sie         verhindert kuenftig: linder (23)
+
+  rauschen  (Verb-Frequenz 213)
+      gerauscht             Partizip II    verhindert kuenftig: getauscht (84)
+      rausche               ich            verhindert kuenftig: tausche (51)
+      rauschst              du             verhindert kuenftig: tauschst (42)
+      rauscht               er/sie         verhindert kuenftig: tauscht (16)
+      rauschte              ich/Prät       verhindert kuenftig: tauschte (45)
+      rauschten             wir/Prät       verhindert kuenftig: tauschten (37)
+      rauschtest            du/Prät        verhindert kuenftig: tauschtest (42)
+      rauschtet             ihr/Prät       verhindert kuenftig: tauschtet (42)
+
+  schlachten  (Verb-Frequenz 212)
+      schlachtet            er/sie         verhindert kuenftig: schlachter (8)
+
+  verbleiben  (Verb-Frequenz 212)
+      verbleibe             ich            verhindert kuenftig: verbleibs (61)
+
+  schneiden  (Verb-Frequenz 209)
+      schnittet             ihr/Prät       verhindert kuenftig: schnitter (15)
+
+  seelen  (Verb-Frequenz 208)
+      geseelt               Partizip II    verhindert kuenftig: beseelt (32)
+      seelte                ich/Prät       verhindert kuenftig: seelze (34)
+
+  rügen  (Verb-Frequenz 204)
+      rügst                 du             verhindert kuenftig: fügst (27)
+      rügten                wir/Prät       verhindert kuenftig: fügten (38)
+      rügtest               du/Prät        verhindert kuenftig: fügtest (27)
+      rügtet                ihr/Prät       verhindert kuenftig: fügtet (27)
+
+  gesunden  (Verb-Frequenz 203)
+      gesundet              er/sie         verhindert kuenftig: gesunder (33)
+
+  lasten  (Verb-Frequenz 198)
+      laste                 ich            verhindert kuenftig: kaste (42)
+      lasteten              wir/Prät       verhindert kuenftig: pasteten (8)
+
+  stücken  (Verb-Frequenz 197)
+      gestückt              Partizip II    verhindert kuenftig: bestückt (70)
+
+  verschieben  (Verb-Frequenz 197)
+      verschobst            du/Prät        verhindert kuenftig: verschonst (6)
+
+  tafeln  (Verb-Frequenz 194)
+      getafelt              Partizip II    verhindert kuenftig: getadelt (8)
+      tafelt                er/sie         verhindert kuenftig: tadelt (8)
+      tafelte               ich/Prät       verhindert kuenftig: tadelte (9)
+      tafle                 ich            verhindert kuenftig: table (82)
+
+  fischen  (Verb-Frequenz 192)
+      fischt                er/sie         verhindert kuenftig: gischt (13)
+
+  hellen  (Verb-Frequenz 192)
+      gehellt               Partizip II    verhindert kuenftig: geheilt (75)
+      hellst                du             verhindert kuenftig: heilst (38)
+      hellt                 er/sie         verhindert kuenftig: heilt (27)
+      hellte                ich/Prät       verhindert kuenftig: heilte (17)
+      hellten               wir/Prät       verhindert kuenftig: heilten (38)
+      helltest              du/Prät        verhindert kuenftig: heiltest (38)
+      helltet               ihr/Prät       verhindert kuenftig: heiltet (38)
+
+  netzen  (Verb-Frequenz 192)
+      genetzt               Partizip II    verhindert kuenftig: benetzt (27)
+
+  verborgen  (Verb-Frequenz 188)
+      verborgt              er/sie         verhindert kuenftig: verbirgt (47)
+
+  zerfallen  (Verb-Frequenz 186)
+      zerfalle              ich            verhindert kuenftig: zerfalls (64)
+
+  gasen  (Verb-Frequenz 185)
+      gastet                ihr/Prät       verhindert kuenftig: bastet (38)
+      gegast                Partizip II    verhindert kuenftig: genast (5)
+
+  heben  (Verb-Frequenz 184)
+      hobst                 du/Prät        verhindert kuenftig: jobst (33)
+
+  türmen  (Verb-Frequenz 181)
+      türm                  ich            verhindert kuenftig: türk (60)
+
+  dicken  (Verb-Frequenz 180)
+      dickte                ich/Prät       verhindert kuenftig: dockte (15)
+
+  kurven  (Verb-Frequenz 176)
+      kurv                  Imperativ Sg   verhindert kuenftig: kurd (19)
+
+  weiden  (Verb-Frequenz 175)
+      geweidet              Partizip II    verhindert kuenftig: beweidet (11)
+
+  fressen  (Verb-Frequenz 174)
+      friss                 Imperativ Sg   verhindert kuenftig: fries (89)
+
+  feuchten  (Verb-Frequenz 172)
+      feuchtet              er/sie         verhindert kuenftig: feuchter (68)
+      feuchtete             ich/Prät       verhindert kuenftig: feuchtere (8)
+      feuchteten            wir/Prät       verhindert kuenftig: feuchteren (19)
+      gefeuchtet            Partizip II    verhindert kuenftig: befeuchtet (14)
+
+  orgeln  (Verb-Frequenz 172)
+      orgle                 ich            verhindert kuenftig: orgie (9)
+
+  verbringen  (Verb-Frequenz 171)
+      verbrachtet           ihr/Prät       verhindert kuenftig: verfrachtet (15)
+
+  haften  (Verb-Frequenz 168)
+      gehaftet              Partizip II    verhindert kuenftig: behaftet (66)
+
+  wiederholen  (Verb-Frequenz 168)
+      wiederholtet          ihr/Prät       verhindert kuenftig: wiederholter (38)
+
+  verfassen  (Verb-Frequenz 165)
+      verfasstet            ihr/Prät       verhindert kuenftig: verfasster (26)
+
+  benennen  (Verb-Frequenz 164)
+      benanntet             ihr/Prät       verhindert kuenftig: benannter (13)
+
+  scheiden  (Verb-Frequenz 163)
+      schiedet              ihr/Prät       verhindert kuenftig: schieder (9)
+
+  fernen  (Verb-Frequenz 155)
+      fernt                 er/sie         verhindert kuenftig: bernt (16)
+
+  wüsten  (Verb-Frequenz 155)
+      wüstet                er/sie         verhindert kuenftig: wüster (26)
+      wüstete               ich/Prät       verhindert kuenftig: wüstere (26)
+      wüsteten              wir/Prät       verhindert kuenftig: wüsteren (26)
+
+  verwachsen  (Verb-Frequenz 150)
+      verwuchs              ich/Prät       verhindert kuenftig: versuchs (54)
+
+  hallen  (Verb-Frequenz 149)
+      hallt                 er/sie         verhindert kuenftig: halit (11)
+
+  grauen  (Verb-Frequenz 146)
+      gegraut               Partizip II    verhindert kuenftig: getraut (27)
+      graust                du             verhindert kuenftig: traust (8)
+      graute                ich/Prät       verhindert kuenftig: traute (36)
+      grauten               wir/Prät       verhindert kuenftig: trauten (12)
+      grautest              du/Prät        verhindert kuenftig: trautest (8)
+      grautet               ihr/Prät       verhindert kuenftig: trautet (8)
+
+  jochen  (Verb-Frequenz 145)
+      gejocht               Partizip II    verhindert kuenftig: gekocht (81)
+      jocht                 er/sie         verhindert kuenftig: kocht (16)
+      jochte                ich/Prät       verhindert kuenftig: mochte (78)
+      jochten               wir/Prät       verhindert kuenftig: mochten (24)
+
+  flügeln  (Verb-Frequenz 143)
+      flügele               Imperativ Sg   verhindert kuenftig: flügels (88)
+
+  werben  (Verb-Frequenz 141)
+      warbt                 ihr/Prät       verhindert kuenftig: warnt (88)
+      wirbst                du             verhindert kuenftig: wirfst (10)
+
+  seuchen  (Verb-Frequenz 140)
+      seuchte               ich/Prät       verhindert kuenftig: seichte (8)
+      seuchten              wir/Prät       verhindert kuenftig: seichten (20)
+
+  ernennen  (Verb-Frequenz 134)
+      ernanntet             ihr/Prät       verhindert kuenftig: ernannter (18)
+
+  schmelzen  (Verb-Frequenz 133)
+      schmilz               Imperativ Sg   verhindert kuenftig: schmolz (16)
+      schmolzt              ihr/Prät       verhindert kuenftig: schmilzt (48)
+
+  garantieren  (Verb-Frequenz 132)
+      garantiertet          ihr/Prät       verhindert kuenftig: garantierter (8)
+
+  testen  (Verb-Frequenz 132)
+      testest               du             verhindert kuenftig: textest (6)
+      testetest             du/Prät        verhindert kuenftig: textetest (6)
+      testetet              ihr/Prät       verhindert kuenftig: textetet (6)
+
+  bingen  (Verb-Frequenz 130)
+      binge                 ich            verhindert kuenftig: ginge (43)
+      bingt                 er/sie         verhindert kuenftig: vingt (21)
+
+  begeben  (Verb-Frequenz 129)
+      begebe                ich            verhindert kuenftig: begehe (11)
+      begebt                ihr            verhindert kuenftig: begeht (60)
+
+  regieren  (Verb-Frequenz 129)
+      regiere               ich            verhindert kuenftig: reviere (27)
+      regiertet             ihr/Prät       verhindert kuenftig: regierter (8)
+
+  summen  (Verb-Frequenz 128)
+      summ                  ich            verhindert kuenftig: dumm (40)
+
+  lenken  (Verb-Frequenz 127)
+      lenke                 ich            verhindert kuenftig: lemke (17)
+
+  hosen  (Verb-Frequenz 126)
+      hoste                 ich/Prät       verhindert kuenftig: moste (39)
+      hosten                wir/Prät       verhindert kuenftig: mosten (39)
+
+  wettern  (Verb-Frequenz 124)
+      wettere               Imperativ Sg   verhindert kuenftig: wetters (54)
+
+  bussen  (Verb-Frequenz 123)
+      buss                  Imperativ Sg   verhindert kuenftig: guss (54)
+
+  ahnen  (Verb-Frequenz 119)
+      ahn                   ich            verhindert kuenftig: ann (78)
+      ahnst                 du             verhindert kuenftig: ahmst (3)
+      ahnten                wir/Prät       verhindert kuenftig: ahmten (3)
+      ahntest               du/Prät        verhindert kuenftig: ahmtest (3)
+      ahntet                ihr/Prät       verhindert kuenftig: ahmtet (3)
+      geahnt                Partizip II    verhindert kuenftig: geahmt (3)
+
+  vereinfachen  (Verb-Frequenz 119)
+      vereinfachtet         ihr/Prät       verhindert kuenftig: vereinfachter (31)
+
+  dritteln  (Verb-Frequenz 118)
+      drittele              Imperativ Sg   verhindert kuenftig: drittels (12)
+
+  verschmelzen  (Verb-Frequenz 117)
+      verschmilz            Imperativ Sg   verhindert kuenftig: verschmolz (30)
+      verschmolzt           ihr/Prät       verhindert kuenftig: verschmilzt (21)
+
+  erbauen  (Verb-Frequenz 116)
+      erbautet              ihr/Prät       verhindert kuenftig: erbauter (12)
+
+  mögen  (Verb-Frequenz 116)
+      gemocht               Partizip II    verhindert kuenftig: gekocht (81)
+
+  beantworten  (Verb-Frequenz 115)
+      beantwortetet         ihr/Prät       verhindert kuenftig: beantworteter (83)
+
+  ermorden  (Verb-Frequenz 115)
+      ermordetet            ihr/Prät       verhindert kuenftig: ermordeter (8)
+
+  gedeihen  (Verb-Frequenz 115)
+      gedeihe               ich            verhindert kuenftig: geweihe (9)
+
+  haaren  (Verb-Frequenz 114)
+      gehaart               Partizip II    verhindert kuenftig: behaart (94)
+      haarst                du             verhindert kuenftig: haardt (46)
+      haarten               wir/Prät       verhindert kuenftig: maarten (25)
+
+  leinen  (Verb-Frequenz 114)
+      geleint               Partizip II    verhindert kuenftig: geleimt (9)
+      leint                 er/sie         verhindert kuenftig: leiht (10)
+
+  befehlen  (Verb-Frequenz 113)
+      befehlt               ihr            verhindert kuenftig: gefehlt (20)
+
+  befürchten  (Verb-Frequenz 113)
+      befürchtetet          ihr/Prät       verhindert kuenftig: befürchteter (60)
+
+  behindern  (Verb-Frequenz 113)
+      behindertet           ihr/Prät       verhindert kuenftig: behinderter (26)
+
+  beklagen  (Verb-Frequenz 113)
+      beklage               ich            verhindert kuenftig: beilage (75)
+
+  bereiten  (Verb-Frequenz 113)
+      bereitest             du             verhindert kuenftig: bereutest (6)
+
+  mustern  (Verb-Frequenz 113)
+      mustere               Imperativ Sg   verhindert kuenftig: musters (31)
+
+  verlängern  (Verb-Frequenz 113)
+      verlängertet          ihr/Prät       verhindert kuenftig: verlängerter (18)
+
+  generieren  (Verb-Frequenz 112)
+      generiertet           ihr/Prät       verhindert kuenftig: generierter (62)
+
+  watten  (Verb-Frequenz 112)
+      gewattet              Partizip II    verhindert kuenftig: gewartet (61)
+      watte                 ich            verhindert kuenftig: wagte (86)
+      wattet                er/sie         verhindert kuenftig: wartet (64)
+      wattete               ich/Prät       verhindert kuenftig: wartete (65)
+      watteten              wir/Prät       verhindert kuenftig: warteten (41)
+
+  qualifizieren  (Verb-Frequenz 111)
+      qualifiziertet        ihr/Prät       verhindert kuenftig: qualifizierter (22)
+
+  kochen  (Verb-Frequenz 110)
+      koche                 ich            verhindert kuenftig: kochs (77)
+      kochten               wir/Prät       verhindert kuenftig: mochten (24)
+
+  verrichten  (Verb-Frequenz 109)
+      verrichte             ich            verhindert kuenftig: verdichte (17)
+      verrichtest           du             verhindert kuenftig: verdichtest (17)
+      verrichtetest         du/Prät        verhindert kuenftig: verdichtetest (17)
+      verrichtetet          ihr/Prät       verhindert kuenftig: verdichtetet (17)
+
+  nerven  (Verb-Frequenz 107)
+      nerve                 ich            verhindert kuenftig: nervs (14)
+
+  begünstigen  (Verb-Frequenz 106)
+      begünstigtet          ihr/Prät       verhindert kuenftig: begünstigter (8)
+
+  interessieren  (Verb-Frequenz 102)
+      interessiertet        ihr/Prät       verhindert kuenftig: interessierter (22)
+
+  vereinbaren  (Verb-Frequenz 102)
+      vereinbartet          ihr/Prät       verhindert kuenftig: vereinbarter (11)
+
+  boxen  (Verb-Frequenz 101)
+      boxt                  du             verhindert kuenftig: boat (28)
+
+  zähnen  (Verb-Frequenz 101)
+      zähn                  ich            verhindert kuenftig: jähn (20)
+      zähnst                du             verhindert kuenftig: zähmst (5)
+      zähnt                 er/sie         verhindert kuenftig: zähmt (5)
+      zähnte                ich/Prät       verhindert kuenftig: zähmte (5)
+      zähnten               wir/Prät       verhindert kuenftig: zähmten (5)
+      zähntest              du/Prät        verhindert kuenftig: zähmtest (5)
+      zähntet               ihr/Prät       verhindert kuenftig: zähmtet (5)
+
+  hexen  (Verb-Frequenz 100)
+      hextest               du/Prät        verhindert kuenftig: textest (6)
+      hextet                ihr/Prät       verhindert kuenftig: textet (12)
+
+------------------------------------------------------------------------------
+D  Verb selten (30-99)   (241 Faelle)
+------------------------------------------------------------------------------
+
+  spulen  (Verb-Frequenz 98)
+      spult                 er/sie         verhindert kuenftig: soult (9)
+
+  tränen  (Verb-Frequenz 98)
+      tränst                du             verhindert kuenftig: trägst (20)
+
+  raten  (Verb-Frequenz 96)
+      rietet                ihr/Prät       verhindert kuenftig: rieter (10)
+
+  verfallen  (Verb-Frequenz 96)
+      verfalle              ich            verhindert kuenftig: verfalls (36)
+
+  kernen  (Verb-Frequenz 93)
+      kernt                 er/sie         verhindert kuenftig: lernt (92)
+      kernten               wir/Prät       verhindert kuenftig: lernten (95)
+
+  wölfen  (Verb-Frequenz 93)
+      gewölft               Partizip II    verhindert kuenftig: gewölbt (24)
+      wölft                 er/sie         verhindert kuenftig: wölbt (9)
+
+  begehren  (Verb-Frequenz 92)
+      begehrtet             ihr/Prät       verhindert kuenftig: begehrter (20)
+
+  wiegen  (Verb-Frequenz 92)
+      wiegten               wir/Prät       verhindert kuenftig: siegten (38)
+
+  befallen  (Verb-Frequenz 91)
+      befalle               ich            verhindert kuenftig: befalls (9)
+      befiel                ich/Prät       verhindert kuenftig: gefiel (77)
+      befielen              wir/Prät       verhindert kuenftig: gefielen (14)
+
+  vergnügen  (Verb-Frequenz 90)
+      vergnügtet            ihr/Prät       verhindert kuenftig: vergnügter (6)
+
+  lachen  (Verb-Frequenz 89)
+      lache                 ich            verhindert kuenftig: lachs (43)
+      lachten               wir/Prät       verhindert kuenftig: pachten (16)
+
+  salzen  (Verb-Frequenz 89)
+      salzt                 du             verhindert kuenftig: salut (17)
+      salzte                ich/Prät       verhindert kuenftig: salute (12)
+      salzten               wir/Prät       verhindert kuenftig: saluten (6)
+
+  trompeten  (Verb-Frequenz 89)
+      trompetet             er/sie         verhindert kuenftig: trompeter (46)
+
+  eiern  (Verb-Frequenz 88)
+      eiert                 er/sie         verhindert kuenftig: elert (12)
+
+  fangen  (Verb-Frequenz 88)
+      fingt                 ihr/Prät       verhindert kuenftig: vingt (21)
+
+  rauchen  (Verb-Frequenz 86)
+      rauchten              wir/Prät       verhindert kuenftig: tauchten (98)
+
+  fetten  (Verb-Frequenz 85)
+      fettet                er/sie         verhindert kuenftig: rettet (71)
+      fettete               ich/Prät       verhindert kuenftig: rettete (99)
+      fetteten              wir/Prät       verhindert kuenftig: retteten (24)
+
+  sonnen  (Verb-Frequenz 85)
+      gesonnt               Partizip II    verhindert kuenftig: gesinnt (48)
+
+  hungern  (Verb-Frequenz 84)
+      hungere               Imperativ Sg   verhindert kuenftig: hungers (15)
+
+  meistern  (Verb-Frequenz 83)
+      meistere              Imperativ Sg   verhindert kuenftig: meisters (94)
+
+  vermessen  (Verb-Frequenz 83)
+      vermaßen              wir/Prät       verhindert kuenftig: dermaßen (45)
+
+  fachen  (Verb-Frequenz 82)
+      fachten               wir/Prät       verhindert kuenftig: dachten (32)
+
+  perlen  (Verb-Frequenz 81)
+      perlt                 er/sie         verhindert kuenftig: perot (10)
+
+  unterzeichnen  (Verb-Frequenz 81)
+      unterzeichnetet       ihr/Prät       verhindert kuenftig: unterzeichneter (8)
+
+  foltern  (Verb-Frequenz 80)
+      foltere               Imperativ Sg   verhindert kuenftig: folgere (13)
+      folterst              du             verhindert kuenftig: folgerst (13)
+      foltert               er/sie         verhindert kuenftig: folgert (44)
+      folterte              ich/Prät       verhindert kuenftig: folgerte (69)
+      folterten             wir/Prät       verhindert kuenftig: folgerten (12)
+      foltertest            du/Prät        verhindert kuenftig: folgertest (13)
+      foltertet             ihr/Prät       verhindert kuenftig: folgertet (13)
+
+  gatten  (Verb-Frequenz 80)
+      gattet                Imperativ Pl   verhindert kuenftig: gatter (24)
+
+  musen  (Verb-Frequenz 80)
+      muste                 ich/Prät       verhindert kuenftig: miste (11)
+      musten                wir/Prät       verhindert kuenftig: husten (47)
+
+  übertreffen  (Verb-Frequenz 79)
+      übertriff             Imperativ Sg   verhindert kuenftig: übergriff (30)
+
+  lügen  (Verb-Frequenz 77)
+      logst                 du/Prät        verhindert kuenftig: lobst (12)
+      logt                  ihr/Prät       verhindert kuenftig: lobt (39)
+
+  rudern  (Verb-Frequenz 76)
+      rudere                Imperativ Sg   verhindert kuenftig: ruders (39)
+
+  überfallen  (Verb-Frequenz 76)
+      überfalle             ich            verhindert kuenftig: überfalls (97)
+
+  erlöschen  (Verb-Frequenz 73)
+      erloscht              ihr/Prät       verhindert kuenftig: erlischt (41)
+
+  turnen  (Verb-Frequenz 73)
+      turne                 Imperativ Sg   verhindert kuenftig: turns (10)
+
+  bullen  (Verb-Frequenz 72)
+      bullt                 er/sie         verhindert kuenftig: built (12)
+
+  puppen  (Verb-Frequenz 71)
+      pupp                  Imperativ Sg   verhindert kuenftig: pulp (40)
+
+  verlesen  (Verb-Frequenz 71)
+      verlasen              wir/Prät       verhindert kuenftig: verladen (34)
+
+  vollenden  (Verb-Frequenz 71)
+      vollende              ich            verhindert kuenftig: vollends (71)
+      vollendetet           ihr/Prät       verhindert kuenftig: vollendeter (19)
+
+  entladen  (Verb-Frequenz 70)
+      entlädst              du             verhindert kuenftig: entlässt (39)
+
+  rasen  (Verb-Frequenz 70)
+      rastet                ihr/Prät       verhindert kuenftig: raster (64)
+
+  pausen  (Verb-Frequenz 69)
+      paus                  Imperativ Sg   verhindert kuenftig: laus (16)
+
+  pilgern  (Verb-Frequenz 69)
+      pilgere               Imperativ Sg   verhindert kuenftig: pilgers (64)
+
+  walden  (Verb-Frequenz 69)
+      gewaldet              Partizip II    verhindert kuenftig: bewaldet (105)
+      waldet                er/sie         verhindert kuenftig: walder (12)
+
+  ledern  (Verb-Frequenz 68)
+      ledere                Imperativ Sg   verhindert kuenftig: leders (68)
+
+  rippen  (Verb-Frequenz 68)
+      gerippt               Partizip II    verhindert kuenftig: getippt (8)
+      ripp                  Imperativ Sg   verhindert kuenftig: rupp (14)
+
+  anhängen  (Verb-Frequenz 67)
+      angehangen            Partizip II    verhindert kuenftig: angegangen (36)
+
+  erwachsen  (Verb-Frequenz 67)
+      erwachse              ich            verhindert kuenftig: erdachse (94)
+
+  nullen  (Verb-Frequenz 67)
+      nulltet               ihr/Prät       verhindert kuenftig: nullter (10)
+
+  rauen  (Verb-Frequenz 67)
+      geraut                Partizip II    verhindert kuenftig: getaut (4)
+      raut                  er/sie         verhindert kuenftig: taut (81)
+      rautest               du/Prät        verhindert kuenftig: tautest (4)
+      rautet                ihr/Prät       verhindert kuenftig: tautet (4)
+
+  winden  (Verb-Frequenz 67)
+      wanden                wir/Prät       verhindert kuenftig: sanden (32)
+      wandet                ihr/Prät       verhindert kuenftig: wander (51)
+
+  ertragen  (Verb-Frequenz 66)
+      ertrage               ich            verhindert kuenftig: ertrags (9)
+      ertragt               ihr            verhindert kuenftig: erfragt (11)
+
+  stäuben  (Verb-Frequenz 66)
+      gestäubt              Partizip II    verhindert kuenftig: bestäubt (11)
+
+  aalen  (Verb-Frequenz 65)
+      aalten                wir/Prät       verhindert kuenftig: walten (38)
+
+  beladen  (Verb-Frequenz 65)
+      belädst               du             verhindert kuenftig: belässt (12)
+
+  cachen  (Verb-Frequenz 65)
+      cachten               wir/Prät       verhindert kuenftig: dachten (32)
+
+  ernten  (Verb-Frequenz 64)
+      ernt                  Imperativ Sg   verhindert kuenftig: erbt (26)
+
+  belieben  (Verb-Frequenz 63)
+      beliebe               ich            verhindert kuenftig: believe (9)
+
+  besteigen  (Verb-Frequenz 62)
+      besteig               Imperativ Sg   verhindert kuenftig: bestwig (11)
+
+  haken  (Verb-Frequenz 62)
+      hake                  ich            verhindert kuenftig: make (73)
+
+  hufen  (Verb-Frequenz 62)
+      huft                  er/sie         verhindert kuenftig: hurt (25)
+      huften                wir/Prät       verhindert kuenftig: hutten (22)
+
+  wachen  (Verb-Frequenz 62)
+      wachtet               ihr/Prät       verhindert kuenftig: wachter (8)
+
+  flanken  (Verb-Frequenz 61)
+      flank                 Imperativ Sg   verhindert kuenftig: blank (85)
+
+  moosen  (Verb-Frequenz 61)
+      moost                 er/sie         verhindert kuenftig: joost (11)
+
+  sponsoren  (Verb-Frequenz 61)
+      sponsore              ich            verhindert kuenftig: sponsors (16)
+
+  atmen  (Verb-Frequenz 58)
+      atmet                 er/sie         verhindert kuenftig: ahmet (17)
+      geatmet               Partizip II    verhindert kuenftig: beatmet (8)
+
+  fugen  (Verb-Frequenz 57)
+      fugt                  er/sie         verhindert kuenftig: furt (73)
+      fugten                wir/Prät       verhindert kuenftig: furten (26)
+      gefugt                Partizip II    verhindert kuenftig: befugt (43)
+
+  meiden  (Verb-Frequenz 57)
+      meidest               du             verhindert kuenftig: meldest (42)
+
+  zimmern  (Verb-Frequenz 57)
+      zimmere               Imperativ Sg   verhindert kuenftig: zimmers (17)
+
+  pfeffern  (Verb-Frequenz 56)
+      pfeffere              Imperativ Sg   verhindert kuenftig: pfeffers (9)
+
+  schotten  (Verb-Frequenz 56)
+      schottet              er/sie         verhindert kuenftig: schotter (34)
+
+  urlauben  (Verb-Frequenz 56)
+      geurlaubt             Partizip II    verhindert kuenftig: beurlaubt (39)
+
+  waschen  (Verb-Frequenz 55)
+      wuschen               wir/Prät       verhindert kuenftig: wischen (20)
+      wuschst               du/Prät        verhindert kuenftig: wischst (8)
+      wuscht                ihr/Prät       verhindert kuenftig: wischt (8)
+
+  wehen  (Verb-Frequenz 54)
+      geweht                Partizip II    verhindert kuenftig: gewehr (41)
+      wehten                wir/Prät       verhindert kuenftig: wehren (90)
+
+  weinen  (Verb-Frequenz 54)
+      weintest              du/Prät        verhindert kuenftig: weinfest (34)
+
+  falten  (Verb-Frequenz 53)
+      faltet                er/sie         verhindert kuenftig: falter (45)
+
+  narben  (Verb-Frequenz 53)
+      narb                  Imperativ Sg   verhindert kuenftig: harb (17)
+
+  panzern  (Verb-Frequenz 53)
+      panzere               Imperativ Sg   verhindert kuenftig: panzers (78)
+
+  heften  (Verb-Frequenz 52)
+      heftest               du             verhindert kuenftig: hegtest (5)
+      heftet                er/sie         verhindert kuenftig: hegtet (5)
+
+  sinnen  (Verb-Frequenz 52)
+      sannen                wir/Prät       verhindert kuenftig: sangen (56)
+
+  beschädigen  (Verb-Frequenz 51)
+      beschädigtet          ihr/Prät       verhindert kuenftig: beschädigter (9)
+
+  heeren  (Verb-Frequenz 51)
+      heerst                du             verhindert kuenftig: heerdt (18)
+
+  kuren  (Verb-Frequenz 51)
+      kurst                 du             verhindert kuenftig: kirst (8)
+
+  kälten  (Verb-Frequenz 51)
+      kältet                er/sie         verhindert kuenftig: kälter (54)
+      kältete               ich/Prät       verhindert kuenftig: kältere (26)
+      kälteten              wir/Prät       verhindert kuenftig: kälteren (41)
+
+  lappen  (Verb-Frequenz 51)
+      lappe                 ich            verhindert kuenftig: pappe (62)
+
+  scherben  (Verb-Frequenz 51)
+      scherb                Imperativ Sg   verhindert kuenftig: scherf (29)
+      scherbe               ich            verhindert kuenftig: scherfe (10)
+
+  sehnen  (Verb-Frequenz 51)
+      gesehnt               Partizip II    verhindert kuenftig: gedehnt (35)
+
+  fechten  (Verb-Frequenz 50)
+      fechtet               ihr            verhindert kuenftig: fechter (12)
+
+  tunneln  (Verb-Frequenz 50)
+      tunnele               Imperativ Sg   verhindert kuenftig: tunnels (83)
+
+  karren  (Verb-Frequenz 49)
+      karr                  Imperativ Sg   verhindert kuenftig: karg (19)
+
+  ranken  (Verb-Frequenz 49)
+      gerankt               Partizip II    verhindert kuenftig: gedankt (9)
+      rankst                du             verhindert kuenftig: dankst (8)
+      rankt                 er/sie         verhindert kuenftig: dankt (14)
+      rankte                ich/Prät       verhindert kuenftig: dankte (60)
+      rankten               wir/Prät       verhindert kuenftig: dankten (10)
+      ranktest              du/Prät        verhindert kuenftig: danktest (8)
+      ranktet               ihr/Prät       verhindert kuenftig: danktet (8)
+
+  keimen  (Verb-Frequenz 48)
+      gekeimt               Partizip II    verhindert kuenftig: geleimt (9)
+
+  verwerfen  (Verb-Frequenz 48)
+      verwerfe              ich            verhindert kuenftig: verwerte (24)
+      verwirfst             du             verhindert kuenftig: verwirrst (11)
+
+  waten  (Verb-Frequenz 48)
+      watet                 er/sie         verhindert kuenftig: water (88)
+
+  erklingen  (Verb-Frequenz 47)
+      erklungen             Partizip II    verhindert kuenftig: erklingen (47)
+
+  kiesen  (Verb-Frequenz 47)
+      koren                 wir/Prät       verhindert kuenftig: loren (44)
+      kort                  ihr/Prät       verhindert kuenftig: mort (26)
+
+  saugen  (Verb-Frequenz 47)
+      sauge                 ich            verhindert kuenftig: saure (76)
+
+  versenden  (Verb-Frequenz 47)
+      versende              ich            verhindert kuenftig: verwende (24)
+
+  güten  (Verb-Frequenz 46)
+      gegütet               Partizip II    verhindert kuenftig: gehütet (17)
+      gütest                du             verhindert kuenftig: hütest (17)
+      gütete                ich/Prät       verhindert kuenftig: hütete (17)
+      güteten               wir/Prät       verhindert kuenftig: hüteten (17)
+      gütetest              du/Prät        verhindert kuenftig: hütetest (17)
+      gütetet               ihr/Prät       verhindert kuenftig: hütetet (17)
+
+  seilen  (Verb-Frequenz 46)
+      geseilt               Partizip II    verhindert kuenftig: gesellt (8)
+      seilten               wir/Prät       verhindert kuenftig: weilten (13)
+
+  containern  (Verb-Frequenz 45)
+      containere            Imperativ Sg   verhindert kuenftig: containers (17)
+
+  fristen  (Verb-Frequenz 45)
+      gefristet             Partizip II    verhindert kuenftig: befristet (60)
+
+  gipfeln  (Verb-Frequenz 45)
+      gipfele               Imperativ Sg   verhindert kuenftig: gipfels (48)
+
+  beauftragen  (Verb-Frequenz 43)
+      beauftragtet          ihr/Prät       verhindert kuenftig: beauftragter (42)
+
+  rillen  (Verb-Frequenz 42)
+      gerillt               Partizip II    verhindert kuenftig: gerollt (29)
+      rillt                 er/sie         verhindert kuenftig: rollt (24)
+      rillte                ich/Prät       verhindert kuenftig: rollte (14)
+      rillten               wir/Prät       verhindert kuenftig: rollten (8)
+
+  sieden  (Verb-Frequenz 42)
+      sied                  Imperativ Sg   verhindert kuenftig: wied (37)
+
+  stocken  (Verb-Frequenz 42)
+      gestockt              Partizip II    verhindert kuenftig: bestockt (8)
+
+  suren  (Verb-Frequenz 42)
+      surst                 du             verhindert kuenftig: wurst (61)
+      surt                  er/sie         verhindert kuenftig: curt (85)
+      surten                wir/Prät       verhindert kuenftig: surfen (53)
+
+  blechen  (Verb-Frequenz 41)
+      blechten              wir/Prät       verhindert kuenftig: flechten (60)
+      geblecht              Partizip II    verhindert kuenftig: geflecht (34)
+
+  gendern  (Verb-Frequenz 41)
+      gegendert             Partizip II    verhindert kuenftig: gegenwert (31)
+      gendere               Imperativ Sg   verhindert kuenftig: genders (41)
+
+  rinnen  (Verb-Frequenz 41)
+      rannen                wir/Prät       verhindert kuenftig: tannen (73)
+      rinnt                 er/sie         verhindert kuenftig: ringt (11)
+
+  backen  (Verb-Frequenz 40)
+      backe                 ich            verhindert kuenftig: hacke (18)
+      backt                 ihr            verhindert kuenftig: nackt (97)
+      buk                   ich/Prät       verhindert kuenftig: vuk (44)
+      bukt                  ihr/Prät       verhindert kuenftig: bult (11)
+
+  erstaunen  (Verb-Frequenz 40)
+      erstauntet            ihr/Prät       verhindert kuenftig: erstaunter (17)
+
+  schwinden  (Verb-Frequenz 40)
+      schwinde              ich            verhindert kuenftig: schwunde (5)
+
+  fabeln  (Verb-Frequenz 39)
+      fable                 ich            verhindert kuenftig: table (82)
+
+  seifen  (Verb-Frequenz 39)
+      seift                 er/sie         verhindert kuenftig: swift (45)
+
+  zechen  (Verb-Frequenz 39)
+      zecht                 er/sie         verhindert kuenftig: hecht (50)
+      zechte                ich/Prät       verhindert kuenftig: hechte (13)
+      zechten               wir/Prät       verhindert kuenftig: hechten (18)
+
+  überarbeiten  (Verb-Frequenz 39)
+      überarbeitetet        ihr/Prät       verhindert kuenftig: überarbeiteter (16)
+
+  begaben  (Verb-Frequenz 38)
+      begabtet              ihr/Prät       verhindert kuenftig: begabter (28)
+
+  lichten  (Verb-Frequenz 38)
+      gelichtet             Partizip II    verhindert kuenftig: belichtet (14)
+      lichtet               er/sie         verhindert kuenftig: lichter (51)
+
+  unterfangen  (Verb-Frequenz 38)
+      unterfing             ich/Prät       verhindert kuenftig: unterging (39)
+      unterfingen           wir/Prät       verhindert kuenftig: untergingen (8)
+
+  walten  (Verb-Frequenz 38)
+      walte                 ich            verhindert kuenftig: walze (72)
+
+  frachten  (Verb-Frequenz 37)
+      frachtest             du             verhindert kuenftig: erachtest (7)
+      frachtete             ich/Prät       verhindert kuenftig: erachtete (50)
+      frachteten            wir/Prät       verhindert kuenftig: erachteten (32)
+      frachtetest           du/Prät        verhindert kuenftig: erachtetest (7)
+      frachtetet            ihr/Prät       verhindert kuenftig: erachtetet (7)
+
+  zehnteln  (Verb-Frequenz 37)
+      zehntele              Imperativ Sg   verhindert kuenftig: zehntels (37)
+
+  buben  (Verb-Frequenz 36)
+      bubt                  er/sie         verhindert kuenftig: bunt (78)
+      bubte                 ich/Prät       verhindert kuenftig: bunte (76)
+      bubten                wir/Prät       verhindert kuenftig: bunten (93)
+
+  ergehen  (Verb-Frequenz 36)
+      ergehe                ich            verhindert kuenftig: ergebe (52)
+      ergingt               ihr/Prät       verhindert kuenftig: erringt (15)
+
+  mixen  (Verb-Frequenz 36)
+      mixt                  du             verhindert kuenftig: mist (30)
+      mixte                 ich/Prät       verhindert kuenftig: miste (11)
+      mixten                wir/Prät       verhindert kuenftig: misten (11)
+
+  covern  (Verb-Frequenz 35)
+      covere                Imperativ Sg   verhindert kuenftig: covers (11)
+
+  heizen  (Verb-Frequenz 35)
+      heize                 ich            verhindert kuenftig: geize (6)
+
+  berlinern  (Verb-Frequenz 34)
+      berlinere             Imperativ Sg   verhindert kuenftig: berliners (9)
+
+  bohren  (Verb-Frequenz 34)
+      bohre                 ich            verhindert kuenftig: bohrs (12)
+
+  entgelten  (Verb-Frequenz 34)
+      entgalt               ich/Prät       verhindert kuenftig: entfalt (82)
+      entgaltest            du/Prät        verhindert kuenftig: entfaltest (82)
+
+  loten  (Verb-Frequenz 34)
+      lotest                du             verhindert kuenftig: potest (9)
+
+  mahlen  (Verb-Frequenz 34)
+      mahle                 ich            verhindert kuenftig: kahle (37)
+
+  reiben  (Verb-Frequenz 34)
+      reibt                 er/sie         verhindert kuenftig: reiht (21)
+
+  unterlaufen  (Verb-Frequenz 34)
+      unterlaufe            ich            verhindert kuenftig: unterlaufs (15)
+
+  verladen  (Verb-Frequenz 34)
+      verlad                Imperativ Sg   verhindert kuenftig: verlas (30)
+
+  zelten  (Verb-Frequenz 34)
+      zeltet                er/sie         verhindert kuenftig: zelter (47)
+
+  überliefern  (Verb-Frequenz 34)
+      überliefertet         ihr/Prät       verhindert kuenftig: überlieferter (25)
+
+  fohlen  (Verb-Frequenz 33)
+      gefohlt               Partizip II    verhindert kuenftig: befohlt (32)
+
+  härten  (Verb-Frequenz 33)
+      härtest               du             verhindert kuenftig: hättest (35)
+      härtet                er/sie         verhindert kuenftig: härter (66)
+      härtete               ich/Prät       verhindert kuenftig: härtere (29)
+      härteten              wir/Prät       verhindert kuenftig: härteren (22)
+
+  verschulden  (Verb-Frequenz 33)
+      verschuldetet         ihr/Prät       verhindert kuenftig: verschuldeter (42)
+
+  futtern  (Verb-Frequenz 32)
+      futtere               Imperativ Sg   verhindert kuenftig: futters (32)
+
+  lotsen  (Verb-Frequenz 32)
+      lots                  Imperativ Sg   verhindert kuenftig: pots (42)
+
+  mängeln  (Verb-Frequenz 32)
+      gemängelt             Partizip II    verhindert kuenftig: bemängelt (69)
+
+  sanden  (Verb-Frequenz 32)
+      sandet                er/sie         verhindert kuenftig: sander (61)
+
+  schuhen  (Verb-Frequenz 32)
+      schuht                er/sie         verhindert kuenftig: schutt (73)
+      schuhte               ich/Prät       verhindert kuenftig: schutte (26)
+      schuhten              wir/Prät       verhindert kuenftig: schutten (26)
+
+  bechern  (Verb-Frequenz 31)
+      bechere               Imperativ Sg   verhindert kuenftig: bechers (9)
+
+  müllen  (Verb-Frequenz 31)
+      gemüllt               Partizip II    verhindert kuenftig: gehüllt (22)
+
+  schären  (Verb-Frequenz 31)
+      schäre                ich            verhindert kuenftig: schärf (11)
+      schärt                er/sie         verhindert kuenftig: schärf (11)
+      schärten              wir/Prät       verhindert kuenftig: schärfen (41)
+
+  stanzen  (Verb-Frequenz 31)
+      stanze                ich            verhindert kuenftig: stange (73)
+
+  takten  (Verb-Frequenz 31)
+      taktest               du             verhindert kuenftig: tautest (4)
+      taktet                er/sie         verhindert kuenftig: tautet (4)
+
+  formieren  (Verb-Frequenz 30)
+      formier               Imperativ Sg   verhindert kuenftig: firmier (6)
+      formiere              ich            verhindert kuenftig: firmiere (6)
+      formierst             du             verhindert kuenftig: firmierst (6)
+      formiertest           du/Prät        verhindert kuenftig: firmiertest (6)
+      formiertet            ihr/Prät       verhindert kuenftig: firmiertet (6)
+
+  forsten  (Verb-Frequenz 30)
+      forstet               er/sie         verhindert kuenftig: forster (79)
+
+  mandeln  (Verb-Frequenz 30)
+      mandelten             wir/Prät       verhindert kuenftig: handelten (66)
+
+  zinken  (Verb-Frequenz 30)
+      zinkte                ich/Prät       verhindert kuenftig: hinkte (9)
+
+------------------------------------------------------------------------------
+E  Verb sehr selten (<30) - hier sitzen die fraglichen Faelle   (359 Faelle)
+------------------------------------------------------------------------------
+
+  geigen  (Verb-Frequenz 29)
+      geig                  Imperativ Sg   verhindert kuenftig: teig (45)
+      geigst                du             verhindert kuenftig: zeigst (15)
+
+  kabeln  (Verb-Frequenz 29)
+      kabele                Imperativ Sg   verhindert kuenftig: kabels (22)
+      kable                 ich            verhindert kuenftig: kahle (37)
+
+  narren  (Verb-Frequenz 29)
+      narre                 ich            verhindert kuenftig: barre (19)
+
+  rußen  (Verb-Frequenz 29)
+      gerußt                Partizip II    verhindert kuenftig: gefußt (10)
+      rußt                  du             verhindert kuenftig: fußt (47)
+      rußte                 ich/Prät       verhindert kuenftig: fußte (19)
+      rußten                wir/Prät       verhindert kuenftig: fußten (10)
+      rußtest               du/Prät        verhindert kuenftig: fußtest (10)
+      rußtet                ihr/Prät       verhindert kuenftig: fußtet (10)
+
+  sahnen  (Verb-Frequenz 29)
+      sahn                  ich            verhindert kuenftig: wahn (52)
+
+  wogen  (Verb-Frequenz 29)
+      woge                  ich            verhindert kuenftig: doge (20)
+      wogst                 du             verhindert kuenftig: worst (32)
+
+  obliegen  (Verb-Frequenz 28)
+      oblagen               wir/Prät       verhindert kuenftig: oblaten (12)
+
+  siegeln  (Verb-Frequenz 28)
+      gesiegelt             Partizip II    verhindert kuenftig: besiegelt (82)
+
+  tischen  (Verb-Frequenz 28)
+      getischt              Partizip II    verhindert kuenftig: gefischt (12)
+      tischt                er/sie         verhindert kuenftig: gischt (13)
+
+  wanken  (Verb-Frequenz 28)
+      gewankt               Partizip II    verhindert kuenftig: gedankt (9)
+      wanke                 ich            verhindert kuenftig: danke (49)
+      wankst                du             verhindert kuenftig: dankst (8)
+      wankte                ich/Prät       verhindert kuenftig: dankte (60)
+      wankten               wir/Prät       verhindert kuenftig: dankten (10)
+      wanktest              du/Prät        verhindert kuenftig: danktest (8)
+      wanktet               ihr/Prät       verhindert kuenftig: danktet (8)
+
+  willigen  (Verb-Frequenz 28)
+      gewilligt             Partizip II    verhindert kuenftig: bewilligt (63)
+
+  deckeln  (Verb-Frequenz 27)
+      deckele               Imperativ Sg   verhindert kuenftig: deckels (27)
+
+  erlegen  (Verb-Frequenz 27)
+      erleg                 Imperativ Sg   verhindert kuenftig: erlen (37)
+
+  häuten  (Verb-Frequenz 27)
+      häut                  Imperativ Sg   verhindert kuenftig: häuf (11)
+
+  lächeln  (Verb-Frequenz 27)
+      gelächelt             Partizip II    verhindert kuenftig: belächelt (13)
+
+  motivieren  (Verb-Frequenz 27)
+      motiviertet           ihr/Prät       verhindert kuenftig: motivierter (27)
+
+  überdenken  (Verb-Frequenz 27)
+      überdachtet           ihr/Prät       verhindert kuenftig: überdachter (14)
+
+  fliesen  (Verb-Frequenz 26)
+      flies                 Imperativ Sg   verhindert kuenftig: vlies (33)
+      fliese                ich            verhindert kuenftig: gliese (16)
+
+  fußballern  (Verb-Frequenz 26)
+      fußballere            Imperativ Sg   verhindert kuenftig: fußballers (26)
+
+  glühen  (Verb-Frequenz 26)
+      glühe                 ich            verhindert kuenftig: blühe (20)
+      glühst                du             verhindert kuenftig: blühst (20)
+      glühte                ich/Prät       verhindert kuenftig: blühte (99)
+      glühten               wir/Prät       verhindert kuenftig: blühten (28)
+      glühtest              du/Prät        verhindert kuenftig: blühtest (20)
+      glühtet               ihr/Prät       verhindert kuenftig: blühtet (20)
+
+  entspannen  (Verb-Frequenz 25)
+      entspanntet           ihr/Prät       verhindert kuenftig: entspannter (12)
+
+  hissen  (Verb-Frequenz 25)
+      hisse                 ich            verhindert kuenftig: bisse (15)
+
+  kegeln  (Verb-Frequenz 25)
+      kegele                Imperativ Sg   verhindert kuenftig: kegels (27)
+      kegle                 ich            verhindert kuenftig: kehle (32)
+
+  lacken  (Verb-Frequenz 25)
+      gelackt               Partizip II    verhindert kuenftig: gepackt (22)
+      lackst                du             verhindert kuenftig: packst (8)
+      lackt                 er/sie         verhindert kuenftig: packt (15)
+      lackte                ich/Prät       verhindert kuenftig: packte (9)
+      lackten               wir/Prät       verhindert kuenftig: packten (8)
+      lacktest              du/Prät        verhindert kuenftig: packtest (8)
+      lacktet               ihr/Prät       verhindert kuenftig: packtet (8)
+
+  schaben  (Verb-Frequenz 25)
+      schabt                er/sie         verhindert kuenftig: schaft (82)
+
+  weilen  (Verb-Frequenz 25)
+      geweilt               Partizip II    verhindert kuenftig: gewellt (9)
+
+  wirten  (Verb-Frequenz 25)
+      gewirtet              Partizip II    verhindert kuenftig: bewirtet (9)
+
+  abenteuern  (Verb-Frequenz 24)
+      abenteuere            Imperativ Sg   verhindert kuenftig: abenteuers (98)
+
+  beschlagnahmen  (Verb-Frequenz 24)
+      beschlagnahmtet       ihr/Prät       verhindert kuenftig: beschlagnahmter (84)
+
+  laben  (Verb-Frequenz 24)
+      labst                 du             verhindert kuenftig: pabst (36)
+
+  schlucken  (Verb-Frequenz 24)
+      schlucke              ich            verhindert kuenftig: schlicke (12)
+
+  gaumen  (Verb-Frequenz 23)
+      gaume                 Imperativ Sg   verhindert kuenftig: baume (13)
+      gaumt                 er/sie         verhindert kuenftig: gaunt (25)
+
+  huren  (Verb-Frequenz 23)
+      hurst                 du             verhindert kuenftig: burst (30)
+      hurte                 ich/Prät       verhindert kuenftig: hirte (34)
+
+  mähen  (Verb-Frequenz 23)
+      mähte                 ich/Prät       verhindert kuenftig: nähte (20)
+
+  putzen  (Verb-Frequenz 23)
+      putze                 ich            verhindert kuenftig: lutze (18)
+
+  schimmeln  (Verb-Frequenz 23)
+      schimmele             Imperativ Sg   verhindert kuenftig: schimmels (23)
+
+  schocken  (Verb-Frequenz 23)
+      schockst              du             verhindert kuenftig: schickst (65)
+      schockt               er/sie         verhindert kuenftig: schickt (96)
+      schockten             wir/Prät       verhindert kuenftig: schickten (62)
+      schocktest            du/Prät        verhindert kuenftig: schicktest (65)
+      schocktet             ihr/Prät       verhindert kuenftig: schicktet (65)
+
+  wetten  (Verb-Frequenz 23)
+      wettete               ich/Prät       verhindert kuenftig: wertete (105)
+      wetteten              wir/Prät       verhindert kuenftig: werteten (18)
+
+  wundern  (Verb-Frequenz 23)
+      gewundert             Partizip II    verhindert kuenftig: bewundert (58)
+
+  beißen  (Verb-Frequenz 22)
+      bisst                 ihr/Prät       verhindert kuenftig: biest (13)
+
+  neiden  (Verb-Frequenz 22)
+      neidet                er/sie         verhindert kuenftig: meidet (18)
+
+  pappen  (Verb-Frequenz 22)
+      gepappt               Partizip II    verhindert kuenftig: gelappt (20)
+
+  schwenken  (Verb-Frequenz 22)
+      schwenke              ich            verhindert kuenftig: schwenks (8)
+
+  schüren  (Verb-Frequenz 22)
+      schürtet              ihr/Prät       verhindert kuenftig: schüttet (9)
+
+  solden  (Verb-Frequenz 22)
+      gesoldet              Partizip II    verhindert kuenftig: besoldet (12)
+
+  übergreifen  (Verb-Frequenz 22)
+      übergegriffen         Partizip II    verhindert kuenftig: überbegriffen (12)
+
+  überspannen  (Verb-Frequenz 22)
+      überspanntet          ihr/Prät       verhindert kuenftig: überspannter (29)
+
+  dönern  (Verb-Frequenz 21)
+      dönere                Imperativ Sg   verhindert kuenftig: döners (21)
+
+  rasseln  (Verb-Frequenz 21)
+      rassel                Imperativ Sg   verhindert kuenftig: dassel (11)
+
+  reuen  (Verb-Frequenz 21)
+      gereut                Partizip II    verhindert kuenftig: bereut (22)
+      reut                  er/sie         verhindert kuenftig: reit (25)
+      reute                 er/Prät        verhindert kuenftig: deute (18)
+
+  sechsteln  (Verb-Frequenz 21)
+      sechstele             Imperativ Sg   verhindert kuenftig: sechstels (21)
+
+  töpfern  (Verb-Frequenz 21)
+      töpfere               Imperativ Sg   verhindert kuenftig: töpfers (21)
+
+  beschreiten  (Verb-Frequenz 20)
+      beschrittet           ihr/Prät       verhindert kuenftig: beschriftet (73)
+
+  darren  (Verb-Frequenz 20)
+      darre                 ich            verhindert kuenftig: sarre (13)
+      darrst                du             verhindert kuenftig: darfst (45)
+
+  düsen  (Verb-Frequenz 20)
+      düst                  du             verhindert kuenftig: wüst (52)
+      düstet                ihr/Prät       verhindert kuenftig: düster (27)
+      gedüst                Partizip II    verhindert kuenftig: gerüst (93)
+
+  gehren  (Verb-Frequenz 20)
+      gegehrt               Partizip II    verhindert kuenftig: begehrt (80)
+
+  klicken  (Verb-Frequenz 20)
+      klicke                ich            verhindert kuenftig: klicks (19)
+
+  polieren  (Verb-Frequenz 20)
+      poliertet             ihr/Prät       verhindert kuenftig: polierter (9)
+
+  rasten  (Verb-Frequenz 20)
+      gerastet              Partizip II    verhindert kuenftig: gefastet (8)
+      rastete               ich/Prät       verhindert kuenftig: fastete (8)
+
+  scheren  (Verb-Frequenz 20)
+      schert                er/sie         verhindert kuenftig: scherz (52)
+      schort                ihr/Prät       verhindert kuenftig: schott (51)
+
+  schreiten  (Verb-Frequenz 20)
+      geschritten           Partizip II    verhindert kuenftig: beschritten (34)
+
+  tippen  (Verb-Frequenz 20)
+      tippe                 ich            verhindert kuenftig: tipps (27)
+
+  verfangen  (Verb-Frequenz 20)
+      verfing               ich/Prät       verhindert kuenftig: verging (15)
+      verfingen             wir/Prät       verhindert kuenftig: vergingen (35)
+
+  verheißen  (Verb-Frequenz 20)
+      verhießen             wir/Prät       verhindert kuenftig: vergießen (14)
+
+  aasen  (Verb-Frequenz 19)
+      aast                  du             verhindert kuenftig: yast (11)
+
+  gelen  (Verb-Frequenz 19)
+      gelt                  er/sie         verhindert kuenftig: zelt (65)
+
+  hacken  (Verb-Frequenz 19)
+      hackt                 er/sie         verhindert kuenftig: nackt (97)
+      hackte                ich/Prät       verhindert kuenftig: nackte (49)
+      hackten               wir/Prät       verhindert kuenftig: nackten (64)
+
+  reimen  (Verb-Frequenz 19)
+      gereimt               Partizip II    verhindert kuenftig: gereiht (30)
+      reimt                 er/sie         verhindert kuenftig: reiht (21)
+      reimte                ich/Prät       verhindert kuenftig: reihte (18)
+
+  snowboarden  (Verb-Frequenz 19)
+      snowboarde            ich            verhindert kuenftig: snowboards (34)
+      snowboardet           er/sie         verhindert kuenftig: snowboarder (17)
+
+  staunen  (Verb-Frequenz 19)
+      gestaunt              Partizip II    verhindert kuenftig: bestaunt (4)
+
+  weben  (Verb-Frequenz 19)
+      webt                  er/sie         verhindert kuenftig: weht (51)
+      wob                   ich/Prät       verhindert kuenftig: wog (76)
+      woben                 wir/Prät       verhindert kuenftig: wogen (29)
+
+  überladen  (Verb-Frequenz 19)
+      überlädst             du             verhindert kuenftig: überlässt (55)
+
+  abgewinnen  (Verb-Frequenz 18)
+      abgewonnen            Partizip II    verhindert kuenftig: abgewinnen (18)
+
+  schnitzen  (Verb-Frequenz 18)
+      schnitze              ich            verhindert kuenftig: schnitte (74)
+
+  sägen  (Verb-Frequenz 18)
+      sägte                 ich/Prät       verhindert kuenftig: säfte (16)
+      sägten                wir/Prät       verhindert kuenftig: säften (22)
+
+  ballen  (Verb-Frequenz 17)
+      ballst                du             verhindert kuenftig: ballet (41)
+
+  dekodieren  (Verb-Frequenz 17)
+      dekodierte            ich/Prät       verhindert kuenftig: dekorierte (18)
+      dekodierten           wir/Prät       verhindert kuenftig: dekorierten (10)
+
+  hadern  (Verb-Frequenz 17)
+      hader                 ich            verhindert kuenftig: hafer (92)
+
+  harfen  (Verb-Frequenz 17)
+      harft                 er/sie         verhindert kuenftig: hardt (21)
+      harften               wir/Prät       verhindert kuenftig: haeften (10)
+
+  mäandern  (Verb-Frequenz 17)
+      mäandere              Imperativ Sg   verhindert kuenftig: mäanders (5)
+
+  parsen  (Verb-Frequenz 17)
+      parst                 du             verhindert kuenftig: parat (9)
+      parste                ich/Prät       verhindert kuenftig: parate (4)
+      parsten               wir/Prät       verhindert kuenftig: paraten (4)
+
+  pflastern  (Verb-Frequenz 17)
+      pflastere             Imperativ Sg   verhindert kuenftig: pflasters (17)
+
+  plagen  (Verb-Frequenz 17)
+      plagst                du             verhindert kuenftig: planst (62)
+      plagtest              du/Prät        verhindert kuenftig: plantest (62)
+      plagtet               ihr/Prät       verhindert kuenftig: plantet (62)
+
+  putten  (Verb-Frequenz 17)
+      putt                  Imperativ Sg   verhindert kuenftig: pitt (62)
+
+  tonen  (Verb-Frequenz 17)
+      tont                  er/sie         verhindert kuenftig: font (78)
+      tonte                 ich/Prät       verhindert kuenftig: tinte (103)
+      tonten                wir/Prät       verhindert kuenftig: tinten (43)
+
+  verbiegen  (Verb-Frequenz 17)
+      verbiege              ich            verhindert kuenftig: verbiete (15)
+      verbiegt              er/sie         verhindert kuenftig: verbirgt (47)
+
+  versiegen  (Verb-Frequenz 17)
+      versiegten            wir/Prät       verhindert kuenftig: versierten (11)
+
+  wallen  (Verb-Frequenz 17)
+      wallet                Imperativ Pl   verhindert kuenftig: waller (13)
+
+  wanzen  (Verb-Frequenz 17)
+      wanz                  Imperativ Sg   verhindert kuenftig: wang (69)
+
+  flimmern  (Verb-Frequenz 16)
+      flimmer               ich            verhindert kuenftig: glimmer (36)
+
+  heuen  (Verb-Frequenz 16)
+      heust                 du             verhindert kuenftig: beust (61)
+
+  igeln  (Verb-Frequenz 16)
+      igle                  ich            verhindert kuenftig: ihle (10)
+
+  jubeln  (Verb-Frequenz 16)
+      gejubelt              Partizip II    verhindert kuenftig: bejubelt (15)
+
+  pachten  (Verb-Frequenz 16)
+      pachte                ich            verhindert kuenftig: lachte (17)
+
+  schliefen  (Verb-Frequenz 16)
+      geschloffen           Partizip II    verhindert kuenftig: geschliffen (31)
+      schliefe              ich            verhindert kuenftig: schliffe (6)
+
+  stilisieren  (Verb-Frequenz 16)
+      stilisiertet          ihr/Prät       verhindert kuenftig: stilisierter (12)
+
+  umschlagen  (Verb-Frequenz 16)
+      umschlage             ich            verhindert kuenftig: umschlags (15)
+
+  verblassen  (Verb-Frequenz 16)
+      verblasstet           ihr/Prät       verhindert kuenftig: verblasster (8)
+
+  zacken  (Verb-Frequenz 16)
+      gezackt               Partizip II    verhindert kuenftig: gehackt (8)
+
+  beigen  (Verb-Frequenz 15)
+      beigst                du             verhindert kuenftig: beugst (18)
+      beigt                 er/sie         verhindert kuenftig: neigt (89)
+      beigte                ich/Prät       verhindert kuenftig: neigte (62)
+      beigten               wir/Prät       verhindert kuenftig: neigten (33)
+      beigtest              du/Prät        verhindert kuenftig: beugtest (18)
+      beigtet               ihr/Prät       verhindert kuenftig: beugtet (18)
+
+  bemalen  (Verb-Frequenz 15)
+      bemale                ich            verhindert kuenftig: female (35)
+
+  flocken  (Verb-Frequenz 15)
+      flockst               du             verhindert kuenftig: blockst (4)
+      flockt                er/sie         verhindert kuenftig: blockt (4)
+      flockte               ich/Prät       verhindert kuenftig: blockte (4)
+      flockten              wir/Prät       verhindert kuenftig: blockten (4)
+      flocktest             du/Prät        verhindert kuenftig: blocktest (4)
+      flocktet              ihr/Prät       verhindert kuenftig: blocktet (4)
+      geflockt              Partizip II    verhindert kuenftig: geblockt (4)
+
+  hauben  (Verb-Frequenz 15)
+      haub                  Imperativ Sg   verhindert kuenftig: haug (9)
+
+  nisten  (Verb-Frequenz 15)
+      niste                 ich            verhindert kuenftig: miste (11)
+
+  portieren  (Verb-Frequenz 15)
+      portiere              ich            verhindert kuenftig: portiers (3)
+
+  sensen  (Verb-Frequenz 15)
+      senste                ich/Prät       verhindert kuenftig: senate (52)
+      sensten               wir/Prät       verhindert kuenftig: senaten (9)
+
+  wässern  (Verb-Frequenz 15)
+      gewässert             Partizip II    verhindert kuenftig: bewässert (27)
+
+  ankern  (Verb-Frequenz 14)
+      ankere                Imperativ Sg   verhindert kuenftig: ankers (9)
+
+  anklingen  (Verb-Frequenz 14)
+      angeklungen           Partizip II    verhindert kuenftig: abgeklungen (19)
+
+  asten  (Verb-Frequenz 14)
+      aste                  ich            verhindert kuenftig: acte (10)
+      astet                 er/sie         verhindert kuenftig: aster (10)
+
+  deichen  (Verb-Frequenz 14)
+      gedeicht              Partizip II    verhindert kuenftig: gereicht (62)
+
+  duschen  (Verb-Frequenz 14)
+      dusch                 Imperativ Sg   verhindert kuenftig: wusch (17)
+
+  mappen  (Verb-Frequenz 14)
+      gemappt               Partizip II    verhindert kuenftig: gekappt (14)
+
+  morsen  (Verb-Frequenz 14)
+      morste                ich/Prät       verhindert kuenftig: horste (13)
+
+  nieten  (Verb-Frequenz 14)
+      genietet              Partizip II    verhindert kuenftig: gemietet (32)
+      nietete               ich/Prät       verhindert kuenftig: mietete (71)
+      nieteten              wir/Prät       verhindert kuenftig: mieteten (16)
+
+  verkleiden  (Verb-Frequenz 14)
+      verkleidetet          ihr/Prät       verhindert kuenftig: verkleideter (54)
+
+  abspannen  (Verb-Frequenz 13)
+      abgespannt            Partizip II    verhindert kuenftig: angespannt (77)
+
+  besingen  (Verb-Frequenz 13)
+      besinge               ich            verhindert kuenftig: bedinge (25)
+      besingst              du             verhindert kuenftig: bedingst (25)
+
+  besinnen  (Verb-Frequenz 13)
+      besinnt               Imperativ Pl   verhindert kuenftig: gesinnt (48)
+      besonnen              Partizip II    verhindert kuenftig: besinnen (13)
+
+  güllen  (Verb-Frequenz 13)
+      güllt                 er/sie         verhindert kuenftig: füllt (55)
+      güllte                ich/Prät       verhindert kuenftig: füllte (63)
+      güllten               wir/Prät       verhindert kuenftig: füllten (52)
+
+  harnen  (Verb-Frequenz 13)
+      geharnt               Partizip II    verhindert kuenftig: getarnt (40)
+      harnst                du             verhindert kuenftig: tarnst (5)
+      harnt                 er/sie         verhindert kuenftig: tarnt (5)
+      harnte                ich/Prät       verhindert kuenftig: tarnte (5)
+      harnten               wir/Prät       verhindert kuenftig: tarnten (5)
+      harntest              du/Prät        verhindert kuenftig: tarntest (5)
+      harntet               ihr/Prät       verhindert kuenftig: tarntet (5)
+
+  hebeln  (Verb-Frequenz 13)
+      hebele                Imperativ Sg   verhindert kuenftig: hebels (13)
+      heble                 ich            verhindert kuenftig: henle (16)
+
+  kapern  (Verb-Frequenz 13)
+      kaper                 ich            verhindert kuenftig: kaler (12)
+
+  spitzeln  (Verb-Frequenz 13)
+      gespitzelt            Partizip II    verhindert kuenftig: bespitzelt (9)
+
+  trügen  (Verb-Frequenz 13)
+      getrogen              Partizip II    verhindert kuenftig: betrogen (38)
+      trogt                 ihr/Prät       verhindert kuenftig: trott (21)
+      trüg                  Imperativ Sg   verhindert kuenftig: trüb (13)
+      trüge                 ich            verhindert kuenftig: trübe (17)
+      trügst                du             verhindert kuenftig: trübst (11)
+      trügt                 er/sie         verhindert kuenftig: trübt (11)
+
+  walken  (Verb-Frequenz 13)
+      walke                 ich            verhindert kuenftig: walle (11)
+
+  abgehen  (Verb-Frequenz 12)
+      abgegangen            Partizip II    verhindert kuenftig: abgefangen (45)
+
+  beschlagen  (Verb-Frequenz 12)
+      beschlage             ich            verhindert kuenftig: beschlags (5)
+
+  geiern  (Verb-Frequenz 12)
+      geierten              wir/Prät       verhindert kuenftig: feierten (87)
+
+  gerinnen  (Verb-Frequenz 12)
+      geronnen              Partizip II    verhindert kuenftig: gerinnen (12)
+
+  hauchen  (Verb-Frequenz 12)
+      gehaucht              Partizip II    verhindert kuenftig: getaucht (32)
+      hauchten              wir/Prät       verhindert kuenftig: tauchten (98)
+
+  helmen  (Verb-Frequenz 12)
+      helmst                du             verhindert kuenftig: helmet (16)
+
+  keulen  (Verb-Frequenz 12)
+      keul                  Imperativ Sg   verhindert kuenftig: keil (50)
+
+  krähen  (Verb-Frequenz 12)
+      krähe                 ich            verhindert kuenftig: kräne (21)
+
+  melken  (Verb-Frequenz 12)
+      melke                 ich            verhindert kuenftig: melle (21)
+
+  ruinieren  (Verb-Frequenz 12)
+      ruiniertet            ihr/Prät       verhindert kuenftig: ruinierter (18)
+
+  schlieren  (Verb-Frequenz 12)
+      schliere              ich            verhindert kuenftig: schliers (3)
+
+  schlägern  (Verb-Frequenz 12)
+      schlägere             Imperativ Sg   verhindert kuenftig: schlägers (12)
+
+  zäunen  (Verb-Frequenz 12)
+      gezäunt               Partizip II    verhindert kuenftig: gezähnt (23)
+
+  baggern  (Verb-Frequenz 11)
+      baggere               Imperativ Sg   verhindert kuenftig: baggers (6)
+
+  befremden  (Verb-Frequenz 11)
+      befremdetet           ihr/Prät       verhindert kuenftig: befremdeter (6)
+
+  befüllen  (Verb-Frequenz 11)
+      befülltet             ihr/Prät       verhindert kuenftig: befüllter (18)
+
+  beizen  (Verb-Frequenz 11)
+      beiz                  Imperativ Sg   verhindert kuenftig: beit (27)
+      beize                 ich            verhindert kuenftig: beige (30)
+      beizt                 du             verhindert kuenftig: heizt (16)
+      beizte                ich/Prät       verhindert kuenftig: heizte (8)
+      gebeizt               Partizip II    verhindert kuenftig: geheizt (16)
+
+  blinken  (Verb-Frequenz 11)
+      blinke                ich            verhindert kuenftig: flinke (5)
+
+  flicken  (Verb-Frequenz 11)
+      flickst               du             verhindert kuenftig: blickst (26)
+      flickt                er/sie         verhindert kuenftig: blickt (98)
+      flickte               ich/Prät       verhindert kuenftig: blickte (12)
+      flickten              wir/Prät       verhindert kuenftig: blickten (26)
+      flicktest             du/Prät        verhindert kuenftig: blicktest (26)
+      flicktet              ihr/Prät       verhindert kuenftig: blicktet (26)
+      geflickt              Partizip II    verhindert kuenftig: geblickt (26)
+
+  gebaren  (Verb-Frequenz 11)
+      gebart                er/sie         verhindert kuenftig: gegart (34)
+
+  leimen  (Verb-Frequenz 11)
+      leimt                 er/sie         verhindert kuenftig: leiht (10)
+
+  misten  (Verb-Frequenz 11)
+      gemistet              Partizip II    verhindert kuenftig: gemietet (32)
+      mistet                er/sie         verhindert kuenftig: mister (15)
+      mistete               ich/Prät       verhindert kuenftig: mietete (71)
+      misteten              wir/Prät       verhindert kuenftig: mieteten (16)
+
+  schoren  (Verb-Frequenz 11)
+      schorte               ich/Prät       verhindert kuenftig: schotte (29)
+      schorten              wir/Prät       verhindert kuenftig: schotten (56)
+
+  spaten  (Verb-Frequenz 11)
+      spat                  Imperativ Sg   verhindert kuenftig: spar (21)
+      spate                 ich            verhindert kuenftig: spare (58)
+
+  splittern  (Verb-Frequenz 11)
+      splittere             Imperativ Sg   verhindert kuenftig: splitters (11)
+
+  taxen  (Verb-Frequenz 11)
+      taxt                  du             verhindert kuenftig: tast (12)
+      taxtet                ihr/Prät       verhindert kuenftig: tastet (11)
+
+  wedeln  (Verb-Frequenz 11)
+      wedele                Imperativ Sg   verhindert kuenftig: wedels (11)
+      wedle                 ich            verhindert kuenftig: werle (14)
+
+  abstützen  (Verb-Frequenz 10)
+      abgestützt            Partizip II    verhindert kuenftig: abgestürzt (10)
+
+  anlassen  (Verb-Frequenz 10)
+      angelassen            Partizip II    verhindert kuenftig: abgelassen (25)
+
+  befangen  (Verb-Frequenz 10)
+      befing                ich/Prät       verhindert kuenftig: beging (105)
+      befingen              wir/Prät       verhindert kuenftig: bedingen (60)
+      befingst              du/Prät        verhindert kuenftig: bedingst (25)
+
+  behelfen  (Verb-Frequenz 10)
+      beholfen              Partizip II    verhindert kuenftig: geholfen (62)
+
+  bersten  (Verb-Frequenz 10)
+      barst                 ich/Prät       verhindert kuenftig: baryt (30)
+
+  büffeln  (Verb-Frequenz 10)
+      büffele               Imperativ Sg   verhindert kuenftig: büffels (10)
+
+  ekeln  (Verb-Frequenz 10)
+      ekle                  ich            verhindert kuenftig: elle (52)
+
+  flattern  (Verb-Frequenz 10)
+      flatter               ich            verhindert kuenftig: glatter (22)
+
+  gärtnern  (Verb-Frequenz 10)
+      gärtnere              Imperativ Sg   verhindert kuenftig: gärtners (11)
+
+  hofmeistern  (Verb-Frequenz 10)
+      hofmeistere           Imperativ Sg   verhindert kuenftig: hofmeisters (10)
+
+  lupfen  (Verb-Frequenz 10)
+      lupf                  Imperativ Sg   verhindert kuenftig: lupe (28)
+
+  saunen  (Verb-Frequenz 10)
+      gesaunt               Partizip II    verhindert kuenftig: gesaugt (9)
+      saun                  ich            verhindert kuenftig: saum (28)
+
+  schweifen  (Verb-Frequenz 10)
+      schweift              er/sie         verhindert kuenftig: schweigt (13)
+
+  verkleben  (Verb-Frequenz 10)
+      verklebtet            ihr/Prät       verhindert kuenftig: verklebter (13)
+
+  wabern  (Verb-Frequenz 10)
+      waber                 ich            verhindert kuenftig: wafer (19)
+
+  wuchten  (Verb-Frequenz 10)
+      gewuchtet             Partizip II    verhindert kuenftig: gewichtet (54)
+
+  anfassen  (Verb-Frequenz 9)
+      angefasst             Partizip II    verhindert kuenftig: abgefasst (66)
+
+  fünfteln  (Verb-Frequenz 9)
+      fünftele              Imperativ Sg   verhindert kuenftig: fünftels (84)
+
+  garnen  (Verb-Frequenz 9)
+      garnst                du             verhindert kuenftig: tarnst (5)
+      garnt                 er/sie         verhindert kuenftig: tarnt (5)
+      garnte                ich/Prät       verhindert kuenftig: tarnte (5)
+      garnten               wir/Prät       verhindert kuenftig: tarnten (5)
+      garntest              du/Prät        verhindert kuenftig: tarntest (5)
+      garntet               ihr/Prät       verhindert kuenftig: tarntet (5)
+      gegarnt               Partizip II    verhindert kuenftig: getarnt (40)
+
+  grollen  (Verb-Frequenz 9)
+      gegrollt              Partizip II    verhindert kuenftig: gegrillt (22)
+
+  kundschaften  (Verb-Frequenz 9)
+      kundschaftet          er/sie         verhindert kuenftig: kundschafter (18)
+
+  ködern  (Verb-Frequenz 9)
+      ködere                Imperativ Sg   verhindert kuenftig: köders (10)
+
+  makeln  (Verb-Frequenz 9)
+      makle                 ich            verhindert kuenftig: malle (9)
+
+  muren  (Verb-Frequenz 9)
+      murst                 du             verhindert kuenftig: murat (22)
+
+  prognostizieren  (Verb-Frequenz 9)
+      prognostiziertet      ihr/Prät       verhindert kuenftig: prognostizierter (38)
+
+  socken  (Verb-Frequenz 9)
+      sock                  Imperativ Sg   verhindert kuenftig: dock (20)
+      socke                 ich            verhindert kuenftig: sicke (9)
+      sockst                du             verhindert kuenftig: socket (14)
+      sockte                ich/Prät       verhindert kuenftig: dockte (15)
+
+  sohlen  (Verb-Frequenz 9)
+      sohlt                 er/sie         verhindert kuenftig: soult (9)
+
+  spreizen  (Verb-Frequenz 9)
+      spreize               ich            verhindert kuenftig: spreite (12)
+
+  ösen  (Verb-Frequenz 9)
+      öse                   ich            verhindert kuenftig: öde (11)
+
+  donnern  (Verb-Frequenz 8)
+      donnere               Imperativ Sg   verhindert kuenftig: donners (11)
+
+  laschen  (Verb-Frequenz 8)
+      lasche                ich            verhindert kuenftig: pasche (4)
+      laschst               du             verhindert kuenftig: laschet (9)
+
+  nuten  (Verb-Frequenz 8)
+      nutet                 er/sie         verhindert kuenftig: mutet (8)
+
+  rammen  (Verb-Frequenz 8)
+      ramme                 Imperativ Sg   verhindert kuenftig: rahme (21)
+
+  raven  (Verb-Frequenz 8)
+      ravte                 ich/Prät       verhindert kuenftig: ragte (20)
+      ravten                wir/Prät       verhindert kuenftig: ragten (8)
+
+  säen  (Verb-Frequenz 8)
+      säte                  ich/Prät       verhindert kuenftig: sähe (17)
+      säten                 wir/Prät       verhindert kuenftig: sähen (19)
+
+  zipfeln  (Verb-Frequenz 8)
+      zipfelt               er/sie         verhindert kuenftig: gipfelt (23)
+      zipfelte              er/Prät        verhindert kuenftig: gipfelte (94)
+      zipfelten             sie/Prät       verhindert kuenftig: gipfelten (54)
+
+  überhitzen  (Verb-Frequenz 8)
+      überhitztet           ihr/Prät       verhindert kuenftig: überhitzter (8)
+
+  bügeln  (Verb-Frequenz 7)
+      bügle                 ich            verhindert kuenftig: bühle (7)
+
+  nabeln  (Verb-Frequenz 7)
+      nable                 ich            verhindert kuenftig: gable (41)
+
+  schreinern  (Verb-Frequenz 7)
+      schreinere            Imperativ Sg   verhindert kuenftig: schreiners (7)
+
+  schulmeistern  (Verb-Frequenz 7)
+      schulmeistere         Imperativ Sg   verhindert kuenftig: schulmeisters (7)
+
+  faken  (Verb-Frequenz 6)
+      fak                   Imperativ Sg   verhindert kuenftig: fao (83)
+      fakte                 ich/Prät       verhindert kuenftig: takte (50)
+
+  geizen  (Verb-Frequenz 6)
+      gegeizt               Partizip II    verhindert kuenftig: gereizt (27)
+      geizt                 du             verhindert kuenftig: reizt (26)
+      geizte                ich/Prät       verhindert kuenftig: reizte (18)
+
+  imkern  (Verb-Frequenz 6)
+      imkere                Imperativ Sg   verhindert kuenftig: imkers (6)
+
+  recken  (Verb-Frequenz 6)
+      reckte                ich/Prät       verhindert kuenftig: deckte (96)
+      reckten               wir/Prät       verhindert kuenftig: deckten (46)
+
+  sennen  (Verb-Frequenz 6)
+      sennt                 er/sie         verhindert kuenftig: sehnt (10)
+      sennte                ich/Prät       verhindert kuenftig: sehnte (12)
+
+  wimmern  (Verb-Frequenz 6)
+      wimmere               Imperativ Sg   verhindert kuenftig: wimmers (6)
+
+  wuchern  (Verb-Frequenz 6)
+      wuchere               Imperativ Sg   verhindert kuenftig: wuchers (6)
+
+  abreden  (Verb-Frequenz 5)
+      abgeredet             Partizip II    verhindert kuenftig: angeredet (23)
+
+  eitern  (Verb-Frequenz 5)
+      eitere                Imperativ Sg   verhindert kuenftig: eiters (5)
+
+  flippern  (Verb-Frequenz 5)
+      flippere              Imperativ Sg   verhindert kuenftig: flippers (5)
+
+  jammern  (Verb-Frequenz 5)
+      jammere               Imperativ Sg   verhindert kuenftig: jammers (5)
+
+  kaspern  (Verb-Frequenz 5)
+      kaspere               Imperativ Sg   verhindert kuenftig: kaspers (5)
+
+  sprudeln  (Verb-Frequenz 5)
+      sprudele              Imperativ Sg   verhindert kuenftig: sprudels (5)
+
+  bestecken  (Verb-Frequenz 4)
+      besteckten            wir/Prät       verhindert kuenftig: gesteckten (18)
+
+  derwischen  (Verb-Frequenz 4)
+      derwischt             Partizip II    verhindert kuenftig: verwischt (33)
+
+  gewahren  (Verb-Frequenz 4)
+      gewahrte              ich/Prät       verhindert kuenftig: bewahrte (92)
+      gewahrten             wir/Prät       verhindert kuenftig: bewahrten (37)
+
+  juxen  (Verb-Frequenz 4)
+      juxt                  du             verhindert kuenftig: just (93)
+
+  knebeln  (Verb-Frequenz 4)
+      knebele               Imperativ Sg   verhindert kuenftig: knebels (4)
+
+  stromern  (Verb-Frequenz 4)
+      stromere              Imperativ Sg   verhindert kuenftig: stromers (4)
+
+  tacken  (Verb-Frequenz 4)
+      getackt               Partizip II    verhindert kuenftig: gehackt (8)
+      tack                  Imperativ Sg   verhindert kuenftig: task (53)
+
+  tadeln  (Verb-Frequenz 4)
+      tadele                Imperativ Sg   verhindert kuenftig: tadels (4)
+
+  beringen  (Verb-Frequenz 3)
+      beringst              du             verhindert kuenftig: bedingst (25)
+      beringtest            du/Prät        verhindert kuenftig: bedingtest (25)
+      beringtet             ihr/Prät       verhindert kuenftig: bedingtet (25)
+
+  lohen  (Verb-Frequenz 3)
+      lohst                 du             verhindert kuenftig: lobst (12)
+      loht                  er/sie         verhindert kuenftig: lobt (39)
+      lohten                wir/Prät       verhindert kuenftig: lobten (34)
+      lohtest               du/Prät        verhindert kuenftig: lobtest (12)
+      lohtet                ihr/Prät       verhindert kuenftig: lobtet (12)
+
+  schürzen  (Verb-Frequenz 3)
+      schürzte              ich/Prät       verhindert kuenftig: schützte (64)
+      schürzten             wir/Prät       verhindert kuenftig: schützten (29)

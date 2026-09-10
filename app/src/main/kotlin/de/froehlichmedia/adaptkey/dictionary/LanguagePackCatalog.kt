@@ -375,7 +375,22 @@ object LanguagePackCatalog {
             // CorrectionConfidence/diacriticRestoration's calibrated known-word protection for what was, on
             // inspection, a single bogus dictionary row. `dictionaries/de/version.txt` 38 -> 39, pack
             // rebuilt and verified byte-identical after unzip, `LanguagePackCatalog` version 38 -> 39.
-            version = 39
+            //
+            // §482 (v1.2.42): D-467 - lemma-column repair. Data only; no behaviour change intended, since
+            // the column's one reader (D-404 Tier 2's family veto) resolves case-insensitively and with a
+            // single hop. Two demonstrably wrong links removed rather than re-pointed: "waren" -> "Ware"
+            // (the dominant reading is the preterite of "sein", and the row carries both readings at once
+            // because the store keys case-insensitively, so no single lemma can be right) and "verlassen"
+            // -> "Verlass" ("verlassen" is itself a base form). 27 cycles resolved - in every one exactly
+            // one side is an attested infinitive in `wiktionary_verben.tsv`, so the direction came from
+            // real data rather than a guess ("bann" -> "bannen", "besuch" -> "besuchen"). 652 chains
+            // flattened onto their deepest root, which is what §320/§321 required all along: the resolver
+            // takes exactly one hop, so an intermediate link hands two members of one real family two
+            // different family keys ("alte" -> "Alter" -> "alt" now points straight at "alt"). 679 rows
+            // changed; word/frequency/POS columns byte-identical. New `dictionaries/lemma_check.py` passes.
+            // `dictionaries/de/version.txt` 39 -> 40, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 39 -> 40.
+            version = 40
         ),
         Entry(
             Language.GREEK,

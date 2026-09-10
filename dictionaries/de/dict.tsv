@@ -62,7 +62,7 @@ eines	33199	OTHER
 Jahr	33028	NOUN
 Stadt	32706	NOUN
 seine	32038	OTHER
-waren	31549	NOUN,VERB,PROPER_NOUN	Ware
+waren	31549	NOUN,VERB,PROPER_NOUN
 hat	31433	OTHER
 etwa	31380	OTHER
 ab	31330	PREPOSITION,OTHER
@@ -297,7 +297,7 @@ Reich	5934	NOUN,VERB
 gehört	5904	OTHER
 dadurch	5904	OTHER
 neu	5893	ADJECTIVE,OTHER
-gehören	5880	NOUN,VERB	Gehör
+gehören	5880	NOUN,VERB
 Frankreich	5879	NOUN,PROPER_NOUN
 ihnen	5878	OTHER
 erhalten	5857	NOUN,VERB,ADJECTIVE	Erhalt
@@ -336,7 +336,7 @@ System	5376	NOUN
 kurz	5348	ADJECTIVE,OTHER
 Regel	5342	NOUN
 größten	5307	OTHER
-alten	5302	NOUN,OTHER	Alter
+alten	5302	NOUN,OTHER	alt
 Sprachen	5298	NOUN,VERB	Sprache
 nahm	5272	OTHER
 darüber	5266	OTHER
@@ -535,7 +535,7 @@ Wahl	3671	NOUN,PROPER_NOUN
 hingegen	3665	OTHER
 III	3660	NOUN
 Einsatz	3652	NOUN
-sieben	3644	NOUN,VERB,OTHER	Sieb
+sieben	3644	NOUN,VERB,OTHER
 würde	3632	OTHER
 Herrschaft	3611	NOUN
 gehörte	3596	OTHER
@@ -549,7 +549,7 @@ gemeinsam	3535	ADJECTIVE,OTHER
 sollten	3523	VERB
 Rom	3521	NOUN,PROPER_NOUN
 Mann	3518	NOUN,PROPER_NOUN
-Vereinigten	3509	NOUN,VERB	Vereinigte
+Vereinigten	3509	NOUN,VERB	vereinigen
 Grenze	3499	NOUN
 bestimmten	3498	VERB,OTHER
 Stelle	3497	NOUN,VERB	stellen
@@ -584,7 +584,7 @@ sollen	3303	VERB
 Darstellung	3300	NOUN
 erreichte	3297	OTHER
 beträgt	3297	OTHER
-alte	3292	NOUN,OTHER	Alter
+alte	3292	NOUN,OTHER	alt
 zunehmend	3280	OTHER
 ähnlich	3279	ADJECTIVE,OTHER
 sehen	3270	VERB
@@ -847,7 +847,7 @@ Programm	2411	NOUN
 heraus	2411	OTHER
 einzelne	2408	OTHER
 südlich	2408	ADJECTIVE,PREPOSITION,OTHER
-ganze	2407	NOUN,OTHER	Ganzes
+ganze	2407	NOUN,OTHER	ganz
 Reiches	2405	NOUN	Reich
 Max	2404	NOUN,PROPER_NOUN
 Papst	2399	NOUN,PROPER_NOUN
@@ -990,7 +990,7 @@ mm	2108	OTHER
 nächsten	2106	OTHER
 Technik	2106	NOUN
 gestellt	2100	OTHER
-Roten	2100	NOUN,ADJECTIVE,OTHER	Rote
+Roten	2100	NOUN,ADJECTIVE,OTHER	rot
 bleibt	2099	OTHER
 geboren	2094	VERB,ADJECTIVE
 Führung	2094	NOUN
@@ -1067,7 +1067,7 @@ dahin	2001	OTHER
 Schüler	2000	NOUN
 Herstellung	1999	NOUN
 vorhanden	1998	ADJECTIVE,OTHER
-ganzen	1995	NOUN,OTHER	Ganzes
+ganzen	1995	NOUN,OTHER	ganz
 namens	1992	NOUN,PREPOSITION,OTHER	Name
 Prinzip	1990	NOUN
 Opfer	1990	NOUN
@@ -1389,7 +1389,7 @@ geschaffen	1573	VERB,ADJECTIVE
 entdeckt	1573	OTHER
 derzeit	1573	OTHER
 Nacht	1570	NOUN
-verlassen	1569	NOUN,VERB,ADJECTIVE	Verlass
+verlassen	1569	NOUN,VERB,ADJECTIVE
 Architektur	1568	NOUN
 schreiben	1565	NOUN,OTHER,VERB
 to	1562	OTHER
@@ -1425,7 +1425,7 @@ NS	1533	NOUN
 notwendig	1531	ADJECTIVE,OTHER
 treffen	1531	NOUN,OTHER,VERB
 eingestellt	1530	OTHER
-antiken	1529	NOUN,OTHER	Antike
+antiken	1529	NOUN,OTHER	antik
 Ansicht	1528	NOUN
 Halle	1528	NOUN,PROPER_NOUN
 aktiv	1523	ADJECTIVE,OTHER
@@ -1490,7 +1490,7 @@ zugeordnet	1472	OTHER
 Buchstaben	1471	NOUN	Buchstabe
 wissenschaftliche	1467	OTHER
 östlichen	1466	OTHER
-Grünen	1464	NOUN,ADJECTIVE,OTHER	Grüne
+Grünen	1464	NOUN,ADJECTIVE,OTHER	grün
 Ausstellung	1464	NOUN
 verwendeten	1463	VERB,OTHER
 Weltkriegs	1460	NOUN	Weltkrieg
@@ -1577,7 +1577,7 @@ Holz	1390	NOUN,PROPER_NOUN
 verantwortlich	1389	ADJECTIVE,OTHER
 genannte	1389	OTHER
 Ägypten	1389	NOUN,PROPER_NOUN
-besten	1387	NOUN,OTHER	Bestes
+besten	1387	NOUN,OTHER	gut
 Farbe	1387	NOUN
 letztlich	1386	OTHER
 Organisationen	1386	NOUN	Organisation
@@ -1862,7 +1862,7 @@ Hersteller	1160	NOUN
 Zeitschrift	1158	NOUN
 elf	1157	OTHER
 Publikum	1156	NOUN
-Varianten	1156	NOUN,ADJECTIVE	Variante
+Varianten	1156	NOUN,ADJECTIVE	variant
 png	1156	OTHER
 gekennzeichnet	1155	OTHER
 Pfalz	1155	NOUN,PROPER_NOUN
@@ -1902,7 +1902,7 @@ menschliche	1134	OTHER
 oftmals	1134	OTHER
 Institutionen	1134	NOUN	Institution
 überliefert	1134	OTHER
-beteiligten	1133	NOUN,VERB,OTHER	Beteiligter
+beteiligten	1133	NOUN,VERB,OTHER	beteiligt
 Effekt	1133	NOUN
 Hektar	1133	NOUN
 griechische	1132	OTHER
@@ -2051,7 +2051,7 @@ Häuser	1069	NOUN	Haus
 wollten	1068	VERB
 Josef	1068	NOUN,PROPER_NOUN
 KZ	1066	NOUN
-breiten	1065	NOUN,OTHER	Breite
+breiten	1065	NOUN,OTHER	breit
 verurteilt	1065	ADJECTIVE,OTHER
 Weltkrieges	1065	NOUN	Weltkrieg
 UNESCO	1065	NOUN
@@ -2305,7 +2305,7 @@ fehlen	952	NOUN,OTHER,VERB
 beschreiben	951	VERB
 Ausgaben	951	NOUN	Ausgabe
 Positionen	949	NOUN	Position
-Toten	949	NOUN,ADJECTIVE,OTHER	Tote
+Toten	949	NOUN,ADJECTIVE,OTHER	tot
 Index	949	NOUN
 Verhältnisse	948	NOUN
 Bestimmung	947	NOUN
@@ -2324,7 +2324,7 @@ Forscher	943	NOUN
 Star	943	NOUN,PROPER_NOUN
 tfrac	943	OTHER
 Fahrzeuge	942	NOUN	Fahrzeug
-beschäftigte	942	NOUN,OTHER	Beschäftigter
+beschäftigte	942	NOUN,OTHER	beschäftigt
 scheiterte	941	OTHER
 Spiegel	941	NOUN
 spielten	941	VERB
@@ -2357,7 +2357,7 @@ Sitze	932	NOUN,VERB	Sitz
 lateinische	931	OTHER
 leitet	930	OTHER
 Olympischen	930	NOUN,ADJECTIVE	olympisch
-Stämme	930	NOUN	Stamm
+Stämme	930	NOUN	stammen
 entdeckte	928	OTHER
 aktuelle	928	OTHER
 bewegen	928	VERB
@@ -2593,9 +2593,9 @@ hieß	850	OTHER
 ständig	850	ADJECTIVE,OTHER
 Konstruktion	850	NOUN
 Krankheiten	849	NOUN	Krankheit
-beste	848	NOUN,OTHER	Bestes
+beste	848	NOUN,OTHER	gut
 ausgestattet	848	ADJECTIVE,OTHER
-Pläne	847	NOUN	Plan
+Pläne	847	NOUN	planen
 Erfahrung	847	NOUN
 dt	847	OTHER
 heißen	846	VERB
@@ -3060,7 +3060,7 @@ Kriegsende	720	NOUN
 Original	720	NOUN
 Hugo	720	NOUN,PROPER_NOUN
 neuere	720	OTHER
-obersten	719	NOUN,OTHER	oberste
+obersten	719	NOUN,OTHER	Oberst
 Prinzipien	718	NOUN
 Schluss	718	NOUN
 kurzer	718	OTHER
@@ -3291,7 +3291,7 @@ Hardware	666	NOUN
 Abend	666	NOUN,PROPER_NOUN
 nationalsozialistischen	666	OTHER
 Kooperation	665	NOUN
-Osmanischen	665	NOUN,ADJECTIVE,OTHER	Osmanische
+Osmanischen	665	NOUN,ADJECTIVE,OTHER	osmanisch
 eingegliedert	665	OTHER
 Mailand	665	NOUN,PROPER_NOUN
 afrikanischen	665	OTHER
@@ -3781,7 +3781,7 @@ Abbau	569	NOUN
 deutliche	569	OTHER
 rechtlich	569	ADJECTIVE,OTHER
 Mittelalters	569	NOUN	Mittelalter
-Jugendlichen	569	NOUN,ADJECTIVE,OTHER	Jugendliche
+Jugendlichen	569	NOUN,ADJECTIVE,OTHER	jugendlich
 Krim	569	NOUN,PROPER_NOUN
 Erzeugung	568	NOUN
 Erziehung	568	NOUN
@@ -3930,7 +3930,7 @@ Syrien	550	NOUN,PROPER_NOUN
 bestätigte	550	OTHER
 nationaler	550	OTHER
 Botschaft	550	NOUN
-Dienste	550	NOUN	Dienst
+Dienste	550	NOUN	dienen
 Archiv	550	NOUN
 Unix	550	NOUN
 gedreht	549	OTHER
@@ -4007,7 +4007,7 @@ Bestandteile	540	NOUN	Bestandteil
 Jupiter	540	NOUN,PROPER_NOUN
 lieferte	540	OTHER
 Bauwerke	540	NOUN	Bauwerk
-beteiligte	540	NOUN,OTHER	Beteiligter
+beteiligte	540	NOUN,OTHER	beteiligt
 philosophische	539	OTHER
 weitaus	539	OTHER
 is	539	NOUN,OTHER
@@ -4027,7 +4027,7 @@ Ausmaß	538	NOUN
 Wurzel	538	NOUN
 richtet	538	OTHER
 eroberten	538	VERB,OTHER
-tiefen	538	NOUN,OTHER	Tiefe
+tiefen	538	NOUN,OTHER	tief
 indirekt	538	ADJECTIVE,OTHER
 hingerichtet	538	OTHER
 Sänger	538	NOUN
@@ -4047,7 +4047,7 @@ Töne	535	NOUN	Ton
 Interview	535	NOUN
 las	535	OTHER
 Strömungen	535	NOUN	Strömung
-Gelehrten	535	NOUN,ADJECTIVE,OTHER	Gelehrte
+Gelehrten	535	NOUN,ADJECTIVE,OTHER	gelehrt
 Special	535	NOUN
 Bus	535	NOUN
 zustande	534	OTHER
@@ -4188,7 +4188,7 @@ Tages	516	NOUN	Tag
 Unterricht	516	NOUN
 gefangen	516	VERB
 League	516	NOUN
-Plänen	516	NOUN	Plan
+Plänen	516	NOUN	planen
 regelmäßige	515	OTHER
 Modus	515	NOUN
 ern	515	OTHER
@@ -4250,7 +4250,7 @@ Claude	508	NOUN
 exakt	508	ADJECTIVE,OTHER
 Gedenktafel	508	NOUN
 scharf	507	ADJECTIVE,OTHER
-besuchen	507	NOUN,VERB	Besuch
+besuchen	507	NOUN,VERB
 vorhandene	507	OTHER
 Einkommen	507	NOUN
 individuellen	507	OTHER
@@ -4371,7 +4371,7 @@ Taufe	493	NOUN,VERB	taufen
 op	493	OTHER
 Bord	493	NOUN
 Ionen	492	NOUN	Ion
-Erwachsenen	492	NOUN,ADJECTIVE,OTHER	Erwachsene
+Erwachsenen	492	NOUN,ADJECTIVE,OTHER	erwachsen
 Fusion	492	NOUN
 Tunnel	492	NOUN
 Tschechien	492	NOUN,PROPER_NOUN
@@ -4715,7 +4715,7 @@ Pferd	454	NOUN
 Sohnes	454	NOUN
 Vorlesungen	454	NOUN	Vorlesung
 Dokumentation	454	NOUN
-Variablen	454	NOUN,ADJECTIVE	Variable
+Variablen	454	NOUN,ADJECTIVE	variabel
 erstellen	454	VERB
 ausgedrückt	453	OTHER
 BBC	453	NOUN
@@ -4776,7 +4776,7 @@ Zeile	447	NOUN
 enger	447	OTHER
 Überwachung	447	NOUN
 interessiert	447	ADJECTIVE,OTHER
-Alternativen	447	NOUN,ADJECTIVE,OTHER	Alternative
+Alternativen	447	NOUN,ADJECTIVE,OTHER	alternativ
 vermitteln	447	VERB
 erhöhten	447	VERB,OTHER
 taten	451	NOUN,VERB,OTHER	tun
@@ -4854,7 +4854,7 @@ Freiwillige	441	NOUN,ADJECTIVE,OTHER	freiwillig
 jüngste	441	OTHER
 Anbau	441	NOUN
 kreisfreien	441	OTHER
-Westfälischen	441	NOUN,ADJECTIVE,OTHER	Westfälische
+Westfälischen	441	NOUN,ADJECTIVE,OTHER	westfälisch
 Mannschaften	441	NOUN	Mannschaft
 Bezirks	441	NOUN	Bezirk
 Picasso	441	NOUN,PROPER_NOUN
@@ -4938,7 +4938,7 @@ Web	435	NOUN
 Atlas	435	NOUN,PROPER_NOUN
 Force	434	NOUN
 nominiert	434	OTHER
-Norddeutschen	434	NOUN,ADJECTIVE,OTHER	Norddeutsche
+Norddeutschen	434	NOUN,ADJECTIVE,OTHER	norddeutsch
 zitiert	434	OTHER
 Beruf	434	NOUN,VERB
 WHO	434	NOUN
@@ -4958,7 +4958,7 @@ beauftragt	432	OTHER
 beweisen	432	NOUN,VERB	Beweis
 höchstens	432	OTHER
 alleine	432	ADJECTIVE,OTHER
-Schweizerischen	432	NOUN,ADJECTIVE,OTHER	Schweizerische
+Schweizerischen	432	NOUN,ADJECTIVE,OTHER	schweizerisch
 Time	432	NOUN,OTHER
 gegenseitig	432	ADJECTIVE,OTHER
 darstellte	432	OTHER
@@ -5410,7 +5410,7 @@ Punk	396	NOUN
 besiedelten	396	VERB,OTHER
 Atlantik	396	NOUN,PROPER_NOUN
 ukrainische	396	NOUN,OTHER	Ukrainisch
-Alters	396	NOUN,OTHER	Alter
+Alters	396	NOUN,OTHER	alt
 Tageszeitung	396	NOUN
 kaufte	396	OTHER
 Klammern	395	NOUN	Klammer
@@ -5429,7 +5429,7 @@ MW	395	NOUN
 Zen	395	NOUN
 NASA	395	NOUN
 Papstes	395	NOUN
-Mächte	394	NOUN	Macht
+Mächte	394	NOUN	machen
 ungewöhnlich	394	ADJECTIVE,OTHER
 Eva	394	NOUN,PROPER_NOUN
 CIA	394	NOUN
@@ -5454,7 +5454,7 @@ Bill	393	NOUN,PROPER_NOUN
 betrachteten	393	VERB,OTHER
 hart	393	ADJECTIVE,OTHER
 Christentums	393	NOUN	Christentum
-Freiwilligen	393	NOUN,ADJECTIVE,OTHER	Freiwillige
+Freiwilligen	393	NOUN,ADJECTIVE,OTHER	freiwillig
 voller	393	PREPOSITION,OTHER
 religiöser	393	OTHER
 Mars	393	NOUN,PROPER_NOUN
@@ -5653,7 +5653,7 @@ berief	379	OTHER
 Budapest	379	NOUN,PROPER_NOUN
 Produkten	379	NOUN	Produkt
 Kanäle	379	NOUN	Kanal
-Intellektuellen	379	NOUN,ADJECTIVE,OTHER	Intellektuelle
+Intellektuellen	379	NOUN,ADJECTIVE,OTHER	intellektuell
 Höhen	379	NOUN	Höhe
 quer	379	OTHER
 KV	379	NOUN,OTHER
@@ -5767,7 +5767,7 @@ gedruckt	370	OTHER
 Atom	370	NOUN
 verschwinden	370	NOUN,OTHER,VERB
 Erwartungen	370	NOUN	Erwartung
-stärken	370	NOUN,VERB	Stärke
+stärken	370	NOUN,VERB
 aufzunehmen	370	VERB
 zusammengeschlossen	370	VERB
 Sektion	370	NOUN
@@ -5875,7 +5875,7 @@ Potsdamer	364	NOUN
 Sees	364	NOUN	See
 Lord	363	NOUN
 Johnson	363	NOUN
-speichern	363	NOUN,VERB	Speicher
+speichern	363	NOUN,VERB
 Selbstverwaltung	363	NOUN
 hinzugefügt	363	OTHER
 Erben	363	NOUN,VERB
@@ -5939,7 +5939,7 @@ Media	359	NOUN
 Oberschicht	359	NOUN
 schriftlichen	359	OTHER
 Flandern	359	NOUN,PROPER_NOUN
-Gläubigen	359	NOUN,ADJECTIVE	Gläubige
+Gläubigen	359	NOUN,ADJECTIVE	gläubig
 Basketball	359	NOUN
 Abwehr	359	NOUN
 hervorgegangen	359	VERB
@@ -6021,7 +6021,7 @@ Täter	354	NOUN
 Foundation	354	NOUN
 Kammer	354	NOUN,PROPER_NOUN
 kanadischen	354	OTHER
-niedersächsischen	354	NOUN,OTHER	niedersächsische
+niedersächsischen	354	NOUN,OTHER	Niedersächsisch
 Merseburg	354	NOUN,PROPER_NOUN
 Mär	354	NOUN
 Erwerb	353	NOUN
@@ -6155,7 +6155,7 @@ Gebäudes	347	NOUN	Gebäude
 Säugetiere	347	NOUN	Säugetier
 gerieten	346	VERB
 absolvierte	346	OTHER
-runden	346	NOUN,OTHER	Runde
+runden	346	NOUN,OTHER	rund
 zivile	346	NOUN,OTHER	Zivil
 integrierte	346	OTHER
 Thesen	346	NOUN	These
@@ -6419,7 +6419,7 @@ erteilt	330	OTHER
 Tiberius	330	NOUN,PROPER_NOUN
 endgültigen	330	OTHER
 Abhandlung	330	NOUN
-süddeutschen	330	NOUN,OTHER	Süddeutscher
+süddeutschen	330	NOUN,OTHER	süddeutsch
 Faschismus	330	NOUN
 Aufruf	330	NOUN
 angezeigt	330	ADJECTIVE,OTHER
@@ -6548,7 +6548,7 @@ Enzyme	323	NOUN	Enzym
 Bier	323	NOUN,ADJECTIVE,PROPER_NOUN	bi
 empfahl	323	OTHER
 schätzte	323	OTHER
-Adligen	323	NOUN,ADJECTIVE,OTHER	Adlige
+Adligen	323	NOUN,ADJECTIVE,OTHER	adlig
 begraben	323	VERB
 begründeten	323	VERB,OTHER
 Engels	323	NOUN	Engel
@@ -6579,7 +6579,7 @@ betreffen	322	NOUN,VERB	Betreff
 Data	322	NOUN
 sigma	322	NOUN,OTHER
 Sophie	322	NOUN,PROPER_NOUN
-lauten	321	NOUN,VERB	Laute
+lauten	321	NOUN,VERB
 konsequent	321	ADJECTIVE,OTHER
 unterzeichnete	321	OTHER
 Fotos	321	NOUN	Foto
@@ -6617,7 +6617,7 @@ Abteilungen	319	NOUN	Abteilung
 Bösen	319	NOUN,OTHER
 eingeführte	319	OTHER
 nacheinander	319	OTHER
-Stämmen	319	NOUN	Stamm
+Stämmen	319	NOUN	stammen
 verwiesen	319	VERB
 Ur	319	NOUN,PROPER_NOUN
 geschaffene	319	OTHER
@@ -7009,7 +7009,7 @@ Auguste	298	NOUN
 Rotterdam	298	NOUN,PROPER_NOUN
 geometrischen	298	OTHER
 Zylinder	298	NOUN
-verurteilte	298	NOUN,OTHER	Verurteilter
+verurteilte	298	NOUN,OTHER	verurteilt
 Umbenennung	298	NOUN
 Bahnhöfe	298	NOUN	Bahnhof
 westdeutschen	298	OTHER
@@ -7070,7 +7070,7 @@ Caspar	296	NOUN
 republikanischen	296	OTHER
 fungiert	296	OTHER
 erneuert	296	OTHER
-konstanten	296	NOUN,OTHER	Konstante
+konstanten	296	NOUN,OTHER	konstant
 Bayerns	296	NOUN	Bayern
 entnommen	296	VERB
 Heilig	296	NOUN,OTHER
@@ -7282,7 +7282,7 @@ Feiertag	286	NOUN
 Türken	286	NOUN
 kontrollieren	286	VERB
 denkbar	286	ADJECTIVE,OTHER
-Angestellten	286	NOUN,ADJECTIVE,OTHER	Angestellte
+Angestellten	286	NOUN,ADJECTIVE,OTHER	angestellt
 ausgedehnte	286	OTHER
 Lateinamerika	286	NOUN,PROPER_NOUN
 Bautzen	286	NOUN,PROPER_NOUN
@@ -7361,7 +7361,7 @@ Säugetieren	283	NOUN	Säugetier
 Marcel	283	NOUN,PROPER_NOUN
 Schleuse	283	NOUN
 Täufer	283	NOUN
-Kranken	282	NOUN,ADJECTIVE,OTHER	Kranke
+Kranken	282	NOUN,ADJECTIVE,OTHER	krank
 Aufsicht	282	NOUN
 durchlaufen	282	VERB
 besiegt	282	ADJECTIVE,OTHER
@@ -7388,7 +7388,7 @@ Armeen	281	NOUN	Armee
 angeblichen	281	OTHER
 Weisheit	281	NOUN
 einnehmen	281	VERB
-Verdienste	281	NOUN	Verdienst
+Verdienste	281	NOUN	verdienen
 Antworten	281	NOUN,VERB,OTHER	Antwort
 Gunsten	281	NOUN	Gunst
 gesendet	281	OTHER
@@ -7556,7 +7556,7 @@ Syntax	274	NOUN
 gebrochen	274	VERB,ADJECTIVE
 Male	274	NOUN,VERB,PROPER_NOUN	Mal
 hervorging	274	OTHER
-steigern	274	NOUN,VERB	Steiger
+steigern	274	NOUN,VERB
 Trump	274	NOUN,PROPER_NOUN
 nutzbar	274	ADJECTIVE,OTHER
 gelbe	274	OTHER
@@ -7964,7 +7964,7 @@ gliedern	259	NOUN,VERB	Glied
 umfassend	259	ADJECTIVE,OTHER
 Diskriminierung	259	NOUN
 angegliedert	259	OTHER
-Dichten	353	NOUN,VERB,OTHER	Dichte
+Dichten	353	NOUN,VERB,OTHER
 Wasserversorgung	259	NOUN
 Iberischen	259	NOUN,OTHER	Iberische
 PCs	259	NOUN
@@ -7998,7 +7998,7 @@ Hospital	258	NOUN
 erforderliche	258	OTHER
 Dean	258	NOUN
 Stadtwappen	258	NOUN
-Spiels	257	NOUN	Spiel
+Spiels	257	NOUN	spielen
 Satzes	257	NOUN
 Lewis	257	NOUN
 erwartete	257	OTHER
@@ -8091,7 +8091,7 @@ Großstädte	254	NOUN	Großstadt
 eingefügt	254	OTHER
 Hip	254	NOUN
 Mitbegründer	254	NOUN
-Spitzen	254	NOUN,VERB,ADJECTIVE,OTHER	Spitze
+Spitzen	254	NOUN,VERB,ADJECTIVE,OTHER	spitz
 Zuwanderung	254	NOUN
 Ruine	254	NOUN
 Juristen	254	NOUN	Jurist
@@ -8503,7 +8503,7 @@ widmet	241	OTHER
 Bernd	241	NOUN,PROPER_NOUN
 geliefert	241	OTHER
 meiner	241	OTHER
-Delegierten	241	NOUN,VERB	Delegierte
+Delegierten	241	NOUN,VERB	delegieren
 Limes	241	NOUN
 verarbeiten	241	VERB
 Carlos	241	NOUN
@@ -8606,7 +8606,7 @@ skandinavischen	238	OTHER
 Teilgebiet	237	NOUN
 Interpretationen	237	NOUN	Interpretation
 abstrakte	237	OTHER
-Kontroversen	237	NOUN,ADJECTIVE,OTHER	Kontroverse
+Kontroversen	237	NOUN,ADJECTIVE,OTHER	kontrovers
 Talent	237	NOUN
 ausreichende	237	OTHER
 VHS	237	NOUN
@@ -8724,7 +8724,7 @@ Pixel	235	NOUN
 Siebenbürgen	235	NOUN,PROPER_NOUN
 FIFA	235	NOUN
 vorangegangenen	234	OTHER
-Dauern	360	NOUN,VERB	Dauer
+Dauern	360	NOUN,VERB
 Ma	234	NOUN,OTHER
 eingebettet	234	OTHER
 Bayer	234	NOUN,PROPER_NOUN
@@ -8821,7 +8821,7 @@ bitten	232	NOUN,OTHER,VERB
 Kastilien	232	NOUN,PROPER_NOUN
 Betten	232	NOUN	Bett
 Hase	232	NOUN,PROPER_NOUN
-niederdeutschen	232	NOUN,OTHER	niederdeutsche
+niederdeutschen	232	NOUN,OTHER	Niederdeutsch
 Sam	231	NOUN,PROPER_NOUN
 AC	231	NOUN,OTHER
 normal	231	ADJECTIVE,OTHER
@@ -8869,7 +8869,7 @@ tödlich	230	ADJECTIVE,OTHER
 befunden	230	NOUN,VERB	Befund
 Luise	230	NOUN
 Missionen	230	NOUN	Mission
-Diensten	230	NOUN	Dienst
+Diensten	230	NOUN	dienen
 begegnet	230	OTHER
 Vandalen	230	NOUN
 Navy	230	NOUN
@@ -8976,7 +8976,7 @@ neutralen	227	OTHER
 übertragenen	227	OTHER
 experimentellen	227	OTHER
 beispielhaft	227	ADJECTIVE,OTHER
-brachen	227	NOUN,VERB	Brache
+brachen	227	NOUN,VERB	brach
 gefragt	227	ADJECTIVE,OTHER
 Rangliste	227	NOUN
 markierte	227	OTHER
@@ -9834,7 +9834,7 @@ Statistiken	205	NOUN	Statistik
 Thatcher	205	NOUN
 Eliten	205	NOUN	Elite
 Südamerikas	205	NOUN	Südamerika
-Geliebten	205	NOUN,ADJECTIVE,OTHER	Geliebte
+Geliebten	205	NOUN,ADJECTIVE,OTHER	geliebt
 Skandal	205	NOUN
 Greenpeace	205	NOUN,PROPER_NOUN
 Host	205	NOUN
@@ -9881,7 +9881,7 @@ Drake	204	NOUN
 dreier	203	OTHER
 jenes	203	OTHER
 Hudson	203	NOUN,PROPER_NOUN
-verurteilten	203	NOUN,OTHER	Verurteilter
+verurteilten	203	NOUN,OTHER	verurteilt
 ausgewertet	203	OTHER
 Türen	203	NOUN	Tür
 differenziert	203	OTHER
@@ -10482,7 +10482,7 @@ Stapel	190	NOUN
 Dampfmaschine	190	NOUN
 Milieu	190	NOUN
 indirekte	190	OTHER
-Blöcke	190	NOUN	Block
+Blöcke	190	NOUN	blocken
 Avenue	190	NOUN
 Sonderform	190	NOUN
 minimal	190	ADJECTIVE,OTHER
@@ -10638,7 +10638,7 @@ zerfallen	186	VERB
 Nebenwirkungen	186	NOUN	Nebenwirkung
 Pu	186	NOUN
 teurer	186	OTHER
-Löhne	186	NOUN,PROPER_NOUN	Lohn
+Löhne	186	NOUN,PROPER_NOUN	lohnen
 geflohen	186	VERB
 abgeleitete	186	OTHER
 Erholung	186	NOUN
@@ -10709,7 +10709,7 @@ Gasen	185	NOUN,PROPER_NOUN	Gas
 Staub	185	NOUN
 Werft	185	NOUN,VERB
 Näherung	185	NOUN
-Wahlberechtigten	185	NOUN,ADJECTIVE,OTHER	Wahlberechtigte
+Wahlberechtigten	185	NOUN,ADJECTIVE,OTHER	wahlberechtigt
 belief	185	OTHER
 Kriegsführung	185	NOUN
 Abwanderung	185	NOUN
@@ -10717,7 +10717,7 @@ ausgewählte	185	OTHER
 Gefährdung	185	NOUN
 schmale	185	OTHER
 Mittelgebirge	185	NOUN
-Adeligen	185	NOUN,ADJECTIVE,OTHER	Adelige
+Adeligen	185	NOUN,ADJECTIVE,OTHER	adelig
 Ostafrika	185	NOUN,PROPER_NOUN
 Amplitude	185	NOUN
 entwässert	185	OTHER
@@ -10952,7 +10952,7 @@ noir	180	OTHER
 weißem	180	OTHER
 kritischer	180	OTHER
 Fernseh	180	NOUN
-dicken	180	NOUN,OTHER	Dicke
+dicken	180	NOUN,OTHER	dick
 Plutarch	180	NOUN,PROPER_NOUN
 begleiten	180	VERB
 Episoden	180	NOUN	Episode
@@ -11373,7 +11373,7 @@ Mt	173	NOUN
 Frankenreich	173	NOUN
 Oberlausitz	173	NOUN,PROPER_NOUN
 Schaltungen	172	NOUN	Schaltung
-vertraute	172	NOUN,OTHER	Vertrauter
+vertraute	172	NOUN,OTHER	vertraut
 verschwindet	172	OTHER
 schuldig	172	ADJECTIVE,OTHER
 kopiert	172	OTHER
@@ -11587,7 +11587,7 @@ Zellkern	169	NOUN
 Tieck	169	NOUN
 Language	169	NOUN
 ehrenamtlich	169	ADJECTIVE,OTHER
-Schlesischen	169	NOUN,ADJECTIVE,OTHER	Schlesische
+Schlesischen	169	NOUN,ADJECTIVE,OTHER	schlesisch
 Südseite	169	NOUN
 Glocken	169	NOUN	Glocke
 Volkskammer	169	NOUN
@@ -12134,7 +12134,7 @@ Versöhnung	160	NOUN
 statische	160	OTHER
 bezweifelt	160	OTHER
 Segen	160	NOUN
-Dienstes	160	NOUN	Dienst
+Dienstes	160	NOUN	dienen
 rasche	160	OTHER
 Elbing	160	NOUN
 Caesarea	160	NOUN
@@ -12398,7 +12398,7 @@ Aminosäure	156	NOUN
 Apotheker	156	NOUN
 kampflos	156	ADJECTIVE,OTHER
 lehnen	156	VERB
-schicken	156	NOUN,VERB	Schick
+schicken	156	NOUN,VERB
 islamischer	156	OTHER
 Entfaltung	156	NOUN
 unterbinden	156	VERB
@@ -12474,7 +12474,7 @@ friedliche	155	OTHER
 betonten	155	VERB,OTHER
 Migranten	155	NOUN
 Wendung	155	NOUN
-Wüsten	155	NOUN,ADJECTIVE	Wüste
+Wüsten	155	NOUN,ADJECTIVE	wüst
 langsamen	155	OTHER
 dringend	155	ADJECTIVE,OTHER
 Schienennetz	155	NOUN
@@ -12492,7 +12492,7 @@ Livland	155	NOUN,PROPER_NOUN
 gegessen	155	OTHER
 px	155	OTHER
 Toronto	155	NOUN,PROPER_NOUN
-fernen	155	NOUN,OTHER	Ferne
+fernen	155	NOUN,OTHER	fern
 Eichen	155	NOUN,VERB
 cap	155	NOUN,OTHER
 Ölgemälde	155	NOUN
@@ -12645,7 +12645,7 @@ Gropius	153	NOUN
 ZX	153	NOUN
 Hauptgebäude	153	NOUN
 Strophe	153	NOUN
-Rotes	527	NOUN,OTHER	Rote
+Rotes	527	NOUN,OTHER	rot
 architektonisch	153	ADJECTIVE,OTHER
 Wümme	153	NOUN
 Exponenten	153	NOUN	Exponent
@@ -13133,7 +13133,7 @@ Petri	146	NOUN
 Garden	146	NOUN	Garde
 Dubrovnik	146	NOUN,PROPER_NOUN
 vorab	146	OTHER
-Predigten	146	NOUN,VERB	Predigt
+Predigten	146	NOUN,VERB	predigen
 Herrhausen	146	NOUN
 PCI	146	NOUN
 Druckerei	146	NOUN
@@ -13205,7 +13205,7 @@ Schmid	145	NOUN,PROPER_NOUN
 Peripherie	145	NOUN
 Freudenstadt	145	NOUN,PROPER_NOUN
 Begriffes	145	NOUN	Begriff
-Mitteldeutschen	145	NOUN,ADJECTIVE,OTHER	Mitteldeutsche
+Mitteldeutschen	145	NOUN,ADJECTIVE,OTHER	mitteldeutsch
 Dekanat	145	NOUN
 Verfassungsänderung	145	NOUN
 Kulturgeschichte	145	NOUN
@@ -13308,9 +13308,9 @@ burgundischen	144	OTHER
 Morris	144	NOUN
 Rohe	144	NOUN,ADJECTIVE,OTHER	roh
 lebendige	144	OTHER
-Mächten	144	NOUN	Macht
+Mächten	144	NOUN	machen
 Hugenotten	144	NOUN
-Taufen	175	NOUN,VERB	Taufe
+Taufen	175	NOUN,VERB
 Embryo	144	NOUN
 Reichsverfassung	144	NOUN
 Tolkien	144	NOUN
@@ -13789,7 +13789,7 @@ Bantusprachen	138	NOUN	Bantusprache
 aufwiesen	138	VERB
 Abstraktion	138	NOUN
 Bauformen	138	NOUN	Bauform
-sparen	138	NOUN,VERB	Spare
+sparen	138	NOUN,VERB
 Theseus	138	NOUN,PROPER_NOUN
 Meldungen	138	NOUN	Meldung
 Alba	138	NOUN,OTHER
@@ -14017,7 +14017,7 @@ Datenverarbeitung	135	NOUN
 einverstanden	135	ADJECTIVE,OTHER
 oberster	135	OTHER
 niedergelassen	135	VERB,ADJECTIVE
-Freiwilliger	157	NOUN,OTHER	Freiwillige
+Freiwilliger	157	NOUN,OTHER	freiwillig
 tschechoslowakischen	135	NOUN,OTHER	tschechoslowakische
 Parteiführung	135	NOUN
 Beratungen	135	NOUN	Beratung
@@ -14035,7 +14035,7 @@ Hungersnot	135	NOUN
 Ausschnitt	135	NOUN
 Tunis	135	NOUN,PROPER_NOUN
 partielle	135	OTHER
-ruhen	135	NOUN,VERB	Ruh
+ruhen	135	NOUN,VERB
 Rico	135	NOUN
 zerschlagen	135	VERB
 Eichmann	135	NOUN
@@ -14330,7 +14330,7 @@ scale	132	OTHER
 Evangeliums	132	NOUN	Evangelium
 Brahe	132	NOUN
 Petershagen	132	NOUN,PROPER_NOUN
-ostfriesischen	132	NOUN,OTHER	ostfriesische
+ostfriesischen	132	NOUN,OTHER	Ostfriesisch
 Wendel	132	NOUN,PROPER_NOUN
 Tischendorf	132	NOUN
 Strahl	131	NOUN
@@ -14561,7 +14561,7 @@ Absicherung	129	NOUN
 Turingmaschine	129	NOUN
 Cathedral	129	NOUN
 Raumsonde	129	NOUN
-minderjährigen	129	NOUN,OTHER	Minderjährige
+minderjährigen	129	NOUN,OTHER	minderjährig
 Verbundenheit	129	NOUN
 regieren	129	OTHER,VERB
 angebotenen	129	OTHER
@@ -15452,7 +15452,7 @@ bewertete	120	OTHER
 beliebteste	120	OTHER
 einsetzende	120	OTHER
 prägende	120	OTHER
-Erwerbstätigen	120	NOUN,ADJECTIVE,OTHER	Erwerbstätige
+Erwerbstätigen	120	NOUN,ADJECTIVE,OTHER	erwerbstätig
 Bürokratie	120	NOUN
 diskutierten	120	VERB,OTHER
 Agency	120	NOUN
@@ -15842,7 +15842,7 @@ Laos	117	NOUN,PROPER_NOUN
 zugestimmt	117	OTHER
 Agrippa	117	NOUN
 wünschte	117	OTHER
-gehöre	117	NOUN,OTHER	Gehör
+gehöre	117	NOUN,OTHER	gehören
 bekämpfte	117	OTHER
 Überlegung	117	NOUN
 Einfall	117	NOUN
@@ -16175,7 +16175,7 @@ Entführung	114	NOUN
 Offenheit	114	NOUN
 Giordano	114	NOUN
 geforderte	114	OTHER
-Drucks	114	NOUN	Druck
+Drucks	114	NOUN	drucken
 Theodore	114	NOUN
 Konstellation	114	NOUN
 beidseitig	114	ADJECTIVE,OTHER
@@ -16356,7 +16356,7 @@ Assoziation	113	NOUN
 Untertitel	113	NOUN
 Hadrians	113	NOUN	Hadrian
 gespeist	113	OTHER
-Sparten	113	NOUN,VERB	Sparte
+Sparten	113	NOUN,VERB	sparen
 Zetkin	113	NOUN
 Bureau	113	NOUN
 Île	113	NOUN
@@ -17034,7 +17034,7 @@ bezeugen	107	OTHER,VERB
 Potenzen	107	NOUN	Potenz
 beschädigte	107	OTHER
 Miss	107	NOUN,VERB
-braunen	107	NOUN,OTHER	braune
+braunen	107	NOUN,OTHER	Brauner
 Kraftfahrzeugen	107	NOUN	Kraftfahrzeug
 zuhause	107	NOUN,OTHER
 Räte	107	NOUN	Rat
@@ -18475,7 +18475,7 @@ Rückstand	96	NOUN
 vorbereiten	96	VERB
 georgische	96	OTHER
 Vega	96	NOUN
-Trägern	96	NOUN	Träger
+Trägern	96	NOUN	träge
 frühmittelalterlichen	96	OTHER
 Mitmenschen	96	NOUN
 Vandalismus	96	NOUN,OTHER
@@ -18889,7 +18889,7 @@ gemachten	94	OTHER
 Zuckerrohr	94	NOUN
 Mexikos	94	NOUN	Mexiko
 Garnisonsstadt	94	NOUN
-Meisters	94	NOUN	Meister
+Meisters	94	NOUN	meist
 Olga	94	NOUN,PROPER_NOUN
 dominant	94	ADJECTIVE,OTHER
 Lampe	94	NOUN,PROPER_NOUN
@@ -19270,7 +19270,7 @@ sperren	92	NOUN,OTHER,VERB	Sperre
 stecken	92	VERB
 SPS	92	NOUN
 Broadcast	92	NOUN
-kehren	92	NOUN,VERB	Kehre
+kehren	92	NOUN,VERB
 Estlands	92	NOUN	Estland
 Delaunay	92	NOUN
 Seitenlänge	92	NOUN
@@ -19313,7 +19313,7 @@ Erschöpfung	91	NOUN
 Stammbaum	91	NOUN
 legitimen	91	OTHER
 Gerücht	91	NOUN
-Verwundeten	91	NOUN,ADJECTIVE,OTHER	Verwundete
+Verwundeten	91	NOUN,ADJECTIVE,OTHER	verwundet
 Leserschaft	91	NOUN
 Erfolgs	91	NOUN	Erfolg
 Provokation	91	NOUN
@@ -19531,7 +19531,7 @@ Klimawandels	90	NOUN	Klimawandel
 ausreicht	90	OTHER
 Steigung	90	NOUN
 lim	90	OTHER
-Dichtern	90	NOUN	Dichter
+Dichtern	90	NOUN	dicht
 Domes	90	NOUN	Dom
 auszeichnen	90	VERB
 Pioneer	90	NOUN
@@ -19597,7 +19597,7 @@ Windgeschwindigkeit	90	NOUN
 Okular	90	NOUN
 Amiens	90	NOUN,PROPER_NOUN
 Königswahl	90	NOUN
-schütze	381	NOUN,VERB,PROPER_NOUN,OTHER	schützen
+schütze	381	NOUN,VERB,PROPER_NOUN,OTHER	Schütz
 Frankenthal	90	NOUN,PROPER_NOUN
 Guyana	90	NOUN,PROPER_NOUN
 Landsgemeinde	90	NOUN
@@ -20595,7 +20595,7 @@ Messwerte	84	NOUN	Messwert
 Teppich	84	NOUN
 Konvergenz	84	NOUN
 Gothaer	84	NOUN
-Tanks	84	NOUN	Tank
+Tanks	84	NOUN	tanken
 Dienstgrad	84	NOUN
 veränderter	84	OTHER
 feindlich	84	ADJECTIVE,OTHER
@@ -20638,7 +20638,7 @@ Athanasius	84	NOUN,PROPER_NOUN
 anbringen	84	NOUN,OTHER,VERB
 Weblinks	84	NOUN	Weblink
 Baskenland	84	NOUN
-baskischen	84	NOUN,OTHER	baskische
+baskischen	84	NOUN,OTHER	Baskisch
 Kapellmeister	84	NOUN
 Download	84	NOUN
 Apokryphen	84	NOUN,OTHER
@@ -20691,7 +20691,7 @@ Klischees	83	NOUN	Klischee
 Julie	83	NOUN,PROPER_NOUN
 Londons	83	NOUN	London
 Vergewaltigungen	83	NOUN	Vergewaltigung
-Meistern	83	NOUN,VERB,OTHER	Meister
+Meistern	83	NOUN,VERB,OTHER	meist
 Truffaut	83	NOUN
 Taxi	83	NOUN
 Faszination	83	NOUN
@@ -20731,7 +20731,7 @@ zweijährigen	83	OTHER
 unterworfenen	83	OTHER
 dienende	83	OTHER
 Andersen	83	NOUN,PROPER_NOUN
-gemeinen	83	NOUN,OTHER	Gemeine
+gemeinen	83	NOUN,OTHER	gemein
 Historikers	83	NOUN	Historiker
 Asia	83	NOUN
 historischem	83	OTHER
@@ -20782,7 +20782,7 @@ gebar	83	OTHER
 Temple	83	NOUN
 Bön	83	NOUN
 Rechtsfähigkeit	83	NOUN
-blinden	83	NOUN,OTHER	Blinde
+blinden	83	NOUN,OTHER	blind
 vorstellte	83	OTHER
 Hewlett	83	NOUN
 Aktie	83	NOUN
@@ -20854,7 +20854,7 @@ Kircher	83	NOUN
 verzichteten	83	VERB
 beschnitten	83	VERB
 Schlamm	83	NOUN
-Diagonalen	83	NOUN,ADJECTIVE	Diagonale
+Diagonalen	83	NOUN,ADJECTIVE	diagonal
 Streckenabschnitt	83	NOUN
 Este	83	NOUN,PROPER_NOUN
 Wettkämpfen	83	NOUN	Wettkampf
@@ -21156,7 +21156,7 @@ Ganges	81	NOUN,PROPER_NOUN
 Hochzeiten	81	NOUN	Hochzeit
 unzähligen	81	OTHER
 Forschungsstand	81	NOUN
-Drucke	81	NOUN,VERB	Druck
+Drucke	81	NOUN,VERB	drucken
 Akropolis	81	NOUN,PROPER_NOUN
 zeitweilige	81	OTHER
 Stromes	81	NOUN
@@ -22054,7 +22054,7 @@ stützten	77	VERB,OTHER
 Grundstücken	77	NOUN	Grundstück
 unangenehm	77	ADJECTIVE,OTHER
 Automatisierung	77	NOUN
-Arbeitslosen	77	NOUN,ADJECTIVE,OTHER	Arbeitslose
+Arbeitslosen	77	NOUN,ADJECTIVE,OTHER	arbeitslos
 Wortschatzes	77	NOUN
 unbeachtet	77	ADJECTIVE,OTHER
 Tragfähigkeit	77	NOUN
@@ -22349,7 +22349,7 @@ bunte	76	OTHER
 Intendant	76	NOUN
 Malediven	76	NOUN,PROPER_NOUN
 Fa	76	NOUN
-Blöcken	76	NOUN	Block
+Blöcken	76	NOUN	blocken
 rekrutiert	76	OTHER
 Schülers	76	NOUN	Schüler
 tragischen	76	OTHER
@@ -23225,7 +23225,7 @@ gewidmete	72	OTHER
 Kristallsystem	72	NOUN
 aktualisierte	72	OTHER
 neutraler	72	OTHER
-außerirdischen	72	NOUN,OTHER	außerirdische
+außerirdischen	72	NOUN,OTHER	Außerirdischer
 Aufbauten	72	NOUN,OTHER
 Pigment	72	NOUN
 Walze	72	NOUN
@@ -23470,7 +23470,7 @@ vorwarf	71	OTHER
 Haute	71	NOUN,VERB
 Grabhügel	71	NOUN
 Bändern	71	NOUN	Band
-Plans	71	NOUN	Plan
+Plans	71	NOUN	planen
 mietete	71	OTHER
 Lichtjahre	71	NOUN	Lichtjahr
 Siena	71	NOUN,PROPER_NOUN
@@ -24013,7 +24013,7 @@ Weihnachtszeit	69	NOUN
 Kambodschas	69	NOUN	Kambodscha
 Kr	69	NOUN
 druckte	69	OTHER
-Trägers	69	NOUN	Träger
+Trägers	69	NOUN	träge
 schlechteste	69	OTHER
 beruhe	69	OTHER
 knüpfen	69	VERB
@@ -24754,7 +24754,7 @@ Soli	66	NOUN
 üblicher	66	OTHER
 abzählbar	66	ADJECTIVE,OTHER
 zweistelligen	66	OTHER
-Locken	78	NOUN,VERB	Locke
+Locken	78	NOUN,VERB
 Champagne	66	NOUN,PROPER_NOUN
 Ingrid	66	NOUN,PROPER_NOUN
 sonderlich	66	ADJECTIVE,OTHER
@@ -26145,7 +26145,7 @@ Oberkassel	62	NOUN
 hauptamtlicher	62	OTHER
 wiederzubeleben	62	VERB
 Lena	62	NOUN,PROPER_NOUN
-Wachen	62	NOUN,VERB,ADJECTIVE,OTHER	Wache
+Wachen	62	NOUN,VERB,ADJECTIVE,OTHER	wach
 abgespielt	62	OTHER
 Neid	62	NOUN
 normalem	62	OTHER
@@ -26704,7 +26704,7 @@ großzügigen	60	OTHER
 Marxisten	60	NOUN	Marxist
 Algier	60	NOUN,PROPER_NOUN
 rechtmäßig	60	ADJECTIVE,OTHER
-Besuchs	60	NOUN	Besuch
+Besuchs	60	NOUN	besuchen
 libyschen	60	OTHER
 kt	60	OTHER
 Krediten	60	NOUN	Kredit
@@ -26902,7 +26902,7 @@ färöische	60	NOUN,OTHER	Färöisch
 mtDNA	60	OTHER
 Luftstrom	60	NOUN
 quert	60	OTHER
-moldauischen	60	NOUN,OTHER	moldauische
+moldauischen	60	NOUN,OTHER	Moldauisch
 Kraftwerks	60	NOUN	Kraftwerk
 Musikwissenschaftler	60	NOUN
 Artikulation	60	NOUN
@@ -27234,7 +27234,7 @@ angeschlagen	59	VERB,ADJECTIVE
 Begrifflichkeiten	59	NOUN	Begrifflichkeit
 Reichsrat	59	NOUN
 Banater	59	NOUN
-Pässe	59	NOUN	Pass
+Pässe	59	NOUN	passen
 Wass	59	NOUN
 Renten	59	NOUN	Rente
 Kol	59	NOUN
@@ -27880,7 +27880,7 @@ Fußballstadion	57	NOUN
 Mikroprozessor	57	NOUN
 POSIX	57	NOUN
 zeitnah	57	ADJECTIVE,OTHER
-Missbrauchs	57	NOUN	Missbrauch
+Missbrauchs	57	NOUN	missbrauchen
 Vincenzo	57	NOUN
 Halske	57	NOUN
 Moderatoren	57	NOUN	Moderator
@@ -28739,7 +28739,7 @@ Dijon	55	NOUN,PROPER_NOUN
 Schrader	55	NOUN
 Notstand	55	NOUN
 Moabit	55	NOUN
-Speichers	55	NOUN	Speicher
+Speichers	55	NOUN	speichern
 Koordinate	55	NOUN
 lizenzierte	55	OTHER
 Sampler	55	NOUN
@@ -28975,7 +28975,7 @@ USS	54	NOUN
 Ornamente	54	NOUN	Ornament
 Teilrepubliken	54	NOUN	Teilrepublik
 Negro	54	NOUN
-kreuze	64	NOUN,VERB	kreuzen
+kreuze	64	NOUN,VERB	Kreuz
 kristalline	54	OTHER
 Reaktionsgeschwindigkeit	54	NOUN
 Stäbchen	54	NOUN
@@ -29453,7 +29453,7 @@ Waldshut	53	NOUN
 Schutzhaft	53	NOUN
 Wahlergebnisse	53	NOUN
 utopischen	53	OTHER
-Blocks	53	NOUN	Block
+Blocks	53	NOUN	blocken
 Internetseite	53	NOUN
 Ikosaeder	53	NOUN
 Dose	53	NOUN
@@ -29696,7 +29696,7 @@ Mikro	52	NOUN
 Inertialsystem	52	NOUN
 Filmproduktionen	52	NOUN	Filmproduktion
 Intrige	52	NOUN
-Müttern	52	NOUN	Mütter
+Müttern	52	NOUN	Mutter
 Janet	52	NOUN
 einrichtete	52	OTHER
 nachgeahmt	52	OTHER
@@ -30175,7 +30175,7 @@ Regenfällen	51	NOUN	Regenfälle
 Erstürmung	51	NOUN
 östlichsten	51	OTHER
 geächtet	51	OTHER
-Toter	156	NOUN,OTHER	Tote
+Toter	156	NOUN,OTHER	tot
 Septimius	51	NOUN
 Vergänglichkeit	51	NOUN
 Plutarchs	51	NOUN	Plutarch
@@ -31510,7 +31510,7 @@ Foyer	48	NOUN
 Résistance	48	NOUN
 weltgrößten	48	OTHER
 Stilelemente	48	NOUN	Stilelement
-Verdächtigen	48	NOUN,ADJECTIVE,OTHER	Verdächtige
+Verdächtigen	48	NOUN,ADJECTIVE,OTHER	verdächtig
 Antagonisten	48	NOUN	Antagonist
 verwerfen	48	VERB
 zitieren	48	VERB
@@ -32106,7 +32106,7 @@ Sprecherin	47	NOUN
 Abbasiden	47	NOUN
 Milchprodukten	47	NOUN	Milchprodukte
 durchdrungen	47	VERB
-Ungläubigen	47	NOUN,ADJECTIVE	Ungläubige
+Ungläubigen	47	NOUN,ADJECTIVE	ungläubig
 Reflex	47	NOUN
 transzendent	47	ADJECTIVE,OTHER
 thermodynamische	47	OTHER
@@ -32220,7 +32220,7 @@ Handelskammern	47	NOUN	Handelskammer
 fünftes	47	OTHER
 beleuchtete	47	OTHER
 kostbare	47	OTHER
-Schwulen	47	NOUN,ADJECTIVE,OTHER	Schwule
+Schwulen	47	NOUN,ADJECTIVE,OTHER	schwul
 Lektor	47	NOUN
 Dekaden	47	NOUN	Dekade
 Buchhandel	47	NOUN
@@ -32467,7 +32467,7 @@ mSv	47	NOUN,OTHER
 Atropin	47	NOUN
 Studierendenschaft	47	NOUN
 Makroökonomie	47	NOUN
-Wehrpflichtigen	47	NOUN,ADJECTIVE,OTHER	Wehrpflichtige
+Wehrpflichtigen	47	NOUN,ADJECTIVE,OTHER	wehrpflichtig
 Koblenzer	47	NOUN
 Orbison	47	NOUN
 aschkenasischen	47	OTHER
@@ -32532,7 +32532,7 @@ Levy	46	NOUN
 Filmreihe	46	NOUN
 Kulturleben	46	NOUN
 weibliches	46	OTHER
-Verkäufe	46	NOUN	Verkauf
+Verkäufe	46	NOUN	verkaufen
 verdienten	46	VERB,OTHER
 gestartete	46	OTHER
 durchwegs	46	OTHER
@@ -32999,7 +32999,7 @@ Korngröße	46	NOUN
 Abidjan	46	NOUN,PROPER_NOUN
 Fernsehturms	46	NOUN	Fernsehturm
 bezweifeln	46	VERB
-grotesken	46	NOUN,OTHER	Groteske
+grotesken	46	NOUN,OTHER	grotesk
 Fünen	46	NOUN,PROPER_NOUN
 Spitzbergen	46	NOUN,PROPER_NOUN
 Niklaus	46	NOUN
@@ -33083,7 +33083,7 @@ Thoreau	46	NOUN
 Mährens	46	NOUN	Mähren
 Singapurs	46	NOUN	Singapur
 Gründgens	46	NOUN
-Lockes	46	NOUN	Locke
+Lockes	46	NOUN	Locken
 Herzlake	46	NOUN
 Bröckers	46	NOUN
 Lakaien	46	NOUN
@@ -34348,7 +34348,7 @@ Flair	43	NOUN
 Kirchenkreises	43	NOUN	Kirchenkreis
 rekrutieren	43	OTHER,VERB
 Gegenangriff	43	NOUN
-Offensiven	124	NOUN,OTHER	Offensive
+Offensiven	124	NOUN,OTHER	offensiv
 Muskelkraft	43	NOUN
 umgeleitet	43	OTHER
 wertvolles	43	OTHER
@@ -34408,7 +34408,7 @@ eleganten	43	OTHER
 Nobelpreises	43	NOUN	Nobelpreis
 beleuchteten	43	VERB,OTHER
 Freizügigkeit	43	NOUN
-Staus	43	NOUN	Stau
+Staus	43	NOUN	stauen
 Schädels	43	NOUN	Schädel
 zwölfte	43	OTHER
 differenzierbar	43	ADJECTIVE,OTHER
@@ -34466,7 +34466,7 @@ Garibaldi	43	NOUN
 verschwindend	43	OTHER
 definitionsgemäß	43	OTHER
 fatale	43	OTHER
-Genese	43	NOUN,VERB	genesen
+Genese	43	NOUN,VERB	Genesis
 Letalität	43	NOUN
 Aggregat	43	NOUN
 Trümmer	43	NOUN
@@ -35115,7 +35115,7 @@ std	42	NOUN,OTHER
 Speicherbereinigung	42	NOUN
 Ariane	42	NOUN,PROPER_NOUN
 Überdosis	42	NOUN
-Fässer	42	NOUN	Fass
+Fässer	42	NOUN	fassen
 Honoré	42	NOUN
 lebhaft	42	ADJECTIVE,OTHER
 befürworten	42	VERB
@@ -35614,7 +35614,7 @@ fühle	41	OTHER
 Auslands	41	NOUN	Ausland
 ordentlicher	41	OTHER
 Reichsministerium	41	NOUN
-Planer	41	NOUN,ADJECTIVE	plan
+Planer	41	NOUN,ADJECTIVE	planen
 abzutreten	41	VERB
 Radiosendern	41	NOUN	Radiosender
 jüdischem	41	OTHER
@@ -36317,7 +36317,7 @@ Adjektivs	40	NOUN	Adjektiv
 Seekrieg	40	NOUN
 Wählerschaft	40	NOUN
 Belebung	40	NOUN
-Gläubigern	40	NOUN	Gläubiger
+Gläubigern	40	NOUN	gläubig
 Interessengemeinschaft	40	NOUN
 befriedigend	40	ADJECTIVE,OTHER
 Schwangerschaften	40	NOUN	Schwangerschaft
@@ -36339,10 +36339,10 @@ libanesischen	40	OTHER
 Vorstandes	40	NOUN
 programmierten	40	OTHER
 maltesische	40	NOUN,OTHER	Maltesisch
-Regens	40	NOUN	Regen
+Regens	40	NOUN	rege
 unempfindlich	40	ADJECTIVE,OTHER
 Carus	40	NOUN
-Kranker	61	NOUN,OTHER	Kranke
+Kranker	61	NOUN,OTHER	krank
 Polynoms	40	NOUN	Polynom
 ablegte	40	OTHER
 Traité	40	NOUN
@@ -37684,7 +37684,7 @@ Zertifizierung	38	NOUN
 gefährdeter	38	OTHER
 Oberschenkel	38	NOUN
 vermögenden	38	OTHER
-Treuen	89	NOUN,PROPER_NOUN,OTHER	Treue
+Treuen	89	NOUN,PROPER_NOUN,OTHER	treu
 unterzuordnen	38	VERB
 Einschnitte	38	NOUN	Einschnitt
 Leitfigur	38	NOUN
@@ -38416,7 +38416,7 @@ Katakomben	37	NOUN	Katakombe
 Renovierungsarbeiten	37	NOUN
 statischer	37	OTHER
 Kirchhoff	37	NOUN
-Löhnen	37	NOUN	Lohn
+Löhnen	37	NOUN	lohnen
 Guru	37	NOUN,OTHER
 Nordzypern	37	NOUN,PROPER_NOUN
 BAG	37	NOUN
@@ -38484,7 +38484,7 @@ Differentialrechnung	37	NOUN
 Namensträger	37	NOUN
 Mahnung	37	NOUN
 Reichsacht	37	NOUN
-Drücke	37	NOUN,OTHER	Druck
+Drücke	37	NOUN,OTHER	drucken
 Wiederkäuern	37	NOUN	Wiederkäuer
 Atemnot	37	NOUN
 Hülsen	37	NOUN
@@ -39217,7 +39217,7 @@ gängigsten	36	OTHER
 patricius	36	NOUN,OTHER
 DBP	36	NOUN
 gebrochene	36	OTHER
-koppeln	36	NOUN,VERB	Koppel
+koppeln	36	NOUN,VERB
 zurückgebracht	36	OTHER
 befüllt	36	ADJECTIVE,OTHER
 Verengung	36	NOUN
@@ -40575,7 +40575,7 @@ mancherlei	35	OTHER
 Molke	35	NOUN
 maurischen	35	OTHER
 Jaroslaw	35	NOUN
-Vätern	35	NOUN	Väter
+Vätern	35	NOUN	Vater
 Gaspard	35	NOUN
 Besançon	35	NOUN,PROPER_NOUN
 zerstreut	35	ADJECTIVE,OTHER
@@ -40690,7 +40690,7 @@ Jungfernfahrt	35	NOUN
 Ausstellungsstücke	35	NOUN	Ausstellungsstück
 Gehöfte	35	NOUN	Gehöft
 Feministinnen	35	NOUN	Feministin
-Liebenden	35	NOUN,ADJECTIVE,OTHER	Liebende
+Liebenden	35	NOUN,ADJECTIVE,OTHER	liebend
 Rampen	35	NOUN	Rampe
 Managements	35	NOUN	Management
 Xenix	35	NOUN
@@ -41340,7 +41340,7 @@ Minimierung	34	NOUN
 Factory	34	NOUN
 Length	34	NOUN,OTHER
 zugebilligt	34	OTHER
-minderjähriger	34	NOUN,OTHER	Minderjährige
+minderjähriger	34	NOUN,OTHER	minderjährig
 Linguist	34	NOUN
 maligne	34	ADJECTIVE,OTHER
 hinzuzufügen	34	VERB
@@ -41358,7 +41358,7 @@ Landsmann	34	NOUN
 Dominikus	34	NOUN
 Denkmalliste	34	NOUN
 Wasserschloss	34	NOUN
-Norddeutscher	51	NOUN,OTHER	Norddeutsche
+Norddeutscher	51	NOUN,OTHER	norddeutsch
 Tribünen	34	NOUN	Tribüne
 Elektrolokomotiven	34	NOUN
 Standorts	34	NOUN	Standort
@@ -41835,7 +41835,7 @@ Zossen	33	NOUN,PROPER_NOUN
 diktierte	33	OTHER
 letztem	33	OTHER
 ernährte	33	OTHER
-berberischen	33	NOUN,OTHER	berberische
+berberischen	33	NOUN,OTHER	Berberisch
 Folterungen	33	NOUN	Folterung
 Assoziierungsabkommen	33	NOUN
 Tilgung	33	NOUN
@@ -42445,7 +42445,7 @@ Schauenburger	33	NOUN
 Pike	33	NOUN,PROPER_NOUN
 Produktionsfaktor	33	NOUN
 Spannungsabfall	33	NOUN
-wehre	38	NOUN,VERB	wehren
+wehre	38	NOUN,VERB	Wehr
 Regenwaldes	33	NOUN
 Sonia	33	NOUN
 Telangana	33	NOUN
@@ -43063,7 +43063,7 @@ Schutzstatus	32	NOUN
 austrägt	32	OTHER
 Sporthallen	32	NOUN	Sporthalle
 Nachkommenschaft	32	NOUN
-narrativen	32	NOUN,OTHER	narrative
+narrativen	32	NOUN,OTHER	Narrativ
 Kyros	32	NOUN
 modernem	32	OTHER
 gestalteter	32	OTHER
@@ -43097,7 +43097,7 @@ Lehrauftrag	32	NOUN
 Protestant	32	NOUN
 Lebensabschnitt	32	NOUN
 Mutterleib	32	NOUN
-schiefen	32	NOUN,OTHER	Schiefe
+schiefen	32	NOUN,OTHER	schief
 Maximilianstraße	32	NOUN
 Bombardement	32	NOUN
 Ersthelfer	32	NOUN
@@ -43628,7 +43628,7 @@ Islamabad	31	NOUN,PROPER_NOUN
 Persiens	31	NOUN	Persien
 Schatzmeister	31	NOUN
 iranischer	31	OTHER
-Liebes	31	NOUN,ADJECTIVE	Liebe
+Liebes	31	NOUN,ADJECTIVE	lieb
 Ptolemäer	31	NOUN
 zuschreibt	31	OTHER
 verkürzter	31	OTHER
@@ -43916,7 +43916,7 @@ baulicher	31	OTHER
 Arbeitsgemeinschaften	31	NOUN	Arbeitsgemeinschaft
 Zusammenfassungen	31	NOUN	Zusammenfassung
 Veterinärmedizin	31	NOUN
-Spieles	31	NOUN	Spiel
+Spieles	31	NOUN	spielen
 flächengrößte	31	OTHER
 hügelig	31	ADJECTIVE,OTHER
 Mediatisierung	31	NOUN
@@ -44015,10 +44015,10 @@ BM	31	NOUN
 Verkehrsminister	31	NOUN
 Weidewirtschaft	31	NOUN
 separatistische	31	OTHER
-Verkaufs	31	NOUN	Verkauf
+Verkaufs	31	NOUN	verkaufen
 paritätisch	31	ADJECTIVE,OTHER
 Handelsverkehr	31	NOUN
-Biere	31	NOUN	Bier
+Biere	31	NOUN	bi
 Artois	31	NOUN
 Höhepunkten	31	NOUN	Höhepunkt
 Bosnienkrieg	31	NOUN
@@ -44165,7 +44165,7 @@ Panamakanals	31	NOUN	Panamakanal
 Kran	31	NOUN
 Landkriegsordnung	31	NOUN
 ausführbare	31	OTHER
-Steuerpflichtigen	31	NOUN,ADJECTIVE,OTHER	Steuerpflichtige
+Steuerpflichtigen	31	NOUN,ADJECTIVE,OTHER	steuerpflichtig
 entspannte	31	OTHER
 Aberration	31	NOUN
 Ruhmeshalle	31	NOUN
@@ -44297,7 +44297,7 @@ großbürgerlichen	31	OTHER
 Hebriden	31	NOUN,PROPER_NOUN
 Polarstern	31	NOUN,PROPER_NOUN
 BRT	31	NOUN
-Invarianten	31	NOUN,ADJECTIVE,OTHER	Invariante
+Invarianten	31	NOUN,ADJECTIVE,OTHER	invariant
 gälischen	31	NOUN,OTHER	Gälisch
 oberflächennahen	31	OTHER
 Schären	31	NOUN
@@ -44789,7 +44789,7 @@ Aneinanderreihung	30	NOUN
 Turkestan	30	NOUN,PROPER_NOUN
 Infrastrukturprojekte	30	NOUN
 Dinamo	30	NOUN
-Fässern	30	NOUN	Fass
+Fässern	30	NOUN	fassen
 MH	30	NOUN,OTHER
 Preisbindung	30	NOUN
 entnommene	30	OTHER
@@ -45434,7 +45434,7 @@ Belushi	30	NOUN
 Regularien	30	NOUN
 Amboise	30	NOUN,PROPER_NOUN
 Helikopter	30	NOUN
-kursiven	30	NOUN,OTHER	Kursive
+kursiven	30	NOUN,OTHER	kursiv
 hansischen	30	OTHER
 Instrumentenbauer	30	NOUN
 hygienische	30	OTHER
@@ -46784,7 +46784,7 @@ Marionette	28	NOUN
 Herald	28	NOUN
 Auteur	28	NOUN,OTHER
 polemischen	28	OTHER
-Hauptverantwortlichen	28	NOUN,ADJECTIVE,OTHER	Hauptverantwortliche
+Hauptverantwortlichen	28	NOUN,ADJECTIVE,OTHER	hauptverantwortlich
 Disneys	28	NOUN	Disney
 Übertreibung	28	NOUN
 Auslassungen	28	NOUN	Auslassung
@@ -46828,7 +46828,7 @@ Jahresbericht	28	NOUN
 Anrecht	28	NOUN
 NZZ	28	NOUN
 gegenwärtiger	28	OTHER
-Defensiven	42	NOUN,OTHER	Defensive
+Defensiven	42	NOUN,OTHER	defensiv
 fünfjähriger	28	OTHER
 Delos	28	NOUN,PROPER_NOUN
 Chios	28	NOUN
@@ -46961,7 +46961,7 @@ Containerschiff	28	NOUN
 Euer	28	NOUN,OTHER
 Kammergericht	28	NOUN
 außerehelichen	28	OTHER
-Blinder	49	NOUN,OTHER	Blinde
+Blinder	49	NOUN,OTHER	blind
 Mittagessen	28	NOUN
 Philosophierens	28	NOUN	Philosophieren
 angespannte	28	OTHER
@@ -47153,7 +47153,7 @@ Flores	28	NOUN,PROPER_NOUN
 ehelichte	28	OTHER
 Geschäftsführerin	28	NOUN
 Namensgeberin	28	NOUN
-Retrospektiven	28	NOUN,ADJECTIVE,OTHER	Retrospektive
+Retrospektiven	28	NOUN,ADJECTIVE,OTHER	retrospektiv
 Asperger	28	NOUN
 Außenstehende	28	NOUN,OTHER
 Aggressionen	28	NOUN	Aggression
@@ -47381,7 +47381,7 @@ Sonnenberg	28	NOUN,PROPER_NOUN
 György	28	NOUN
 Hochwassers	28	NOUN	Hochwasser
 Warenhäuser	28	NOUN	Warenhaus
-Druckes	28	NOUN	Druck
+Druckes	28	NOUN	drucken
 Pigmenten	28	NOUN	Pigment
 simultane	28	OTHER
 Gurken	28	NOUN
@@ -48750,7 +48750,7 @@ Pfingstler	27	NOUN
 apokryphe	27	OTHER
 Aufl	27	NOUN
 Bahnhofsviertel	27	NOUN
-Besuches	27	NOUN	Besuch
+Besuches	27	NOUN	besuchen
 Vertriebs	27	NOUN	Vertrieb
 Rettungswache	27	NOUN
 Stylesheets	27	NOUN	Stylesheet
@@ -49725,7 +49725,7 @@ Spinnentiere	26	NOUN
 Peristaltik	26	NOUN
 Anschwellen	26	NOUN,VERB,OTHER
 verzweigen	26	VERB
-Verdiensten	26	NOUN	Verdienst
+Verdiensten	26	NOUN	verdienen
 Fernwanderwege	26	NOUN	Fernwanderweg
 Nino	26	NOUN,PROPER_NOUN
 Camulodunum	26	NOUN
@@ -50827,7 +50827,7 @@ Fermium	25	NOUN
 langlebiger	25	OTHER
 anzutreiben	25	VERB
 Wissensvermittlung	25	NOUN
-Berufstätigen	25	NOUN,ADJECTIVE,OTHER	Berufstätige
+Berufstätigen	25	NOUN,ADJECTIVE,OTHER	berufstätig
 Honorare	25	NOUN	Honorar
 Kulturanthropologie	25	NOUN
 interdisziplinäres	25	OTHER
@@ -51190,7 +51190,7 @@ Proportionalität	25	NOUN
 Anwendungsprogramm	25	NOUN
 Webanwendungen	25	NOUN	Webanwendung
 zusätzlichem	25	OTHER
-eilen	25	NOUN,VERB	Eile
+eilen	25	NOUN,VERB
 Lens	25	NOUN,OTHER
 oberflächennahe	25	OTHER
 Tracheen	25	NOUN
@@ -51431,7 +51431,7 @@ erodiert	25	OTHER
 Appellationsgericht	25	NOUN
 Druckfestigkeit	25	NOUN
 gesättigte	25	OTHER
-Betons	25	NOUN	Beton
+Betons	25	NOUN	betonen
 Bauingenieur	25	NOUN
 Schläuche	25	NOUN	Schlauch
 CO₂	25	NOUN
@@ -51948,7 +51948,7 @@ Zahlenfolge	25	NOUN
 Wortverbindungen	25	NOUN	Wortverbindung
 Karmel	25	NOUN
 abrahamitischen	25	OTHER
-Barmherzigen	25	NOUN,ADJECTIVE	Barmherzige
+Barmherzigen	25	NOUN,ADJECTIVE	barmherzig
 Lithiumchlorid	25	NOUN
 Bipolartransistoren	25	NOUN	Bipolartransistor
 Funktionsstörungen	25	NOUN	Funktionsstörung
@@ -53828,7 +53828,7 @@ Fiji	24	NOUN
 Hinterrad	24	NOUN
 Sheng	24	NOUN
 Hesychasten	24	NOUN	Hesychast
-Wolfes	24	NOUN	Wolfe
+Wolfes	24	NOUN	Wolf
 Burgenlandes	24	NOUN
 Wak	24	NOUN,OTHER
 Anchorage	24	NOUN,PROPER_NOUN
@@ -54059,7 +54059,7 @@ Bibelauslegung	23	NOUN
 Fettes	23	NOUN,OTHER	Fett
 Bataille	23	NOUN
 Triebkraft	23	NOUN
-irren	23	NOUN,VERB	Irre
+irren	23	NOUN,VERB
 Budō	23	NOUN,OTHER
 Kontakts	23	NOUN	Kontakt
 Sinnlosigkeit	23	NOUN
@@ -55765,7 +55765,7 @@ berittene	22	OTHER
 Romanautor	22	NOUN
 Bearbeiter	22	NOUN
 Selbstbeherrschung	22	NOUN
-wahnsinnigen	22	NOUN,OTHER	Wahnsinnige
+wahnsinnigen	22	NOUN,OTHER	wahnsinnig
 Tüchtigkeit	22	NOUN
 Ausformungen	22	NOUN	Ausformung
 tugendhaften	22	OTHER
@@ -55933,7 +55933,7 @@ Kahr	22	NOUN
 ultimativ	22	ADJECTIVE,OTHER
 Gesamtsumme	22	NOUN
 Verfassungsbruch	22	NOUN
-Eisernes	22	NOUN	Eiserne
+Eisernes	22	NOUN	Eisern
 Haftzeit	22	NOUN
 Judenvernichtung	22	NOUN
 Großkirchen	22	NOUN	Großkirche
@@ -56071,7 +56071,7 @@ habsburgischer	22	OTHER
 angetragen	22	VERB
 Außenseiten	22	NOUN	Außenseite
 Schallausbreitung	22	NOUN
-Gehörs	22	NOUN	Gehör
+Gehörs	22	NOUN	gehören
 Langevin	22	NOUN
 verwandtes	22	OTHER
 Wortgleichungen	22	NOUN
@@ -56204,7 +56204,7 @@ erkämpften	22	VERB,OTHER
 Bretten	22	NOUN,PROPER_NOUN
 Verfassunggebende	22	NOUN,OTHER
 Bundesinnenministerium	22	NOUN
-Hessisches	22	NOUN,OTHER	Hessische
+Hessisches	22	NOUN,OTHER	Hessisch
 Seedorf	22	NOUN
 Anziehungspunkte	22	NOUN	Anziehungspunkt
 Modal	22	NOUN
@@ -57591,7 +57591,7 @@ Konditional	21	NOUN
 Zellweger	21	NOUN
 Trusts	21	NOUN	Trust
 Distributoren	21	NOUN
-Verkäufen	21	NOUN	Verkauf
+Verkäufen	21	NOUN	verkaufen
 anwerben	21	VERB
 dreistellige	21	OTHER
 Koproduktion	21	NOUN
@@ -59394,7 +59394,7 @@ Infektiologie	21	NOUN
 Tonsur	21	NOUN
 Scheichs	21	NOUN	Scheich
 Stuhlgang	21	NOUN
-Natives	21	NOUN,ADJECTIVE,OTHER	Native
+Natives	21	NOUN,ADJECTIVE,OTHER	nativ
 Calder	21	NOUN
 umdrehen	21	VERB
 Regelabweichung	21	NOUN
@@ -59880,7 +59880,7 @@ Rienzi	20	NOUN
 Gewalttätigkeit	20	NOUN
 Engelhardt	20	NOUN
 Pasewalk	20	NOUN,PROPER_NOUN
-Verwundeter	26	NOUN,OTHER	Verwundete
+Verwundeter	26	NOUN,OTHER	verwundet
 Kameradschaft	20	NOUN
 Lechfeld	20	NOUN,PROPER_NOUN
 DAP	20	NOUN
@@ -60370,7 +60370,7 @@ biogenen	20	OTHER
 Scharnier	20	NOUN
 erfassbar	20	ADJECTIVE,OTHER
 Morphemen	20	NOUN	Morphem
-bengalischen	20	NOUN,OTHER	bengalische
+bengalischen	20	NOUN,OTHER	Bengalisch
 Preslaw	20	NOUN
 neuzeitlicher	20	OTHER
 Selbstzensur	20	NOUN
@@ -62210,7 +62210,7 @@ Tangos	19	NOUN
 Geschlechtsidentität	19	NOUN
 Reisepässe	19	NOUN
 sezerniert	19	OTHER
-blicke	26	NOUN,VERB,OTHER	blicken
+blicke	26	NOUN,VERB,OTHER	Blick
 DHA	19	NOUN
 holst	59	NOUN,VERB	holen
 Reviews	19	NOUN
@@ -62879,7 +62879,7 @@ Korruptionsvorwürfen	19	NOUN
 Crécy	19	NOUN
 komfortable	19	OTHER
 Überseegebiete	19	NOUN
-vermerken	19	NOUN,VERB	Vermerk
+vermerken	19	NOUN,VERB
 Containerschiffen	19	NOUN
 Newark	19	NOUN,PROPER_NOUN
 Talg	19	NOUN
@@ -64927,7 +64927,7 @@ Fluchtversuche	18	NOUN	Fluchtversuch
 lautstark	18	ADJECTIVE,OTHER
 Teltowkanal	18	NOUN
 Übernachtung	18	NOUN
-Osmanisches	18	NOUN,ADJECTIVE,OTHER	Osmanische
+Osmanisches	18	NOUN,ADJECTIVE,OTHER	osmanisch
 Asow	18	NOUN,PROPER_NOUN
 Meeresströmung	18	NOUN
 wenigste	18	OTHER
@@ -65854,7 +65854,7 @@ Hacke	18	NOUN
 wegzudenken	18	VERB
 Strafraum	18	NOUN
 Anwaltskanzlei	18	NOUN
-Pässen	18	NOUN	Pass
+Pässen	18	NOUN	passen
 Rummel	18	NOUN
 Glory	18	NOUN
 Myotis	18	NOUN,OTHER
@@ -66546,7 +66546,7 @@ Dulles	18	NOUN
 Theme	18	NOUN,OTHER
 Telepathie	18	NOUN
 Winterlager	18	NOUN
-verkehre	284	NOUN,VERB,OTHER	verkehren
+verkehre	284	NOUN,VERB,OTHER	Verkehr
 Danse	18	NOUN,OTHER
 Postament	18	NOUN
 Fortress	18	NOUN,OTHER
@@ -67421,7 +67421,7 @@ fördernde	17	OTHER
 BDOS	17	NOUN
 Propagandafilm	17	NOUN
 kriegszerstörten	17	OTHER
-Küsse	17	NOUN,VERB	küssen
+Küsse	17	NOUN,VERB	Kuss
 Antwortbrief	17	NOUN
 Ehrerbietung	17	NOUN
 Westwood	17	NOUN,PROPER_NOUN
@@ -69696,7 +69696,7 @@ Mineralnummer	16	NOUN
 NaCl	16	NOUN
 KCl	16	NOUN
 Bruchdehnung	16	NOUN
-hochfesten	16	NOUN,OTHER	hochfeste
+hochfesten	16	NOUN,OTHER	Hochfest
 Stählen	16	NOUN,OTHER	Stahl
 Treibstoffverbrauch	16	NOUN
 Beschläge	16	NOUN	Beschlag
@@ -71209,7 +71209,7 @@ Materialforschung	16	NOUN
 Hasbro	16	NOUN
 Punktesystem	16	NOUN
 freiberuflich	16	ADJECTIVE,OTHER
-Drachens	16	NOUN	Drachen
+Drachens	16	NOUN	Drache
 Bildkomposition	16	NOUN
 Frack	16	NOUN
 Städtebaus	16	NOUN	Städtebau
@@ -71417,7 +71417,7 @@ Sankara	16	NOUN
 kubanischer	16	OTHER
 Wortakzent	16	NOUN
 Personalendung	16	NOUN
-Staatenlosen	16	NOUN,ADJECTIVE,OTHER	Staatenlose
+Staatenlosen	16	NOUN,ADJECTIVE,OTHER	staatenlos
 Schulterband	16	NOUN
 provokant	16	ADJECTIVE,OTHER
 Westwall	16	NOUN
@@ -72131,7 +72131,7 @@ Namensgleichheit	16	NOUN
 Zivilrechts	16	NOUN	Zivilrecht
 GenG	16	NOUN
 würdige	16	OTHER
-Lobe	16	NOUN,VERB	loben
+Lobe	16	NOUN,VERB	Lob
 Fernsehmoderator	16	NOUN
 Poliklinik	16	NOUN
 Librettist	16	NOUN
@@ -73450,7 +73450,7 @@ gekannten	15	OTHER
 libertären	15	OTHER
 País	15	NOUN,OTHER
 Comunista	15	NOUN
-planes	31	NOUN,ADJECTIVE	plan
+planes	31	NOUN,ADJECTIVE	planen
 meistgenutzten	15	OTHER
 OCA	15	NOUN
 Gedichtform	15	NOUN
@@ -74462,7 +74462,7 @@ Landtiere	15	NOUN
 ausladenden	15	OTHER
 Pflanzenfressern	15	NOUN	Pflanzenfresser
 Straußen	15	NOUN	Strauß
-Klonens	15	NOUN	Klonen
+Klonens	15	NOUN	Klon
 Doyles	15	NOUN	Doyle
 gleitende	15	OTHER
 Barber	15	NOUN
@@ -74737,7 +74737,7 @@ iy	15	OTHER
 Krypto	15	NOUN,OTHER
 Elektrogeräte	15	NOUN
 Gedenkplatte	15	NOUN
-stürze	68	NOUN,VERB	stürzen
+stürze	68	NOUN,VERB	Sturz
 Apparaten	15	NOUN	Apparat
 basierter	15	OTHER
 Anschlussleitungen	15	NOUN
@@ -74747,7 +74747,7 @@ eritreischen	15	OTHER
 Sheila	15	NOUN
 Straßenrennen	15	NOUN
 Armas	15	NOUN
-Nassers	15	NOUN	Nasser
+Nassers	15	NOUN	nass
 Guerillabewegung	15	NOUN
 bolivianische	15	OTHER
 Martí	15	NOUN
@@ -75003,7 +75003,7 @@ angepasstes	15	OTHER
 eingemauert	15	OTHER
 Physiokraten	15	NOUN
 Wanderjahre	15	NOUN
-Wirtschaftens	15	NOUN	Wirtschaften
+Wirtschaftens	15	NOUN	Wirtschaft
 Larvenstadien	15	NOUN
 kratzen	15	OTHER,VERB
 Sielmingen	15	NOUN
@@ -75221,7 +75221,7 @@ zugesicherten	15	OTHER
 gefragter	15	OTHER
 Festveranstaltungen	15	NOUN	Festveranstaltung
 Paläoanthropologen	15	NOUN
-Geisteskranken	15	NOUN,ADJECTIVE,OTHER	Geisteskranke
+Geisteskranken	15	NOUN,ADJECTIVE,OTHER	geisteskrank
 Königskrönung	15	NOUN
 Spreeinsel	15	NOUN
 geköpft	15	OTHER
@@ -76416,7 +76416,7 @@ Feiertags	15	NOUN,OTHER	Feiertag
 Sitzblockaden	15	NOUN
 Whymper	15	NOUN
 Amateurfunkdienst	15	NOUN
-Schlichters	15	NOUN	Schlichter
+Schlichters	15	NOUN	schlicht
 Timisoara	15	NOUN
 transponierendes	15	OTHER
 Granden	15	NOUN
@@ -78224,7 +78224,7 @@ eingelagerten	14	OTHER
 destruktiver	14	OTHER
 Bitmuster	14	NOUN
 Gleichanteil	14	NOUN
-Arbeitens	14	NOUN	Arbeiten
+Arbeitens	14	NOUN	Arbeit
 zulässiger	14	OTHER
 Erbsubstanz	14	NOUN
 har	14	NOUN,OTHER
@@ -79815,7 +79815,7 @@ Norgay	14	NOUN
 Sherpas	14	NOUN
 Südgipfel	14	NOUN
 schwierigste	14	OTHER
-schleppen	14	NOUN,VERB	Schleppe
+schleppen	14	NOUN,VERB
 Monopolisten	14	NOUN	Monopolist
 Intellectual	14	NOUN
 Marktversagen	14	NOUN
@@ -79905,7 +79905,7 @@ Hory	14	NOUN,OTHER
 Platinmetallen	14	NOUN	Platinmetalle
 Schenkelhalsfraktur	14	NOUN
 lockern	14	VERB
-verstecke	32	NOUN,VERB,OTHER	verstecken
+verstecke	32	NOUN,VERB,OTHER	Versteck
 Strukturreform	14	NOUN
 entschärfte	14	OTHER
 eindringliche	14	OTHER
@@ -81733,7 +81733,7 @@ Gesundung	13	NOUN
 Weidling	13	NOUN
 Freizeitschifffahrt	13	NOUN
 Schifffahrts	13	NOUN	Schifffahrt
-Felsens	13	NOUN	Felsen
+Felsens	13	NOUN	Fels
 Flachwasser	13	NOUN
 Naturgewalten	13	NOUN
 Litzelstetten	13	NOUN
@@ -83064,7 +83064,7 @@ Martianus	13	NOUN
 mittelgroßer	13	OTHER
 Prägnanz	13	NOUN
 interessierenden	13	OTHER
-Schärfen	41	NOUN,VERB	Schärfe
+Schärfen	41	NOUN,VERB
 Lesegesellschaften	13	NOUN
 spanischsprachige	13	OTHER
 ikonographische	13	OTHER
@@ -83311,7 +83311,7 @@ Seehunde	13	NOUN	Seehund
 Sommerfest	13	NOUN
 absorbierende	13	OTHER
 Intensitätsverteilung	13	NOUN
-Lichtern	13	NOUN	Lichter
+Lichtern	13	NOUN	Licht
 Fats	13	NOUN
 XC	13	NOUN,OTHER
 Isomerase	13	NOUN
@@ -84939,7 +84939,7 @@ Anderswelt	13	NOUN
 Zielseite	13	NOUN
 ausgeschlossene	13	OTHER
 Monophylie	13	NOUN
-Packs	13	NOUN	Pack
+Packs	13	NOUN	packen
 Rechtsakt	13	NOUN
 Kościuszko	13	NOUN
 Westgalizien	13	NOUN
@@ -88060,7 +88060,7 @@ Eibenholz	12	NOUN
 kulminiert	12	OTHER
 halbkreisförmig	12	ADJECTIVE,OTHER
 homologer	12	OTHER
-Pulses	12	NOUN	Pulse
+Pulses	12	NOUN	Puls
 Weidetiere	12	NOUN
 Kleiber	12	NOUN,PROPER_NOUN
 Zuchtformen	12	NOUN
@@ -88484,7 +88484,7 @@ eigenständigem	12	OTHER
 Gegenkraft	12	NOUN
 trotzkistische	12	OTHER
 Sveriges	12	NOUN
-Lohnes	12	NOUN	Lohn
+Lohnes	12	NOUN	lohnen
 Dienstleistungsgewerkschaft	12	NOUN
 verkehrsgünstige	12	OTHER
 Catulus	12	NOUN
@@ -88684,7 +88684,7 @@ eurer	12	OTHER
 entwaffnen	12	VERB
 geschärft	12	OTHER
 Spontanität	12	NOUN
-Körnern	12	NOUN	Körner
+Körnern	12	NOUN	Korn
 Polish	12	NOUN
 Gammaquanten	12	NOUN
 Kilovolt	12	NOUN
@@ -89050,7 +89050,7 @@ Planetensystem	12	NOUN
 Rückwärtsbewegung	12	NOUN
 Lufthülle	12	NOUN
 Butzbach	12	NOUN,PROPER_NOUN
-Aberglaubens	12	NOUN	Aberglauben
+Aberglaubens	12	NOUN	Aberglaube
 Ausdeutung	12	NOUN
 Kansai	12	NOUN
 Tōhoku	12	NOUN
@@ -92935,7 +92935,7 @@ Kreditwürdigkeit	11	NOUN
 zementierte	11	OTHER
 Patriziats	11	NOUN	Patriziat
 zwangsläufige	11	OTHER
-Vermerke	11	NOUN,VERB	Vermerk
+Vermerke	11	NOUN,VERB	vermerken
 Poggio	11	NOUN
 Bracciolini	11	NOUN
 Bronzeskulpturen	11	NOUN	Bronzeskulptur
@@ -93980,7 +93980,7 @@ Scheffer	11	NOUN
 Nordseeinsel	11	NOUN
 Föhrer	11	NOUN
 Wik	11	NOUN
-Fleckens	11	NOUN	Flecken
+Fleckens	11	NOUN	Fleck
 ledigen	11	OTHER
 erzeugbar	11	OTHER
 eingeführtes	11	OTHER
@@ -94886,7 +94886,7 @@ anrichteten	11	VERB
 Pankratius	11	NOUN,PROPER_NOUN
 Kapuzinerkirche	11	NOUN
 Holzkirche	11	NOUN
-Kaufs	11	NOUN	Kauf
+Kaufs	11	NOUN	kaufen
 Erziehungshilfe	11	NOUN
 Limonen	11	NOUN
 Weitling	11	NOUN
@@ -95032,7 +95032,7 @@ Copolymere	11	NOUN
 Wandflächen	11	NOUN
 Pflanzenfamilien	11	NOUN	Pflanzenfamilie
 Gewaltverbot	11	NOUN
-Trauern	54	NOUN,VERB	Trauer
+Trauern	54	NOUN,VERB
 internationalisierte	11	OTHER
 Fortkommen	11	NOUN
 gestärkten	11	OTHER
@@ -95878,7 +95878,7 @@ Responsibility	11	NOUN,OTHER
 Unterschiedes	11	NOUN	Unterschied
 nahelegte	11	OTHER
 Feinsilber	11	NOUN
-Kurieren	28	NOUN,VERB	Kurier
+Kurieren	28	NOUN,VERB
 Lorbeerblatt	11	NOUN
 Emaille	11	NOUN
 Ytterbiums	11	NOUN	Ytterbium
@@ -96142,7 +96142,7 @@ Abaddon	11	NOUN,PROPER_NOUN
 Ehrensold	11	NOUN
 Grundzeichen	11	NOUN
 Erbfall	11	NOUN
-Märkisches	11	NOUN	Märkische
+Märkisches	11	NOUN	Märkisch
 Oberdeck	11	NOUN
 Antriebssystem	11	NOUN
 aufgetauchten	11	OTHER
@@ -97502,7 +97502,7 @@ Skulpturenmuseum	10	NOUN
 Turban	10	NOUN
 Sportmöglichkeiten	10	NOUN
 Turkey	10	NOUN
-Unglaubens	10	NOUN	Unglauben
+Unglaubens	10	NOUN	Unglaube
 Staatsdoktrin	10	NOUN
 argwöhnisch	10	ADJECTIVE,OTHER
 methodologischer	10	OTHER
@@ -97555,7 +97555,7 @@ Steingarten	10	NOUN
 verwechselte	10	OTHER
 Maharadscha	10	NOUN
 nahegebracht	10	OTHER
-Bannen	31	NOUN,VERB	Bann
+Bannen	31	NOUN,VERB
 Drogenabhängigen	10	NOUN,OTHER
 unvorteilhaft	10	ADJECTIVE,OTHER
 tantrische	10	OTHER
@@ -100278,7 +100278,7 @@ unterwandern	10	VERB
 Silvana	10	NOUN
 Haseloff	10	NOUN
 Grundideen	10	NOUN	Grundidee
-Düften	10	NOUN	Duft
+Düften	10	NOUN	duften
 Fluglage	10	NOUN
 Strahltriebwerke	10	NOUN
 Aramid	10	NOUN
@@ -100480,7 +100480,7 @@ Bezugsgrößen	10	NOUN	Bezugsgröße
 Lichtfarbe	10	NOUN
 Munk	10	NOUN
 Tripolitanien	10	NOUN
-Versanden	22	NOUN,VERB	Versand
+Versanden	22	NOUN,VERB
 Erfrischungsgetränken	10	NOUN
 NADP	10	NOUN
 Langzeitfolgen	10	NOUN
@@ -101616,7 +101616,7 @@ grandiose	10	OTHER
 Laichzeit	10	NOUN
 lebenswertesten	10	OTHER
 Arriva	10	NOUN
-Stopps	10	NOUN	Stopp
+Stopps	10	NOUN	stoppen
 Jurchen	10	NOUN
 Ahnenverehrung	10	NOUN
 Chinakohl	10	NOUN
@@ -102088,7 +102088,7 @@ zeitweisen	10	OTHER
 Mieterhöhung	10	NOUN
 Kappungsgrenze	10	NOUN
 Mumia	10	NOUN
-Geschlechtsreifen	26	NOUN,OTHER	Geschlechtsreife
+Geschlechtsreifen	26	NOUN,OTHER	geschlechtsreif
 Endstufe	10	NOUN
 aufragen	10	VERB
 Pardo	10	NOUN,OTHER
@@ -102612,7 +102612,7 @@ Forscherin	10	NOUN
 Neurogenese	10	NOUN
 Urquell	10	NOUN
 Gasthöfen	10	NOUN	Gasthof
-Bieres	10	NOUN	Bier
+Bieres	10	NOUN	bi
 Frauenarzt	10	NOUN
 Mikrofossilien	10	NOUN
 Gesteinseinheiten	10	NOUN
@@ -102906,7 +102906,7 @@ Rochade	10	NOUN
 Kopier	10	NOUN,VERB
 Kuß	10	NOUN
 Fredric	10	NOUN
-Haines	10	NOUN	Haine
+Haines	10	NOUN	Hain
 Parallelschwingkreis	10	NOUN
 Remanenz	10	NOUN
 gewundene	10	OTHER
@@ -103254,7 +103254,7 @@ okkupierten	10	VERB
 Seelower	10	NOUN
 nachrichtendienstlich	10	ADJECTIVE,OTHER
 penguins	10	NOUN,OTHER
-schimmern	10	NOUN,VERB	Schimmer
+schimmern	10	NOUN,VERB
 Zeckenarten	10	NOUN
 Höchstzins	10	NOUN
 widernatürlich	10	ADJECTIVE,OTHER
@@ -107325,7 +107325,7 @@ Bankhäuser	9	NOUN
 Kriegsproduktion	9	NOUN
 Rheinstadion	9	NOUN
 Kriminalfälle	9	NOUN
-Kürten	9	NOUN,VERB,PROPER_NOUN,OTHER	küren
+Kürten	9	NOUN,VERB,PROPER_NOUN,OTHER	Kür
 Überführungen	9	NOUN
 Vorentscheidungen	9	NOUN
 Verwaltungsbauten	9	NOUN
@@ -108200,7 +108200,7 @@ Lazzaro	9	NOUN
 irrte	9	OTHER
 Homilie	9	NOUN
 Straßenlaternen	9	NOUN
-Verdächtiger	19	NOUN,OTHER	Verdächtige
+Verdächtiger	19	NOUN,OTHER	verdächtig
 Hautverletzungen	9	NOUN
 Dromedare	9	NOUN
 Ultraschallbereich	9	NOUN
@@ -111111,7 +111111,7 @@ Drucktanks	9	NOUN
 Sondergebiet	9	NOUN
 wiedererrichtete	9	OTHER
 Beschäftigungsstruktur	9	NOUN
-Ärgern	20	NOUN,VERB	Ärger
+Ärgern	20	NOUN,VERB
 serifenlose	9	OTHER
 Whittaker	9	NOUN
 Epidauros	9	NOUN
@@ -114929,7 +114929,7 @@ Fazilitätengemeinden	8	NOUN
 Balen	8	NOUN
 Limburgisch	8	NOUN,OTHER
 Kongogräuel	8	NOUN
-Walloniens	8	NOUN	Wallonien
+Walloniens	8	NOUN	Wallonie
 zusagten	8	VERB
 Austeritätspolitik	8	NOUN
 Zwin	8	NOUN
@@ -116057,7 +116057,7 @@ Antikriegsfilm	8	NOUN
 langandauernde	8	OTHER
 Korty	8	NOUN
 Lause	8	NOUN
-Stillers	8	NOUN	Stiller
+Stillers	8	NOUN	still
 lachend	8	OTHER
 Meinungsbildungsprozess	8	NOUN
 Zusatznutzen	8	NOUN
@@ -116259,7 +116259,7 @@ Digitalradio	8	NOUN
 selbstfahrende	8	OTHER
 Kommunikationsnetze	8	NOUN
 Verbilligung	8	NOUN
-Käufen	8	NOUN	Kauf
+Käufen	8	NOUN	kaufen
 intransparente	8	OTHER
 Lockdowns	8	NOUN	Lockdown
 Grundeinkommen	8	NOUN
@@ -119795,7 +119795,7 @@ Verständnissen	435	NOUN	Verständnis
 Mittelpunktes	434	NOUN	Mittelpunkt
 Mittelpunkten	434	NOUN	Mittelpunkt
 Reformationen	433	NOUN	Reformation
-Diensts	431	NOUN	Dienst
+Diensts	431	NOUN	dienen
 Hltgn.	431	NOUN	Haltung
 Hltgn.n	431	NOUN	Haltung
 Citys	427	NOUN	City
@@ -119959,7 +119959,7 @@ Nachweises	242	NOUN	Nachweis
 Synonyms	241	NOUN	Synonym
 Konstanzen	240	NOUN	Konstanz
 Stahles	239	NOUN	Stahl
-Verkaufes	239	NOUN	Verkauf
+Verkaufes	239	NOUN	verkaufen
 Gerechtigkeiten	238	NOUN	Gerechtigkeit
 Einganges	237	NOUN	Eingang
 Hardwares	236	NOUN	Hardware
@@ -120166,7 +120166,7 @@ Organes	162	NOUN	Organ
 Pferds	161	NOUN	Pferd
 Horsts	160	NOUN	Horst
 Horsten	160	NOUN	Horst
-Blockes	160	NOUN	Block
+Blockes	160	NOUN	blocken
 Getreiden	160	NOUN	Getreide
 Einzuges	159	NOUN	Einzug
 Einzüge	159	NOUN	Einzug
@@ -120451,7 +120451,7 @@ Bachelors	116	NOUN	Bachelor
 Mys	116	NOUN	My
 Generalsekretären	115	NOUN	Generalsekretär
 Einwanderers	115	NOUN	Einwanderer
-Bieren	115	NOUN	Bier
+Bieren	115	NOUN	bi
 Gleichheiten	114	NOUN	Gleichheit
 Bundesämter	114	NOUN	Bundesamt
 Bundesämtern	114	NOUN	Bundesamt
@@ -120589,7 +120589,7 @@ Marktwirtschaften	102	NOUN	Marktwirtschaft
 Waffenstillstanden	102	NOUN	Waffenstillstand
 Waffenstillstände	102	NOUN	Waffenstillstand
 Waffenstillständen	102	NOUN	Waffenstillstand
-Missbräuchen	102	NOUN	Missbrauch
+Missbräuchen	102	NOUN	missbrauchen
 Hilfsmittels	102	NOUN	Hilfsmittel
 Oberbefehlshabern	102	NOUN	Oberbefehlshaber
 Potentialen	101	NOUN	Potential
@@ -121008,7 +121008,7 @@ Pythagorase	77	NOUN	Pythagoras
 Pythagorasen	77	NOUN	Pythagoras
 Textilindustrien	77	NOUN	Textilindustrie
 Oberhäuptern	76	NOUN	Oberhaupt
-Lohns	76	NOUN	Lohn
+Lohns	76	NOUN	lohnen
 Lebensunterhalte	76	NOUN	Lebensunterhalt
 Lebensunterhalten	76	NOUN	Lebensunterhalt
 Idealismuse	76	NOUN	Idealismus
@@ -121614,7 +121614,7 @@ Tirolers	57	NOUN	Tiroler
 Tirolern	57	NOUN	Tiroler
 Thoriums	56	NOUN	Thorium
 Thorien	56	NOUN	Thorium
-Wirrens	56	NOUN	Wirren
+Wirrens	56	NOUN	wirr
 Loyalitäten	56	NOUN	Loyalität
 Pioniers	56	NOUN	Pionier
 Chis	56	NOUN	Chi
@@ -121959,7 +121959,7 @@ Schlagworts	50	NOUN	Schlagwort
 Schlagwörtern	50	NOUN	Schlagwort
 Schwerkräfte	50	NOUN	Schwerkraft
 Schwerkräften	50	NOUN	Schwerkraft
-Gehöres	50	NOUN	Gehör
+Gehöres	50	NOUN	gehören
 Kurien	50	NOUN	Kurie
 Kompatibilitäten	50	NOUN	Kompatibilität
 Nervensysteme	50	NOUN	Nervensystem
@@ -122196,7 +122196,7 @@ Ethnologien	46	NOUN	Ethnologie
 Ostgrenzen	46	NOUN	Ostgrenze
 Absicherungen	46	NOUN	Absicherung
 Verbundenheiten	46	NOUN	Verbundenheit
-Verdiensts	46	NOUN	Verdienst
+Verdiensts	46	NOUN	verdienen
 Baukünste	46	NOUN	Baukunst
 Baukünsten	46	NOUN	Baukunst
 Friedensschlüssen	46	NOUN	Friedensschluss
@@ -123377,7 +123377,7 @@ Megawatts	33	NOUN	Megawatt
 Megawattn	33	NOUN	Megawatt
 Judos	33	NOUN	Judo
 Textils	33	NOUN	Textil
-Schlichtern	33	NOUN	Schlichter
+Schlichtern	33	NOUN	schlicht
 Sufismuse	33	NOUN	Sufismus
 Sufismusen	33	NOUN	Sufismus
 Handelspartners	33	NOUN	Handelspartner
@@ -123696,8 +123696,8 @@ des Dionysos	31	NOUN	Dionysos
 Dionysose	31	NOUN	Dionysos
 Dionysosen	31	NOUN	Dionysos
 Biennalen	31	NOUN	Biennale
-Banns	31	NOUN	Bann
-Banne	31	NOUN,VERB,PROPER_NOUN	Bann
+Banns	31	NOUN	Bannen
+Banne	31	NOUN,VERB,PROPER_NOUN	Bannen
 Grosze	31	NOUN	Grosz
 Groszen	31	NOUN	Grosz
 Gewandes	31	NOUN	Gewand
@@ -124136,8 +124136,8 @@ Turnusse	28	NOUN	Turnus
 Turnussen	28	NOUN	Turnus
 Wortführers	28	NOUN	Wortführer
 Wortführern	28	NOUN	Wortführer
-Kuriers	28	NOUN	Kurier
-Kuriere	28	NOUN,VERB	Kurier
+Kuriers	28	NOUN	Kurieren
+Kuriere	28	NOUN,VERB	Kurieren
 Ackers	28	NOUN	Acker
 Gelehrsamkeiten	28	NOUN	Gelehrsamkeit
 Aufbewahrungen	28	NOUN	Aufbewahrung
@@ -125297,7 +125297,7 @@ Horts	23	NOUN	Hort
 Calvinismuse	23	NOUN	Calvinismus
 Calvinismusen	23	NOUN	Calvinismus
 Kinderarbeiten	23	NOUN	Kinderarbeit
-Schiefers	23	NOUN	Schiefer
+Schiefers	23	NOUN	schief
 Phänotyps	23	NOUN	Phänotyp
 (des) Slowakisch	23	NOUN	Slowakisch
 Bundestagswahlkreises	23	NOUN	Bundestagswahlkreis
@@ -125345,7 +125345,7 @@ Gewohnheitsrechten	23	NOUN	Gewohnheitsrecht
 Lunds	23	NOUN	Lund
 Lunde	23	NOUN	Lund
 Lunden	23	NOUN,PROPER_NOUN	Lund
-Erwerbstätiger	23	NOUN,ADJECTIVE	Erwerbstätige
+Erwerbstätiger	23	NOUN,ADJECTIVE	erwerbstätig
 Kostüms	23	NOUN	Kostüm
 Rappers	23	NOUN	Rapper
 Rappern	23	NOUN	Rapper
@@ -125434,7 +125434,7 @@ Wintersporten	22	NOUN	Wintersport
 Europameisters	22	NOUN	Europameister
 Europameistern	22	NOUN	Europameister
 Konjunkturen	22	NOUN	Konjunktur
-Versands	22	NOUN	Versand
+Versands	22	NOUN	Versanden
 Todesjahres	22	NOUN	Todesjahr
 Todesjahre	22	NOUN	Todesjahr
 Todesjahren	22	NOUN	Todesjahr
@@ -126092,7 +126092,7 @@ Döners	21	NOUN	Döner
 Dönern	21	NOUN	Döner
 Zopen	21	NOUN	Zope
 Anwendbarkeiten	20	NOUN	Anwendbarkeit
-Ärgers	20	NOUN	Ärger
+Ärgers	20	NOUN	Ärgern
 Hingaben	20	NOUN	Hingabe
 Korrosionen	20	NOUN	Korrosion
 Oberflächenwassers	20	NOUN	Oberflächenwasser
@@ -126951,7 +126951,7 @@ Festsäle	18	NOUN	Festsaal
 Festsälen	18	NOUN	Festsaal
 Angriffskriege	18	NOUN	Angriffskrieg
 Angriffskriegen	18	NOUN	Angriffskrieg
-Wehrpflichtiger	18	NOUN,ADJECTIVE	Wehrpflichtige
+Wehrpflichtiger	18	NOUN,ADJECTIVE	wehrpflichtig
 Gesamtauflagen	18	NOUN	Gesamtauflage
 Historizitäten	18	NOUN	Historizität
 Reichskammergerichte	18	NOUN	Reichskammergericht
@@ -127111,7 +127111,7 @@ Frikativen	18	NOUN	Frikativ
 Diebes	18	NOUN	Dieb
 Mayos	18	NOUN	Mayo
 Begutachtungen	18	NOUN	Begutachtung
-Siebs	18	NOUN	Sieb
+Siebs	18	NOUN	sieben
 siebe	1520	NOUN,VERB	sieben
 Jugendbewegungen	18	NOUN	Jugendbewegung
 Lebenswandeln	18	NOUN	Lebenswandel
@@ -127168,7 +127168,7 @@ Regentropfens	18	NOUN	Regentropfen
 Gruppenphasen	18	NOUN	Gruppenphase
 Zugpaars	18	NOUN	Zugpaar
 Zugpaaren	18	NOUN	Zugpaar
-Vermerks	18	NOUN	Vermerk
+Vermerks	18	NOUN	vermerken
 Magentas	18	NOUN	Magenta
 Besorgnisse	18	NOUN	Besorgnis
 Besorgnissen	18	NOUN	Besorgnis
@@ -127679,7 +127679,7 @@ Außenhäute	16	NOUN	Außenhaut
 Außenhäuten	16	NOUN	Außenhaut
 Abstoßungen	16	NOUN	Abstoßung
 Intifadas	16	NOUN	Intifada
-Fasses	16	NOUN	Fass
+Fasses	16	NOUN	fassen
 Landschaftsplanungen	16	NOUN	Landschaftsplanung
 Totalitäten	16	NOUN	Totalität
 Verfasserschaften	16	NOUN	Verfasserschaft
@@ -127839,7 +127839,7 @@ Grundausbildungen	16	NOUN	Grundausbildung
 Embryonalentwicklungen	16	NOUN	Embryonalentwicklung
 Messgerätes	16	NOUN	Messgerät
 Ganzheiten	16	NOUN	Ganzheit
-Untreuen	16	NOUN,ADJECTIVE	Untreue
+Untreuen	16	NOUN,ADJECTIVE	untreu
 Unschärferelationen	16	NOUN	Unschärferelation
 Jurisdiktionen	16	NOUN	Jurisdiktion
 Neubeginns	16	NOUN	Neubeginn
@@ -127921,8 +127921,8 @@ Hauptaugenmerke	16	NOUN	Hauptaugenmerk
 Hauptaugenmerken	16	NOUN	Hauptaugenmerk
 Transporters	16	NOUN	Transporter
 Transportern	16	NOUN	Transporter
-Dufts	16	NOUN	Duft
-Düfte	16	NOUN	Duft
+Dufts	16	NOUN	duften
+Düfte	16	NOUN	duften
 Thalliums	16	NOUN	Thallium
 Thallien	16	NOUN	Thallium
 Harnblasen	16	NOUN	Harnblase
@@ -128219,8 +128219,8 @@ Lachsen	15	NOUN	Lachs
 Quells	15	NOUN	Quell
 Kriegswirtschaften	15	NOUN	Kriegswirtschaft
 Schutzmächten	15	NOUN	Schutzmacht
-Spitzers	15	NOUN	Spitzer
-Spitzern	15	NOUN	Spitzer
+Spitzers	15	NOUN	spitz
+Spitzern	15	NOUN	spitz
 Bauchspeicheldrüsen	15	NOUN	Bauchspeicheldrüse
 Extremismen	15	NOUN	Extremismus
 Stadtgrabens	15	NOUN	Stadtgraben
@@ -128488,8 +128488,8 @@ Inzeste	15	NOUN	Inzest
 Inzesten	15	NOUN	Inzest
 Ausbilders	15	NOUN	Ausbilder
 Ausbildern	15	NOUN	Ausbilder
-Planers	15	NOUN	Planer
-Planern	15	NOUN	Planer
+Planers	15	NOUN	planen
+Planern	15	NOUN	planen
 Fernoste	15	NOUN	Fernost
 Fernosten	15	NOUN	Fernost
 Passagiers	15	NOUN	Passagier
@@ -129581,7 +129581,7 @@ Golfplätzen	13	NOUN	Golfplatz
 Istanbulers	13	NOUN	Istanbuler
 Istanbulern	13	NOUN	Istanbuler
 Abbés	13	NOUN	Abbé
-Totems	13	NOUN	Totem
+Totems	13	NOUN	tot
 Vereinbarkeiten	13	NOUN	Vereinbarkeit
 Demarkationslinien	13	NOUN	Demarkationslinie
 Professionalisierungen	13	NOUN	Professionalisierung
@@ -129655,9 +129655,9 @@ Kreisels	13	NOUN	Kreisel
 Kreiseln	13	NOUN	Kreisel
 Aerodynamiken	13	NOUN	Aerodynamik
 Anpassungsfähigkeiten	13	NOUN	Anpassungsfähigkeit
-Mehrfacheses	13	NOUN	Mehrfaches
-Mehrfachese	13	NOUN	Mehrfaches
-Mehrfachesen	13	NOUN	Mehrfaches
+Mehrfacheses	13	NOUN	mehrfach
+Mehrfachese	13	NOUN	mehrfach
+Mehrfachesen	13	NOUN	mehrfach
 Gemeinnützigkeiten	13	NOUN	Gemeinnützigkeit
 Serotonins	13	NOUN	Serotonin
 Serotonine	13	NOUN	Serotonin
@@ -131361,8 +131361,8 @@ Minuenden	11	NOUN	Minuend
 Quantenchromodynamiken	11	NOUN	Quantenchromodynamik
 Rechtssubjekts	11	NOUN	Rechtssubjekt
 Rechtssubjekten	11	NOUN	Rechtssubjekt
-Eigners	11	NOUN	Eigner
-Eignern	11	NOUN	Eigner
+Eigners	11	NOUN	eigen
+Eignern	11	NOUN	eigen
 Lorentzkräfte	11	NOUN	Lorentzkraft
 Lorentzkräften	11	NOUN	Lorentzkraft
 Energieerhaltungssätze	11	NOUN	Energieerhaltungssatz
@@ -132918,7 +132918,7 @@ Jahresgehälter	9	NOUN	Jahresgehalt
 Jahresgehältern	9	NOUN	Jahresgehalt
 Rettungsbootes	9	NOUN	Rettungsboot
 Jugendkulturen	9	NOUN	Jugendkultur
-Holes	9	NOUN	Hole
+Holes	9	NOUN	holen
 Pyrotechniken	9	NOUN	Pyrotechnik
 Halbleitertechniken	9	NOUN	Halbleitertechnik
 Aktionsplanes	9	NOUN	Aktionsplan
@@ -134852,8 +134852,8 @@ Fischzuchten	8	NOUN	Fischzucht
 Kündigungsfristen	8	NOUN	Kündigungsfrist
 (des) Indonesisch	8	NOUN	Indonesisch
 Oreganos	8	NOUN	Oregano
-Veganers	8	NOUN	Veganer
-Veganern	8	NOUN	Veganer
+Veganers	8	NOUN	vegan
+Veganern	8	NOUN	vegan
 Schenkers	8	NOUN	Schenker
 Schenkern	8	NOUN	Schenker
 Räumlufte	8	NOUN	Raumluft
@@ -135315,7 +135315,7 @@ Gottesstaaten	8	NOUN	Gottesstaat
 Kochkünste	8	NOUN	Kochkunst
 Kochkünsten	8	NOUN	Kochkunst
 Hochspannungen	8	NOUN	Hochspannung
-Steigers	8	NOUN	Steiger
+Steigers	8	NOUN	steigern
 Theologiestudiums	8	NOUN	Theologiestudium
 Theologiestudien	8	NOUN	Theologiestudium
 Banalitäten	8	NOUN	Banalität
@@ -135383,7 +135383,7 @@ Honorarprofessoren	8	NOUN	Honorarprofessor
 Rückstoßes	8	NOUN	Rückstoß
 Rückstöße	8	NOUN	Rückstoß
 Rückstößen	8	NOUN	Rückstoß
-Ungläubiger	8	NOUN,ADJECTIVE	Ungläubige
+Ungläubiger	8	NOUN,ADJECTIVE	ungläubig
 Kleis	8	NOUN	Klei
 Kleier	8	NOUN	Klei
 Kleiern	8	NOUN	Klei
@@ -139031,7 +139031,7 @@ Pican	6	NOUN	Pica
 Messbuches	6	NOUN	Messbuch
 Messbücher	6	NOUN	Messbuch
 Messbüchern	6	NOUN	Messbuch
-Schimmers	6	NOUN	Schimmer
+Schimmers	6	NOUN	schimmern
 Frackings	6	NOUN	Fracking
 Frackinge	6	NOUN	Fracking
 Frackingen	6	NOUN	Fracking
@@ -139507,7 +139507,7 @@ des Gan	6	NOUN	Gan
 Gane	6	NOUN	Gan
 Ganen	6	NOUN	Gan
 Stellvertreterinnen	6	NOUN	Stellvertreterin
-Schicks	6	NOUN	Schick
+Schicks	6	NOUN	schicken
 schicke	65	NOUN,VERB	schicken
 Diskontinuitäten	6	NOUN	Diskontinuität
 Reagenzglases	6	NOUN	Reagenzglas
@@ -139910,7 +139910,7 @@ Sanitäters	6	NOUN	Sanitäter
 Sanitätern	6	NOUN	Sanitäter
 Sechseckes	6	NOUN	Sechseck
 (des) Korsisch	6	NOUN	Korsisch
-Biens	6	NOUN	Bien
+Biens	6	NOUN	bi
 Geheimreden	6	NOUN	Geheimrede
 Handelsbilanzdefizits	6	NOUN	Handelsbilanzdefizit
 Handelsbilanzdefizite	6	NOUN	Handelsbilanzdefizit
@@ -142806,7 +142806,7 @@ Bewusstseinszuständen	5	NOUN	Bewusstseinszustand
 Löwenkopfs	5	NOUN	Löwenkopf
 Löwenköpfe	5	NOUN	Löwenkopf
 Löwenköpfen	5	NOUN	Löwenkopf
-Ziern	5	NOUN	Zier
+Ziern	5	NOUN	zieren
 Leinöles	5	NOUN	Leinöl
 Leinöle	5	NOUN	Leinöl
 Leinölen	5	NOUN	Leinöl
@@ -143591,8 +143591,8 @@ Broterwerbs	5	NOUN	Broterwerb
 Broterwerbe	5	NOUN	Broterwerb
 Broterwerben	5	NOUN	Broterwerb
 Feldzeichens	5	NOUN	Feldzeichen
-Unbewusstese	5	NOUN	Unbewusstes
-Unbewusstesen	5	NOUN	Unbewusstes
+Unbewusstese	5	NOUN	unbewusst
+Unbewusstesen	5	NOUN	unbewusst
 Steinmetzmeisters	5	NOUN	Steinmetzmeister
 Steinmetzmeistern	5	NOUN	Steinmetzmeister
 Gottesurteils	5	NOUN	Gottesurteil
@@ -145960,7 +145960,7 @@ Nyxen	4	NOUN	Nyx
 Mikrofilms	4	NOUN	Mikrofilm
 Mikrofilme	4	NOUN	Mikrofilm
 Mikrofilmen	4	NOUN	Mikrofilm
-Spares	4	NOUN	Spare
+Spares	4	NOUN	sparen
 Constablen	4	NOUN	Constable
 Constables	4	NOUN	Constable
 Fehlernährungen	4	NOUN	Fehlernährung
@@ -146203,9 +146203,9 @@ Irgunen	4	NOUN	Irgun
 Kunstverständnisses	4	NOUN	Kunstverständnis
 Kunstverständnisse	4	NOUN	Kunstverständnis
 Kunstverständnissen	4	NOUN	Kunstverständnis
-Schwanks	4	NOUN	Schwank
-Schwänke	4	NOUN	Schwank
-Schwänken	4	NOUN	Schwank
+Schwanks	4	NOUN	schwanken
+Schwänke	4	NOUN	schwanken
+Schwänken	4	NOUN	schwanken
 Rotlichtviertels	4	NOUN	Rotlichtviertel
 Rotlichtvierteln	4	NOUN	Rotlichtviertel
 Normativitäten	4	NOUN	Normativität
@@ -152550,13 +152550,13 @@ geschafftest	656	VERB	geschaffen
 geschafften	656	VERB	geschaffen
 geschafftet	656	VERB	geschaffen
 geschaff	656	VERB	geschaffen
-linkst	646	VERB	linken
-linkt	646	VERB	linken
-linkte	646	VERB	linken
-linktest	646	VERB	linken
-linkten	646	VERB	linken
-linktet	646	VERB	linken
-gelinkt	646	VERB	linken
+linkst	646	VERB	Link
+linkt	646	VERB	Link
+linkte	646	VERB	Link
+linktest	646	VERB	Link
+linkten	646	VERB	Link
+linktet	646	VERB	Link
+gelinkt	646	VERB	Link
 verhinder	600	VERB	verhindern
 verhinderst	600	VERB	verhindern
 verhindertest	600	VERB	verhindern
@@ -152599,15 +152599,15 @@ erzeug	416	VERB	erzeugen
 bewegst	387	VERB	bewegen
 bewegtest	387	VERB	bewegen
 bewegtet	387	VERB	bewegen
-schütztest	381	VERB	schützen
-schütztet	381	VERB	schützen
+schütztest	381	VERB	Schütz
+schütztet	381	VERB	Schütz
 errichte	369	VERB	errichten
 errichtest	369	VERB	errichten
 errichtetest	369	VERB	errichten
 errichtetet	369	VERB	errichten
-versuchst	358	VERB	versuchen
-versuchtest	358	VERB	versuchen
-versuchtet	358	VERB	versuchen
+versuchst	358	VERB	Versuch
+versuchtest	358	VERB	Versuch
+versuchtet	358	VERB	Versuch
 erfüllst	327	VERB	erfüllen
 erfülltest	327	VERB	erfüllen
 erfülltet	327	VERB	erfüllen
@@ -152631,9 +152631,9 @@ erlangtet	293	VERB	erlangen
 wählst	285	VERB	wählen
 wähltest	285	VERB	wählen
 wähltet	285	VERB	wählen
-verkehrst	284	VERB	verkehren
-verkehrtest	284	VERB	verkehren
-verkehrtet	284	VERB	verkehren
+verkehrst	284	VERB	Verkehr
+verkehrtest	284	VERB	Verkehr
+verkehrtet	284	VERB	Verkehr
 sicherst	280	VERB	sichern
 sichertest	280	VERB	sichern
 sichertet	280	VERB	sichern
@@ -152768,9 +152768,9 @@ berücksichtige	178	VERB	berücksichtigen
 berücksichtigst	178	VERB	berücksichtigen
 berücksichtigtest	178	VERB	berücksichtigen
 berücksichtigtet	178	VERB	berücksichtigen
-verzichtest	177	VERB	verzichten
-verzichtetest	177	VERB	verzichten
-verzichtetet	177	VERB	verzichten
+verzichtest	177	VERB	Verzicht
+verzichtetest	177	VERB	Verzicht
+verzichtetet	177	VERB	Verzicht
 verursachst	176	VERB	verursachen
 verursachtest	176	VERB	verursachen
 verursachtet	176	VERB	verursachen
@@ -152794,11 +152794,11 @@ mündest	160	VERB	münden
 mündetest	160	VERB	münden
 mündetet	160	VERB	münden
 gemündet	160	VERB	münden
-wechsle	157	VERB	wechseln
-wechselst	157	VERB	wechseln
-wechseltest	157	VERB	wechseln
-wechseltet	157	VERB	wechseln
-wechsele	157	VERB	wechseln
+wechsle	157	VERB	Wechsel
+wechselst	157	VERB	Wechsel
+wechseltest	157	VERB	Wechsel
+wechseltet	157	VERB	Wechsel
+wechsele	157	VERB	Wechsel
 beschäftigst	156	VERB	beschäftigen
 beschäftigtest	156	VERB	beschäftigen
 beschäftigtet	156	VERB	beschäftigen
@@ -153039,18 +153039,18 @@ ernährst	110	VERB	ernähren
 ernährtest	110	VERB	ernähren
 ernährtet	110	VERB	ernähren
 ernähr	110	VERB	ernähren
-spiegle	108	VERB	spiegeln
-spiegelst	108	VERB	spiegeln
-spiegeltest	108	VERB	spiegeln
-spiegeltet	108	VERB	spiegeln
+spiegle	108	VERB	Spiegel
+spiegelst	108	VERB	Spiegel
+spiegeltest	108	VERB	Spiegel
+spiegeltet	108	VERB	Spiegel
 beteilige	108	VERB	beteiligen
 beteiligst	108	VERB	beteiligen
 beteiligtest	108	VERB	beteiligen
 beteiligtet	108	VERB	beteiligen
-gliederst	108	VERB	gliedern
-gliedertest	108	VERB	gliedern
-gliedertet	108	VERB	gliedern
-gliedere	108	VERB	gliedern
+gliederst	108	VERB	Glied
+gliedertest	108	VERB	Glied
+gliedertet	108	VERB	Glied
+gliedere	108	VERB	Glied
 dichtest	108	VERB	dichten
 dichtet	108	VERB	dichten
 dichtetest	108	VERB	dichten
@@ -153266,10 +153266,10 @@ rechtfertigst	71	VERB	rechtfertigen
 rechtfertigtest	71	VERB	rechtfertigen
 rechtfertigtet	71	VERB	rechtfertigen
 rechtfertig	71	VERB	rechtfertigen
-gewähre	71	VERB	gewähren
-gewährst	71	VERB	gewähren
-gewährtest	71	VERB	gewähren
-gewährtet	71	VERB	gewähren
+gewähre	71	VERB	Gewähr
+gewährst	71	VERB	Gewähr
+gewährtest	71	VERB	Gewähr
+gewährtet	71	VERB	Gewähr
 besichtige	71	VERB	besichtigen
 besichtigst	71	VERB	besichtigen
 besichtigtest	71	VERB	besichtigen
@@ -153303,8 +153303,8 @@ formuliere	68	VERB	formulieren
 formulierst	68	VERB	formulieren
 formuliertest	68	VERB	formulieren
 formuliertet	68	VERB	formulieren
-stürztest	68	VERB	stürzen
-stürztet	68	VERB	stürzen
+stürztest	68	VERB	Sturz
+stürztet	68	VERB	Sturz
 genügst	67	VERB	genügen
 genügtest	67	VERB	genügen
 genügtet	67	VERB	genügen
@@ -153322,8 +153322,8 @@ stabilisiertet	65	VERB	stabilisieren
 stabilisier	65	VERB	stabilisieren
 bewertetest	65	VERB	bewerten
 bewertetet	65	VERB	bewerten
-schätztest	65	VERB	schätzen
-schätztet	65	VERB	schätzen
+schätztest	65	VERB	Schatz
+schätztet	65	VERB	Schatz
 lehnst	65	VERB	lehnen
 lehntest	65	VERB	lehnen
 lehntet	65	VERB	lehnen
@@ -153339,8 +153339,8 @@ entdecktet	65	VERB	entdecken
 äußertest	65	VERB	äußern
 äußertet	65	VERB	äußern
 übereingestimmt	64	VERB	übereinstimmen
-kreuztest	64	VERB	kreuzen
-kreuztet	64	VERB	kreuzen
+kreuztest	64	VERB	Kreuz
+kreuztet	64	VERB	Kreuz
 entstamm	64	VERB	entstammen
 entstammst	64	VERB	entstammen
 entstammtest	64	VERB	entstammen
@@ -153461,9 +153461,9 @@ entlastetest	43	VERB	entlasten
 entlasteten	43	VERB	entlasten
 entlastetet	43	VERB	entlasten
 entlast	43	VERB	entlasten
-tauschst	42	VERB	tauschen
-tauschtest	42	VERB	tauschen
-tauschtet	42	VERB	tauschen
+tauschst	42	VERB	Tausch
+tauschtest	42	VERB	Tausch
+tauschtet	42	VERB	Tausch
 mische	42	VERB	mischen
 mischst	42	VERB	mischen
 mischtest	42	VERB	mischen
@@ -153478,9 +153478,9 @@ wecke	41	VERB	wecken
 weckst	41	VERB	wecken
 wecktest	41	VERB	wecken
 wecktet	41	VERB	wecken
-wandelst	41	VERB	wandeln
-wandeltest	41	VERB	wandeln
-wandeltet	41	VERB	wandeln
+wandelst	41	VERB	Wandel
+wandeltest	41	VERB	Wandel
+wandeltet	41	VERB	Wandel
 verkündest	40	VERB	verkünden
 verkündetest	40	VERB	verkünden
 verkündetet	40	VERB	verkünden
@@ -153595,11 +153595,11 @@ bedecke	35	VERB	bedecken
 bedeckst	35	VERB	bedecken
 bedecktest	35	VERB	bedecken
 bedecktet	35	VERB	bedecken
-bündle	35	VERB	bündeln
-bündelst	35	VERB	bündeln
-bündeltest	35	VERB	bündeln
-bündelten	35	VERB	bündeln
-bündeltet	35	VERB	bündeln
+bündle	35	VERB	Bündel
+bündelst	35	VERB	Bündel
+bündeltest	35	VERB	Bündel
+bündelten	35	VERB	Bündel
+bündeltet	35	VERB	Bündel
 registriere	35	VERB	registrieren
 registrierst	35	VERB	registrieren
 registriertest	35	VERB	registrieren
@@ -153673,10 +153673,10 @@ erfreust	33	VERB	erfreuen
 erfreutest	33	VERB	erfreuen
 erfreutet	33	VERB	erfreuen
 erfreu	33	VERB	erfreuen
-schilderst	33	VERB	schildern
-schildertest	33	VERB	schildern
-schildertet	33	VERB	schildern
-schildere	33	VERB	schildern
+schilderst	33	VERB	Schild
+schildertest	33	VERB	Schild
+schildertet	33	VERB	Schild
+schildere	33	VERB	Schild
 belaste	33	VERB	belasten
 belastest	33	VERB	belasten
 belastetest	33	VERB	belasten
@@ -153697,9 +153697,9 @@ bewohne	32	VERB	bewohnen
 abgestammt	32	VERB	abstammen
 ignoriertest	32	VERB	ignorieren
 ignoriertet	32	VERB	ignorieren
-versteckst	32	VERB	verstecken
-verstecktest	32	VERB	verstecken
-verstecktet	32	VERB	verstecken
+versteckst	32	VERB	Versteck
+verstecktest	32	VERB	Versteck
+verstecktet	32	VERB	Versteck
 erwecke	31	VERB	erwecken
 erweckst	31	VERB	erwecken
 erwecktest	31	VERB	erwecken
@@ -153768,11 +153768,11 @@ vermischst	29	VERB	vermischen
 vermischtest	29	VERB	vermischen
 vermischtet	29	VERB	vermischen
 unterstelle	29	VERB	unterstellen
-pendle	29	VERB	pendeln
-pendelst	29	VERB	pendeln
-pendeltest	29	VERB	pendeln
-pendeltet	29	VERB	pendeln
-gependelt	29	VERB	pendeln
+pendle	29	VERB	Pendel
+pendelst	29	VERB	Pendel
+pendeltest	29	VERB	Pendel
+pendeltet	29	VERB	Pendel
+gependelt	29	VERB	Pendel
 verurteile	29	VERB	verurteilen
 verurteilst	29	VERB	verurteilen
 verurteiltest	29	VERB	verurteilen
@@ -153790,7 +153790,7 @@ siedle	29	VERB	siedeln
 siedelst	29	VERB	siedeln
 siedeltest	29	VERB	siedeln
 siedeltet	29	VERB	siedeln
-eingereist	28	VERB	einreisen
+eingereist	28	VERB	Einreise
 reinige	28	VERB	reinigen
 reinigst	28	VERB	reinigen
 reinigtest	28	VERB	reinigen
@@ -153861,11 +153861,11 @@ modellierst	26	VERB	modellieren
 modelliertest	26	VERB	modellieren
 modelliertet	26	VERB	modellieren
 modellier	26	VERB	modellieren
-blickst	26	VERB	blicken
-blicktest	26	VERB	blicken
-blickten	26	VERB	blicken
-blicktet	26	VERB	blicken
-geblickt	26	VERB	blicken
+blickst	26	VERB	Blick
+blicktest	26	VERB	Blick
+blickten	26	VERB	Blick
+blicktet	26	VERB	Blick
+geblickt	26	VERB	Blick
 billigst	25	VERB	billigen
 billigtest	25	VERB	billigen
 billigtet	25	VERB	billigen
@@ -153949,9 +153949,9 @@ entschlüsselte	24	VERB	entschlüsseln
 entschlüsseltest	24	VERB	entschlüsseln
 entschlüsselten	24	VERB	entschlüsseln
 entschlüsseltet	24	VERB	entschlüsseln
-stiftest	24	VERB	stiften
-stiftetest	24	VERB	stiften
-stiftetet	24	VERB	stiften
+stiftest	24	VERB	Stift
+stiftetest	24	VERB	Stift
+stiftetet	24	VERB	Stift
 verwerte	24	VERB	verwerten
 verwertest	24	VERB	verwerten
 verwertetest	24	VERB	verwerten
@@ -154102,11 +154102,11 @@ schmücke	21	VERB	schmücken
 schmückst	21	VERB	schmücken
 schmücktest	21	VERB	schmücken
 schmücktet	21	VERB	schmücken
-kriegte	21	VERB	kriegen
-kriegtest	21	VERB	kriegen
-kriegten	21	VERB	kriegen
-kriegtet	21	VERB	kriegen
-gekriegt	21	VERB	kriegen
+kriegte	21	VERB	Krieg
+kriegtest	21	VERB	Krieg
+kriegten	21	VERB	Krieg
+kriegtet	21	VERB	Krieg
+gekriegt	21	VERB	Krieg
 strukturiere	20	VERB	strukturieren
 strukturierst	20	VERB	strukturieren
 strukturiertest	20	VERB	strukturieren
@@ -154315,10 +154315,10 @@ besorge	18	VERB	besorgen
 besorgst	18	VERB	besorgen
 besorgtest	18	VERB	besorgen
 besorgtet	18	VERB	besorgen
-verzehrst	18	VERB	verzehren
-verzehrte	18	VERB	verzehren
-verzehrtest	18	VERB	verzehren
-verzehrtet	18	VERB	verzehren
+verzehrst	18	VERB	Verzehr
+verzehrte	18	VERB	Verzehr
+verzehrtest	18	VERB	Verzehr
+verzehrtet	18	VERB	Verzehr
 reproduziere	17	VERB	reproduzieren
 reproduzierst	17	VERB	reproduzieren
 reproduziertest	17	VERB	reproduzieren
@@ -154396,13 +154396,13 @@ synchronisierst	17	VERB	synchronisieren
 synchronisiertest	17	VERB	synchronisieren
 synchronisiertet	17	VERB	synchronisieren
 synchronisier	17	VERB	synchronisieren
-hütest	17	VERB	hüten
-hütet	17	VERB	hüten
-hütete	17	VERB	hüten
-hütetest	17	VERB	hüten
-hüteten	17	VERB	hüten
-hütetet	17	VERB	hüten
-gehütet	17	VERB	hüten
+hütest	17	VERB	Hut
+hütet	17	VERB	Hut
+hütete	17	VERB	Hut
+hütetest	17	VERB	Hut
+hüteten	17	VERB	Hut
+hütetet	17	VERB	Hut
+gehütet	17	VERB	Hut
 verharre	17	VERB	verharren
 verharrst	17	VERB	verharren
 verharrtest	17	VERB	verharren
@@ -154527,10 +154527,10 @@ kondensierst	15	VERB	kondensieren
 kondensiertest	15	VERB	kondensieren
 kondensiertet	15	VERB	kondensieren
 kondensier	15	VERB	kondensieren
-küsstest	15	VERB	küssen
-küssten	15	VERB	küssen
-küsstet	15	VERB	küssen
-küss	15	VERB	küssen
+küsstest	15	VERB	Kuss
+küssten	15	VERB	Kuss
+küsstet	15	VERB	Kuss
+küss	15	VERB	Kuss
 korreliere	15	VERB	korrelieren
 korrelierst	15	VERB	korrelieren
 korreliertest	15	VERB	korrelieren
@@ -154563,7 +154563,7 @@ milderte	15	VERB	mildern
 mildertest	15	VERB	mildern
 milderten	15	VERB	mildern
 mildertet	15	VERB	mildern
-ausgereist	15	VERB	ausreisen
+ausgereist	15	VERB	Ausreise
 protestiere	15	VERB	protestieren
 protestierst	15	VERB	protestieren
 protestiertest	15	VERB	protestieren
@@ -154641,12 +154641,12 @@ bekräftige	14	VERB	bekräftigen
 bekräftigst	14	VERB	bekräftigen
 bekräftigtest	14	VERB	bekräftigen
 bekräftigtet	14	VERB	bekräftigen
-streue	14	VERB	streuen
-streust	14	VERB	streuen
-streute	14	VERB	streuen
-streutest	14	VERB	streuen
-streuten	14	VERB	streuen
-streutet	14	VERB	streuen
+streue	14	VERB	Streu
+streust	14	VERB	Streu
+streute	14	VERB	Streu
+streutest	14	VERB	Streu
+streuten	14	VERB	Streu
+streutet	14	VERB	Streu
 verifiziere	14	VERB	verifizieren
 verifizierst	14	VERB	verifizieren
 verifizierte	14	VERB	verifizieren
@@ -154657,12 +154657,12 @@ konstatiere	14	VERB	konstatieren
 konstatierst	14	VERB	konstatieren
 konstatiertest	14	VERB	konstatieren
 konstatiertet	14	VERB	konstatieren
-säum	14	VERB	säumen
-säumst	14	VERB	säumen
-säumt	14	VERB	säumen
-säumte	14	VERB	säumen
-säumtest	14	VERB	säumen
-säumtet	14	VERB	säumen
+säum	14	VERB	Saum
+säumst	14	VERB	Saum
+säumt	14	VERB	Saum
+säumte	14	VERB	Saum
+säumtest	14	VERB	Saum
+säumtet	14	VERB	Saum
 verschärfe	14	VERB	verschärfen
 verschärfst	14	VERB	verschärfen
 verschärftest	14	VERB	verschärfen
@@ -154806,13 +154806,13 @@ erkaufst	12	VERB	erkaufen
 erkauftest	12	VERB	erkaufen
 erkauften	12	VERB	erkaufen
 erkauftet	12	VERB	erkaufen
-lobst	12	VERB	loben
-lobtest	12	VERB	loben
-lobtet	12	VERB	loben
-scheust	12	VERB	scheuen
-scheutest	12	VERB	scheuen
-scheutet	12	VERB	scheuen
-gescheut	12	VERB	scheuen
+lobst	12	VERB	Lob
+lobtest	12	VERB	Lob
+lobtet	12	VERB	Lob
+scheust	12	VERB	Scheu
+scheutest	12	VERB	Scheu
+scheutet	12	VERB	Scheu
+gescheut	12	VERB	Scheu
 vertusche	12	VERB	vertuschen
 vertuschst	12	VERB	vertuschen
 vertuschte	12	VERB	vertuschen
@@ -155134,9 +155134,9 @@ porträtiere	10	VERB	porträtieren
 porträtierst	10	VERB	porträtieren
 porträtiertest	10	VERB	porträtieren
 porträtiertet	10	VERB	porträtieren
-grüßtest	10	VERB	grüßen
-grüßten	10	VERB	grüßen
-grüßtet	10	VERB	grüßen
+grüßtest	10	VERB	Gruß
+grüßten	10	VERB	Gruß
+grüßtet	10	VERB	Gruß
 beliefer	10	VERB	beliefern
 belieferst	10	VERB	beliefern
 beliefertest	10	VERB	beliefern
@@ -155655,11 +155655,11 @@ verstelltest	7	VERB	verstellen
 verstellten	7	VERB	verstellen
 verstelltet	7	VERB	verstellen
 verstell	7	VERB	verstellen
-wickle	7	VERB	wickeln
-wickelst	7	VERB	wickeln
-wickeltest	7	VERB	wickeln
-wickelten	7	VERB	wickeln
-wickeltet	7	VERB	wickeln
+wickle	7	VERB	Wickel
+wickelst	7	VERB	Wickel
+wickeltest	7	VERB	Wickel
+wickelten	7	VERB	Wickel
+wickeltet	7	VERB	Wickel
 stagniere	7	VERB	stagnieren
 stagnierst	7	VERB	stagnieren
 stagniertest	7	VERB	stagnieren
@@ -155668,9 +155668,9 @@ verwüste	7	VERB	verwüsten
 verwüstest	7	VERB	verwüsten
 verwüstetest	7	VERB	verwüsten
 verwüstetet	7	VERB	verwüsten
-raubst	7	VERB	rauben
-raubtest	7	VERB	rauben
-raubtet	7	VERB	rauben
+raubst	7	VERB	Raub
+raubtest	7	VERB	Raub
+raubtet	7	VERB	Raub
 visualisiere	7	VERB	visualisieren
 visualisierst	7	VERB	visualisieren
 visualisierte	7	VERB	visualisieren
@@ -155767,7 +155767,7 @@ büße	7	VERB	büßen
 büßtest	7	VERB	büßen
 büßtet	7	VERB	büßen
 gebüßt	7	VERB	büßen
-nachgefolgt	7	VERB	nachfolgen
+nachgefolgt	7	VERB	Nachfolge
 entschädige	7	VERB	entschädigen
 entschädigst	7	VERB	entschädigen
 entschädigte	7	VERB	entschädigen
@@ -155872,13 +155872,13 @@ zerteiltest	6	VERB	zerteilen
 zerteilten	6	VERB	zerteilen
 zerteiltet	6	VERB	zerteilen
 zerteil	6	VERB	zerteilen
-sühn	6	VERB	sühnen
-sühnst	6	VERB	sühnen
-sühnt	6	VERB	sühnen
-sühnte	6	VERB	sühnen
-sühntest	6	VERB	sühnen
-sühnten	6	VERB	sühnen
-sühntet	6	VERB	sühnen
+sühn	6	VERB	Sühne
+sühnst	6	VERB	Sühne
+sühnt	6	VERB	Sühne
+sühnte	6	VERB	Sühne
+sühntest	6	VERB	Sühne
+sühnten	6	VERB	Sühne
+sühntet	6	VERB	Sühne
 verkündige	6	VERB	verkündigen
 verkündigst	6	VERB	verkündigen
 verkündigte	6	VERB	verkündigen
@@ -155895,10 +155895,10 @@ verrottetest	6	VERB	verrotten
 verrotteten	6	VERB	verrotten
 verrottetet	6	VERB	verrotten
 verrott	6	VERB	verrotten
-textete	6	VERB	texten
-textetest	6	VERB	texten
-texteten	6	VERB	texten
-textetet	6	VERB	texten
+textete	6	VERB	Texte
+textetest	6	VERB	Texte
+texteten	6	VERB	Texte
+textetet	6	VERB	Texte
 zelebriere	6	VERB	zelebrieren
 zelebrierst	6	VERB	zelebrieren
 zelebriertest	6	VERB	zelebrieren
@@ -156212,14 +156212,14 @@ konkretisierst	5	VERB	konkretisieren
 konkretisiertest	5	VERB	konkretisieren
 konkretisierten	5	VERB	konkretisieren
 konkretisiertet	5	VERB	konkretisieren
-zügle	5	VERB	zügeln
-zügelst	5	VERB	zügeln
-zügelt	5	VERB	zügeln
-zügelte	5	VERB	zügeln
-zügeltest	5	VERB	zügeln
-zügelten	5	VERB	zügeln
-zügeltet	5	VERB	zügeln
-gezügelt	5	VERB	zügeln
+zügle	5	VERB	Zügel
+zügelst	5	VERB	Zügel
+zügelt	5	VERB	Zügel
+zügelte	5	VERB	Zügel
+zügeltest	5	VERB	Zügel
+zügelten	5	VERB	Zügel
+zügeltet	5	VERB	Zügel
+gezügelt	5	VERB	Zügel
 versklave	5	VERB	versklaven
 versklavst	5	VERB	versklaven
 versklavtest	5	VERB	versklaven
@@ -156244,7 +156244,7 @@ erhärtetest	5	VERB	erhärten
 erhärteten	5	VERB	erhärten
 erhärtetet	5	VERB	erhärten
 erhärt	5	VERB	erhärten
-fortgedauert	5	VERB	fortdauern
+fortgedauert	5	VERB	Fortdauer
 promoviere	5	VERB	promovieren
 promovierst	5	VERB	promovieren
 promoviertest	5	VERB	promovieren
@@ -156281,11 +156281,11 @@ schlussfolgerten	5	VERB	schlussfolgern
 schlussfolgertet	5	VERB	schlussfolgern
 schlussfolgere	5	VERB	schlussfolgern
 aufeinandergefolgt	5	VERB	aufeinanderfolgen
-genest	5	VERB	genesen
-genas	5	VERB	genesen
-genasest	5	VERB	genesen
-genasen	5	VERB	genesen
-genast	5	VERB	genesen
+genest	5	VERB	Genesis
+genas	5	VERB	Genesis
+genasest	5	VERB	Genesis
+genasen	5	VERB	Genesis
+genast	5	VERB	Genesis
 christianisiere	5	VERB	christianisieren
 christianisierst	5	VERB	christianisieren
 christianisiertest	5	VERB	christianisieren
@@ -156371,12 +156371,12 @@ adoptiere	5	VERB	adoptieren
 adoptierst	5	VERB	adoptieren
 adoptiertest	5	VERB	adoptieren
 adoptiertet	5	VERB	adoptieren
-schmuggle	5	VERB	schmuggeln
-schmuggelst	5	VERB	schmuggeln
-schmuggelt	5	VERB	schmuggeln
-schmuggeltest	5	VERB	schmuggeln
-schmuggelten	5	VERB	schmuggeln
-schmuggeltet	5	VERB	schmuggeln
+schmuggle	5	VERB	Schmuggel
+schmuggelst	5	VERB	Schmuggel
+schmuggelt	5	VERB	Schmuggel
+schmuggeltest	5	VERB	Schmuggel
+schmuggelten	5	VERB	Schmuggel
+schmuggeltet	5	VERB	Schmuggel
 erstrebe	5	VERB	erstreben
 erstrebst	5	VERB	erstreben
 erstrebtest	5	VERB	erstreben
@@ -156550,14 +156550,14 @@ ionisierst	5	VERB	ionisieren
 ionisiertest	5	VERB	ionisieren
 ionisiertet	5	VERB	ionisieren
 ionisier	5	VERB	ionisieren
-drifte	5	VERB	driften
-driftest	5	VERB	driften
-driftet	5	VERB	driften
-driftete	5	VERB	driften
-driftetest	5	VERB	driften
-drifteten	5	VERB	driften
-driftetet	5	VERB	driften
-gedriftet	5	VERB	driften
+drifte	5	VERB	Drift
+driftest	5	VERB	Drift
+driftet	5	VERB	Drift
+driftete	5	VERB	Drift
+driftetest	5	VERB	Drift
+drifteten	5	VERB	Drift
+driftetet	5	VERB	Drift
+gedriftet	5	VERB	Drift
 normalisiere	5	VERB	normalisieren
 normalisierst	5	VERB	normalisieren
 normalisiertest	5	VERB	normalisieren
@@ -156751,11 +156751,11 @@ verwickelst	4	VERB	verwickeln
 verwickeltest	4	VERB	verwickeln
 verwickeltet	4	VERB	verwickeln
 verwickel	4	VERB	verwickeln
-küre	4	VERB	küren
-kürst	4	VERB	küren
-kürt	4	VERB	küren
-kürtest	4	VERB	küren
-kürtet	4	VERB	küren
+küre	4	VERB	Kür
+kürst	4	VERB	Kür
+kürt	4	VERB	Kür
+kürtest	4	VERB	Kür
+kürtet	4	VERB	Kür
 herausgeragt	4	VERB	herausragen
 nachgewirkt	4	VERB	nachwirken
 diffamiere	4	VERB	diffamieren
@@ -156907,14 +156907,14 @@ inspiziertest	4	VERB	inspizieren
 inspizierten	4	VERB	inspizieren
 inspiziertet	4	VERB	inspizieren
 inspizier	4	VERB	inspizieren
-wärm	4	VERB	wärmen
-wärmst	4	VERB	wärmen
-wärmt	4	VERB	wärmen
-wärmte	4	VERB	wärmen
-wärmtest	4	VERB	wärmen
-wärmten	4	VERB	wärmen
-wärmtet	4	VERB	wärmen
-gewärmt	4	VERB	wärmen
+wärm	4	VERB	Wärme
+wärmst	4	VERB	Wärme
+wärmt	4	VERB	Wärme
+wärmte	4	VERB	Wärme
+wärmtest	4	VERB	Wärme
+wärmten	4	VERB	Wärme
+wärmtet	4	VERB	Wärme
+gewärmt	4	VERB	Wärme
 besteuer	4	VERB	besteuern
 besteuerst	4	VERB	besteuern
 besteuerte	4	VERB	besteuern
@@ -156990,14 +156990,14 @@ favorisiertet	4	VERB	favorisieren
 erklimme	4	VERB	erklimmen
 erklimmst	4	VERB	erklimmen
 erklimmt	4	VERB	erklimmen
-meißle	4	VERB	meißeln
-meißelst	4	VERB	meißeln
-meißelt	4	VERB	meißeln
-meißelte	4	VERB	meißeln
-meißeltest	4	VERB	meißeln
-meißelten	4	VERB	meißeln
-meißeltet	4	VERB	meißeln
-gemeißelt	4	VERB	meißeln
+meißle	4	VERB	Meißel
+meißelst	4	VERB	Meißel
+meißelt	4	VERB	Meißel
+meißelte	4	VERB	Meißel
+meißeltest	4	VERB	Meißel
+meißelten	4	VERB	Meißel
+meißeltet	4	VERB	Meißel
+gemeißelt	4	VERB	Meißel
 kanalisiere	4	VERB	kanalisieren
 kanalisierst	4	VERB	kanalisieren
 kanalisiertest	4	VERB	kanalisieren
@@ -157104,9 +157104,9 @@ demontiertet	4	VERB	demontieren
 überhöhtest	4	VERB	überhöhen
 überhöhtet	4	VERB	überhöhen
 überhöh	4	VERB	überhöhen
-geleitest	4	VERB	geleiten
-geleitetest	4	VERB	geleiten
-geleitetet	4	VERB	geleiten
+geleitest	4	VERB	Geleit
+geleitetest	4	VERB	Geleit
+geleitetet	4	VERB	Geleit
 ertön	4	VERB	ertönen
 ertönst	4	VERB	ertönen
 ertönte	4	VERB	ertönen
@@ -160804,19 +160804,19 @@ bergigstem	4	ADJECTIVE	bergig
 bergigsten	4	ADJECTIVE	bergig
 bergigster	4	ADJECTIVE	bergig
 bergigstes	4	ADJECTIVE	bergig
-berufenem	402	ADJECTIVE	berufen
-berufener	402	ADJECTIVE	berufen
-berufenere	402	ADJECTIVE	berufen
-berufenerem	402	ADJECTIVE	berufen
-berufeneren	402	ADJECTIVE	berufen
-berufenerer	402	ADJECTIVE	berufen
-berufeneres	402	ADJECTIVE	berufen
-berufenes	402	ADJECTIVE	berufen
-berufenste	402	ADJECTIVE	berufen
-berufenstem	402	ADJECTIVE	berufen
-berufensten	402	ADJECTIVE	berufen
-berufenster	402	ADJECTIVE	berufen
-berufenstes	402	ADJECTIVE	berufen
+berufenem	402	ADJECTIVE	Beruf
+berufener	402	ADJECTIVE	Beruf
+berufenere	402	ADJECTIVE	Beruf
+berufenerem	402	ADJECTIVE	Beruf
+berufeneren	402	ADJECTIVE	Beruf
+berufenerer	402	ADJECTIVE	Beruf
+berufeneres	402	ADJECTIVE	Beruf
+berufenes	402	ADJECTIVE	Beruf
+berufenste	402	ADJECTIVE	Beruf
+berufenstem	402	ADJECTIVE	Beruf
+berufensten	402	ADJECTIVE	Beruf
+berufenster	402	ADJECTIVE	Beruf
+berufenstes	402	ADJECTIVE	Beruf
 beruflichem	32	ADJECTIVE	beruflich
 berufstätigem	8	ADJECTIVE	berufstätig
 berufstätiger	8	ADJECTIVE	berufstätig
@@ -160849,16 +160849,16 @@ beschaffenem	52	ADJECTIVE	beschaffen
 beschaffenen	52	ADJECTIVE	beschaffen
 beschaffener	52	ADJECTIVE	beschaffen
 beschaffenes	52	ADJECTIVE	beschaffen
-bescheidenere	30	ADJECTIVE	bescheiden
-bescheidenerem	30	ADJECTIVE	bescheiden
-bescheideneren	30	ADJECTIVE	bescheiden
-bescheidenerer	30	ADJECTIVE	bescheiden
-bescheideneres	30	ADJECTIVE	bescheiden
-bescheidenste	30	ADJECTIVE	bescheiden
-bescheidenstem	30	ADJECTIVE	bescheiden
-bescheidensten	30	ADJECTIVE	bescheiden
-bescheidenster	30	ADJECTIVE	bescheiden
-bescheidenstes	30	ADJECTIVE	bescheiden
+bescheidenere	30	ADJECTIVE	Bescheid
+bescheidenerem	30	ADJECTIVE	Bescheid
+bescheideneren	30	ADJECTIVE	Bescheid
+bescheidenerer	30	ADJECTIVE	Bescheid
+bescheideneres	30	ADJECTIVE	Bescheid
+bescheidenste	30	ADJECTIVE	Bescheid
+bescheidenstem	30	ADJECTIVE	Bescheid
+bescheidensten	30	ADJECTIVE	Bescheid
+bescheidenster	30	ADJECTIVE	Bescheid
+bescheidenstes	30	ADJECTIVE	Bescheid
 beschienene	6	ADJECTIVE	beschienen
 beschienenem	6	ADJECTIVE	beschienen
 beschienenen	6	ADJECTIVE	beschienen
@@ -162829,19 +162829,19 @@ drüsigem	8	ADJECTIVE	drüsig
 drüsigen	8	ADJECTIVE	drüsig
 drüsiger	8	ADJECTIVE	drüsig
 drüsiges	8	ADJECTIVE	drüsig
-duftem	2	ADJECTIVE	dufte
-dufter	2	ADJECTIVE	dufte
-duftere	2	ADJECTIVE	dufte
-dufterem	2	ADJECTIVE	dufte
-dufteren	2	ADJECTIVE	dufte
-dufterer	2	ADJECTIVE	dufte
-dufteres	2	ADJECTIVE	dufte
-duftes	2	ADJECTIVE	dufte
-dufteste	2	ADJECTIVE	dufte
-duftestem	2	ADJECTIVE	dufte
-duftesten	2	ADJECTIVE	dufte
-duftester	2	ADJECTIVE	dufte
-duftestes	2	ADJECTIVE	dufte
+duftem	2	ADJECTIVE	duften
+dufter	2	ADJECTIVE	duften
+duftere	2	ADJECTIVE	duften
+dufterem	2	ADJECTIVE	duften
+dufteren	2	ADJECTIVE	duften
+dufterer	2	ADJECTIVE	duften
+dufteres	2	ADJECTIVE	duften
+duftes	2	ADJECTIVE	duften
+dufteste	2	ADJECTIVE	duften
+duftestem	2	ADJECTIVE	duften
+duftesten	2	ADJECTIVE	duften
+duftester	2	ADJECTIVE	duften
+duftestes	2	ADJECTIVE	duften
 duktile	5	ADJECTIVE	duktil
 duktilem	5	ADJECTIVE	duktil
 duktilen	5	ADJECTIVE	duktil
@@ -162941,11 +162941,11 @@ durchschlagenem	12	ADJECTIVE	durchschlagen
 durchschlagenen	12	ADJECTIVE	durchschlagen
 durchschlagener	12	ADJECTIVE	durchschlagen
 durchschlagenes	12	ADJECTIVE	durchschlagen
-durchschnittene	16	ADJECTIVE	durchschnitten
-durchschnittenem	16	ADJECTIVE	durchschnitten
-durchschnittenen	16	ADJECTIVE	durchschnitten
-durchschnittener	16	ADJECTIVE	durchschnitten
-durchschnittenes	16	ADJECTIVE	durchschnitten
+durchschnittene	16	ADJECTIVE	Durchschnitt
+durchschnittenem	16	ADJECTIVE	Durchschnitt
+durchschnittenen	16	ADJECTIVE	Durchschnitt
+durchschnittener	16	ADJECTIVE	Durchschnitt
+durchschnittenes	16	ADJECTIVE	Durchschnitt
 durchschnittlichem	456	ADJECTIVE	durchschnittlich
 durchschnittlichere	456	ADJECTIVE	durchschnittlich
 durchschnittlicherem	456	ADJECTIVE	durchschnittlich
@@ -163623,7 +163623,7 @@ einwandfreistem	12	ADJECTIVE	einwandfrei
 einwandfreisten	12	ADJECTIVE	einwandfrei
 einwandfreister	12	ADJECTIVE	einwandfrei
 einwandfreistes	12	ADJECTIVE	einwandfrei
-einzelnem	206	ADJECTIVE	einzeln
+einzelnem	206	ADJECTIVE	Einzel
 einzigartigem	74	ADJECTIVE	einzigartig
 eisfreiem	18	ADJECTIVE	eisfrei
 eisfreier	18	ADJECTIVE	eisfrei
@@ -164364,7 +164364,7 @@ erhabnem	14	ADJECTIVE	erhaben
 erhabnen	14	ADJECTIVE	erhaben
 erhabner	14	ADJECTIVE	erhaben
 erhabnes	14	ADJECTIVE	erhaben
-erhaltenem	2928	ADJECTIVE	erhalten
+erhaltenem	2928	ADJECTIVE	Erhalt
 erhältlichem	306	ADJECTIVE	erhältlich
 erhältliches	306	ADJECTIVE	erhältlich
 erkennbarem	458	ADJECTIVE	erkennbar
@@ -166827,7 +166827,7 @@ gegensätzlichster	10	ADJECTIVE	gegensätzlich
 gegensätzlichstes	10	ADJECTIVE	gegensätzlich
 gegenteiligem	6	ADJECTIVE	gegenteilig
 gegenteiliges	6	ADJECTIVE	gegenteilig
-gehaltenem	760	ADJECTIVE	gehalten
+gehaltenem	760	ADJECTIVE	Gehalt
 geheiligte	11	ADJECTIVE	geheiligt
 geheiligtem	11	ADJECTIVE	geheiligt
 geheiligter	11	ADJECTIVE	geheiligt
@@ -167026,36 +167026,36 @@ gelblichstem	28	ADJECTIVE	gelblich
 gelblichsten	28	ADJECTIVE	gelblich
 gelblichster	28	ADJECTIVE	gelblich
 gelblichstes	28	ADJECTIVE	gelblich
-geleckte	4	ADJECTIVE	geleckt
-gelecktem	4	ADJECTIVE	geleckt
-geleckten	4	ADJECTIVE	geleckt
-geleckter	4	ADJECTIVE	geleckt
-gelecktere	4	ADJECTIVE	geleckt
-geleckterem	4	ADJECTIVE	geleckt
-geleckteren	4	ADJECTIVE	geleckt
-geleckterer	4	ADJECTIVE	geleckt
-geleckteres	4	ADJECTIVE	geleckt
-gelecktes	4	ADJECTIVE	geleckt
-geleckteste	4	ADJECTIVE	geleckt
-gelecktestem	4	ADJECTIVE	geleckt
-gelecktesten	4	ADJECTIVE	geleckt
-gelecktester	4	ADJECTIVE	geleckt
-gelecktestes	4	ADJECTIVE	geleckt
-gelegenste	332	ADJECTIVE	gelegen
-gelegenstem	332	ADJECTIVE	gelegen
-gelegensten	332	ADJECTIVE	gelegen
-gelegenster	332	ADJECTIVE	gelegen
-gelegenstes	332	ADJECTIVE	gelegen
-gelegne	332	ADJECTIVE	gelegen
-gelegnem	332	ADJECTIVE	gelegen
-gelegnen	332	ADJECTIVE	gelegen
-gelegner	332	ADJECTIVE	gelegen
-gelegnere	332	ADJECTIVE	gelegen
-gelegnerem	332	ADJECTIVE	gelegen
-gelegneren	332	ADJECTIVE	gelegen
-gelegnerer	332	ADJECTIVE	gelegen
-gelegneres	332	ADJECTIVE	gelegen
-gelegnes	332	ADJECTIVE	gelegen
+geleckte	4	ADJECTIVE	lecken
+gelecktem	4	ADJECTIVE	lecken
+geleckten	4	ADJECTIVE	lecken
+geleckter	4	ADJECTIVE	lecken
+gelecktere	4	ADJECTIVE	lecken
+geleckterem	4	ADJECTIVE	lecken
+geleckteren	4	ADJECTIVE	lecken
+geleckterer	4	ADJECTIVE	lecken
+geleckteres	4	ADJECTIVE	lecken
+gelecktes	4	ADJECTIVE	lecken
+geleckteste	4	ADJECTIVE	lecken
+gelecktestem	4	ADJECTIVE	lecken
+gelecktesten	4	ADJECTIVE	lecken
+gelecktester	4	ADJECTIVE	lecken
+gelecktestes	4	ADJECTIVE	lecken
+gelegenste	332	ADJECTIVE	Gelege
+gelegenstem	332	ADJECTIVE	Gelege
+gelegensten	332	ADJECTIVE	Gelege
+gelegenster	332	ADJECTIVE	Gelege
+gelegenstes	332	ADJECTIVE	Gelege
+gelegne	332	ADJECTIVE	Gelege
+gelegnem	332	ADJECTIVE	Gelege
+gelegnen	332	ADJECTIVE	Gelege
+gelegner	332	ADJECTIVE	Gelege
+gelegnere	332	ADJECTIVE	Gelege
+gelegnerem	332	ADJECTIVE	Gelege
+gelegneren	332	ADJECTIVE	Gelege
+gelegnerer	332	ADJECTIVE	Gelege
+gelegneres	332	ADJECTIVE	Gelege
+gelegnes	332	ADJECTIVE	Gelege
 gelegentlichem	868	ADJECTIVE	gelegentlich
 gelegentliches	868	ADJECTIVE	gelegentlich
 gelehrtem	148	ADJECTIVE	gelehrt
@@ -167120,11 +167120,11 @@ geläufigster	65	ADJECTIVE	geläufig
 geläufigstes	65	ADJECTIVE	geläufig
 gemachtem	1351	ADJECTIVE	gemacht
 gemachtes	1351	ADJECTIVE	gemacht
-gemahlene	16	ADJECTIVE	gemahlen
-gemahlenem	16	ADJECTIVE	gemahlen
-gemahlenen	16	ADJECTIVE	gemahlen
-gemahlener	16	ADJECTIVE	gemahlen
-gemahlenes	16	ADJECTIVE	gemahlen
+gemahlene	16	ADJECTIVE	Gemahl
+gemahlenem	16	ADJECTIVE	Gemahl
+gemahlenen	16	ADJECTIVE	Gemahl
+gemahlener	16	ADJECTIVE	Gemahl
+gemahlenes	16	ADJECTIVE	Gemahl
 gemeinem	70	ADJECTIVE	gemein
 gemeinere	70	ADJECTIVE	gemein
 gemeinerem	70	ADJECTIVE	gemein
@@ -167792,11 +167792,11 @@ gesättigtstes	18	ADJECTIVE	gesättigt
 gesäumtem	34	ADJECTIVE	gesäumt
 gesäumter	34	ADJECTIVE	gesäumt
 gesäumtes	34	ADJECTIVE	gesäumt
-gesüßte	10	ADJECTIVE	gesüßt
-gesüßtem	10	ADJECTIVE	gesüßt
-gesüßten	10	ADJECTIVE	gesüßt
-gesüßter	10	ADJECTIVE	gesüßt
-gesüßtes	10	ADJECTIVE	gesüßt
+gesüßte	10	ADJECTIVE	süßen
+gesüßtem	10	ADJECTIVE	süßen
+gesüßten	10	ADJECTIVE	süßen
+gesüßter	10	ADJECTIVE	süßen
+gesüßtes	10	ADJECTIVE	süßen
 getarntem	20	ADJECTIVE	getarnt
 getarnter	20	ADJECTIVE	getarnt
 getarntere	20	ADJECTIVE	getarnt
@@ -169736,11 +169736,11 @@ inakzeptableren	16	ADJECTIVE	inakzeptabel
 inakzeptablerer	16	ADJECTIVE	inakzeptabel
 inakzeptableres	16	ADJECTIVE	inakzeptabel
 inakzeptables	16	ADJECTIVE	inakzeptabel
-inbegriffne	8	ADJECTIVE	inbegriffen
-inbegriffnem	8	ADJECTIVE	inbegriffen
-inbegriffnen	8	ADJECTIVE	inbegriffen
-inbegriffner	8	ADJECTIVE	inbegriffen
-inbegriffnes	8	ADJECTIVE	inbegriffen
+inbegriffne	8	ADJECTIVE	Inbegriff
+inbegriffnem	8	ADJECTIVE	Inbegriff
+inbegriffnen	8	ADJECTIVE	Inbegriff
+inbegriffner	8	ADJECTIVE	Inbegriff
+inbegriffnes	8	ADJECTIVE	Inbegriff
 indifferente	8	ADJECTIVE	indifferent
 indifferentem	8	ADJECTIVE	indifferent
 indifferenten	8	ADJECTIVE	indifferent
@@ -170320,19 +170320,19 @@ ironischstem	62	ADJECTIVE	ironisch
 ironischsten	62	ADJECTIVE	ironisch
 ironischster	62	ADJECTIVE	ironisch
 ironischstes	62	ADJECTIVE	ironisch
-irrem	5	ADJECTIVE	irr
-irrer	5	ADJECTIVE	irr
-irrere	5	ADJECTIVE	irr
-irrerem	5	ADJECTIVE	irr
-irreren	5	ADJECTIVE	irr
-irrerer	5	ADJECTIVE	irr
-irreres	5	ADJECTIVE	irr
-irres	5	ADJECTIVE	irr
-irrste	5	ADJECTIVE	irr
-irrstem	5	ADJECTIVE	irr
-irrsten	5	ADJECTIVE	irr
-irrster	5	ADJECTIVE	irr
-irrstes	5	ADJECTIVE	irr
+irrem	5	ADJECTIVE	irren
+irrer	5	ADJECTIVE	irren
+irrere	5	ADJECTIVE	irren
+irrerem	5	ADJECTIVE	irren
+irreren	5	ADJECTIVE	irren
+irrerer	5	ADJECTIVE	irren
+irreres	5	ADJECTIVE	irren
+irres	5	ADJECTIVE	irren
+irrste	5	ADJECTIVE	irren
+irrstem	5	ADJECTIVE	irren
+irrsten	5	ADJECTIVE	irren
+irrster	5	ADJECTIVE	irren
+irrstes	5	ADJECTIVE	irren
 irrationalem	29	ADJECTIVE	irrational
 irrationaler	29	ADJECTIVE	irrational
 irrationalere	29	ADJECTIVE	irrational
@@ -172471,19 +172471,19 @@ linksufriges	5	ADJECTIVE	linksufrig
 lipophilem	9	ADJECTIVE	lipophil
 lipophiler	9	ADJECTIVE	lipophil
 lipophiles	9	ADJECTIVE	lipophil
-liquidem	10	ADJECTIVE	liquide
-liquider	10	ADJECTIVE	liquide
-liquidere	10	ADJECTIVE	liquide
-liquiderem	10	ADJECTIVE	liquide
-liquideren	10	ADJECTIVE	liquide
-liquiderer	10	ADJECTIVE	liquide
-liquideres	10	ADJECTIVE	liquide
-liquides	10	ADJECTIVE	liquide
-liquideste	10	ADJECTIVE	liquide
-liquidestem	10	ADJECTIVE	liquide
-liquidesten	10	ADJECTIVE	liquide
-liquidester	10	ADJECTIVE	liquide
-liquidestes	10	ADJECTIVE	liquide
+liquidem	10	ADJECTIVE	Liquid
+liquider	10	ADJECTIVE	Liquid
+liquidere	10	ADJECTIVE	Liquid
+liquiderem	10	ADJECTIVE	Liquid
+liquideren	10	ADJECTIVE	Liquid
+liquiderer	10	ADJECTIVE	Liquid
+liquideres	10	ADJECTIVE	Liquid
+liquides	10	ADJECTIVE	Liquid
+liquideste	10	ADJECTIVE	Liquid
+liquidestem	10	ADJECTIVE	Liquid
+liquidesten	10	ADJECTIVE	Liquid
+liquidester	10	ADJECTIVE	Liquid
+liquidestes	10	ADJECTIVE	Liquid
 literarischere	110	ADJECTIVE	literarisch
 literarischerem	110	ADJECTIVE	literarisch
 literarischeren	110	ADJECTIVE	literarisch
@@ -172526,16 +172526,16 @@ logischster	81	ADJECTIVE	logisch
 logischstes	81	ADJECTIVE	logisch
 logistischem	13	ADJECTIVE	logistisch
 logistisches	13	ADJECTIVE	logistisch
-losere	82	ADJECTIVE	lose
-loserem	82	ADJECTIVE	lose
-loseren	82	ADJECTIVE	lose
-loserer	82	ADJECTIVE	lose
-loseres	82	ADJECTIVE	lose
-loseste	82	ADJECTIVE	lose
-losestem	82	ADJECTIVE	lose
-losesten	82	ADJECTIVE	lose
-losester	82	ADJECTIVE	lose
-losestes	82	ADJECTIVE	lose
+losere	82	ADJECTIVE	Los
+loserem	82	ADJECTIVE	Los
+loseren	82	ADJECTIVE	Los
+loserer	82	ADJECTIVE	Los
+loseres	82	ADJECTIVE	Los
+loseste	82	ADJECTIVE	Los
+losestem	82	ADJECTIVE	Los
+losesten	82	ADJECTIVE	Los
+losester	82	ADJECTIVE	Los
+losestes	82	ADJECTIVE	Los
 loyalem	36	ADJECTIVE	loyal
 loyalere	36	ADJECTIVE	loyal
 loyalerem	36	ADJECTIVE	loyal
@@ -173121,11 +173121,11 @@ mehrschichtiges	6	ADJECTIVE	mehrschichtig
 mehrspurigem	4	ADJECTIVE	mehrspurig
 mehrspuriger	4	ADJECTIVE	mehrspurig
 mehrspuriges	4	ADJECTIVE	mehrspurig
-mehrste	9	ADJECTIVE	mehrst
-mehrstem	9	ADJECTIVE	mehrst
-mehrsten	9	ADJECTIVE	mehrst
-mehrster	9	ADJECTIVE	mehrst
-mehrstes	9	ADJECTIVE	mehrst
+mehrste	9	ADJECTIVE	mehren
+mehrstem	9	ADJECTIVE	mehren
+mehrsten	9	ADJECTIVE	mehren
+mehrster	9	ADJECTIVE	mehren
+mehrstes	9	ADJECTIVE	mehren
 mehrstufigem	4	ADJECTIVE	mehrstufig
 mehrstufiger	4	ADJECTIVE	mehrstufig
 meistem	5010	ADJECTIVE	meist
@@ -174770,14 +174770,14 @@ obszönstem	4	ADJECTIVE	obszön
 obszönsten	4	ADJECTIVE	obszön
 obszönster	4	ADJECTIVE	obszön
 obszönstes	4	ADJECTIVE	obszön
-offenerem	536	ADJECTIVE	offen
-offenerer	536	ADJECTIVE	offen
-offeneres	536	ADJECTIVE	offen
-offenste	536	ADJECTIVE	offen
-offenstem	536	ADJECTIVE	offen
-offensten	536	ADJECTIVE	offen
-offenster	536	ADJECTIVE	offen
-offenstes	536	ADJECTIVE	offen
+offenerem	536	ADJECTIVE	Off
+offenerer	536	ADJECTIVE	Off
+offeneres	536	ADJECTIVE	Off
+offenste	536	ADJECTIVE	Off
+offenstem	536	ADJECTIVE	Off
+offensten	536	ADJECTIVE	Off
+offenster	536	ADJECTIVE	Off
+offenstes	536	ADJECTIVE	Off
 offenbarem	537	ADJECTIVE	offenbar
 offenbarer	537	ADJECTIVE	offenbar
 offenbarere	537	ADJECTIVE	offenbar
@@ -175538,17 +175538,17 @@ plakativstem	6	ADJECTIVE	plakativ
 plakativsten	6	ADJECTIVE	plakativ
 plakativster	6	ADJECTIVE	plakativ
 plakativstes	6	ADJECTIVE	plakativ
-planem	31	ADJECTIVE	plan
-planere	31	ADJECTIVE	plan
-planerem	31	ADJECTIVE	plan
-planeren	31	ADJECTIVE	plan
-planerer	31	ADJECTIVE	plan
-planeres	31	ADJECTIVE	plan
-planste	31	ADJECTIVE	plan
-planstem	31	ADJECTIVE	plan
-plansten	31	ADJECTIVE	plan
-planster	31	ADJECTIVE	plan
-planstes	31	ADJECTIVE	plan
+planem	31	ADJECTIVE	planen
+planere	31	ADJECTIVE	planen
+planerem	31	ADJECTIVE	planen
+planeren	31	ADJECTIVE	planen
+planerer	31	ADJECTIVE	planen
+planeres	31	ADJECTIVE	planen
+planste	31	ADJECTIVE	planen
+planstem	31	ADJECTIVE	planen
+plansten	31	ADJECTIVE	planen
+planster	31	ADJECTIVE	planen
+planstes	31	ADJECTIVE	planen
 planarem	14	ADJECTIVE	planar
 planares	14	ADJECTIVE	planar
 planerischem	6	ADJECTIVE	planerisch
@@ -177801,19 +177801,19 @@ scherzhaftestem	48	ADJECTIVE	scherzhaft
 scherzhaftesten	48	ADJECTIVE	scherzhaft
 scherzhaftester	48	ADJECTIVE	scherzhaft
 scherzhaftestes	48	ADJECTIVE	scherzhaft
-schickem	32	ADJECTIVE	schick
-schicker	32	ADJECTIVE	schick
-schickere	32	ADJECTIVE	schick
-schickerem	32	ADJECTIVE	schick
-schickeren	32	ADJECTIVE	schick
-schickerer	32	ADJECTIVE	schick
-schickeres	32	ADJECTIVE	schick
-schickes	32	ADJECTIVE	schick
-schickste	32	ADJECTIVE	schick
-schickstem	32	ADJECTIVE	schick
-schicksten	32	ADJECTIVE	schick
-schickster	32	ADJECTIVE	schick
-schickstes	32	ADJECTIVE	schick
+schickem	32	ADJECTIVE	schicken
+schicker	32	ADJECTIVE	schicken
+schickere	32	ADJECTIVE	schicken
+schickerem	32	ADJECTIVE	schicken
+schickeren	32	ADJECTIVE	schicken
+schickerer	32	ADJECTIVE	schicken
+schickeres	32	ADJECTIVE	schicken
+schickes	32	ADJECTIVE	schicken
+schickste	32	ADJECTIVE	schicken
+schickstem	32	ADJECTIVE	schicken
+schicksten	32	ADJECTIVE	schicken
+schickster	32	ADJECTIVE	schicken
+schickstes	32	ADJECTIVE	schicken
 schiefem	10	ADJECTIVE	schief
 schiefere	10	ADJECTIVE	schief
 schieferem	10	ADJECTIVE	schief
@@ -178144,19 +178144,19 @@ schwangrem	56	ADJECTIVE	schwanger
 schwangren	56	ADJECTIVE	schwanger
 schwangrer	56	ADJECTIVE	schwanger
 schwangres	56	ADJECTIVE	schwanger
-schwankem	39	ADJECTIVE	schwank
-schwanker	39	ADJECTIVE	schwank
-schwankere	39	ADJECTIVE	schwank
-schwankerem	39	ADJECTIVE	schwank
-schwankeren	39	ADJECTIVE	schwank
-schwankerer	39	ADJECTIVE	schwank
-schwankeres	39	ADJECTIVE	schwank
-schwankes	39	ADJECTIVE	schwank
-schwankste	39	ADJECTIVE	schwank
-schwankstem	39	ADJECTIVE	schwank
-schwanksten	39	ADJECTIVE	schwank
-schwankster	39	ADJECTIVE	schwank
-schwankstes	39	ADJECTIVE	schwank
+schwankem	39	ADJECTIVE	schwanken
+schwanker	39	ADJECTIVE	schwanken
+schwankere	39	ADJECTIVE	schwanken
+schwankerem	39	ADJECTIVE	schwanken
+schwankeren	39	ADJECTIVE	schwanken
+schwankerer	39	ADJECTIVE	schwanken
+schwankeres	39	ADJECTIVE	schwanken
+schwankes	39	ADJECTIVE	schwanken
+schwankste	39	ADJECTIVE	schwanken
+schwankstem	39	ADJECTIVE	schwanken
+schwanksten	39	ADJECTIVE	schwanken
+schwankster	39	ADJECTIVE	schwanken
+schwankstes	39	ADJECTIVE	schwanken
 schwarzbraune	4	ADJECTIVE	schwarzbraun
 schwarzbraunem	4	ADJECTIVE	schwarzbraun
 schwarzbraunen	4	ADJECTIVE	schwarzbraun
@@ -179420,19 +179420,19 @@ steiles	68	ADJECTIVE	steil
 steilstem	68	ADJECTIVE	steil
 steilster	68	ADJECTIVE	steil
 steilstes	68	ADJECTIVE	steil
-steinigem	4	ADJECTIVE	steinig
-steiniger	4	ADJECTIVE	steinig
-steinigere	4	ADJECTIVE	steinig
-steinigerem	4	ADJECTIVE	steinig
-steinigeren	4	ADJECTIVE	steinig
-steinigerer	4	ADJECTIVE	steinig
-steinigeres	4	ADJECTIVE	steinig
-steiniges	4	ADJECTIVE	steinig
-steinigste	4	ADJECTIVE	steinig
-steinigstem	4	ADJECTIVE	steinig
-steinigsten	4	ADJECTIVE	steinig
-steinigster	4	ADJECTIVE	steinig
-steinigstes	4	ADJECTIVE	steinig
+steinigem	4	ADJECTIVE	steinigen
+steiniger	4	ADJECTIVE	steinigen
+steinigere	4	ADJECTIVE	steinigen
+steinigerem	4	ADJECTIVE	steinigen
+steinigeren	4	ADJECTIVE	steinigen
+steinigerer	4	ADJECTIVE	steinigen
+steinigeres	4	ADJECTIVE	steinigen
+steiniges	4	ADJECTIVE	steinigen
+steinigste	4	ADJECTIVE	steinigen
+steinigstem	4	ADJECTIVE	steinigen
+steinigsten	4	ADJECTIVE	steinigen
+steinigster	4	ADJECTIVE	steinigen
+steinigstes	4	ADJECTIVE	steinigen
 steirischem	4	ADJECTIVE	steirisch
 steirischer	4	ADJECTIVE	steirisch
 steirischere	4	ADJECTIVE	steirisch
@@ -184334,11 +184334,11 @@ verborgenstem	94	ADJECTIVE	verborgen
 verborgensten	94	ADJECTIVE	verborgen
 verborgenster	94	ADJECTIVE	verborgen
 verborgenstes	94	ADJECTIVE	verborgen
-verbotne	762	ADJECTIVE	verboten
-verbotnem	762	ADJECTIVE	verboten
-verbotnen	762	ADJECTIVE	verboten
-verbotner	762	ADJECTIVE	verboten
-verbotnes	762	ADJECTIVE	verboten
+verbotne	762	ADJECTIVE	Verbot
+verbotnem	762	ADJECTIVE	Verbot
+verbotnen	762	ADJECTIVE	Verbot
+verbotner	762	ADJECTIVE	Verbot
+verbotnes	762	ADJECTIVE	Verbot
 verbranntem	176	ADJECTIVE	verbrannt
 verbrannter	176	ADJECTIVE	verbrannt
 verbranntes	176	ADJECTIVE	verbrannt
@@ -184354,17 +184354,17 @@ verbreitetstes	1272	ADJECTIVE	verbreitet
 verbrieftem	14	ADJECTIVE	verbrieft
 verbriefter	14	ADJECTIVE	verbrieft
 verbrieftes	14	ADJECTIVE	verbrieft
-verbundenem	1984	ADJECTIVE	verbunden
-verbundenere	1984	ADJECTIVE	verbunden
-verbundenerem	1984	ADJECTIVE	verbunden
-verbundeneren	1984	ADJECTIVE	verbunden
-verbundenerer	1984	ADJECTIVE	verbunden
-verbundeneres	1984	ADJECTIVE	verbunden
-verbundenste	1984	ADJECTIVE	verbunden
-verbundenstem	1984	ADJECTIVE	verbunden
-verbundensten	1984	ADJECTIVE	verbunden
-verbundenster	1984	ADJECTIVE	verbunden
-verbundenstes	1984	ADJECTIVE	verbunden
+verbundenem	1984	ADJECTIVE	Verbund
+verbundenere	1984	ADJECTIVE	Verbund
+verbundenerem	1984	ADJECTIVE	Verbund
+verbundeneren	1984	ADJECTIVE	Verbund
+verbundenerer	1984	ADJECTIVE	Verbund
+verbundeneres	1984	ADJECTIVE	Verbund
+verbundenste	1984	ADJECTIVE	Verbund
+verbundenstem	1984	ADJECTIVE	Verbund
+verbundensten	1984	ADJECTIVE	Verbund
+verbundenster	1984	ADJECTIVE	Verbund
+verbundenstes	1984	ADJECTIVE	Verbund
 verdammtem	31	ADJECTIVE	verdammt
 verdammter	31	ADJECTIVE	verdammt
 verdammtere	31	ADJECTIVE	verdammt
@@ -185157,19 +185157,19 @@ verstorbnem	94	ADJECTIVE	verstorben
 verstorbnen	94	ADJECTIVE	verstorben
 verstorbner	94	ADJECTIVE	verstorben
 verstorbnes	94	ADJECTIVE	verstorben
-verständigem	14	ADJECTIVE	verständig
-verständiger	14	ADJECTIVE	verständig
-verständigere	14	ADJECTIVE	verständig
-verständigerem	14	ADJECTIVE	verständig
-verständigeren	14	ADJECTIVE	verständig
-verständigerer	14	ADJECTIVE	verständig
-verständigeres	14	ADJECTIVE	verständig
-verständiges	14	ADJECTIVE	verständig
-verständigste	14	ADJECTIVE	verständig
-verständigstem	14	ADJECTIVE	verständig
-verständigsten	14	ADJECTIVE	verständig
-verständigster	14	ADJECTIVE	verständig
-verständigstes	14	ADJECTIVE	verständig
+verständigem	14	ADJECTIVE	verständigen
+verständiger	14	ADJECTIVE	verständigen
+verständigere	14	ADJECTIVE	verständigen
+verständigerem	14	ADJECTIVE	verständigen
+verständigeren	14	ADJECTIVE	verständigen
+verständigerer	14	ADJECTIVE	verständigen
+verständigeres	14	ADJECTIVE	verständigen
+verständiges	14	ADJECTIVE	verständigen
+verständigste	14	ADJECTIVE	verständigen
+verständigstem	14	ADJECTIVE	verständigen
+verständigsten	14	ADJECTIVE	verständigen
+verständigster	14	ADJECTIVE	verständigen
+verständigstes	14	ADJECTIVE	verständigen
 verständlichem	112	ADJECTIVE	verständlich
 verständlichere	112	ADJECTIVE	verständlich
 verständlicherem	112	ADJECTIVE	verständlich

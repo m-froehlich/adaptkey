@@ -477,6 +477,15 @@ rather than silently treating it as equivalent to a language that does have its 
    `--capitalises-nouns` to `dictionaries/quality_gate.py`, whose bare-NOUN check encodes the *other*
    convention and would otherwise report every correctly-tagged noun as a violation.
 
+   **Run `dictionaries/lemma_check.py` alongside it (D-467).** `quality_gate.py` only verifies that no
+   `lemma` value points at a word that does not exist; this one checks the defects that survive that -
+   self-links, cycles (A is an inflection of B and B of A), and chains (the lemma itself has a lemma). All
+   three are wrong regardless of language, and chains matter concretely: the app resolves a word family with
+   a single hop, so an intermediate link hands two members of one real family two different family keys and
+   D-404 Tier 2's veto silently stops working. Its optional `--suspects` screen (a form far more frequent
+   than its own base) is a *screening* signal only - a suppletive paradigm looks exactly the same, so treat
+   every hit as something to read, never as a verdict.
+
    **Mandatory, structural check, not a judgement call, added after D-447 (Dutch): sanity-check every
    calibration ratio's own magnitude before trusting the generated-form frequencies it drives - a ratio
    nowhere near 1 (well above ~2-3x or well below ~0.05x) is a signal something upstream is extracting the
