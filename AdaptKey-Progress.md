@@ -1213,27 +1213,15 @@ non-trivial changes).
   `wiktionary_verben.tsv` rather than guessed. New `dictionaries/lemma_check.py` guards the three structural
   classes going forward. Data-only, no code touched.
 
-- **D-468 - OPEN, fully scoped and mechanically doable without any language knowledge (2026-09-10, §482).**
-  The same structural repair D-467 did for German applies to every other pack, and they are all far worse -
-  German's links came from the individually-reviewed §320/§321/§322 passes, everyone else's came
-  mechanically from kaikki.org. Measured across all 32 dictionaries: **415,808 chains and 151,953 cycles,
-  6.1% of all 9.27M lemma links.** Worst affected: Ukrainian 35%, Latvian 34%, Slovak 18%, Russian 13%,
-  Tagalog 12%, French 11%. Portuguese, Hungarian, Uzbek and Indonesian have no cycles at all.
-
-  **Why it needs no speaker of the language.** Chain flattening asserts nothing new - it resolves existing
-  data onto its own deepest root, exactly what §320/§321 already require, and matters because the family
-  resolver takes a single hop. Cycle direction is decidable from each pack's own retained Wiktionary
-  extracts: every language folder still carries `wiktionary_verbs.tsv`/`_nouns.tsv`/`_adjectives.tsv`/
-  `_allpos.tsv`, which is precisely how German's 27 pairs were settled. Where a pack's own extracts do not
-  decide a given cycle, the safe fallback is dropping both links, which fails open to pre-D-404-Tier-2
-  behaviour rather than asserting anything.
-
-  **What it is not.** The `--suspects` screen (4,055 hits across all languages, German only 8) is a
-  different, *content* question and genuinely does need a speaker - a suppletive paradigm is
-  indistinguishable from a mis-link by shape alone. Not part of this item.
-
-  **The real cost is blast radius, not difficulty**: 31 language packs would need a rebuild, a re-host and a
-  catalog version bump each. Worth doing as its own deliberate round, not folded into unrelated work.
+- **D-468 - RESOLVED (§484, v1.2.44), not yet device-confirmed.** The same structural repair as D-467
+  (chain flattening + attested-direction cycle resolution), generalised to all 31 remaining dictionaries
+  (30 packs + bundled English) via new `dictionaries/lemma_repair.py`. Doing so found a real limit of the
+  method itself that the original scoping got wrong: unlike German, the other packs' own Wiktionary
+  extraction makes cycle direction almost never mechanically decidable, so nearly all cycles fail open
+  (every link among their members dropped) instead of being resolved the way German's were - see §484 below
+  for the proof and the numbers. Chain flattening (the larger share of the originally measured defect
+  volume) is completely unaffected by this and ran exactly as planned. 446,015 lemma-column rows changed
+  across the 31 packs; every pack passes `lemma_check.py` and `quality_gate.py`.
 
 - **D-461 cross-language effect - CHECKED, no action needed (2026-09-10).** D-461 switched off forced
   capitalisation for 1,295 rows across all languages (rows carrying `PROPER_NOUN` plus some other reading).
@@ -1244,6 +1232,64 @@ non-trivial changes).
   nationality adjectives - essentially only English, already corrected in §479. **One residue this session
   could not settle honestly**: Greek's 15 rows (`Αγίου`, `Αγίας`, `Άγιο`, ...) need a native reader; a guess
   was deliberately not made.
+
+- **§484 (v1.2.44): D-468 - the lemma-column structural repair generalised from German to all 31 remaining**
+  **dictionaries, and the generalisation itself turned up a real, proven limit of the method.** New
+  `dictionaries/lemma_repair.py` reuses `lemma_check.py`'s own resolver: chains always flatten onto their
+  deepest root (asserts nothing new, exactly what §320/§321 already require); cycles get decided in two
+  tiers - strong (every other cycle member is attested as one of a candidate's own paradigm forms) then weak
+  (exactly one member is a paradigm headword at all, German's own actual method) - and dropped entirely
+  (every link among the cycle's members removed) when neither tier decides.
+
+  **The regression check against German passed first**: 0 changes, confirming the script reproduces §482's
+  already-approved manual work before touching anything new.
+
+  **The dry run across the other 31 packs then surfaced the real finding, not assumed going in.** Of 10,006
+  cycles found (component count - one entry per A<->B pair or larger ring, not per row), only **6** resolved
+  via attestation (cs 1, fi 1, nl 1, ru 3) - everywhere else, both tiers tied and the cycle was dropped.
+  Traced to the root, not just observed: German's `wiktionary_verben.tsv` lists ONLY genuine infinitives -
+  a conjugated form never gets its own row - so its attestation check is inherently one-sided. Every other
+  pack's extraction (`extract_wiktionary.py`'s `is_form_of_entry()` filter) gives an inflected form its own
+  full paradigm entry too, whenever that form happens to have its own non-"form_of" Wiktionary page -
+  confirmed directly on French: `grandes` (fem. pl. of `grand`) has its own page listing `grand`/`grands`/
+  `grande` as ITS forms, exactly as `grand`'s own page lists `grandes`. `merge_wiktionary.py`'s
+  `process()` walks every `(headword, forms)` pair in file order and sets `form.lemma = headword` whenever
+  the target's lemma slot is still empty - when both directions of a pair each have their own paradigm
+  entry, both writes happen, which is definitionally how a same-file 2-cycle arises. Proven, not just
+  measured: a 2-cycle A<->B can only exist in `dict.tsv` in the first place if `forms(A)` contains B AND
+  `forms(B)` contains A - precisely the condition the strong-tier check needs to decide a direction - so it
+  is guaranteed to tie for essentially every real case, not just usually. Frequency-ratio tie-breaking was
+  considered and rejected for the same reason the `--suspects` screen is out of scope for D-468 in the first
+  place: it would silently reintroduce the exact suppletive-paradigm judgement call (`is`<-`be`) that needs
+  a native speaker, under a different name.
+
+  **Applied to all 31 packs on that basis** (`export PYTHONIOENCODING=utf-8` needed first - the default
+  Windows console codepage crashed the script's own sample-printing on any non-Latin-1 cycle member, e.g.
+  Cyrillic or Croatian `ć`; no dict.tsv was corrupted by this, the crash happened before the write). Spot-
+  checked real transformations by hand afterward, not just the gates: French `références` (which chained
+  through `référence`) now correctly flattens straight to `référencer`; `notes`->`note` now flattens to
+  `noter`; `française`'s link to the non-existent `françaix` (a pre-existing bad link this round happened to
+  clean up, not something D-468 set out to fix) is gone; Russian `лет` (which chained through `лета`) now
+  flattens straight to `лето`; Ukrainian `році`/`років`/`роках` (all inflections of `рік`, "year") lost their
+  link entirely because `рік` itself sat in an undecidable cycle with `ріка` ("river") - dropped correctly
+  rather than guessed. **446,015 total lemma-column rows
+  changed across the 31 packs** (chain flattenings plus cycle redirects/removals combined - the same figure
+  `git diff --stat`'s own insertion/deletion count independently confirms). Every one of the 31 packs passes
+  `lemma_check.py` (0 self-links/cycles/chains) and `quality_gate.py`.
+
+  **Packaging, all 31.** For the 30 downloadable packs: `dictionaries/<code>/version.txt` bumped by 1,
+  archive rebuilt under `language-packs/` (Python `zipfile`, `ZIP_DEFLATED` - the per-language
+  `dictionaries/<code>/build_zip.py` scripts already checked in do the same thing), unzipped and byte-
+  compared against the source `dict.tsv`/`bigram.tsv`/`hints.tsv`/`version.txt` before trusting it, and
+  `LanguagePackCatalog`'s own per-language `version` bumped with a comment recording that language's own
+  cycle/chain counts. English's bundled `app/src/main/assets/en/dict.tsv` (2,496 rows changed, 0 cycles -
+  chains only) needed neither a `version.txt` nor a catalog entry - it ships inside the APK directly
+  (D-280), covered by the app's own `versionCode`/`versionName` bump. See spec §38's new D-467/D-468
+  addendum for the structural invariants and the full proof of why the attestation method cannot generalise.
+
+  Data-only; no Kotlin logic touched (only `LanguagePackCatalog`'s own version numbers/comments).
+  1651 unit tests unchanged, `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 539 -> 540,
+  `versionName` `"1.2.43"` -> `"1.2.44"`. Not yet device-confirmed.
 
 - **§483 (v1.2.43): D-462 - the German verb-paradigm gap closed, and the user's review turned a**
   **hand-check into a rule.** 5,591 missing inflected forms of 1,976 attested verbs added at floor

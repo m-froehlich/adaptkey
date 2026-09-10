@@ -46,7 +46,7 @@ saan	19322	OTHER
 talaksan	18890	NOUN,OTHER
 mas	18318	OTHER
 tao	17904	NOUN,OTHER
-san	17795	NOUN,OTHER	santa
+san	17795	NOUN,OTHER
 xs	17291	OTHER
 ibang	16980	OTHER
 pamamagitan	16947	NOUN,OTHER
@@ -210,7 +210,7 @@ telebisyon	4865	NOUN,OTHER
 orihinal	4811	NOUN,ADJECTIVE
 nagsimula	4808	VERB	magsimula
 simula	4727	NOUN,OTHER
-santa	4721	NOUN,ADJECTIVE	san
+santa	4721	NOUN,ADJECTIVE
 paggamit	4667	OTHER
 halos	4667	OTHER
 ama	4658	NOUN,OTHER
@@ -262,7 +262,7 @@ pangalang	3935	OTHER
 serye	3909	NOUN,OTHER
 kalaunan	3897	NOUN,OTHER
 flo	3895	OTHER
-sinabi	3891	VERB	sabihin
+sinabi	3891	VERB	magsabi
 hilaga	3888	NOUN,OTHER
 pelikulang	3877	OTHER
 europa	3868	PROPER_NOUN
@@ -394,7 +394,7 @@ bagyo	2691	NOUN,OTHER
 humigit-kumulang	2688	OTHER
 sariling	2678	OTHER
 santo	2671	NOUN,ADJECTIVE	santa
-isinulat	2671	VERB	isulat
+isinulat	2671	VERB	sulatan
 marcos	2646	PROPER_NOUN
 mahalagang	2636	OTHER
 heograpiya	2630	NOUN,OTHER
@@ -524,7 +524,7 @@ pangyayari	2064	NOUN,OTHER
 parangal	2056	OTHER
 luzon	2055	PROPER_NOUN
 isla	2048	NOUN,OTHER
-nakuha	2047	VERB	makuha
+nakuha	2047	VERB	kumuha
 aprika	2043	PROPER_NOUN
 ginanap	2038	OTHER
 pinalitan	2035	VERB	palitan
@@ -611,7 +611,7 @@ olimpiko	1781	OTHER
 tradisyonal	1779	ADJECTIVE
 industriya	1779	NOUN,OTHER
 tiyak	1778	ADJECTIVE
-kinuha	1772	VERB	kunin
+kinuha	1772	VERB	kumuha
 natatanging	1770	OTHER
 lumahok	1766	OTHER
 ibinigay	1751	VERB	ibigay
@@ -656,7 +656,7 @@ dugo	1664	NOUN,OTHER
 himpilang	1663	OTHER
 vi	1659	NOUN,OTHER
 karapatan	1656	NOUN,OTHER
-magkaroon	1650	VERB	magkakaroon
+magkaroon	1650	VERB
 lokasyon	1648	NOUN,OTHER
 organisasyon	1635	NOUN,OTHER
 abs-cbn	1628	OTHER
@@ -770,7 +770,7 @@ dati	1443	ADJECTIVE
 haba	1442	NOUN,ADJECTIVE
 istasyon	1441	OTHER
 kabataan	1440	NOUN,OTHER
-binigyan	1440	VERB	bigyan
+binigyan	1440	VERB	magbigay
 gawaing	1436	OTHER
 nauugnay	1434	VERB	maugnay
 kauna-unahang	1433	OTHER
@@ -794,7 +794,7 @@ hukbo	1396	NOUN,OTHER
 tunog	1393	NOUN,OTHER
 paglalakbay	1391	OTHER
 ibon	1391	NOUN,OTHER
-natapos	1390	VERB	matapos
+natapos	1390	VERB	tapusin
 gumagawa	1390	VERB	gumawa
 madaling	1388	OTHER
 pormal	1386	OTHER
@@ -979,7 +979,7 @@ inilalarawan	1158	OTHER
 pinamagatang	1154	OTHER
 hong	1153	PROPER_NOUN
 korte	1153	NOUN,OTHER
-sinundan	1151	VERB	sundan
+sinundan	1151	VERB	sumunod
 kabuuan	1150	NOUN,OTHER
 tag-init	1149	NOUN,OTHER
 kalahati	1148	NOUN,ADJECTIVE
@@ -1101,7 +1101,7 @@ hyg	1041	OTHER
 bahaging	1040	OTHER
 numero	1040	NOUN,OTHER
 pagbibigay	1039	OTHER
-gawin	1035	VERB	gawan
+gawin	1035	VERB
 langit	1033	NOUN,OTHER
 pinangalanang	1032	OTHER
 sangkap	1031	NOUN,OTHER
@@ -1128,7 +1128,7 @@ distritong	1014	OTHER
 tungo	1014	NOUN,ADJECTIVE
 natitirang	1013	OTHER
 sayaw	1013	NOUN,OTHER
-nagawa	1012	VERB	magawa
+nagawa	1012	VERB	gawan
 kalsada	1012	NOUN,OTHER
 samahan	1011	NOUN,VERB
 propesyonal	1011	NOUN,ADJECTIVE
@@ -1184,7 +1184,7 @@ order	966	NOUN,OTHER
 matagal	965	ADJECTIVE
 patinig	965	NOUN,OTHER
 bayani	963	NOUN,OTHER
-isinama	962	VERB	isama
+isinama	962	VERB	samahan
 itinalaga	961	OTHER
 metal	961	NOUN,OTHER
 naturang	961	OTHER
@@ -1202,7 +1202,7 @@ ipinapakita	948	VERB	ipakita
 hukuman	948	NOUN,VERB
 personalidad	947	OTHER
 pagbagsak	946	OTHER
-ibaba	946	NOUN,VERB	babaan
+ibaba	946	NOUN,VERB	bumaba
 estadong	945	OTHER
 boy	944	PROPER_NOUN
 awtoridad	944	NOUN,OTHER
@@ -1212,7 +1212,7 @@ milya	941	NOUN,OTHER
 salaysay	941	NOUN,ADJECTIVE
 pangunahin	940	ADJECTIVE
 lansangan	940	NOUN,OTHER
-isinagawa	940	VERB	isagawa
+isinagawa	940	VERB	magsagawa
 paghahari	936	OTHER
 inilipat	935	OTHER
 buto	934	NOUN,OTHER
@@ -1252,14 +1252,14 @@ libingan	909	NOUN,VERB
 trono	908	NOUN,OTHER
 matandang	908	OTHER
 pinamunuan	907	VERB	pamunuan
-tinanggap	907	VERB	tanggapin
+tinanggap	907	VERB	tumanggap
 nga	907	NOUN,OTHER
 kalaunang	905	OTHER
 tinukoy	905	OTHER
 unreviewed	905	OTHER
 kahalagahan	904	NOUN,OTHER
 harap	904	NOUN,OTHER
-natanggap	904	VERB	matanggap
+natanggap	904	VERB	tumanggap
 dinastiya	902	NOUN,OTHER
 nangangailangan	900	VERB	mangailangan
 pantelebisyon	900	OTHER
@@ -1341,7 +1341,7 @@ pamayanang	835	OTHER
 tabi	835	NOUN,OTHER
 nagaganap	835	NOUN,VERB,ADJECTIVE	maganap
 mukha	835	NOUN,ADJECTIVE
-isinasagawa	834	VERB	isagawa
+isinasagawa	834	VERB	magsagawa
 pampang	834	NOUN,OTHER
 gas	834	NOUN,OTHER
 pagsapit	833	OTHER
@@ -1353,7 +1353,7 @@ lalake	830	OTHER
 alak	830	NOUN,OTHER
 boto	830	NOUN,OTHER
 uesac	829	OTHER
-natalo	828	VERB	matalo
+natalo	828	VERB	manalo
 val	827	OTHER
 umaga	824	NOUN,VERB
 medyebal	824	OTHER
@@ -1583,7 +1583,7 @@ natin	693	OTHER
 pagsusulat	692	OTHER
 ebolusyon	692	NOUN,OTHER
 aguinaldo	692	PROPER_NOUN
-makuha	692	VERB	ipakuha
+makuha	692	VERB	kumuha
 pagsasama	692	NOUN,OTHER
 katipunan	691	NOUN,OTHER
 tumanggap	691	VERB
@@ -1889,7 +1889,7 @@ sumikat	573	VERB
 kalahating	573	OTHER
 kurso	573	NOUN,OTHER
 maharlika	572	NOUN,ADJECTIVE
-nilagdaan	572	VERB	lagdaan
+nilagdaan	572	VERB	lumagda
 expressway	572	OTHER
 portugal	572	PROPER_NOUN
 gantimpalang	572	OTHER
@@ -1899,7 +1899,7 @@ rebolusyon	571	NOUN,OTHER
 humingi	571	VERB
 duterte	570	PROPER_NOUN
 pantay	570	ADJECTIVE
-doktor	570	NOUN,OTHER	doktora
+doktor	570	NOUN,OTHER
 malayo	570	NOUN,ADJECTIVE
 diwa	569	NOUN,OTHER
 tradisyong	569	OTHER
@@ -2033,7 +2033,7 @@ torre	531	OTHER
 shoemaker	531	OTHER
 paliparang	530	OTHER
 mahistrado	530	NOUN,OTHER
-ibinalik	530	VERB	ibalik
+ibinalik	530	VERB	bumalik
 pba	530	OTHER
 lazio	530	OTHER
 pondo	529	NOUN,OTHER
@@ -2076,7 +2076,7 @@ suwisa	519	NOUN,PROPER_NOUN	suwiso
 pakpak	519	NOUN,OTHER
 mayor	518	ADJECTIVE
 nabuhay	518	VERB	mabuhay
-lola	518	NOUN,OTHER	lolo
+lola	518	NOUN,OTHER
 mensahe	518	NOUN,OTHER
 naitatag	517	OTHER
 pagbabasa	517	NOUN,OTHER
@@ -2160,7 +2160,7 @@ sumasahimpapawid	497	VERB	sumahimpapawid
 mabuhay	497	VERB
 pagkalat	497	OTHER
 odas	497	OTHER
-napatay	496	VERB	mapatay
+napatay	496	VERB	patayin
 hitsura	496	OTHER
 imperyal	496	OTHER
 bigas	496	NOUN,OTHER
@@ -2195,7 +2195,7 @@ virus	489	NOUN,OTHER
 seoul	489	OTHER
 hukom	489	NOUN,OTHER
 nagtagal	489	OTHER
-tinalo	489	VERB	talunin
+tinalo	489	VERB	manalo
 paghihiwalay	488	OTHER
 bohol	488	PROPER_NOUN
 daantaon	488	OTHER
@@ -2257,7 +2257,7 @@ sinubukan	477	VERB	subukan
 yeung	477	OTHER
 dalaga	477	NOUN,ADJECTIVE
 samahang	476	OTHER
-tinatanggap	476	VERB	tanggapin
+tinatanggap	476	VERB	tumanggap
 laganap	476	NOUN,ADJECTIVE
 kodigo	476	NOUN,OTHER
 tanong	476	NOUN,OTHER
@@ -2308,7 +2308,7 @@ tama	462	NOUN,ADJECTIVE
 sandata	462	NOUN,OTHER
 patag	462	ADJECTIVE
 koreanong	462	OTHER
-magkakaroon	461	VERB	magkaroon
+magkakaroon	461	VERB
 pagkakaiba-iba	461	NOUN,OTHER
 keso	461	NOUN,OTHER
 nanggaling	460	OTHER
@@ -2346,14 +2346,14 @@ kapalaran	452	NOUN,OTHER
 sandatahang	452	OTHER
 napakalaking	452	OTHER
 puntong	452	OTHER
-lolo	452	NOUN,OTHER	lola
+lolo	452	NOUN,OTHER
 paglabag	451	NOUN,OTHER
 saudi	451	PROPER_NOUN
 visayas	450	OTHER
 dolyar	450	NOUN,OTHER
 yari	450	NOUN,ADJECTIVE
 ganito	450	OTHER
-inumin	449	NOUN,VERB	inuman
+inumin	449	NOUN,VERB
 nakalilipas	449	OTHER
 piso	449	NOUN,OTHER
 ra	449	NOUN,OTHER
@@ -2418,7 +2418,7 @@ nanguna	437	VERB	manguna
 idinisenyo	437	OTHER
 nicolas	436	PROPER_NOUN
 maaga	436	ADJECTIVE
-kinakain	436	VERB	kainin
+kinakain	436	VERB	kumain
 maganda	435	ADJECTIVE
 pinagmumulan	435	VERB	pagmulan
 johnson	435	PROPER_NOUN
@@ -2532,13 +2532,13 @@ ahensiya	412	NOUN,OTHER
 nagpapatakbo	412	OTHER
 kasaysayang	412	OTHER
 pumayag	412	VERB
-binibigyan	412	VERB	bigyan
+binibigyan	412	VERB	magbigay
 paglalagay	412	OTHER
 sinumang	412	OTHER
-tinanggal	412	VERB	tanggalin
+tinanggal	412	VERB	ipatanggal
 sinusundan	411	VERB	sumunod
 interpretasyon	411	NOUN,OTHER
-kunin	411	VERB	ipakuha
+kunin	411	VERB	kumuha
 domingo	411	PROPER_NOUN
 panlipunang	410	OTHER
 araw-araw	410	ADJECTIVE
@@ -3000,7 +3000,7 @@ pataas	339	OTHER
 kang	339	NOUN,OTHER
 malambot	339	ADJECTIVE
 darwin	339	PROPER_NOUN
-dalhin	339	VERB	ipadala
+dalhin	339	VERB
 nabigyan	339	OTHER
 demonyo	339	NOUN,OTHER
 ibalik	338	VERB	bumalik
@@ -3285,7 +3285,7 @@ pagbili	308	OTHER
 ngayo	308	OTHER
 istilong	308	OTHER
 susi	308	NOUN,OTHER
-makukuha	308	VERB	makuha
+makukuha	308	VERB	kumuha
 baryante	308	NOUN,ADJECTIVE
 pagkakamali	307	OTHER
 mister	307	NOUN,OTHER
@@ -3337,7 +3337,7 @@ pagsunod	303	OTHER
 sakuna	303	NOUN,OTHER
 nagmumungkahi	303	OTHER
 pangatlo	303	OTHER
-nabibilang	303	VERB	bilangin
+nabibilang	303	VERB	magbilang
 pinayagan	303	OTHER
 palatuntunan	303	NOUN,OTHER
 nagbebenta	303	VERB	magbenta
@@ -3448,7 +3448,7 @@ magkahiwalay	292	OTHER
 inaangkin	292	OTHER
 bihira	292	ADJECTIVE
 pagkatao	292	OTHER
-pinagtatalunan	292	NOUN,VERB	pagtalunan
+pinagtatalunan	292	NOUN,VERB	tumalon
 alba	292	NOUN,OTHER
 itinuturo	291	OTHER
 mandaluyong	291	PROPER_NOUN
@@ -3478,7 +3478,7 @@ malolos	288	PROPER_NOUN
 masbate	288	PROPER_NOUN
 zambales	288	PROPER_NOUN
 inorganisa	288	OTHER
-isinusulat	288	VERB	isulat
+isinusulat	288	VERB	sulatan
 mambabasa	288	OTHER
 akademiko	288	NOUN,ADJECTIVE
 ipinatupad	288	VERB	ipatupad
@@ -3515,7 +3515,7 @@ tumira	285	VERB
 tanggapin	285	VERB,ADJECTIVE	tumanggap
 alyansa	285	NOUN,OTHER
 lumalaki	285	VERB	lumaki
-tinulungan	285	VERB	tulungan
+tinulungan	285	VERB	tumulong
 patunay	284	NOUN,OTHER
 inakusahan	284	OTHER
 typhoon	284	OTHER
@@ -3554,7 +3554,7 @@ depensa	281	NOUN,OTHER
 kasagsagan	281	OTHER
 manlalakbay	281	NOUN,OTHER
 talakayan	281	NOUN,OTHER
-pinagkukunan	281	VERB	ipakuha
+pinagkukunan	281	VERB	kumuha
 humiwalay	281	OTHER
 tumutugma	281	OTHER
 winasak	281	VERB	wasakin
@@ -3650,7 +3650,7 @@ payo	272	NOUN,OTHER
 kombinasyon	272	NOUN,OTHER
 tinapos	272	VERB	tapusin
 michele	272	OTHER
-nakukuha	272	VERB	ipakuha
+nakukuha	272	VERB	kumuha
 patatas	272	NOUN,OTHER
 pagtatalo	271	OTHER
 pagpapalaya	271	OTHER
@@ -3755,7 +3755,7 @@ malimit	263	ADJECTIVE
 nya	263	OTHER
 kabayanan	263	OTHER
 que	263	PROPER_NOUN
-inawit	263	VERB	awitin
+inawit	263	VERB	umawit
 kiev	263	OTHER
 mathbf	263	OTHER
 ilokano	262	NOUN,ADJECTIVE
@@ -3855,7 +3855,7 @@ pagkakaayos	255	OTHER
 kumita	255	VERB
 nakasuot	255	OTHER
 ibinebenta	255	VERB	ibenta
-pinutol	255	VERB	putulin
+pinutol	255	VERB	pumutol
 nakhon	255	OTHER
 ninyo	254	OTHER
 pagkontrol	254	OTHER
@@ -4104,7 +4104,7 @@ naka	234	OTHER
 pandaigdigan	234	ADJECTIVE
 ermita	234	NOUN,OTHER
 centro	234	OTHER
-pinanatili	234	VERB	panatilihin
+pinanatili	234	VERB	magpanatili
 pagguhit	234	OTHER
 pinakakilala	234	OTHER
 pagtatakda	234	OTHER
@@ -4123,7 +4123,7 @@ singh	233	PROPER_NOUN
 magasing	233	OTHER
 multo	233	NOUN,OTHER
 europeong	233	OTHER
-tito	233	NOUN,OTHER	tita
+tito	233	NOUN,OTHER
 pez	232	OTHER
 rajah	232	OTHER
 rehimeng	232	OTHER
@@ -4173,7 +4173,7 @@ binigay	230	OTHER
 magaganap	230	NOUN,VERB,ADJECTIVE	maganap
 eva	230	PROPER_NOUN
 burma	230	PROPER_NOUN
-naibalik	230	VERB	maibalik
+naibalik	230	VERB	bumalik
 pag-uuri	230	OTHER
 ocampo	230	PROPER_NOUN
 imbakan	230	OTHER
@@ -4211,7 +4211,7 @@ kontinental	227	OTHER
 flores	227	PROPER_NOUN
 tumatalakay	227	OTHER
 bumababa	227	VERB	bumaba
-pinag-aralan	227	VERB	pag-aralan
+pinag-aralan	227	VERB	aralin
 rusong	227	OTHER
 sinunog	227	VERB	sunugin
 kayumanggi	227	NOUN,ADJECTIVE
@@ -4419,7 +4419,7 @@ labing-apat	213	OTHER
 hurisdiksyon	213	NOUN,OTHER
 pugad	213	NOUN,OTHER
 agrikultural	213	ADJECTIVE
-sulatin	213	VERB,ADJECTIVE	sulatan
+sulatin	213	VERB,ADJECTIVE
 jaime	213	OTHER
 pinagkunan	213	OTHER
 alberto	213	PROPER_NOUN
@@ -4553,8 +4553,8 @@ kinolekta	206	OTHER
 pag-uusap	205	OTHER
 batanes	205	PROPER_NOUN
 lumagda	205	VERB
-isinasama	205	VERB	isama
-basahin	205	VERB	basahan
+isinasama	205	VERB	samahan
+basahin	205	VERB
 rurok	205	NOUN,OTHER
 naglalabas	205	VERB	maglabas
 uganda	205	PROPER_NOUN
@@ -4733,7 +4733,7 @@ ave	196	OTHER
 mapabuti	195	OTHER
 propaganda	195	NOUN,OTHER
 kadena	195	NOUN,OTHER
-hiniram	195	VERB	hiramin
+hiniram	195	VERB	humiram
 qu	195	OTHER
 bansag	195	NOUN,ADJECTIVE
 katotohanang	195	OTHER
@@ -4769,7 +4769,7 @@ youtuber	194	OTHER
 leclerc	194	OTHER
 tang	193	PROPER_NOUN
 matugunan	193	OTHER
-magagawa	193	VERB	magawa
+magagawa	193	VERB	gawan
 paputok	193	NOUN,OTHER
 himno	193	OTHER
 marunong	193	ADJECTIVE
@@ -4784,8 +4784,8 @@ pansit	193	NOUN,OTHER
 pahinang	192	OTHER
 pinansiyal	192	ADJECTIVE
 kainan	192	NOUN,VERB	kumain
-moreno	192	NOUN,ADJECTIVE	morena
-nagkakaisa	192	VERB	magkaisa
+moreno	192	NOUN,ADJECTIVE
+nagkakaisa	192	VERB
 hiyas	192	NOUN,OTHER
 fiba	192	OTHER
 alok	192	NOUN,OTHER
@@ -4842,7 +4842,7 @@ kawanihan	189	NOUN,OTHER
 dominikano	189	NOUN,ADJECTIVE
 pagpapaliwanag	189	OTHER
 monarko	189	OTHER
-tinamaan	189	VERB	tamaan
+tinamaan	189	VERB	tumama
 tinatalakay	189	OTHER
 sumakop	189	OTHER
 itinakdang	189	OTHER
@@ -4877,7 +4877,7 @@ alin	187	OTHER
 sinimulang	187	OTHER
 kabuoan	187	NOUN,OTHER
 paglilinis	187	OTHER
-kinunan	187	VERB	kunan
+kinunan	187	VERB	kumuha
 urbanisadong	187	OTHER
 seleksiyon	187	NOUN,OTHER
 paghahalo	187	OTHER
@@ -4896,7 +4896,7 @@ organong	187	OTHER
 babalik	187	VERB	bumalik
 lumakas	187	VERB
 kalsadang	187	OTHER
-binaril	186	VERB	barilin
+binaril	186	VERB	mamaril
 hiligaynon	186	NOUN,OTHER
 isinaayos	186	VERB	isaayos
 vito	186	OTHER
@@ -4978,7 +4978,7 @@ cha	183	OTHER
 hinatulan	182	OTHER
 tuyo	182	NOUN,ADJECTIVE
 bihag	182	NOUN,ADJECTIVE
-kinukuha	182	VERB	ipakuha
+kinukuha	182	VERB	kumuha
 kasanayang	182	OTHER
 pagtataya	182	OTHER
 pagtatangi	182	OTHER
@@ -5098,7 +5098,7 @@ pagbubuntis	177	NOUN,OTHER
 ikot	177	NOUN,OTHER
 kargamento	177	NOUN,OTHER
 pinahihintulutan	177	OTHER
-sinabihan	177	VERB	sabihan
+sinabihan	177	VERB	magsabi
 pabula	177	NOUN,OTHER
 ax	177	OTHER
 pinakamalawak	176	OTHER
@@ -5138,7 +5138,7 @@ sabihing	175	OTHER
 kumulang	175	VERB
 makumpleto	175	OTHER
 mangyayari	175	VERB	mangyari
-binisita	175	VERB	bisitahin
+binisita	175	VERB	bumisita
 orasan	175	NOUN,VERB
 daglat	175	NOUN,OTHER
 kwadrado	175	OTHER
@@ -5168,7 +5168,7 @@ panlalawigang	174	OTHER
 batayang	174	OTHER
 hinimok	174	OTHER
 barrio	174	OTHER
-ninakaw	174	VERB	nakawin
+ninakaw	174	VERB	magnakaw
 nadagdagan	174	OTHER
 bariabulo	174	OTHER
 makalikha	174	OTHER
@@ -5229,7 +5229,7 @@ pinapalitan	171	VERB	palitan
 tagapagturo	171	NOUN,OTHER
 sakaling	171	OTHER
 harapang	171	OTHER
-hinawakan	171	VERB	hawakan
+hinawakan	171	VERB	humawak
 nabawi	171	OTHER
 antique	171	PROPER_NOUN
 emosyonal	171	ADJECTIVE
@@ -5251,7 +5251,7 @@ arkeolohikal	170	OTHER
 biyolohikal	170	OTHER
 lumubog	170	OTHER
 piloto	170	NOUN,OTHER
-mabigyan	170	VERB	bigyan
+mabigyan	170	VERB	magbigay
 bawasan	170	OTHER
 transmisyon	170	NOUN,OTHER
 partikulong	170	OTHER
@@ -5560,7 +5560,7 @@ nasaksihan	159	OTHER
 ipinagdiwang	159	OTHER
 ralph	159	PROPER_NOUN
 nancy	159	PROPER_NOUN
-kinanta	159	VERB	kantahin
+kinanta	159	VERB	kumanta
 buwanang	159	OTHER
 carey	159	OTHER
 katambal	159	OTHER
@@ -5711,7 +5711,7 @@ pagtulog	154	OTHER
 intelektuwal	154	NOUN,ADJECTIVE
 ekonomiks	154	NOUN,OTHER
 kandila	154	NOUN,OTHER
-inaawit	154	VERB	awitin
+inaawit	154	VERB	umawit
 senegal	154	PROPER_NOUN
 nakatatanda	154	OTHER
 domenico	154	OTHER
@@ -5779,9 +5779,9 @@ sama-samang	151	OTHER
 kahinaan	151	NOUN,OTHER
 kagalingan	151	NOUN,OTHER
 magdaos	151	VERB
-pastor	151	NOUN,OTHER	pastora
+pastor	151	NOUN,OTHER
 betty	151	PROPER_NOUN
-itinago	151	VERB	itago
+itinago	151	VERB	magtago
 gumuho	151	VERB
 gu	151	OTHER
 gumana	151	OTHER
@@ -5813,7 +5813,7 @@ atomiko	150	OTHER
 kapulungang	150	OTHER
 impluwensiyang	150	OTHER
 kaligayahan	150	NOUN,OTHER
-pinananatili	150	VERB	panatilihin
+pinananatili	150	VERB	magpanatili
 martes	150	NOUN,OTHER
 pagbomba	150	OTHER
 alicia	150	PROPER_NOUN
@@ -6429,7 +6429,7 @@ rasyo	132	OTHER
 astrolohiya	132	NOUN,OTHER
 ger	132	OTHER
 sitwasyong	132	OTHER
-kinain	132	VERB	kainin
+kinain	132	VERB	kumain
 pangkalikasan	132	OTHER
 ipinagpapalagay	132	VERB	lagyan
 nagpapadala	132	OTHER
@@ -6443,7 +6443,7 @@ paliguan	132	NOUN,VERB
 umani	132	OTHER
 armenyo	132	NOUN,ADJECTIVE
 rimini	132	OTHER
-binibilang	132	VERB	bilangin
+binibilang	132	VERB	magbilang
 ipinangako	132	VERB	ipangako
 karneng	132	OTHER
 cima	132	OTHER
@@ -6485,7 +6485,7 @@ pandacan	130	PROPER_NOUN
 ilagan	130	PROPER_NOUN
 ipinahiwatig	130	VERB	ipahiwatig
 kasabihan	130	NOUN,OTHER
-nobya	130	NOUN,OTHER	nobyo
+nobya	130	NOUN,OTHER
 salitang-ugat	130	NOUN,OTHER
 mikrobyo	130	NOUN,OTHER
 lumalawak	130	VERB	lumawak
@@ -6607,7 +6607,7 @@ serif	127	OTHER
 palihim	127	ADJECTIVE
 corinto	127	OTHER
 gulugod	127	NOUN,OTHER
-ipadala	127	VERB	dalhin
+ipadala	127	VERB
 pulbos	127	NOUN,ADJECTIVE
 dhaka	127	OTHER
 kastanyas	127	NOUN,OTHER
@@ -6696,7 +6696,7 @@ puntahan	124	VERB
 ikalima	124	NOUN,ADJECTIVE
 showtime	124	OTHER
 malate	124	OTHER
-paninindigan	124	NOUN,VERB	panindigan
+paninindigan	124	NOUN,VERB
 legarda	124	PROPER_NOUN
 kapantay	124	OTHER
 hirap	124	NOUN,ADJECTIVE
@@ -6779,7 +6779,7 @@ kaklase	122	NOUN,OTHER
 lea	122	OTHER
 claudia	122	OTHER
 nagbabahagi	122	OTHER
-bayaran	122	NOUN,VERB,ADJECTIVE	mabayaran
+bayaran	122	NOUN,VERB,ADJECTIVE
 delos	122	OTHER
 dasal	122	NOUN,OTHER
 dinagdagan	122	VERB	dagdagan
@@ -6801,7 +6801,7 @@ nakamura	122	PROPER_NOUN
 tarento	122	OTHER
 zombie	122	OTHER
 htmlsymbol	122	OTHER
-mababasa	121	VERB	mabasa
+mababasa	121	VERB	basahan
 binabago	121	OTHER
 maibalik	121	VERB	bumalik
 tributaryo	121	NOUN,OTHER
@@ -6822,7 +6822,7 @@ mana	121	NOUN,OTHER
 bidyong	121	OTHER
 musa	121	OTHER
 mantikilya	121	OTHER
-tinutulungan	121	VERB	tulungan
+tinutulungan	121	VERB	tumulong
 sede	121	OTHER
 galilea	121	OTHER
 osiris	121	OTHER
@@ -6914,10 +6914,10 @@ lalabas	119	VERB	lumabas
 iniugnay	119	OTHER
 pagpapakasal	119	OTHER
 lila	119	NOUN,OTHER
-natakot	119	VERB	matakot
+natakot	119	VERB	takutin
 ikalabing	119	OTHER
 kliyente	119	NOUN,OTHER
-ibinaba	119	VERB	ibaba
+ibinaba	119	VERB	bumaba
 arkanghel	119	NOUN,OTHER
 romansa	119	NOUN,OTHER
 lviv	119	OTHER
@@ -7170,7 +7170,7 @@ tumutol	113	OTHER
 nagbabala	113	OTHER
 dangal	113	NOUN,OTHER
 ipinagbili	113	OTHER
-bibigyan	113	VERB	bigyan
+bibigyan	113	VERB	magbigay
 trabahador	113	NOUN,OTHER
 palayo	113	OTHER
 pagpapalagay	113	OTHER
@@ -7408,7 +7408,7 @@ rene	108	OTHER
 abilidad	108	NOUN,OTHER
 notasyong	108	OTHER
 bisikleta	108	NOUN,OTHER
-bilhin	108	VERB	bilhan
+bilhin	108	VERB
 nagtitinda	108	VERB	magtinda
 konsul	108	NOUN,OTHER
 freddie	108	OTHER
@@ -7419,13 +7419,13 @@ antolohiya	108	NOUN,OTHER
 liza	108	OTHER
 stella	108	NOUN,OTHER
 nanggagaling	108	OTHER
-natatakot	108	VERB	matakot
+natatakot	108	VERB	takutin
 luntian	108	OTHER
 smile	108	OTHER
 bd	108	OTHER
 batik	108	NOUN,OTHER
 yat-sen	108	OTHER
-hinihingi	107	VERB	hingin
+hinihingi	107	VERB	humingi
 paterno	107	OTHER
 sabon	107	NOUN,OTHER
 balitang	107	NOUN,OTHER
@@ -7541,7 +7541,7 @@ sisa	105	OTHER
 saglit	105	NOUN,ADJECTIVE
 tawad	105	NOUN,OTHER
 pagsusuot	105	OTHER
-sinunod	105	VERB	sundin
+sinunod	105	VERB	sumunod
 mahuli	105	VERB
 pagpapatiwakal	105	NOUN,OTHER
 paula	105	OTHER
@@ -7635,13 +7635,13 @@ diyametro	103	NOUN,OTHER
 susa	103	OTHER
 dominanteng	103	OTHER
 pinya	103	NOUN,OTHER
-sasabihin	103	VERB	sabihin
+sasabihin	103	VERB	magsabi
 isinasaad	103	OTHER
 maglabas	103	VERB
 indo-europeo	103	OTHER
 kagat	103	NOUN,ADJECTIVE
 magkaugnay	103	OTHER
-pinayuhan	103	VERB	payuhan
+pinayuhan	103	VERB	magpayo
 ipinatawag	103	OTHER
 kalabang	103	OTHER
 namahala	103	OTHER
@@ -7667,7 +7667,7 @@ kabaligtarang	103	OTHER
 illuminati	103	OTHER
 tumbasan	103	NOUN,VERB,ADJECTIVE
 tinik	103	NOUN,OTHER
-natanggal	103	VERB	matanggal
+natanggal	103	VERB	ipatanggal
 nagmamarka	103	OTHER
 neo-asirya	103	OTHER
 naghahati	103	VERB	maghati
@@ -7818,7 +7818,7 @@ maisagawa	100	VERB	magsagawa
 indikasyon	100	NOUN,OTHER
 pinagbawalan	100	VERB	pagbawalan
 puna	100	NOUN,OTHER
-pinirmahan	100	VERB	pirmahan
+pinirmahan	100	VERB	pumirma
 mehikanong	100	OTHER
 pautang	100	OTHER
 humirang	100	OTHER
@@ -8098,7 +8098,7 @@ nauuna	96	VERB	mauna
 termal	96	OTHER
 superstar	96	OTHER
 pinakapopular	96	OTHER
-nilabanan	96	VERB	labanan
+nilabanan	96	VERB	lumaban
 sikhismo	96	OTHER
 mongheng	96	OTHER
 abugado	96	OTHER
@@ -8192,7 +8192,7 @@ velasco	95	OTHER
 husay	95	NOUN,ADJECTIVE
 kamote	95	NOUN,OTHER
 makipag-ugnayan	95	OTHER
-naayos	95	VERB	maayos
+naayos	95	VERB	ayusin
 nestor	95	OTHER
 arianismo	95	OTHER
 makalangit	95	OTHER
@@ -8203,7 +8203,7 @@ iligal	95	OTHER
 pagdurugo	95	NOUN,OTHER
 nasyonal	95	OTHER
 hitomi	95	OTHER
-itinatago	95	VERB	itago
+itinatago	95	VERB	magtago
 sumerya	95	OTHER
 ras	95	OTHER
 pagkaing-dagat	95	OTHER
@@ -8287,7 +8287,7 @@ pag-uulat	93	OTHER
 alamin	93	VERB
 nagkakaiba	93	OTHER
 pangkimika	93	OTHER
-nasaktan	93	VERB	masaktan
+nasaktan	93	VERB	manakit
 nauwi	93	OTHER
 gulo	93	NOUN,OTHER
 napagkasunduan	93	OTHER
@@ -8479,7 +8479,7 @@ tin	90	PROPER_NOUN
 minoryang	90	OTHER
 pagkalugi	90	OTHER
 mapagmahal	90	ADJECTIVE
-masasabi	90	VERB,ADJECTIVE	masabi
+masasabi	90	VERB,ADJECTIVE	magsabi
 tukoy	90	NOUN,ADJECTIVE
 temperaturang	90	OTHER
 ebolusyonaryo	90	OTHER
@@ -8609,7 +8609,7 @@ inampon	88	OTHER
 pitaka	88	NOUN,OTHER
 estadistikang	88	OTHER
 pagkukumpuni	88	OTHER
-ibabalik	88	VERB	ibalik
+ibabalik	88	VERB	bumalik
 kapisanang	88	OTHER
 radyasyon	88	NOUN,OTHER
 baguhang	88	OTHER
@@ -8698,7 +8698,7 @@ perpekto	88	OTHER
 dokumentasyon	88	NOUN,OTHER
 nagtatago	88	VERB	magtago
 ginuhit	88	OTHER
-ipinalit	88	VERB	ipalit
+ipinalit	88	VERB	palitan
 nagtatanggol	88	VERB	magtanggol
 parola	88	NOUN,OTHER
 pag-uugnay	88	OTHER
@@ -8909,14 +8909,14 @@ eklipse	85	NOUN,OTHER
 kroasya	85	PROPER_NOUN
 slex	85	OTHER
 naghanap	85	VERB	maghanap
-hinahawakan	85	VERB	hawakan
+hinahawakan	85	VERB	humawak
 sentimo	85	NOUN,OTHER
 sibilisasyong	85	OTHER
 inulit	85	VERB	ulitin
 karatula	85	NOUN,OTHER
 dimensiyonal	85	OTHER
 motibasyon	85	OTHER
-makakain	85	VERB	makain
+makakain	85	VERB	kumain
 absolutong	85	OTHER
 kawalang-trabaho	85	NOUN,OTHER
 lilim	85	NOUN,OTHER
@@ -9029,7 +9029,7 @@ pinipigilan	84	OTHER
 westlife	84	OTHER
 escobar	84	OTHER
 intensyon	84	NOUN,OTHER
-tita	84	NOUN,OTHER	tito
+tita	84	NOUN,OTHER
 subdistrito	84	OTHER
 ihinto	84	VERB	huminto
 monasteryong	84	OTHER
@@ -9078,7 +9078,7 @@ mapapanood	83	OTHER
 tekstura	83	NOUN,OTHER
 nasugbu	83	PROPER_NOUN
 depekto	83	OTHER
-kukunin	83	VERB	kunin
+kukunin	83	VERB	kumuha
 makinig	83	VERB
 zhu	83	OTHER
 kanton	83	NOUN,OTHER
@@ -9132,7 +9132,7 @@ nag-aalis	82	OTHER
 panseguridad	82	OTHER
 tensiyon	82	NOUN,OTHER
 nabuong	82	OTHER
-prangka	82	ADJECTIVE	prangko
+prangka	82	ADJECTIVE
 rason	82	NOUN,OTHER
 nalalapat	82	OTHER
 makatwiran	82	OTHER
@@ -9227,7 +9227,7 @@ pagyanig	81	NOUN,OTHER
 nag-iisip	81	VERB	mag-isip
 mahahati	81	OTHER
 simulain	81	NOUN,OTHER
-isasama	81	VERB	isama
+isasama	81	VERB	samahan
 pagdagdag	81	OTHER
 nagkasundo	81	VERB	magkasundo
 nakapagbigay	81	OTHER
@@ -9255,7 +9255,7 @@ teroristang	81	OTHER
 makasalanan	81	NOUN,ADJECTIVE
 nangibabaw	81	VERB	mangibabaw
 piging	81	NOUN,ADJECTIVE
-matatapos	81	VERB	matapos
+matatapos	81	VERB	tapusin
 pilantropo	81	NOUN,OTHER
 matitinding	81	OTHER
 pang-alaala	81	OTHER
@@ -9297,7 +9297,7 @@ munggo	81	NOUN,OTHER
 grosseto	81	OTHER
 mardon	81	OTHER
 bergisch	81	OTHER
-mabilang	80	VERB	bilangin
+mabilang	80	VERB	magbilang
 tugma	80	NOUN,ADJECTIVE
 diplomasya	80	NOUN,OTHER
 sagay	80	NOUN,OTHER
@@ -9718,7 +9718,7 @@ lengua	76	OTHER
 grabitasyon	76	OTHER
 radiasyon	76	OTHER
 nanonood	76	VERB	manood
-natatanggap	76	VERB	matanggap
+natatanggap	76	VERB	tumanggap
 og	76	OTHER
 myembro	76	NOUN,OTHER
 theresa	76	OTHER
@@ -10369,7 +10369,7 @@ cu	70	NOUN,OTHER
 tara	70	OTHER
 meycauayan	70	PROPER_NOUN
 ipamahagi	70	VERB
-pinapasok	70	VERB	papasukin
+pinapasok	70	VERB	pasukin
 probinsiyang	70	OTHER
 ikono	70	NOUN,OTHER
 indiano	70	OTHER
@@ -10684,7 +10684,7 @@ kasabayan	67	NOUN,OTHER
 ludovico	67	OTHER
 af	67	OTHER
 valerie	67	OTHER
-susundan	67	VERB	sundan
+susundan	67	VERB	sumunod
 pirasong	67	OTHER
 pagpaparangal	67	OTHER
 zsa	67	OTHER
@@ -10957,7 +10957,7 @@ sucat	65	PROPER_NOUN
 jasmine	65	PROPER_NOUN
 koalisyong	65	OTHER
 masedonya	65	PROPER_NOUN
-sinisi	65	VERB	sisihin
+sinisi	65	VERB	manisi
 palakihin	65	VERB
 balatong	65	NOUN,OTHER
 kuhol	65	NOUN,OTHER
@@ -11203,7 +11203,7 @@ damian	63	OTHER
 pagsipsip	63	OTHER
 pagbukas	63	OTHER
 prehistorya	63	OTHER
-nasabi	63	VERB	masabi
+nasabi	63	VERB	magsabi
 haute	63	OTHER
 maputi	63	ADJECTIVE
 pinuntahan	63	VERB	puntahan
@@ -11368,7 +11368,7 @@ ulong	62	OTHER
 episodyong	62	OTHER
 aomori	62	OTHER
 trumpeta	62	NOUN,OTHER
-linisin	62	NOUN,VERB	linisan
+linisin	62	NOUN,VERB
 kakilala	62	NOUN,OTHER
 liber	62	OTHER
 bolinao	62	OTHER
@@ -11880,7 +11880,7 @@ pagbabanta	58	OTHER
 pagbubunyi	58	OTHER
 parlamentong	58	OTHER
 eslobenya	58	PROPER_NOUN
-dinalaw	58	VERB	dalawin
+dinalaw	58	VERB	dumalaw
 pamasahe	58	NOUN,OTHER
 inangking	58	OTHER
 pataba	58	NOUN,OTHER
@@ -12136,9 +12136,9 @@ versace	57	OTHER
 aplikante	57	NOUN,OTHER
 taras	57	NOUN,OTHER
 alongpunsiyon	57	OTHER
-nobyo	57	NOUN,OTHER	nobya
+nobyo	57	NOUN,OTHER
 engkantada	57	OTHER
-bilugan	57	VERB,ADJECTIVE	bilugin
+bilugan	57	VERB,ADJECTIVE
 nagboboses	57	OTHER
 ambo	57	PROPER_NOUN
 butiking	57	OTHER
@@ -12196,7 +12196,7 @@ sinamantala	56	OTHER
 crony	56	OTHER
 pondohan	56	VERB
 nagkabisa	56	OTHER
-mabayaran	56	VERB	bayaran
+mabayaran	56	VERB
 tinuturuan	56	OTHER
 naipon	56	OTHER
 bibi	56	OTHER
@@ -12223,7 +12223,7 @@ pagtutukoy	56	OTHER
 sinasanay	56	OTHER
 tataas	56	OTHER
 mir	56	OTHER
-inihiwalay	56	VERB	ihiwalay
+inihiwalay	56	VERB	maghiwalay
 nuwes	56	NOUN,OTHER
 testing	56	NOUN,OTHER
 sgt	56	OTHER
@@ -12330,7 +12330,7 @@ naghahanggan	55	OTHER
 numa	55	OTHER
 epistemolohiya	55	NOUN,OTHER
 pagkakaunawa	55	NOUN,OTHER
-natatapos	55	VERB	matapos
+natatapos	55	VERB	tapusin
 seryoso	55	OTHER
 nakaugat	55	OTHER
 diretso	55	OTHER
@@ -12346,7 +12346,7 @@ pinatawad	55	OTHER
 timugang	55	OTHER
 pinaboran	55	OTHER
 degri	55	OTHER
-hiningi	55	VERB	hingin
+hiningi	55	VERB	humingi
 makaiwas	55	OTHER
 sinalungat	55	OTHER
 salat	55	NOUN,ADJECTIVE
@@ -12499,7 +12499,7 @@ banahaw	54	OTHER
 endemiko	54	ADJECTIVE
 monumentong	54	OTHER
 normatibong	54	OTHER
-ibinibilang	54	VERB	bilangin
+ibinibilang	54	VERB	magbilang
 mauunawaan	54	OTHER
 paghula	54	OTHER
 pagpapahalagang	54	OTHER
@@ -12689,7 +12689,7 @@ sui	53	OTHER
 fukushima	53	PROPER_NOUN
 maluku	53	OTHER
 ape	53	OTHER
-sagutin	53	NOUN,VERB	sagutan
+sagutin	53	NOUN,VERB
 imbestigahan	53	OTHER
 abstrakto	53	NOUN,ADJECTIVE
 rao	53	OTHER
@@ -12728,7 +12728,7 @@ istatistika	53	OTHER
 estraktura	53	OTHER
 kognitibo	53	OTHER
 delikado	53	ADJECTIVE
-dinaanan	53	VERB	daanan
+dinaanan	53	VERB	dumaan
 interpersonal	53	OTHER
 anggulong	53	OTHER
 makipot	53	ADJECTIVE
@@ -13113,7 +13113,7 @@ paglinang	51	OTHER
 magkasingkahulugan	51	OTHER
 pagpapahinga	51	OTHER
 nagagawang	51	OTHER
-kakainin	51	VERB	kainin
+kakainin	51	VERB	kumain
 sipnayan	51	NOUN,OTHER
 pangkaunlaran	51	OTHER
 paghiwalay	51	OTHER
@@ -13131,7 +13131,7 @@ eug	51	OTHER
 boli	51	OTHER
 nepomuceno	51	OTHER
 isinaalang-alang	51	VERB	isaalang-alang
-isasagawa	51	VERB	isagawa
+isasagawa	51	VERB	magsagawa
 komportable	51	OTHER
 pinamagatan	51	OTHER
 unos	51	NOUN,OTHER
@@ -13153,7 +13153,7 @@ dukha	51	NOUN,ADJECTIVE
 isinuot	51	VERB	isuot
 dev	51	OTHER
 tutungo	51	OTHER
-nabibigyan	51	VERB	bigyan
+nabibigyan	51	VERB	magbigay
 wikain	51	NOUN,OTHER
 penh	51	OTHER
 melinda	51	OTHER
@@ -13254,7 +13254,7 @@ maori	50	OTHER
 palapit	50	OTHER
 mag-isip	50	VERB
 tinatrato	50	OTHER
-nabasa	50	VERB	mabasa
+nabasa	50	VERB	basahan
 espasyo-panahon	50	OTHER
 istatwa	50	NOUN,OTHER
 isotopo	50	OTHER
@@ -13269,7 +13269,7 @@ brahma	50	OTHER
 tanya	50	OTHER
 mangguguhit	50	OTHER
 liam	50	OTHER
-nakunan	50	VERB	makunan
+nakunan	50	VERB	kumuha
 roh	50	OTHER
 irwin	50	OTHER
 gon	50	OTHER
@@ -13521,7 +13521,7 @@ pang-salapi	49	OTHER
 batikos	49	NOUN,OTHER
 institusyonal	49	OTHER
 hipona	49	OTHER
-tatanggapin	49	VERB	tanggapin
+tatanggapin	49	VERB	tumanggap
 ganti	49	NOUN,OTHER
 pumanig	49	VERB
 bigong	49	OTHER
@@ -13730,7 +13730,7 @@ yero	48	NOUN,OTHER
 malikha	48	OTHER
 aisha	48	OTHER
 pababang	48	OTHER
-nabasag	48	VERB	mabasag
+nabasag	48	VERB	bumasag
 mapapabilang	48	OTHER
 ginhawa	48	NOUN,ADJECTIVE
 africanus	48	OTHER
@@ -13851,7 +13851,7 @@ sandhu	48	OTHER
 khotyn	48	OTHER
 namayan	47	PROPER_NOUN
 naharap	47	OTHER
-natatag	47	VERB	matatag
+natatag	47	VERB	magtatag
 hinahalal	47	OTHER
 tagatanggap	47	OTHER
 varsovia	47	OTHER
@@ -14291,7 +14291,7 @@ hinalo	46	OTHER
 sensei	46	OTHER
 blossom	46	OTHER
 gamble	46	OTHER
-sayawan	46	NOUN,VERB	sayawin
+sayawan	46	NOUN,VERB
 arias	46	PROPER_NOUN
 dalag	46	NOUN,OTHER
 vicenza	46	OTHER
@@ -14392,7 +14392,7 @@ veritas	45	OTHER
 crame	45	OTHER
 greenhills	45	OTHER
 pavel	45	OTHER
-matatanggap	45	VERB	matanggap
+matatanggap	45	VERB	tumanggap
 soter	45	OTHER
 manipulasyon	45	OTHER
 magkasundo	45	VERB,ADJECTIVE
@@ -14516,7 +14516,7 @@ paunawa	45	OTHER
 misal	45	NOUN,OTHER
 mapagbigay	45	ADJECTIVE
 pugon	45	NOUN,OTHER
-ipapalit	45	VERB	ipalit
+ipapalit	45	VERB	palitan
 hoshi	45	OTHER
 cedric	45	OTHER
 sorry	45	OTHER
@@ -14629,7 +14629,7 @@ pag-atakeng	44	OTHER
 heydar	44	OTHER
 endorser	44	OTHER
 tagapagbantay	44	OTHER
-kinakanta	44	VERB	kantahin
+kinakanta	44	VERB	kumanta
 taruc	44	PROPER_NOUN
 pagpapataw	44	OTHER
 pd	44	OTHER
@@ -14680,7 +14680,7 @@ humanista	44	OTHER
 paghuhubog	44	OTHER
 polong	44	OTHER
 arnaiz	44	PROPER_NOUN
-binibisita	44	VERB	bisitahin
+binibisita	44	VERB	bumisita
 nasisira	44	VERB	masira
 garahe	44	NOUN,OTHER
 busuanga	44	OTHER
@@ -14775,7 +14775,7 @@ hamad	44	OTHER
 hyun	44	OTHER
 matador	44	NOUN,OTHER
 kathryn	44	OTHER
-sinaktan	44	VERB	saktan
+sinaktan	44	VERB	manakit
 inferno	44	OTHER
 hugasan	44	NOUN,VERB
 mapuntahan	44	OTHER
@@ -14888,7 +14888,7 @@ mailathala	43	OTHER
 humihikayat	43	OTHER
 humikayat	43	OTHER
 nyc	43	OTHER
-maibabalik	43	VERB	maibalik
+maibabalik	43	VERB	bumalik
 kayamanang	43	OTHER
 atletang	43	OTHER
 bilig	43	NOUN,OTHER
@@ -14917,7 +14917,7 @@ kurbang	43	OTHER
 dominyon	43	NOUN,OTHER
 virgen	43	OTHER
 mio	43	OTHER
-morena	43	NOUN,ADJECTIVE	moreno
+morena	43	NOUN,ADJECTIVE
 lubang	43	NOUN,OTHER
 tinatantya	43	OTHER
 troll	43	OTHER
@@ -15164,7 +15164,7 @@ konsumpsiyon	42	NOUN,OTHER
 bariabulong	42	OTHER
 tugong	42	OTHER
 eskwelang	42	OTHER
-dinadaanan	42	VERB	daanan
+dinadaanan	42	VERB	dumaan
 balangay	42	NOUN,OTHER
 limbag	42	NOUN,ADJECTIVE
 nilapitan	42	OTHER
@@ -15391,7 +15391,7 @@ srivijaya	41	OTHER
 makatuwiran	41	OTHER
 nagpapagana	41	OTHER
 pagsingaw	41	OTHER
-itinatanggi	41	VERB	itanggi
+itinatanggi	41	VERB	tumanggi
 batista	41	OTHER
 norton	41	OTHER
 brodkast	41	NOUN,OTHER
@@ -16141,7 +16141,7 @@ ma-access	39	OTHER
 gumala	39	VERB
 beermen	39	OTHER
 baja	39	OTHER
-matatalo	39	VERB	matalo
+matatalo	39	VERB	manalo
 ttingen	39	OTHER
 hubo	39	NOUN,ADJECTIVE
 nabigador	39	OTHER
@@ -16307,7 +16307,7 @@ malayo-polynesian	38	OTHER
 napakababang	38	OTHER
 sinalin	38	OTHER
 pagsalin	38	OTHER
-susundin	38	VERB	sundin
+susundin	38	VERB	sumunod
 mistulang	38	OTHER
 semaphore	38	OTHER
 kronolohikal	38	OTHER
@@ -16572,7 +16572,7 @@ pook-palatandaan	37	OTHER
 mananakay	37	NOUN,OTHER
 erosyon	37	OTHER
 abangan	37	NOUN,VERB
-kinukunan	37	VERB	ipakuha
+kinukunan	37	VERB	kumuha
 balayan	37	PROPER_NOUN
 nakatalagang	37	OTHER
 skies	37	OTHER
@@ -16617,7 +16617,7 @@ ernie	37	OTHER
 cheryl	37	OTHER
 hangal	37	NOUN,OTHER
 temporaryong	37	OTHER
-tutulungan	37	VERB	tulungan
+tutulungan	37	VERB	tumulong
 kinumpiska	37	OTHER
 dawson	37	OTHER
 hatulan	37	PROPER_NOUN
@@ -16709,7 +16709,7 @@ nag-isyu	37	OTHER
 manalangin	37	VERB
 nagdududa	37	VERB	magduda
 kinaugalian	37	OTHER
-magkaisa	37	VERB	nagkakaisa
+magkaisa	37	VERB
 sumabay	37	OTHER
 sakristan	37	NOUN,OTHER
 takutin	37	VERB,ADJECTIVE
@@ -16746,7 +16746,7 @@ mapabilis	37	OTHER
 maaabot	37	OTHER
 nagsalaysay	37	OTHER
 kuwartel	37	NOUN,OTHER
-ipinagtapat	37	VERB	ipagtapat
+ipinagtapat	37	VERB	magtapat
 misyonaryo	37	NOUN,OTHER
 gion	37	OTHER
 nanumbalik	37	VERB	manumbalik
@@ -17761,7 +17761,7 @@ morpema	34	OTHER
 resesyon	34	NOUN,OTHER
 interseksiyon	34	NOUN,OTHER
 pagdikit	34	OTHER
-basahan	34	NOUN,VERB	basahin
+basahan	34	NOUN,VERB
 inosenteng	34	OTHER
 faustino	34	OTHER
 makakasama	34	OTHER
@@ -18511,7 +18511,7 @@ pres	32	OTHER
 naglilipat	32	OTHER
 kap	32	OTHER
 gloc	32	OTHER
-ipinagawa	32	VERB	ipagawa
+ipinagawa	32	VERB	gawan
 camilo	32	OTHER
 tis	32	OTHER
 oic	32	OTHER
@@ -18551,7 +18551,7 @@ orestes	32	OTHER
 jong-un	32	OTHER
 evi	32	OTHER
 honoraryong	32	OTHER
-ibinagsak	32	VERB	ibagsak
+ibinagsak	32	VERB	bumagsak
 jodi	32	OTHER
 purefoods	32	OTHER
 slavonic	32	OTHER
@@ -18631,7 +18631,7 @@ makapag-aral	32	OTHER
 nagpatala	32	OTHER
 anarkistang	32	OTHER
 makapagpatuloy	32	OTHER
-isusulat	32	VERB	isulat
+isusulat	32	VERB	sulatan
 biyograpiya	32	NOUN,OTHER
 nagpaparangal	32	OTHER
 maligtas	32	OTHER
@@ -19409,7 +19409,7 @@ lumutang	30	VERB
 antropologong	30	OTHER
 kooperasyong	30	OTHER
 lgu	30	OTHER
-mestiso	30	NOUN,ADJECTIVE	mestisa
+mestiso	30	NOUN,ADJECTIVE
 nag-aayos	30	OTHER
 tinatakan	30	VERB	tatakan
 napalilibutan	30	OTHER
@@ -19623,7 +19623,7 @@ salubungin	30	OTHER
 nakinig	30	VERB	makinig
 paracale	30	PROPER_NOUN
 bakunawa	30	NOUN,OTHER
-nahihiya	30	VERB	mahiya
+nahihiya	30	VERB	mapahiya
 abaca	30	OTHER
 labing-tatlong	30	OTHER
 buhos	30	NOUN,OTHER
@@ -21096,7 +21096,7 @@ nakahubad	28	OTHER
 mabuhangin	28	ADJECTIVE
 sisingilin	28	OTHER
 botika	28	NOUN,OTHER
-hinuhusgahan	28	VERB	husgahan
+hinuhusgahan	28	VERB	manghusga
 humanistang	28	OTHER
 nanganganak	28	VERB	manganak
 magtagal	28	OTHER
@@ -21733,7 +21733,7 @@ integradong	27	OTHER
 kognitibong	27	OTHER
 nakapagtatag	27	OTHER
 hiwalayan	27	VERB	maghiwalay
-tatanggalin	27	VERB	tanggalin
+tatanggalin	27	VERB	ipatanggal
 nababanat	27	OTHER
 pagpapawis	27	OTHER
 pampagkain	27	OTHER
@@ -22211,7 +22211,7 @@ tagapagpaunawa	27	OTHER
 hinulawan	27	OTHER
 melisa	27	OTHER
 jacobin	27	OTHER
-inuman	27	NOUN,VERB	inumin
+inuman	27	NOUN,VERB
 slanted	27	OTHER
 fs	27	OTHER
 muck	27	OTHER
@@ -22498,7 +22498,7 @@ surreal	26	OTHER
 jinshi	26	OTHER
 piave	26	OTHER
 iniaalay	26	OTHER
-binilang	26	VERB	bilangin
+binilang	26	VERB	magbilang
 pigsa	26	NOUN,ADJECTIVE
 lalagyang	26	OTHER
 kaasiman	26	NOUN,OTHER
@@ -22862,7 +22862,7 @@ cardinale	26	OTHER
 beki	26	OTHER
 childress	26	OTHER
 romualdo	26	PROPER_NOUN
-inabuso	26	VERB	abusuhin
+inabuso	26	VERB	mag-abuso
 yahya	26	OTHER
 tagapag-ulat	26	OTHER
 fearless	26	OTHER
@@ -23143,7 +23143,7 @@ koronasyong	25	OTHER
 riego	25	OTHER
 onyok	25	OTHER
 kaalinsabay	25	OTHER
-mahawakan	25	VERB	hawakan
+mahawakan	25	VERB	humawak
 etnograpiya	25	OTHER
 prupesyunal	25	OTHER
 gumagastos	25	VERB	gumastos
@@ -23177,7 +23177,7 @@ ipinaliliwanag	25	VERB	ipaliwanag
 ati-atihan	25	OTHER
 pandalawahang	25	OTHER
 starship	25	OTHER
-inihihiwalay	25	VERB	ihiwalay
+inihihiwalay	25	VERB	maghiwalay
 bukovina	25	OTHER
 inilathalang	25	OTHER
 frau	25	OTHER
@@ -23193,7 +23193,7 @@ naghahandog	25	OTHER
 ipako	25	OTHER
 istoryang	25	OTHER
 redondo	25	PROPER_NOUN
-nilalabanan	25	VERB	labanan
+nilalabanan	25	VERB	lumaban
 nakalaban	25	OTHER
 archangel	25	OTHER
 calayan	25	PROPER_NOUN
@@ -23365,7 +23365,7 @@ lipat	25	NOUN,OTHER
 magsanib	25	OTHER
 poultry	25	OTHER
 talentong	25	OTHER
-saksakan	25	NOUN,VERB	saksakin
+saksakan	25	NOUN,VERB
 althea	25	PROPER_NOUN
 heilongjiang	25	OTHER
 faisal	25	OTHER
@@ -23777,7 +23777,7 @@ hipag	24	NOUN,OTHER
 naglayong	24	OTHER
 lakambini	24	NOUN,OTHER
 sedisyon	24	NOUN,OTHER
-ipinapatay	24	VERB	ipapatay
+ipinapatay	24	VERB	patayin
 samah	24	OTHER
 bum	24	OTHER
 pinagkaisang	24	OTHER
@@ -23976,7 +23976,7 @@ tatiana	24	OTHER
 rufus	24	OTHER
 salve	24	OTHER
 giuliani	24	OTHER
-bubuuin	24	VERB	buuin
+bubuuin	24	VERB	bumuo
 mace	24	OTHER
 addams	24	OTHER
 graz	24	OTHER
@@ -24131,7 +24131,7 @@ panglimang	24	OTHER
 nagpapabago	24	OTHER
 drc	24	OTHER
 seko	24	ADJECTIVE
-ibilang	24	VERB	bilangin
+ibilang	24	VERB	magbilang
 plankton	24	OTHER
 clips	24	OTHER
 meh	24	OTHER
@@ -24172,7 +24172,7 @@ panluto	24	OTHER
 iraning	24	OTHER
 armenio	24	OTHER
 tack	24	OTHER
-kunan	24	VERB	ipakuha
+kunan	24	VERB	kumuha
 martinika	24	OTHER
 ginintuan	24	VERB,ADJECTIVE
 litaw	24	ADJECTIVE
@@ -25210,7 +25210,7 @@ departmento	23	OTHER
 pigi	23	NOUN,OTHER
 kili-kili	23	OTHER
 labaw	23	NOUN,OTHER
-nabali	23	VERB	mabali
+nabali	23	VERB	bumali
 pakikipag-ayos	23	OTHER
 nalaglag	23	VERB	malaglag
 pir	23	OTHER
@@ -25422,7 +25422,7 @@ baul	22	NOUN,OTHER
 pagkakahalal	22	OTHER
 prekolonyal	22	OTHER
 mararahas	22	OTHER
-gawan	22	VERB	gawin
+gawan	22	VERB
 shoki	22	OTHER
 taira	22	OTHER
 yoritomo	22	OTHER
@@ -25502,7 +25502,7 @@ namahagi	22	VERB	mamahagi
 inaatas	22	OTHER
 stand-up	22	OTHER
 adr	22	OTHER
-binasag	22	VERB	basagin
+binasag	22	VERB	bumasag
 kriterya	22	OTHER
 arbitraryo	22	OTHER
 screenshot	22	OTHER
@@ -25566,9 +25566,9 @@ kinukutya	22	OTHER
 nagpahina	22	OTHER
 monarkang	22	OTHER
 dinadagdagan	22	OTHER
-nahahawakan	22	VERB	hawakan
+nahahawakan	22	VERB	humawak
 aliwin	22	OTHER
-malunod	22	VERB	lunurin
+malunod	22	VERB
 pagusbong	22	OTHER
 trillanes	22	PROPER_NOUN
 lipido	22	OTHER
@@ -25978,7 +25978,7 @@ umangkin	22	OTHER
 nabigyang	22	OTHER
 shinigami	22	OTHER
 pangkusina	22	OTHER
-daraanan	22	VERB	daanan
+daraanan	22	VERB	dumaan
 rubin	22	OTHER
 mojo	22	OTHER
 giselle	22	OTHER
@@ -26049,7 +26049,7 @@ binudburan	22	OTHER
 barbecue	22	OTHER
 torno	22	OTHER
 akwatika	22	ADJECTIVE
-babasagin	22	NOUN,VERB,ADJECTIVE	basagin
+babasagin	22	NOUN,VERB,ADJECTIVE	bumasag
 kaibig-ibig	22	OTHER
 nahihirapang	22	OTHER
 panluwas	22	OTHER
@@ -27122,7 +27122,7 @@ pvt	21	OTHER
 dsm-iv	21	OTHER
 ajay	21	OTHER
 suplementong	21	OTHER
-namamaga	21	VERB,ADJECTIVE	mamaga
+namamaga	21	VERB,ADJECTIVE
 babilonio	21	OTHER
 matagalan	21	OTHER
 kcc	21	OTHER
@@ -27509,7 +27509,7 @@ atletiko	20	OTHER
 naturalistang	20	OTHER
 cie	20	OTHER
 lisensiyang	20	OTHER
-ibababa	20	VERB	ibaba
+ibababa	20	VERB	bumaba
 pinaiksing	20	OTHER
 pokwang	20	OTHER
 aglipayan	20	OTHER
@@ -27724,7 +27724,7 @@ pahapyaw	20	OTHER
 simulaing	20	OTHER
 stain	20	OTHER
 maaprubahan	20	OTHER
-pinagtalunan	20	VERB	pagtalunan
+pinagtalunan	20	VERB	tumalon
 tagaplano	20	OTHER
 lenggwahe	20	OTHER
 dolph	20	OTHER
@@ -28018,7 +28018,7 @@ pinakamatalik	20	OTHER
 whistle	20	OTHER
 rebound	20	OTHER
 pang-isang	20	OTHER
-hinalikan	20	VERB	halikan
+hinalikan	20	VERB	humalik
 shinbo	20	OTHER
 datus	20	OTHER
 nyutral	20	NOUN,OTHER
@@ -28419,7 +28419,7 @@ alabat	19	PROPER_NOUN
 tatad	19	PROPER_NOUN
 kasilag	19	PROPER_NOUN
 gamay	19	ADJECTIVE
-sulatan	19	NOUN,VERB,ADJECTIVE	sulatin
+sulatan	19	NOUN,VERB,ADJECTIVE
 contreras	19	PROPER_NOUN
 galamay	19	NOUN,OTHER
 bilyonaryo	19	NOUN,OTHER
@@ -28558,7 +28558,7 @@ antala	18	NOUN,OTHER
 pangingilin	18	NOUN,OTHER
 mallig	18	PROPER_NOUN
 bayombong	18	PROPER_NOUN
-ipapatay	18	VERB	ipatay
+ipapatay	18	VERB	patayin
 anyayahan	18	PROPER_NOUN
 bayong	18	NOUN,OTHER
 homiliya	18	NOUN,OTHER
@@ -28857,7 +28857,7 @@ kuwentista	17	NOUN,OTHER
 kuwaderno	17	NOUN,OTHER
 kolateral	17	NOUN,OTHER
 iritasyon	17	NOUN,OTHER
-nakain	17	VERB	makain
+nakain	17	VERB	kumain
 kombulsyon	17	NOUN,OTHER
 akonito	17	NOUN,OTHER
 paypay	17	NOUN,OTHER
@@ -28880,7 +28880,7 @@ kmu	16	PROPER_NOUN
 barikada	16	NOUN,OTHER
 hintuturo	16	NOUN,OTHER
 mapagpatawad	16	ADJECTIVE
-hinihipan	16	VERB	hipan
+hinihipan	16	VERB	humihip
 ehemplo	16	NOUN,OTHER
 tipik	16	NOUN,OTHER
 subkultura	16	NOUN,OTHER
@@ -29165,11 +29165,11 @@ elyo	15	NOUN,OTHER
 pasensya	15	NOUN,OTHER
 puspos	15	ADJECTIVE
 salo	15	NOUN,OTHER
-sayawin	15	VERB	sayawan
+sayawin	15	VERB
 destino	15	NOUN,OTHER
 kidnap	15	NOUN,OTHER
 kilyawan	15	NOUN,ADJECTIVE
-doktora	15	NOUN,OTHER	doktor
+doktora	15	NOUN,OTHER
 aktibidades	15	NOUN,OTHER
 magustuhan	15	VERB
 termometro	15	NOUN,OTHER
@@ -29272,7 +29272,7 @@ plawta	14	NOUN,OTHER
 maghabi	14	VERB
 patago	14	ADJECTIVE
 gitang	14	NOUN,OTHER
-bilangan	14	NOUN,VERB	bilangin
+bilangan	14	NOUN,VERB	magbilang
 tutuldok	14	NOUN,VERB	tumuldok
 masinsinan	14	ADJECTIVE
 madiin	14	VERB
@@ -29565,7 +29565,7 @@ tigilan	13	NOUN,VERB
 maitama	13	VERB	tumama
 samsam	13	NOUN,ADJECTIVE
 tarragona	13	PROPER_NOUN
-maaayos	13	VERB,ADJECTIVE	maayos
+maaayos	13	VERB,ADJECTIVE	ayusin
 tutok	13	NOUN,OTHER
 bessie	13	PROPER_NOUN
 litograpiya	13	NOUN,OTHER
@@ -29767,7 +29767,7 @@ ayuda	12	NOUN,OTHER
 itanggi	12	VERB	tumanggi
 felisa	12	PROPER_NOUN
 estereotipo	12	NOUN,OTHER
-pinagtawanan	12	VERB	pagtawanan
+pinagtawanan	12	VERB	tumawa
 bombon	12	PROPER_NOUN
 milaor	12	PROPER_NOUN
 tagilog	12	NOUN,ADJECTIVE
@@ -29832,7 +29832,7 @@ ensayo	12	NOUN,OTHER
 hugot	12	NOUN,ADJECTIVE
 mapagkumbaba	12	ADJECTIVE
 lumuha	12	VERB
-mestisa	12	NOUN,ADJECTIVE	mestiso
+mestisa	12	NOUN,ADJECTIVE
 iras	12	NOUN,OTHER
 kumapit	12	VERB
 mapagmatyag	12	ADJECTIVE
@@ -29984,7 +29984,7 @@ dalanghita	11	NOUN,OTHER
 paimbabaw	11	ADJECTIVE
 danay	11	NOUN,OTHER
 dagundong	11	NOUN,OTHER
-pananatilihin	11	VERB	panatilihin
+pananatilihin	11	VERB	magpanatili
 malamlam	11	ADJECTIVE
 kasundaluhan	11	NOUN,OTHER
 repetisyon	11	NOUN,OTHER
@@ -30002,7 +30002,7 @@ salop	11	NOUN,OTHER
 syota	11	NOUN,OTHER
 peryodismo	11	NOUN,OTHER
 malawig	11	ADJECTIVE
-makipag-away	11	VERB	awayin
+makipag-away	11	VERB	mag-away
 kinse	11	NOUN,OTHER
 kasiraan	11	NOUN,OTHER
 pangkagawaran	11	ADJECTIVE
@@ -30081,7 +30081,7 @@ paga	11	NOUN,ADJECTIVE
 sanglaan	11	NOUN,VERB
 takaw	11	NOUN,ADJECTIVE
 piko	11	NOUN,OTHER
-makunan	11	VERB	ipakuha
+makunan	11	VERB	kumuha
 pampango	11	NOUN,OTHER
 sumuway	11	VERB
 abaniko	11	NOUN,OTHER
@@ -30197,7 +30197,7 @@ adopsyon	10	NOUN,OTHER
 bakahan	10	NOUN,OTHER
 pwersahin	10	VERB
 kural	10	NOUN,OTHER
-prangko	10	NOUN,ADJECTIVE	prangka
+prangko	10	NOUN,ADJECTIVE
 butal	10	ADJECTIVE
 salig	10	NOUN,ADJECTIVE
 balintuna	10	ADJECTIVE
@@ -30237,7 +30237,7 @@ magarao	10	PROPER_NOUN
 caballeros	10	PROPER_NOUN
 salva	10	PROPER_NOUN
 asta	10	NOUN,OTHER
-panindigan	10	VERB	paninindigan
+panindigan	10	VERB
 fukunaga	10	PROPER_NOUN
 zoraida	10	PROPER_NOUN
 ele	10	NOUN,OTHER
@@ -30454,7 +30454,7 @@ anak-araw	9	NOUN,OTHER
 kilig	9	NOUN,ADJECTIVE
 pasaway	9	NOUN,ADJECTIVE
 mag-umpisa	9	VERB
-intindihin	9	VERB	ipaintindi
+intindihin	9	VERB
 patriotismo	9	NOUN,OTHER
 restituto	9	PROPER_NOUN
 laker	9	NOUN,OTHER
@@ -30503,7 +30503,7 @@ kolorete	9	NOUN,OTHER
 pusta	9	NOUN,OTHER
 palatitikan	9	NOUN,OTHER
 higanti	9	NOUN,OTHER
-iho	9	NOUN,OTHER	iha
+iho	9	NOUN,OTHER
 kayan	9	NOUN,OTHER
 sumbong	9	NOUN,OTHER
 eronautika	9	NOUN,OTHER
@@ -30658,7 +30658,7 @@ dawis	9	NOUN,OTHER
 dumalag	9	PROPER_NOUN
 katangahan	9	NOUN,OTHER
 libacao	9	PROPER_NOUN
-pagtatalunan	9	VERB	pagtalunan
+pagtatalunan	9	VERB	tumalon
 macasaet	9	PROPER_NOUN
 sambat	9	NOUN,OTHER
 sicat	9	PROPER_NOUN
@@ -30806,7 +30806,7 @@ olivares	8	PROPER_NOUN
 buhain	8	PROPER_NOUN
 pagpupugot	8	NOUN,OTHER
 peseta	8	NOUN,OTHER
-sagutan	8	NOUN,VERB	sagutin
+sagutan	8	NOUN,VERB
 matsuno	8	PROPER_NOUN
 matres	8	NOUN,OTHER
 tadtad	8	NOUN,ADJECTIVE
@@ -31018,7 +31018,7 @@ masahista	8	NOUN,OTHER
 desidido	8	ADJECTIVE
 santillan	8	PROPER_NOUN
 ricafort	8	PROPER_NOUN
-mabali	8	VERB	baliin
+mabali	8	VERB	bumali
 panis	8	NOUN,ADJECTIVE
 himagsik	8	NOUN,OTHER
 bataw	8	NOUN,ADJECTIVE
@@ -31182,7 +31182,7 @@ kwarta	7	NOUN,OTHER
 habol	7	NOUN,ADJECTIVE
 bagal	7	NOUN,OTHER
 angadanan	7	PROPER_NOUN
-pastora	7	NOUN,OTHER	pastor
+pastora	7	NOUN,OTHER
 makato	7	PROPER_NOUN
 balilihan	7	PROPER_NOUN
 candijay	7	PROPER_NOUN
@@ -31194,7 +31194,7 @@ kumapal	7	VERB
 mabalot	7	VERB,PROPER_NOUN	balutin
 kinastigo	7	VERB	kastiguhin
 gantihan	7	NOUN,VERB
-saksakin	7	VERB	saksakan
+saksakin	7	VERB
 solisitor	7	NOUN,OTHER
 masusi	7	ADJECTIVE
 magbalik-loob	7	VERB
@@ -31387,7 +31387,7 @@ maghasik	7	VERB
 arpiya	7	NOUN,OTHER
 matatakutin	7	NOUN,ADJECTIVE
 bibo	7	ADJECTIVE
-ipinatay	7	VERB	ipatay
+ipinatay	7	VERB	patayin
 bimpo	7	NOUN,OTHER
 kaedad	7	NOUN,ADJECTIVE
 promulgasyon	7	NOUN,OTHER
@@ -31692,7 +31692,7 @@ tigbauan	6	PROPER_NOUN
 briguela	6	PROPER_NOUN
 natonin	6	PROPER_NOUN
 maghahasik	6	NOUN,VERB	maghasik
-senyorito	6	NOUN,OTHER	senyorita
+senyorito	6	NOUN,OTHER
 lusot	6	NOUN,ADJECTIVE
 adorable	6	ADJECTIVE
 gosiengfiao	6	PROPER_NOUN
@@ -31745,7 +31745,7 @@ gramar	6	NOUN,OTHER
 zenaida	6	PROPER_NOUN
 tibayan	6	PROPER_NOUN
 uban	6	NOUN,OTHER
-mabasag	6	VERB	basagin
+mabasag	6	VERB	bumasag
 bestida	6	NOUN,OTHER
 bilas	6	NOUN,OTHER
 kaibiganin	6	VERB
@@ -31756,7 +31756,7 @@ panderetas	6	NOUN,OTHER
 ipil-ipil	6	NOUN,OTHER
 kulong	6	NOUN,ADJECTIVE
 pluralismo	6	NOUN,OTHER
-pinagtatawanan	6	VERB	pagtawanan
+pinagtatawanan	6	VERB	tumawa
 sugapa	6	NOUN,ADJECTIVE
 mangaso	6	VERB
 hayok	6	NOUN,ADJECTIVE
@@ -31806,7 +31806,7 @@ bukong	6	NOUN,OTHER
 koloniyal	6	ADJECTIVE
 bugnoy	6	NOUN,OTHER
 buwig	6	NOUN,OTHER
-iha	6	NOUN,OTHER	iho
+iha	6	NOUN,OTHER
 mima	6	NOUN,OTHER
 sukli	6	NOUN,OTHER
 tanto	6	NOUN,ADJECTIVE
@@ -31893,7 +31893,7 @@ dipa	6	NOUN,OTHER
 anestisya	6	NOUN,OTHER
 depektibo	6	ADJECTIVE
 gadyet	6	NOUN,OTHER
-mamaga	6	VERB	namamaga
+mamaga	6	VERB
 bikas	6	NOUN,OTHER
 tagapagsagawa	6	NOUN,OTHER
 pitis	6	NOUN,ADJECTIVE
@@ -32027,7 +32027,7 @@ papagayo	5	NOUN,OTHER
 luansing	5	PROPER_NOUN
 dapithapon	5	NOUN,OTHER
 ritmiko	5	ADJECTIVE
-nanakawin	5	VERB	nakawin
+nanakawin	5	VERB	magnakaw
 pakitang-tao	5	NOUN,OTHER
 tag-ani	5	NOUN,OTHER
 mamundok	5	VERB
@@ -32380,7 +32380,7 @@ calalang	5	PROPER_NOUN
 eredero	5	NOUN,OTHER
 tapik	5	NOUN,OTHER
 badya	5	NOUN,OTHER
-lunurin	5	VERB	malunod
+lunurin	5	VERB
 nones	5	ADJECTIVE
 tabletas	5	NOUN,OTHER
 mapagmalaki	5	ADJECTIVE
@@ -32520,7 +32520,7 @@ layas	4	NOUN,ADJECTIVE
 lusog	4	NOUN,OTHER
 ingkubador	4	NOUN,OTHER
 umang	4	NOUN,OTHER
-ipapapatay	4	VERB	ipapatay
+ipapapatay	4	VERB	patayin
 bumulwak	4	VERB
 hakot	4	NOUN,ADJECTIVE
 peligroso	4	ADJECTIVE
@@ -32636,7 +32636,7 @@ hillside	4	PROPER_NOUN
 kort	4	NOUN,OTHER
 apostasiya	4	NOUN,OTHER
 makapigil-hininga	4	ADJECTIVE
-senyorita	4	NOUN,OTHER	senyorito
+senyorita	4	NOUN,OTHER
 varona	4	PROPER_NOUN
 edlyn	4	PROPER_NOUN
 gancayco	4	PROPER_NOUN
@@ -32816,7 +32816,7 @@ hopya	4	NOUN,OTHER
 okre	4	NOUN,OTHER
 tsampoy	4	NOUN,OTHER
 kapbisa	4	NOUN,OTHER
-bilugin	4	VERB	bilugan
+bilugin	4	VERB
 pitagan	4	NOUN,OTHER
 putot	4	ADJECTIVE
 kokak	4	NOUN,OTHER
@@ -33379,7 +33379,7 @@ ingklitik	3	NOUN,OTHER
 makalimot	3	VERB
 mandamyento	3	NOUN,OTHER
 obstakulo	3	NOUN,OTHER
-bilhan	3	VERB	bilhin
+bilhan	3	VERB
 miktinig	3	NOUN,OTHER
 hinakot	3	VERB
 tsipriyota	3	NOUN,ADJECTIVE
@@ -33497,7 +33497,7 @@ katapatang-asal	3	NOUN,OTHER
 taong-grasa	3	NOUN,OTHER
 sando	3	NOUN,OTHER
 botas	3	NOUN,OTHER
-ihada	3	NOUN,OTHER	ihado
+ihada	3	NOUN,OTHER
 magilas	3	ADJECTIVE
 novero	3	PROPER_NOUN
 giting	3	NOUN,OTHER
@@ -33602,7 +33602,7 @@ katanway	3	NOUN,OTHER
 bulog	3	NOUN,OTHER
 syokoy	3	NOUN,OTHER
 higlikas	3	ADJECTIVE
-pagtawanan	3	VERB	tawanan
+pagtawanan	3	VERB	tumawa
 igapos	3	VERB
 kabarkada	3	NOUN,OTHER
 kunsiderasyon	3	NOUN,OTHER
@@ -33837,7 +33837,7 @@ tagibang	2	ADJECTIVE
 suico	2	PROPER_NOUN
 kakilawan	2	NOUN,OTHER
 glase	2	NOUN,OTHER
-ipinapapatay	2	VERB	ipapatay
+ipinapapatay	2	VERB	patayin
 analisa	2	NOUN,OTHER
 pagsasanay-militar	2	NOUN,OTHER
 buting	2	PROPER_NOUN
@@ -33925,7 +33925,7 @@ atangya	2	NOUN,OTHER
 dapulak	2	NOUN,OTHER
 shimabukuro	2	PROPER_NOUN
 yepes	2	PROPER_NOUN
-pipirmahan	2	VERB	pirmahan
+pipirmahan	2	VERB	pumirma
 salinidad	2	NOUN,OTHER
 agimatin	2	ADJECTIVE
 ratipikahan	2	VERB
@@ -33949,7 +33949,7 @@ pisis	2	PROPER_NOUN
 andam	2	NOUN,OTHER
 deparo	2	PROPER_NOUN
 tatak-kalakal	2	NOUN,OTHER
-kukunan	2	NOUN,VERB	kunan
+kukunan	2	NOUN,VERB	kumuha
 eskaparate	2	NOUN,OTHER
 daguldol	2	NOUN,OTHER
 pilipinismo	2	NOUN,OTHER
@@ -34266,7 +34266,7 @@ pirali	2	NOUN,OTHER
 kodeyna	2	NOUN,OTHER
 apido	2	NOUN,OTHER
 igera	2	NOUN,OTHER
-hihipan	2	NOUN,VERB	hipan
+hihipan	2	NOUN,VERB	humihip
 labatiba	2	NOUN,OTHER
 anakonda	2	NOUN,OTHER
 laywan	2	NOUN,OTHER
@@ -34373,7 +34373,7 @@ diklap	2	NOUN,OTHER
 kumprehensibo	2	NOUN,OTHER
 hikahos	2	NOUN,ADJECTIVE
 pamaran	2	PROPER_NOUN
-tinalunan	2	VERB	talunan
+tinalunan	2	VERB	tumalon
 oropel	2	NOUN,OTHER
 haspe	2	NOUN,ADJECTIVE
 haling	2	NOUN,ADJECTIVE
@@ -35608,7 +35608,7 @@ seradura	1	NOUN,OTHER
 maghatol	1	VERB
 benditahan	1	NOUN,VERB
 birgo	1	PROPER_NOUN
-katalunan	1	NOUN,VERB	matalo
+katalunan	1	NOUN,VERB	manalo
 magkasiya	1	VERB
 alporhas	1	NOUN,OTHER
 palaibunan	1	NOUN,OTHER
@@ -35994,7 +35994,7 @@ lumanlan	1	PROPER_NOUN
 lumanog	1	PROPER_NOUN
 lumanta	1	VERB
 mababangloob	1	PROPER_NOUN
-mabilangan	1	VERB,PROPER_NOUN	bilangin
+mabilangan	1	VERB,PROPER_NOUN	magbilang
 macalalad	1	PROPER_NOUN
 macalincag	1	PROPER_NOUN
 macalindong	1	PROPER_NOUN
@@ -36178,7 +36178,7 @@ letson	1	NOUN,OTHER
 untog	1	NOUN,OTHER
 maguluhan	1	VERB
 kiropraktiko	1	NOUN,OTHER
-maaaral	1	VERB,ADJECTIVE	maaral
+maaaral	1	VERB,ADJECTIVE	aralin
 ipinasimula	1	VERB
 parapernalya	1	NOUN,OTHER
 olivera	1	PROPER_NOUN
@@ -36523,7 +36523,7 @@ llanto	1	PROPER_NOUN
 limcaoco	1	PROPER_NOUN
 aldaba	1	NOUN,OTHER
 patnig	1	NOUN,OTHER
-masasakyan	1	VERB,ADJECTIVE	masakyan
+masasakyan	1	VERB,ADJECTIVE	sakyan
 walang-kaya	1	ADJECTIVE
 masangay	1	ADJECTIVE
 mumog	1	NOUN,OTHER
@@ -36753,8 +36753,8 @@ adwanero	1	NOUN,OTHER
 magtanan	1	VERB
 makulog	1	ADJECTIVE
 laguyo	1	NOUN,OTHER
-pag-awayan	1	VERB	awayin
-ikuha	1	VERB	ipakuha
+pag-awayan	1	VERB	mag-away
+ikuha	1	VERB	kumuha
 magsibak	1	VERB
 mag-aararo	1	NOUN,VERB	mag-araro
 balor	1	NOUN,OTHER
@@ -36824,7 +36824,7 @@ walang-bisa	1	ADJECTIVE
 balasa	1	NOUN,OTHER
 marbella	1	PROPER_NOUN
 orendain	1	PROPER_NOUN
-pinipirmahan	1	VERB	pirmahan
+pinipirmahan	1	VERB	pumirma
 admirable	1	ADJECTIVE
 gulpi	1	NOUN,OTHER
 krematoryo	1	NOUN,OTHER
@@ -36837,11 +36837,11 @@ antiparas	1	NOUN,OTHER
 pleyades	1	PROPER_NOUN
 tagtanim	1	NOUN,OTHER
 gasera	1	NOUN,OTHER
-linisan	1	NOUN,VERB	linisin
+linisan	1	NOUN,VERB
 lumabnaw	1	VERB
 magbarena	1	VERB
 klaripikasyon	1	NOUN,OTHER
-pinag-initan	1	VERB	pag-initan
+pinag-initan	1	VERB	initan
 pabillo	1	PROPER_NOUN
 mamugot	1	VERB
 plutokrasya	1	NOUN,OTHER
@@ -37015,7 +37015,7 @@ hardinera	41	NOUN,OTHER	hardinero
 hawayana	32	NOUN,ADJECTIVE	hawayano
 henerala	1588	NOUN,OTHER	heneral
 heorhiyana	38	NOUN,ADJECTIVE	heorhiyano
-ihado	3	NOUN,OTHER	ihada
+ihado	3	NOUN,OTHER
 ilokana	228	NOUN,OTHER	ilokano
 indiyana	381	NOUN,OTHER	indiyano
 indonesa	244	NOUN,OTHER	indones
@@ -37074,9 +37074,9 @@ tsismosa	3	NOUN,ADJECTIVE	tsismoso
 tsang	2	NOUN,OTHER	tsong
 turka	296	NOUN,OTHER	turko
 yayo	72	NOUN,OTHER	yaya
-inabala	10	VERB	abalahin
-inaabala	10	VERB	abalahin
-aabalahin	10	VERB	abalahin
+inabala	10	VERB	mang-abala
+inaabala	10	VERB	mang-abala
+aabalahin	10	VERB	mang-abala
 inabangan	47	VERB	abangan
 inaabangan	47	VERB	abangan
 aabangan	47	VERB	abangan
@@ -37097,58 +37097,58 @@ aabuhin	17	VERB	abuhin
 inabuluyan	4	VERB	abuluyan
 inaabuluyan	4	VERB	abuluyan
 aabuluyan	4	VERB	abuluyan
-inaabuso	9	VERB	abusuhin
-aabusuhin	9	VERB	abusuhin
-pag-abusuhan	9	VERB	abusuhin
-pinapag-abusuhan	9	VERB	abusuhin
-pinag-aabusuhan	9	VERB	abusuhin
-ipag-abuso	9	VERB	abusuhin
-ipinapag-abuso	9	VERB	abusuhin
-ipaabuso	9	VERB	abusuhin
-ipinaaabuso	9	VERB	abusuhin
-ipinapaabuso	9	VERB	abusuhin
-ipagpaabuso	9	VERB	abusuhin
-ipinagpapaabuso	9	VERB	abusuhin
-ipinapagpaabuso	9	VERB	abusuhin
-ikapagpaabuso	9	VERB	abusuhin
-ikinapagpapaabuso	9	VERB	abusuhin
-ikinakapagpaabuso	9	VERB	abusuhin
-maabuso	9	VERB	abusuhin
-naaabuso	9	VERB	abusuhin
-maipag-abuso	9	VERB	abusuhin
-naipag-aabuso	9	VERB	abusuhin
-naipapag-abuso	9	VERB	abusuhin
-naiipag-abuso	9	VERB	abusuhin
-maikapag-abuso	9	VERB	abusuhin
-naikapag-aabuso	9	VERB	abusuhin
-naikapapag-abuso	9	VERB	abusuhin
-naiikapag-abuso	9	VERB	abusuhin
-mapag-abusoan	9	VERB	abusuhin
-napag-aabusoan	9	VERB	abusuhin
-napapag-abusoan	9	VERB	abusuhin
-maipaabuso	9	VERB	abusuhin
-naipaaabuso	9	VERB	abusuhin
-naipapaabuso	9	VERB	abusuhin
-naiipaabuso	9	VERB	abusuhin
-maipagpaabuso	9	VERB	abusuhin
-naipagpapaabuso	9	VERB	abusuhin
-naipapagpaabuso	9	VERB	abusuhin
-naiipagpaabuso	9	VERB	abusuhin
-maikapagpaabuso	9	VERB	abusuhin
-naikapagpapaabuso	9	VERB	abusuhin
-naikakapagpaabuso	9	VERB	abusuhin
-naiikapagpaabuso	9	VERB	abusuhin
-mapagpaabusuhan	9	VERB	abusuhin
-napagpapaaabusuhan	9	VERB	abusuhin
-napapagpaabusuhan	9	VERB	abusuhin
-mapapag-abusuhan	9	VERB	abusuhin
-napapapag-abusuhan	9	VERB	abusuhin
-makipag-abuso	9	VERB	abusuhin
-nakikipag-abuso	9	VERB	abusuhin
-makiabuso	9	VERB	abusuhin
-nakikiabuso	9	VERB	abusuhin
-makipagpaabuso	9	VERB	abusuhin
-nakikipagpaabuso	9	VERB	abusuhin
+inaabuso	9	VERB	mag-abuso
+aabusuhin	9	VERB	mag-abuso
+pag-abusuhan	9	VERB	mag-abuso
+pinapag-abusuhan	9	VERB	mag-abuso
+pinag-aabusuhan	9	VERB	mag-abuso
+ipag-abuso	9	VERB	mag-abuso
+ipinapag-abuso	9	VERB	mag-abuso
+ipaabuso	9	VERB	mag-abuso
+ipinaaabuso	9	VERB	mag-abuso
+ipinapaabuso	9	VERB	mag-abuso
+ipagpaabuso	9	VERB	mag-abuso
+ipinagpapaabuso	9	VERB	mag-abuso
+ipinapagpaabuso	9	VERB	mag-abuso
+ikapagpaabuso	9	VERB	mag-abuso
+ikinapagpapaabuso	9	VERB	mag-abuso
+ikinakapagpaabuso	9	VERB	mag-abuso
+maabuso	9	VERB	mag-abuso
+naaabuso	9	VERB	mag-abuso
+maipag-abuso	9	VERB	mag-abuso
+naipag-aabuso	9	VERB	mag-abuso
+naipapag-abuso	9	VERB	mag-abuso
+naiipag-abuso	9	VERB	mag-abuso
+maikapag-abuso	9	VERB	mag-abuso
+naikapag-aabuso	9	VERB	mag-abuso
+naikapapag-abuso	9	VERB	mag-abuso
+naiikapag-abuso	9	VERB	mag-abuso
+mapag-abusoan	9	VERB	mag-abuso
+napag-aabusoan	9	VERB	mag-abuso
+napapag-abusoan	9	VERB	mag-abuso
+maipaabuso	9	VERB	mag-abuso
+naipaaabuso	9	VERB	mag-abuso
+naipapaabuso	9	VERB	mag-abuso
+naiipaabuso	9	VERB	mag-abuso
+maipagpaabuso	9	VERB	mag-abuso
+naipagpapaabuso	9	VERB	mag-abuso
+naipapagpaabuso	9	VERB	mag-abuso
+naiipagpaabuso	9	VERB	mag-abuso
+maikapagpaabuso	9	VERB	mag-abuso
+naikapagpapaabuso	9	VERB	mag-abuso
+naikakapagpaabuso	9	VERB	mag-abuso
+naiikapagpaabuso	9	VERB	mag-abuso
+mapagpaabusuhan	9	VERB	mag-abuso
+napagpapaaabusuhan	9	VERB	mag-abuso
+napapagpaabusuhan	9	VERB	mag-abuso
+mapapag-abusuhan	9	VERB	mag-abuso
+napapapag-abusuhan	9	VERB	mag-abuso
+makipag-abuso	9	VERB	mag-abuso
+nakikipag-abuso	9	VERB	mag-abuso
+makiabuso	9	VERB	mag-abuso
+nakikiabuso	9	VERB	mag-abuso
+makipagpaabuso	9	VERB	mag-abuso
+nakikipagpaabuso	9	VERB	mag-abuso
 inabutan	12	VERB	abutan
 inaabutan	12	VERB	abutan
 aabutan	12	VERB	abutan
@@ -37216,55 +37216,55 @@ aakuin	9	VERB	akuin
 inakyatan	3	VERB	akyatan
 inaakyatan	3	VERB	akyatan
 aakyatan	3	VERB	akyatan
-inakyat	33	VERB	akyatin
-inaakyat	33	VERB	akyatin
-aakyatin	33	VERB	akyatin
-pag-akyatan	33	VERB	akyatin
-pinapag-akyatan	33	VERB	akyatin
-pinag-aakyatan	33	VERB	akyatin
-iakyat	33	VERB	akyatin
-iniaakyat	33	VERB	akyatin
-ipaakyat	33	VERB	akyatin
-ipinaaakyat	33	VERB	akyatin
-ipinapaakyat	33	VERB	akyatin
-ipagpaakyat	33	VERB	akyatin
-ipinagpapaakyat	33	VERB	akyatin
-ipinapagpaakyat	33	VERB	akyatin
-ikapagpaakyat	33	VERB	akyatin
-ikinapagpapaakyat	33	VERB	akyatin
-ikinakapagpaakyat	33	VERB	akyatin
-maakyat	33	VERB	akyatin
-naaakyat	33	VERB	akyatin
-maiakyat	33	VERB	akyatin
-naiaakyat	33	VERB	akyatin
-maikaakyat	33	VERB	akyatin
-naikaaakyat	33	VERB	akyatin
-naikakaakyat	33	VERB	akyatin
-naiikaakyat	33	VERB	akyatin
-mapag-akyatan	33	VERB	akyatin
-napag-aakyatan	33	VERB	akyatin
-napapag-akyatan	33	VERB	akyatin
-maipaakyat	33	VERB	akyatin
-naipaaakyat	33	VERB	akyatin
-naipapaakyat	33	VERB	akyatin
-naiipaakyat	33	VERB	akyatin
-maipagpaakyat	33	VERB	akyatin
-naipagpapaakyat	33	VERB	akyatin
-naipapagpaakyat	33	VERB	akyatin
-naiipagpaakyat	33	VERB	akyatin
-maikapagpaakyat	33	VERB	akyatin
-naikapagpapaakyat	33	VERB	akyatin
-naikakapagpaakyat	33	VERB	akyatin
-naiikapagpaakyat	33	VERB	akyatin
-mapagpaakyatan	33	VERB	akyatin
-napagpapaaakyatan	33	VERB	akyatin
-napapagpaakyatan	33	VERB	akyatin
-mapapag-akyatan	33	VERB	akyatin
-napapapag-akyatan	33	VERB	akyatin
-makiakyat	33	VERB	akyatin
-nakikiakyat	33	VERB	akyatin
-makipagpaakyat	33	VERB	akyatin
-nakikipagpaakyat	33	VERB	akyatin
+inakyat	33	VERB	umakyat
+inaakyat	33	VERB	umakyat
+aakyatin	33	VERB	umakyat
+pag-akyatan	33	VERB	umakyat
+pinapag-akyatan	33	VERB	umakyat
+pinag-aakyatan	33	VERB	umakyat
+iakyat	33	VERB	umakyat
+iniaakyat	33	VERB	umakyat
+ipaakyat	33	VERB	umakyat
+ipinaaakyat	33	VERB	umakyat
+ipinapaakyat	33	VERB	umakyat
+ipagpaakyat	33	VERB	umakyat
+ipinagpapaakyat	33	VERB	umakyat
+ipinapagpaakyat	33	VERB	umakyat
+ikapagpaakyat	33	VERB	umakyat
+ikinapagpapaakyat	33	VERB	umakyat
+ikinakapagpaakyat	33	VERB	umakyat
+maakyat	33	VERB	umakyat
+naaakyat	33	VERB	umakyat
+maiakyat	33	VERB	umakyat
+naiaakyat	33	VERB	umakyat
+maikaakyat	33	VERB	umakyat
+naikaaakyat	33	VERB	umakyat
+naikakaakyat	33	VERB	umakyat
+naiikaakyat	33	VERB	umakyat
+mapag-akyatan	33	VERB	umakyat
+napag-aakyatan	33	VERB	umakyat
+napapag-akyatan	33	VERB	umakyat
+maipaakyat	33	VERB	umakyat
+naipaaakyat	33	VERB	umakyat
+naipapaakyat	33	VERB	umakyat
+naiipaakyat	33	VERB	umakyat
+maipagpaakyat	33	VERB	umakyat
+naipagpapaakyat	33	VERB	umakyat
+naipapagpaakyat	33	VERB	umakyat
+naiipagpaakyat	33	VERB	umakyat
+maikapagpaakyat	33	VERB	umakyat
+naikapagpapaakyat	33	VERB	umakyat
+naikakapagpaakyat	33	VERB	umakyat
+naiikapagpaakyat	33	VERB	umakyat
+mapagpaakyatan	33	VERB	umakyat
+napagpapaaakyatan	33	VERB	umakyat
+napapagpaakyatan	33	VERB	umakyat
+mapapag-akyatan	33	VERB	umakyat
+napapapag-akyatan	33	VERB	umakyat
+makiakyat	33	VERB	umakyat
+nakikiakyat	33	VERB	umakyat
+makipagpaakyat	33	VERB	umakyat
+nakikipagpaakyat	33	VERB	umakyat
 inalahasan	1	VERB	alahasan
 inaalahasan	1	VERB	alahasan
 aalahasan	1	VERB	alahasan
@@ -37578,102 +37578,102 @@ nakikiatake	70	VERB	atakihin
 makipagpaatake	70	VERB	atakihin
 nakikipagpaatake	70	VERB	atakihin
 aatasan	27	VERB	atasan
-inaway	1	VERB	awayin
-inaaway	1	VERB	awayin
-aawayin	1	VERB	awayin
-pinapag-awayan	1	VERB	awayin
-pinag-aawayan	1	VERB	awayin
-ipag-away	1	VERB	awayin
-ipinapag-away	1	VERB	awayin
-ikapag-away	1	VERB	awayin
-ikinapag-aaway	1	VERB	awayin
-ikinakapag-away	1	VERB	awayin
-ipaaway	1	VERB	awayin
-ipinaaaway	1	VERB	awayin
-ipinapaaway	1	VERB	awayin
-ipagpaaway	1	VERB	awayin
-ipinagpapaaway	1	VERB	awayin
-ipinapagpaaway	1	VERB	awayin
-ikapagpaaway	1	VERB	awayin
-ikinapagpapaaway	1	VERB	awayin
-ikinakapagpaaway	1	VERB	awayin
-maaway	1	VERB	awayin
-naaaway	1	VERB	awayin
-maipag-away	1	VERB	awayin
-naipag-aaway	1	VERB	awayin
-naipapag-away	1	VERB	awayin
-naiipag-away	1	VERB	awayin
-maikapag-away	1	VERB	awayin
-naikapag-aaway	1	VERB	awayin
-naikapapag-away	1	VERB	awayin
-naiikapag-away	1	VERB	awayin
-mapag-awayan	1	VERB	awayin
-napag-aawayan	1	VERB	awayin
-napapag-awayan	1	VERB	awayin
-maipaaway	1	VERB	awayin
-naipaaaway	1	VERB	awayin
-naipapaaway	1	VERB	awayin
-naiipaaway	1	VERB	awayin
-maipagpaaway	1	VERB	awayin
-naipagpapaaway	1	VERB	awayin
-naipapagpaaway	1	VERB	awayin
-naiipagpaaway	1	VERB	awayin
-maikapagpaaway	1	VERB	awayin
-naikapagpapaaway	1	VERB	awayin
-naikakapagpaaway	1	VERB	awayin
-naiikapagpaaway	1	VERB	awayin
-mapagpaawayan	1	VERB	awayin
-napagpapaaawayan	1	VERB	awayin
-napapagpaawayan	1	VERB	awayin
-mapapag-awayan	1	VERB	awayin
-napapapag-awayan	1	VERB	awayin
-nakikipag-away	1	VERB	awayin
-makiaway	1	VERB	awayin
-nakikiaway	1	VERB	awayin
-makipagpaaway	1	VERB	awayin
-nakikipagpaaway	1	VERB	awayin
-aawitin	1579	VERB	awitin
-awitan	1579	VERB	awitin
-inaawitan	1579	VERB	awitin
-pag-awitan	1579	VERB	awitin
-pinapag-awitan	1579	VERB	awitin
-pinag-aawitan	1579	VERB	awitin
-iawit	1579	VERB	awitin
-iniaawit	1579	VERB	awitin
-ipagpaawit	1579	VERB	awitin
-ipinagpapaawit	1579	VERB	awitin
-ipinapagpaawit	1579	VERB	awitin
-ikapagpaawit	1579	VERB	awitin
-ikinapagpapaawit	1579	VERB	awitin
-ikinakapagpaawit	1579	VERB	awitin
-maawitan	1579	VERB	awitin
-naaawitan	1579	VERB	awitin
-mapag-awitan	1579	VERB	awitin
-napag-aawitan	1579	VERB	awitin
-napapag-awitan	1579	VERB	awitin
-maiawit	1579	VERB	awitin
-naiaawit	1579	VERB	awitin
-maikaawit	1579	VERB	awitin
-naikaaawit	1579	VERB	awitin
-naikakaawit	1579	VERB	awitin
-naiikaawit	1579	VERB	awitin
-maipagpaawit	1579	VERB	awitin
-naipagpapaawit	1579	VERB	awitin
-naipapagpaawit	1579	VERB	awitin
-naiipagpaawit	1579	VERB	awitin
-maikapagpaawit	1579	VERB	awitin
-naikapagpapaawit	1579	VERB	awitin
-naikakapagpaawit	1579	VERB	awitin
-naiikapagpaawit	1579	VERB	awitin
-mapagpaawitan	1579	VERB	awitin
-napagpapaaawitan	1579	VERB	awitin
-napapagpaawitan	1579	VERB	awitin
-mapapag-awitan	1579	VERB	awitin
-napapapag-awitan	1579	VERB	awitin
-makiawit	1579	VERB	awitin
-nakikiawit	1579	VERB	awitin
-makipagpaawit	1579	VERB	awitin
-nakikipagpaawit	1579	VERB	awitin
+inaway	1	VERB	mag-away
+inaaway	1	VERB	mag-away
+aawayin	1	VERB	mag-away
+pinapag-awayan	1	VERB	mag-away
+pinag-aawayan	1	VERB	mag-away
+ipag-away	1	VERB	mag-away
+ipinapag-away	1	VERB	mag-away
+ikapag-away	1	VERB	mag-away
+ikinapag-aaway	1	VERB	mag-away
+ikinakapag-away	1	VERB	mag-away
+ipaaway	1	VERB	mag-away
+ipinaaaway	1	VERB	mag-away
+ipinapaaway	1	VERB	mag-away
+ipagpaaway	1	VERB	mag-away
+ipinagpapaaway	1	VERB	mag-away
+ipinapagpaaway	1	VERB	mag-away
+ikapagpaaway	1	VERB	mag-away
+ikinapagpapaaway	1	VERB	mag-away
+ikinakapagpaaway	1	VERB	mag-away
+maaway	1	VERB	mag-away
+naaaway	1	VERB	mag-away
+maipag-away	1	VERB	mag-away
+naipag-aaway	1	VERB	mag-away
+naipapag-away	1	VERB	mag-away
+naiipag-away	1	VERB	mag-away
+maikapag-away	1	VERB	mag-away
+naikapag-aaway	1	VERB	mag-away
+naikapapag-away	1	VERB	mag-away
+naiikapag-away	1	VERB	mag-away
+mapag-awayan	1	VERB	mag-away
+napag-aawayan	1	VERB	mag-away
+napapag-awayan	1	VERB	mag-away
+maipaaway	1	VERB	mag-away
+naipaaaway	1	VERB	mag-away
+naipapaaway	1	VERB	mag-away
+naiipaaway	1	VERB	mag-away
+maipagpaaway	1	VERB	mag-away
+naipagpapaaway	1	VERB	mag-away
+naipapagpaaway	1	VERB	mag-away
+naiipagpaaway	1	VERB	mag-away
+maikapagpaaway	1	VERB	mag-away
+naikapagpapaaway	1	VERB	mag-away
+naikakapagpaaway	1	VERB	mag-away
+naiikapagpaaway	1	VERB	mag-away
+mapagpaawayan	1	VERB	mag-away
+napagpapaaawayan	1	VERB	mag-away
+napapagpaawayan	1	VERB	mag-away
+mapapag-awayan	1	VERB	mag-away
+napapapag-awayan	1	VERB	mag-away
+nakikipag-away	1	VERB	mag-away
+makiaway	1	VERB	mag-away
+nakikiaway	1	VERB	mag-away
+makipagpaaway	1	VERB	mag-away
+nakikipagpaaway	1	VERB	mag-away
+aawitin	1579	VERB	umawit
+awitan	1579	VERB	umawit
+inaawitan	1579	VERB	umawit
+pag-awitan	1579	VERB	umawit
+pinapag-awitan	1579	VERB	umawit
+pinag-aawitan	1579	VERB	umawit
+iawit	1579	VERB	umawit
+iniaawit	1579	VERB	umawit
+ipagpaawit	1579	VERB	umawit
+ipinagpapaawit	1579	VERB	umawit
+ipinapagpaawit	1579	VERB	umawit
+ikapagpaawit	1579	VERB	umawit
+ikinapagpapaawit	1579	VERB	umawit
+ikinakapagpaawit	1579	VERB	umawit
+maawitan	1579	VERB	umawit
+naaawitan	1579	VERB	umawit
+mapag-awitan	1579	VERB	umawit
+napag-aawitan	1579	VERB	umawit
+napapag-awitan	1579	VERB	umawit
+maiawit	1579	VERB	umawit
+naiaawit	1579	VERB	umawit
+maikaawit	1579	VERB	umawit
+naikaaawit	1579	VERB	umawit
+naikakaawit	1579	VERB	umawit
+naiikaawit	1579	VERB	umawit
+maipagpaawit	1579	VERB	umawit
+naipagpapaawit	1579	VERB	umawit
+naipapagpaawit	1579	VERB	umawit
+naiipagpaawit	1579	VERB	umawit
+maikapagpaawit	1579	VERB	umawit
+naikapagpapaawit	1579	VERB	umawit
+naikakapagpaawit	1579	VERB	umawit
+naiikapagpaawit	1579	VERB	umawit
+mapagpaawitan	1579	VERB	umawit
+napagpapaaawitan	1579	VERB	umawit
+napapagpaawitan	1579	VERB	umawit
+mapapag-awitan	1579	VERB	umawit
+napapapag-awitan	1579	VERB	umawit
+makiawit	1579	VERB	umawit
+nakikiawit	1579	VERB	umawit
+makipagpaawit	1579	VERB	umawit
+nakikipagpaawit	1579	VERB	umawit
 aayusin	231	VERB	ayusin
 pag-ayusan	231	VERB	ayusin
 pinapag-ayusan	231	VERB	ayusin
@@ -37722,48 +37722,48 @@ makiayos	231	VERB	ayusin
 nakikiayos	231	VERB	ayusin
 makipagpaayos	231	VERB	ayusin
 nakikipagpaayos	231	VERB	ayusin
-binabaan	17	VERB	babaan
-binababaan	17	VERB	babaan
-bababaan	17	VERB	babaan
-inababaan	17	VERB	babaan
-pagbabaan	17	VERB	babaan
-pinapagbabaan	17	VERB	babaan
-pinagbababaan	17	VERB	babaan
-ibinababa	17	VERB	babaan
-ipagpababa	17	VERB	babaan
-ipinagpapababa	17	VERB	babaan
-ipinapagpababa	17	VERB	babaan
-ikapagpababa	17	VERB	babaan
-ikinapagpapababa	17	VERB	babaan
-ikinakapagpababa	17	VERB	babaan
-mababaan	17	VERB	babaan
-nabababaan	17	VERB	babaan
-maibaba	17	VERB	babaan
-naibababa	17	VERB	babaan
-maikababa	17	VERB	babaan
-naikabababa	17	VERB	babaan
-naikakababa	17	VERB	babaan
-naiikababa	17	VERB	babaan
-mapagbabaan	17	VERB	babaan
-napagbababaan	17	VERB	babaan
-napapagbabaan	17	VERB	babaan
-maipagpababa	17	VERB	babaan
-naipagpapababa	17	VERB	babaan
-naipapagpababa	17	VERB	babaan
-naiipagpababa	17	VERB	babaan
-maikapagpababa	17	VERB	babaan
-naikapagpapababa	17	VERB	babaan
-naikakapagpababa	17	VERB	babaan
-naiikapagpababa	17	VERB	babaan
-mapagpababaan	17	VERB	babaan
-napagpapabababaan	17	VERB	babaan
-napapagpababaan	17	VERB	babaan
-mapapagbabaan	17	VERB	babaan
-napapapagbabaan	17	VERB	babaan
-makibaba	17	VERB	babaan
-nakikibaba	17	VERB	babaan
-makipagpababa	17	VERB	babaan
-nakikipagpababa	17	VERB	babaan
+binabaan	17	VERB	bumaba
+binababaan	17	VERB	bumaba
+bababaan	17	VERB	bumaba
+inababaan	17	VERB	bumaba
+pagbabaan	17	VERB	bumaba
+pinapagbabaan	17	VERB	bumaba
+pinagbababaan	17	VERB	bumaba
+ibinababa	17	VERB	bumaba
+ipagpababa	17	VERB	bumaba
+ipinagpapababa	17	VERB	bumaba
+ipinapagpababa	17	VERB	bumaba
+ikapagpababa	17	VERB	bumaba
+ikinapagpapababa	17	VERB	bumaba
+ikinakapagpababa	17	VERB	bumaba
+mababaan	17	VERB	bumaba
+nabababaan	17	VERB	bumaba
+maibaba	17	VERB	bumaba
+naibababa	17	VERB	bumaba
+maikababa	17	VERB	bumaba
+naikabababa	17	VERB	bumaba
+naikakababa	17	VERB	bumaba
+naiikababa	17	VERB	bumaba
+mapagbabaan	17	VERB	bumaba
+napagbababaan	17	VERB	bumaba
+napapagbabaan	17	VERB	bumaba
+maipagpababa	17	VERB	bumaba
+naipagpapababa	17	VERB	bumaba
+naipapagpababa	17	VERB	bumaba
+naiipagpababa	17	VERB	bumaba
+maikapagpababa	17	VERB	bumaba
+naikapagpapababa	17	VERB	bumaba
+naikakapagpababa	17	VERB	bumaba
+naiikapagpababa	17	VERB	bumaba
+mapagpababaan	17	VERB	bumaba
+napagpapabababaan	17	VERB	bumaba
+napapagpababaan	17	VERB	bumaba
+mapapagbabaan	17	VERB	bumaba
+napapapagbabaan	17	VERB	bumaba
+makibaba	17	VERB	bumaba
+nakikibaba	17	VERB	bumaba
+makipagpababa	17	VERB	bumaba
+nakikipagpababa	17	VERB	bumaba
 binaboy	1	VERB	babuyin
 binababoy	1	VERB	babuyin
 bababoy	1	VERB	babuyin
@@ -37893,58 +37893,58 @@ makibaligtad	47	VERB	baligtarin
 nakikibaligtad	47	VERB	baligtarin
 makipagpabaligtad	47	VERB	baligtarin
 nakikipagpabaligtad	47	VERB	baligtarin
-binali	8	VERB	baliin
-binabali	8	VERB	baliin
-babaliin	8	VERB	baliin
-inabali	8	VERB	baliin
-pagbalian	8	VERB	baliin
-pinapagbalian	8	VERB	baliin
-pinagbabalian	8	VERB	baliin
-ibali	8	VERB	baliin
-ibinabali	8	VERB	baliin
-ipabali	8	VERB	baliin
-ipinababali	8	VERB	baliin
-ipinapabali	8	VERB	baliin
-ipagpabali	8	VERB	baliin
-ipinagpapabali	8	VERB	baliin
-ipinapagpabali	8	VERB	baliin
-ikapagpabali	8	VERB	baliin
-ikinapagpapabali	8	VERB	baliin
-ikinakapagpabali	8	VERB	baliin
-nababali	8	VERB	baliin
-maibali	8	VERB	baliin
-naibabali	8	VERB	baliin
-maikabali	8	VERB	baliin
-naikababali	8	VERB	baliin
-naikakabali	8	VERB	baliin
-naiikabali	8	VERB	baliin
-mapagbalian	8	VERB	baliin
-napagbabalian	8	VERB	baliin
-napapagbalian	8	VERB	baliin
-maipabali	8	VERB	baliin
-naipababali	8	VERB	baliin
-naipapabali	8	VERB	baliin
-naiipabali	8	VERB	baliin
-maipagpabali	8	VERB	baliin
-naipagpapabali	8	VERB	baliin
-naipapagpabali	8	VERB	baliin
-naiipagpabali	8	VERB	baliin
-maikapagpabali	8	VERB	baliin
-naikapagpapabali	8	VERB	baliin
-naikakapagpabali	8	VERB	baliin
-naiikapagpabali	8	VERB	baliin
-mapagpabalian	8	VERB	baliin
-napagpapababalian	8	VERB	baliin
-napapagpabalian	8	VERB	baliin
-mapapagbalian	8	VERB	baliin
-napapapagbalian	8	VERB	baliin
-makibali	8	VERB	baliin
-nakikibali	8	VERB	baliin
-makipagpabali	8	VERB	baliin
-nakikipagpabali	8	VERB	baliin
-binalikan	17	VERB	balikan
-binabalikan	17	VERB	balikan
-babalikan	17	VERB	balikan
+binali	8	VERB	bumali
+binabali	8	VERB	bumali
+babaliin	8	VERB	bumali
+inabali	8	VERB	bumali
+pagbalian	8	VERB	bumali
+pinapagbalian	8	VERB	bumali
+pinagbabalian	8	VERB	bumali
+ibali	8	VERB	bumali
+ibinabali	8	VERB	bumali
+ipabali	8	VERB	bumali
+ipinababali	8	VERB	bumali
+ipinapabali	8	VERB	bumali
+ipagpabali	8	VERB	bumali
+ipinagpapabali	8	VERB	bumali
+ipinapagpabali	8	VERB	bumali
+ikapagpabali	8	VERB	bumali
+ikinapagpapabali	8	VERB	bumali
+ikinakapagpabali	8	VERB	bumali
+nababali	8	VERB	bumali
+maibali	8	VERB	bumali
+naibabali	8	VERB	bumali
+maikabali	8	VERB	bumali
+naikababali	8	VERB	bumali
+naikakabali	8	VERB	bumali
+naiikabali	8	VERB	bumali
+mapagbalian	8	VERB	bumali
+napagbabalian	8	VERB	bumali
+napapagbalian	8	VERB	bumali
+maipabali	8	VERB	bumali
+naipababali	8	VERB	bumali
+naipapabali	8	VERB	bumali
+naiipabali	8	VERB	bumali
+maipagpabali	8	VERB	bumali
+naipagpapabali	8	VERB	bumali
+naipapagpabali	8	VERB	bumali
+naiipagpabali	8	VERB	bumali
+maikapagpabali	8	VERB	bumali
+naikapagpapabali	8	VERB	bumali
+naikakapagpabali	8	VERB	bumali
+naiikapagpabali	8	VERB	bumali
+mapagpabalian	8	VERB	bumali
+napagpapababalian	8	VERB	bumali
+napapagpabalian	8	VERB	bumali
+mapapagbalian	8	VERB	bumali
+napapapagbalian	8	VERB	bumali
+makibali	8	VERB	bumali
+nakikibali	8	VERB	bumali
+makipagpabali	8	VERB	bumali
+nakikipagpabali	8	VERB	bumali
+binalikan	17	VERB	bumalik
+binabalikan	17	VERB	bumalik
+babalikan	17	VERB	bumalik
 binalikat	1	VERB	balikatin
 binabalikat	1	VERB	balikatin
 babalikatin	1	VERB	balikatin
@@ -38172,141 +38172,141 @@ makibanto	3	VERB	bantuan
 nakikibanto	3	VERB	bantuan
 makipagpabanto	3	VERB	bantuan
 nakikipagpabanto	3	VERB	bantuan
-binabaril	41	VERB	barilin
-babarilin	41	VERB	barilin
-inabaril	41	VERB	barilin
-pagbarilan	41	VERB	barilin
-pinapagbarilan	41	VERB	barilin
-pinagbabarilan	41	VERB	barilin
-ibaril	41	VERB	barilin
-ibinabaril	41	VERB	barilin
-ipabaril	41	VERB	barilin
-ipinababaril	41	VERB	barilin
-ipinapabaril	41	VERB	barilin
-ipagpabaril	41	VERB	barilin
-ipinagpapabaril	41	VERB	barilin
-ipinapagpabaril	41	VERB	barilin
-ikapagpabaril	41	VERB	barilin
-ikinapagpapabaril	41	VERB	barilin
-ikinakapagpabaril	41	VERB	barilin
-mabaril	41	VERB	barilin
-nababaril	41	VERB	barilin
-maibaril	41	VERB	barilin
-naibabaril	41	VERB	barilin
-maikabaril	41	VERB	barilin
-naikababaril	41	VERB	barilin
-naikakabaril	41	VERB	barilin
-naiikabaril	41	VERB	barilin
-mapagbarilan	41	VERB	barilin
-napagbabarilan	41	VERB	barilin
-napapagbarilan	41	VERB	barilin
-maipabaril	41	VERB	barilin
-naipababaril	41	VERB	barilin
-naipapabaril	41	VERB	barilin
-naiipabaril	41	VERB	barilin
-maipagpabaril	41	VERB	barilin
-naipagpapabaril	41	VERB	barilin
-naipapagpabaril	41	VERB	barilin
-naiipagpabaril	41	VERB	barilin
-maikapagpabaril	41	VERB	barilin
-naikapagpapabaril	41	VERB	barilin
-naikakapagpabaril	41	VERB	barilin
-naiikapagpabaril	41	VERB	barilin
-mapagpabarilan	41	VERB	barilin
-napagpapababarilan	41	VERB	barilin
-napapagpabarilan	41	VERB	barilin
-mapapagbarilan	41	VERB	barilin
-napapapagbarilan	41	VERB	barilin
-makibaril	41	VERB	barilin
-nakikibaril	41	VERB	barilin
-makipagpabaril	41	VERB	barilin
-nakikipagpabaril	41	VERB	barilin
-pamarilan	41	VERB	barilin
-pinamamarilan	41	VERB	barilin
-pinapamarilan	41	VERB	barilin
-ipamaril	41	VERB	barilin
-ipinapamaril	41	VERB	barilin
-ipapamaril	41	VERB	barilin
-ipinapapamaril	41	VERB	barilin
-ikapagpapamaril	41	VERB	barilin
-ikinapagpapapamaril	41	VERB	barilin
-ikinakapagpapamaril	41	VERB	barilin
-papamarilan	41	VERB	barilin
-pinapapamarilan	41	VERB	barilin
-maipaaril	41	VERB	barilin
-naipaaaril	41	VERB	barilin
-naipapaaril	41	VERB	barilin
-naiipaaril	41	VERB	barilin
-maikapaaril	41	VERB	barilin
-naikapaaaril	41	VERB	barilin
-naikapapaaril	41	VERB	barilin
-naiikapaaril	41	VERB	barilin
-mapaarilan	41	VERB	barilin
-napaaarilan	41	VERB	barilin
-napapaarilan	41	VERB	barilin
-maipapamaril	41	VERB	barilin
-naipapapamaril	41	VERB	barilin
-naiipapamaril	41	VERB	barilin
-maikapagpapamaril	41	VERB	barilin
-naikapagpapapamaril	41	VERB	barilin
-naikakapagpapamaril	41	VERB	barilin
-naiikapagpapamaril	41	VERB	barilin
-mapapamarilan	41	VERB	barilin
-napapapamarilan	41	VERB	barilin
-makipamaril	41	VERB	barilin
-nakikipamaril	41	VERB	barilin
-binabasag	28	VERB	basagin
-inabasag	28	VERB	basagin
-basagan	28	VERB	basagin
-binabasagan	28	VERB	basagin
-inabasagan	28	VERB	basagin
-pagbasagan	28	VERB	basagin
-pinapagbasagan	28	VERB	basagin
-pinagbabasagan	28	VERB	basagin
-ibasag	28	VERB	basagin
-ibinabasag	28	VERB	basagin
-ipabasag	28	VERB	basagin
-ipinababasag	28	VERB	basagin
-ipinapabasag	28	VERB	basagin
-ipagpabasag	28	VERB	basagin
-ipinagpapabasag	28	VERB	basagin
-ipinapagpabasag	28	VERB	basagin
-ikapagpabasag	28	VERB	basagin
-ikinapagpapabasag	28	VERB	basagin
-ikinakapagpabasag	28	VERB	basagin
-nababasag	28	VERB	basagin
-mabasagan	28	VERB	basagin
-nababasagan	28	VERB	basagin
-maibasag	28	VERB	basagin
-naibabasag	28	VERB	basagin
-maikabasag	28	VERB	basagin
-naikababasag	28	VERB	basagin
-naikakabasag	28	VERB	basagin
-naiikabasag	28	VERB	basagin
-mapagbasagan	28	VERB	basagin
-napagbabasagan	28	VERB	basagin
-napapagbasagan	28	VERB	basagin
-maipabasag	28	VERB	basagin
-naipababasag	28	VERB	basagin
-naipapabasag	28	VERB	basagin
-naiipabasag	28	VERB	basagin
-maipagpabasag	28	VERB	basagin
-naipagpapabasag	28	VERB	basagin
-naipapagpabasag	28	VERB	basagin
-naiipagpabasag	28	VERB	basagin
-maikapagpabasag	28	VERB	basagin
-naikapagpapabasag	28	VERB	basagin
-naikakapagpabasag	28	VERB	basagin
-naiikapagpabasag	28	VERB	basagin
-mapagpabasagan	28	VERB	basagin
-napagpapababasagan	28	VERB	basagin
-napapagpabasagan	28	VERB	basagin
-mapapagbasagan	28	VERB	basagin
-napapapagbasagan	28	VERB	basagin
-makibasag	28	VERB	basagin
-nakikibasag	28	VERB	basagin
-makipagpabasag	28	VERB	basagin
-nakikipagpabasag	28	VERB	basagin
+binabaril	41	VERB	mamaril
+babarilin	41	VERB	mamaril
+inabaril	41	VERB	mamaril
+pagbarilan	41	VERB	mamaril
+pinapagbarilan	41	VERB	mamaril
+pinagbabarilan	41	VERB	mamaril
+ibaril	41	VERB	mamaril
+ibinabaril	41	VERB	mamaril
+ipabaril	41	VERB	mamaril
+ipinababaril	41	VERB	mamaril
+ipinapabaril	41	VERB	mamaril
+ipagpabaril	41	VERB	mamaril
+ipinagpapabaril	41	VERB	mamaril
+ipinapagpabaril	41	VERB	mamaril
+ikapagpabaril	41	VERB	mamaril
+ikinapagpapabaril	41	VERB	mamaril
+ikinakapagpabaril	41	VERB	mamaril
+mabaril	41	VERB	mamaril
+nababaril	41	VERB	mamaril
+maibaril	41	VERB	mamaril
+naibabaril	41	VERB	mamaril
+maikabaril	41	VERB	mamaril
+naikababaril	41	VERB	mamaril
+naikakabaril	41	VERB	mamaril
+naiikabaril	41	VERB	mamaril
+mapagbarilan	41	VERB	mamaril
+napagbabarilan	41	VERB	mamaril
+napapagbarilan	41	VERB	mamaril
+maipabaril	41	VERB	mamaril
+naipababaril	41	VERB	mamaril
+naipapabaril	41	VERB	mamaril
+naiipabaril	41	VERB	mamaril
+maipagpabaril	41	VERB	mamaril
+naipagpapabaril	41	VERB	mamaril
+naipapagpabaril	41	VERB	mamaril
+naiipagpabaril	41	VERB	mamaril
+maikapagpabaril	41	VERB	mamaril
+naikapagpapabaril	41	VERB	mamaril
+naikakapagpabaril	41	VERB	mamaril
+naiikapagpabaril	41	VERB	mamaril
+mapagpabarilan	41	VERB	mamaril
+napagpapababarilan	41	VERB	mamaril
+napapagpabarilan	41	VERB	mamaril
+mapapagbarilan	41	VERB	mamaril
+napapapagbarilan	41	VERB	mamaril
+makibaril	41	VERB	mamaril
+nakikibaril	41	VERB	mamaril
+makipagpabaril	41	VERB	mamaril
+nakikipagpabaril	41	VERB	mamaril
+pamarilan	41	VERB	mamaril
+pinamamarilan	41	VERB	mamaril
+pinapamarilan	41	VERB	mamaril
+ipamaril	41	VERB	mamaril
+ipinapamaril	41	VERB	mamaril
+ipapamaril	41	VERB	mamaril
+ipinapapamaril	41	VERB	mamaril
+ikapagpapamaril	41	VERB	mamaril
+ikinapagpapapamaril	41	VERB	mamaril
+ikinakapagpapamaril	41	VERB	mamaril
+papamarilan	41	VERB	mamaril
+pinapapamarilan	41	VERB	mamaril
+maipaaril	41	VERB	mamaril
+naipaaaril	41	VERB	mamaril
+naipapaaril	41	VERB	mamaril
+naiipaaril	41	VERB	mamaril
+maikapaaril	41	VERB	mamaril
+naikapaaaril	41	VERB	mamaril
+naikapapaaril	41	VERB	mamaril
+naiikapaaril	41	VERB	mamaril
+mapaarilan	41	VERB	mamaril
+napaaarilan	41	VERB	mamaril
+napapaarilan	41	VERB	mamaril
+maipapamaril	41	VERB	mamaril
+naipapapamaril	41	VERB	mamaril
+naiipapamaril	41	VERB	mamaril
+maikapagpapamaril	41	VERB	mamaril
+naikapagpapapamaril	41	VERB	mamaril
+naikakapagpapamaril	41	VERB	mamaril
+naiikapagpapamaril	41	VERB	mamaril
+mapapamarilan	41	VERB	mamaril
+napapapamarilan	41	VERB	mamaril
+makipamaril	41	VERB	mamaril
+nakikipamaril	41	VERB	mamaril
+binabasag	28	VERB	bumasag
+inabasag	28	VERB	bumasag
+basagan	28	VERB	bumasag
+binabasagan	28	VERB	bumasag
+inabasagan	28	VERB	bumasag
+pagbasagan	28	VERB	bumasag
+pinapagbasagan	28	VERB	bumasag
+pinagbabasagan	28	VERB	bumasag
+ibasag	28	VERB	bumasag
+ibinabasag	28	VERB	bumasag
+ipabasag	28	VERB	bumasag
+ipinababasag	28	VERB	bumasag
+ipinapabasag	28	VERB	bumasag
+ipagpabasag	28	VERB	bumasag
+ipinagpapabasag	28	VERB	bumasag
+ipinapagpabasag	28	VERB	bumasag
+ikapagpabasag	28	VERB	bumasag
+ikinapagpapabasag	28	VERB	bumasag
+ikinakapagpabasag	28	VERB	bumasag
+nababasag	28	VERB	bumasag
+mabasagan	28	VERB	bumasag
+nababasagan	28	VERB	bumasag
+maibasag	28	VERB	bumasag
+naibabasag	28	VERB	bumasag
+maikabasag	28	VERB	bumasag
+naikababasag	28	VERB	bumasag
+naikakabasag	28	VERB	bumasag
+naiikabasag	28	VERB	bumasag
+mapagbasagan	28	VERB	bumasag
+napagbabasagan	28	VERB	bumasag
+napapagbasagan	28	VERB	bumasag
+maipabasag	28	VERB	bumasag
+naipababasag	28	VERB	bumasag
+naipapabasag	28	VERB	bumasag
+naiipabasag	28	VERB	bumasag
+maipagpabasag	28	VERB	bumasag
+naipagpapabasag	28	VERB	bumasag
+naipapagpabasag	28	VERB	bumasag
+naiipagpabasag	28	VERB	bumasag
+maikapagpabasag	28	VERB	bumasag
+naikapagpapabasag	28	VERB	bumasag
+naikakapagpabasag	28	VERB	bumasag
+naiikapagpabasag	28	VERB	bumasag
+mapagpabasagan	28	VERB	bumasag
+napagpapababasagan	28	VERB	bumasag
+napapagpabasagan	28	VERB	bumasag
+mapapagbasagan	28	VERB	bumasag
+napapapagbasagan	28	VERB	bumasag
+makibasag	28	VERB	bumasag
+nakikibasag	28	VERB	bumasag
+makipagpabasag	28	VERB	bumasag
+nakikipagpabasag	28	VERB	bumasag
 binasahan	43	VERB	basahan
 binabasahan	43	VERB	basahan
 babasahan	43	VERB	basahan
@@ -38771,98 +38771,98 @@ beberipikahin	6	VERB	beripikahin
 binidbiran	1	VERB	bidbiran
 binibidbiran	1	VERB	bidbiran
 bibidbiran	1	VERB	bidbiran
-inabigyan	529	VERB	bigyan
-pagbigyan	529	VERB	bigyan
-pinapagbigyan	529	VERB	bigyan
-pinagbibigyan	529	VERB	bigyan
-ipagbigay	529	VERB	bigyan
-ipinapagbigay	529	VERB	bigyan
-ipagpabigay	529	VERB	bigyan
-ipinagpapabigay	529	VERB	bigyan
-ipinapagpabigay	529	VERB	bigyan
-ikapagpabigay	529	VERB	bigyan
-ikinapagpapabigay	529	VERB	bigyan
-ikinakapagpabigay	529	VERB	bigyan
-maipagbigay	529	VERB	bigyan
-naipagbibigay	529	VERB	bigyan
-naipapagbigay	529	VERB	bigyan
-naiipagbigay	529	VERB	bigyan
-maikapagbigay	529	VERB	bigyan
-naikapagbibigay	529	VERB	bigyan
-naikapapagbigay	529	VERB	bigyan
-naiikapagbigay	529	VERB	bigyan
-mapagbigayan	529	VERB	bigyan
-napagbibigayan	529	VERB	bigyan
-napapagbigayan	529	VERB	bigyan
-maipagpabigay	529	VERB	bigyan
-naipagpapabigay	529	VERB	bigyan
-naipapagpabigay	529	VERB	bigyan
-naiipagpabigay	529	VERB	bigyan
-maikapagpabigay	529	VERB	bigyan
-naikapagpapabigay	529	VERB	bigyan
-naikakapagpabigay	529	VERB	bigyan
-naiikapagpabigay	529	VERB	bigyan
-mapagpabigyan	529	VERB	bigyan
-napagpapabibigyan	529	VERB	bigyan
-napapagpabigyan	529	VERB	bigyan
-mapapagbigyan	529	VERB	bigyan
-napapapagbigyan	529	VERB	bigyan
-makipagbigay	529	VERB	bigyan
-nakikipagbigay	529	VERB	bigyan
-makibigay	529	VERB	bigyan
-nakikibigay	529	VERB	bigyan
-makipagpabigay	529	VERB	bigyan
-nakikipagpabigay	529	VERB	bigyan
+inabigyan	529	VERB	magbigay
+pagbigyan	529	VERB	magbigay
+pinapagbigyan	529	VERB	magbigay
+pinagbibigyan	529	VERB	magbigay
+ipagbigay	529	VERB	magbigay
+ipinapagbigay	529	VERB	magbigay
+ipagpabigay	529	VERB	magbigay
+ipinagpapabigay	529	VERB	magbigay
+ipinapagpabigay	529	VERB	magbigay
+ikapagpabigay	529	VERB	magbigay
+ikinapagpapabigay	529	VERB	magbigay
+ikinakapagpabigay	529	VERB	magbigay
+maipagbigay	529	VERB	magbigay
+naipagbibigay	529	VERB	magbigay
+naipapagbigay	529	VERB	magbigay
+naiipagbigay	529	VERB	magbigay
+maikapagbigay	529	VERB	magbigay
+naikapagbibigay	529	VERB	magbigay
+naikapapagbigay	529	VERB	magbigay
+naiikapagbigay	529	VERB	magbigay
+mapagbigayan	529	VERB	magbigay
+napagbibigayan	529	VERB	magbigay
+napapagbigayan	529	VERB	magbigay
+maipagpabigay	529	VERB	magbigay
+naipagpapabigay	529	VERB	magbigay
+naipapagpabigay	529	VERB	magbigay
+naiipagpabigay	529	VERB	magbigay
+maikapagpabigay	529	VERB	magbigay
+naikapagpapabigay	529	VERB	magbigay
+naikakapagpabigay	529	VERB	magbigay
+naiikapagpabigay	529	VERB	magbigay
+mapagpabigyan	529	VERB	magbigay
+napagpapabibigyan	529	VERB	magbigay
+napapagpabigyan	529	VERB	magbigay
+mapapagbigyan	529	VERB	magbigay
+napapapagbigyan	529	VERB	magbigay
+makipagbigay	529	VERB	magbigay
+nakikipagbigay	529	VERB	magbigay
+makibigay	529	VERB	magbigay
+nakikibigay	529	VERB	magbigay
+makipagpabigay	529	VERB	magbigay
+nakikipagpabigay	529	VERB	magbigay
 bibigyang-diin	52	VERB	bigyang-diin
-binilangan	18	VERB	bilangan
-binibilangan	18	VERB	bilangan
-bibilangan	18	VERB	bilangan
-bibilangin	56	VERB	bilangin
-inabilang	56	VERB	bilangin
-inabilangan	56	VERB	bilangin
-pagbilangan	56	VERB	bilangin
-pinapagbilangan	56	VERB	bilangin
-pinagbibilangan	56	VERB	bilangin
-ipabilang	56	VERB	bilangin
-ipinabibilang	56	VERB	bilangin
-ipinapabilang	56	VERB	bilangin
-ipagpabilang	56	VERB	bilangin
-ipinagpapabilang	56	VERB	bilangin
-ipinapagpabilang	56	VERB	bilangin
-ikapagpabilang	56	VERB	bilangin
-ikinapagpapabilang	56	VERB	bilangin
-ikinakapagpabilang	56	VERB	bilangin
-nabibilangan	56	VERB	bilangin
-maibilang	56	VERB	bilangin
-naibibilang	56	VERB	bilangin
-maikabilang	56	VERB	bilangin
-naikabibilang	56	VERB	bilangin
-naikakabilang	56	VERB	bilangin
-naiikabilang	56	VERB	bilangin
-mapagbilangan	56	VERB	bilangin
-napagbibilangan	56	VERB	bilangin
-napapagbilangan	56	VERB	bilangin
-maipabilang	56	VERB	bilangin
-naipabibilang	56	VERB	bilangin
-naipapabilang	56	VERB	bilangin
-naiipabilang	56	VERB	bilangin
-maipagpabilang	56	VERB	bilangin
-naipagpapabilang	56	VERB	bilangin
-naipapagpabilang	56	VERB	bilangin
-naiipagpabilang	56	VERB	bilangin
-maikapagpabilang	56	VERB	bilangin
-naikapagpapabilang	56	VERB	bilangin
-naikakapagpabilang	56	VERB	bilangin
-naiikapagpabilang	56	VERB	bilangin
-mapagpabilangan	56	VERB	bilangin
-napagpapabibilangan	56	VERB	bilangin
-napapagpabilangan	56	VERB	bilangin
-mapapagbilangan	56	VERB	bilangin
-napapapagbilangan	56	VERB	bilangin
-makibilang	56	VERB	bilangin
-nakikibilang	56	VERB	bilangin
-makipagpabilang	56	VERB	bilangin
-nakikipagpabilang	56	VERB	bilangin
+binilangan	18	VERB	magbilang
+binibilangan	18	VERB	magbilang
+bibilangan	18	VERB	magbilang
+bibilangin	56	VERB	magbilang
+inabilang	56	VERB	magbilang
+inabilangan	56	VERB	magbilang
+pagbilangan	56	VERB	magbilang
+pinapagbilangan	56	VERB	magbilang
+pinagbibilangan	56	VERB	magbilang
+ipabilang	56	VERB	magbilang
+ipinabibilang	56	VERB	magbilang
+ipinapabilang	56	VERB	magbilang
+ipagpabilang	56	VERB	magbilang
+ipinagpapabilang	56	VERB	magbilang
+ipinapagpabilang	56	VERB	magbilang
+ikapagpabilang	56	VERB	magbilang
+ikinapagpapabilang	56	VERB	magbilang
+ikinakapagpabilang	56	VERB	magbilang
+nabibilangan	56	VERB	magbilang
+maibilang	56	VERB	magbilang
+naibibilang	56	VERB	magbilang
+maikabilang	56	VERB	magbilang
+naikabibilang	56	VERB	magbilang
+naikakabilang	56	VERB	magbilang
+naiikabilang	56	VERB	magbilang
+mapagbilangan	56	VERB	magbilang
+napagbibilangan	56	VERB	magbilang
+napapagbilangan	56	VERB	magbilang
+maipabilang	56	VERB	magbilang
+naipabibilang	56	VERB	magbilang
+naipapabilang	56	VERB	magbilang
+naiipabilang	56	VERB	magbilang
+maipagpabilang	56	VERB	magbilang
+naipagpapabilang	56	VERB	magbilang
+naipapagpabilang	56	VERB	magbilang
+naiipagpabilang	56	VERB	magbilang
+maikapagpabilang	56	VERB	magbilang
+naikapagpapabilang	56	VERB	magbilang
+naikakapagpabilang	56	VERB	magbilang
+naiikapagpabilang	56	VERB	magbilang
+mapagpabilangan	56	VERB	magbilang
+napagpapabibilangan	56	VERB	magbilang
+napapagpabilangan	56	VERB	magbilang
+mapapagbilangan	56	VERB	magbilang
+napapapagbilangan	56	VERB	magbilang
+makibilang	56	VERB	magbilang
+nakikibilang	56	VERB	magbilang
+makipagpabilang	56	VERB	magbilang
+nakikipagpabilang	56	VERB	magbilang
 binilhan	4	VERB	bilhan
 binibilhan	4	VERB	bilhan
 bibilhan	4	VERB	bilhan
@@ -38976,54 +38976,54 @@ makipagpabilog	73	VERB	bilugan
 nakikipagpabilog	73	VERB	bilugan
 binilog	5	VERB	bilugin
 bibilugin	5	VERB	bilugin
-bibisitahin	230	VERB	bisitahin
-inabisita	230	VERB	bisitahin
-pagbisitahan	230	VERB	bisitahin
-pinapagbisitahan	230	VERB	bisitahin
-pinagbibisitahan	230	VERB	bisitahin
-ibisita	230	VERB	bisitahin
-ibinibisita	230	VERB	bisitahin
-ipabisita	230	VERB	bisitahin
-ipinabibisita	230	VERB	bisitahin
-ipinapabisita	230	VERB	bisitahin
-ipagpabisita	230	VERB	bisitahin
-ipinagpapabisita	230	VERB	bisitahin
-ipinapagpabisita	230	VERB	bisitahin
-ikapagpabisita	230	VERB	bisitahin
-ikinapagpapabisita	230	VERB	bisitahin
-ikinakapagpabisita	230	VERB	bisitahin
-mabisita	230	VERB	bisitahin
-nabibisita	230	VERB	bisitahin
-maibisita	230	VERB	bisitahin
-naibibisita	230	VERB	bisitahin
-maikabisita	230	VERB	bisitahin
-naikabibisita	230	VERB	bisitahin
-naikakabisita	230	VERB	bisitahin
-naiikabisita	230	VERB	bisitahin
-mapagbisitaan	230	VERB	bisitahin
-napagbibisitaan	230	VERB	bisitahin
-napapagbisitaan	230	VERB	bisitahin
-maipabisita	230	VERB	bisitahin
-naipabibisita	230	VERB	bisitahin
-naipapabisita	230	VERB	bisitahin
-naiipabisita	230	VERB	bisitahin
-maipagpabisita	230	VERB	bisitahin
-naipagpapabisita	230	VERB	bisitahin
-naipapagpabisita	230	VERB	bisitahin
-naiipagpabisita	230	VERB	bisitahin
-maikapagpabisita	230	VERB	bisitahin
-naikapagpapabisita	230	VERB	bisitahin
-naikakapagpabisita	230	VERB	bisitahin
-naiikapagpabisita	230	VERB	bisitahin
-mapagpabisitahan	230	VERB	bisitahin
-napagpapabibisitahan	230	VERB	bisitahin
-napapagpabisitahan	230	VERB	bisitahin
-mapapagbisitahan	230	VERB	bisitahin
-napapapagbisitahan	230	VERB	bisitahin
-makibisita	230	VERB	bisitahin
-nakikibisita	230	VERB	bisitahin
-makipagpabisita	230	VERB	bisitahin
-nakikipagpabisita	230	VERB	bisitahin
+bibisitahin	230	VERB	bumisita
+inabisita	230	VERB	bumisita
+pagbisitahan	230	VERB	bumisita
+pinapagbisitahan	230	VERB	bumisita
+pinagbibisitahan	230	VERB	bumisita
+ibisita	230	VERB	bumisita
+ibinibisita	230	VERB	bumisita
+ipabisita	230	VERB	bumisita
+ipinabibisita	230	VERB	bumisita
+ipinapabisita	230	VERB	bumisita
+ipagpabisita	230	VERB	bumisita
+ipinagpapabisita	230	VERB	bumisita
+ipinapagpabisita	230	VERB	bumisita
+ikapagpabisita	230	VERB	bumisita
+ikinapagpapabisita	230	VERB	bumisita
+ikinakapagpabisita	230	VERB	bumisita
+mabisita	230	VERB	bumisita
+nabibisita	230	VERB	bumisita
+maibisita	230	VERB	bumisita
+naibibisita	230	VERB	bumisita
+maikabisita	230	VERB	bumisita
+naikabibisita	230	VERB	bumisita
+naikakabisita	230	VERB	bumisita
+naiikabisita	230	VERB	bumisita
+mapagbisitaan	230	VERB	bumisita
+napagbibisitaan	230	VERB	bumisita
+napapagbisitaan	230	VERB	bumisita
+maipabisita	230	VERB	bumisita
+naipabibisita	230	VERB	bumisita
+naipapabisita	230	VERB	bumisita
+naiipabisita	230	VERB	bumisita
+maipagpabisita	230	VERB	bumisita
+naipagpapabisita	230	VERB	bumisita
+naipapagpabisita	230	VERB	bumisita
+naiipagpabisita	230	VERB	bumisita
+maikapagpabisita	230	VERB	bumisita
+naikapagpapabisita	230	VERB	bumisita
+naikakapagpabisita	230	VERB	bumisita
+naiikapagpabisita	230	VERB	bumisita
+mapagpabisitahan	230	VERB	bumisita
+napagpapabibisitahan	230	VERB	bumisita
+napapagpabisitahan	230	VERB	bumisita
+mapapagbisitahan	230	VERB	bumisita
+napapapagbisitahan	230	VERB	bumisita
+makibisita	230	VERB	bumisita
+nakikibisita	230	VERB	bumisita
+makipagpabisita	230	VERB	bumisita
+nakikipagpabisita	230	VERB	bumisita
 binotohan	146	VERB	botohan
 binobotohan	146	VERB	botohan
 bobotohan	146	VERB	botohan
@@ -39807,8 +39807,8 @@ bubuwisan	10	VERB	buwisan
 binuyo	3	VERB	buyuhin
 binubuyo	3	VERB	buyuhin
 bubuyuhin	3	VERB	buyuhin
-dinaraanan	1375	VERB	daanan
-dadaanan	1375	VERB	daanan
+dinaraanan	1375	VERB	dumaan
+dadaanan	1375	VERB	dumaan
 daragdagan	148	VERB	dagdagan
 dinahikan	13	VERB	dahikan
 dinarahikan	13	VERB	dahikan
@@ -39859,55 +39859,55 @@ makidalas	18	VERB	dalasan
 nakikidalas	18	VERB	dalasan
 makipagpadalas	18	VERB	dalasan
 nakikipagpadalas	18	VERB	dalasan
-dinadalaw	40	VERB	dalawin
-dadalawin	40	VERB	dalawin
-inadalaw	40	VERB	dalawin
-pagdalawan	40	VERB	dalawin
-pinapagdalawan	40	VERB	dalawin
-pinagdadalawan	40	VERB	dalawin
-idalaw	40	VERB	dalawin
-idinadalaw	40	VERB	dalawin
-ipadalaw	40	VERB	dalawin
-ipinadadalaw	40	VERB	dalawin
-ipinapadalaw	40	VERB	dalawin
-ipagpadalaw	40	VERB	dalawin
-ipinagpapadalaw	40	VERB	dalawin
-ipinapagpadalaw	40	VERB	dalawin
-ikapagpadalaw	40	VERB	dalawin
-ikinapagpapadalaw	40	VERB	dalawin
-ikinakapagpadalaw	40	VERB	dalawin
-madalaw	40	VERB	dalawin
-nadadalaw	40	VERB	dalawin
-maidalaw	40	VERB	dalawin
-naidadalaw	40	VERB	dalawin
-maikadalaw	40	VERB	dalawin
-naikadadalaw	40	VERB	dalawin
-naikakadalaw	40	VERB	dalawin
-naiikadalaw	40	VERB	dalawin
-mapagdalawan	40	VERB	dalawin
-napagdadalawan	40	VERB	dalawin
-napapagdalawan	40	VERB	dalawin
-maipadalaw	40	VERB	dalawin
-naipadadalaw	40	VERB	dalawin
-naipapadalaw	40	VERB	dalawin
-naiipadalaw	40	VERB	dalawin
-maipagpadalaw	40	VERB	dalawin
-naipagpapadalaw	40	VERB	dalawin
-naipapagpadalaw	40	VERB	dalawin
-naiipagpadalaw	40	VERB	dalawin
-maikapagpadalaw	40	VERB	dalawin
-naikapagpapadalaw	40	VERB	dalawin
-naikakapagpadalaw	40	VERB	dalawin
-naiikapagpadalaw	40	VERB	dalawin
-mapagpadalawan	40	VERB	dalawin
-napagpapadadalawan	40	VERB	dalawin
-napapagpadalawan	40	VERB	dalawin
-mapapagdalawan	40	VERB	dalawin
-napapapagdalawan	40	VERB	dalawin
-makidalaw	40	VERB	dalawin
-nakikidalaw	40	VERB	dalawin
-makipagpadalaw	40	VERB	dalawin
-nakikipagpadalaw	40	VERB	dalawin
+dinadalaw	40	VERB	dumalaw
+dadalawin	40	VERB	dumalaw
+inadalaw	40	VERB	dumalaw
+pagdalawan	40	VERB	dumalaw
+pinapagdalawan	40	VERB	dumalaw
+pinagdadalawan	40	VERB	dumalaw
+idalaw	40	VERB	dumalaw
+idinadalaw	40	VERB	dumalaw
+ipadalaw	40	VERB	dumalaw
+ipinadadalaw	40	VERB	dumalaw
+ipinapadalaw	40	VERB	dumalaw
+ipagpadalaw	40	VERB	dumalaw
+ipinagpapadalaw	40	VERB	dumalaw
+ipinapagpadalaw	40	VERB	dumalaw
+ikapagpadalaw	40	VERB	dumalaw
+ikinapagpapadalaw	40	VERB	dumalaw
+ikinakapagpadalaw	40	VERB	dumalaw
+madalaw	40	VERB	dumalaw
+nadadalaw	40	VERB	dumalaw
+maidalaw	40	VERB	dumalaw
+naidadalaw	40	VERB	dumalaw
+maikadalaw	40	VERB	dumalaw
+naikadadalaw	40	VERB	dumalaw
+naikakadalaw	40	VERB	dumalaw
+naiikadalaw	40	VERB	dumalaw
+mapagdalawan	40	VERB	dumalaw
+napagdadalawan	40	VERB	dumalaw
+napapagdalawan	40	VERB	dumalaw
+maipadalaw	40	VERB	dumalaw
+naipadadalaw	40	VERB	dumalaw
+naipapadalaw	40	VERB	dumalaw
+naiipadalaw	40	VERB	dumalaw
+maipagpadalaw	40	VERB	dumalaw
+naipagpapadalaw	40	VERB	dumalaw
+naipapagpadalaw	40	VERB	dumalaw
+naiipagpadalaw	40	VERB	dumalaw
+maikapagpadalaw	40	VERB	dumalaw
+naikapagpapadalaw	40	VERB	dumalaw
+naikakapagpadalaw	40	VERB	dumalaw
+naiikapagpadalaw	40	VERB	dumalaw
+mapagpadalawan	40	VERB	dumalaw
+napagpapadadalawan	40	VERB	dumalaw
+napapagpadalawan	40	VERB	dumalaw
+mapapagdalawan	40	VERB	dumalaw
+napapapagdalawan	40	VERB	dumalaw
+makidalaw	40	VERB	dumalaw
+nakikidalaw	40	VERB	dumalaw
+makipagpadalaw	40	VERB	dumalaw
+nakikipagpadalaw	40	VERB	dumalaw
 inadala	433	VERB	dalhin
 dalhan	433	VERB	dalhin
 dinadalhan	433	VERB	dalhin
@@ -40007,9 +40007,9 @@ makidantay	1	VERB	dantayan
 nakikidantay	1	VERB	dantayan
 makipagpadantay	1	VERB	dantayan
 nakikipagpadantay	1	VERB	dantayan
-dinaya	19	VERB	dayain
-dinaraya	19	VERB	dayain
-darayain	19	VERB	dayain
+dinaya	19	VERB	madaya
+dinaraya	19	VERB	madaya
+darayain	19	VERB	madaya
 dinepensahan	8	VERB	depensahan
 dinedepensahan	8	VERB	depensahan
 dedepensahan	8	VERB	depensahan
@@ -40575,8 +40575,8 @@ nakikipagpadura	12	VERB	dumura
 dinuongan	1	VERB	duongan
 dinuruongan	1	VERB	duongan
 duruongan	1	VERB	duongan
-dinuraan	15	VERB	duraan
-duduraan	15	VERB	duraan
+dinuraan	15	VERB	dumura
+duduraan	15	VERB	dumura
 inekisan	4	VERB	ekisan
 ineekisan	4	VERB	ekisan
 eekisan	4	VERB	ekisan
@@ -40740,9 +40740,9 @@ nakikipagpaganti	9	VERB	gantihan
 ginasolinahan	31	VERB	gasolinahan
 ginagasolinahan	31	VERB	gasolinahan
 gagasolinahan	31	VERB	gasolinahan
-ginastos	116	VERB	gastusin
-ginagastos	116	VERB	gastusin
-gagastusin	116	VERB	gastusin
+ginastos	116	VERB	gumastos
+ginagastos	116	VERB	gumastos
+gagastusin	116	VERB	gumastos
 ginagataan	1	VERB	gataan
 gagataan	1	VERB	gataan
 ginagawan	28	VERB	gawan
@@ -41105,9 +41105,9 @@ makigutom	6	VERB	gutumin
 nakikigutom	6	VERB	gutumin
 makipagpagutom	6	VERB	gutumin
 nakikipagpagutom	6	VERB	gutumin
-hinabulan	17	VERB	habulan
-hinahabulan	17	VERB	habulan
-hahabulan	17	VERB	habulan
+hinabulan	17	VERB	habulin
+hinahabulan	17	VERB	habulin
+hahabulan	17	VERB	habulin
 hahabulin	26	VERB	habulin
 inahabol	26	VERB	habulin
 inahabulan	26	VERB	habulin
@@ -41217,48 +41217,48 @@ makipanghalay	6	VERB	halayin
 nakikipanghalay	6	VERB	halayin
 makipagpahalay	6	VERB	halayin
 nakikipagpahalay	6	VERB	halayin
-hinahalikan	37	VERB	halikan
-hahalikan	37	VERB	halikan
-inahalikan	37	VERB	halikan
-paghalikan	37	VERB	halikan
-pinapaghalikan	37	VERB	halikan
-pinaghahalikan	37	VERB	halikan
-ihalik	37	VERB	halikan
-inihahalik	37	VERB	halikan
-ipagpahalik	37	VERB	halikan
-ipinagpapahalik	37	VERB	halikan
-ipinapagpahalik	37	VERB	halikan
-ikapagpahalik	37	VERB	halikan
-ikinapagpapahalik	37	VERB	halikan
-ikinakapagpahalik	37	VERB	halikan
-mahalikan	37	VERB	halikan
-nahahalikan	37	VERB	halikan
-maihalik	37	VERB	halikan
-naihahalik	37	VERB	halikan
-maikahalik	37	VERB	halikan
-naikahahalik	37	VERB	halikan
-naikakahalik	37	VERB	halikan
-naiikahalik	37	VERB	halikan
-mapaghalikan	37	VERB	halikan
-napaghahalikan	37	VERB	halikan
-napapaghalikan	37	VERB	halikan
-maipagpahalik	37	VERB	halikan
-naipagpapahalik	37	VERB	halikan
-naipapagpahalik	37	VERB	halikan
-naiipagpahalik	37	VERB	halikan
-maikapagpahalik	37	VERB	halikan
-naikapagpapahalik	37	VERB	halikan
-naikakapagpahalik	37	VERB	halikan
-naiikapagpahalik	37	VERB	halikan
-mapagpahalikan	37	VERB	halikan
-napagpapahahalikan	37	VERB	halikan
-napapagpahalikan	37	VERB	halikan
-mapapaghalikan	37	VERB	halikan
-napapapaghalikan	37	VERB	halikan
-makihalik	37	VERB	halikan
-nakikihalik	37	VERB	halikan
-makipagpahalik	37	VERB	halikan
-nakikipagpahalik	37	VERB	halikan
+hinahalikan	37	VERB	humalik
+hahalikan	37	VERB	humalik
+inahalikan	37	VERB	humalik
+paghalikan	37	VERB	humalik
+pinapaghalikan	37	VERB	humalik
+pinaghahalikan	37	VERB	humalik
+ihalik	37	VERB	humalik
+inihahalik	37	VERB	humalik
+ipagpahalik	37	VERB	humalik
+ipinagpapahalik	37	VERB	humalik
+ipinapagpahalik	37	VERB	humalik
+ikapagpahalik	37	VERB	humalik
+ikinapagpapahalik	37	VERB	humalik
+ikinakapagpahalik	37	VERB	humalik
+mahalikan	37	VERB	humalik
+nahahalikan	37	VERB	humalik
+maihalik	37	VERB	humalik
+naihahalik	37	VERB	humalik
+maikahalik	37	VERB	humalik
+naikahahalik	37	VERB	humalik
+naikakahalik	37	VERB	humalik
+naiikahalik	37	VERB	humalik
+mapaghalikan	37	VERB	humalik
+napaghahalikan	37	VERB	humalik
+napapaghalikan	37	VERB	humalik
+maipagpahalik	37	VERB	humalik
+naipagpapahalik	37	VERB	humalik
+naipapagpahalik	37	VERB	humalik
+naiipagpahalik	37	VERB	humalik
+maikapagpahalik	37	VERB	humalik
+naikapagpapahalik	37	VERB	humalik
+naikakapagpahalik	37	VERB	humalik
+naiikapagpahalik	37	VERB	humalik
+mapagpahalikan	37	VERB	humalik
+napagpapahahalikan	37	VERB	humalik
+napapagpahalikan	37	VERB	humalik
+mapapaghalikan	37	VERB	humalik
+napapapaghalikan	37	VERB	humalik
+makihalik	37	VERB	humalik
+nakikihalik	37	VERB	humalik
+makipagpahalik	37	VERB	humalik
+nakikipagpahalik	37	VERB	humalik
 hinalughog	1	VERB	halughugin
 hinahalughog	1	VERB	halughugin
 hahalughugin	1	VERB	halughugin
@@ -41437,9 +41437,9 @@ nakikipagpahanap	410	VERB	hanapin
 hinanayan	17	VERB	hanayan
 hinahanayan	17	VERB	hanayan
 hahanayan	17	VERB	hanayan
-hinandaan	75	VERB	handaan
-hinahandaan	75	VERB	handaan
-hahandaan	75	VERB	handaan
+hinandaan	75	VERB	humanda
+hinahandaan	75	VERB	humanda
+hahandaan	75	VERB	humanda
 hahangarin	263	VERB	hangarin
 inahangad	263	VERB	hangarin
 paghangaran	263	VERB	hangarin
@@ -41562,49 +41562,49 @@ makihati	257	VERB	hatiin
 nakikihati	257	VERB	hatiin
 makipagpahati	257	VERB	hatiin
 nakikipagpahati	257	VERB	hatiin
-hahawakan	240	VERB	hawakan
-inahawakan	240	VERB	hawakan
-paghawakan	240	VERB	hawakan
-pinapaghawakan	240	VERB	hawakan
-pinaghahawakan	240	VERB	hawakan
-ihawak	240	VERB	hawakan
-inihahawak	240	VERB	hawakan
-ipagpahawak	240	VERB	hawakan
-ipinagpapahawak	240	VERB	hawakan
-ipinapagpahawak	240	VERB	hawakan
-ikapagpahawak	240	VERB	hawakan
-ikinapagpapahawak	240	VERB	hawakan
-ikinakapagpahawak	240	VERB	hawakan
-maihawak	240	VERB	hawakan
-naihahawak	240	VERB	hawakan
-maikahawak	240	VERB	hawakan
-naikahahawak	240	VERB	hawakan
-naikakahawak	240	VERB	hawakan
-naiikahawak	240	VERB	hawakan
-mapaghawakan	240	VERB	hawakan
-napaghahawakan	240	VERB	hawakan
-napapaghawakan	240	VERB	hawakan
-maipagpahawak	240	VERB	hawakan
-naipagpapahawak	240	VERB	hawakan
-naipapagpahawak	240	VERB	hawakan
-naiipagpahawak	240	VERB	hawakan
-maikapagpahawak	240	VERB	hawakan
-naikapagpapahawak	240	VERB	hawakan
-naikakapagpahawak	240	VERB	hawakan
-naiikapagpahawak	240	VERB	hawakan
-mapagpahawakan	240	VERB	hawakan
-napagpapahahawakan	240	VERB	hawakan
-napapagpahawakan	240	VERB	hawakan
-mapapaghawakan	240	VERB	hawakan
-napapapaghawakan	240	VERB	hawakan
-makihawak	240	VERB	hawakan
-nakikihawak	240	VERB	hawakan
-makipagpahawak	240	VERB	hawakan
-nakikipagpahawak	240	VERB	hawakan
+hahawakan	240	VERB	humawak
+inahawakan	240	VERB	humawak
+paghawakan	240	VERB	humawak
+pinapaghawakan	240	VERB	humawak
+pinaghahawakan	240	VERB	humawak
+ihawak	240	VERB	humawak
+inihahawak	240	VERB	humawak
+ipagpahawak	240	VERB	humawak
+ipinagpapahawak	240	VERB	humawak
+ipinapagpahawak	240	VERB	humawak
+ikapagpahawak	240	VERB	humawak
+ikinapagpapahawak	240	VERB	humawak
+ikinakapagpahawak	240	VERB	humawak
+maihawak	240	VERB	humawak
+naihahawak	240	VERB	humawak
+maikahawak	240	VERB	humawak
+naikahahawak	240	VERB	humawak
+naikakahawak	240	VERB	humawak
+naiikahawak	240	VERB	humawak
+mapaghawakan	240	VERB	humawak
+napaghahawakan	240	VERB	humawak
+napapaghawakan	240	VERB	humawak
+maipagpahawak	240	VERB	humawak
+naipagpapahawak	240	VERB	humawak
+naipapagpahawak	240	VERB	humawak
+naiipagpahawak	240	VERB	humawak
+maikapagpahawak	240	VERB	humawak
+naikapagpapahawak	240	VERB	humawak
+naikakapagpahawak	240	VERB	humawak
+naiikapagpahawak	240	VERB	humawak
+mapagpahawakan	240	VERB	humawak
+napagpapahahawakan	240	VERB	humawak
+napapagpahawakan	240	VERB	humawak
+mapapaghawakan	240	VERB	humawak
+napapapaghawakan	240	VERB	humawak
+makihawak	240	VERB	humawak
+nakikihawak	240	VERB	humawak
+makipagpahawak	240	VERB	humawak
+nakikipagpahawak	240	VERB	humawak
 hahayaan	112	VERB	hayaan
-hinigaan	84	VERB	higaan
-hinihigaan	84	VERB	higaan
-hihigaan	84	VERB	higaan
+hinigaan	84	VERB	humiga
+hinihigaan	84	VERB	humiga
+hihigaan	84	VERB	humiga
 hinimatay	1	VERB	himatayin
 hinihimatay	1	VERB	himatayin
 hihimatayin	1	VERB	himatayin
@@ -41614,112 +41614,112 @@ hihimpilan	2545	VERB	himpilan
 hiningal	1	VERB	hingalin
 hinihingal	1	VERB	hingalin
 hihingalin	1	VERB	hingalin
-hiningan	9	VERB	hingan
-hinihingan	9	VERB	hingan
-hihingan	9	VERB	hingan
-inahingan	9	VERB	hingan
-paghingan	9	VERB	hingan
-pinapaghingan	9	VERB	hingan
-pinaghihingan	9	VERB	hingan
-ihingi	9	VERB	hingan
-inihihingi	9	VERB	hingan
-ipagpahingi	9	VERB	hingan
-ipinagpapahingi	9	VERB	hingan
-ipinapagpahingi	9	VERB	hingan
-ikapagpahingi	9	VERB	hingan
-ikinapagpapahingi	9	VERB	hingan
-ikinakapagpahingi	9	VERB	hingan
-mahingan	9	VERB	hingan
-nahihingan	9	VERB	hingan
-maihingi	9	VERB	hingan
-naihihingi	9	VERB	hingan
-maikahingi	9	VERB	hingan
-naikahihingi	9	VERB	hingan
-naikakahingi	9	VERB	hingan
-naiikahingi	9	VERB	hingan
-mapaghingian	9	VERB	hingan
-napaghihingian	9	VERB	hingan
-napapaghingian	9	VERB	hingan
-maipagpahingi	9	VERB	hingan
-naipagpapahingi	9	VERB	hingan
-naipapagpahingi	9	VERB	hingan
-naiipagpahingi	9	VERB	hingan
-maikapagpahingi	9	VERB	hingan
-naikapagpapahingi	9	VERB	hingan
-naikakapagpahingi	9	VERB	hingan
-naiikapagpahingi	9	VERB	hingan
-mapagpahingan	9	VERB	hingan
-napagpapahihingan	9	VERB	hingan
-napapagpahingan	9	VERB	hingan
-mapapaghingan	9	VERB	hingan
-napapapaghingan	9	VERB	hingan
-makihingi	9	VERB	hingan
-nakikihingi	9	VERB	hingan
-makipagpahingi	9	VERB	hingan
-nakikipagpahingi	9	VERB	hingan
-hihingin	27	VERB	hingin
-inahingi	27	VERB	hingin
-ipahingi	27	VERB	hingin
-ipinahihingi	27	VERB	hingin
-ipinapahingi	27	VERB	hingin
-mahingi	27	VERB	hingin
-nahihingi	27	VERB	hingin
-maipahingi	27	VERB	hingin
-naipahihingi	27	VERB	hingin
-naipapahingi	27	VERB	hingin
-naiipahingi	27	VERB	hingin
+hiningan	9	VERB	humingi
+hinihingan	9	VERB	humingi
+hihingan	9	VERB	humingi
+inahingan	9	VERB	humingi
+paghingan	9	VERB	humingi
+pinapaghingan	9	VERB	humingi
+pinaghihingan	9	VERB	humingi
+ihingi	9	VERB	humingi
+inihihingi	9	VERB	humingi
+ipagpahingi	9	VERB	humingi
+ipinagpapahingi	9	VERB	humingi
+ipinapagpahingi	9	VERB	humingi
+ikapagpahingi	9	VERB	humingi
+ikinapagpapahingi	9	VERB	humingi
+ikinakapagpahingi	9	VERB	humingi
+mahingan	9	VERB	humingi
+nahihingan	9	VERB	humingi
+maihingi	9	VERB	humingi
+naihihingi	9	VERB	humingi
+maikahingi	9	VERB	humingi
+naikahihingi	9	VERB	humingi
+naikakahingi	9	VERB	humingi
+naiikahingi	9	VERB	humingi
+mapaghingian	9	VERB	humingi
+napaghihingian	9	VERB	humingi
+napapaghingian	9	VERB	humingi
+maipagpahingi	9	VERB	humingi
+naipagpapahingi	9	VERB	humingi
+naipapagpahingi	9	VERB	humingi
+naiipagpahingi	9	VERB	humingi
+maikapagpahingi	9	VERB	humingi
+naikapagpapahingi	9	VERB	humingi
+naikakapagpahingi	9	VERB	humingi
+naiikapagpahingi	9	VERB	humingi
+mapagpahingan	9	VERB	humingi
+napagpapahihingan	9	VERB	humingi
+napapagpahingan	9	VERB	humingi
+mapapaghingan	9	VERB	humingi
+napapapaghingan	9	VERB	humingi
+makihingi	9	VERB	humingi
+nakikihingi	9	VERB	humingi
+makipagpahingi	9	VERB	humingi
+nakikipagpahingi	9	VERB	humingi
+hihingin	27	VERB	humingi
+inahingi	27	VERB	humingi
+ipahingi	27	VERB	humingi
+ipinahihingi	27	VERB	humingi
+ipinapahingi	27	VERB	humingi
+mahingi	27	VERB	humingi
+nahihingi	27	VERB	humingi
+maipahingi	27	VERB	humingi
+naipahihingi	27	VERB	humingi
+naipapahingi	27	VERB	humingi
+naiipahingi	27	VERB	humingi
 hingahin	157	VERB	hininga
 hinihinga	157	VERB	hininga
 hihintayin	19	VERB	hintayin
-hinintuan	83	VERB	hintuan
-hinihintuan	83	VERB	hintuan
-hihintuan	83	VERB	hintuan
-hinipan	4	VERB	hipan
-inahipan	4	VERB	hipan
-paghipan	4	VERB	hipan
-pinapaghipan	4	VERB	hipan
-pinaghihipan	4	VERB	hipan
-ihihip	4	VERB	hipan
-inihihihip	4	VERB	hipan
-ipagpahihip	4	VERB	hipan
-ipinagpapahihip	4	VERB	hipan
-ipinapagpahihip	4	VERB	hipan
-ikapagpahihip	4	VERB	hipan
-ikinapagpapahihip	4	VERB	hipan
-ikinakapagpahihip	4	VERB	hipan
-mahipan	4	VERB	hipan
-nahihipan	4	VERB	hipan
-maihihip	4	VERB	hipan
-naihihihip	4	VERB	hipan
-maikahihip	4	VERB	hipan
-naikahihihip	4	VERB	hipan
-naikakahihip	4	VERB	hipan
-naiikahihip	4	VERB	hipan
-mapaghihipan	4	VERB	hipan
-napaghihihipan	4	VERB	hipan
-napapaghihipan	4	VERB	hipan
-maipagpahihip	4	VERB	hipan
-naipagpapahihip	4	VERB	hipan
-naipapagpahihip	4	VERB	hipan
-naiipagpahihip	4	VERB	hipan
-maikapagpahihip	4	VERB	hipan
-naikapagpapahihip	4	VERB	hipan
-naikakapagpahihip	4	VERB	hipan
-naiikapagpahihip	4	VERB	hipan
-mapagpahipan	4	VERB	hipan
-napagpapahihipan	4	VERB	hipan
-napapagpahipan	4	VERB	hipan
-mapapaghipan	4	VERB	hipan
-napapapaghipan	4	VERB	hipan
-makihihip	4	VERB	hipan
-nakikihihip	4	VERB	hipan
-makipagpahihip	4	VERB	hipan
-nakikipagpahihip	4	VERB	hipan
-hiniraman	1	VERB	hiraman
-hinihiraman	1	VERB	hiraman
-hihiraman	1	VERB	hiraman
-hinihiram	9	VERB	hiramin
-hihiramin	9	VERB	hiramin
+hinintuan	83	VERB	huminto
+hinihintuan	83	VERB	huminto
+hihintuan	83	VERB	huminto
+hinipan	4	VERB	humihip
+inahipan	4	VERB	humihip
+paghipan	4	VERB	humihip
+pinapaghipan	4	VERB	humihip
+pinaghihipan	4	VERB	humihip
+ihihip	4	VERB	humihip
+inihihihip	4	VERB	humihip
+ipagpahihip	4	VERB	humihip
+ipinagpapahihip	4	VERB	humihip
+ipinapagpahihip	4	VERB	humihip
+ikapagpahihip	4	VERB	humihip
+ikinapagpapahihip	4	VERB	humihip
+ikinakapagpahihip	4	VERB	humihip
+mahipan	4	VERB	humihip
+nahihipan	4	VERB	humihip
+maihihip	4	VERB	humihip
+naihihihip	4	VERB	humihip
+maikahihip	4	VERB	humihip
+naikahihihip	4	VERB	humihip
+naikakahihip	4	VERB	humihip
+naiikahihip	4	VERB	humihip
+mapaghihipan	4	VERB	humihip
+napaghihihipan	4	VERB	humihip
+napapaghihipan	4	VERB	humihip
+maipagpahihip	4	VERB	humihip
+naipagpapahihip	4	VERB	humihip
+naipapagpahihip	4	VERB	humihip
+naiipagpahihip	4	VERB	humihip
+maikapagpahihip	4	VERB	humihip
+naikapagpapahihip	4	VERB	humihip
+naikakapagpahihip	4	VERB	humihip
+naiikapagpahihip	4	VERB	humihip
+mapagpahipan	4	VERB	humihip
+napagpapahihipan	4	VERB	humihip
+napapagpahipan	4	VERB	humihip
+mapapaghipan	4	VERB	humihip
+napapapaghipan	4	VERB	humihip
+makihihip	4	VERB	humihip
+nakikihihip	4	VERB	humihip
+makipagpahihip	4	VERB	humihip
+nakikipagpahihip	4	VERB	humihip
+hiniraman	1	VERB	humiram
+hinihiraman	1	VERB	humiram
+hihiraman	1	VERB	humiram
+hinihiram	9	VERB	humiram
+hihiramin	9	VERB	humiram
 hinithit	3	VERB	hithitin
 hinihithit	3	VERB	hithitin
 hihithitin	3	VERB	hithitin
@@ -41775,9 +41775,9 @@ makihithit	3	VERB	hithitin
 nakikihithit	3	VERB	hithitin
 makipagpahithit	3	VERB	hithitin
 nakikipagpahithit	3	VERB	hithitin
-hiniya	5	VERB	hiyain
-hinihiya	5	VERB	hiyain
-hihiyain	5	VERB	hiyain
+hiniya	5	VERB	mapahiya
+hinihiya	5	VERB	mapahiya
+hihiyain	5	VERB	mapahiya
 hinornalan	1	VERB	hornalan
 hinohornalan	1	VERB	hornalan
 hohornalan	1	VERB	hornalan
@@ -42402,8 +42402,8 @@ nakikipagpahiram	37	VERB	humiram
 humihirap	1	VERB	humirap
 hihirap	1	VERB	humirap
 hungmihirap	1	VERB	humirap
-hinusgahan	20	VERB	husgahan
-huhusgahan	20	VERB	husgahan
+hinusgahan	20	VERB	manghusga
+huhusgahan	20	VERB	manghusga
 ipino-post	1	VERB	i-post
 ipo-post	1	VERB	i-post
 ini-scan	8	VERB	i-scan
@@ -42412,7 +42412,7 @@ ii-scan	8	VERB	i-scan
 ibinabaw	2989	VERB	ibabaw
 ibinababaw	2989	VERB	ibabaw
 ibababaw	2989	VERB	ibabaw
-ibabagsak	75	VERB	ibagsak
+ibabagsak	75	VERB	bumagsak
 iniiba	33	VERB	ibahin
 iibahin	33	VERB	ibahin
 ibinabase	4	VERB	ibase
@@ -42420,8 +42420,8 @@ ibabase	4	VERB	ibase
 ibinayo	124	VERB	ibayo
 ibinabayo	124	VERB	ibayo
 ibabayo	124	VERB	ibayo
-ibinili	4	VERB	ibili
-ibibili	4	VERB	ibili
+ibinili	4	VERB	bilhan
+ibibili	4	VERB	bilhan
 ibinoto	12	VERB	iboto
 ibinoboto	12	VERB	iboto
 iboboto	12	VERB	iboto
@@ -42429,9 +42429,9 @@ ibinoykot	4	VERB	iboykot
 ibinoboykot	4	VERB	iboykot
 iboboykot	4	VERB	iboykot
 idaraos	110	VERB	idaos
-idinikit	13	VERB	idikit
-idinidikit	13	VERB	idikit
-ididikit	13	VERB	idikit
+idinikit	13	VERB	magdikit
+idinidikit	13	VERB	magdikit
+ididikit	13	VERB	magdikit
 iginapos	4	VERB	igapos
 iginagapos	4	VERB	igapos
 igagapos	4	VERB	igapos
@@ -42440,8 +42440,8 @@ iginagaya	1	VERB	igaya
 igagaya	1	VERB	igaya
 inihahagis	45	VERB	ihagis
 ihahagis	45	VERB	ihagis
-inihalili	12	VERB	ihalili
-ihahalili	12	VERB	ihalili
+inihalili	12	VERB	humalili
+ihahalili	12	VERB	humalili
 inihahalintulad	12	VERB	ihalintulad
 ihahalintulad	12	VERB	ihalintulad
 inihian	1	VERB	ihian
@@ -42487,7 +42487,7 @@ makiihi	1	VERB	ihian
 nakikiihi	1	VERB	ihian
 makipagpaihi	1	VERB	ihian
 nakikipagpaihi	1	VERB	ihian
-ihihiwalay	112	VERB	ihiwalay
+ihihiwalay	112	VERB	maghiwalay
 ikakabit	19	VERB	ikabit
 ikinagagalit	1	VERB	ikagalit
 ikagagalit	1	VERB	ikagalit
@@ -42501,12 +42501,12 @@ ikinakalat	34	VERB	ikalat
 ikakalat	34	VERB	ikalat
 ikinokonsidera	17	VERB	ikonsidera
 ikokonsidera	17	VERB	ikonsidera
-ikinuha	1	VERB	ikuha
-ikinukuha	1	VERB	ikuha
-ikukuha	1	VERB	ikuha
-inilaganap	1	VERB	ilaganap
-inilalaganap	1	VERB	ilaganap
-ilalaganap	1	VERB	ilaganap
+ikinuha	1	VERB	kumuha
+ikinukuha	1	VERB	kumuha
+ikukuha	1	VERB	kumuha
+inilaganap	1	VERB	lumaganap
+inilalaganap	1	VERB	lumaganap
+ilalaganap	1	VERB	lumaganap
 inilaglag	4	VERB	ilaglag
 inilalaglag	4	VERB	ilaglag
 ilalaglag	4	VERB	ilaglag
@@ -42518,9 +42518,9 @@ inilalalim	11181	VERB	ilalim
 ilalalim	11181	VERB	ilalim
 inilalantad	27	VERB	ilantad
 ilalantad	27	VERB	ilantad
-inilapit	9	VERB	ilapit
-inilalapit	9	VERB	ilapit
-ilalapit	9	VERB	ilapit
+inilapit	9	VERB	lumapit
+inilalapit	9	VERB	lumapit
+ilalapit	9	VERB	lumapit
 inilawan	20	VERB	ilawan
 iniilawan	20	VERB	ilawan
 iilawan	20	VERB	ilawan
@@ -42534,9 +42534,9 @@ inililikas	14	VERB	ilikas
 ililikas	14	VERB	ilikas
 inililikha	8	VERB	ilikha
 ililikha	8	VERB	ilikha
-iniliko	1	VERB	iliko
-inililiko	1	VERB	iliko
-ililiko	1	VERB	iliko
+iniliko	1	VERB	lumiko
+inililiko	1	VERB	lumiko
+ililiko	1	VERB	lumiko
 inilulubog	3	VERB	ilubog
 ilulubog	3	VERB	ilubog
 iniimbento	1	VERB	imbentuhin
@@ -42654,7 +42654,7 @@ pinapag-intindihan	12	VERB	intindihin
 pinag-iintindihan	12	VERB	intindihin
 iintindi	12	VERB	intindihin
 iniiintindi	12	VERB	intindihin
-ipaintindi	12	VERB	intindihin
+ipaintindi	12	VERB
 ipinaiintindi	12	VERB	intindihin
 ipinapaintindi	12	VERB	intindihin
 ipagpaintindi	12	VERB	intindihin
@@ -42751,21 +42751,21 @@ ipinaaalam	86	VERB	ipaalam
 ipaaalam	86	VERB	ipaalam
 ipinapaalam	86	VERB	ipaalam
 pinapaalam	86	VERB	ipaalam
-ipinaayos	6	VERB	ipaayos
-ipapaayos	6	VERB	ipaayos
-pinapaayos	6	VERB	ipaayos
+ipinaayos	6	VERB	ayusin
+ipapaayos	6	VERB	ayusin
+pinapaayos	6	VERB	ayusin
 ipinabalik	5	VERB	ipabalik
 ipinapabalik	5	VERB	ipabalik
 ipapabalik	5	VERB	ipabalik
 pinapabalik	5	VERB	ipabalik
-ipinabasa	1	VERB	ipabasa
-ipapabasa	1	VERB	ipabasa
+ipinabasa	1	VERB	basahan
+ipapabasa	1	VERB	basahan
 ipinababatid	15	VERB	ipabatid
 ipababatid	15	VERB	ipabatid
 ipinadama	8	VERB	ipadama
 ipinadarama	8	VERB	ipadama
 ipadarama	8	VERB	ipadama
-ipagagawa	6	VERB	ipagawa
+ipagagawa	6	VERB	gawan
 ipinagbigay-alam	8	VERB	ipagbigay-alam
 ipinagbibigay-alam	8	VERB	ipagbigay-alam
 ipagbibigay-alam	8	VERB	ipagbigay-alam
@@ -42797,68 +42797,68 @@ ipinagsasawalang-bahala	1	VERB	ipagsawalang-bahala
 ipagsasawalang-bahala	1	VERB	ipagsawalang-bahala
 pinagsasawalang-bahala	1	VERB	ipagsawalang-bahala
 ipagtatanggol	256	VERB	ipagtanggol
-ipinagtatapat	8	VERB	ipagtapat
-ipagtatapat	8	VERB	ipagtapat
-pinagtatapat	8	VERB	ipagtapat
+ipinagtatapat	8	VERB	magtapat
+ipagtatapat	8	VERB	magtapat
+pinagtatapat	8	VERB	magtapat
 ipahihiwatig	153	VERB	ipahiwatig
 ipinaintindi	15	VERB	ipaintindi
 ipapaintindi	15	VERB	ipaintindi
 ipinakahulugan	24	VERB	ipakahulugan
 ipinapakahulugan	24	VERB	ipakahulugan
 ipapakahulugan	24	VERB	ipakahulugan
-ipinakuha	1	VERB	ipakuha
-ipinapakuha	1	VERB	ipakuha
-ipapakuha	1	VERB	ipakuha
-inakuha	1	VERB	ipakuha
-inakunan	1	VERB	ipakuha
-pagkunan	1	VERB	ipakuha
-pinapagkunan	1	VERB	ipakuha
-ipinakukuha	1	VERB	ipakuha
-ipagpakuha	1	VERB	ipakuha
-ipinagpapakuha	1	VERB	ipakuha
-ipinapagpakuha	1	VERB	ipakuha
-ikapagpakuha	1	VERB	ipakuha
-ikinapagpapakuha	1	VERB	ipakuha
-ikinakapagpakuha	1	VERB	ipakuha
-nakukunan	1	VERB	ipakuha
-maikuha	1	VERB	ipakuha
-naikukuha	1	VERB	ipakuha
-maikakuha	1	VERB	ipakuha
-naikakukuha	1	VERB	ipakuha
-naikakakuha	1	VERB	ipakuha
-naiikakuha	1	VERB	ipakuha
-mapagkuhaan	1	VERB	ipakuha
-napagkukuhaan	1	VERB	ipakuha
-napapagkuhaan	1	VERB	ipakuha
-maipakuha	1	VERB	ipakuha
-naipakukuha	1	VERB	ipakuha
-naipapakuha	1	VERB	ipakuha
-naiipakuha	1	VERB	ipakuha
-maipagpakuha	1	VERB	ipakuha
-naipagpapakuha	1	VERB	ipakuha
-naipapagpakuha	1	VERB	ipakuha
-naiipagpakuha	1	VERB	ipakuha
-maikapagpakuha	1	VERB	ipakuha
-naikapagpapakuha	1	VERB	ipakuha
-naikakapagpakuha	1	VERB	ipakuha
-naiikapagpakuha	1	VERB	ipakuha
-mapagpakunan	1	VERB	ipakuha
-napagpapakukunan	1	VERB	ipakuha
-napapagpakunan	1	VERB	ipakuha
-mapapagkunan	1	VERB	ipakuha
-napapapagkunan	1	VERB	ipakuha
-makikuha	1	VERB	ipakuha
-nakikikuha	1	VERB	ipakuha
-makipagpakuha	1	VERB	ipakuha
-nakikipagpakuha	1	VERB	ipakuha
+ipinakuha	1	VERB	kumuha
+ipinapakuha	1	VERB	kumuha
+ipapakuha	1	VERB	kumuha
+inakuha	1	VERB	kumuha
+inakunan	1	VERB	kumuha
+pagkunan	1	VERB	kumuha
+pinapagkunan	1	VERB	kumuha
+ipinakukuha	1	VERB	kumuha
+ipagpakuha	1	VERB	kumuha
+ipinagpapakuha	1	VERB	kumuha
+ipinapagpakuha	1	VERB	kumuha
+ikapagpakuha	1	VERB	kumuha
+ikinapagpapakuha	1	VERB	kumuha
+ikinakapagpakuha	1	VERB	kumuha
+nakukunan	1	VERB	kumuha
+maikuha	1	VERB	kumuha
+naikukuha	1	VERB	kumuha
+maikakuha	1	VERB	kumuha
+naikakukuha	1	VERB	kumuha
+naikakakuha	1	VERB	kumuha
+naiikakuha	1	VERB	kumuha
+mapagkuhaan	1	VERB	kumuha
+napagkukuhaan	1	VERB	kumuha
+napapagkuhaan	1	VERB	kumuha
+maipakuha	1	VERB	kumuha
+naipakukuha	1	VERB	kumuha
+naipapakuha	1	VERB	kumuha
+naiipakuha	1	VERB	kumuha
+maipagpakuha	1	VERB	kumuha
+naipagpapakuha	1	VERB	kumuha
+naipapagpakuha	1	VERB	kumuha
+naiipagpakuha	1	VERB	kumuha
+maikapagpakuha	1	VERB	kumuha
+naikapagpapakuha	1	VERB	kumuha
+naikakapagpakuha	1	VERB	kumuha
+naiikapagpakuha	1	VERB	kumuha
+mapagpakunan	1	VERB	kumuha
+napagpapakukunan	1	VERB	kumuha
+napapagpakunan	1	VERB	kumuha
+mapapagkunan	1	VERB	kumuha
+napapapagkunan	1	VERB	kumuha
+makikuha	1	VERB	kumuha
+nakikikuha	1	VERB	kumuha
+makipagpakuha	1	VERB	kumuha
+nakikipagpakuha	1	VERB	kumuha
 ipinaliban	1	VERB	ipaliban
 ipinapaliban	1	VERB	ipaliban
 ipapaliban	1	VERB	ipaliban
-ipinapalit	28	VERB	ipalit
+ipinapalit	28	VERB	palitan
 ipaliliwanag	330	VERB	ipaliwanag
-ipinamagitan	3	VERB	ipamagitan
-ipinamamagitan	3	VERB	ipamagitan
-ipamamagitan	3	VERB	ipamagitan
+ipinamagitan	3	VERB	mamagitan
+ipinamamagitan	3	VERB	mamagitan
+ipamamagitan	3	VERB	mamagitan
 ipinamigay	10	VERB	ipamigay
 ipinapamigay	10	VERB	ipamigay
 ipapamigay	10	VERB	ipamigay
@@ -43166,12 +43166,12 @@ isinaisip	4	VERB	isaisip
 isinasaisip	4	VERB	isaisip
 isasaisip	4	VERB	isaisip
 isasakatuparan	37	VERB	isakatuparan
-isinakay	8	VERB	isakay
-isinasakay	8	VERB	isakay
-isasakay	8	VERB	isakay
-isinaksak	5	VERB	isaksak
-isinasaksak	5	VERB	isaksak
-isasaksak	5	VERB	isaksak
+isinakay	8	VERB	sakyan
+isinasakay	8	VERB	sakyan
+isasakay	8	VERB	sakyan
+isinaksak	5	VERB	saksakan
+isinasaksak	5	VERB	saksakan
+isasaksak	5	VERB	saksakan
 isasalarawan	74	VERB	isalarawan
 isinalba	6	VERB	isalba
 isinasalba	6	VERB	isalba
@@ -43230,12 +43230,12 @@ isusumpa	13	VERB	isumpa
 isusuot	52	VERB	isuot
 itinataboy	43	VERB	itaboy
 itataboy	43	VERB	itaboy
-itatago	133	VERB	itago
+itatago	133	VERB	magtago
 itatala	66	VERB	itala
 itinatali	34	VERB	itali
 itatali	34	VERB	itali
-itinaggi	15	VERB	itanggi
-itatanggi	15	VERB	itanggi
+itinaggi	15	VERB	tumanggi
+itatanggi	15	VERB	tumanggi
 itatanim	47	VERB	itanim
 itinapat	8	VERB	itapat
 itinatapat	8	VERB	itapat
@@ -43315,9 +43315,9 @@ makipangailangan	72	VERB	kailanganin
 nakikipangailangan	72	VERB	kailanganin
 makipagpakailangan	72	VERB	kailanganin
 nakikipagpakailangan	72	VERB	kailanganin
-kinainan	245	VERB	kainan
-kinakainan	245	VERB	kainan
-kakainan	245	VERB	kainan
+kinainan	245	VERB	kumain
+kinakainan	245	VERB	kumain
+kakainan	245	VERB	kumain
 kinalaban	56	VERB	kalabanin
 kinakalaban	56	VERB	kalabanin
 kakalabanin	56	VERB	kalabanin
@@ -43382,8 +43382,8 @@ makikandado	1	VERB	kandaduhan
 nakikikandado	1	VERB	kandaduhan
 makipagpakandado	1	VERB	kandaduhan
 nakikipagpakandado	1	VERB	kandaduhan
-kinakantahan	9	VERB	kantahan
-kakantahin	50	VERB	kantahin
+kinakantahan	9	VERB	kumanta
+kakantahin	50	VERB	kumanta
 kinantot	1	VERB	kantutin
 kinakantot	1	VERB	kantutin
 kakantutin	1	VERB	kantutin
@@ -43942,7 +43942,7 @@ kukutsarahin	3	VERB	kutsarahin
 kinuyog	1	VERB	kuyugin
 kinukuyog	1	VERB	kuyugin
 kukuyugin	1	VERB	kuyugin
-lalabanan	3536	VERB	labanan
+lalabanan	3536	VERB	lumaban
 nilalabasan	295	VERB	labasan
 lalabasan	295	VERB	labasan
 lalabhan	9	VERB	labhan
@@ -43990,8 +43990,8 @@ makilaba	9	VERB	labhan
 nakikilaba	9	VERB	labhan
 makipagpalaba	9	VERB	labhan
 nakikipagpalaba	9	VERB	labhan
-nilalagdaan	46	VERB	lagdaan
-lalagdaan	46	VERB	lagdaan
+nilalagdaan	46	VERB	lumagda
+lalagdaan	46	VERB	lumagda
 nilagnat	1	VERB	lagnatin
 nilalagnat	1	VERB	lagnatin
 lalagnatin	1	VERB	lagnatin
@@ -44893,7 +44893,7 @@ maaaksaya	4	VERB,ADJECTIVE	maaksaya
 naano	1	VERB	maano
 naaano	1	VERB	maano
 maaano	1	VERB	maano
-naaral	4	VERB	maaral
+naaral	4	VERB	aralin
 naari	581	VERB	maari
 naaari	581	VERB	maari
 nababa	1372	VERB	mababa
@@ -44903,19 +44903,19 @@ nababagsakan	1	VERB	mabagsakan
 mababagsakan	1	VERB	mabagsakan
 nabakas	10	VERB	mabakas
 nababakas	10	VERB	mabakas
-mababali	10	VERB	mabali
+mababali	10	VERB	bumali
 nabalik	5	VERB	mabalik
 nababalik	5	VERB	mabalik
 mababalik	5	VERB	mabalik
-mababasag	8	VERB	mabasag
+mababasag	8	VERB	bumasag
 nabato	57	VERB	mabato
 nababato	57	VERB	mabato
 mababato	57	VERB	mabato
 nabayaran	72	VERB	mabayaran
 mababayaran	72	VERB	mabayaran
 mabibigo	240	VERB	mabigo
-nabilog	42	VERB	mabilog
-mabibilog	42	VERB,ADJECTIVE	mabilog
+nabilog	42	VERB	bilugan
+mabibilog	42	VERB,ADJECTIVE	bilugan
 nabulas	1	VERB	mabulas
 nabubulas	1	VERB	mabulas
 mabubulas	1	VERB,ADJECTIVE	mabulas
@@ -44927,8 +44927,8 @@ nabuburol	282	VERB	maburol
 mabuburol	282	VERB,ADJECTIVE	maburol
 nabubutas	9	VERB	mabutas
 mabubutas	9	VERB	mabutas
-nadalian	15	VERB	madalian
-madadalian	15	VERB,ADJECTIVE	madalian
+nadalian	15	VERB	dumali
+madadalian	15	VERB,ADJECTIVE	dumali
 minadali	5	VERB	madaliin
 minamadali	5	VERB	madaliin
 mamadaliin	5	VERB	madaliin
@@ -45299,8 +45299,8 @@ nagumumpisa	12	VERB	mag-umpisa
 nag-usap	17	VERB	mag-usap
 mag-uusap	17	VERB	mag-usap
 mag-uutos	22	VERB	mag-utos
-nagalaw	13	VERB	magalaw
-magagalaw	13	VERB	magalaw
+nagalaw	13	VERB	galawin
+magagalaw	13	VERB	galawin
 magagalit	28	VERB	magalit
 inaganap	257	VERB	maganap
 kinakaganapan	257	VERB	maganap
@@ -47866,8 +47866,8 @@ nahilo	1	VERB	mahilo
 nahihilo	1	VERB	mahilo
 mahihilo	1	VERB	mahilo
 mahihirapan	12	VERB	mahirapan
-nahiya	6	VERB	mahiya
-mahihiya	6	VERB	mahiya
+nahiya	6	VERB	mapahiya
+mahihiya	6	VERB	mapahiya
 nahugis	3	VERB	mahugis
 nahuhugis	3	VERB	mahugis
 mahuhugis	3	VERB,ADJECTIVE	mahugis
@@ -47877,29 +47877,29 @@ mahuhumaling	1	VERB	mahumaling
 naibsan	68	VERB	maibsan
 naiibsan	68	VERB	maibsan
 maiibsan	68	VERB	maibsan
-nainis	1	VERB	mainis
-maiinis	1	VERB	mainis
+nainis	1	VERB	inisin
+maiinis	1	VERB	inisin
 naisahan	1	VERB	maisahan
 naiisahan	1	VERB	maisahan
 maiisahan	1	VERB	maisahan
 maiisip	26	VERB	maisip
-naitama	17	VERB	maitama
-naitatama	17	VERB	maitama
-maitatama	17	VERB	maitama
+naitama	17	VERB	tumama
+naitatama	17	VERB	tumama
+maitatama	17	VERB	tumama
 nakabasag	9	VERB	makabasag
 nakababasag	9	VERB	makabasag
 makababasag	9	VERB	makabasag
 nakakabasag	9	VERB	makabasag
-nakainan	484	VERB	makainan
-makakainan	484	VERB	makainan
+nakainan	484	VERB	kumain
+makakainan	484	VERB	kumain
 nakaintindi	4	VERB	makaintindi
 makakaintindi	4	VERB	makaintindi
 nakaisa	1	VERB	makaisa
 nakakaisa	1	VERB	makaisa
 makakaisa	1	VERB	makaisa
 nakaiisa	1	VERB	makaisa
-nakakakain	109	VERB	makakain
-makakakain	109	VERB	makakain
+nakakakain	109	VERB	kumain
+makakakain	109	VERB	kumain
 nakakikita	95	VERB	makakita
 makakikita	95	VERB	makakita
 nakakukuha	612	VERB	makakuha
@@ -47976,11 +47976,11 @@ makikialam	41	VERB	makialam
 nakiapid	3	VERB	makiapid
 nakikiapid	3	VERB	makiapid
 makikiapid	3	VERB	makiapid
-nakikain	484	VERB	makikain
-makikikain	484	VERB	makikain
+nakikain	484	VERB	kumain
+makikikain	484	VERB	kumain
 makikinig	106	VERB	makinig
-nakipag-away	14	VERB	makipag-away
-makikipag-away	14	VERB	makipag-away
+nakipag-away	14	VERB	mag-away
+makikipag-away	14	VERB	mag-away
 makikipag-usap	160	VERB	makipag-usap
 nakipagbati	1	VERB	makipagbati
 nakikipagbati	1	VERB	makipagbati
@@ -47989,15 +47989,15 @@ nakikipagkaibigan	22	VERB	makipagkaibigan
 makikipagkaibigan	22	VERB	makipagkaibigan
 nakikipagsapalaran	14	VERB	makipagsapalaran
 makikipagsapalaran	14	VERB	makipagsapalaran
-nakipagsuntukan	1	VERB	makipagsuntukan
-makikipagsuntukan	1	VERB	makipagsuntukan
+nakipagsuntukan	1	VERB	magsuntukan
+makikipagsuntukan	1	VERB	magsuntukan
 makikipagtalik	73	VERB	makipagtalik
 nakikiusap	12	VERB	makiusap
 makikiusap	12	VERB	makiusap
 nakontento	4	VERB	makontento
 nakokontento	4	VERB	makontento
 makokontento	4	VERB	makontento
-makukunan	14	VERB	makunan
+makukunan	14	VERB	kumuha
 nalalaglag	15	VERB	malaglag
 malalaglag	15	VERB	malaglag
 nalakihan	33	VERB	malakihan
@@ -48071,8 +48071,8 @@ makiluto	29	VERB	maluto
 nakikiluto	29	VERB	maluto
 makipagpaluto	29	VERB	maluto
 nakikipagpaluto	29	VERB	maluto
-nalutuan	1	VERB	malutuan
-malulutuan	1	VERB	malutuan
+nalutuan	1	VERB	maluto
+malulutuan	1	VERB	maluto
 naluwat	1	VERB	maluwat
 naluluwat	1	VERB	maluwat
 maluluwat	1	VERB,ADJECTIVE	maluwat
@@ -48258,8 +48258,8 @@ mamanahan	28	VERB	manahan
 nanahimik	6	VERB	manahimik
 nananahimik	6	VERB	manahimik
 mananahimik	6	VERB	manahimik
-nanakawan	1	VERB	manakawan
-mananakawan	1	VERB	manakawan
+nanakawan	1	VERB	magnakaw
+mananakawan	1	VERB	magnakaw
 nanakit	12	VERB	manakit
 nananakit	12	VERB	manakit
 mananakit	12	VERB	manakit
@@ -49254,8 +49254,8 @@ napaparam	1	VERB	maparam
 mapaparam	1	VERB	maparam
 napapasok	15	VERB	mapasok
 mapapasok	15	VERB	mapasok
-napapatay	95	VERB	mapatay
-mapapatay	95	VERB	mapatay
+napapatay	95	VERB	patayin
+mapapatay	95	VERB	patayin
 napayapa	124	VERB	mapayapa
 napapayapa	124	VERB	mapayapa
 mapapayapa	124	VERB,ADJECTIVE	mapayapa
@@ -49299,9 +49299,9 @@ masasagabal	1	VERB,ADJECTIVE	masagabal
 nasagap	9	VERB	masagap
 nasasagap	9	VERB	masagap
 masasagap	9	VERB	masagap
-masasaktan	42	VERB	masaktan
-nasakyan	3	VERB	masakyan
-nasasakyan	3	VERB	masakyan
+masasaktan	42	VERB	manakit
+nasakyan	3	VERB	sakyan
+nasasakyan	3	VERB	sakyan
 nasamid	1	VERB	masamid
 nasasamid	1	VERB	masamid
 masasamid	1	VERB	masamid
@@ -49331,9 +49331,9 @@ masisilaw	1	VERB	masilaw
 nasilayan	5	VERB	masilayan
 nasisilayan	5	VERB	masilayan
 masisilayan	5	VERB	masilayan
-nasiraan	6	VERB	masiraan
-nasisiraan	6	VERB	masiraan
-masisiraan	6	VERB	masiraan
+nasiraan	6	VERB	siraan
+nasisiraan	6	VERB	siraan
+masisiraan	6	VERB	siraan
 nasiyasat	8	VERB	masiyasat
 nasisiyasat	8	VERB	masiyasat
 masisiyasat	8	VERB,ADJECTIVE	masiyasat
@@ -49341,34 +49341,34 @@ nasulong	49	VERB	masulong
 nasusulong	49	VERB	masulong
 masusulong	49	VERB,ADJECTIVE	masulong
 nasusumpungan	9	VERB	masumpungan
-natae	22	VERB	matae
-matatae	22	VERB	matae
+natae	22	VERB	madumi
+matatae	22	VERB	madumi
 natahimik	13	VERB	matahimik
 natatahimik	13	VERB	matahimik
 matatahimik	13	VERB,ADJECTIVE	matahimik
-matatakot	34	VERB	matakot
-kinakatalunan	305	VERB	matalo
-kinatatalunan	305	VERB	matalo
-ikapagpatalo	305	VERB	matalo
-ikinapagpapatalo	305	VERB	matalo
-ikinakapagpatalo	305	VERB	matalo
-maikapagpatalo	305	VERB	matalo
-naikapagpapatalo	305	VERB	matalo
-naikakapagpatalo	305	VERB	matalo
-naiikapagpatalo	305	VERB	matalo
-makitalo	305	VERB	matalo
-nakikitalo	305	VERB	matalo
-matatanggal	126	VERB	matanggal
-natapat	133	VERB	matapat
-matatapat	133	VERB,ADJECTIVE	matapat
+matatakot	34	VERB	takutin
+kinakatalunan	305	VERB	manalo
+kinatatalunan	305	VERB	manalo
+ikapagpatalo	305	VERB	manalo
+ikinapagpapatalo	305	VERB	manalo
+ikinakapagpatalo	305	VERB	manalo
+maikapagpatalo	305	VERB	manalo
+naikapagpapatalo	305	VERB	manalo
+naikakapagpatalo	305	VERB	manalo
+naiikapagpatalo	305	VERB	manalo
+makitalo	305	VERB	manalo
+nakikitalo	305	VERB	manalo
+matatanggal	126	VERB	ipatanggal
+natapat	133	VERB	magtapat
+matatapat	133	VERB,ADJECTIVE	magtapat
 natapilok	1	VERB	matapilok
 natatapilok	1	VERB	matapilok
 matatapilok	1	VERB	matapilok
-natapon	41	VERB	matapon
-matatapon	41	VERB	matapon
-natapunan	41	VERB	matapunan
-matatapunan	41	VERB	matapunan
-matatatag	900	VERB,ADJECTIVE	matatag
+natapon	41	VERB	ipatapon
+matatapon	41	VERB	ipatapon
+natapunan	41	VERB	ipatapon
+matatapunan	41	VERB	ipatapon
+matatatag	900	VERB,ADJECTIVE	magtatag
 natatauhan	1	VERB	matauhan
 natimbang	28	VERB	matimbang
 natitimbang	28	VERB	matimbang
@@ -49399,9 +49399,9 @@ mumultuhin	1	VERB	multuhin
 minura	3	VERB	murahin
 minumura	3	VERB	murahin
 mumurahin	3	VERB	murahin
-kagampanan	2423	VERB	naganap
-kinakagampanan	2423	VERB	naganap
-kinagagampanan	2423	VERB	naganap
+kagampanan	2423	VERB	maganap
+kinakagampanan	2423	VERB	maganap
+kinagagampanan	2423	VERB	maganap
 ngumingisi	1	VERB	ngumisi
 ngingisi	1	VERB	ngumisi
 ngisihan	1	VERB	ngumisi
@@ -49564,12 +49564,12 @@ pinadadalhan	1	VERB	padalhan
 padadalhan	1	VERB	padalhan
 pinapadali	14	VERB	padaliin
 papadaliin	14	VERB	padaliin
-papag-aralan	271	VERB	pag-aralan
+papag-aralan	271	VERB	aralin
 pinag-aaral	8	VERB	pag-aralin
 pag-aaralin	8	VERB	pag-aralin
-pinag-awayan	1	VERB	pag-awayan
-papag-away	1	VERB	pag-awayan
-pag-iinitan	12	VERB	pag-initan
+pinag-awayan	1	VERB	mag-away
+papag-away	1	VERB	mag-away
+pag-iinitan	12	VERB	initan
 pinapagaling	45	VERB	pagalingin
 papagalingin	45	VERB	pagalingin
 pagagandahin	27	VERB	pagandahin
@@ -49577,8 +49577,8 @@ pinapaganda	27	VERB	pagandahin
 pinapagbasehan	1	VERB	pagbasehan
 pinapagbawalan	17	VERB	pagbawalan
 papagbawalan	17	VERB	pagbawalan
-pinagdudahan	12	VERB	pagdudahan
-pagdududahan	12	VERB	pagdudahan
+pinagdudahan	12	VERB	magduda
+pagdududahan	12	VERB	magduda
 pinaghigantihan	3	VERB	paghigantihan
 pinaghihigantihan	3	VERB	paghigantihan
 paghihigantihan	3	VERB	paghigantihan
@@ -49605,83 +49605,83 @@ pinapagmalupitan	3	VERB	pagmalupitan
 papagmalupitan	3	VERB	pagmalupitan
 pinagmamalupitan	3	VERB	pagmalupitan
 pagmumulan	5	VERB	pagmulan
-pinagsabihan	8	VERB	pagsabihan
-pagsasabihan	8	VERB	pagsabihan
+pinagsabihan	8	VERB	magsabi
+pagsasabihan	8	VERB	magsabi
 pagsasamantalahan	10	VERB	pagsamantalahan
 pinapagsamantalahan	10	VERB	pagsamantalahan
-pinagsisihan	4	VERB	pagsisihan
-pagsisisihan	4	VERB	pagsisihan
+pinagsisihan	4	VERB	magsisi
+pagsisisihan	4	VERB	magsisi
 pinagtakpan	6	VERB	pagtakpan
 pinagtatakpan	6	VERB	pagtakpan
 pagtatakpan	6	VERB	pagtakpan
 pinapagtakpan	6	VERB	pagtakpan
-pinapagtalunan	8	VERB	pagtalunan
-ipagtalo	8	VERB	pagtalunan
-ipinapagtalo	8	VERB	pagtalunan
-mapagtalunan	8	VERB	pagtalunan
-napagtatalunan	8	VERB	pagtalunan
-napapagtalunan	8	VERB	pagtalunan
-maipagtalo	8	VERB	pagtalunan
-naipagtatalo	8	VERB	pagtalunan
-naipapagtalo	8	VERB	pagtalunan
-naiipagtalo	8	VERB	pagtalunan
-maikapagtalo	8	VERB	pagtalunan
-naikapagtatalo	8	VERB	pagtalunan
-naikapapagtalo	8	VERB	pagtalunan
-naiikapagtalo	8	VERB	pagtalunan
-mapagtaloan	8	VERB	pagtalunan
-napagtataloan	8	VERB	pagtalunan
-napapagtaloan	8	VERB	pagtalunan
-mapagpatalunan	8	VERB	pagtalunan
-napagpapatatalunan	8	VERB	pagtalunan
-napapagpatalunan	8	VERB	pagtalunan
-mapapagtalunan	8	VERB	pagtalunan
-napapapagtalunan	8	VERB	pagtalunan
-makipagtalo	8	VERB	pagtalunan
-nakikipagtalo	8	VERB	pagtalunan
-pagtatawanan	4	VERB	pagtawanan
-pinapagtawanan	4	VERB	pagtawanan
-ipagtawa	4	VERB	pagtawanan
-ipinapagtawa	4	VERB	pagtawanan
-ipagpatawa	4	VERB	pagtawanan
-ipinagpapatawa	4	VERB	pagtawanan
-ipinapagpatawa	4	VERB	pagtawanan
-ikapagpatawa	4	VERB	pagtawanan
-ikinapagpapatawa	4	VERB	pagtawanan
-ikinakapagpatawa	4	VERB	pagtawanan
-mapagtawanan	4	VERB	pagtawanan
-napagtatawanan	4	VERB	pagtawanan
-napapagtawanan	4	VERB	pagtawanan
-maipagtawa	4	VERB	pagtawanan
-naipagtatawa	4	VERB	pagtawanan
-naipapagtawa	4	VERB	pagtawanan
-naiipagtawa	4	VERB	pagtawanan
-maikapagtawa	4	VERB	pagtawanan
-naikapagtatawa	4	VERB	pagtawanan
-naikapapagtawa	4	VERB	pagtawanan
-naiikapagtawa	4	VERB	pagtawanan
-mapagtawaan	4	VERB	pagtawanan
-napagtatawaan	4	VERB	pagtawanan
-napapagtawaan	4	VERB	pagtawanan
-maipagpatawa	4	VERB	pagtawanan
-naipagpapatawa	4	VERB	pagtawanan
-naipapagpatawa	4	VERB	pagtawanan
-naiipagpatawa	4	VERB	pagtawanan
-maikapagpatawa	4	VERB	pagtawanan
-naikapagpapatawa	4	VERB	pagtawanan
-naikakapagpatawa	4	VERB	pagtawanan
-naiikapagpatawa	4	VERB	pagtawanan
-mapagpatawanan	4	VERB	pagtawanan
-napagpapatatawanan	4	VERB	pagtawanan
-napapagpatawanan	4	VERB	pagtawanan
-mapapagtawanan	4	VERB	pagtawanan
-napapapagtawanan	4	VERB	pagtawanan
-makipagtawa	4	VERB	pagtawanan
-nakikipagtawa	4	VERB	pagtawanan
-makitawa	4	VERB	pagtawanan
-nakikitawa	4	VERB	pagtawanan
-makipagpatawa	4	VERB	pagtawanan
-nakikipagpatawa	4	VERB	pagtawanan
+pinapagtalunan	8	VERB	tumalon
+ipagtalo	8	VERB	tumalon
+ipinapagtalo	8	VERB	tumalon
+mapagtalunan	8	VERB	tumalon
+napagtatalunan	8	VERB	tumalon
+napapagtalunan	8	VERB	tumalon
+maipagtalo	8	VERB	tumalon
+naipagtatalo	8	VERB	tumalon
+naipapagtalo	8	VERB	tumalon
+naiipagtalo	8	VERB	tumalon
+maikapagtalo	8	VERB	tumalon
+naikapagtatalo	8	VERB	tumalon
+naikapapagtalo	8	VERB	tumalon
+naiikapagtalo	8	VERB	tumalon
+mapagtaloan	8	VERB	tumalon
+napagtataloan	8	VERB	tumalon
+napapagtaloan	8	VERB	tumalon
+mapagpatalunan	8	VERB	tumalon
+napagpapatatalunan	8	VERB	tumalon
+napapagpatalunan	8	VERB	tumalon
+mapapagtalunan	8	VERB	tumalon
+napapapagtalunan	8	VERB	tumalon
+makipagtalo	8	VERB	tumalon
+nakikipagtalo	8	VERB	tumalon
+pagtatawanan	4	VERB	tumawa
+pinapagtawanan	4	VERB	tumawa
+ipagtawa	4	VERB	tumawa
+ipinapagtawa	4	VERB	tumawa
+ipagpatawa	4	VERB	tumawa
+ipinagpapatawa	4	VERB	tumawa
+ipinapagpatawa	4	VERB	tumawa
+ikapagpatawa	4	VERB	tumawa
+ikinapagpapatawa	4	VERB	tumawa
+ikinakapagpatawa	4	VERB	tumawa
+mapagtawanan	4	VERB	tumawa
+napagtatawanan	4	VERB	tumawa
+napapagtawanan	4	VERB	tumawa
+maipagtawa	4	VERB	tumawa
+naipagtatawa	4	VERB	tumawa
+naipapagtawa	4	VERB	tumawa
+naiipagtawa	4	VERB	tumawa
+maikapagtawa	4	VERB	tumawa
+naikapagtatawa	4	VERB	tumawa
+naikapapagtawa	4	VERB	tumawa
+naiikapagtawa	4	VERB	tumawa
+mapagtawaan	4	VERB	tumawa
+napagtatawaan	4	VERB	tumawa
+napapagtawaan	4	VERB	tumawa
+maipagpatawa	4	VERB	tumawa
+naipagpapatawa	4	VERB	tumawa
+naipapagpatawa	4	VERB	tumawa
+naiipagpatawa	4	VERB	tumawa
+maikapagpatawa	4	VERB	tumawa
+naikapagpapatawa	4	VERB	tumawa
+naikakapagpatawa	4	VERB	tumawa
+naiikapagpatawa	4	VERB	tumawa
+mapagpatawanan	4	VERB	tumawa
+napagpapatatawanan	4	VERB	tumawa
+napapagpatawanan	4	VERB	tumawa
+mapapagtawanan	4	VERB	tumawa
+napapapagtawanan	4	VERB	tumawa
+makipagtawa	4	VERB	tumawa
+nakikipagtawa	4	VERB	tumawa
+makitawa	4	VERB	tumawa
+nakikitawa	4	VERB	tumawa
+makipagpatawa	4	VERB	tumawa
+nakikipagpatawa	4	VERB	tumawa
 pinagupitan	3	VERB	pagupitan
 pinapagupitan	3	VERB	pagupitan
 papagupitan	3	VERB	pagupitan
@@ -50033,8 +50033,8 @@ papansinin	107	VERB	pansinin
 pinantay	1	VERB	pantayin
 pinapantay	1	VERB	pantayin
 papantayin	1	VERB	pantayin
-pinapapasok	27	VERB	papasukin
-papapasukin	27	VERB	papasukin
+pinapapasok	27	VERB	pasukin
+papapasukin	27	VERB	pasukin
 pinapupunta	5	VERB	papuntahin
 papupuntahin	5	VERB	papuntahin
 pinapapunta	5	VERB	papuntahin
@@ -50214,51 +50214,51 @@ papauwiin	5	VERB	pauwiin
 papawisan	1	VERB	pawisan
 pinapayaman	9	VERB	payamanin
 papayamanin	9	VERB	payamanin
-papayuhan	23	VERB	payuhan
+papayuhan	23	VERB	magpayo
 pipigain	1	VERB	pigain
 pinino	12	VERB	pinuhin
 pinipino	12	VERB	pinuhin
 pipinuhin	12	VERB	pinuhin
-inapirmahan	31	VERB	pirmahan
-pagpirmahan	31	VERB	pirmahan
-pinapagpirmahan	31	VERB	pirmahan
-pinagpipirmahan	31	VERB	pirmahan
-ipirma	31	VERB	pirmahan
-ipinipirma	31	VERB	pirmahan
-ipagpapirma	31	VERB	pirmahan
-ipinagpapapirma	31	VERB	pirmahan
-ipinapagpapirma	31	VERB	pirmahan
-ikapagpapirma	31	VERB	pirmahan
-ikinapagpapapirma	31	VERB	pirmahan
-ikinakapagpapirma	31	VERB	pirmahan
-mapirmahan	31	VERB	pirmahan
-napipirmahan	31	VERB	pirmahan
-maipirma	31	VERB	pirmahan
-naipipirma	31	VERB	pirmahan
-maikapirma	31	VERB	pirmahan
-naikapipirma	31	VERB	pirmahan
-naikakapirma	31	VERB	pirmahan
-naiikapirma	31	VERB	pirmahan
-mapagpirmaan	31	VERB	pirmahan
-napagpipirmaan	31	VERB	pirmahan
-napapagpirmaan	31	VERB	pirmahan
-maipagpapirma	31	VERB	pirmahan
-naipagpapapirma	31	VERB	pirmahan
-naipapagpapirma	31	VERB	pirmahan
-naiipagpapirma	31	VERB	pirmahan
-maikapagpapirma	31	VERB	pirmahan
-naikapagpapapirma	31	VERB	pirmahan
-naikakapagpapirma	31	VERB	pirmahan
-naiikapagpapirma	31	VERB	pirmahan
-mapagpapirmahan	31	VERB	pirmahan
-napagpapapipirmahan	31	VERB	pirmahan
-napapagpapirmahan	31	VERB	pirmahan
-mapapagpirmahan	31	VERB	pirmahan
-napapapagpirmahan	31	VERB	pirmahan
-makipirma	31	VERB	pirmahan
-nakikipirma	31	VERB	pirmahan
-makipagpapirma	31	VERB	pirmahan
-nakikipagpapirma	31	VERB	pirmahan
+inapirmahan	31	VERB	pumirma
+pagpirmahan	31	VERB	pumirma
+pinapagpirmahan	31	VERB	pumirma
+pinagpipirmahan	31	VERB	pumirma
+ipirma	31	VERB	pumirma
+ipinipirma	31	VERB	pumirma
+ipagpapirma	31	VERB	pumirma
+ipinagpapapirma	31	VERB	pumirma
+ipinapagpapirma	31	VERB	pumirma
+ikapagpapirma	31	VERB	pumirma
+ikinapagpapapirma	31	VERB	pumirma
+ikinakapagpapirma	31	VERB	pumirma
+mapirmahan	31	VERB	pumirma
+napipirmahan	31	VERB	pumirma
+maipirma	31	VERB	pumirma
+naipipirma	31	VERB	pumirma
+maikapirma	31	VERB	pumirma
+naikapipirma	31	VERB	pumirma
+naikakapirma	31	VERB	pumirma
+naiikapirma	31	VERB	pumirma
+mapagpirmaan	31	VERB	pumirma
+napagpipirmaan	31	VERB	pumirma
+napapagpirmaan	31	VERB	pumirma
+maipagpapirma	31	VERB	pumirma
+naipagpapapirma	31	VERB	pumirma
+naipapagpapirma	31	VERB	pumirma
+naiipagpapirma	31	VERB	pumirma
+maikapagpapirma	31	VERB	pumirma
+naikapagpapapirma	31	VERB	pumirma
+naikakapagpapirma	31	VERB	pumirma
+naiikapagpapirma	31	VERB	pumirma
+mapagpapirmahan	31	VERB	pumirma
+napagpapapipirmahan	31	VERB	pumirma
+napapagpapirmahan	31	VERB	pumirma
+mapapagpirmahan	31	VERB	pumirma
+napapapagpirmahan	31	VERB	pumirma
+makipirma	31	VERB	pumirma
+nakikipirma	31	VERB	pumirma
+makipagpapirma	31	VERB	pumirma
+nakikipagpapirma	31	VERB	pumirma
 popondohan	72	VERB	pondohan
 piprituhin	8	VERB	prituhin
 pinroblema	1	VERB	problemahin
@@ -50464,9 +50464,9 @@ pupurihin	43	VERB	purihin
 pinutukan	22	VERB	putukan
 pinuputukan	22	VERB	putukan
 puputukan	22	VERB	putukan
-pinutulan	1	VERB	putulan
-puputulan	1	VERB	putulan
-puputulin	129	VERB	putulin
+pinutulan	1	VERB	pumutol
+puputulan	1	VERB	pumutol
+puputulin	129	VERB	pumutol
 pinuwersahan	1	VERB	puwersahan
 pinupuwersahan	1	VERB	puwersahan
 pupuwersahan	1	VERB	puwersahan
@@ -50487,7 +50487,7 @@ rerentahan	10	VERB	rentahan
 rumeresbak	1	VERB	rumesbak
 reresbak	1	VERB	rumesbak
 rungmeresbak	1	VERB	rumesbak
-sasabihan	12	VERB	sabihan
+sasabihan	12	VERB	magsabi
 sinabon	1	VERB	sabunin
 sinasabon	1	VERB	sabunin
 sasabunin	1	VERB	sabunin
@@ -50693,7 +50693,7 @@ sasaksak	9	VERB	saksakin
 sinaksihan	14	VERB	saksihan
 sinasaksihan	14	VERB	saksihan
 sasaksihan	14	VERB	saksihan
-sasaktan	42	VERB	saktan
+sasaktan	42	VERB	manakit
 inasakyan	17	VERB	sakyan
 pagsakyan	17	VERB	sakyan
 pinapagsakyan	17	VERB	sakyan
@@ -51020,8 +51020,8 @@ sinisiksikan	22	VERB	siksikan
 sisiksikan	22	VERB	siksikan
 sinisilangan	5416	VERB	silangan
 sisilangan	5416	VERB	silangan
-sinimbahan	9449	VERB	simbahan
-sisimbahan	9449	VERB	simbahan
+sinimbahan	9449	VERB	magsimba
+sisimbahan	9449	VERB	magsimba
 sinimplehan	3	VERB	simplehan
 sinisimplehan	3	VERB	simplehan
 sisimplehan	3	VERB	simplehan
@@ -51085,7 +51085,7 @@ nakikipanira	13	VERB	siraan
 makipagpasira	13	VERB	siraan
 nakikipagpasira	13	VERB	siraan
 sisirain	193	VERB	sirain
-sisisihin	24	VERB	sisihin
+sisisihin	24	VERB	manisi
 susubukan	174	VERB	subukan
 inasubukan	174	VERB	subukan
 pagsubukan	174	VERB	subukan
@@ -51633,8 +51633,8 @@ susuway	14	VERB	sumuway
 sungmusuway	14	VERB	sumuway
 sinusunggaban	13	VERB	sunggaban
 susunggaban	13	VERB	sunggaban
-sinuntok	5	VERB	suntukin
-susuntukin	5	VERB	suntukin
+sinuntok	5	VERB	manuntok
+susuntukin	5	VERB	manuntok
 sinurian	202	VERB	surian
 sinusurian	202	VERB	surian
 susurian	202	VERB	surian
@@ -51754,9 +51754,9 @@ tinataihan	1	VERB	taihan
 tataihan	1	VERB	taihan
 taian	1	VERB	taihan
 tinataian	1	VERB	taihan
-tinakbuhan	10	VERB	takbuhan
-tinatakbuhan	10	VERB	takbuhan
-tatakbuhan	10	VERB	takbuhan
+tinakbuhan	10	VERB	takbuhin
+tinatakbuhan	10	VERB	takbuhin
+tatakbuhan	10	VERB	takbuhin
 tinakbo	1	VERB	takbuhin
 tinatakbo	1	VERB	takbuhin
 tatakbuhin	1	VERB	takbuhin
@@ -51874,11 +51874,11 @@ tinatalaan	4232	VERB	talaan
 tatalaan	4232	VERB	talaan
 tinatalikuran	54	VERB	talikuran
 tatalikuran	54	VERB	talikuran
-tinatalunan	19	VERB	talunan
-tatalunan	19	VERB	talunan
-tatalunin	316	VERB	talunin
-tinatamaan	61	VERB	tamaan
-tatamaan	61	VERB	tamaan
+tinatalunan	19	VERB	tumalon
+tatalunan	19	VERB	tumalon
+tatalunin	316	VERB	manalo
+tinatamaan	61	VERB	tumama
+tatamaan	61	VERB	tumama
 tinambakan	26	VERB	tambakan
 tinatambakan	26	VERB	tambakan
 tatambakan	26	VERB	tambakan
@@ -52010,10 +52010,10 @@ makitanong	110	VERB	tanungin
 nakikitanong	110	VERB	tanungin
 makipagpatanong	110	VERB	tanungin
 nakikipagpatanong	110	VERB	tanungin
-tinapat	1	VERB	tapatin
-tatapatin	1	VERB	tapatin
-tinapunan	14	VERB	tapunan
-tatapunan	14	VERB	tapunan
+tinapat	1	VERB	magtapat
+tatapatin	1	VERB	magtapat
+tinapunan	14	VERB	ipatapon
+tatapunan	14	VERB	ipatapon
 inatapos	201	VERB	tapusin
 pagtapusan	201	VERB	tapusin
 pinapagtapusan	201	VERB	tapusin
@@ -52079,20 +52079,20 @@ tinatauhan	3644	VERB	tauhan
 tatauhan	3644	VERB	tauhan
 tinawagan	59	VERB	tawagan
 tinatawagan	59	VERB	tawagan
-tinawanan	8	VERB	tawanan
-tinatawanan	8	VERB	tawanan
-tatawanan	8	VERB	tawanan
-inatawanan	8	VERB	tawanan
-itawa	8	VERB	tawanan
-itinatawa	8	VERB	tawanan
-matawanan	8	VERB	tawanan
-natatawanan	8	VERB	tawanan
-maitawa	8	VERB	tawanan
-naitatawa	8	VERB	tawanan
-maikatawa	8	VERB	tawanan
-naikatatawa	8	VERB	tawanan
-naikakatawa	8	VERB	tawanan
-naiikatawa	8	VERB	tawanan
+tinawanan	8	VERB	tumawa
+tinatawanan	8	VERB	tumawa
+tatawanan	8	VERB	tumawa
+inatawanan	8	VERB	tumawa
+itawa	8	VERB	tumawa
+itinatawa	8	VERB	tumawa
+matawanan	8	VERB	tumawa
+natatawanan	8	VERB	tumawa
+maitawa	8	VERB	tumawa
+naitatawa	8	VERB	tumawa
+maikatawa	8	VERB	tumawa
+naikatatawa	8	VERB	tumawa
+naikakatawa	8	VERB	tumawa
+naiikatawa	8	VERB	tumawa
 tinawaran	3	VERB	tawaran
 tinatawaran	3	VERB	tawaran
 tatawaran	3	VERB	tawaran
@@ -52105,9 +52105,9 @@ tatayahan	5	VERB	tayahan
 tinibagan	19	VERB	tibagan
 tinitibagan	19	VERB	tibagan
 titibagan	19	VERB	tibagan
-tinigasan	1	VERB	tigasan
-tinitigasan	1	VERB	tigasan
-titigasan	1	VERB	tigasan
+tinigasan	1	VERB	tumigas
+tinitigasan	1	VERB	tumigas
+titigasan	1	VERB	tumigas
 tinigilan	17	VERB	tigilan
 tinitigilan	17	VERB	tigilan
 titigilan	17	VERB	tigilan
@@ -52127,9 +52127,9 @@ titirahan	1491	VERB	tirahan
 tinira	4	VERB	tirahin
 tinitira	4	VERB	tirahin
 titirahin	4	VERB	tirahin
-tiniya	151	VERB	tiyahin
-tinitiya	151	VERB	tiyahin
-titiyahin	151	VERB	tiyahin
+tiniya	151	VERB	tiyuhin
+tinitiya	151	VERB	tiyuhin
+titiyahin	151	VERB	tiyuhin
 tiniyo	248	VERB	tiyuhin
 tinitiyo	248	VERB	tiyuhin
 titiyuhin	248	VERB	tiyuhin
@@ -53579,19 +53579,19 @@ madudugo	2	ADJECTIVE	madugo
 madudula	1	ADJECTIVE	madula
 magagaan	70	ADJECTIVE	magaan
 magagaslaw	1	ADJECTIVE	magaslaw
-magagastos	9	ADJECTIVE	magastos
+magagastos	9	ADJECTIVE	gumastos
 magigilas	1	ADJECTIVE	magilas
 magigiliw	14	ADJECTIVE	magiliw
 magiginoo	17	ADJECTIVE	maginoo
 pinakamagulo	14	ADJECTIVE	magulo
-mahahalay	4	ADJECTIVE	mahalay
+mahahalay	4	ADJECTIVE	halayin
 mahahalimuyak	1	ADJECTIVE	mahalimuyak
 mahahangin	3	ADJECTIVE	mahangin
 mahahapdi	1	ADJECTIVE	mahapdi
 mahaharot	2	ADJECTIVE	maharot
 mahahayap	1	ADJECTIVE	mahayap
 mahahayop	1	ADJECTIVE	mahayop
-mahihigit	480	ADJECTIVE	mahigit
+mahihigit	480	ADJECTIVE	humigit
 mahihigpit	138	ADJECTIVE	mahigpit
 mahihimala	1	ADJECTIVE	mahimala
 mahihina	68	ADJECTIVE	mahina
@@ -53647,7 +53647,7 @@ malilimit	57	ADJECTIVE	malimit
 malilinamnam	10	ADJECTIVE	malinamnam
 malilinaw	243	ADJECTIVE	malinaw
 malilinggit	1	ADJECTIVE	malinggit
-malilinis	56	ADJECTIVE	malinis
+malilinis	56	ADJECTIVE	linisan
 malilinta	6	ADJECTIVE	malinta
 malisyosa	3	ADJECTIVE	malisyoso
 maliliwanag	138	ADJECTIVE	maliwanag

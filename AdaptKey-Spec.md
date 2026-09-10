@@ -2608,6 +2608,31 @@ form rather than by rowid - a rowid-based reference would also not survive `TABL
 wipe-and-reseed cycle in any well-defined way, since SQLite gives no guarantee that rowids are stable across
 a `DELETE`+bulk-`INSERT` pair.
 
+**D-467/D-468 (2026-09-10): structural invariants, and why a one-hop resolver makes them matter.**
+`AdaptKeyService` resolves a word family with exactly ONE hop (`entry.lemma ?: entry.word`) - so a `lemma`
+column that is internally inconsistent produces two concrete, silent failure modes rather than a crash: a
+**chain** (the lemma itself has a lemma) hands two members of the same real family two different family
+keys, so D-404 Tier 2's veto silently fails to fire between them; a **cycle** (A's lemma is B and B's lemma
+is A) can never hang the one-hop resolver, but still makes two words look related (or unrelated) when they
+are not. A **self-link** is a degenerate one-member cycle. `dictionaries/lemma_check.py` checks all three as
+hard PASS/FAIL, and `dictionaries/lemma_repair.py` fixes them mechanically: chains always flatten onto their
+deepest root (asserts nothing new, exactly what §320/§321 already required); cycle direction is decided,
+where decidable, from the language's own retained Wiktionary paradigm extract (which of the two forms is
+attested as a paradigm headword with the other listed among its own forms) - undecidable cycles have every
+link among their members dropped, failing open to pre-D-404-Tier-2 behaviour for that pair rather than
+asserting a guessed direction. German (§482) got all 27 of its cycles decided this way, because its own
+`wiktionary_verben.tsv` lists only genuine infinitives (conjugated forms are never given their own row) -
+the attestation check can only be one-sided there. **Confirmed NOT to generalise to the other 30 packs**
+(§484/D-468): their own extraction gives an inflected form its own full paradigm entry too (e.g. French
+`grandes` has its own Wiktionary page listing `grand` among ITS forms, exactly as `grand`'s page lists
+`grandes`), so a cycle's two directions end up equally "attested" by construction - proof, not just
+observation: a 2-cycle A<->B can only exist in the first place if `forms(A)` contains B AND `forms(B)`
+contains A, which is precisely the condition the attestation check requires to decide a direction, so it is
+guaranteed to tie for essentially every real case. Frequency-ratio tie-breaking was considered and rejected
+for the same reason the `--suspects` screen is explicitly out of scope for D-468: a suppletive paradigm
+(`is`<-`be`) looks identical to a mis-link by shape alone, and only a speaker of the language can tell them
+apart - using frequency to force a direction would silently reintroduce exactly that judgement call.
+
 ---
 
 ## 39. Learned-Words Base-Form Consolidation — Tier 3, Non-LLM Path (D-404)

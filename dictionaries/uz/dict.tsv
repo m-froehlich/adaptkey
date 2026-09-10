@@ -149,7 +149,7 @@ tur	25009	OTHER
 turi	25002	OTHER
 ishtirok	24992	NOUN,OTHER
 departamenti	24764	OTHER
-yerda	24670	NOUN,OTHER	yer
+yerda	24670	NOUN,OTHER	yemoq
 marta	24537	NOUN,OTHER
 asr	24255	NOUN,OTHER
 davomida	24248	NOUN,OTHER	davom
@@ -371,7 +371,7 @@ keldi	11872	VERB	kelmoq
 masjid	11825	NOUN,OTHER
 toʻliq	11817	OTHER
 dastlabki	11817	ADJECTIVE
-yerida	11816	NOUN,OTHER	yer
+yerida	11816	NOUN,OTHER	yemoq
 zamonaviy	11764	OTHER
 qoʻshma	11742	ADJECTIVE
 yaponiya	11710	NOUN,OTHER
@@ -395,7 +395,7 @@ kommunalari	11207	OTHER
 futbolchi	11186	NOUN,OTHER
 iqtisodiy	11113	ADJECTIVE
 klub	11103	OTHER
-otasi	11095	NOUN,OTHER	ota
+otasi	11095	NOUN,OTHER	otmoq
 iyul	11082	NOUN,OTHER
 sanʼat	11064	NOUN,OTHER
 oʻzbekistondagi	11049	OTHER
@@ -1412,7 +1412,7 @@ finalida	3046	OTHER
 yillarida	3045	NOUN,OTHER	yil
 belgisi	3045	OTHER
 akasi	3042	NOUN,OTHER	aka
-yerga	3041	NOUN,OTHER	yer
+yerga	3041	NOUN,OTHER	yemoq
 xususiyatlari	3037	NOUN,OTHER	xususiyat
 tugatgan	3034	OTHER
 agrilus	3031	OTHER
@@ -1971,7 +1971,7 @@ hududidagi	2139	OTHER
 abbosiylar	2139	OTHER
 oltinchi	2138	OTHER
 darhol	2137	OTHER
-otasining	2137	NOUN,OTHER	ota
+otasining	2137	NOUN,OTHER	otmoq
 nufuzli	2131	ADJECTIVE
 guruhining	2127	NOUN,OTHER	guruh
 olimi	2124	OTHER
@@ -2135,7 +2135,7 @@ tasdiqlangan	1959	OTHER
 turar	1959	OTHER
 dehistoniga	1959	OTHER
 ettirgan	1958	OTHER
-yerdan	1957	NOUN,OTHER	yer
+yerdan	1957	NOUN,OTHER	yemoq
 jangi	1955	OTHER
 ustiga	1955	OTHER
 belgilari	1955	OTHER
@@ -3227,7 +3227,7 @@ yevropadagi	1254	OTHER
 munosabatlarni	1252	NOUN,OTHER	munosabat
 chiqaradigan	1252	OTHER
 surgun	1252	OTHER
-yerning	1251	NOUN,OTHER	yer
+yerning	1251	NOUN,OTHER	yemoq
 xristian	1251	NOUN,OTHER
 ishini	1251	NOUN,OTHER	ish
 aprelida	1251	NOUN,OTHER	aprel
@@ -3480,7 +3480,7 @@ aleksey	1166	OTHER
 ruslar	1166	NOUN,OTHER	rus
 karimov	1166	PROPER_NOUN
 doimo	1166	OTHER
-yerlar	1166	NOUN,VERB	yer
+yerlar	1166	NOUN,VERB	yemoq
 sahifasi	1165	NOUN,OTHER	sahifa
 qurilma	1165	OTHER
 maykl	1165	OTHER
@@ -4120,7 +4120,7 @@ koʻrgazma	972	OTHER
 zonasi	972	OTHER
 qiziqarli	972	OTHER
 hujumi	972	OTHER
-kelajakda	972	NOUN,OTHER	kelajak
+kelajakda	972	NOUN,OTHER	kelmoq
 amakivachchasi	972	OTHER
 ingichka	972	OTHER
 rttemberg	972	OTHER
@@ -4566,7 +4566,7 @@ mayida	864	NOUN,OTHER	may
 bolaning	864	NOUN,OTHER	bola
 antik	863	OTHER
 turuvchi	863	OTHER
-yerlarda	863	NOUN,OTHER	yer
+yerlarda	863	NOUN,OTHER	yemoq
 solih	863	OTHER
 konservativ	863	OTHER
 misrda	863	OTHER
@@ -4707,7 +4707,7 @@ korporatsiyasi	835	OTHER
 gerbi	835	NOUN,OTHER	gerb
 abdurahmon	835	OTHER
 kelishdi	835	OTHER
-yerni	835	NOUN,OTHER	yer
+yerni	835	NOUN,OTHER	yemoq
 huquqshunoslik	835	NOUN,OTHER
 sohada	834	OTHER
 buxoriy	834	OTHER
@@ -4916,7 +4916,7 @@ qatori	794	OTHER
 istalgan	794	OTHER
 muvozanat	794	NOUN,OTHER
 hududlarni	793	OTHER
-yerlari	793	NOUN,OTHER	yer
+yerlari	793	NOUN,OTHER	yemoq
 vazifalari	793	NOUN,OTHER	vazifa
 tashqariga	793	OTHER
 baa	793	OTHER
@@ -5499,7 +5499,7 @@ kurashgan	694	OTHER
 komil	694	OTHER
 ishlashi	694	OTHER
 hujumkor	693	OTHER
-yerlarni	693	NOUN,OTHER	yer
+yerlarni	693	NOUN,OTHER	yemoq
 mari	693	OTHER
 oʻylab	693	VERB	oʻylamoq
 kaliforniyaning	693	OTHER
@@ -6690,7 +6690,7 @@ tavalludining	555	OTHER
 tanish	555	OTHER
 manzarali	555	OTHER
 vodiy	554	NOUN,OTHER
-yeri	554	NOUN,OTHER	yer
+yeri	554	NOUN,OTHER	yemoq
 kattasi	554	NOUN,OTHER	katta
 bgcolor	554	OTHER
 oʻrindagi	554	OTHER
@@ -7905,7 +7905,7 @@ nusxalari	453	OTHER
 telefonlar	453	OTHER
 isitish	453	OTHER
 avtomagistrali	453	OTHER
-yerlarini	452	NOUN,OTHER	yer
+yerlarini	452	NOUN,OTHER	yemoq
 aʼlo	452	OTHER
 namunalar	452	NOUN,OTHER	namuna
 nizom	452	OTHER
@@ -7960,7 +7960,7 @@ turlarida	448	OTHER
 miqdor	448	NOUN,OTHER
 kuzatildi	448	OTHER
 tashlaydi	448	OTHER
-otasidan	448	NOUN,OTHER	ota
+otasidan	448	NOUN,OTHER	otmoq
 sharoitlari	448	OTHER
 chiqaruvchilar	448	OTHER
 vektor	448	OTHER
@@ -9567,7 +9567,7 @@ atamasini	358	NOUN,OTHER	atama
 xodimlarining	358	NOUN,OTHER	xodim
 evolyutsion	358	OTHER
 bandlik	358	OTHER
-otasiga	358	NOUN,OTHER	ota
+otasiga	358	NOUN,OTHER	otmoq
 uyini	358	NOUN,OTHER	uy
 salibchilar	358	OTHER
 chiqishlar	358	OTHER
@@ -9805,7 +9805,7 @@ satirik	347	OTHER
 furqat	347	OTHER
 qatnovi	347	OTHER
 dunay	347	OTHER
-yerlarning	347	NOUN,OTHER	yer
+yerlarning	347	NOUN,OTHER	yemoq
 shirkat	347	NOUN,OTHER
 gullaydi	347	OTHER
 xarakterga	347	OTHER
@@ -11970,7 +11970,7 @@ vaziyatga	272	NOUN,OTHER	vaziyat
 suiisteʼmol	272	OTHER
 qolsa	272	VERB	qolmoq
 nkvd	272	OTHER
-otasini	272	NOUN,OTHER	ota
+otasini	272	NOUN,OTHER	otmoq
 oʻqitilgan	272	OTHER
 erkaklarda	272	OTHER
 oʻyinlarning	272	NOUN,OTHER	oʻyin
@@ -12068,7 +12068,7 @@ tegib	269	VERB	tegmoq
 haykalning	269	NOUN,OTHER	haykal
 sab	269	OTHER
 raebareli	269	OTHER
-yerlarga	269	NOUN,OTHER	yer
+yerlarga	269	NOUN,OTHER	yemoq
 dostonlari	269	OTHER
 cheklab	269	OTHER
 viloyatini	269	NOUN,OTHER	viloyat
@@ -12129,7 +12129,7 @@ oti	267	OTHER
 yodgorliklardan	267	OTHER
 idoralar	267	OTHER
 konserva	267	OTHER
-yerlarida	267	NOUN,OTHER	yer
+yerlarida	267	NOUN,OTHER	yemoq
 koʻpaygan	267	OTHER
 xoqon	267	OTHER
 qoʻshinlarni	267	NOUN,OTHER	qoʻshin
@@ -12341,7 +12341,7 @@ ourairports	262	OTHER
 maorifi	261	OTHER
 yaroslavl	261	OTHER
 jamiyatlar	261	NOUN,OTHER	jamiyat
-yerlariga	261	NOUN,OTHER	yer
+yerlariga	261	NOUN,OTHER	yemoq
 koʻmilgan	261	OTHER
 havolalari	261	OTHER
 bio	261	OTHER
@@ -16188,7 +16188,7 @@ oʻrnidan	184	OTHER
 mashinasozligi	184	OTHER
 silovsin	184	OTHER
 qaytargan	184	OTHER
-yerlarining	184	NOUN,OTHER	yer
+yerlarining	184	NOUN,OTHER	yemoq
 yigʻma	184	OTHER
 kabilarni	184	OTHER
 qilamiz	184	VERB	qilmoq
@@ -16714,7 +16714,7 @@ fondining	177	OTHER
 dunyosini	177	OTHER
 jarayonidan	177	NOUN,OTHER	jarayon
 kashta	177	OTHER
-yerlardan	177	NOUN,OTHER	yer
+yerlardan	177	NOUN,OTHER	yemoq
 tarixning	177	NOUN,OTHER	tarix
 bosfor	177	OTHER
 tajribani	177	NOUN,OTHER	tajriba
@@ -18958,7 +18958,7 @@ matnning	152	NOUN,OTHER	matn
 navbat	152	NOUN,OTHER
 yarimoʻtkazgichlar	152	OTHER
 elektrostatik	152	OTHER
-otaning	152	NOUN,OTHER	ota
+otaning	152	NOUN,OTHER	otmoq
 jadidlar	152	OTHER
 ettiriladi	152	OTHER
 eʼtiqodiga	152	OTHER
@@ -21136,7 +21136,7 @@ topshirilishi	132	OTHER
 portativ	132	OTHER
 matnida	132	NOUN,OTHER	matn
 reyd	132	OTHER
-yerlaridan	132	NOUN,OTHER	yer
+yerlaridan	132	NOUN,OTHER	yemoq
 ordenlar	132	OTHER
 nasl-nasabi	132	OTHER
 ergashib	132	OTHER
@@ -21931,7 +21931,7 @@ beliz	126	PROPER_NOUN
 holatidagi	126	OTHER
 koʻchgan	126	OTHER
 masalliqlar	126	OTHER
-otalari	126	NOUN,OTHER	ota
+otalari	126	NOUN,OTHER	otmoq
 falsafasida	126	NOUN,OTHER	falsafa
 qozonishi	126	OTHER
 bardoshli	126	OTHER
@@ -22210,7 +22210,7 @@ uygʻunlik	123	OTHER
 daraxtlarni	123	NOUN,OTHER	daraxt
 bitimni	123	OTHER
 uygʻotgan	123	OTHER
-kelajakka	123	NOUN,OTHER	kelajak
+kelajakka	123	NOUN,OTHER	kelmoq
 immigrantlar	123	OTHER
 narxlarni	123	OTHER
 zoʻravonlikdan	123	OTHER
@@ -24204,7 +24204,7 @@ koʻrsatishini	111	OTHER
 kelardi	111	OTHER
 narodov	111	OTHER
 tizimidir	111	OTHER
-otalar	111	NOUN,OTHER	ota
+otalar	111	NOUN,OTHER	otmoq
 bayramni	111	NOUN,OTHER	bayram
 meʼyorda	111	OTHER
 suratlarini	111	NOUN,OTHER	surat
@@ -24480,7 +24480,7 @@ dʼ	109	OTHER
 adibi	109	OTHER
 diss	109	OTHER
 raqqosasi	109	OTHER
-otam	109	NOUN,OTHER	ota
+otam	109	NOUN,OTHER	otmoq
 chaqirilib	109	OTHER
 moro	109	OTHER
 saba	109	OTHER
@@ -25476,7 +25476,7 @@ tahlilchilar	103	OTHER
 qabariq	103	OTHER
 ossuriyaliklar	103	OTHER
 xaridorlar	103	OTHER
-kelajakni	103	NOUN,OTHER	kelajak
+kelajakni	103	NOUN,OTHER	kelmoq
 mozilla	103	OTHER
 targʻibotchisi	103	OTHER
 suriyani	103	NOUN,OTHER	suriya
@@ -30192,7 +30192,7 @@ mavjudotlarning	83	NOUN,OTHER	mavjudot
 gistologiya	83	OTHER
 baliklar	83	OTHER
 monoxromatik	83	OTHER
-shishadan	83	NOUN,OTHER	shisha
+shishadan	83	NOUN,OTHER	shishmoq
 zarbaga	83	NOUN,OTHER	zarba
 turandot	83	OTHER
 suriladi	83	OTHER
@@ -31675,7 +31675,7 @@ vals	78	OTHER
 arias	78	OTHER
 kosta-rikaga	78	OTHER
 marti	78	NOUN,OTHER	mart
-yerini	78	NOUN,OTHER	yer
+yerini	78	NOUN,OTHER	yemoq
 filadelfiyada	78	OTHER
 spektaklni	78	NOUN,OTHER	spektakl
 izohlangan	78	OTHER
@@ -34029,7 +34029,7 @@ yordamisiz	71	OTHER
 priborsozlik	71	OTHER
 kataloglar	71	OTHER
 koʻrinishlaridan	71	OTHER
-yeriga	71	NOUN,OTHER	yer
+yeriga	71	NOUN,OTHER	yemoq
 kambagʻallik	71	OTHER
 vositalarning	71	OTHER
 tugatiladi	71	OTHER
@@ -34564,7 +34564,7 @@ shahboz	69	OTHER
 tojiddin	69	OTHER
 qisqartiradi	69	OTHER
 shoʻrxoklar	69	OTHER
-otadan	69	NOUN,OTHER	ota
+otadan	69	NOUN,OTHER	otmoq
 oqimlarini	69	OTHER
 tutadigan	69	VERB	tutmoq
 vaqt-vaqti	69	OTHER
@@ -35821,7 +35821,7 @@ xxvi	66	OTHER
 atmosferasida	66	OTHER
 meteorit	66	OTHER
 kislorodni	66	OTHER
-yerining	66	NOUN,OTHER	yer
+yerining	66	NOUN,OTHER	yemoq
 avstriyani	66	OTHER
 makr	66	OTHER
 lope	66	OTHER
@@ -36356,7 +36356,7 @@ palataning	65	OTHER
 tajribasining	65	NOUN,OTHER	tajriba
 xazinalar	65	NOUN,OTHER	xazina
 modellariga	65	OTHER
-shishasi	65	NOUN,OTHER	shisha
+shishasi	65	NOUN,OTHER	shishmoq
 sica	65	OTHER
 eda	65	OTHER
 getafe	65	OTHER
@@ -37326,7 +37326,7 @@ yodid	63	OTHER
 samolyotidan	63	NOUN,OTHER	samolyot
 ionlash	63	OTHER
 bogʻlanishning	63	OTHER
-shishalar	63	NOUN,OTHER	shisha
+shishalar	63	NOUN,OTHER	shishmoq
 disklari	63	OTHER
 pts	63	OTHER
 suhbatni	63	NOUN,OTHER	suhbat
@@ -45255,7 +45255,7 @@ integratsiyalash	48	OTHER
 elchiligi	48	OTHER
 leclerc	48	OTHER
 takliflariga	48	OTHER
-otalarining	48	NOUN,OTHER	ota
+otalarining	48	NOUN,OTHER	otmoq
 korteks	48	OTHER
 qarib	48	OTHER
 telangana	48	OTHER
@@ -45466,7 +45466,7 @@ injilda	47	OTHER
 umumiyligi	47	OTHER
 coa	47	OTHER
 muvaffaqiyatlarini	47	OTHER
-yeridan	47	NOUN,OTHER	yer
+yeridan	47	NOUN,OTHER	yemoq
 nabiy	47	OTHER
 barmoqlarini	47	NOUN,OTHER	barmoq
 kanaldagi	47	OTHER
@@ -51136,7 +51136,7 @@ aldrich	41	OTHER
 zain	41	OTHER
 nisha	41	OTHER
 cak	41	OTHER
-aholilar	41	NOUN,OTHER	aholi
+aholilar	41	NOUN,OTHER	ahl
 avt	41	OTHER
 albright	41	OTHER
 mcdermott	41	OTHER
@@ -53626,7 +53626,7 @@ mahkamasini	38	NOUN,OTHER	mahkama
 aloqalaridan	38	OTHER
 mire	38	OTHER
 diapazoniga	38	OTHER
-shishaning	38	NOUN,OTHER	shisha
+shishaning	38	NOUN,OTHER	shishmoq
 eritmalarning	38	OTHER
 chiqarilishining	38	OTHER
 teatridan	38	NOUN,OTHER	teatr
@@ -53857,7 +53857,7 @@ sterlinggacha	38	OTHER
 melnikov	38	OTHER
 lsa	38	OTHER
 oʻzimiz	38	OTHER
-shishaga	38	NOUN,OTHER	shisha
+shishaga	38	NOUN,OTHER	shishmoq
 rudani	38	OTHER
 jismdan	38	NOUN,OTHER	jism
 qurilmasining	38	OTHER
@@ -53917,7 +53917,7 @@ promo	38	OTHER
 curt	38	OTHER
 welch	38	OTHER
 sovitiladi	38	OTHER
-qorilar	38	NOUN,OTHER	qori
+qorilar	38	NOUN,OTHER	qor
 julyetta	38	OTHER
 sevgining	38	NOUN,OTHER	sevgi
 ritmlar	38	OTHER
@@ -57370,7 +57370,7 @@ shillong	34	OTHER
 ogʻirlashdi	34	OTHER
 nada	34	OTHER
 borganini	34	OTHER
-otani	34	NOUN,OTHER	ota
+otani	34	NOUN,OTHER	otmoq
 kenji	34	OTHER
 mita	34	OTHER
 uchirdi	34	OTHER
@@ -58571,7 +58571,7 @@ parcha-parcha	34	OTHER
 alm	34	OTHER
 echoes	34	OTHER
 yordamchisiga	34	OTHER
-shishani	34	NOUN,OTHER	shisha
+shishani	34	NOUN,OTHER	shishmoq
 kotlin	34	OTHER
 perch	34	OTHER
 kalonov	34	OTHER
@@ -62611,7 +62611,7 @@ arabistonga	30	OTHER
 tugallanmay	30	OTHER
 standartni	30	OTHER
 tahririyatining	30	OTHER
-oʻqishlar	30	NOUN,OTHER	oʻqish
+oʻqishlar	30	NOUN,OTHER	oʻqimoq
 aniqlikni	30	OTHER
 fikriy	30	OTHER
 toʻgʻondan	30	OTHER
@@ -62854,7 +62854,7 @@ davraga	30	OTHER
 rayni	30	OTHER
 mashqlarning	30	OTHER
 uchinchisida	30	OTHER
-otaga	30	NOUN,OTHER	ota
+otaga	30	NOUN,OTHER	otmoq
 boshqarishini	30	OTHER
 yashashdan	30	OTHER
 tuyulishi	30	OTHER
@@ -65148,7 +65148,7 @@ coelho	29	OTHER
 yur	29	OTHER
 muhabbatim	29	NOUN,OTHER	muhabbat
 tarnov	29	OTHER
-otamdan	29	NOUN,OTHER	ota
+otamdan	29	NOUN,OTHER	otmoq
 insoni	29	NOUN,OTHER	inson
 tuzilgani	29	OTHER
 urganchga	29	OTHER
@@ -66929,7 +66929,7 @@ muhtadiy	28	OTHER
 al-xattobning	28	OTHER
 boʻlganlarda	28	OTHER
 boʻshashish	28	OTHER
-otalaridan	28	NOUN,OTHER	ota
+otalaridan	28	NOUN,OTHER	otmoq
 zamalek	28	OTHER
 paxtasi	28	NOUN,OTHER	paxta
 ofisining	28	OTHER
@@ -71246,7 +71246,7 @@ terracotta	26	OTHER
 oʻtkazayotganda	26	OTHER
 amigos	26	OTHER
 logotiplari	26	OTHER
-kelajakning	26	NOUN,OTHER	kelajak
+kelajakning	26	NOUN,OTHER	kelmoq
 carri	26	OTHER
 ushlanadi	26	OTHER
 oʻntaligi	26	OTHER
@@ -73511,7 +73511,7 @@ laosdagi	25	OTHER
 safronov	25	OTHER
 oʻrdaklari	25	NOUN,OTHER	oʻrdak
 yoqilgʻida	25	OTHER
-shishadek	25	NOUN,OTHER	shisha
+shishadek	25	NOUN,OTHER	shishmoq
 chastotaning	25	OTHER
 shiftni	25	OTHER
 toʻpda	25	OTHER
@@ -76672,7 +76672,7 @@ lamarr	23	OTHER
 a-b	23	OTHER
 taqchillik	23	OTHER
 talabdan	23	VERB	talab
-otamning	23	NOUN,OTHER	ota
+otamning	23	NOUN,OTHER	otmoq
 bidenning	23	OTHER
 vunderkind	23	OTHER
 vuppertal	23	OTHER
@@ -99199,7 +99199,7 @@ drevnyaya	16	OTHER
 qoʻrqoqlik	16	OTHER
 datura	16	OTHER
 temurdan	16	OTHER
-otalariga	16	NOUN,OTHER	ota
+otalariga	16	NOUN,OTHER	otmoq
 qirqinchi	16	OTHER
 qoʻldan-qoʻlga	16	OTHER
 rahimbiy	16	OTHER
@@ -122948,7 +122948,7 @@ goʻshtingizdan	128	NOUN,OTHER	goʻsht
 goʻshtlaringizdan	128	NOUN,OTHER	goʻsht
 goʻshtingizdek	128	NOUN,OTHER	goʻsht
 goʻshtlaringizdek	128	NOUN,OTHER	goʻsht
-goʻshtilar	90	NOUN,OTHER	goʻshti
+goʻshtilar	90	NOUN,OTHER	goʻsht
 grafitlar	13	NOUN,OTHER	grafit
 grafitning	13	NOUN,OTHER	grafit
 grafitlarning	13	NOUN,OTHER	grafit
@@ -140506,85 +140506,85 @@ kegayingizdan	1	NOUN,OTHER	kegay
 kegaylaringizdan	1	NOUN,OTHER	kegay
 kegayingizdek	1	NOUN,OTHER	kegay
 kegaylaringizdek	1	NOUN,OTHER	kegay
-kelajaklar	46	NOUN,VERB	kelajak
-kelajaklarning	46	NOUN,OTHER	kelajak
-kelajaklarga	46	NOUN,OTHER	kelajak
-kelajaklarni	46	NOUN,OTHER	kelajak
-kelajaklarda	46	NOUN,OTHER	kelajak
-kelajakdan	46	NOUN,OTHER	kelajak
-kelajaklardan	46	NOUN,OTHER	kelajak
-kelajakdek	46	NOUN,OTHER	kelajak
-kelajaklardek	46	NOUN,OTHER	kelajak
-kelajakim	46	NOUN,OTHER	kelajak
-kelajaklarim	46	NOUN,OTHER	kelajak
-kelajakimning	46	NOUN,OTHER	kelajak
-kelajaklarimning	46	NOUN,OTHER	kelajak
-kelajakimga	46	NOUN,OTHER	kelajak
-kelajaklarimga	46	NOUN,OTHER	kelajak
-kelajakimni	46	NOUN,OTHER	kelajak
-kelajaklarimni	46	NOUN,OTHER	kelajak
-kelajakimda	46	NOUN,OTHER	kelajak
-kelajaklarimda	46	NOUN,OTHER	kelajak
-kelajakimdan	46	NOUN,OTHER	kelajak
-kelajaklarimdan	46	NOUN,OTHER	kelajak
-kelajakimdek	46	NOUN,OTHER	kelajak
-kelajaklarimdek	46	NOUN,OTHER	kelajak
-kelajaking	46	NOUN,OTHER	kelajak
-kelajaklaring	46	NOUN,OTHER	kelajak
-kelajakingning	46	NOUN,OTHER	kelajak
-kelajaklaringning	46	NOUN,OTHER	kelajak
-kelajakingga	46	NOUN,OTHER	kelajak
-kelajaklaringga	46	NOUN,OTHER	kelajak
-kelajakingni	46	NOUN,OTHER	kelajak
-kelajaklaringni	46	NOUN,OTHER	kelajak
-kelajakingda	46	NOUN,OTHER	kelajak
-kelajaklaringda	46	NOUN,OTHER	kelajak
-kelajakingdan	46	NOUN,OTHER	kelajak
-kelajaklaringdan	46	NOUN,OTHER	kelajak
-kelajakingdek	46	NOUN,OTHER	kelajak
-kelajaklaringdek	46	NOUN,OTHER	kelajak
-kelajaki	46	NOUN,OTHER	kelajak
-kelajaklari	46	NOUN,OTHER	kelajak
-kelajakining	46	NOUN,OTHER	kelajak
-kelajaklarining	46	NOUN,OTHER	kelajak
-kelajakiga	46	NOUN,OTHER	kelajak
-kelajaklariga	46	NOUN,OTHER	kelajak
-kelajakini	46	NOUN,OTHER	kelajak
-kelajaklarini	46	NOUN,OTHER	kelajak
-kelajakida	46	NOUN,OTHER	kelajak
-kelajaklarida	46	NOUN,OTHER	kelajak
-kelajakidan	46	NOUN,OTHER	kelajak
-kelajaklaridan	46	NOUN,OTHER	kelajak
-kelajakidek	46	NOUN,OTHER	kelajak
-kelajaklaridek	46	NOUN,OTHER	kelajak
-kelajakimiz	46	NOUN,OTHER	kelajak
-kelajaklarimiz	46	NOUN,OTHER	kelajak
-kelajakimizning	46	NOUN,OTHER	kelajak
-kelajaklarimizning	46	NOUN,OTHER	kelajak
-kelajakimizga	46	NOUN,OTHER	kelajak
-kelajaklarimizga	46	NOUN,OTHER	kelajak
-kelajakimizni	46	NOUN,OTHER	kelajak
-kelajaklarimizni	46	NOUN,OTHER	kelajak
-kelajakimizda	46	NOUN,OTHER	kelajak
-kelajaklarimizda	46	NOUN,OTHER	kelajak
-kelajakimizdan	46	NOUN,OTHER	kelajak
-kelajaklarimizdan	46	NOUN,OTHER	kelajak
-kelajakimizdek	46	NOUN,OTHER	kelajak
-kelajaklarimizdek	46	NOUN,OTHER	kelajak
-kelajakingiz	46	NOUN,OTHER	kelajak
-kelajaklaringiz	46	NOUN,OTHER	kelajak
-kelajakingizning	46	NOUN,OTHER	kelajak
-kelajaklaringizning	46	NOUN,OTHER	kelajak
-kelajakingizga	46	NOUN,OTHER	kelajak
-kelajaklaringizga	46	NOUN,OTHER	kelajak
-kelajakingizni	46	NOUN,OTHER	kelajak
-kelajaklaringizni	46	NOUN,OTHER	kelajak
-kelajakingizda	46	NOUN,OTHER	kelajak
-kelajaklaringizda	46	NOUN,OTHER	kelajak
-kelajakingizdan	46	NOUN,OTHER	kelajak
-kelajaklaringizdan	46	NOUN,OTHER	kelajak
-kelajakingizdek	46	NOUN,OTHER	kelajak
-kelajaklaringizdek	46	NOUN,OTHER	kelajak
+kelajaklar	46	NOUN,VERB	kelmoq
+kelajaklarning	46	NOUN,OTHER	kelmoq
+kelajaklarga	46	NOUN,OTHER	kelmoq
+kelajaklarni	46	NOUN,OTHER	kelmoq
+kelajaklarda	46	NOUN,OTHER	kelmoq
+kelajakdan	46	NOUN,OTHER	kelmoq
+kelajaklardan	46	NOUN,OTHER	kelmoq
+kelajakdek	46	NOUN,OTHER	kelmoq
+kelajaklardek	46	NOUN,OTHER	kelmoq
+kelajakim	46	NOUN,OTHER	kelmoq
+kelajaklarim	46	NOUN,OTHER	kelmoq
+kelajakimning	46	NOUN,OTHER	kelmoq
+kelajaklarimning	46	NOUN,OTHER	kelmoq
+kelajakimga	46	NOUN,OTHER	kelmoq
+kelajaklarimga	46	NOUN,OTHER	kelmoq
+kelajakimni	46	NOUN,OTHER	kelmoq
+kelajaklarimni	46	NOUN,OTHER	kelmoq
+kelajakimda	46	NOUN,OTHER	kelmoq
+kelajaklarimda	46	NOUN,OTHER	kelmoq
+kelajakimdan	46	NOUN,OTHER	kelmoq
+kelajaklarimdan	46	NOUN,OTHER	kelmoq
+kelajakimdek	46	NOUN,OTHER	kelmoq
+kelajaklarimdek	46	NOUN,OTHER	kelmoq
+kelajaking	46	NOUN,OTHER	kelmoq
+kelajaklaring	46	NOUN,OTHER	kelmoq
+kelajakingning	46	NOUN,OTHER	kelmoq
+kelajaklaringning	46	NOUN,OTHER	kelmoq
+kelajakingga	46	NOUN,OTHER	kelmoq
+kelajaklaringga	46	NOUN,OTHER	kelmoq
+kelajakingni	46	NOUN,OTHER	kelmoq
+kelajaklaringni	46	NOUN,OTHER	kelmoq
+kelajakingda	46	NOUN,OTHER	kelmoq
+kelajaklaringda	46	NOUN,OTHER	kelmoq
+kelajakingdan	46	NOUN,OTHER	kelmoq
+kelajaklaringdan	46	NOUN,OTHER	kelmoq
+kelajakingdek	46	NOUN,OTHER	kelmoq
+kelajaklaringdek	46	NOUN,OTHER	kelmoq
+kelajaki	46	NOUN,OTHER	kelmoq
+kelajaklari	46	NOUN,OTHER	kelmoq
+kelajakining	46	NOUN,OTHER	kelmoq
+kelajaklarining	46	NOUN,OTHER	kelmoq
+kelajakiga	46	NOUN,OTHER	kelmoq
+kelajaklariga	46	NOUN,OTHER	kelmoq
+kelajakini	46	NOUN,OTHER	kelmoq
+kelajaklarini	46	NOUN,OTHER	kelmoq
+kelajakida	46	NOUN,OTHER	kelmoq
+kelajaklarida	46	NOUN,OTHER	kelmoq
+kelajakidan	46	NOUN,OTHER	kelmoq
+kelajaklaridan	46	NOUN,OTHER	kelmoq
+kelajakidek	46	NOUN,OTHER	kelmoq
+kelajaklaridek	46	NOUN,OTHER	kelmoq
+kelajakimiz	46	NOUN,OTHER	kelmoq
+kelajaklarimiz	46	NOUN,OTHER	kelmoq
+kelajakimizning	46	NOUN,OTHER	kelmoq
+kelajaklarimizning	46	NOUN,OTHER	kelmoq
+kelajakimizga	46	NOUN,OTHER	kelmoq
+kelajaklarimizga	46	NOUN,OTHER	kelmoq
+kelajakimizni	46	NOUN,OTHER	kelmoq
+kelajaklarimizni	46	NOUN,OTHER	kelmoq
+kelajakimizda	46	NOUN,OTHER	kelmoq
+kelajaklarimizda	46	NOUN,OTHER	kelmoq
+kelajakimizdan	46	NOUN,OTHER	kelmoq
+kelajaklarimizdan	46	NOUN,OTHER	kelmoq
+kelajakimizdek	46	NOUN,OTHER	kelmoq
+kelajaklarimizdek	46	NOUN,OTHER	kelmoq
+kelajakingiz	46	NOUN,OTHER	kelmoq
+kelajaklaringiz	46	NOUN,OTHER	kelmoq
+kelajakingizning	46	NOUN,OTHER	kelmoq
+kelajaklaringizning	46	NOUN,OTHER	kelmoq
+kelajakingizga	46	NOUN,OTHER	kelmoq
+kelajaklaringizga	46	NOUN,OTHER	kelmoq
+kelajakingizni	46	NOUN,OTHER	kelmoq
+kelajaklaringizni	46	NOUN,OTHER	kelmoq
+kelajakingizda	46	NOUN,OTHER	kelmoq
+kelajaklaringizda	46	NOUN,OTHER	kelmoq
+kelajakingizdan	46	NOUN,OTHER	kelmoq
+kelajaklaringizdan	46	NOUN,OTHER	kelmoq
+kelajakingizdek	46	NOUN,OTHER	kelmoq
+kelajaklaringizdek	46	NOUN,OTHER	kelmoq
 kelinlarning	36	NOUN,OTHER	kelin
 kelinlarga	36	NOUN,OTHER	kelin
 kelinlarni	36	NOUN,OTHER	kelin
@@ -160634,72 +160634,72 @@ osoyishtalikingizdan	4	NOUN,OTHER	osoyishtalik
 osoyishtaliklaringizdan	4	NOUN,OTHER	osoyishtalik
 osoyishtalikingizdek	4	NOUN,OTHER	osoyishtalik
 osoyishtaliklaringizdek	4	NOUN,OTHER	osoyishtalik
-otalarning	158	NOUN,OTHER	ota
-otalarga	158	NOUN,OTHER	ota
-otalarni	158	NOUN,OTHER	ota
-otada	158	NOUN,OTHER	ota
-otalarda	158	NOUN,OTHER	ota
-otalardan	158	NOUN,OTHER	ota
-otadek	158	NOUN,OTHER	ota
-otalardek	158	NOUN,OTHER	ota
-otalarim	158	NOUN,OTHER	ota
-otalarimning	158	NOUN,OTHER	ota
-otamga	158	NOUN,OTHER	ota
-otalarimga	158	NOUN,OTHER	ota
-otamni	158	NOUN,OTHER	ota
-otalarimni	158	NOUN,OTHER	ota
-otamda	158	NOUN,OTHER	ota
-otalarimda	158	NOUN,OTHER	ota
-otalarimdan	158	NOUN,OTHER	ota
-otamdek	158	NOUN,OTHER	ota
-otalarimdek	158	NOUN,OTHER	ota
-otang	158	NOUN,OTHER	ota
-otalaring	158	NOUN,OTHER	ota
-otangning	158	NOUN,OTHER	ota
-otalaringning	158	NOUN,OTHER	ota
-otangga	158	NOUN,OTHER	ota
-otalaringga	158	NOUN,OTHER	ota
-otangni	158	NOUN,OTHER	ota
-otalaringni	158	NOUN,OTHER	ota
-otangda	158	NOUN,OTHER	ota
-otalaringda	158	NOUN,OTHER	ota
-otangdan	158	NOUN,OTHER	ota
-otalaringdan	158	NOUN,OTHER	ota
-otangdek	158	NOUN,OTHER	ota
-otalaringdek	158	NOUN,OTHER	ota
-otalarini	158	NOUN,OTHER	ota
-otasida	158	NOUN,OTHER	ota
-otalarida	158	NOUN,OTHER	ota
-otasidek	158	NOUN,OTHER	ota
-otalaridek	158	NOUN,OTHER	ota
-otamiz	158	NOUN,VERB	ota
-otalarimiz	158	NOUN,OTHER	ota
-otamizning	158	NOUN,OTHER	ota
-otalarimizning	158	NOUN,OTHER	ota
-otamizga	158	NOUN,OTHER	ota
-otalarimizga	158	NOUN,OTHER	ota
-otamizni	158	NOUN,OTHER	ota
-otalarimizni	158	NOUN,OTHER	ota
-otamizda	158	NOUN,OTHER	ota
-otalarimizda	158	NOUN,OTHER	ota
-otamizdan	158	NOUN,OTHER	ota
-otalarimizdan	158	NOUN,OTHER	ota
-otamizdek	158	NOUN,OTHER	ota
-otalarimizdek	158	NOUN,OTHER	ota
-otangiz	158	NOUN,OTHER	ota
-otalaringiz	158	NOUN,OTHER	ota
-otangizning	158	NOUN,OTHER	ota
-otalaringizning	158	NOUN,OTHER	ota
-otangizga	158	NOUN,OTHER	ota
-otalaringizga	158	NOUN,OTHER	ota
-otangizni	158	NOUN,OTHER	ota
-otalaringizni	158	NOUN,OTHER	ota
-otangizda	158	NOUN,OTHER	ota
-otalaringizda	158	NOUN,OTHER	ota
-otangizdan	158	NOUN,OTHER	ota
-otalaringizdan	158	NOUN,OTHER	ota
-otangizdek	158	NOUN,OTHER	ota
-otalaringizdek	158	NOUN,OTHER	ota
+otalarning	158	NOUN,OTHER	otmoq
+otalarga	158	NOUN,OTHER	otmoq
+otalarni	158	NOUN,OTHER	otmoq
+otada	158	NOUN,OTHER	otmoq
+otalarda	158	NOUN,OTHER	otmoq
+otalardan	158	NOUN,OTHER	otmoq
+otadek	158	NOUN,OTHER	otmoq
+otalardek	158	NOUN,OTHER	otmoq
+otalarim	158	NOUN,OTHER	otmoq
+otalarimning	158	NOUN,OTHER	otmoq
+otamga	158	NOUN,OTHER	otmoq
+otalarimga	158	NOUN,OTHER	otmoq
+otamni	158	NOUN,OTHER	otmoq
+otalarimni	158	NOUN,OTHER	otmoq
+otamda	158	NOUN,OTHER	otmoq
+otalarimda	158	NOUN,OTHER	otmoq
+otalarimdan	158	NOUN,OTHER	otmoq
+otamdek	158	NOUN,OTHER	otmoq
+otalarimdek	158	NOUN,OTHER	otmoq
+otang	158	NOUN,OTHER	otmoq
+otalaring	158	NOUN,OTHER	otmoq
+otangning	158	NOUN,OTHER	otmoq
+otalaringning	158	NOUN,OTHER	otmoq
+otangga	158	NOUN,OTHER	otmoq
+otalaringga	158	NOUN,OTHER	otmoq
+otangni	158	NOUN,OTHER	otmoq
+otalaringni	158	NOUN,OTHER	otmoq
+otangda	158	NOUN,OTHER	otmoq
+otalaringda	158	NOUN,OTHER	otmoq
+otangdan	158	NOUN,OTHER	otmoq
+otalaringdan	158	NOUN,OTHER	otmoq
+otangdek	158	NOUN,OTHER	otmoq
+otalaringdek	158	NOUN,OTHER	otmoq
+otalarini	158	NOUN,OTHER	otmoq
+otasida	158	NOUN,OTHER	otmoq
+otalarida	158	NOUN,OTHER	otmoq
+otasidek	158	NOUN,OTHER	otmoq
+otalaridek	158	NOUN,OTHER	otmoq
+otamiz	158	NOUN,VERB	otmoq
+otalarimiz	158	NOUN,OTHER	otmoq
+otamizning	158	NOUN,OTHER	otmoq
+otalarimizning	158	NOUN,OTHER	otmoq
+otamizga	158	NOUN,OTHER	otmoq
+otalarimizga	158	NOUN,OTHER	otmoq
+otamizni	158	NOUN,OTHER	otmoq
+otalarimizni	158	NOUN,OTHER	otmoq
+otamizda	158	NOUN,OTHER	otmoq
+otalarimizda	158	NOUN,OTHER	otmoq
+otamizdan	158	NOUN,OTHER	otmoq
+otalarimizdan	158	NOUN,OTHER	otmoq
+otamizdek	158	NOUN,OTHER	otmoq
+otalarimizdek	158	NOUN,OTHER	otmoq
+otangiz	158	NOUN,OTHER	otmoq
+otalaringiz	158	NOUN,OTHER	otmoq
+otangizning	158	NOUN,OTHER	otmoq
+otalaringizning	158	NOUN,OTHER	otmoq
+otangizga	158	NOUN,OTHER	otmoq
+otalaringizga	158	NOUN,OTHER	otmoq
+otangizni	158	NOUN,OTHER	otmoq
+otalaringizni	158	NOUN,OTHER	otmoq
+otangizda	158	NOUN,OTHER	otmoq
+otalaringizda	158	NOUN,OTHER	otmoq
+otangizdan	158	NOUN,OTHER	otmoq
+otalaringizdan	158	NOUN,OTHER	otmoq
+otangizdek	158	NOUN,OTHER	otmoq
+otalaringizdek	158	NOUN,OTHER	otmoq
 otashlar	2	NOUN,OTHER	otash
 otashning	2	NOUN,OTHER	otash
 otashlarning	2	NOUN,OTHER	otash
@@ -177667,82 +177667,82 @@ shinangizdan	9	NOUN,OTHER	shina
 shinalaringizdan	9	NOUN,OTHER	shina
 shinangizdek	9	NOUN,OTHER	shina
 shinalaringizdek	9	NOUN,OTHER	shina
-shishalarning	111	NOUN,OTHER	shisha
-shishalarga	111	NOUN,OTHER	shisha
-shishalarni	111	NOUN,OTHER	shisha
-shishada	111	NOUN,OTHER	shisha
-shishalarda	111	NOUN,OTHER	shisha
-shishalardan	111	NOUN,OTHER	shisha
-shishalardek	111	NOUN,OTHER	shisha
-shisham	111	NOUN,OTHER	shisha
-shishalarim	111	NOUN,OTHER	shisha
-shishamning	111	NOUN,OTHER	shisha
-shishalarimning	111	NOUN,OTHER	shisha
-shishamga	111	NOUN,OTHER	shisha
-shishalarimga	111	NOUN,OTHER	shisha
-shishamni	111	NOUN,OTHER	shisha
-shishalarimni	111	NOUN,OTHER	shisha
-shishamda	111	NOUN,OTHER	shisha
-shishalarimda	111	NOUN,OTHER	shisha
-shishamdan	111	NOUN,OTHER	shisha
-shishalarimdan	111	NOUN,OTHER	shisha
-shishamdek	111	NOUN,OTHER	shisha
-shishalarimdek	111	NOUN,OTHER	shisha
-shishang	111	NOUN,OTHER	shisha
-shishalaring	111	NOUN,OTHER	shisha
-shishangning	111	NOUN,OTHER	shisha
-shishalaringning	111	NOUN,OTHER	shisha
-shishangga	111	NOUN,OTHER	shisha
-shishalaringga	111	NOUN,OTHER	shisha
-shishangni	111	NOUN,OTHER	shisha
-shishalaringni	111	NOUN,OTHER	shisha
-shishangda	111	NOUN,OTHER	shisha
-shishalaringda	111	NOUN,OTHER	shisha
-shishangdan	111	NOUN,OTHER	shisha
-shishalaringdan	111	NOUN,OTHER	shisha
-shishangdek	111	NOUN,OTHER	shisha
-shishalaringdek	111	NOUN,OTHER	shisha
-shishalari	111	NOUN,OTHER	shisha
-shishasining	111	NOUN,OTHER	shisha
-shishalarining	111	NOUN,OTHER	shisha
-shishasiga	111	NOUN,OTHER	shisha
-shishalariga	111	NOUN,OTHER	shisha
-shishasini	111	NOUN,OTHER	shisha
-shishalarini	111	NOUN,OTHER	shisha
-shishasida	111	NOUN,OTHER	shisha
-shishalarida	111	NOUN,OTHER	shisha
-shishasidan	111	NOUN,OTHER	shisha
-shishalaridan	111	NOUN,OTHER	shisha
-shishasidek	111	NOUN,OTHER	shisha
-shishalaridek	111	NOUN,OTHER	shisha
-shishamiz	111	NOUN,VERB	shisha
-shishalarimiz	111	NOUN,OTHER	shisha
-shishamizning	111	NOUN,OTHER	shisha
-shishalarimizning	111	NOUN,OTHER	shisha
-shishamizga	111	NOUN,OTHER	shisha
-shishalarimizga	111	NOUN,OTHER	shisha
-shishamizni	111	NOUN,OTHER	shisha
-shishalarimizni	111	NOUN,OTHER	shisha
-shishamizda	111	NOUN,OTHER	shisha
-shishalarimizda	111	NOUN,OTHER	shisha
-shishamizdan	111	NOUN,OTHER	shisha
-shishalarimizdan	111	NOUN,OTHER	shisha
-shishamizdek	111	NOUN,OTHER	shisha
-shishalarimizdek	111	NOUN,OTHER	shisha
-shishangiz	111	NOUN,OTHER	shisha
-shishalaringiz	111	NOUN,OTHER	shisha
-shishangizning	111	NOUN,OTHER	shisha
-shishalaringizning	111	NOUN,OTHER	shisha
-shishangizga	111	NOUN,OTHER	shisha
-shishalaringizga	111	NOUN,OTHER	shisha
-shishangizni	111	NOUN,OTHER	shisha
-shishalaringizni	111	NOUN,OTHER	shisha
-shishangizda	111	NOUN,OTHER	shisha
-shishalaringizda	111	NOUN,OTHER	shisha
-shishangizdan	111	NOUN,OTHER	shisha
-shishalaringizdan	111	NOUN,OTHER	shisha
-shishangizdek	111	NOUN,OTHER	shisha
-shishalaringizdek	111	NOUN,OTHER	shisha
+shishalarning	111	NOUN,OTHER	shishmoq
+shishalarga	111	NOUN,OTHER	shishmoq
+shishalarni	111	NOUN,OTHER	shishmoq
+shishada	111	NOUN,OTHER	shishmoq
+shishalarda	111	NOUN,OTHER	shishmoq
+shishalardan	111	NOUN,OTHER	shishmoq
+shishalardek	111	NOUN,OTHER	shishmoq
+shisham	111	NOUN,OTHER	shishmoq
+shishalarim	111	NOUN,OTHER	shishmoq
+shishamning	111	NOUN,OTHER	shishmoq
+shishalarimning	111	NOUN,OTHER	shishmoq
+shishamga	111	NOUN,OTHER	shishmoq
+shishalarimga	111	NOUN,OTHER	shishmoq
+shishamni	111	NOUN,OTHER	shishmoq
+shishalarimni	111	NOUN,OTHER	shishmoq
+shishamda	111	NOUN,OTHER	shishmoq
+shishalarimda	111	NOUN,OTHER	shishmoq
+shishamdan	111	NOUN,OTHER	shishmoq
+shishalarimdan	111	NOUN,OTHER	shishmoq
+shishamdek	111	NOUN,OTHER	shishmoq
+shishalarimdek	111	NOUN,OTHER	shishmoq
+shishang	111	NOUN,OTHER	shishmoq
+shishalaring	111	NOUN,OTHER	shishmoq
+shishangning	111	NOUN,OTHER	shishmoq
+shishalaringning	111	NOUN,OTHER	shishmoq
+shishangga	111	NOUN,OTHER	shishmoq
+shishalaringga	111	NOUN,OTHER	shishmoq
+shishangni	111	NOUN,OTHER	shishmoq
+shishalaringni	111	NOUN,OTHER	shishmoq
+shishangda	111	NOUN,OTHER	shishmoq
+shishalaringda	111	NOUN,OTHER	shishmoq
+shishangdan	111	NOUN,OTHER	shishmoq
+shishalaringdan	111	NOUN,OTHER	shishmoq
+shishangdek	111	NOUN,OTHER	shishmoq
+shishalaringdek	111	NOUN,OTHER	shishmoq
+shishalari	111	NOUN,OTHER	shishmoq
+shishasining	111	NOUN,OTHER	shishmoq
+shishalarining	111	NOUN,OTHER	shishmoq
+shishasiga	111	NOUN,OTHER	shishmoq
+shishalariga	111	NOUN,OTHER	shishmoq
+shishasini	111	NOUN,OTHER	shishmoq
+shishalarini	111	NOUN,OTHER	shishmoq
+shishasida	111	NOUN,OTHER	shishmoq
+shishalarida	111	NOUN,OTHER	shishmoq
+shishasidan	111	NOUN,OTHER	shishmoq
+shishalaridan	111	NOUN,OTHER	shishmoq
+shishasidek	111	NOUN,OTHER	shishmoq
+shishalaridek	111	NOUN,OTHER	shishmoq
+shishamiz	111	NOUN,VERB	shishmoq
+shishalarimiz	111	NOUN,OTHER	shishmoq
+shishamizning	111	NOUN,OTHER	shishmoq
+shishalarimizning	111	NOUN,OTHER	shishmoq
+shishamizga	111	NOUN,OTHER	shishmoq
+shishalarimizga	111	NOUN,OTHER	shishmoq
+shishamizni	111	NOUN,OTHER	shishmoq
+shishalarimizni	111	NOUN,OTHER	shishmoq
+shishamizda	111	NOUN,OTHER	shishmoq
+shishalarimizda	111	NOUN,OTHER	shishmoq
+shishamizdan	111	NOUN,OTHER	shishmoq
+shishalarimizdan	111	NOUN,OTHER	shishmoq
+shishamizdek	111	NOUN,OTHER	shishmoq
+shishalarimizdek	111	NOUN,OTHER	shishmoq
+shishangiz	111	NOUN,OTHER	shishmoq
+shishalaringiz	111	NOUN,OTHER	shishmoq
+shishangizning	111	NOUN,OTHER	shishmoq
+shishalaringizning	111	NOUN,OTHER	shishmoq
+shishangizga	111	NOUN,OTHER	shishmoq
+shishalaringizga	111	NOUN,OTHER	shishmoq
+shishangizni	111	NOUN,OTHER	shishmoq
+shishalaringizni	111	NOUN,OTHER	shishmoq
+shishangizda	111	NOUN,OTHER	shishmoq
+shishalaringizda	111	NOUN,OTHER	shishmoq
+shishangizdan	111	NOUN,OTHER	shishmoq
+shishalaringizdan	111	NOUN,OTHER	shishmoq
+shishangizdek	111	NOUN,OTHER	shishmoq
+shishalaringizdek	111	NOUN,OTHER	shishmoq
 shkafning	3	NOUN,OTHER	shkaf
 shkaflarning	3	NOUN,OTHER	shkaf
 shkafga	3	NOUN,OTHER	shkaf
@@ -199057,48 +199057,48 @@ yangilikingizdan	27	NOUN,OTHER	yangilik
 yangiliklaringizdan	27	NOUN,OTHER	yangilik
 yangilikingizdek	27	NOUN,OTHER	yangilik
 yangiliklaringizdek	27	NOUN,OTHER	yangilik
-yangiliklarlar	83	NOUN,OTHER	yangiliklar
-yangiliklarlarning	83	NOUN,OTHER	yangiliklar
-yangiliklarlarga	83	NOUN,OTHER	yangiliklar
-yangiliklarlarni	83	NOUN,OTHER	yangiliklar
-yangiliklarlarda	83	NOUN,OTHER	yangiliklar
-yangiliklarlardan	83	NOUN,OTHER	yangiliklar
-yangiliklarlardek	83	NOUN,OTHER	yangiliklar
-yangiliklarlarim	83	NOUN,OTHER	yangiliklar
-yangiliklarlarimning	83	NOUN,OTHER	yangiliklar
-yangiliklarlarimga	83	NOUN,OTHER	yangiliklar
-yangiliklarlarimni	83	NOUN,OTHER	yangiliklar
-yangiliklarlarimda	83	NOUN,OTHER	yangiliklar
-yangiliklarlarimdan	83	NOUN,OTHER	yangiliklar
-yangiliklarlarimdek	83	NOUN,OTHER	yangiliklar
-yangiliklarlaring	83	NOUN,OTHER	yangiliklar
-yangiliklarlaringning	83	NOUN,OTHER	yangiliklar
-yangiliklarlaringga	83	NOUN,OTHER	yangiliklar
-yangiliklarlaringni	83	NOUN,OTHER	yangiliklar
-yangiliklarlaringda	83	NOUN,OTHER	yangiliklar
-yangiliklarlaringdan	83	NOUN,OTHER	yangiliklar
-yangiliklarlaringdek	83	NOUN,OTHER	yangiliklar
-yangiliklarlari	83	NOUN,OTHER	yangiliklar
-yangiliklarlarining	83	NOUN,OTHER	yangiliklar
-yangiliklarlariga	83	NOUN,OTHER	yangiliklar
-yangiliklarlarini	83	NOUN,OTHER	yangiliklar
-yangiliklarlarida	83	NOUN,OTHER	yangiliklar
-yangiliklarlaridan	83	NOUN,OTHER	yangiliklar
-yangiliklarlaridek	83	NOUN,OTHER	yangiliklar
-yangiliklarlarimiz	83	NOUN,OTHER	yangiliklar
-yangiliklarlarimizning	83	NOUN,OTHER	yangiliklar
-yangiliklarlarimizga	83	NOUN,OTHER	yangiliklar
-yangiliklarlarimizni	83	NOUN,OTHER	yangiliklar
-yangiliklarlarimizda	83	NOUN,OTHER	yangiliklar
-yangiliklarlarimizdan	83	NOUN,OTHER	yangiliklar
-yangiliklarlarimizdek	83	NOUN,OTHER	yangiliklar
-yangiliklarlaringiz	83	NOUN,OTHER	yangiliklar
-yangiliklarlaringizning	83	NOUN,OTHER	yangiliklar
-yangiliklarlaringizga	83	NOUN,OTHER	yangiliklar
-yangiliklarlaringizni	83	NOUN,OTHER	yangiliklar
-yangiliklarlaringizda	83	NOUN,OTHER	yangiliklar
-yangiliklarlaringizdan	83	NOUN,OTHER	yangiliklar
-yangiliklarlaringizdek	83	NOUN,OTHER	yangiliklar
+yangiliklarlar	83	NOUN,OTHER	yangilik
+yangiliklarlarning	83	NOUN,OTHER	yangilik
+yangiliklarlarga	83	NOUN,OTHER	yangilik
+yangiliklarlarni	83	NOUN,OTHER	yangilik
+yangiliklarlarda	83	NOUN,OTHER	yangilik
+yangiliklarlardan	83	NOUN,OTHER	yangilik
+yangiliklarlardek	83	NOUN,OTHER	yangilik
+yangiliklarlarim	83	NOUN,OTHER	yangilik
+yangiliklarlarimning	83	NOUN,OTHER	yangilik
+yangiliklarlarimga	83	NOUN,OTHER	yangilik
+yangiliklarlarimni	83	NOUN,OTHER	yangilik
+yangiliklarlarimda	83	NOUN,OTHER	yangilik
+yangiliklarlarimdan	83	NOUN,OTHER	yangilik
+yangiliklarlarimdek	83	NOUN,OTHER	yangilik
+yangiliklarlaring	83	NOUN,OTHER	yangilik
+yangiliklarlaringning	83	NOUN,OTHER	yangilik
+yangiliklarlaringga	83	NOUN,OTHER	yangilik
+yangiliklarlaringni	83	NOUN,OTHER	yangilik
+yangiliklarlaringda	83	NOUN,OTHER	yangilik
+yangiliklarlaringdan	83	NOUN,OTHER	yangilik
+yangiliklarlaringdek	83	NOUN,OTHER	yangilik
+yangiliklarlari	83	NOUN,OTHER	yangilik
+yangiliklarlarining	83	NOUN,OTHER	yangilik
+yangiliklarlariga	83	NOUN,OTHER	yangilik
+yangiliklarlarini	83	NOUN,OTHER	yangilik
+yangiliklarlarida	83	NOUN,OTHER	yangilik
+yangiliklarlaridan	83	NOUN,OTHER	yangilik
+yangiliklarlaridek	83	NOUN,OTHER	yangilik
+yangiliklarlarimiz	83	NOUN,OTHER	yangilik
+yangiliklarlarimizning	83	NOUN,OTHER	yangilik
+yangiliklarlarimizga	83	NOUN,OTHER	yangilik
+yangiliklarlarimizni	83	NOUN,OTHER	yangilik
+yangiliklarlarimizda	83	NOUN,OTHER	yangilik
+yangiliklarlarimizdan	83	NOUN,OTHER	yangilik
+yangiliklarlarimizdek	83	NOUN,OTHER	yangilik
+yangiliklarlaringiz	83	NOUN,OTHER	yangilik
+yangiliklarlaringizning	83	NOUN,OTHER	yangilik
+yangiliklarlaringizga	83	NOUN,OTHER	yangilik
+yangiliklarlaringizni	83	NOUN,OTHER	yangilik
+yangiliklarlaringizda	83	NOUN,OTHER	yangilik
+yangiliklarlaringizdan	83	NOUN,OTHER	yangilik
+yangiliklarlaringizdek	83	NOUN,OTHER	yangilik
 yanvarlar	760	NOUN,OTHER	yanvar
 yanvarlarning	760	NOUN,OTHER	yanvar
 yanvarlarga	760	NOUN,OTHER	yanvar
@@ -199490,66 +199490,66 @@ yelkalaringizdan	18	NOUN,OTHER	yelka
 yelkangizdek	18	NOUN,OTHER	yelka
 yelkalaringizdek	18	NOUN,OTHER	yelka
 yenglar	4	NOUN,OTHER	yeng
-yerdek	881	NOUN,OTHER	yer
-yerlardek	881	NOUN,OTHER	yer
-yerim	881	NOUN,OTHER	yer
-yerlarim	881	NOUN,OTHER	yer
-yerimning	881	NOUN,OTHER	yer
-yerlarimning	881	NOUN,OTHER	yer
-yerimga	881	NOUN,OTHER	yer
-yerlarimga	881	NOUN,OTHER	yer
-yerimni	881	NOUN,OTHER	yer
-yerlarimni	881	NOUN,OTHER	yer
-yerimda	881	NOUN,OTHER	yer
-yerlarimda	881	NOUN,OTHER	yer
-yerimdan	881	NOUN,OTHER	yer
-yerlarimdan	881	NOUN,OTHER	yer
-yerimdek	881	NOUN,OTHER	yer
-yerlarimdek	881	NOUN,OTHER	yer
-yering	881	NOUN,OTHER	yer
-yerlaring	881	NOUN,OTHER	yer
-yeringning	881	NOUN,OTHER	yer
-yerlaringning	881	NOUN,OTHER	yer
-yeringga	881	NOUN,OTHER	yer
-yerlaringga	881	NOUN,OTHER	yer
-yeringni	881	NOUN,OTHER	yer
-yerlaringni	881	NOUN,OTHER	yer
-yeringda	881	NOUN,OTHER	yer
-yerlaringda	881	NOUN,OTHER	yer
-yeringdan	881	NOUN,OTHER	yer
-yerlaringdan	881	NOUN,OTHER	yer
-yeringdek	881	NOUN,OTHER	yer
-yerlaringdek	881	NOUN,OTHER	yer
-yeridek	881	NOUN,OTHER	yer
-yerlaridek	881	NOUN,OTHER	yer
-yerimiz	881	NOUN,OTHER	yer
-yerlarimiz	881	NOUN,OTHER	yer
-yerimizning	881	NOUN,OTHER	yer
-yerlarimizning	881	NOUN,OTHER	yer
-yerimizga	881	NOUN,OTHER	yer
-yerlarimizga	881	NOUN,OTHER	yer
-yerimizni	881	NOUN,OTHER	yer
-yerlarimizni	881	NOUN,OTHER	yer
-yerimizda	881	NOUN,OTHER	yer
-yerlarimizda	881	NOUN,OTHER	yer
-yerimizdan	881	NOUN,OTHER	yer
-yerlarimizdan	881	NOUN,OTHER	yer
-yerimizdek	881	NOUN,OTHER	yer
-yerlarimizdek	881	NOUN,OTHER	yer
-yeringiz	881	NOUN,OTHER	yer
-yerlaringiz	881	NOUN,OTHER	yer
-yeringizning	881	NOUN,OTHER	yer
-yerlaringizning	881	NOUN,OTHER	yer
-yeringizga	881	NOUN,OTHER	yer
-yerlaringizga	881	NOUN,OTHER	yer
-yeringizni	881	NOUN,OTHER	yer
-yerlaringizni	881	NOUN,OTHER	yer
-yeringizda	881	NOUN,OTHER	yer
-yerlaringizda	881	NOUN,OTHER	yer
-yeringizdan	881	NOUN,OTHER	yer
-yerlaringizdan	881	NOUN,OTHER	yer
-yeringizdek	881	NOUN,OTHER	yer
-yerlaringizdek	881	NOUN,OTHER	yer
+yerdek	881	NOUN,OTHER	yemoq
+yerlardek	881	NOUN,OTHER	yemoq
+yerim	881	NOUN,OTHER	yemoq
+yerlarim	881	NOUN,OTHER	yemoq
+yerimning	881	NOUN,OTHER	yemoq
+yerlarimning	881	NOUN,OTHER	yemoq
+yerimga	881	NOUN,OTHER	yemoq
+yerlarimga	881	NOUN,OTHER	yemoq
+yerimni	881	NOUN,OTHER	yemoq
+yerlarimni	881	NOUN,OTHER	yemoq
+yerimda	881	NOUN,OTHER	yemoq
+yerlarimda	881	NOUN,OTHER	yemoq
+yerimdan	881	NOUN,OTHER	yemoq
+yerlarimdan	881	NOUN,OTHER	yemoq
+yerimdek	881	NOUN,OTHER	yemoq
+yerlarimdek	881	NOUN,OTHER	yemoq
+yering	881	NOUN,OTHER	yemoq
+yerlaring	881	NOUN,OTHER	yemoq
+yeringning	881	NOUN,OTHER	yemoq
+yerlaringning	881	NOUN,OTHER	yemoq
+yeringga	881	NOUN,OTHER	yemoq
+yerlaringga	881	NOUN,OTHER	yemoq
+yeringni	881	NOUN,OTHER	yemoq
+yerlaringni	881	NOUN,OTHER	yemoq
+yeringda	881	NOUN,OTHER	yemoq
+yerlaringda	881	NOUN,OTHER	yemoq
+yeringdan	881	NOUN,OTHER	yemoq
+yerlaringdan	881	NOUN,OTHER	yemoq
+yeringdek	881	NOUN,OTHER	yemoq
+yerlaringdek	881	NOUN,OTHER	yemoq
+yeridek	881	NOUN,OTHER	yemoq
+yerlaridek	881	NOUN,OTHER	yemoq
+yerimiz	881	NOUN,OTHER	yemoq
+yerlarimiz	881	NOUN,OTHER	yemoq
+yerimizning	881	NOUN,OTHER	yemoq
+yerlarimizning	881	NOUN,OTHER	yemoq
+yerimizga	881	NOUN,OTHER	yemoq
+yerlarimizga	881	NOUN,OTHER	yemoq
+yerimizni	881	NOUN,OTHER	yemoq
+yerlarimizni	881	NOUN,OTHER	yemoq
+yerimizda	881	NOUN,OTHER	yemoq
+yerlarimizda	881	NOUN,OTHER	yemoq
+yerimizdan	881	NOUN,OTHER	yemoq
+yerlarimizdan	881	NOUN,OTHER	yemoq
+yerimizdek	881	NOUN,OTHER	yemoq
+yerlarimizdek	881	NOUN,OTHER	yemoq
+yeringiz	881	NOUN,OTHER	yemoq
+yerlaringiz	881	NOUN,OTHER	yemoq
+yeringizning	881	NOUN,OTHER	yemoq
+yerlaringizning	881	NOUN,OTHER	yemoq
+yeringizga	881	NOUN,OTHER	yemoq
+yerlaringizga	881	NOUN,OTHER	yemoq
+yeringizni	881	NOUN,OTHER	yemoq
+yerlaringizni	881	NOUN,OTHER	yemoq
+yeringizda	881	NOUN,OTHER	yemoq
+yerlaringizda	881	NOUN,OTHER	yemoq
+yeringizdan	881	NOUN,OTHER	yemoq
+yerlaringizdan	881	NOUN,OTHER	yemoq
+yeringizdek	881	NOUN,OTHER	yemoq
+yerlaringizdek	881	NOUN,OTHER	yemoq
 yiglar	2	NOUN,OTHER	yig
 yigning	2	NOUN,OTHER	yig
 yiglarning	2	NOUN,OTHER	yig
@@ -214716,7 +214716,7 @@ asriyroq	1	ADJECTIVE	asriy
 astronomikroq	13	ADJECTIVE	astronomik
 axloqiyroq	23	ADJECTIVE	axloqiy
 axloqsizroq	1	ADJECTIVE	axloqsiz
-ayniroq	58	ADJECTIVE	ayni
+ayniroq	58	ADJECTIVE	ayn
 ayonroq	3	ADJECTIVE	ayon
 badiiyroq	142	ADJECTIVE	badiiy
 baxilroq	1	ADJECTIVE	baxil
@@ -215274,7 +215274,7 @@ vahshiyroq	2	ADJECTIVE	vahshiy
 vazminroq	1	ADJECTIVE	vazmin
 vijdoniyroq	1	ADJECTIVE	vijdoniy
 xoinroq	1	ADJECTIVE	xoin
-xokiroq	1	ADJECTIVE	xoki
+xokiroq	1	ADJECTIVE	xok
 xokisorroq	1	ADJECTIVE	xokisor
 xorijiyroq	73	ADJECTIVE	xorijiy
 xosroq	190	ADJECTIVE	xos

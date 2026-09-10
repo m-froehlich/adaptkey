@@ -23,7 +23,7 @@ luar	91256	VERB	meluar
 memiliki	85503	VERB
 bagian	84862	NOUN,OTHER
 bahwa	84018	OTHER
-dapat	83113	VERB	dapatlah
+dapat	83113	VERB	mendapat
 satu	82551	VERB	menyatu
 telah	78225	OTHER
 lebih	78224	VERB	melebih
@@ -38,7 +38,7 @@ pertama	68888	OTHER
 seorang	64849	NOUN,OTHER
 besar	63010	VERB	membesar
 beberapa	61223	OTHER
-akan	60911	VERB	akanlah
+akan	60911	VERB	mengakan
 orang	60712	VERB	mohonlah
 saat	60629	OTHER
 kemudian	60363	OTHER
@@ -117,13 +117,13 @@ perusahaan	27853	NOUN,OTHER
 mulai	27780	VERB	memulai
 sendiri	27228	VERB	menyendiri
 tiga	27167	OTHER
-perang	26919	VERB	kuperangi
+perang	26919	VERB	memerangi
 bawah	26715	OTHER
 tokoh	26613	OTHER
 umum	26611	OTHER
 rumah	26547	OTHER
 bagi	26336	VERB	membagi
-hidup	26160	VERB	kuhidupi
+hidup	26160	VERB	menghidupi
 mana	26022	OTHER
 berbagai	25904	VERB
 famili	25896	OTHER
@@ -292,7 +292,7 @@ suku	13924	OTHER
 ekonomi	13922	OTHER
 buku	13890	VERB	membuku
 karier	13865	OTHER
-dekat	13844	VERB	kudekati
+dekat	13844	VERB	mendekati
 agung	13762	OTHER
 tumbuhan	13714	NOUN,OTHER
 tingkat	13691	VERB	meningkat
@@ -362,7 +362,7 @@ awalnya	11322	OTHER
 ilmu	11221	OTHER
 kaki	11216	OTHER
 tinggal	11214	VERB	tinggallah
-alam	11210	VERB	kualami
+alam	11210	VERB	mengalami
 perdana	11209	OTHER
 batu	11135	VERB	membatu
 ruang	11045	VERB	meruang
@@ -464,7 +464,7 @@ diberikan	8853	VERB	memberikan
 layanan	8831	OTHER
 perjanjian	8824	NOUN,OTHER
 sesuai	8782	ADJECTIVE
-kurang	8773	VERB	kaukurangi
+kurang	8773	VERB	mengurangi
 ikan	8763	OTHER
 tenggara	8761	VERB	menenggara
 pemimpin	8761	NOUN,OTHER
@@ -505,7 +505,7 @@ gerakan	8172	NOUN,OTHER
 sisi	8170	VERB	menyisi
 berjudul	8157	VERB
 gaya	8124	VERB	menggaya
-milik	8120	VERB	kaumiliki
+milik	8120	VERB	memiliki
 katedral	8079	OTHER
 peringkat	8068	OTHER
 berwarna	8058	VERB
@@ -550,7 +550,7 @@ tua	7585	VERB	menua
 berkembang	7565	VERB,ADJECTIVE
 terkait	7562	VERB	mengait
 ahli	7530	OTHER
-cinta	7527	NOUN,VERB	kaucintai
+cinta	7527	NOUN,VERB	mencintai
 paus	7517	OTHER
 melihat	7512	VERB
 mampu	7509	OTHER
@@ -566,12 +566,12 @@ proyek	7412	OTHER
 cepat	7378	OTHER
 ditebang	7342	VERB	menebang
 singel	7336	OTHER
-ulang	7313	VERB	kuulangi
+ulang	7313	VERB	mengulangi
 meningkatkan	7304	VERB	bertingkat
 keturunan	7304	NOUN,OTHER
 pertanian	7300	NOUN,OTHER
 hitam	7291	VERB	menghitam
-ingin	7283	VERB	kauingini
+ingin	7283	VERB	mengingini
 nicolson	7269	OTHER
 mengebor	7269	VERB
 peristiwa	7249	OTHER
@@ -623,7 +623,7 @@ aktor	6776	OTHER
 memilih	6774	VERB
 alat	6761	OTHER
 pasangan	6757	NOUN,OTHER
-datang	6755	VERB	datanglah
+datang	6755	VERB	mendatang
 diadakan	6753	VERB	berada
 publik	6750	OTHER
 romawi	6722	OTHER
@@ -638,7 +638,7 @@ diangkat	6661	VERB	mengangkat
 obat	6655	OTHER
 perdagangan	6648	NOUN,OTHER
 kanada	6648	OTHER
-penuh	6648	VERB	kupenuhi
+penuh	6648	VERB	memenuhi
 memperoleh	6642	VERB
 titik	6623	VERB	menitik
 membangun	6617	VERB
@@ -859,7 +859,7 @@ meksiko	4846	OTHER
 dewa	4835	OTHER
 ikut	4833	VERB	mengikut
 mengandung	4818	VERB
-makan	4815	VERB	makanlah
+makan	4815	VERB	memakan
 diambil	4808	VERB	mengambil
 yesus	4795	OTHER
 utamanya	4793	OTHER
@@ -1086,13 +1086,13 @@ tapi	3689	OTHER
 digantikan	3687	VERB	berganti
 iklim	3679	OTHER
 berkaitan	3673	VERB
-percaya	3671	VERB	kupercayai
+percaya	3671	VERB	mempercayai
 memakan	3671	VERB
 pertumbuhan	3660	NOUN,OTHER
 saling	3659	OTHER
 makam	3642	OTHER
 merek	3633	OTHER
-hakim	3633	VERB	kuhakimi
+hakim	3633	VERB	menghakimi
 pasal	3633	OTHER
 perhatian	3629	NOUN,OTHER
 porifera	3629	OTHER
@@ -1641,11 +1641,11 @@ mengangkat	2339	VERB
 pondok	2338	VERB	memondok
 benar-benar	2337	OTHER
 anjing	2336	OTHER
-langkah	2335	VERB	kaulangkahi
+langkah	2335	VERB	melangkahi
 kebebasan	2334	NOUN,OTHER
 raden	2333	OTHER
 gula	2327	OTHER
-suka	2327	VERB	kusukai
+suka	2327	VERB	menyukai
 prinsip	2325	OTHER
 penemuan	2324	NOUN,OTHER
 rahasia	2323	OTHER
@@ -1667,7 +1667,7 @@ investasi	2303	OTHER
 strategis	2303	OTHER
 melainkan	2302	VERB
 rekan	2301	VERB	merekan
-lepas	2299	VERB	lepaslah
+lepas	2299	VERB	melepas
 onthophagus	2297	OTHER
 ayam	2296	OTHER
 ibrani	2293	OTHER
@@ -1726,7 +1726,7 @@ siaran	2204	OTHER
 sebab	2202	VERB	menyebab
 menentang	2200	VERB
 kucing	2200	OTHER
-kasih	2198	VERB	kaukasihi
+kasih	2198	VERB	mengasihi
 karakteristik	2193	OTHER
 ras	2192	OTHER
 roda	2192	OTHER
@@ -1920,7 +1920,7 @@ bersama-sama	1929	VERB
 alur	1928	OTHER
 menyelenggarakan	1928	VERB
 diterapkan	1924	VERB	berterap
-berkat	1923	VERB	kauberkati
+berkat	1923	VERB	memberkati
 https	1922	OTHER
 kesuksesan	1919	NOUN,OTHER
 sinyal	1919	OTHER
@@ -2127,7 +2127,7 @@ penyair	1706	NOUN,OTHER
 dibawah	1706	OTHER
 cedera	1706	OTHER
 kotak	1705	VERB	mengotak
-punya	1702	VERB	kaupunyai
+punya	1702	VERB	mempunyai
 pasca	1701	OTHER
 beragama	1700	VERB
 menangani	1698	VERB
@@ -2218,7 +2218,7 @@ binatang	1616	OTHER
 nagari	1615	OTHER
 juru	1614	OTHER
 kembar	1613	OTHER
-pelajar	1613	NOUN,VERB	kupelajari
+pelajar	1613	NOUN,VERB	memelajari
 pandang	1613	VERB	memandang
 sidang	1612	OTHER
 tahun-tahun	1612	OTHER
@@ -2410,7 +2410,7 @@ pembangkit	1452	NOUN,OTHER
 penambahan	1452	NOUN,OTHER
 kacang	1448	OTHER
 marah	1448	OTHER
-takut	1443	VERB	kutakuti
+takut	1443	VERB	menakuti
 terlepas	1443	VERB	melepas
 cincin	1441	OTHER
 susunan	1439	NOUN,OTHER
@@ -2628,7 +2628,7 @@ terakhirnya	1287	OTHER
 kru	1287	OTHER
 membedakan	1287	VERB	berbeda
 pembinaan	1287	NOUN,OTHER
-coba	1287	VERB	cobalah
+coba	1287	VERB	mencoba
 tahan	1286	VERB	menahan
 merayakan	1286	VERB
 perbandingan	1286	NOUN,OTHER
@@ -2686,7 +2686,7 @@ pd	1255	OTHER
 unggul	1255	OTHER
 diadaptasi	1254	OTHER
 tikus	1253	VERB	menikus
-dinobatkan	1252	VERB	menobatkan
+dinobatkan	1252	VERB	bertobat
 lemak	1252	OTHER
 dicatat	1252	VERB	mencatat
 percobaan	1252	NOUN,OTHER
@@ -2847,7 +2847,7 @@ menyimpulkan	1155	VERB
 marinir	1152	OTHER
 diajukan	1152	VERB	mengajukan
 anugerah	1151	OTHER
-sadar	1151	VERB	kusadari
+sadar	1151	VERB	menyadari
 penamaan	1150	NOUN,OTHER
 dijalankan	1150	VERB	berjalan
 nelayan	1149	OTHER
@@ -3094,7 +3094,7 @@ telekomunikasi	1040	OTHER
 utusan	1038	NOUN,OTHER
 mencalonkan	1038	VERB
 lembut	1038	OTHER
-angkat	1037	VERB	angkatlah
+angkat	1037	VERB	mengangkat
 pemisahan	1037	NOUN,OTHER
 memperkirakan	1036	VERB
 oposisi	1036	VERB	mengoposisi
@@ -3344,7 +3344,7 @@ batas-batas	947	OTHER
 choi	947	OTHER
 subspesies	945	OTHER
 akurat	945	OTHER
-bangun	945	VERB	bangunlah
+bangun	945	VERB	membangun
 lin	945	OTHER
 imigran	944	OTHER
 mengundang	944	VERB
@@ -3620,7 +3620,7 @@ akal	851	OTHER
 pascasarjana	851	OTHER
 seksi	851	OTHER
 tersusun	850	VERB	menyusun
-kuasa	850	VERB	kukuasai
+kuasa	850	VERB	menguasai
 mengangkut	850	VERB
 mengarahkan	850	VERB	berarah
 segar	850	OTHER
@@ -4096,7 +4096,7 @@ melengkapi	721	VERB
 instruksi	721	OTHER
 lokasinya	721	OTHER
 nyanyian	721	NOUN,OTHER
-bangkit	720	VERB	bangkitlah
+bangkit	720	VERB	membangkit
 niat	720	OTHER
 diucapkan	720	VERB	berucap
 bahrain	720	OTHER
@@ -4477,7 +4477,7 @@ ditangani	635	VERB	menangani
 diklaim	635	VERB	mengklaim
 dimasak	635	VERB	memasak
 cakupan	634	NOUN,OTHER
-nasihat	634	VERB	kunasihati
+nasihat	634	VERB	menasihati
 laki-lakinya	634	OTHER
 faksi	634	OTHER
 desainer	634	OTHER
@@ -4702,7 +4702,7 @@ puas	594	OTHER
 rumah-rumah	594	OTHER
 arca	594	OTHER
 mutu	594	OTHER
-diam	594	VERB	kaudiami
+diam	594	VERB	mendiami
 lingkar	593	OTHER
 peresmian	593	NOUN,OTHER
 dermaga	592	OTHER
@@ -5340,7 +5340,7 @@ tendangan	497	NOUN,OTHER
 salatiga	497	OTHER
 membuang	497	VERB
 persediaan	497	NOUN,OTHER
-ambil	497	VERB	ambillah
+ambil	497	VERB	mengambil
 bijih	497	OTHER
 pendakian	497	NOUN,OTHER
 dekorasi	497	OTHER
@@ -5975,7 +5975,7 @@ menegakkan	423	VERB	bertegak
 dimekarkan	423	VERB	memekarkan
 ratna	423	OTHER
 clathria	423	OTHER
-diperhatikan	422	VERB	kauperhatikan
+diperhatikan	422	VERB
 pendorong	422	NOUN,OTHER
 tautan	422	NOUN,OTHER
 ci	422	OTHER
@@ -8210,7 +8210,7 @@ akita	268	OTHER
 weda	268	OTHER
 semata	268	OTHER
 melemah	268	OTHER
-gemar	268	VERB	kugemari
+gemar	268	VERB	menggemari
 damar	268	VERB	mendamar
 sj	268	OTHER
 memanjat	268	VERB
@@ -9554,7 +9554,7 @@ alwi	216	OTHER
 banksia	216	OTHER
 pembekuan	216	NOUN,OTHER
 lengkung	216	VERB	melengkung
-dengar	216	VERB	dengarlah
+dengar	216	VERB	mendengar
 richter	216	OTHER
 pemenangnya	216	OTHER
 pembaharuan	216	OTHER
@@ -9907,7 +9907,7 @@ prekursor	205	OTHER
 perseteruan	205	NOUN,OTHER
 mengalirkan	205	VERB
 perkakas	205	OTHER
-temu	205	VERB	kautemui
+temu	205	VERB	menemui
 lenyap	205	OTHER
 ubin	205	OTHER
 lesmana	205	OTHER
@@ -10333,7 +10333,7 @@ berkiprah	195	VERB
 penipu	195	NOUN,OTHER
 prelatus	195	OTHER
 ay	194	OTHER
-bekal	194	VERB	kubekali
+bekal	194	VERB	membekali
 ideologis	194	OTHER
 prestasinya	194	OTHER
 rais	194	VERB	merais
@@ -15272,7 +15272,7 @@ sikorsky	115	OTHER
 liza	115	OTHER
 inkubasi	115	OTHER
 hler	115	OTHER
-jumpa	115	VERB	kujumpai
+jumpa	115	VERB	menjumpai
 margot	115	OTHER
 pendayagunaan	115	OTHER
 yew	115	OTHER
@@ -17717,7 +17717,7 @@ bengkak	94	VERB	membengkak
 mencit	94	OTHER
 romantik	94	OTHER
 ekspresif	94	OTHER
-silakan	94	VERB	menyilakan
+silakan	94	VERB	bersila
 timur-barat	94	OTHER
 massanya	94	OTHER
 amis	94	OTHER
@@ -24479,7 +24479,7 @@ kocok	61	VERB	mengocok
 obscura	61	OTHER
 fishes	61	OTHER
 berformat	61	OTHER
-hasilkan	61	VERB	menghasilkan
+hasilkan	61	VERB	berhasil
 mayr	61	OTHER
 lekat	61	VERB	melekat
 gx	61	OTHER
@@ -25771,7 +25771,7 @@ binatang-binatang	57	OTHER
 perlambatan	57	OTHER
 patin	57	OTHER
 diibaratkan	57	OTHER
-tabur	57	VERB	kautaburi
+tabur	57	VERB	menaburi
 diembannya	57	OTHER
 kereta-kereta	57	OTHER
 berkarat	57	VERB
@@ -27796,7 +27796,7 @@ ril	51	OTHER
 permandian	51	NOUN,OTHER
 plaosan	51	OTHER
 sagala	51	OTHER
-junjung	51	VERB	junjunglah
+junjung	51	VERB	menjunjung
 caringin	51	OTHER
 leander	51	OTHER
 sidayu	51	OTHER
@@ -32900,7 +32900,7 @@ godong	41	OTHER
 tariannya	41	OTHER
 astuti	41	OTHER
 iswahjudi	41	OTHER
-keluarkan	41	VERB	dikeluarkan
+keluarkan	41	VERB	dikeluarkanlah
 komjen	41	OTHER
 salahsatu	41	OTHER
 aswad	41	OTHER
@@ -60846,7 +60846,7 @@ zhenren	18	OTHER
 berintikan	18	OTHER
 beh	18	OTHER
 lunasi	18	VERB	melunasi
-urap	18	VERB	kauurapi
+urap	18	VERB	mengurapi
 cipatujah	18	OTHER
 jaipong	18	OTHER
 dompak	18	OTHER
@@ -73134,7 +73134,7 @@ kakaktua	14	OTHER
 gerokgak	14	OTHER
 sub-dialek	14	OTHER
 pendalungan	14	OTHER
-layan	14	VERB	kulayani
+layan	14	VERB	melayani
 abh	14	OTHER
 kerabat-kerabat	14	OTHER
 tomonaga	14	OTHER
@@ -131810,7 +131810,7 @@ da-young	6	OTHER
 lily-rose	6	OTHER
 femila	6	OTHER
 kang-min	6	OTHER
-nobatkan	6	VERB	menobatkan
+nobatkan	6	VERB	bertobat
 permindo	6	OTHER
 ermawati	6	OTHER
 yassir	6	OTHER
@@ -184720,7 +184720,7 @@ pematuhan	2	NOUN,OTHER
 berkerut-kerut	2	VERB
 belangiran	2	NOUN,OTHER
 mengover	2	VERB
-keluarkanlah	2	VERB	dikeluarkan
+keluarkanlah	2	VERB	dikeluarkanlah
 kiraan	2	NOUN,OTHER
 berjingkrak	2	VERB
 sekaan	2	NOUN,OTHER
@@ -185476,7 +185476,7 @@ kenegatifan	1	NOUN,OTHER
 susupan	1	NOUN,OTHER
 berbesan	1	VERB
 pembenih	1	NOUN,OTHER
-silakanlah	1	VERB	menyilakan
+silakanlah	1	VERB	bersila
 berpeluk	1	VERB
 bersulur	1	VERB
 bermakam	1	VERB
@@ -189774,16 +189774,16 @@ mengijazahkan	21	VERB	berijazah
 diijazahkan	21	VERB	berijazah
 mengijtihadkan	4	VERB	berijtihad
 diijtihadkan	4	VERB	berijtihad
-mengikankan	330	VERB	berikan
-diikankan	330	VERB	berikan
+mengikankan	330	VERB	memberikan
+diikankan	330	VERB	memberikan
 mengikhtiarkan	15	VERB	berikhtiar
 diikhtiarkan	15	VERB	berikhtiar
 mengiklimkan	681	VERB	beriklim
 diiklimkan	681	VERB	beriklim
 mengiktikadkan	5	VERB	beriktikad
 diiktikadkan	5	VERB	beriktikad
-mengilahkan	39	VERB	berilah
-diilahkan	39	VERB	berilah
+mengilahkan	39	VERB	memberi
+diilahkan	39	VERB	memberi
 mengilmukan	54	VERB	berilmu
 diilmukan	54	VERB	berilmu
 merimakan	28	VERB	berima
@@ -191411,13 +191411,13 @@ menzinakan	40	VERB	berzina
 dizinakan	40	VERB	berzina
 menyerdawakan	3	VERB	beserdawa
 diserdawakan	3	VERB	beserdawa
-kukeluarkan	2879	VERB	dikeluarkan
-kaukeluarkan	2879	VERB	dikeluarkan
-kauperhatikan	533	VERB	diperhatikan
-kutertawakan	20	VERB	ditertawakan
-kautertawakan	20	VERB	ditertawakan
-tertawakan	20	VERB	ditertawakan
-tertawakanlah	20	VERB	ditertawakan
+kukeluarkan	2879	VERB	dikeluarkanlah
+kaukeluarkan	2879	VERB	dikeluarkanlah
+kauperhatikan	533	VERB
+kutertawakan	20	VERB	menertawakan
+kautertawakan	20	VERB	menertawakan
+tertawakan	20	VERB	menertawakan
+tertawakanlah	20	VERB	menertawakan
 itu	2008	VERB	itulah
 kubacakan	1	VERB	kaubacakannya
 kaubacakan	1	VERB	kaubacakannya
@@ -195310,11 +195310,11 @@ kaupohon	885	VERB	memohon
 dipohon	885	VERB	memohon
 terpohon	885	VERB	memohon
 pohonlah	885	VERB	memohon
-dipohonkan	13	VERB	memohonkan
-kupohonkan	13	VERB	memohonkan
-kaupohonkan	13	VERB	memohonkan
-pohonkan	13	VERB	memohonkan
-pohonkanlah	13	VERB	memohonkan
+dipohonkan	13	VERB	bermohon
+kupohonkan	13	VERB	bermohon
+kaupohonkan	13	VERB	bermohon
+pohonkan	13	VERB	bermohon
+pohonkanlah	13	VERB	bermohon
 kupojok	1	VERB	memojok
 kaupojok	1	VERB	memojok
 dipojok	1	VERB	memojok
@@ -198058,10 +198058,10 @@ kuderita	2510	VERB	menderita
 kauderita	2510	VERB	menderita
 terderita	2510	VERB	menderita
 deritalah	2510	VERB	menderita
-kudermakan	5	VERB	mendermakan
-kaudermakan	5	VERB	mendermakan
-dermakan	5	VERB	mendermakan
-dermakanlah	5	VERB	mendermakan
+kudermakan	5	VERB	bederma
+kaudermakan	5	VERB	bederma
+dermakan	5	VERB	bederma
+dermakanlah	5	VERB	bederma
 kuderu	9	VERB	menderu
 kauderu	9	VERB	menderu
 dideru	9	VERB	menderu
@@ -198837,10 +198837,10 @@ kauterkam	28	VERB	menerkam
 terterkam	28	VERB	menerkam
 terkam	28	VERB	menerkam
 terkamlah	28	VERB	menerkam
-kuternakkan	1	VERB	menernakkan
-kauternakkan	1	VERB	menernakkan
-ternakkan	1	VERB	menernakkan
-ternakkanlah	1	VERB	menernakkan
+kuternakkan	1	VERB	beternak
+kauternakkan	1	VERB	beternak
+ternakkan	1	VERB	beternak
+ternakkanlah	1	VERB	beternak
 kuterobos	273	VERB	menerobos
 kauterobos	273	VERB	menerobos
 terterobos	273	VERB	menerobos
@@ -199362,11 +199362,11 @@ kuamankan	1183	VERB	mengamankan
 kauamankan	1183	VERB	mengamankan
 amankan	1183	VERB	mengamankan
 amankanlah	1183	VERB	mengamankan
-diamarkan	16	VERB	mengamarkan
-kuamarkan	16	VERB	mengamarkan
-kauamarkan	16	VERB	mengamarkan
-amarkan	16	VERB	mengamarkan
-amarkanlah	16	VERB	mengamarkan
+diamarkan	16	VERB	berkamar
+kuamarkan	16	VERB	berkamar
+kauamarkan	16	VERB	berkamar
+amarkan	16	VERB	berkamar
+amarkanlah	16	VERB	berkamar
 kuamati	1129	VERB	mengamati
 kauamati	1129	VERB	mengamati
 amatilah	1129	VERB	mengamati
@@ -199817,11 +199817,11 @@ kauarang	236	VERB	mengarang
 diarang	236	VERB	mengarang
 terarang	236	VERB	mengarang
 aranglah	236	VERB	mengarang
-diarangkan	1	VERB	mengarangkan
-kuarangkan	1	VERB	mengarangkan
-kauarangkan	1	VERB	mengarangkan
-arangkan	1	VERB	mengarangkan
-arangkanlah	1	VERB	mengarangkan
+diarangkan	1	VERB	berkarang
+kuarangkan	1	VERB	berkarang
+kauarangkan	1	VERB	berkarang
+arangkan	1	VERB	berkarang
+arangkanlah	1	VERB	berkarang
 kuaransemen	64	VERB	mengaransemen
 kauaransemen	64	VERB	mengaransemen
 teraransemen	64	VERB	mengaransemen
@@ -199932,11 +199932,11 @@ kukasari	1	VERB	mengasari
 kaukasari	1	VERB	mengasari
 kasari	1	VERB	mengasari
 kasarilah	1	VERB	mengasari
-dikasetkan	8	VERB	mengasetkan
-kukasetkan	8	VERB	mengasetkan
-kaukasetkan	8	VERB	mengasetkan
-kasetkan	8	VERB	mengasetkan
-kasetkanlah	8	VERB	mengasetkan
+dikasetkan	8	VERB	beraset
+kukasetkan	8	VERB	beraset
+kaukasetkan	8	VERB	beraset
+kasetkan	8	VERB	beraset
+kasetkanlah	8	VERB	beraset
 kauasi	1	VERB	mengasi
 diasi	1	VERB	mengasi
 asilah	1	VERB	mengasi
@@ -200052,11 +200052,11 @@ kukausi	1	VERB	mengausi
 kaukausi	1	VERB	mengausi
 kausi	1	VERB	mengausi
 kausilah	1	VERB	mengausi
-diauskan	1	VERB	mengauskan
-kuauskan	1	VERB	mengauskan
-kauauskan	1	VERB	mengauskan
-auskan	1	VERB	mengauskan
-auskanlah	1	VERB	mengauskan
+diauskan	1	VERB	berkaus
+kuauskan	1	VERB	berkaus
+kauauskan	1	VERB	berkaus
+auskan	1	VERB	berkaus
+auskanlah	1	VERB	berkaus
 kukaut	1	VERB	mengaut
 kaukaut	1	VERB	mengaut
 dikaut	1	VERB	mengaut
@@ -200502,11 +200502,11 @@ dikelit	1	VERB	mengelit
 terkelit	1	VERB	mengelit
 kelit	1	VERB	mengelit
 kelitlah	1	VERB	mengelit
-dielokkan	43	VERB	mengelokkan
-kuelokkan	43	VERB	mengelokkan
-kauelokkan	43	VERB	mengelokkan
-elokkan	43	VERB	mengelokkan
-elokkanlah	43	VERB	mengelokkan
+dielokkan	43	VERB	berkelok
+kuelokkan	43	VERB	berkelok
+kauelokkan	43	VERB	berkelok
+elokkan	43	VERB	berkelok
+elokkanlah	43	VERB	berkelok
 kukelola	2409	VERB	mengelola
 kaukelola	2409	VERB	mengelola
 kelolalah	2409	VERB	mengelola
@@ -200582,11 +200582,11 @@ diembargo	3	VERB	mengembargo
 terembargo	3	VERB	mengembargo
 embargo	3	VERB	mengembargo
 embargolah	3	VERB	mengembargo
-diembarkan	5	VERB	mengembarkan
-kuembarkan	5	VERB	mengembarkan
-kauembarkan	5	VERB	mengembarkan
-embarkan	5	VERB	mengembarkan
-embarkanlah	5	VERB	mengembarkan
+diembarkan	5	VERB	berkembar
+kuembarkan	5	VERB	berkembar
+kauembarkan	5	VERB	berkembar
+embarkan	5	VERB	berkembar
+embarkanlah	5	VERB	berkembar
 kuembat	1	VERB	mengembat
 kauembat	1	VERB	mengembat
 diembat	1	VERB	mengembat
@@ -200806,11 +200806,11 @@ kupak	15	VERB	mengepak
 kaupak	15	VERB	mengepak
 terpak	15	VERB	mengepak
 paklah	15	VERB	mengepak
-dipakkan	33	VERB	mengepakkan
-kupakkan	33	VERB	mengepakkan
-kaupakkan	33	VERB	mengepakkan
-pakkan	33	VERB	mengepakkan
-pakkanlah	33	VERB	mengepakkan
+dipakkan	33	VERB	berkepak
+kupakkan	33	VERB	berkepak
+kaupakkan	33	VERB	berkepak
+pakkan	33	VERB	berkepak
+pakkanlah	33	VERB	berkepak
 kukepal	8	VERB	mengepal
 kaukepal	8	VERB	mengepal
 dikepal	8	VERB	mengepal
@@ -202433,9 +202433,9 @@ kuharuskan	746	VERB	mengharuskan
 kauharuskan	746	VERB	mengharuskan
 haruskan	746	VERB	mengharuskan
 haruskanlah	746	VERB	mengharuskan
-kuhasilkan	12967	VERB	menghasilkan
-kauhasilkan	12967	VERB	menghasilkan
-hasilkanlah	12967	VERB	menghasilkan
+kuhasilkan	12967	VERB	berhasil
+kauhasilkan	12967	VERB	berhasil
+hasilkanlah	12967	VERB	berhasil
 kuhasta	1	VERB	menghasta
 kauhasta	1	VERB	menghasta
 dihasta	1	VERB	menghasta
@@ -204063,10 +204063,10 @@ diunjur	1	VERB	mengunjur
 terunjur	1	VERB	mengunjur
 unjur	1	VERB	mengunjur
 unjurlah	1	VERB	mengunjur
-kuunjurkan	1	VERB	mengunjurkan
-kauunjurkan	1	VERB	mengunjurkan
-unjurkan	1	VERB	mengunjurkan
-unjurkanlah	1	VERB	mengunjurkan
+kuunjurkan	1	VERB	belunjur
+kauunjurkan	1	VERB	belunjur
+unjurkan	1	VERB	belunjur
+unjurkanlah	1	VERB	belunjur
 kuuntai	1	VERB	menguntai
 kauuntai	1	VERB	menguntai
 diuntai	1	VERB	menguntai
@@ -205173,9 +205173,9 @@ kujustifikasikan	3	VERB	menjustifikasikan
 kaujustifikasikan	3	VERB	menjustifikasikan
 justifikasikan	3	VERB	menjustifikasikan
 justifikasikanlah	3	VERB	menjustifikasikan
-kunobatkan	251	VERB	menobatkan
-kaunobatkan	251	VERB	menobatkan
-nobatkanlah	251	VERB	menobatkan
+kunobatkan	251	VERB	bertobat
+kaunobatkan	251	VERB	bertobat
+nobatkanlah	251	VERB	bertobat
 kunodai	72	VERB	menodai
 kaunodai	72	VERB	menodai
 nodai	72	VERB	menodai
@@ -207222,9 +207222,9 @@ kusikut	5	VERB	menyikut
 kausikut	5	VERB	menyikut
 disikut	5	VERB	menyikut
 sikutlah	5	VERB	menyikut
-kusilakan	1	VERB	menyilakan
-kausilakan	1	VERB	menyilakan
-tersilakan	1	VERB	menyilakan
+kusilakan	1	VERB	bersila
+kausilakan	1	VERB	bersila
+tersilakan	1	VERB	bersila
 kusilang	48	VERB	menyilang
 kausilang	48	VERB	menyilang
 disilang	48	VERB	menyilang

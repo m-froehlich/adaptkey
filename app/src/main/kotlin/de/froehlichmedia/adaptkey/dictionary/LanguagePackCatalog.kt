@@ -527,7 +527,21 @@ object LanguagePackCatalog {
             // version.txt` 5 -> 6, pack rebuilt (new `dictionaries/el/build_zip.py`, this pack never had one
             // checked in before), `LanguagePackCatalog` version 5 -> 6. No new tests (data-only). Not yet
             // device-confirmed.
-            version = 6
+            //
+            // D-468 (§484, v1.2.44): lemma-column structural repair, same mechanism as D-467/§482 above for
+            // German - see there for the method, and AdaptKey-Progress.md's own D-468 entry for why cycle
+            // direction could not be decided here the way it was for German: this pack's own Wiktionary
+            // extraction gives an inflected form its own headword row too, so a cycle's two directions end up
+            // equally "attested" by construction, proven rather than assumed - the same check that settled
+            // German's 27 pairs by hand cannot discriminate here.
+            //
+            // 2667 rows changed (chains flattened onto their deepest root, cycles resolved or dropped as
+            // above). 79 cycles found; 79 resolved by dropping every link among their members (fails open to
+            // pre-D-404-Tier-2 behaviour for that pair).
+            //
+            // `dictionaries/el/version.txt` 6 -> 7, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 6 -> 7. Data-only; no Kotlin touched.
+            version = 7
         ),
         Entry(
             Language.FRENCH,
@@ -627,7 +641,21 @@ object LanguagePackCatalog {
             // same native-review reason. `dictionaries/fr/version.txt` 1 -> 2, pack rebuilt (7.7MB -> 8.7MB).
             // No new tests (data-only). Not device-confirmed. Still not native-speaker reviewed (guide step
             // 11) - the correction this round is a real quality improvement, not a substitute for that gate.
-            version = 2
+            //
+            // D-468 (§484, v1.2.44): lemma-column structural repair, same mechanism as D-467/§482 above for
+            // German - see there for the method, and AdaptKey-Progress.md's own D-468 entry for why cycle
+            // direction could not be decided here the way it was for German: this pack's own Wiktionary
+            // extraction gives an inflected form its own headword row too, so a cycle's two directions end up
+            // equally "attested" by construction, proven rather than assumed - the same check that settled
+            // German's 27 pairs by hand cannot discriminate here.
+            //
+            // 19588 rows changed (chains flattened onto their deepest root, cycles resolved or dropped as
+            // above). 3893 cycles found; 3893 resolved by dropping every link among their members (fails open
+            // to pre-D-404-Tier-2 behaviour for that pair).
+            //
+            // `dictionaries/fr/version.txt` 2 -> 3, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 2 -> 3. Data-only; no Kotlin touched.
+            version = 3
         ),
         Entry(
             Language.SPANISH,
@@ -747,7 +775,20 @@ object LanguagePackCatalog {
             // rebuilt (6.1MB -> 7.1MB). No new tests (data-only). Not device-confirmed. Still not
             // native-speaker reviewed (guide step 11) - the correction this round is a real quality
             // improvement, not a substitute for that gate.
-            version = 2
+            //
+            // D-468 (§484, v1.2.44): lemma-column structural repair, same mechanism as D-467/§482 above for
+            // German - see there for the method, and AdaptKey-Progress.md's own D-468 entry for why cycle
+            // direction could not be decided here the way it was for German: this pack's own Wiktionary
+            // extraction gives an inflected form its own headword row too, so a cycle's two directions end up
+            // equally "attested" by construction, proven rather than assumed - the same check that settled
+            // German's 27 pairs by hand cannot discriminate here.
+            //
+            // 14792 rows changed (chains flattened onto their deepest root, cycles resolved or dropped as
+            // above). No cycles in this pack.
+            //
+            // `dictionaries/es/version.txt` 2 -> 3, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 2 -> 3. Data-only; no Kotlin touched.
+            version = 3
         ),
         Entry(
             Language.PORTUGUESE,
@@ -857,7 +898,20 @@ object LanguagePackCatalog {
             // duplicates, 0 non-positive frequencies, 0 orphaned lemma links, 0 bare-NOUN rows. `dictionaries/
             // pt/version.txt` 1 -> 2, pack rebuilt. Verbs/adjectives' own Wortfamilien scope from D-445 itself
             // is otherwise unchanged - this round only adds plurals, nothing else.
-            version = 2
+            //
+            // D-468 (§484, v1.2.44): lemma-column structural repair, same mechanism as D-467/§482 above for
+            // German - see there for the method, and AdaptKey-Progress.md's own D-468 entry for why cycle
+            // direction could not be decided here the way it was for German: this pack's own Wiktionary
+            // extraction gives an inflected form its own headword row too, so a cycle's two directions end up
+            // equally "attested" by construction, proven rather than assumed - the same check that settled
+            // German's 27 pairs by hand cannot discriminate here.
+            //
+            // 3026 rows changed (chains flattened onto their deepest root, cycles resolved or dropped as
+            // above). No cycles in this pack.
+            //
+            // `dictionaries/pt/version.txt` 2 -> 3, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 2 -> 3. Data-only; no Kotlin touched.
+            version = 3
         ),
         Entry(
             Language.ITALIAN,
@@ -924,7 +978,21 @@ object LanguagePackCatalog {
             // tokens, the largest of any language pack this project has built) and a complete, real lexicon
             // with full noun/verb/adjective Wortfamilien parity - but still "pretty good" in the guide's own
             // sense, not native-reviewed quality. Not device-confirmed either.
-            version = 1
+            //
+            // D-468 (§484, v1.2.44): lemma-column structural repair, same mechanism as D-467/§482 above for
+            // German - see there for the method, and AdaptKey-Progress.md's own D-468 entry for why cycle
+            // direction could not be decided here the way it was for German: this pack's own Wiktionary
+            // extraction gives an inflected form its own headword row too, so a cycle's two directions end up
+            // equally "attested" by construction, proven rather than assumed - the same check that settled
+            // German's 27 pairs by hand cannot discriminate here.
+            //
+            // 7579 rows changed (chains flattened onto their deepest root, cycles resolved or dropped as
+            // above). 352 cycles found; 352 resolved by dropping every link among their members (fails open to
+            // pre-D-404-Tier-2 behaviour for that pair).
+            //
+            // `dictionaries/it/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
+            version = 2
         ),
         Entry(
             Language.DUTCH,
@@ -1009,7 +1077,22 @@ object LanguagePackCatalog {
             // the periphrastic-form bug above was found and fixed) - but still "pretty good" in the guide's
             // own sense, not native-reviewed quality. Not device-confirmed either. This closes the
             // three-language (pt/it/nl) overnight one-shot round.
-            version = 1
+            //
+            // D-468 (§484, v1.2.44): lemma-column structural repair, same mechanism as D-467/§482 above for
+            // German - see there for the method, and AdaptKey-Progress.md's own D-468 entry for why cycle
+            // direction could not be decided here the way it was for German: this pack's own Wiktionary
+            // extraction gives an inflected form its own headword row too, so a cycle's two directions end up
+            // equally "attested" by construction, proven rather than assumed - the same check that settled
+            // German's 27 pairs by hand cannot discriminate here.
+            //
+            // 7342 rows changed (chains flattened onto their deepest root, cycles resolved or dropped as
+            // above). 1074 cycles found; 1 resolved via attestation (same tier as D-467), 1073 resolved by
+            // dropping every link among their members (fails open to pre-D-404-Tier-2 behaviour for that
+            // pair).
+            //
+            // `dictionaries/nl/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
+            version = 2
         ),
         Entry(
             Language.POLISH,
@@ -1091,7 +1174,21 @@ object LanguagePackCatalog {
             // tokens) and a complete, real lexicon with full noun/verb/adjective Wortfamilien parity (the
             // richest inflectional data of any language this project has built) - but still "pretty good" in
             // the guide's own sense, not native-reviewed quality. Not device-confirmed either.
-            version = 1
+            //
+            // D-468 (§484, v1.2.44): lemma-column structural repair, same mechanism as D-467/§482 above for
+            // German - see there for the method, and AdaptKey-Progress.md's own D-468 entry for why cycle
+            // direction could not be decided here the way it was for German: this pack's own Wiktionary
+            // extraction gives an inflected form its own headword row too, so a cycle's two directions end up
+            // equally "attested" by construction, proven rather than assumed - the same check that settled
+            // German's 27 pairs by hand cannot discriminate here.
+            //
+            // 16416 rows changed (chains flattened onto their deepest root, cycles resolved or dropped as
+            // above). 215 cycles found; 215 resolved by dropping every link among their members (fails open to
+            // pre-D-404-Tier-2 behaviour for that pair).
+            //
+            // `dictionaries/pl/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
+            version = 2
         ),
         Entry(
             Language.TURKISH,
@@ -1216,7 +1313,21 @@ object LanguagePackCatalog {
             // in the guide's own sense, and, unlike every other implemented language, genuinely incomplete
             // for prepositions specifically (a confirmed structural/linguistic finding, not an oversight -
             // see above). Not device-confirmed either. This closes the two-language (pl/tr) autonomous round.
-            version = 1
+            //
+            // D-468 (§484, v1.2.44): lemma-column structural repair, same mechanism as D-467/§482 above for
+            // German - see there for the method, and AdaptKey-Progress.md's own D-468 entry for why cycle
+            // direction could not be decided here the way it was for German: this pack's own Wiktionary
+            // extraction gives an inflected form its own headword row too, so a cycle's two directions end up
+            // equally "attested" by construction, proven rather than assumed - the same check that settled
+            // German's 27 pairs by hand cannot discriminate here.
+            //
+            // 23791 rows changed (chains flattened onto their deepest root, cycles resolved or dropped as
+            // above). 1 cycles found; 1 resolved by dropping every link among their members (fails open to
+            // pre-D-404-Tier-2 behaviour for that pair).
+            //
+            // `dictionaries/tr/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
+            version = 2
         ),
         Entry(
             Language.SWEDISH,
@@ -1302,7 +1413,21 @@ object LanguagePackCatalog {
             // by anyone who actually speaks Swedish. Real, full-dump corpus scale (268.26M real tokens) - but
             // thinner Wortfamilien/POS coverage than every native-edition language built so far (see above,
             // concrete numbers and mechanism-level impact, not a vague caveat). Not device-confirmed either.
-            version = 1
+            //
+            // D-468 (§484, v1.2.44): lemma-column structural repair, same mechanism as D-467/§482 above for
+            // German - see there for the method, and AdaptKey-Progress.md's own D-468 entry for why cycle
+            // direction could not be decided here the way it was for German: this pack's own Wiktionary
+            // extraction gives an inflected form its own headword row too, so a cycle's two directions end up
+            // equally "attested" by construction, proven rather than assumed - the same check that settled
+            // German's 27 pairs by hand cannot discriminate here.
+            //
+            // 5366 rows changed (chains flattened onto their deepest root, cycles resolved or dropped as
+            // above). 27 cycles found; 27 resolved by dropping every link among their members (fails open to
+            // pre-D-404-Tier-2 behaviour for that pair).
+            //
+            // `dictionaries/sv/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
+            version = 2
         ),
         Entry(
             Language.NORWEGIAN,
@@ -1375,7 +1500,21 @@ object LanguagePackCatalog {
             // but thinner Wortfamilien/POS coverage than every native-edition language (see above, concrete
             // numbers and mechanism-level impact). Not device-confirmed either. Danish and Finnish continue
             // next in the same round.
-            version = 1
+            //
+            // D-468 (§484, v1.2.44): lemma-column structural repair, same mechanism as D-467/§482 above for
+            // German - see there for the method, and AdaptKey-Progress.md's own D-468 entry for why cycle
+            // direction could not be decided here the way it was for German: this pack's own Wiktionary
+            // extraction gives an inflected form its own headword row too, so a cycle's two directions end up
+            // equally "attested" by construction, proven rather than assumed - the same check that settled
+            // German's 27 pairs by hand cannot discriminate here.
+            //
+            // 2688 rows changed (chains flattened onto their deepest root, cycles resolved or dropped as
+            // above). 46 cycles found; 46 resolved by dropping every link among their members (fails open to
+            // pre-D-404-Tier-2 behaviour for that pair).
+            //
+            // `dictionaries/nb/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
+            version = 2
         ),
         Entry(
             Language.DANISH,
@@ -1440,7 +1579,21 @@ object LanguagePackCatalog {
             // thinner Wortfamilien/POS coverage than every native-edition language (see above, concrete
             // numbers and mechanism-level impact). Not device-confirmed either. Finnish continues next, the
             // last of the four-language Nordic batch, before the remaining 14 languages of this round.
-            version = 1
+            //
+            // D-468 (§484, v1.2.44): lemma-column structural repair, same mechanism as D-467/§482 above for
+            // German - see there for the method, and AdaptKey-Progress.md's own D-468 entry for why cycle
+            // direction could not be decided here the way it was for German: this pack's own Wiktionary
+            // extraction gives an inflected form its own headword row too, so a cycle's two directions end up
+            // equally "attested" by construction, proven rather than assumed - the same check that settled
+            // German's 27 pairs by hand cannot discriminate here.
+            //
+            // 4410 rows changed (chains flattened onto their deepest root, cycles resolved or dropped as
+            // above). 157 cycles found; 157 resolved by dropping every link among their members (fails open to
+            // pre-D-404-Tier-2 behaviour for that pair).
+            //
+            // `dictionaries/da/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
+            version = 2
         ),
         Entry(
             Language.FINNISH,
@@ -1539,7 +1692,22 @@ object LanguagePackCatalog {
             // four-language Nordic batch (Swedish/Norwegian/Danish/Finnish) of the larger 18-language round**
             // - Czech, Slovak, Hungarian, Romanian, Croatian, Bosnian, Serbian, Estonian, Latvian, Lithuanian,
             // Indonesian, Malay, Swahili, and Tagalog remain.
-            version = 1
+            //
+            // D-468 (§484, v1.2.44): lemma-column structural repair, same mechanism as D-467/§482 above for
+            // German - see there for the method, and AdaptKey-Progress.md's own D-468 entry for why cycle
+            // direction could not be decided here the way it was for German: this pack's own Wiktionary
+            // extraction gives an inflected form its own headword row too, so a cycle's two directions end up
+            // equally "attested" by construction, proven rather than assumed - the same check that settled
+            // German's 27 pairs by hand cannot discriminate here.
+            //
+            // 86117 rows changed (chains flattened onto their deepest root, cycles resolved or dropped as
+            // above). 121 cycles found; 1 resolved via attestation (same tier as D-467), 120 resolved by
+            // dropping every link among their members (fails open to pre-D-404-Tier-2 behaviour for that
+            // pair).
+            //
+            // `dictionaries/fi/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
+            version = 2
         ),
         Entry(
             Language.CZECH,
@@ -1615,7 +1783,22 @@ object LanguagePackCatalog {
             // not native-reviewed quality, and with a confirmed, honestly documented proper-noun coverage gap
             // specific to this source. Not device-confirmed either. Slovak, Hungarian, and Romanian continue
             // next in the same round.
-            version = 1
+            //
+            // D-468 (§484, v1.2.44): lemma-column structural repair, same mechanism as D-467/§482 above for
+            // German - see there for the method, and AdaptKey-Progress.md's own D-468 entry for why cycle
+            // direction could not be decided here the way it was for German: this pack's own Wiktionary
+            // extraction gives an inflected form its own headword row too, so a cycle's two directions end up
+            // equally "attested" by construction, proven rather than assumed - the same check that settled
+            // German's 27 pairs by hand cannot discriminate here.
+            //
+            // 4145 rows changed (chains flattened onto their deepest root, cycles resolved or dropped as
+            // above). 173 cycles found; 1 resolved via attestation (same tier as D-467), 172 resolved by
+            // dropping every link among their members (fails open to pre-D-404-Tier-2 behaviour for that
+            // pair).
+            //
+            // `dictionaries/cs/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
+            version = 2
         ),
         Entry(
             Language.SLOVAK,
@@ -1706,7 +1889,21 @@ object LanguagePackCatalog {
             // rather than left as a vague caveat, plus a genuinely novel positional-data-shape finding
             // resolved by design rather than guesswork. Not device-confirmed either. Hungarian and Romanian
             // continue next in the same round.
-            version = 1
+            //
+            // D-468 (§484, v1.2.44): lemma-column structural repair, same mechanism as D-467/§482 above for
+            // German - see there for the method, and AdaptKey-Progress.md's own D-468 entry for why cycle
+            // direction could not be decided here the way it was for German: this pack's own Wiktionary
+            // extraction gives an inflected form its own headword row too, so a cycle's two directions end up
+            // equally "attested" by construction, proven rather than assumed - the same check that settled
+            // German's 27 pairs by hand cannot discriminate here.
+            //
+            // 8661 rows changed (chains flattened onto their deepest root, cycles resolved or dropped as
+            // above). 78 cycles found; 78 resolved by dropping every link among their members (fails open to
+            // pre-D-404-Tier-2 behaviour for that pair).
+            //
+            // `dictionaries/sk/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
+            version = 2
         ),
         Entry(
             Language.HUNGARIAN,
@@ -1812,7 +2009,20 @@ object LanguagePackCatalog {
             // but thinner Wortfamilien/POS coverage than a native-edition language, plus the same possessive-
             // suffix scope limit Finnish's own entry documents. Not device-confirmed either. Romanian
             // continues next, the last of the cs/sk/hu/ro group.
-            version = 1
+            //
+            // D-468 (§484, v1.2.44): lemma-column structural repair, same mechanism as D-467/§482 above for
+            // German - see there for the method, and AdaptKey-Progress.md's own D-468 entry for why cycle
+            // direction could not be decided here the way it was for German: this pack's own Wiktionary
+            // extraction gives an inflected form its own headword row too, so a cycle's two directions end up
+            // equally "attested" by construction, proven rather than assumed - the same check that settled
+            // German's 27 pairs by hand cannot discriminate here.
+            //
+            // 4112 rows changed (chains flattened onto their deepest root, cycles resolved or dropped as
+            // above). No cycles in this pack.
+            //
+            // `dictionaries/hu/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
+            version = 2
         ),
         Entry(
             Language.ROMANIAN,
@@ -1888,7 +2098,21 @@ object LanguagePackCatalog {
             // any native-edition language's own full coverage. Not device-confirmed either. **This closes the
             // cs/sk/hu/ro group of the larger 18-language round** - Croatian, Bosnian, Serbian, Estonian,
             // Latvian, Lithuanian, Indonesian, Malay, Swahili, and Tagalog remain.
-            version = 1
+            //
+            // D-468 (§484, v1.2.44): lemma-column structural repair, same mechanism as D-467/§482 above for
+            // German - see there for the method, and AdaptKey-Progress.md's own D-468 entry for why cycle
+            // direction could not be decided here the way it was for German: this pack's own Wiktionary
+            // extraction gives an inflected form its own headword row too, so a cycle's two directions end up
+            // equally "attested" by construction, proven rather than assumed - the same check that settled
+            // German's 27 pairs by hand cannot discriminate here.
+            //
+            // 16936 rows changed (chains flattened onto their deepest root, cycles resolved or dropped as
+            // above). 425 cycles found; 425 resolved by dropping every link among their members (fails open to
+            // pre-D-404-Tier-2 behaviour for that pair).
+            //
+            // `dictionaries/ro/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
+            version = 2
         ),
         Entry(
             Language.CROATIAN,
@@ -1991,7 +2215,21 @@ object LanguagePackCatalog {
             // table limitation shared with Bosnian's own upcoming entry. Not device-confirmed either. Bosnian
             // continues next, reusing the identical shared Wiktionary extraction with its own separate
             // Wikipedia corpus.
-            version = 1
+            //
+            // D-468 (§484, v1.2.44): lemma-column structural repair, same mechanism as D-467/§482 above for
+            // German - see there for the method, and AdaptKey-Progress.md's own D-468 entry for why cycle
+            // direction could not be decided here the way it was for German: this pack's own Wiktionary
+            // extraction gives an inflected form its own headword row too, so a cycle's two directions end up
+            // equally "attested" by construction, proven rather than assumed - the same check that settled
+            // German's 27 pairs by hand cannot discriminate here.
+            //
+            // 2826 rows changed (chains flattened onto their deepest root, cycles resolved or dropped as
+            // above). 93 cycles found; 93 resolved by dropping every link among their members (fails open to
+            // pre-D-404-Tier-2 behaviour for that pair).
+            //
+            // `dictionaries/hr/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
+            version = 2
         ),
         Entry(
             Language.BOSNIAN,
@@ -2063,7 +2301,21 @@ object LanguagePackCatalog {
             // documents. Not device-confirmed either. **This closes the Croatian/Bosnian pair of the trio** -
             // Serbian remains explicitly deferred (see Croatian's own entry above). Estonian, Latvian,
             // Lithuanian, Indonesian, Malay, Swahili, and Tagalog remain in this 18-language round.
-            version = 1
+            //
+            // D-468 (§484, v1.2.44): lemma-column structural repair, same mechanism as D-467/§482 above for
+            // German - see there for the method, and AdaptKey-Progress.md's own D-468 entry for why cycle
+            // direction could not be decided here the way it was for German: this pack's own Wiktionary
+            // extraction gives an inflected form its own headword row too, so a cycle's two directions end up
+            // equally "attested" by construction, proven rather than assumed - the same check that settled
+            // German's 27 pairs by hand cannot discriminate here.
+            //
+            // 2695 rows changed (chains flattened onto their deepest root, cycles resolved or dropped as
+            // above). 88 cycles found; 88 resolved by dropping every link among their members (fails open to
+            // pre-D-404-Tier-2 behaviour for that pair).
+            //
+            // `dictionaries/bs/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
+            version = 2
         ),
         Entry(
             Language.ESTONIAN,
@@ -2123,7 +2375,21 @@ object LanguagePackCatalog {
             // by anyone who actually speaks Estonian. Real, full-dump corpus scale (55.65M real tokens) - but
             // thinner Wortfamilien/POS coverage than a native-edition language. Not device-confirmed either.
             // Latvian and Lithuanian continue next in the same Baltic trio.
-            version = 1
+            //
+            // D-468 (§484, v1.2.44): lemma-column structural repair, same mechanism as D-467/§482 above for
+            // German - see there for the method, and AdaptKey-Progress.md's own D-468 entry for why cycle
+            // direction could not be decided here the way it was for German: this pack's own Wiktionary
+            // extraction gives an inflected form its own headword row too, so a cycle's two directions end up
+            // equally "attested" by construction, proven rather than assumed - the same check that settled
+            // German's 27 pairs by hand cannot discriminate here.
+            //
+            // 6286 rows changed (chains flattened onto their deepest root, cycles resolved or dropped as
+            // above). 1 cycles found; 1 resolved by dropping every link among their members (fails open to
+            // pre-D-404-Tier-2 behaviour for that pair).
+            //
+            // `dictionaries/et/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
+            version = 2
         ),
         Entry(
             Language.LATVIAN,
@@ -2185,7 +2451,21 @@ object LanguagePackCatalog {
             // thinner Wortfamilien/POS coverage than a native-edition language, and a real calibration bug
             // found and fixed (see above). Not device-confirmed either. Lithuanian continues next, the last
             // of the Baltic trio.
-            version = 1
+            //
+            // D-468 (§484, v1.2.44): lemma-column structural repair, same mechanism as D-467/§482 above for
+            // German - see there for the method, and AdaptKey-Progress.md's own D-468 entry for why cycle
+            // direction could not be decided here the way it was for German: this pack's own Wiktionary
+            // extraction gives an inflected form its own headword row too, so a cycle's two directions end up
+            // equally "attested" by construction, proven rather than assumed - the same check that settled
+            // German's 27 pairs by hand cannot discriminate here.
+            //
+            // 23993 rows changed (chains flattened onto their deepest root, cycles resolved or dropped as
+            // above). 233 cycles found; 233 resolved by dropping every link among their members (fails open to
+            // pre-D-404-Tier-2 behaviour for that pair).
+            //
+            // `dictionaries/lv/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
+            version = 2
         ),
         Entry(
             Language.LITHUANIAN,
@@ -2247,7 +2527,21 @@ object LanguagePackCatalog {
             // but thinner Wortfamilien/POS coverage than a native-edition language. Not device-confirmed
             // either. **This closes the Estonian/Latvian/Lithuanian Baltic trio.** Indonesian, Malay, Swahili,
             // and Tagalog remain in this 18-language round.
-            version = 1
+            //
+            // D-468 (§484, v1.2.44): lemma-column structural repair, same mechanism as D-467/§482 above for
+            // German - see there for the method, and AdaptKey-Progress.md's own D-468 entry for why cycle
+            // direction could not be decided here the way it was for German: this pack's own Wiktionary
+            // extraction gives an inflected form its own headword row too, so a cycle's two directions end up
+            // equally "attested" by construction, proven rather than assumed - the same check that settled
+            // German's 27 pairs by hand cannot discriminate here.
+            //
+            // 2641 rows changed (chains flattened onto their deepest root, cycles resolved or dropped as
+            // above). 67 cycles found; 67 resolved by dropping every link among their members (fails open to
+            // pre-D-404-Tier-2 behaviour for that pair).
+            //
+            // `dictionaries/lt/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
+            version = 2
         ),
         Entry(
             Language.MALAY,
@@ -2324,7 +2618,20 @@ object LanguagePackCatalog {
             // verbs/adjectives specifically (a language/source characteristic, not an oversight). Not
             // device-confirmed either. Indonesian continues next, the same underlying language family with a
             // richer native edition of its own.
-            version = 1
+            //
+            // D-468 (§484, v1.2.44): lemma-column structural repair, same mechanism as D-467/§482 above for
+            // German - see there for the method, and AdaptKey-Progress.md's own D-468 entry for why cycle
+            // direction could not be decided here the way it was for German: this pack's own Wiktionary
+            // extraction gives an inflected form its own headword row too, so a cycle's two directions end up
+            // equally "attested" by construction, proven rather than assumed - the same check that settled
+            // German's 27 pairs by hand cannot discriminate here.
+            //
+            // 8 rows changed (chains flattened onto their deepest root, cycles resolved or dropped as above).
+            // no cycles in this pack.
+            //
+            // `dictionaries/ms/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
+            version = 2
         ),
         Entry(
             Language.INDONESIAN,
@@ -2414,7 +2721,21 @@ object LanguagePackCatalog {
             // Lithuanian, Malay, Indonesian, plus Serbian explicitly deferred pending its own Cyrillic-
             // keyboard discussion) - Swahili and Tagalog remain as the final two languages of this round,
             // continuing next.
-            version = 1
+            //
+            // D-468 (§484, v1.2.44): lemma-column structural repair, same mechanism as D-467/§482 above for
+            // German - see there for the method, and AdaptKey-Progress.md's own D-468 entry for why cycle
+            // direction could not be decided here the way it was for German: this pack's own Wiktionary
+            // extraction gives an inflected form its own headword row too, so a cycle's two directions end up
+            // equally "attested" by construction, proven rather than assumed - the same check that settled
+            // German's 27 pairs by hand cannot discriminate here.
+            //
+            // 122 rows changed (chains flattened onto their deepest root, cycles resolved or dropped as
+            // above). 1 cycles found; 1 resolved by dropping every link among their members (fails open to
+            // pre-D-404-Tier-2 behaviour for that pair).
+            //
+            // `dictionaries/id/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
+            version = 2
         ),
         Entry(
             Language.SWAHILI,
@@ -2490,7 +2811,21 @@ object LanguagePackCatalog {
             // and Swahili's own real, much larger Bantu noun-class/verb-affixation grammar system is not
             // implemented as dedicated grammar hooks this round. Not device-confirmed either. Tagalog
             // continues next, the final language of this 18-language round.
-            version = 1
+            //
+            // D-468 (§484, v1.2.44): lemma-column structural repair, same mechanism as D-467/§482 above for
+            // German - see there for the method, and AdaptKey-Progress.md's own D-468 entry for why cycle
+            // direction could not be decided here the way it was for German: this pack's own Wiktionary
+            // extraction gives an inflected form its own headword row too, so a cycle's two directions end up
+            // equally "attested" by construction, proven rather than assumed - the same check that settled
+            // German's 27 pairs by hand cannot discriminate here.
+            //
+            // 1006 rows changed (chains flattened onto their deepest root, cycles resolved or dropped as
+            // above). 7 cycles found; 7 resolved by dropping every link among their members (fails open to
+            // pre-D-404-Tier-2 behaviour for that pair).
+            //
+            // `dictionaries/sw/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
+            version = 2
         ),
         Entry(
             Language.TAGALOG,
@@ -2565,7 +2900,21 @@ object LanguagePackCatalog {
             // the full reasoning). Every one of these packs shares the same honesty-gate status: real,
             // full-dump corpus scale, genuine calibration-sanity-checked Wortfamilien completion where the
             // source allows it, and zero claim of native-speaker review - "pretty good", not "done".
-            version = 1
+            //
+            // D-468 (§484, v1.2.44): lemma-column structural repair, same mechanism as D-467/§482 above for
+            // German - see there for the method, and AdaptKey-Progress.md's own D-468 entry for why cycle
+            // direction could not be decided here the way it was for German: this pack's own Wiktionary
+            // extraction gives an inflected form its own headword row too, so a cycle's two directions end up
+            // equally "attested" by construction, proven rather than assumed - the same check that settled
+            // German's 27 pairs by hand cannot discriminate here.
+            //
+            // 1376 rows changed (chains flattened onto their deepest root, cycles resolved or dropped as
+            // above). 30 cycles found; 30 resolved by dropping every link among their members (fails open to
+            // pre-D-404-Tier-2 behaviour for that pair).
+            //
+            // `dictionaries/tl/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
+            version = 2
         ),
         Entry(
             Language.SERBIAN,
@@ -2677,7 +3026,21 @@ object LanguagePackCatalog {
             // tokens, the largest of any language this project has built) and a real, freshly-fixed
             // Wortfamilien pipeline - but the same "pretty good, not done" ceiling as every other
             // pipeline-built language. Not device-confirmed either.
-            version = 1
+            //
+            // D-468 (§484, v1.2.44): lemma-column structural repair, same mechanism as D-467/§482 above for
+            // German - see there for the method, and AdaptKey-Progress.md's own D-468 entry for why cycle
+            // direction could not be decided here the way it was for German: this pack's own Wiktionary
+            // extraction gives an inflected form its own headword row too, so a cycle's two directions end up
+            // equally "attested" by construction, proven rather than assumed - the same check that settled
+            // German's 27 pairs by hand cannot discriminate here.
+            //
+            // 2300 rows changed (chains flattened onto their deepest root, cycles resolved or dropped as
+            // above). 84 cycles found; 84 resolved by dropping every link among their members (fails open to
+            // pre-D-404-Tier-2 behaviour for that pair).
+            //
+            // `dictionaries/sr/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
+            version = 2
         ),
         Entry(
             Language.RUSSIAN,
@@ -2769,7 +3132,22 @@ object LanguagePackCatalog {
             // largest of any language this project has built) and a real, freshly-fixed Wortfamilien
             // pipeline - but the same "pretty good, not done" ceiling as every other pipeline-built language.
             // Not device-confirmed either.
-            version = 1
+            //
+            // D-468 (§484, v1.2.44): lemma-column structural repair, same mechanism as D-467/§482 above for
+            // German - see there for the method, and AdaptKey-Progress.md's own D-468 entry for why cycle
+            // direction could not be decided here the way it was for German: this pack's own Wiktionary
+            // extraction gives an inflected form its own headword row too, so a cycle's two directions end up
+            // equally "attested" by construction, proven rather than assumed - the same check that settled
+            // German's 27 pairs by hand cannot discriminate here.
+            //
+            // 126366 rows changed (chains flattened onto their deepest root, cycles resolved or dropped as
+            // above). 1214 cycles found; 3 resolved via attestation (same tier as D-467), 1211 resolved by
+            // dropping every link among their members (fails open to pre-D-404-Tier-2 behaviour for that
+            // pair).
+            //
+            // `dictionaries/ru/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
+            version = 2
         ),
         Entry(
             Language.UKRAINIAN,
@@ -2839,7 +3217,21 @@ object LanguagePackCatalog {
             // reviewed by anyone who actually speaks Ukrainian, and its own Wiktionary source is the
             // English-coverage fallback (thinner than a native-sourced pack by design, see above) - expect
             // this one to need more follow-up curation than Russian's own round. Not device-confirmed either.
-            version = 1
+            //
+            // D-468 (§484, v1.2.44): lemma-column structural repair, same mechanism as D-467/§482 above for
+            // German - see there for the method, and AdaptKey-Progress.md's own D-468 entry for why cycle
+            // direction could not be decided here the way it was for German: this pack's own Wiktionary
+            // extraction gives an inflected form its own headword row too, so a cycle's two directions end up
+            // equally "attested" by construction, proven rather than assumed - the same check that settled
+            // German's 27 pairs by hand cannot discriminate here.
+            //
+            // 27655 rows changed (chains flattened onto their deepest root, cycles resolved or dropped as
+            // above). 1547 cycles found; 1547 resolved by dropping every link among their members (fails open
+            // to pre-D-404-Tier-2 behaviour for that pair).
+            //
+            // `dictionaries/uk/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
+            version = 2
         ),
         Entry(
             Language.AZERBAIJANI,
@@ -2935,7 +3327,20 @@ object LanguagePackCatalog {
             // curation than Russian's own native-sourced round. `hints.tsv`'s own currency/punctuation
             // choices are a first draft flagged for native review, not a verified fact like the diacritic
             // table. Not device-confirmed either.
-            version = 1
+            //
+            // D-468 (§484, v1.2.44): lemma-column structural repair, same mechanism as D-467/§482 above for
+            // German - see there for the method, and AdaptKey-Progress.md's own D-468 entry for why cycle
+            // direction could not be decided here the way it was for German: this pack's own Wiktionary
+            // extraction gives an inflected form its own headword row too, so a cycle's two directions end up
+            // equally "attested" by construction, proven rather than assumed - the same check that settled
+            // German's 27 pairs by hand cannot discriminate here.
+            //
+            // 18229 rows changed (chains flattened onto their deepest root, cycles resolved or dropped as
+            // above). No cycles in this pack.
+            //
+            // `dictionaries/az/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
+            version = 2
         ),
         Entry(
             Language.UZBEK,
@@ -3040,7 +3445,20 @@ object LanguagePackCatalog {
             // does for German's ä/ö/ü - expect this pack to need the most follow-up curation of the whole
             // D-450-followup round. Not device-confirmed either. **This closes the four-language
             // Russian/Ukrainian/Azerbaijani/Uzbek D-450-followup round.**
-            version = 1
+            //
+            // D-468 (§484, v1.2.44): lemma-column structural repair, same mechanism as D-467/§482 above for
+            // German - see there for the method, and AdaptKey-Progress.md's own D-468 entry for why cycle
+            // direction could not be decided here the way it was for German: this pack's own Wiktionary
+            // extraction gives an inflected form its own headword row too, so a cycle's two directions end up
+            // equally "attested" by construction, proven rather than assumed - the same check that settled
+            // German's 27 pairs by hand cannot discriminate here.
+            //
+            // 380 rows changed (chains flattened onto their deepest root, cycles resolved or dropped as
+            // above). No cycles in this pack.
+            //
+            // `dictionaries/uz/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
+            version = 2
         )
     )
 }

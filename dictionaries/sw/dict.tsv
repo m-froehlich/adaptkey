@@ -288,7 +288,7 @@ bila	5577	PREPOSITION
 aliteuliwa	5576	OTHER
 baadhi	5536	NOUN,OTHER
 visiwa	5526	NOUN,OTHER	kisiwa
-utafiti	5519	NOUN,VERB	tafiti
+utafiti	5519	NOUN,VERB
 walikuwa	5507	OTHER
 kristo	5495	PROPER_NOUN
 ghana	5447	PROPER_NOUN
@@ -457,7 +457,7 @@ wanyama	3659	NOUN,OTHER	mnyama
 shughuli	3647	NOUN,OTHER
 bk	3636	PROPER_NOUN
 amerika	3634	PROPER_NOUN
-wasanii	3624	NOUN,VERB	msanii
+wasanii	3624	NOUN,VERB	sanii
 asilia	3619	ADJECTIVE
 kwenda	3618	VERB	enda
 mpaka	3610	NOUN,PREPOSITION
@@ -736,7 +736,7 @@ aliendelea	2024	OTHER
 jukumu	2021	NOUN,OTHER
 uchunguzi	2021	NOUN,OTHER
 barabara	2009	NOUN,ADJECTIVE
-mabao	2006	NOUN,OTHER	bao
+mabao	2006	NOUN,OTHER	ubao
 ushindi	2001	NOUN,OTHER
 rwanda	1999	PROPER_NOUN
 magonjwa	1996	NOUN,OTHER	ugonjwa
@@ -790,7 +790,7 @@ kadiri	1839	NOUN,VERB
 urithi	1838	NOUN,VERB	rithi
 ng	1837	OTHER
 kamerun	1833	PROPER_NOUN
-maadili	1833	NOUN,OTHER	adili
+maadili	1833	NOUN,OTHER
 mawili	1832	ADJECTIVE
 tana	1830	OTHER
 viwango	1829	NOUN,OTHER	kiwango
@@ -1101,7 +1101,7 @@ mfiadini	1200	NOUN,OTHER
 kuonekana	1199	VERB	onekana
 mawazo	1197	NOUN,OTHER	wazo
 kipekee	1196	OTHER
-udhibiti	1194	NOUN,VERB	dhibiti
+udhibiti	1194	NOUN,VERB
 wafuasi	1193	NOUN,OTHER	mfuasi
 lagos	1193	OTHER
 mashabiki	1192	NOUN,OTHER	shabiki
@@ -1166,7 +1166,7 @@ mawaziri	1123	NOUN,OTHER	waziri
 ulimwenguni	1120	OTHER
 kibiashara	1119	ADJECTIVE
 waarabu	1117	NOUN,OTHER	mwarabu
-pande	1115	NOUN,OTHER	upande
+pande	1115	NOUN,OTHER	panda
 jipya	1115	ADJECTIVE
 bandari	1111	NOUN,OTHER
 macho	1109	NOUN,OTHER	jicho
@@ -1205,7 +1205,7 @@ ujumbe	1066	NOUN,OTHER
 mshiriki	1062	NOUN,VERB	shiriki
 walioishi	1062	OTHER
 angalia	1061	VERB
-mahitaji	1059	NOUN,OTHER	uhitaji
+mahitaji	1059	NOUN,OTHER	hitaji
 gitaa	1058	NOUN,OTHER
 ushahidi	1057	NOUN,OTHER
 somo	1056	NOUN,OTHER
@@ -1238,7 +1238,7 @@ risasi	1033	NOUN,OTHER
 mwendo	1032	NOUN,OTHER
 waswahili	1031	NOUN,OTHER	mswahili
 nakala	1031	NOUN,OTHER
-kuhudumu	1031	VERB	hudumu
+kuhudumu	1031	VERB	dumu
 mifano	1030	NOUN,OTHER	mfano
 makanisa	1029	NOUN,OTHER	kanisa
 watawa	1029	NOUN,OTHER	mtawa
@@ -1274,7 +1274,7 @@ mipaka	987	NOUN,OTHER	mpaka
 uko	987	VERB	wako
 misimu	987	NOUN,OTHER	msimu
 mila	986	NOUN,OTHER
-wachache	986	VERB,ADJECTIVE	chacha
+wachache	986	VERB,ADJECTIVE	cha
 kitengo	986	NOUN,OTHER
 alisomea	986	OTHER
 alikulia	986	OTHER
@@ -1465,7 +1465,7 @@ mapambano	839	NOUN,OTHER	pambano
 ukiwa	838	NOUN,OTHER
 kufuzu	837	VERB	fuzu
 kalenda	836	NOUN,OTHER
-kuacha	836	VERB	acha
+kuacha	836	VERB	cha
 mombasa	835	PROPER_NOUN
 walimu	834	NOUN,OTHER	mwalimu
 angani	834	OTHER
@@ -1606,7 +1606,7 @@ kuuza	737	VERB	uza
 ufundi	735	NOUN,OTHER
 kuondoa	733	VERB	ondoa
 walihesabika	733	OTHER
-washiriki	731	NOUN,VERB	mshiriki
+washiriki	731	NOUN,VERB	shiriki
 aliingia	730	OTHER
 kijiografia	729	ADJECTIVE
 mwanamitindo	729	NOUN,OTHER
@@ -1641,7 +1641,7 @@ babu	710	NOUN,OTHER
 kupambana	710	VERB	pambana
 iliopo	707	OTHER
 mauzo	706	NOUN,OTHER
-anahudumu	705	VERB	hudumu
+anahudumu	705	VERB	dumu
 kuunganisha	704	OTHER
 misingi	704	NOUN,OTHER	msingi
 uwepo	704	NOUN,VERB	wapo
@@ -1723,11 +1723,11 @@ wanaheshimiwa	669	OTHER
 kutoweka	668	VERB	weka
 machapisho	668	NOUN,OTHER	chapisho
 wazee	667	NOUN,ADJECTIVE	mzee
-kupanga	667	VERB	panga
+kupanga	667	VERB	upanga
 kulevya	667	OTHER
 waliouawa	667	OTHER
 hungaria	666	OTHER
-mitume	665	NOUN,OTHER	mtume
+mitume	665	NOUN,OTHER	tuma
 yeyote	664	ADJECTIVE
 uchambuzi	664	NOUN,OTHER
 utekelezaji	664	NOUN,OTHER
@@ -1770,7 +1770,7 @@ mti	646	NOUN,OTHER
 kiini	646	NOUN,OTHER
 shinyanga	646	OTHER
 leandry	646	OTHER
-tafiti	644	NOUN,VERB	utafiti
+tafiti	644	NOUN,VERB
 mahojiano	644	NOUN,OTHER
 hakika	643	NOUN,OTHER
 mtaa	642	NOUN,OTHER
@@ -1835,7 +1835,7 @@ hakuwa	619	OTHER
 inaonekana	618	OTHER
 wasomi	618	NOUN,OTHER	msomi
 mhadhiri	617	NOUN,OTHER
-uasi	616	NOUN,VERB	asi
+uasi	616	NOUN,VERB
 kuvutia	616	OTHER
 miamba	615	NOUN,OTHER	mwamba
 aliondoka	614	OTHER
@@ -2031,7 +2031,7 @@ wajumbe	529	NOUN,OTHER	mjumbe
 anayeishi	529	OTHER
 liko	528	VERB
 tumbo	528	NOUN,OTHER	utumbo
-kutawala	527	VERB	tawala
+kutawala	527	VERB	utawala
 mbinguni	527	OTHER
 sugu	527	NOUN,ADJECTIVE
 mashtaka	527	NOUN,OTHER	shtaka
@@ -2441,7 +2441,7 @@ alionyesha	409	OTHER
 kinanda	409	NOUN,OTHER
 kukataa	408	VERB	kataa
 kujaribu	407	VERB	jaribu
-halali	407	VERB,ADJECTIVE	lala
+halali	407	VERB,ADJECTIVE	la
 tawala	407	NOUN,VERB	utawala
 pato	407	NOUN,OTHER
 mchekeshaji	407	NOUN,OTHER
@@ -2778,8 +2778,8 @@ hutengenezwa	339	OTHER
 kuwezesha	339	OTHER
 aljeria	339	OTHER
 alikamilisha	339	OTHER
-waasi	339	NOUN,VERB	mwasi
-watafiti	339	NOUN,VERB	mtafiti
+waasi	339	NOUN,VERB	asi
+watafiti	339	NOUN,VERB	tafiti
 kupigana	339	OTHER
 himaya	338	NOUN,OTHER
 uvumbuzi	338	NOUN,OTHER
@@ -2997,7 +2997,7 @@ maonesho	302	OTHER
 silva	302	OTHER
 andr	302	OTHER
 amecheza	302	OTHER
-kulala	301	VERB	lala
+kulala	301	VERB	la
 mkongwe	301	NOUN,ADJECTIVE
 uliofanyika	301	OTHER
 ubunge	301	NOUN,OTHER
@@ -3151,11 +3151,11 @@ wanamaji	278	NOUN,OTHER	mwanamaji
 lipo	278	OTHER
 ilifanya	278	OTHER
 piramidi	278	NOUN,OTHER
-usajili	277	NOUN,VERB	sajili
+usajili	277	NOUN,VERB
 mapendekezo	277	NOUN,OTHER	pendekezo
 huandikwa	277	OTHER
 kanu	277	NOUN,OTHER
-kuwania	277	VERB	wania
+kuwania	277	VERB	nia
 uwazi	277	NOUN,OTHER
 mzozo	277	NOUN,OTHER
 uzinduzi	277	NOUN,OTHER
@@ -3394,7 +3394,7 @@ yai	251	NOUN,OTHER
 matengenezo	251	NOUN,OTHER
 mfaransa	251	NOUN,OTHER
 ifuatavyo	250	OTHER
-adili	250	NOUN,ADJECTIVE	maadili
+adili	250	NOUN,ADJECTIVE
 nyasa	250	OTHER
 kifungu	250	NOUN,OTHER
 uwindaji	250	NOUN,OTHER
@@ -3560,7 +3560,7 @@ utatu	231	NOUN,OTHER
 routledge	231	OTHER
 ilitokea	231	OTHER
 obama	231	PROPER_NOUN
-wamiliki	231	NOUN,VERB	mmiliki
+wamiliki	231	NOUN,VERB	miliki
 kazini	231	OTHER
 kutumikia	231	OTHER
 wsl	231	OTHER
@@ -3748,7 +3748,7 @@ kujitokeza	216	OTHER
 punda	216	NOUN,OTHER
 kuhusika	216	OTHER
 vatikano	216	OTHER
-mashahidi	216	NOUN,OTHER	shahidi
+mashahidi	216	NOUN,OTHER	ushahidi
 kuadhimisha	216	OTHER
 knowles	216	OTHER
 anaiwakilisha	216	OTHER
@@ -3901,7 +3901,7 @@ mahususi	203	ADJECTIVE
 alitawazwa	203	OTHER
 thrush	203	OTHER
 wajir	203	OTHER
-wahitimu	203	NOUN,VERB	mhitimu
+wahitimu	203	NOUN,VERB	hitimu
 juba	202	OTHER
 hutokana	202	OTHER
 kikanisa	202	NOUN,ADJECTIVE
@@ -4125,7 +4125,7 @@ kua	185	VERB
 rashid	185	OTHER
 wanashirika	185	OTHER
 bibliotheca	185	OTHER
-wahariri	185	NOUN,VERB	mhariri
+wahariri	185	NOUN,VERB	hariri
 inayomilikiwa	185	OTHER
 majumba	184	OTHER
 kimojawapo	184	ADJECTIVE
@@ -4252,7 +4252,7 @@ mwanateolojia	177	OTHER
 sulawesi	177	OTHER
 stella	177	OTHER
 wakapuchini	177	NOUN,OTHER	mkapuchini
-mhudumu	177	NOUN,VERB	hudumu
+mhudumu	177	NOUN,VERB	dumu
 mwanamichezo	177	NOUN,OTHER
 themanini	177	OTHER
 kumpenda	176	OTHER
@@ -4283,7 +4283,7 @@ ilibadilishwa	175	OTHER
 nta	175	NOUN,OTHER
 inayotolewa	175	OTHER
 aliandaa	175	OTHER
-maafa	175	NOUN,OTHER	afa
+maafa	175	NOUN,OTHER	fa
 mwetu	175	ADJECTIVE
 kisima	175	NOUN,OTHER
 mandera	175	OTHER
@@ -4362,7 +4362,7 @@ sharti	169	NOUN,OTHER
 alipoanza	169	OTHER
 raha	169	NOUN,OTHER
 nyika	169	NOUN,OTHER
-washauri	169	NOUN,VERB	mshauri
+washauri	169	NOUN,VERB	shauri
 alitembelea	169	OTHER
 mediterania	169	ADJECTIVE
 baa	169	NOUN,OTHER
@@ -4488,7 +4488,7 @@ singapuri	162	OTHER
 ilitumia	162	OTHER
 huendelea	162	VERB	endelea
 iliongezeka	162	OTHER
-mapacha	162	NOUN,PROPER_NOUN	pacha
+mapacha	162	NOUN,PROPER_NOUN	cha
 filipo	162	OTHER
 aliyeshinda	162	OTHER
 kibaha	162	OTHER
@@ -4540,7 +4540,7 @@ breviari	160	OTHER
 mzungu	160	NOUN,OTHER
 alishtakiwa	160	OTHER
 zinazounda	160	OTHER
-wahudumu	160	NOUN,VERB	mhudumu
+wahudumu	160	NOUN,VERB	dumu
 alifundishwa	160	OTHER
 alisajiliwa	160	OTHER
 kifasihi	159	OTHER
@@ -4601,7 +4601,7 @@ viko	156	NOUN,VERB	kiko
 inapata	156	OTHER
 mizimu	156	NOUN,OTHER	mzimu
 walisema	156	OTHER
-wasafiri	156	NOUN,VERB	msafiri
+wasafiri	156	NOUN,VERB	safiri
 kuhamishwa	156	OTHER
 ghali	156	ADJECTIVE
 kuliwa	156	OTHER
@@ -4748,8 +4748,8 @@ kugawa	150	VERB	gawa
 maajabu	150	NOUN,OTHER	ajabu
 inafanana	150	OTHER
 akiandika	150	OTHER
-wahalifu	150	NOUN,VERB	mhalifu
-wadhamini	150	NOUN,VERB	mdhamini
+wahalifu	150	NOUN,VERB	halifu
+wadhamini	150	NOUN,VERB	dhamini
 shanga	150	NOUN,OTHER	ushanga
 kikomo	150	NOUN,OTHER
 ubadilishaji	150	NOUN,OTHER
@@ -4841,7 +4841,7 @@ kirukanjia	146	NOUN,OTHER
 zinazotumiwa	146	OTHER
 protoni	146	NOUN,OTHER
 dancehall	146	OTHER
-wenzi	146	NOUN,OTHER	mwenzi
+wenzi	146	NOUN,OTHER	enzi
 mchangiaji	146	NOUN,OTHER
 muheza	146	OTHER
 katanga	146	OTHER
@@ -5247,7 +5247,7 @@ akon	130	OTHER
 steroidi	130	OTHER
 cisticola	130	OTHER
 anahesabiwa	130	OTHER
-matumbo	130	NOUN,OTHER	tumbo
+matumbo	130	NOUN,OTHER	utumbo
 kurithi	130	VERB	rithi
 mbingu	130	NOUN,OTHER	uwingu
 hakupata	130	OTHER
@@ -5330,7 +5330,7 @@ mapana	127	OTHER
 kitambulisho	127	NOUN,OTHER
 wigo	127	NOUN,OTHER
 kuzikwa	127	OTHER
-makuhani	127	NOUN,OTHER	kuhani
+makuhani	127	NOUN,OTHER	hani
 huingia	127	VERB	ingia
 aisha	127	VERB,PROPER_NOUN	isha
 nami	127	PREPOSITION
@@ -5465,7 +5465,7 @@ nachingwea	123	OTHER
 kutekelezwa	123	OTHER
 aleksander	123	OTHER
 ipasavyo	123	OTHER
-manyasi	123	NOUN,OTHER	nyasi
+manyasi	123	NOUN,OTHER	unyasi
 uwaziri	123	NOUN,OTHER
 mijusi	123	NOUN,OTHER	mjusi
 upadrisho	123	OTHER
@@ -5598,7 +5598,7 @@ nawe	118	PREPOSITION
 zako	118	ADJECTIVE
 jumatatu	118	PROPER_NOUN
 kijamaa	118	OTHER
-wafadhili	118	NOUN,VERB	mfadhili
+wafadhili	118	NOUN,VERB	fadhili
 kutekwa	118	OTHER
 alipigana	118	OTHER
 waliokufa	118	OTHER
@@ -6146,7 +6146,7 @@ bukavu	105	OTHER
 kumalizia	105	OTHER
 isotopi	105	OTHER
 dijiti	105	OTHER
-ubeti	105	NOUN,VERB	beti
+ubeti	105	NOUN,VERB
 mwanataaluma	105	OTHER
 koli	105	OTHER
 lopes	105	OTHER
@@ -6428,7 +6428,7 @@ coppa	99	OTHER
 wanajamii	98	VERB	jamii
 uzembe	98	NOUN,OTHER
 kijumla	98	OTHER
-wapate	98	NOUN,VERB	mpate
+wapate	98	NOUN,VERB	pata
 iliyotumika	98	OTHER
 ilifanywa	98	OTHER
 kinajulikana	98	OTHER
@@ -6475,7 +6475,7 @@ yawe	97	VERB
 kupangwa	97	OTHER
 kuwajibika	97	OTHER
 mgongano	97	NOUN,OTHER
-mahakimu	97	NOUN,OTHER	hakimu
+mahakimu	97	NOUN,OTHER	kimu
 hayakuwa	97	OTHER
 fundisho	97	OTHER
 wanawe	97	NOUN,VERB	mwanawe
@@ -6570,7 +6570,7 @@ korona	95	OTHER
 mbichi	95	OTHER
 jumuishi	95	OTHER
 mfumuko	95	NOUN,OTHER
-wasanifu	95	NOUN,VERB	msanifu
+wasanifu	95	NOUN,VERB	sanifu
 usangu	95	OTHER
 akipiga	95	OTHER
 amechezea	95	OTHER
@@ -6597,7 +6597,7 @@ lilitokea	94	OTHER
 zikawa	94	OTHER
 wazawa	94	NOUN,OTHER	mzawa
 doha	94	OTHER
-mikate	94	NOUN,OTHER	mkate
+mikate	94	NOUN,OTHER	kata
 alizidi	94	OTHER
 maimamu	94	NOUN,OTHER	imamu
 iliyotokana	94	OTHER
@@ -6643,7 +6643,7 @@ halikuwa	93	OTHER
 huona	93	VERB	ona
 ukilinganisha	93	OTHER
 zilipata	93	OTHER
-mabalozi	93	NOUN,OTHER	balozi
+mabalozi	93	NOUN,OTHER	ubalozi
 kusawazisha	93	OTHER
 kuachwa	93	OTHER
 cuf	93	OTHER
@@ -6894,7 +6894,7 @@ walifukuzwa	89	OTHER
 vinapatikana	89	OTHER
 pole	89	ADJECTIVE
 unatoka	89	VERB	toka
-kuajiri	89	VERB	ajiri
+kuajiri	89	VERB	jiri
 haba	89	ADJECTIVE
 seva	89	OTHER
 kigamboni	89	OTHER
@@ -6912,7 +6912,7 @@ akamaliza	89	OTHER
 dem	89	OTHER
 ntungamo	89	OTHER
 ziliandikwa	89	OTHER
-beti	89	NOUN,VERB	ubeti
+beti	89	NOUN,VERB
 kipawa	89	NOUN,OTHER
 sal	89	OTHER
 wasafwa	89	OTHER
@@ -7967,7 +7967,7 @@ kuingiliwa	73	OTHER
 waario	73	OTHER
 cle	73	OTHER
 rb	73	OTHER
-waasisi	73	NOUN,VERB	mwasisi
+waasisi	73	NOUN,VERB	asisi
 kupatana	73	OTHER
 inaunganisha	73	OTHER
 mez	73	OTHER
@@ -8974,7 +8974,7 @@ alijitambulisha	63	OTHER
 wei	63	OTHER
 osama	63	OTHER
 jean-baptiste	63	OTHER
-warithi	63	NOUN,VERB	mrithi
+warithi	63	NOUN,VERB	rithi
 mhamiaji	63	NOUN,OTHER
 inayotengenezwa	63	OTHER
 mwizi	63	NOUN,OTHER
@@ -9043,7 +9043,7 @@ rosemary	62	OTHER
 wezi	62	NOUN,OTHER	mwizi
 mwiko	62	NOUN,OTHER
 ukiwemo	62	OTHER
-mitende	62	NOUN,OTHER	mtende
+mitende	62	NOUN,OTHER	tenda
 paradiso	62	NOUN,OTHER
 muimbaji	62	OTHER
 luc	62	OTHER
@@ -9688,7 +9688,7 @@ haijawahi	56	OTHER
 zilizojulikana	56	OTHER
 unachukuliwa	56	OTHER
 kugawiwa	56	OTHER
-kukuta	56	VERB	kuta
+kukuta	56	VERB	ukuta
 kiazi	56	NOUN,OTHER
 ikaanza	56	OTHER
 uliotokea	56	OTHER
@@ -9985,7 +9985,7 @@ iliyomfanya	55	OTHER
 yalipata	55	OTHER
 metorolojia	55	NOUN,OTHER
 okestra	55	OTHER
-waajiri	55	VERB	ajiri
+waajiri	55	VERB	jiri
 elise	55	OTHER
 pote	55	ADJECTIVE	ote
 kipengee	55	OTHER
@@ -10231,7 +10231,7 @@ vilivyochapishwa	53	OTHER
 tikiti	53	NOUN,OTHER
 ars	53	OTHER
 greenwood	53	OTHER
-miche	53	NOUN,OTHER	mche
+miche	53	NOUN,OTHER	cha
 saad	53	OTHER
 a-level	53	OTHER
 tumia	53	VERB
@@ -10543,7 +10543,7 @@ madagascariensis	51	OTHER
 akabaki	51	OTHER
 zeituni	51	NOUN,OTHER
 msalala	51	OTHER
-wanyonge	51	NOUN,VERB	mnyonge
+wanyonge	51	NOUN,VERB	nyonga
 gideon	51	OTHER
 mapadre	51	NOUN,OTHER	padre
 walikubaliana	51	OTHER
@@ -11367,7 +11367,7 @@ bonifasi	46	OTHER
 vijavyo	46	OTHER
 mana	46	OTHER
 godwin	46	OTHER
-tunakuta	46	VERB	kuta
+tunakuta	46	VERB	ukuta
 ruzizi	46	OTHER
 cond	46	OTHER
 aut	46	OTHER
@@ -11380,7 +11380,7 @@ siwa	46	NOUN,OTHER
 zilezile	46	ADJECTIVE
 omdurman	46	OTHER
 unaongezeka	46	OTHER
-mwajiri	46	NOUN,VERB	ajiri
+mwajiri	46	NOUN,VERB	jiri
 waliimba	46	OTHER
 unaohusisha	46	OTHER
 linaloonyesha	46	OTHER
@@ -11500,7 +11500,7 @@ sucre	45	OTHER
 djamena	45	OTHER
 yatokanayo	45	OTHER
 ipi	45	OTHER
-mchache	45	VERB	chacha
+mchache	45	VERB	cha
 kumtii	45	OTHER
 maungamo	45	NOUN,OTHER	ungamo
 utupu	45	NOUN,OTHER
@@ -11975,7 +11975,7 @@ kukawa	43	VERB	kawa
 ilimsaidia	43	OTHER
 hamed	43	OTHER
 watuareg	43	OTHER
-aache	43	VERB	acha
+aache	43	VERB	cha
 huzunguka	43	VERB	zunguka
 karo	43	NOUN,OTHER
 mitini	43	NOUN,OTHER	mtini
@@ -11985,7 +11985,7 @@ xxii	43	OTHER
 brandt	43	OTHER
 huungana	43	OTHER
 toto	43	OTHER
-kuahidi	43	VERB	ahidi
+kuahidi	43	VERB	hidi
 easton	43	OTHER
 parti	43	OTHER
 markus	43	OTHER
@@ -12373,12 +12373,12 @@ kiniloti	42	OTHER
 uhunzi	42	NOUN,OTHER
 zikionyesha	42	OTHER
 yemeni	42	OTHER
-kuakisi	42	VERB	akisi
+kuakisi	42	VERB	kisi
 walijitokeza	42	OTHER
 kuibadilisha	42	OTHER
 yaliyoendelea	42	OTHER
 horst	42	OTHER
-hulala	42	VERB	lala
+hulala	42	VERB	la
 ngapi	42	ADJECTIVE
 unasema	42	VERB	sema
 unapungua	42	OTHER
@@ -12400,7 +12400,7 @@ ulionyeshwa	42	OTHER
 yalikuwepo	42	OTHER
 kudhuru	42	VERB	dhuru
 nih	42	OTHER
-unapakana	42	VERB	pakana
+unapakana	42	VERB	kana
 pilato	42	OTHER
 kutarajia	42	VERB	tarajia
 bandarini	42	OTHER
@@ -12438,7 +12438,7 @@ umakanika	42	NOUN,OTHER
 wakaenda	42	OTHER
 simbel	42	OTHER
 emin	42	OTHER
-kupasua	42	VERB	pasua
+kupasua	42	VERB	sua
 abdelaziz	42	OTHER
 aligeuka	42	OTHER
 crist	42	OTHER
@@ -13109,7 +13109,7 @@ akimaanisha	39	OTHER
 dionisi	39	OTHER
 yalienea	39	OTHER
 iliyoathiriwa	39	OTHER
-uchache	39	NOUN,VERB	chacha
+uchache	39	NOUN,VERB	cha
 athumani	39	OTHER
 sua	39	VERB
 koromeo	39	NOUN,OTHER
@@ -13333,7 +13333,7 @@ bizerte	39	OTHER
 monusco	39	OTHER
 mnunuzi	38	NOUN,OTHER
 kudhihirisha	38	OTHER
-wastaafu	38	NOUN,VERB	mstaafu
+wastaafu	38	NOUN,VERB	staafu
 mashuleni	38	OTHER
 ujirani	38	NOUN,OTHER
 kiimani	38	OTHER
@@ -13807,7 +13807,7 @@ mwathiriwa	37	NOUN,OTHER
 uavyaji	37	NOUN,OTHER
 diocesi	37	OTHER
 swiftlet	37	OTHER
-anapanga	37	VERB	panga
+anapanga	37	VERB	upanga
 unaangazia	37	OTHER
 arabe	37	OTHER
 kom	37	OTHER
@@ -13910,7 +13910,7 @@ zilizohifadhiwa	36	OTHER
 sanford	36	OTHER
 hutambua	36	VERB	tambua
 zinazostawi	36	OTHER
-huacha	36	VERB	acha
+huacha	36	VERB	cha
 busokelo	36	OTHER
 lilichukua	36	OTHER
 mkwaju	36	NOUN,OTHER
@@ -14261,7 +14261,7 @@ mikunjo	35	NOUN,OTHER	mkunjo
 humwaga	35	VERB	mwaga
 kiekolojia	35	OTHER
 tulikuwa	35	OTHER
-pinde	35	NOUN,OTHER	upinde
+pinde	35	NOUN,OTHER	pinda
 unakua	35	VERB	kua
 kilichotolewa	35	OTHER
 dunant	35	OTHER
@@ -14983,7 +14983,7 @@ yaliyoongozwa	33	OTHER
 bana	33	VERB
 wanda	33	OTHER
 fatih	33	OTHER
-wahitaji	33	NOUN,VERB	mhitaji
+wahitaji	33	NOUN,VERB	hitaji
 akawaambia	33	OTHER
 kigujarati	33	NOUN,OTHER
 bitch	33	OTHER
@@ -15173,7 +15173,7 @@ kupeleleza	32	VERB	peleleza
 nuba	32	OTHER
 mabandari	32	OTHER
 kifashisti	32	ADJECTIVE
-wahifadhi	32	NOUN,VERB	mhifadhi
+wahifadhi	32	NOUN,VERB	hifadhi
 ubishi	32	NOUN,OTHER
 helene	32	OTHER
 itumike	32	OTHER
@@ -15418,7 +15418,7 @@ jd	32	OTHER
 zimetafsiriwa	32	OTHER
 hakushinda	32	OTHER
 cartel	32	OTHER
-mataya	32	NOUN,OTHER	taya
+mataya	32	NOUN,OTHER	utaya
 mcheduara	32	NOUN,OTHER
 karas	32	OTHER
 artvin	32	OTHER
@@ -16947,7 +16947,7 @@ wahan	29	OTHER
 icu	29	OTHER
 miikka	29	OTHER
 nra	29	OTHER
-hupanga	29	VERB	panga
+hupanga	29	VERB	upanga
 simi	29	VERB
 coahuila	29	OTHER
 wanakuja	29	VERB	ja
@@ -17672,7 +17672,7 @@ servetus	27	OTHER
 wanormani	27	OTHER
 kunyanyua	27	OTHER
 jabal	27	OTHER
-wasaliti	27	NOUN,VERB	msaliti
+wasaliti	27	NOUN,VERB	saliti
 kadhi	27	NOUN,OTHER
 linaunganisha	27	OTHER
 umeleta	27	OTHER
@@ -17726,7 +17726,7 @@ mroma	27	OTHER
 ponsyo	27	OTHER
 hazipo	27	OTHER
 nang	27	OTHER
-kuchafua	27	VERB	chafua
+kuchafua	27	VERB	fua
 kijiko	27	NOUN,OTHER
 mmumunyo	27	OTHER
 vipaumbele	27	NOUN,OTHER	kipaumbele
@@ -18187,7 +18187,7 @@ kilipatikana	26	OTHER
 nipe	26	OTHER
 kimatendo	26	OTHER
 humpa	26	OTHER
-huakisi	26	VERB	akisi
+huakisi	26	VERB	kisi
 zimechangia	26	OTHER
 sijui	26	VERB	jua
 abdulla	26	OTHER
@@ -18833,7 +18833,7 @@ mtera	25	OTHER
 udhalilishaji	25	NOUN,OTHER
 walao	25	OTHER
 aliyegundua	25	OTHER
-anatawala	25	VERB	tawala
+anatawala	25	VERB	utawala
 anand	25	OTHER
 aliyejaribu	25	OTHER
 white-fronted	25	OTHER
@@ -19592,7 +19592,7 @@ kuzibwa	24	OTHER
 heimat	24	OTHER
 ziweze	24	OTHER
 nyambizi	24	NOUN,OTHER
-mapande	24	NOUN,OTHER	pande
+mapande	24	NOUN,OTHER	panda
 kutojua	24	VERB	jua
 molokai	24	OTHER
 boll	24	OTHER
@@ -19780,7 +19780,7 @@ wavutaji	24	NOUN,OTHER	mvutaji
 tippett	24	OTHER
 lifti	24	NOUN,OTHER
 ung	24	OTHER
-waache	24	VERB	acha
+waache	24	VERB	cha
 kumuamini	24	OTHER
 ashram	24	OTHER
 dirishani	24	OTHER
@@ -19811,7 +19811,7 @@ kupandikiza	24	OTHER
 kope	24	NOUN,OTHER
 anamsaidia	24	OTHER
 yalova	24	OTHER
-wanapanga	24	VERB	panga
+wanapanga	24	VERB	upanga
 nytimes	24	OTHER
 warthog	24	OTHER
 umefika	24	OTHER
@@ -19929,7 +19929,7 @@ prognosisi	24	OTHER
 tatedo	24	OTHER
 bambara	24	OTHER
 siastique	24	OTHER
-mapazia	24	NOUN,OTHER	pazia
+mapazia	24	NOUN,OTHER	zia
 chibok	24	OTHER
 kendrick	24	OTHER
 batson	24	OTHER
@@ -20026,7 +20026,7 @@ tabakamwamba	23	OTHER
 iliyounganisha	23	OTHER
 kimakonde	23	NOUN,OTHER
 maharaja	23	OTHER
-anaacha	23	VERB	acha
+anaacha	23	VERB	cha
 uliomo	23	OTHER
 habilis	23	OTHER
 zilizotumia	23	OTHER
@@ -20659,7 +20659,7 @@ kutazamia	22	OTHER
 wakatumia	22	OTHER
 zimetajwa	22	OTHER
 ikitegemea	22	OTHER
-hutawala	22	VERB	tawala
+hutawala	22	VERB	utawala
 muafaka	22	OTHER
 zinawakilisha	22	OTHER
 zisizobadilika	22	OTHER
@@ -20750,7 +20750,7 @@ mullah	22	OTHER
 cdf	22	OTHER
 alilalamika	22	OTHER
 waliwashinda	22	OTHER
-kupakana	22	VERB	pakana
+kupakana	22	VERB	kana
 tl	22	OTHER
 alizuru	22	OTHER
 mwandaaji	22	NOUN,OTHER
@@ -22096,10 +22096,10 @@ kitagbanwa	21	OTHER
 odisha	21	OTHER
 kova	21	OTHER
 wallah	21	OTHER
-unaakisi	21	VERB	akisi
+unaakisi	21	VERB	kisi
 kiroboto	21	NOUN,OTHER
 kimarkesa	21	OTHER
-akande	21	VERB	kanda
+akande	21	VERB	ukanda
 ngalula	21	OTHER
 hellige	21	OTHER
 nicki	21	OTHER
@@ -22621,7 +22621,7 @@ anafanana	20	VERB	fanana
 lililoonekana	20	OTHER
 narayan	20	OTHER
 hattie	20	OTHER
-unaacha	20	VERB	acha
+unaacha	20	VERB	cha
 uingizwaji	20	OTHER
 iliyoharibika	20	OTHER
 danilo	20	OTHER
@@ -23177,7 +23177,7 @@ vilitumiwa	19	OTHER
 hulazimika	19	OTHER
 kudidimia	19	OTHER
 ilitarajiwa	19	OTHER
-wafasiri	19	NOUN,VERB	mfasiri
+wafasiri	19	NOUN,VERB	fasiri
 inayopanda	19	OTHER
 abyssinica	19	OTHER
 anapendwa	19	OTHER
@@ -24797,7 +24797,7 @@ sochaux-montb	19	OTHER
 hugundua	19	VERB	gundua
 fintech	19	OTHER
 bete	19	OTHER
-washawishi	19	NOUN,VERB	mshawishi
+washawishi	19	NOUN,VERB	shawishi
 likasi	19	OTHER
 netcare	19	OTHER
 viljoen	19	OTHER
@@ -25102,7 +25102,7 @@ nyukliasi	18	NOUN,OTHER
 chakavu	18	ADJECTIVE
 maski	18	NOUN,OTHER
 kinza	18	VERB
-uajiri	18	NOUN,VERB	ajiri
+uajiri	18	NOUN,VERB	jiri
 tawahudi	18	NOUN,OTHER
 konyeza	18	VERB
 choroa	18	NOUN,OTHER
@@ -25295,7 +25295,7 @@ mpumbavu	15	NOUN,ADJECTIVE
 danguro	15	NOUN,OTHER
 disko	15	NOUN,OTHER
 upekuzi	15	NOUN,OTHER
-asi	15	NOUN,VERB	uasi
+asi	15	NOUN,VERB
 punguzo	15	NOUN,OTHER
 kamata	15	VERB
 uamilifu	15	NOUN,OTHER
@@ -25373,7 +25373,7 @@ karakara	14	NOUN,OTHER
 mshereheshaji	14	NOUN,OTHER
 bomoa	14	VERB
 rakaa	14	NOUN,OTHER
-dhibiti	14	NOUN,VERB	udhibiti
+dhibiti	14	NOUN,VERB
 zogo	14	NOUN,OTHER
 mkorofi	14	NOUN,ADJECTIVE
 mshipi	14	NOUN,OTHER
@@ -25677,7 +25677,7 @@ stakabadhi	10	NOUN,VERB
 lithiamu	10	NOUN,OTHER
 kande	10	NOUN,OTHER
 kapera	10	NOUN,OTHER
-washenzi	10	NOUN,OTHER	mshenzi
+washenzi	10	NOUN,OTHER
 mwethiopia	10	NOUN,OTHER
 chuku	10	NOUN,OTHER
 husu	10	VERB
@@ -26122,7 +26122,7 @@ mtoza	6	NOUN,OTHER
 upatu	6	NOUN,OTHER
 dhara	6	NOUN,OTHER
 bwege	6	NOUN,OTHER
-sajili	6	NOUN,VERB	usajili
+sajili	6	NOUN,VERB
 wavivu	6	NOUN,ADJECTIVE	mvivu
 upokezi	6	NOUN,OTHER
 thamana	6	NOUN,OTHER
@@ -27071,7 +27071,7 @@ zigizaga	2	NOUN,OTHER
 maruerue	2	NOUN,OTHER
 ndumba	2	NOUN,OTHER
 mingapi	2	ADJECTIVE
-mshenzi	2	NOUN,OTHER	washenzi
+mshenzi	2	NOUN,OTHER
 resi	2	NOUN,OTHER
 kambakoche	2	NOUN,OTHER
 sumbufu	2	ADJECTIVE
@@ -27537,7 +27537,7 @@ kidhi	1	VERB
 suluhisha	1	VERB
 mathe	1	NOUN,OTHER
 mvukuto	1	NOUN,OTHER
-mzabuni	1	NOUN,VERB	zabuni
+mzabuni	1	NOUN,VERB	buni
 jalia	1	VERB
 ususu	1	NOUN,OTHER
 mroho	1	NOUN,OTHER
@@ -27794,10 +27794,10 @@ mafindo	17	NOUN,OTHER	findo
 mafinyo	4	NOUN,OTHER	finyo
 mafirauni	5	NOUN,OTHER	firauni
 mafisadi	6	NOUN,OTHER	fisadi
-mafuko	65	NOUN,OTHER	fuko
+mafuko	65	NOUN,OTHER	ufuko
 mafundo	27	NOUN,OTHER	fundo
 mafunza	13	NOUN,OTHER	funza
-mafuo	14	NOUN,OTHER	fuo
+mafuo	14	NOUN,OTHER	ufuo
 mafurushi	2	NOUN,OTHER	furushi
 mafuu	10	NOUN,OTHER	fuu
 mafyulisi	3	NOUN,OTHER	fyulisi
@@ -27866,7 +27866,7 @@ majongo	73	NOUN,OTHER	jongo
 majora	3	NOUN,OTHER	jora
 majua	1484	NOUN,OTHER	jua
 majuha	5	NOUN,OTHER	juha
-majumbe	101	NOUN,OTHER	jumbe
+majumbe	101	NOUN,OTHER	ujumbe
 majuya	1	NOUN,OTHER	juya
 makaakaa	6	NOUN,OTHER	kaakaa
 makaango	1	NOUN,OTHER	kaango
@@ -28098,7 +28098,7 @@ makonda	11	NOUN,OTHER	konda
 makondakta	33	NOUN,OTHER	kondakta
 makontena	48	NOUN,OTHER	kontena
 makontinenti	9	NOUN,OTHER	kontinenti
-makoo	423	NOUN,OTHER	koo
+makoo	423	NOUN,OTHER	ukoo
 makopa	18	NOUN,OTHER	kopa
 makoplo	15	NOUN,OTHER	koplo
 makoroma	33	NOUN,OTHER	koroma
@@ -28106,11 +28106,11 @@ makoromeo	34	NOUN,OTHER	koromeo
 makorosho	60	NOUN,OTHER	korosho
 makoti	112	NOUN,OTHER	koti
 makuli	8	NOUN,OTHER	kuli
-makungu	15	NOUN,OTHER	kungu
+makungu	15	NOUN,OTHER	ukungu
 makungwi	21	NOUN,OTHER	kungwi
 makunjo	3	NOUN,OTHER	kunjo
 makusudio	10	NOUN,OTHER	kusudio
-makuti	64	NOUN,OTHER	kuti
+makuti	64	NOUN,OTHER	ukuti
 makuyu	14	NOUN,OTHER	kuyu
 makwadrilioni	2	NOUN,OTHER	kwadrilioni
 makwapa	10	NOUN,OTHER	kwapa
@@ -28134,7 +28134,7 @@ mibangi	26	NOUN,OTHER	mbangi
 mibano	10	NOUN,OTHER	mbano
 wabatizaji	127	NOUN,OTHER	mbatizaji
 wabebaji	11	NOUN,OTHER	mbebaji
-wabembe	6	NOUN,VERB	mbembe
+wabembe	6	NOUN,VERB	bemba
 wabeya	1182	NOUN,OTHER	mbeya
 wabia	24	NOUN,OTHER	mbia
 mibibo	4	NOUN,OTHER	mbibo
@@ -28146,7 +28146,7 @@ wabrazili	4	NOUN,OTHER	mbrazili
 wabudha	4	NOUN,OTHER	mbudha
 mambumbumbu	1	NOUN,OTHER	mbumbumbu
 mibungati	1	NOUN,OTHER	mbungati
-mibuni	106	NOUN,OTHER	mbuni
+mibuni	106	NOUN,OTHER	buni
 mibura	3	NOUN,OTHER	mbura
 waburudishaji	49	NOUN,OTHER	mburudishaji
 mibuyu	34	NOUN,OTHER	mbuyu
@@ -28176,15 +28176,15 @@ wachumi	114	NOUN,OTHER	mchumi
 michungwa	17	NOUN,OTHER	mchungwa
 wachuuzi	9	NOUN,OTHER	mchuuzi
 wadachi	4	NOUN,OTHER	mdachi
-wadadisi	5	NOUN,VERB	mdadisi
-wadai	5	NOUN,VERB	mdai
+wadadisi	5	NOUN,VERB	dadisi
+wadai	5	NOUN,VERB	dai
 wadaiwa	4	NOUN,OTHER	mdaiwa
 midalasini	32	NOUN,OTHER	mdalasini
 wadanganyifu	8	NOUN,OTHER	mdanganyifu
 wademokrasia	1	NOUN,OTHER	mdemokrasia
 wadeni	1	NOUN,OTHER	mdeni
 wadhalimu	2	NOUN,OTHER	mdhalimu
-wadhibiti	30	NOUN,VERB	mdhibiti
+wadhibiti	30	NOUN,VERB	dhibiti
 wadigo	1	NOUN,OTHER	mdigo
 midimu	1	NOUN,OTHER	mdimu
 midundiko	6	NOUN,OTHER	mdundiko
@@ -28222,22 +28222,22 @@ migusano	23	NOUN,OTHER	mgusano
 wagwizi	1	NOUN,OTHER	mgwizi
 wahabeshi	4	NOUN,OTHER	mhabeshi
 wahaini	2	NOUN,OTHER	mhaini
-wahakiki	49	NOUN,VERB	mhakiki
+wahakiki	49	NOUN,VERB	hakiki
 wahamasishaji	70	NOUN,OTHER	mhamasishaji
 wahashamu	6	NOUN,OTHER	mhashamu
 wahisani	49	NOUN,OTHER	mhisani
-wahoji	4	NOUN,VERB	mhoji
+wahoji	4	NOUN,VERB	hoji
 wahojiwa	8	NOUN,OTHER	mhojiwa
 mamilionea	22	NOUN,OTHER	milionea
-wajadili	2	NOUN,VERB	mjadili
+wajadili	2	NOUN,VERB	jadili
 wajamzito	68	NOUN,OTHER	mjamzito
 wajanja	19	NOUN,OTHER	mjanja
-mijao	78	NOUN,OTHER	mjao
+mijao	78	NOUN,OTHER	ijayo
 mijengo	11	NOUN,OTHER	mjengo
 wajuzi	11	NOUN,OTHER	mjuzi
 mikaa	49	NOUN,OTHER	mkaa
-wakabidhi	3	NOUN,VERB	mkabidhi
-wakaidi	10	NOUN,VERB	mkaidi
+wakabidhi	3	NOUN,VERB	kabidhi
+wakaidi	10	NOUN,VERB	kaidi
 mikakao	5	NOUN,OTHER	mkakao
 wakale	4	NOUN,OTHER	mkale
 wakalimani	42	NOUN,OTHER	mkalimani
@@ -28263,7 +28263,7 @@ wakiritimba	1	NOUN,OTHER	mkiritimba
 wakiukaji	3	NOUN,OTHER	mkiukaji
 mikizi	43	NOUN,OTHER	mkizi
 mikoba	18	NOUN,OTHER	mkoba
-wakodi	2	NOUN,VERB	mkodi
+wakodi	2	NOUN,VERB	kodi
 wakodishaji	2	NOUN,OTHER	mkodishaji
 mikojo	306	NOUN,OTHER	mkojo
 mikokoteni	11	NOUN,OTHER	mkokoteni
@@ -28354,7 +28354,7 @@ wapwa	182	NOUN,VERB	mpwa
 mirabaha	2	NOUN,OTHER	mrabaha
 waraibu	12	NOUN,OTHER	mraibu
 mirama	4	NOUN,OTHER	mrama
-waratibu	437	NOUN,VERB	mratibu
+waratibu	437	NOUN,VERB	ratibu
 mirehani	1	NOUN,OTHER	mrehani
 mirengo	247	NOUN,OTHER	mrengo
 waroho	1	NOUN,OTHER	mroho
@@ -28366,7 +28366,7 @@ misafa	3	NOUN,OTHER	msafa
 wasafirishaji	7	NOUN,OTHER	msafirishaji
 misafsafi	30	NOUN,OTHER	msafsafi
 misahafu	14	NOUN,OTHER	msahafu
-wasajili	55	NOUN,VERB	msajili
+wasajili	55	NOUN,VERB	sajili
 misako	26	NOUN,OTHER	msako
 misala	5	NOUN,OTHER	msala
 misamaha	242	NOUN,OTHER	msamaha
@@ -28399,7 +28399,7 @@ washindwa	1	NOUN,OTHER	mshindwa
 mishipi	12	NOUN,OTHER	mshipi
 washirikina	3	NOUN,OTHER	mshirikina
 washoni	1	NOUN,OTHER	mshoni
-washtaki	6	NOUN,VERB	mshtaki
+washtaki	6	NOUN,VERB	shtaki
 mishubiri	22	NOUN,OTHER	mshubiri
 wasimuliaji	33	NOUN,OTHER	msimuliaji
 wasiri	10	NOUN,OTHER	msiri
@@ -28414,7 +28414,7 @@ wasondani	4	NOUN,OTHER	msondani
 misongamano	309	NOUN,OTHER	msongamano
 misongo	84	NOUN,OTHER	msongo
 mistafeli	3	NOUN,OTHER	mstafeli
-wastahiki	4	NOUN,VERB	mstahiki
+wastahiki	4	NOUN,VERB	stahiki
 wastahimilivu	5	NOUN,OTHER	mstahimilivu
 mistatili	55	NOUN,OTHER	mstatili
 wasudani	4	NOUN,OTHER	msudani
@@ -28429,10 +28429,10 @@ miswaki	26	NOUN,OTHER	mswaki
 waswazi	1	NOUN,OTHER	mswazi
 waswisi	12	NOUN,OTHER	mswisi
 wasyria	2	NOUN,OTHER	msyria
-watabiri	11	NOUN,VERB	mtabiri
+watabiri	11	NOUN,VERB	tabiri
 mitafaruku	6	NOUN,OTHER	mtafaruku
 mitagusano	4	NOUN,OTHER	mtagusano
-watahini	11	NOUN,VERB	mtahini
+watahini	11	NOUN,VERB	tahini
 watahiniwa	5	NOUN,OTHER	mtahiniwa
 watajiri	5	NOUN,OTHER	mtajiri
 wataka	1	NOUN,VERB	mtaka
@@ -28457,7 +28457,7 @@ mitengano	8	NOUN,OTHER	mtengano
 mitepe	1	NOUN,OTHER	mtepe
 watesaji	2	NOUN,OTHER	mtesaji
 watetea	1	NOUN,OTHER	mtetea
-watii	6	NOUN,VERB	mtii
+watii	6	NOUN,VERB	tii
 mitikisiko	11	NOUN,OTHER	mtikisiko
 mitikiso	1	NOUN,OTHER	mtikiso
 mitikiti	2	NOUN,OTHER	mtikiti
@@ -28487,7 +28487,7 @@ waunganishaji	1	NOUN,OTHER	muunganishaji
 miungo	30	NOUN,OTHER	muungo
 mivinyo	61	NOUN,OTHER	mvinyo
 mivujo	1	NOUN,OTHER	mvujo
-mivuke	280	NOUN,OTHER	mvuke
+mivuke	280	NOUN,OTHER	vuka
 mivukuto	1	NOUN,OTHER	mvukuto
 mivule	1	NOUN,OTHER	mvule
 wavumilivu	11	NOUN,OTHER	mvumilivu
@@ -28498,7 +28498,7 @@ wavunja	3	NOUN,VERB	mvunja
 mivuto	297	NOUN,OTHER	mvuto
 waadhini	2	NOUN,OTHER	mwadhini
 miafaka	98	NOUN,OTHER	mwafaka
-wajiri	41	NOUN,VERB	mwajiri
+wajiri	41	NOUN,VERB	jiri
 wajiriwa	23	NOUN,OTHER	mwajiriwa
 miambao	236	NOUN,OTHER	mwambao
 miamko	71	NOUN,OTHER	mwamko
@@ -28561,7 +28561,7 @@ waendelezaji	25	NOUN,OTHER	mwendelezaji
 miendelezo	169	NOUN,OTHER	mwendelezo
 miendokasi	22	NOUN,OTHER	mwendokasi
 myenendo	246	NOUN,OTHER	mwenendo
-mienge	78	NOUN,OTHER	mwenge
+mienge	78	NOUN,OTHER	enga
 wenyekiti	2538	NOUN,OTHER	mwenyekiti
 wenyezi	327	NOUN,OTHER	mwenyezi
 wenzio	2	NOUN,OTHER	mwenzio
@@ -28589,7 +28589,7 @@ mionjo	7	NOUN,OTHER	mwonjo
 miyeyuko	6	NOUN,OTHER	myeyuko
 miyombo	3	NOUN,OTHER	myombo
 wayunani	1	NOUN,OTHER	myunani
-wazabuni	1	NOUN,VERB	mzabuni
+wazabuni	1	NOUN,VERB	buni
 mizaha	38	NOUN,OTHER	mzaha
 mizambarau	4	NOUN,OTHER	mzambarau
 wazambia	5	NOUN,OTHER	mzambia
@@ -28611,7 +28611,7 @@ maofisi	1741	NOUN,OTHER	ofisi
 maongezeko	792	NOUN,OTHER	ongezeko
 maopereta	9	NOUN,OTHER	opereta
 maovaroli	2	NOUN,OTHER	ovaroli
-mapaja	31	NOUN,OTHER	paja
+mapaja	31	NOUN,OTHER	ja
 mapaji	52	NOUN,OTHER	paji
 mapambazuko	8	NOUN,OTHER	pambazuko
 mapanzi	134	NOUN,OTHER	panzi
@@ -28620,7 +28620,7 @@ maparachichi	22	NOUN,OTHER	parachichi
 maparoko	47	NOUN,OTHER	paroko
 mapeasi	7	NOUN,OTHER	peasi
 mapeni	20	NOUN,OTHER	peni
-mapepo	136	NOUN,OTHER	pepo
+mapepo	136	NOUN,OTHER	upepo
 mapera	15	NOUN,OTHER	pera
 mapesa	999	NOUN,OTHER	pesa
 mapesheni	5	NOUN,OTHER	pesheni
@@ -28739,7 +28739,7 @@ mawele	26	NOUN,OTHER	uwele
 mayoga	59	NOUN,OTHER	uyoga
 nyuzio	71	NOUN,OTHER	uzio
 mavuguvugu	379	NOUN,OTHER	vuguvugu
-nyakaa	5	NOUN,OTHER	wakaa
+nyakaa	5	NOUN,OTHER	kaa
 nyangwa	22	NOUN,OTHER	wangwa
 mawaridi	59	NOUN,OTHER	waridi
 nyembe	6	NOUN,OTHER	wembe
@@ -28817,35 +28817,35 @@ vyaabudu	25	VERB	abudu
 zaabudu	25	VERB	abudu
 kwaabudu	25	VERB	abudu
 paabudu	25	VERB	abudu
-kutoacha	241	VERB	acha
-acheni	241	VERB	acha
-wacheni	241	VERB	acha
-ninaacha	241	VERB	acha
-naacha	241	VERB	acha
-tunaacha	241	VERB	acha
-mnaacha	241	VERB	acha
-wanaacha	241	VERB	acha
-siachi	241	VERB	acha
-hatuachi	241	VERB	acha
-huachi	241	VERB	acha
-hamwachi	241	VERB	acha
-haachi	241	VERB	acha
-hawaachi	241	VERB	acha
-niache	241	VERB	acha
-tuache	241	VERB	acha
-uache	241	VERB	acha
-mwache	241	VERB	acha
-twaacha	241	VERB	acha
-waacha	241	VERB	acha
-mwaacha	241	VERB	acha
-aacha	241	VERB	acha
-yaacha	241	VERB	acha
-laacha	241	VERB	acha
-chaacha	241	VERB	acha
-vyaacha	241	VERB	acha
-zaacha	241	VERB	acha
-kwaacha	241	VERB	acha
-paacha	241	VERB	acha
+kutoacha	241	VERB	cha
+acheni	241	VERB	cha
+wacheni	241	VERB	cha
+ninaacha	241	VERB	cha
+naacha	241	VERB	cha
+tunaacha	241	VERB	cha
+mnaacha	241	VERB	cha
+wanaacha	241	VERB	cha
+siachi	241	VERB	cha
+hatuachi	241	VERB	cha
+huachi	241	VERB	cha
+hamwachi	241	VERB	cha
+haachi	241	VERB	cha
+hawaachi	241	VERB	cha
+niache	241	VERB	cha
+tuache	241	VERB	cha
+uache	241	VERB	cha
+mwache	241	VERB	cha
+twaacha	241	VERB	cha
+waacha	241	VERB	cha
+mwaacha	241	VERB	cha
+aacha	241	VERB	cha
+yaacha	241	VERB	cha
+laacha	241	VERB	cha
+chaacha	241	VERB	cha
+vyaacha	241	VERB	cha
+zaacha	241	VERB	cha
+kwaacha	241	VERB	cha
+paacha	241	VERB	cha
 kutoachilia	37	VERB	achilia
 achilieni	37	VERB	achilia
 huachilia	37	VERB	achilia
@@ -29107,36 +29107,36 @@ vyaagua	58	VERB	agua
 zaagua	58	VERB	agua
 kwaagua	58	VERB	agua
 paagua	58	VERB	agua
-kutoahidi	12	VERB	ahidi
-ahidini	12	VERB	ahidi
-huahidi	12	VERB	ahidi
-ninaahidi	12	VERB	ahidi
-naahidi	12	VERB	ahidi
-tunaahidi	12	VERB	ahidi
-unaahidi	12	VERB	ahidi
-mnaahidi	12	VERB	ahidi
-anaahidi	12	VERB	ahidi
-wanaahidi	12	VERB	ahidi
-siahidi	12	VERB	ahidi
-hatuahidi	12	VERB	ahidi
-hamwahidi	12	VERB	ahidi
-haahidi	12	VERB	ahidi
-hawaahidi	12	VERB	ahidi
-niahidi	12	VERB	ahidi
-tuahidi	12	VERB	ahidi
-uahidi	12	VERB	ahidi
-mwahidi	12	VERB	ahidi
-aahidi	12	VERB	ahidi
-waahidi	12	VERB	ahidi
-twaahidi	12	VERB	ahidi
-mwaahidi	12	VERB	ahidi
-yaahidi	12	VERB	ahidi
-laahidi	12	VERB	ahidi
-chaahidi	12	VERB	ahidi
-vyaahidi	12	VERB	ahidi
-zaahidi	12	VERB	ahidi
-kwaahidi	12	VERB	ahidi
-paahidi	12	VERB	ahidi
+kutoahidi	12	VERB	hidi
+ahidini	12	VERB	hidi
+huahidi	12	VERB	hidi
+ninaahidi	12	VERB	hidi
+naahidi	12	VERB	hidi
+tunaahidi	12	VERB	hidi
+unaahidi	12	VERB	hidi
+mnaahidi	12	VERB	hidi
+anaahidi	12	VERB	hidi
+wanaahidi	12	VERB	hidi
+siahidi	12	VERB	hidi
+hatuahidi	12	VERB	hidi
+hamwahidi	12	VERB	hidi
+haahidi	12	VERB	hidi
+hawaahidi	12	VERB	hidi
+niahidi	12	VERB	hidi
+tuahidi	12	VERB	hidi
+uahidi	12	VERB	hidi
+mwahidi	12	VERB	hidi
+aahidi	12	VERB	hidi
+waahidi	12	VERB	hidi
+twaahidi	12	VERB	hidi
+mwaahidi	12	VERB	hidi
+yaahidi	12	VERB	hidi
+laahidi	12	VERB	hidi
+chaahidi	12	VERB	hidi
+vyaahidi	12	VERB	hidi
+zaahidi	12	VERB	hidi
+kwaahidi	12	VERB	hidi
+paahidi	12	VERB	hidi
 kuaili	17	VERB	aili
 kutoaili	17	VERB	aili
 ailini	17	VERB	aili
@@ -29230,33 +29230,33 @@ vyaajabu	2825	VERB	ajabu
 zaajabu	2825	VERB	ajabu
 kwaajabu	2825	VERB	ajabu
 paajabu	2825	VERB	ajabu
-kutoajiri	25	VERB	ajiri
-ajirini	25	VERB	ajiri
-huajiri	25	VERB	ajiri
-ninaajiri	25	VERB	ajiri
-naajiri	25	VERB	ajiri
-tunaajiri	25	VERB	ajiri
-unaajiri	25	VERB	ajiri
-mnaajiri	25	VERB	ajiri
-anaajiri	25	VERB	ajiri
-wanaajiri	25	VERB	ajiri
-siajiri	25	VERB	ajiri
-hatuajiri	25	VERB	ajiri
-hamwajiri	25	VERB	ajiri
-haajiri	25	VERB	ajiri
-hawaajiri	25	VERB	ajiri
-niajiri	25	VERB	ajiri
-tuajiri	25	VERB	ajiri
-aajiri	25	VERB	ajiri
-twaajiri	25	VERB	ajiri
-mwaajiri	25	VERB	ajiri
-yaajiri	25	VERB	ajiri
-laajiri	25	VERB	ajiri
-chaajiri	25	VERB	ajiri
-vyaajiri	25	VERB	ajiri
-zaajiri	25	VERB	ajiri
-kwaajiri	25	VERB	ajiri
-paajiri	25	VERB	ajiri
+kutoajiri	25	VERB	jiri
+ajirini	25	VERB	jiri
+huajiri	25	VERB	jiri
+ninaajiri	25	VERB	jiri
+naajiri	25	VERB	jiri
+tunaajiri	25	VERB	jiri
+unaajiri	25	VERB	jiri
+mnaajiri	25	VERB	jiri
+anaajiri	25	VERB	jiri
+wanaajiri	25	VERB	jiri
+siajiri	25	VERB	jiri
+hatuajiri	25	VERB	jiri
+hamwajiri	25	VERB	jiri
+haajiri	25	VERB	jiri
+hawaajiri	25	VERB	jiri
+niajiri	25	VERB	jiri
+tuajiri	25	VERB	jiri
+aajiri	25	VERB	jiri
+twaajiri	25	VERB	jiri
+mwaajiri	25	VERB	jiri
+yaajiri	25	VERB	jiri
+laajiri	25	VERB	jiri
+chaajiri	25	VERB	jiri
+vyaajiri	25	VERB	jiri
+zaajiri	25	VERB	jiri
+kwaajiri	25	VERB	jiri
+paajiri	25	VERB	jiri
 kuaka	506	VERB	aka
 kutoaka	506	VERB	aka
 akeni	506	VERB	aka
@@ -29321,34 +29321,34 @@ vyaakidi	29	VERB	akidi
 zaakidi	29	VERB	akidi
 kwaakidi	29	VERB	akidi
 paakidi	29	VERB	akidi
-kutoakisi	50	VERB	akisi
-akisini	50	VERB	akisi
-ninaakisi	50	VERB	akisi
-naakisi	50	VERB	akisi
-tunaakisi	50	VERB	akisi
-mnaakisi	50	VERB	akisi
-anaakisi	50	VERB	akisi
-wanaakisi	50	VERB	akisi
-siakisi	50	VERB	akisi
-hatuakisi	50	VERB	akisi
-hamwakisi	50	VERB	akisi
-haakisi	50	VERB	akisi
-hawaakisi	50	VERB	akisi
-niakisi	50	VERB	akisi
-tuakisi	50	VERB	akisi
-uakisi	50	VERB	akisi
-mwakisi	50	VERB	akisi
-aakisi	50	VERB	akisi
-waakisi	50	VERB	akisi
-twaakisi	50	VERB	akisi
-mwaakisi	50	VERB	akisi
-yaakisi	50	VERB	akisi
-laakisi	50	VERB	akisi
-chaakisi	50	VERB	akisi
-vyaakisi	50	VERB	akisi
-zaakisi	50	VERB	akisi
-kwaakisi	50	VERB	akisi
-paakisi	50	VERB	akisi
+kutoakisi	50	VERB	kisi
+akisini	50	VERB	kisi
+ninaakisi	50	VERB	kisi
+naakisi	50	VERB	kisi
+tunaakisi	50	VERB	kisi
+mnaakisi	50	VERB	kisi
+anaakisi	50	VERB	kisi
+wanaakisi	50	VERB	kisi
+siakisi	50	VERB	kisi
+hatuakisi	50	VERB	kisi
+hamwakisi	50	VERB	kisi
+haakisi	50	VERB	kisi
+hawaakisi	50	VERB	kisi
+niakisi	50	VERB	kisi
+tuakisi	50	VERB	kisi
+uakisi	50	VERB	kisi
+mwakisi	50	VERB	kisi
+aakisi	50	VERB	kisi
+waakisi	50	VERB	kisi
+twaakisi	50	VERB	kisi
+mwaakisi	50	VERB	kisi
+yaakisi	50	VERB	kisi
+laakisi	50	VERB	kisi
+chaakisi	50	VERB	kisi
+vyaakisi	50	VERB	kisi
+zaakisi	50	VERB	kisi
+kwaakisi	50	VERB	kisi
+paakisi	50	VERB	kisi
 kualika	8	VERB	alika
 kutoalika	8	VERB	alika
 alikeni	8	VERB	alika
@@ -29859,40 +29859,40 @@ vyaanguka	8	VERB	anguka
 zaanguka	8	VERB	anguka
 kwaanguka	8	VERB	anguka
 paanguka	8	VERB	anguka
-kuania	124	VERB	ania
-kutoania	124	VERB	ania
-anieni	124	VERB	ania
-huania	124	VERB	ania
-ninaania	124	VERB	ania
-naania	124	VERB	ania
-tunaania	124	VERB	ania
-unaania	124	VERB	ania
-mnaania	124	VERB	ania
-anaania	124	VERB	ania
-wanaania	124	VERB	ania
-sianii	124	VERB	ania
-hatuanii	124	VERB	ania
-huanii	124	VERB	ania
-hamwanii	124	VERB	ania
-haanii	124	VERB	ania
-hawaanii	124	VERB	ania
-nianie	124	VERB	ania
-tuanie	124	VERB	ania
-uanie	124	VERB	ania
-mwanie	124	VERB	ania
-aanie	124	VERB	ania
-waanie	124	VERB	ania
-twaania	124	VERB	ania
-waania	124	VERB	ania
-mwaania	124	VERB	ania
-aania	124	VERB	ania
-yaania	124	VERB	ania
-laania	124	VERB	ania
-chaania	124	VERB	ania
-vyaania	124	VERB	ania
-zaania	124	VERB	ania
-kwaania	124	VERB	ania
-paania	124	VERB	ania
+kuania	124	VERB	nia
+kutoania	124	VERB	nia
+anieni	124	VERB	nia
+huania	124	VERB	nia
+ninaania	124	VERB	nia
+naania	124	VERB	nia
+tunaania	124	VERB	nia
+unaania	124	VERB	nia
+mnaania	124	VERB	nia
+anaania	124	VERB	nia
+wanaania	124	VERB	nia
+sianii	124	VERB	nia
+hatuanii	124	VERB	nia
+huanii	124	VERB	nia
+hamwanii	124	VERB	nia
+haanii	124	VERB	nia
+hawaanii	124	VERB	nia
+nianie	124	VERB	nia
+tuanie	124	VERB	nia
+uanie	124	VERB	nia
+mwanie	124	VERB	nia
+aanie	124	VERB	nia
+waanie	124	VERB	nia
+twaania	124	VERB	nia
+waania	124	VERB	nia
+mwaania	124	VERB	nia
+aania	124	VERB	nia
+yaania	124	VERB	nia
+laania	124	VERB	nia
+chaania	124	VERB	nia
+vyaania	124	VERB	nia
+zaania	124	VERB	nia
+kwaania	124	VERB	nia
+paania	124	VERB	nia
 kuanika	8	VERB	anika
 kutoanika	8	VERB	anika
 anikeni	8	VERB	anika
@@ -30200,71 +30200,71 @@ vyaathiri	58	VERB	athiri
 zaathiri	58	VERB	athiri
 kwaathiri	58	VERB	athiri
 paathiri	58	VERB	athiri
-kuatibu	8	VERB	atibu
-kutoatibu	8	VERB	atibu
-atibuni	8	VERB	atibu
-huatibu	8	VERB	atibu
-ninaatibu	8	VERB	atibu
-naatibu	8	VERB	atibu
-tunaatibu	8	VERB	atibu
-unaatibu	8	VERB	atibu
-mnaatibu	8	VERB	atibu
-anaatibu	8	VERB	atibu
-wanaatibu	8	VERB	atibu
-siatibu	8	VERB	atibu
-hatuatibu	8	VERB	atibu
-hamwatibu	8	VERB	atibu
-haatibu	8	VERB	atibu
-hawaatibu	8	VERB	atibu
-niatibu	8	VERB	atibu
-tuatibu	8	VERB	atibu
-uatibu	8	VERB	atibu
-mwatibu	8	VERB	atibu
-aatibu	8	VERB	atibu
-waatibu	8	VERB	atibu
-twaatibu	8	VERB	atibu
-mwaatibu	8	VERB	atibu
-yaatibu	8	VERB	atibu
-laatibu	8	VERB	atibu
-chaatibu	8	VERB	atibu
-vyaatibu	8	VERB	atibu
-zaatibu	8	VERB	atibu
-kwaatibu	8	VERB	atibu
-paatibu	8	VERB	atibu
-kuaua	8	VERB	aua
-kutoaua	8	VERB	aua
-aueni	8	VERB	aua
-huaua	8	VERB	aua
-ninaaua	8	VERB	aua
-naaua	8	VERB	aua
-tunaaua	8	VERB	aua
-unaaua	8	VERB	aua
-mnaaua	8	VERB	aua
-anaaua	8	VERB	aua
-wanaaua	8	VERB	aua
-siaui	8	VERB	aua
-hatuaui	8	VERB	aua
-huaui	8	VERB	aua
-hamwaui	8	VERB	aua
-haaui	8	VERB	aua
-hawaaui	8	VERB	aua
-niaue	8	VERB	aua
-tuaue	8	VERB	aua
-uaue	8	VERB	aua
-mwaue	8	VERB	aua
-aaue	8	VERB	aua
-waaue	8	VERB	aua
-twaaua	8	VERB	aua
-waaua	8	VERB	aua
-mwaaua	8	VERB	aua
-aaua	8	VERB	aua
-yaaua	8	VERB	aua
-laaua	8	VERB	aua
-chaaua	8	VERB	aua
-vyaaua	8	VERB	aua
-zaaua	8	VERB	aua
-kwaaua	8	VERB	aua
-paaua	8	VERB	aua
+kuatibu	8	VERB	tibu
+kutoatibu	8	VERB	tibu
+atibuni	8	VERB	tibu
+huatibu	8	VERB	tibu
+ninaatibu	8	VERB	tibu
+naatibu	8	VERB	tibu
+tunaatibu	8	VERB	tibu
+unaatibu	8	VERB	tibu
+mnaatibu	8	VERB	tibu
+anaatibu	8	VERB	tibu
+wanaatibu	8	VERB	tibu
+siatibu	8	VERB	tibu
+hatuatibu	8	VERB	tibu
+hamwatibu	8	VERB	tibu
+haatibu	8	VERB	tibu
+hawaatibu	8	VERB	tibu
+niatibu	8	VERB	tibu
+tuatibu	8	VERB	tibu
+uatibu	8	VERB	tibu
+mwatibu	8	VERB	tibu
+aatibu	8	VERB	tibu
+waatibu	8	VERB	tibu
+twaatibu	8	VERB	tibu
+mwaatibu	8	VERB	tibu
+yaatibu	8	VERB	tibu
+laatibu	8	VERB	tibu
+chaatibu	8	VERB	tibu
+vyaatibu	8	VERB	tibu
+zaatibu	8	VERB	tibu
+kwaatibu	8	VERB	tibu
+paatibu	8	VERB	tibu
+kuaua	8	VERB	ua
+kutoaua	8	VERB	ua
+aueni	8	VERB	ua
+huaua	8	VERB	ua
+ninaaua	8	VERB	ua
+naaua	8	VERB	ua
+tunaaua	8	VERB	ua
+unaaua	8	VERB	ua
+mnaaua	8	VERB	ua
+anaaua	8	VERB	ua
+wanaaua	8	VERB	ua
+siaui	8	VERB	ua
+hatuaui	8	VERB	ua
+huaui	8	VERB	ua
+hamwaui	8	VERB	ua
+haaui	8	VERB	ua
+hawaaui	8	VERB	ua
+niaue	8	VERB	ua
+tuaue	8	VERB	ua
+uaue	8	VERB	ua
+mwaue	8	VERB	ua
+aaue	8	VERB	ua
+waaue	8	VERB	ua
+twaaua	8	VERB	ua
+waaua	8	VERB	ua
+mwaaua	8	VERB	ua
+aaua	8	VERB	ua
+yaaua	8	VERB	ua
+laaua	8	VERB	ua
+chaaua	8	VERB	ua
+vyaaua	8	VERB	ua
+zaaua	8	VERB	ua
+kwaaua	8	VERB	ua
+paaua	8	VERB	ua
 kuavya	4	VERB	avya
 kutoavya	4	VERB	avya
 avyeni	4	VERB	avya
@@ -30299,40 +30299,40 @@ vyaavya	4	VERB	avya
 zaavya	4	VERB	avya
 kwaavya	4	VERB	avya
 paavya	4	VERB	avya
-kuazima	8	VERB	azima
-kutoazima	8	VERB	azima
-azimeni	8	VERB	azima
-huazima	8	VERB	azima
-ninaazima	8	VERB	azima
-naazima	8	VERB	azima
-tunaazima	8	VERB	azima
-unaazima	8	VERB	azima
-mnaazima	8	VERB	azima
-anaazima	8	VERB	azima
-wanaazima	8	VERB	azima
-siazimi	8	VERB	azima
-hatuazimi	8	VERB	azima
-huazimi	8	VERB	azima
-hamwazimi	8	VERB	azima
-haazimi	8	VERB	azima
-hawaazimi	8	VERB	azima
-niazime	8	VERB	azima
-tuazime	8	VERB	azima
-uazime	8	VERB	azima
-mwazime	8	VERB	azima
-aazime	8	VERB	azima
-waazime	8	VERB	azima
-twaazima	8	VERB	azima
-waazima	8	VERB	azima
-mwaazima	8	VERB	azima
-aazima	8	VERB	azima
-yaazima	8	VERB	azima
-laazima	8	VERB	azima
-chaazima	8	VERB	azima
-vyaazima	8	VERB	azima
-zaazima	8	VERB	azima
-kwaazima	8	VERB	azima
-paazima	8	VERB	azima
+kuazima	8	VERB	zima
+kutoazima	8	VERB	zima
+azimeni	8	VERB	zima
+huazima	8	VERB	zima
+ninaazima	8	VERB	zima
+naazima	8	VERB	zima
+tunaazima	8	VERB	zima
+unaazima	8	VERB	zima
+mnaazima	8	VERB	zima
+anaazima	8	VERB	zima
+wanaazima	8	VERB	zima
+siazimi	8	VERB	zima
+hatuazimi	8	VERB	zima
+huazimi	8	VERB	zima
+hamwazimi	8	VERB	zima
+haazimi	8	VERB	zima
+hawaazimi	8	VERB	zima
+niazime	8	VERB	zima
+tuazime	8	VERB	zima
+uazime	8	VERB	zima
+mwazime	8	VERB	zima
+aazime	8	VERB	zima
+waazime	8	VERB	zima
+twaazima	8	VERB	zima
+waazima	8	VERB	zima
+mwaazima	8	VERB	zima
+aazima	8	VERB	zima
+yaazima	8	VERB	zima
+laazima	8	VERB	zima
+chaazima	8	VERB	zima
+vyaazima	8	VERB	zima
+zaazima	8	VERB	zima
+kwaazima	8	VERB	zima
+paazima	8	VERB	zima
 kubaathi	4	VERB	baathi
 kutobaathi	4	VERB	baathi
 baathini	4	VERB	baathi
@@ -31211,70 +31211,70 @@ lacha	371044	VERB	cha
 vyacha	371044	VERB	cha
 zacha	371044	VERB	cha
 kwacha	371044	VERB	cha
-kuchacha	174	VERB	chacha
-kutochacha	174	VERB	chacha
-chacheni	174	VERB	chacha
-huchacha	174	VERB	chacha
-ninachacha	174	VERB	chacha
-nachacha	174	VERB	chacha
-tunachacha	174	VERB	chacha
-unachacha	174	VERB	chacha
-mnachacha	174	VERB	chacha
-anachacha	174	VERB	chacha
-wanachacha	174	VERB	chacha
-sichachi	174	VERB	chacha
-hatuchachi	174	VERB	chacha
-huchachi	174	VERB	chacha
-hamchachi	174	VERB	chacha
-hachachi	174	VERB	chacha
-hawachachi	174	VERB	chacha
-nichache	174	VERB	chacha
-tuchache	174	VERB	chacha
-achache	174	VERB	chacha
-twachacha	174	VERB	chacha
-wachacha	174	VERB	chacha
-mwachacha	174	VERB	chacha
-achacha	174	VERB	chacha
-yachacha	174	VERB	chacha
-lachacha	174	VERB	chacha
-chachacha	174	VERB	chacha
-vyachacha	174	VERB	chacha
-zachacha	174	VERB	chacha
-kwachacha	174	VERB	chacha
-pachacha	174	VERB	chacha
-kutochafua	4	VERB	chafua
-chafueni	4	VERB	chafua
-huchafua	4	VERB	chafua
-ninachafua	4	VERB	chafua
-nachafua	4	VERB	chafua
-tunachafua	4	VERB	chafua
-unachafua	4	VERB	chafua
-mnachafua	4	VERB	chafua
-anachafua	4	VERB	chafua
-wanachafua	4	VERB	chafua
-sichafui	4	VERB	chafua
-hatuchafui	4	VERB	chafua
-huchafui	4	VERB	chafua
-hamchafui	4	VERB	chafua
-hachafui	4	VERB	chafua
-hawachafui	4	VERB	chafua
-nichafue	4	VERB	chafua
-tuchafue	4	VERB	chafua
-uchafue	4	VERB	chafua
-mchafue	4	VERB	chafua
-achafue	4	VERB	chafua
-wachafue	4	VERB	chafua
-twachafua	4	VERB	chafua
-wachafua	4	VERB	chafua
-mwachafua	4	VERB	chafua
-achafua	4	VERB	chafua
-yachafua	4	VERB	chafua
-lachafua	4	VERB	chafua
-chachafua	4	VERB	chafua
-vyachafua	4	VERB	chafua
-zachafua	4	VERB	chafua
-kwachafua	4	VERB	chafua
-pachafua	4	VERB	chafua
+kuchacha	174	VERB	cha
+kutochacha	174	VERB	cha
+chacheni	174	VERB	cha
+huchacha	174	VERB	cha
+ninachacha	174	VERB	cha
+nachacha	174	VERB	cha
+tunachacha	174	VERB	cha
+unachacha	174	VERB	cha
+mnachacha	174	VERB	cha
+anachacha	174	VERB	cha
+wanachacha	174	VERB	cha
+sichachi	174	VERB	cha
+hatuchachi	174	VERB	cha
+huchachi	174	VERB	cha
+hamchachi	174	VERB	cha
+hachachi	174	VERB	cha
+hawachachi	174	VERB	cha
+nichache	174	VERB	cha
+tuchache	174	VERB	cha
+achache	174	VERB	cha
+twachacha	174	VERB	cha
+wachacha	174	VERB	cha
+mwachacha	174	VERB	cha
+achacha	174	VERB	cha
+yachacha	174	VERB	cha
+lachacha	174	VERB	cha
+chachacha	174	VERB	cha
+vyachacha	174	VERB	cha
+zachacha	174	VERB	cha
+kwachacha	174	VERB	cha
+pachacha	174	VERB	cha
+kutochafua	4	VERB	fua
+chafueni	4	VERB	fua
+huchafua	4	VERB	fua
+ninachafua	4	VERB	fua
+nachafua	4	VERB	fua
+tunachafua	4	VERB	fua
+unachafua	4	VERB	fua
+mnachafua	4	VERB	fua
+anachafua	4	VERB	fua
+wanachafua	4	VERB	fua
+sichafui	4	VERB	fua
+hatuchafui	4	VERB	fua
+huchafui	4	VERB	fua
+hamchafui	4	VERB	fua
+hachafui	4	VERB	fua
+hawachafui	4	VERB	fua
+nichafue	4	VERB	fua
+tuchafue	4	VERB	fua
+uchafue	4	VERB	fua
+mchafue	4	VERB	fua
+achafue	4	VERB	fua
+wachafue	4	VERB	fua
+twachafua	4	VERB	fua
+wachafua	4	VERB	fua
+mwachafua	4	VERB	fua
+achafua	4	VERB	fua
+yachafua	4	VERB	fua
+lachafua	4	VERB	fua
+chachafua	4	VERB	fua
+vyachafua	4	VERB	fua
+zachafua	4	VERB	fua
+kwachafua	4	VERB	fua
+pachafua	4	VERB	fua
 kuchafya	104	VERB	chafya
 kutochafya	104	VERB	chafya
 chafyeni	104	VERB	chafya
@@ -35792,37 +35792,37 @@ vyahadithi	14755	VERB	hadithi
 zahadithi	14755	VERB	hadithi
 kwahadithi	14755	VERB	hadithi
 pahadithi	14755	VERB	hadithi
-kuhajiri	4	VERB	hajiri
-kutohajiri	4	VERB	hajiri
-hajirini	4	VERB	hajiri
-huhajiri	4	VERB	hajiri
-ninahajiri	4	VERB	hajiri
-nahajiri	4	VERB	hajiri
-tunahajiri	4	VERB	hajiri
-unahajiri	4	VERB	hajiri
-mnahajiri	4	VERB	hajiri
-anahajiri	4	VERB	hajiri
-wanahajiri	4	VERB	hajiri
-sihajiri	4	VERB	hajiri
-hatuhajiri	4	VERB	hajiri
-hamhajiri	4	VERB	hajiri
-hahajiri	4	VERB	hajiri
-hawahajiri	4	VERB	hajiri
-nihajiri	4	VERB	hajiri
-tuhajiri	4	VERB	hajiri
-uhajiri	4	VERB	hajiri
-mhajiri	4	VERB	hajiri
-ahajiri	4	VERB	hajiri
-wahajiri	4	VERB	hajiri
-twahajiri	4	VERB	hajiri
-mwahajiri	4	VERB	hajiri
-yahajiri	4	VERB	hajiri
-lahajiri	4	VERB	hajiri
-chahajiri	4	VERB	hajiri
-vyahajiri	4	VERB	hajiri
-zahajiri	4	VERB	hajiri
-kwahajiri	4	VERB	hajiri
-pahajiri	4	VERB	hajiri
+kuhajiri	4	VERB	jiri
+kutohajiri	4	VERB	jiri
+hajirini	4	VERB	jiri
+huhajiri	4	VERB	jiri
+ninahajiri	4	VERB	jiri
+nahajiri	4	VERB	jiri
+tunahajiri	4	VERB	jiri
+unahajiri	4	VERB	jiri
+mnahajiri	4	VERB	jiri
+anahajiri	4	VERB	jiri
+wanahajiri	4	VERB	jiri
+sihajiri	4	VERB	jiri
+hatuhajiri	4	VERB	jiri
+hamhajiri	4	VERB	jiri
+hahajiri	4	VERB	jiri
+hawahajiri	4	VERB	jiri
+nihajiri	4	VERB	jiri
+tuhajiri	4	VERB	jiri
+uhajiri	4	VERB	jiri
+mhajiri	4	VERB	jiri
+ahajiri	4	VERB	jiri
+wahajiri	4	VERB	jiri
+twahajiri	4	VERB	jiri
+mwahajiri	4	VERB	jiri
+yahajiri	4	VERB	jiri
+lahajiri	4	VERB	jiri
+chahajiri	4	VERB	jiri
+vyahajiri	4	VERB	jiri
+zahajiri	4	VERB	jiri
+kwahajiri	4	VERB	jiri
+pahajiri	4	VERB	jiri
 kuhakiki	191	VERB	hakiki
 kutohakiki	191	VERB	hakiki
 hakikini	191	VERB	hakiki
@@ -35941,37 +35941,37 @@ vyahama	87	VERB	hama
 zahama	87	VERB	hama
 kwahama	87	VERB	hama
 pahama	87	VERB	hama
-kuhamaki	46	VERB	hamaki
-kutohamaki	46	VERB	hamaki
-hamakini	46	VERB	hamaki
-huhamaki	46	VERB	hamaki
-ninahamaki	46	VERB	hamaki
-nahamaki	46	VERB	hamaki
-tunahamaki	46	VERB	hamaki
-unahamaki	46	VERB	hamaki
-mnahamaki	46	VERB	hamaki
-anahamaki	46	VERB	hamaki
-wanahamaki	46	VERB	hamaki
-sihamaki	46	VERB	hamaki
-hatuhamaki	46	VERB	hamaki
-hamhamaki	46	VERB	hamaki
-hahamaki	46	VERB	hamaki
-hawahamaki	46	VERB	hamaki
-nihamaki	46	VERB	hamaki
-tuhamaki	46	VERB	hamaki
-uhamaki	46	VERB	hamaki
-mhamaki	46	VERB	hamaki
-ahamaki	46	VERB	hamaki
-wahamaki	46	VERB	hamaki
-twahamaki	46	VERB	hamaki
-mwahamaki	46	VERB	hamaki
-yahamaki	46	VERB	hamaki
-lahamaki	46	VERB	hamaki
-chahamaki	46	VERB	hamaki
-vyahamaki	46	VERB	hamaki
-zahamaki	46	VERB	hamaki
-kwahamaki	46	VERB	hamaki
-pahamaki	46	VERB	hamaki
+kuhamaki	46	VERB	maka
+kutohamaki	46	VERB	maka
+hamakini	46	VERB	maka
+huhamaki	46	VERB	maka
+ninahamaki	46	VERB	maka
+nahamaki	46	VERB	maka
+tunahamaki	46	VERB	maka
+unahamaki	46	VERB	maka
+mnahamaki	46	VERB	maka
+anahamaki	46	VERB	maka
+wanahamaki	46	VERB	maka
+sihamaki	46	VERB	maka
+hatuhamaki	46	VERB	maka
+hamhamaki	46	VERB	maka
+hahamaki	46	VERB	maka
+hawahamaki	46	VERB	maka
+nihamaki	46	VERB	maka
+tuhamaki	46	VERB	maka
+uhamaki	46	VERB	maka
+mhamaki	46	VERB	maka
+ahamaki	46	VERB	maka
+wahamaki	46	VERB	maka
+twahamaki	46	VERB	maka
+mwahamaki	46	VERB	maka
+yahamaki	46	VERB	maka
+lahamaki	46	VERB	maka
+chahamaki	46	VERB	maka
+vyahamaki	46	VERB	maka
+zahamaki	46	VERB	maka
+kwahamaki	46	VERB	maka
+pahamaki	46	VERB	maka
 kuhami	8	VERB	hami
 kutohami	8	VERB	hami
 hamini	8	VERB	hami
@@ -36683,33 +36683,33 @@ vyahudhuria	12	VERB	hudhuria
 zahudhuria	12	VERB	hudhuria
 kwahudhuria	12	VERB	hudhuria
 pahudhuria	12	VERB	hudhuria
-kutohudumu	436	VERB	hudumu
-hudumuni	436	VERB	hudumu
-huhudumu	436	VERB	hudumu
-ninahudumu	436	VERB	hudumu
-nahudumu	436	VERB	hudumu
-tunahudumu	436	VERB	hudumu
-unahudumu	436	VERB	hudumu
-mnahudumu	436	VERB	hudumu
-wanahudumu	436	VERB	hudumu
-sihudumu	436	VERB	hudumu
-hatuhudumu	436	VERB	hudumu
-hamhudumu	436	VERB	hudumu
-hahudumu	436	VERB	hudumu
-hawahudumu	436	VERB	hudumu
-nihudumu	436	VERB	hudumu
-tuhudumu	436	VERB	hudumu
-uhudumu	436	VERB	hudumu
-ahudumu	436	VERB	hudumu
-twahudumu	436	VERB	hudumu
-mwahudumu	436	VERB	hudumu
-yahudumu	436	VERB	hudumu
-lahudumu	436	VERB	hudumu
-chahudumu	436	VERB	hudumu
-vyahudumu	436	VERB	hudumu
-zahudumu	436	VERB	hudumu
-kwahudumu	436	VERB	hudumu
-pahudumu	436	VERB	hudumu
+kutohudumu	436	VERB	dumu
+hudumuni	436	VERB	dumu
+huhudumu	436	VERB	dumu
+ninahudumu	436	VERB	dumu
+nahudumu	436	VERB	dumu
+tunahudumu	436	VERB	dumu
+unahudumu	436	VERB	dumu
+mnahudumu	436	VERB	dumu
+wanahudumu	436	VERB	dumu
+sihudumu	436	VERB	dumu
+hatuhudumu	436	VERB	dumu
+hamhudumu	436	VERB	dumu
+hahudumu	436	VERB	dumu
+hawahudumu	436	VERB	dumu
+nihudumu	436	VERB	dumu
+tuhudumu	436	VERB	dumu
+uhudumu	436	VERB	dumu
+ahudumu	436	VERB	dumu
+twahudumu	436	VERB	dumu
+mwahudumu	436	VERB	dumu
+yahudumu	436	VERB	dumu
+lahudumu	436	VERB	dumu
+chahudumu	436	VERB	dumu
+vyahudumu	436	VERB	dumu
+zahudumu	436	VERB	dumu
+kwahudumu	436	VERB	dumu
+pahudumu	436	VERB	dumu
 kuhui	91	VERB	hui
 kutohui	91	VERB	hui
 huini	91	VERB	hui
@@ -38132,39 +38132,39 @@ vyakana	589	VERB	kana
 zakana	589	VERB	kana
 kwakana	589	VERB	kana
 pakana	589	VERB	kana
-kukanda	9553	VERB	kanda
-kutokanda	9553	VERB	kanda
-kandeni	9553	VERB	kanda
-hukanda	9553	VERB	kanda
-ninakanda	9553	VERB	kanda
-nakanda	9553	VERB	kanda
-tunakanda	9553	VERB	kanda
-unakanda	9553	VERB	kanda
-mnakanda	9553	VERB	kanda
-anakanda	9553	VERB	kanda
-wanakanda	9553	VERB	kanda
-sikandi	9553	VERB	kanda
-hatukandi	9553	VERB	kanda
-hukandi	9553	VERB	kanda
-hamkandi	9553	VERB	kanda
-hakandi	9553	VERB	kanda
-hawakandi	9553	VERB	kanda
-nikande	9553	VERB	kanda
-tukande	9553	VERB	kanda
-ukande	9553	VERB	kanda
-mkande	9553	VERB	kanda
-wakande	9553	VERB	kanda
-twakanda	9553	VERB	kanda
-wakanda	9553	VERB	kanda
-mwakanda	9553	VERB	kanda
-akanda	9553	VERB	kanda
-yakanda	9553	VERB	kanda
-lakanda	9553	VERB	kanda
-chakanda	9553	VERB	kanda
-vyakanda	9553	VERB	kanda
-zakanda	9553	VERB	kanda
-kwakanda	9553	VERB	kanda
-pakanda	9553	VERB	kanda
+kukanda	9553	VERB	ukanda
+kutokanda	9553	VERB	ukanda
+kandeni	9553	VERB	ukanda
+hukanda	9553	VERB	ukanda
+ninakanda	9553	VERB	ukanda
+nakanda	9553	VERB	ukanda
+tunakanda	9553	VERB	ukanda
+unakanda	9553	VERB	ukanda
+mnakanda	9553	VERB	ukanda
+anakanda	9553	VERB	ukanda
+wanakanda	9553	VERB	ukanda
+sikandi	9553	VERB	ukanda
+hatukandi	9553	VERB	ukanda
+hukandi	9553	VERB	ukanda
+hamkandi	9553	VERB	ukanda
+hakandi	9553	VERB	ukanda
+hawakandi	9553	VERB	ukanda
+nikande	9553	VERB	ukanda
+tukande	9553	VERB	ukanda
+ukande	9553	VERB	ukanda
+mkande	9553	VERB	ukanda
+wakande	9553	VERB	ukanda
+twakanda	9553	VERB	ukanda
+wakanda	9553	VERB	ukanda
+mwakanda	9553	VERB	ukanda
+akanda	9553	VERB	ukanda
+yakanda	9553	VERB	ukanda
+lakanda	9553	VERB	ukanda
+chakanda	9553	VERB	ukanda
+vyakanda	9553	VERB	ukanda
+zakanda	9553	VERB	ukanda
+kwakanda	9553	VERB	ukanda
+pakanda	9553	VERB	ukanda
 kutokanusha	4	VERB	kanusha
 kanusheni	4	VERB	kanusha
 hukanusha	4	VERB	kanusha
@@ -39978,38 +39978,38 @@ vyakusudi	1962	VERB	kusudi
 zakusudi	1962	VERB	kusudi
 kwakusudi	1962	VERB	kusudi
 pakusudi	1962	VERB	kusudi
-kutokuta	1522	VERB	kuta
-kuteni	1522	VERB	kuta
-hukuta	1522	VERB	kuta
-ninakuta	1522	VERB	kuta
-nakuta	1522	VERB	kuta
-unakuta	1522	VERB	kuta
-mnakuta	1522	VERB	kuta
-anakuta	1522	VERB	kuta
-wanakuta	1522	VERB	kuta
-sikuti	1522	VERB	kuta
-hatukuti	1522	VERB	kuta
-hukuti	1522	VERB	kuta
-hamkuti	1522	VERB	kuta
-hakuti	1522	VERB	kuta
-hawakuti	1522	VERB	kuta
-nikute	1522	VERB	kuta
-tukute	1522	VERB	kuta
-ukute	1522	VERB	kuta
-mkute	1522	VERB	kuta
-akute	1522	VERB	kuta
-wakute	1522	VERB	kuta
-twakuta	1522	VERB	kuta
-wakuta	1522	VERB	kuta
-mwakuta	1522	VERB	kuta
-akuta	1522	VERB	kuta
-yakuta	1522	VERB	kuta
-lakuta	1522	VERB	kuta
-chakuta	1522	VERB	kuta
-vyakuta	1522	VERB	kuta
-zakuta	1522	VERB	kuta
-kwakuta	1522	VERB	kuta
-pakuta	1522	VERB	kuta
+kutokuta	1522	VERB	ukuta
+kuteni	1522	VERB	ukuta
+hukuta	1522	VERB	ukuta
+ninakuta	1522	VERB	ukuta
+nakuta	1522	VERB	ukuta
+unakuta	1522	VERB	ukuta
+mnakuta	1522	VERB	ukuta
+anakuta	1522	VERB	ukuta
+wanakuta	1522	VERB	ukuta
+sikuti	1522	VERB	ukuta
+hatukuti	1522	VERB	ukuta
+hukuti	1522	VERB	ukuta
+hamkuti	1522	VERB	ukuta
+hakuti	1522	VERB	ukuta
+hawakuti	1522	VERB	ukuta
+nikute	1522	VERB	ukuta
+tukute	1522	VERB	ukuta
+ukute	1522	VERB	ukuta
+mkute	1522	VERB	ukuta
+akute	1522	VERB	ukuta
+wakute	1522	VERB	ukuta
+twakuta	1522	VERB	ukuta
+wakuta	1522	VERB	ukuta
+mwakuta	1522	VERB	ukuta
+akuta	1522	VERB	ukuta
+yakuta	1522	VERB	ukuta
+lakuta	1522	VERB	ukuta
+chakuta	1522	VERB	ukuta
+vyakuta	1522	VERB	ukuta
+zakuta	1522	VERB	ukuta
+kwakuta	1522	VERB	ukuta
+pakuta	1522	VERB	ukuta
 kukwaa	25	VERB	kwaa
 kutokwaa	25	VERB	kwaa
 kwaeni	25	VERB	kwaa
@@ -40218,37 +40218,37 @@ vyalaki	261	VERB	laki
 zalaki	261	VERB	laki
 kwalaki	261	VERB	laki
 palaki	261	VERB	laki
-kutolala	129	VERB	lala
-laleni	129	VERB	lala
-ninalala	129	VERB	lala
-nalala	129	VERB	lala
-tunalala	129	VERB	lala
-unalala	129	VERB	lala
-mnalala	129	VERB	lala
-analala	129	VERB	lala
-wanalala	129	VERB	lala
-silali	129	VERB	lala
-hatulali	129	VERB	lala
-hulali	129	VERB	lala
-hamlali	129	VERB	lala
-hawalali	129	VERB	lala
-nilale	129	VERB	lala
-tulale	129	VERB	lala
-ulale	129	VERB	lala
-mlale	129	VERB	lala
-alale	129	VERB	lala
-walale	129	VERB	lala
-twalala	129	VERB	lala
-walala	129	VERB	lala
-mwalala	129	VERB	lala
-alala	129	VERB	lala
-yalala	129	VERB	lala
-lalala	129	VERB	lala
-chalala	129	VERB	lala
-vyalala	129	VERB	lala
-zalala	129	VERB	lala
-kwalala	129	VERB	lala
-palala	129	VERB	lala
+kutolala	129	VERB	la
+laleni	129	VERB	la
+ninalala	129	VERB	la
+nalala	129	VERB	la
+tunalala	129	VERB	la
+unalala	129	VERB	la
+mnalala	129	VERB	la
+analala	129	VERB	la
+wanalala	129	VERB	la
+silali	129	VERB	la
+hatulali	129	VERB	la
+hulali	129	VERB	la
+hamlali	129	VERB	la
+hawalali	129	VERB	la
+nilale	129	VERB	la
+tulale	129	VERB	la
+ulale	129	VERB	la
+mlale	129	VERB	la
+alale	129	VERB	la
+walale	129	VERB	la
+twalala	129	VERB	la
+walala	129	VERB	la
+mwalala	129	VERB	la
+alala	129	VERB	la
+yalala	129	VERB	la
+lalala	129	VERB	la
+chalala	129	VERB	la
+vyalala	129	VERB	la
+zalala	129	VERB	la
+kwalala	129	VERB	la
+palala	129	VERB	la
 kulalama	8	VERB	lalama
 kutolalama	8	VERB	lalama
 lalameni	8	VERB	lalama
@@ -41476,31 +41476,31 @@ vyanakili	25	VERB	nakili
 zanakili	25	VERB	nakili
 kwanakili	25	VERB	nakili
 panakili	25	VERB	nakili
-kunakisi	91	VERB	nakisi
-kutonakisi	91	VERB	nakisi
-nakisini	91	VERB	nakisi
-hunakisi	91	VERB	nakisi
-ninanakisi	91	VERB	nakisi
-nanakisi	91	VERB	nakisi
-tunanakisi	91	VERB	nakisi
-unanakisi	91	VERB	nakisi
-mnanakisi	91	VERB	nakisi
-ananakisi	91	VERB	nakisi
-wananakisi	91	VERB	nakisi
-sinakisi	91	VERB	nakisi
-hatunakisi	91	VERB	nakisi
-hamnakisi	91	VERB	nakisi
-hanakisi	91	VERB	nakisi
-hawanakisi	91	VERB	nakisi
-twanakisi	91	VERB	nakisi
-mwanakisi	91	VERB	nakisi
-yanakisi	91	VERB	nakisi
-lanakisi	91	VERB	nakisi
-chanakisi	91	VERB	nakisi
-vyanakisi	91	VERB	nakisi
-zanakisi	91	VERB	nakisi
-kwanakisi	91	VERB	nakisi
-panakisi	91	VERB	nakisi
+kunakisi	91	VERB	kisi
+kutonakisi	91	VERB	kisi
+nakisini	91	VERB	kisi
+hunakisi	91	VERB	kisi
+ninanakisi	91	VERB	kisi
+nanakisi	91	VERB	kisi
+tunanakisi	91	VERB	kisi
+unanakisi	91	VERB	kisi
+mnanakisi	91	VERB	kisi
+ananakisi	91	VERB	kisi
+wananakisi	91	VERB	kisi
+sinakisi	91	VERB	kisi
+hatunakisi	91	VERB	kisi
+hamnakisi	91	VERB	kisi
+hanakisi	91	VERB	kisi
+hawanakisi	91	VERB	kisi
+twanakisi	91	VERB	kisi
+mwanakisi	91	VERB	kisi
+yanakisi	91	VERB	kisi
+lanakisi	91	VERB	kisi
+chanakisi	91	VERB	kisi
+vyanakisi	91	VERB	kisi
+zanakisi	91	VERB	kisi
+kwanakisi	91	VERB	kisi
+panakisi	91	VERB	kisi
 kutonakshi	133	VERB	nakshi
 nakshini	133	VERB	nakshi
 hunakshi	133	VERB	nakshi
@@ -42834,72 +42834,72 @@ vyapaka	1153	VERB	paka
 zapaka	1153	VERB	paka
 kwapaka	1153	VERB	paka
 papaka	1153	VERB	paka
-kutopakana	2443	VERB	pakana
-pakaneni	2443	VERB	pakana
-hupakana	2443	VERB	pakana
-ninapakana	2443	VERB	pakana
-napakana	2443	VERB	pakana
-tunapakana	2443	VERB	pakana
-mnapakana	2443	VERB	pakana
-anapakana	2443	VERB	pakana
-wanapakana	2443	VERB	pakana
-sipakani	2443	VERB	pakana
-hatupakani	2443	VERB	pakana
-hupakani	2443	VERB	pakana
-hampakani	2443	VERB	pakana
-hapakani	2443	VERB	pakana
-hawapakani	2443	VERB	pakana
-nipakane	2443	VERB	pakana
-tupakane	2443	VERB	pakana
-upakane	2443	VERB	pakana
-mpakane	2443	VERB	pakana
-apakane	2443	VERB	pakana
-wapakane	2443	VERB	pakana
-twapakana	2443	VERB	pakana
-wapakana	2443	VERB	pakana
-mwapakana	2443	VERB	pakana
-apakana	2443	VERB	pakana
-yapakana	2443	VERB	pakana
-lapakana	2443	VERB	pakana
-chapakana	2443	VERB	pakana
-vyapakana	2443	VERB	pakana
-zapakana	2443	VERB	pakana
-kwapakana	2443	VERB	pakana
-papakana	2443	VERB	pakana
-kupakata	321593	VERB	pakata
-kutopakata	321593	VERB	pakata
-pakateni	321593	VERB	pakata
-hupakata	321593	VERB	pakata
-ninapakata	321593	VERB	pakata
-napakata	321593	VERB	pakata
-tunapakata	321593	VERB	pakata
-unapakata	321593	VERB	pakata
-mnapakata	321593	VERB	pakata
-anapakata	321593	VERB	pakata
-wanapakata	321593	VERB	pakata
-sipakati	321593	VERB	pakata
-hatupakati	321593	VERB	pakata
-hupakati	321593	VERB	pakata
-hampakati	321593	VERB	pakata
-hapakati	321593	VERB	pakata
-hawapakati	321593	VERB	pakata
-nipakate	321593	VERB	pakata
-tupakate	321593	VERB	pakata
-upakate	321593	VERB	pakata
-mpakate	321593	VERB	pakata
-apakate	321593	VERB	pakata
-wapakate	321593	VERB	pakata
-twapakata	321593	VERB	pakata
-wapakata	321593	VERB	pakata
-mwapakata	321593	VERB	pakata
-apakata	321593	VERB	pakata
-yapakata	321593	VERB	pakata
-lapakata	321593	VERB	pakata
-chapakata	321593	VERB	pakata
-vyapakata	321593	VERB	pakata
-zapakata	321593	VERB	pakata
-kwapakata	321593	VERB	pakata
-papakata	321593	VERB	pakata
+kutopakana	2443	VERB	kana
+pakaneni	2443	VERB	kana
+hupakana	2443	VERB	kana
+ninapakana	2443	VERB	kana
+napakana	2443	VERB	kana
+tunapakana	2443	VERB	kana
+mnapakana	2443	VERB	kana
+anapakana	2443	VERB	kana
+wanapakana	2443	VERB	kana
+sipakani	2443	VERB	kana
+hatupakani	2443	VERB	kana
+hupakani	2443	VERB	kana
+hampakani	2443	VERB	kana
+hapakani	2443	VERB	kana
+hawapakani	2443	VERB	kana
+nipakane	2443	VERB	kana
+tupakane	2443	VERB	kana
+upakane	2443	VERB	kana
+mpakane	2443	VERB	kana
+apakane	2443	VERB	kana
+wapakane	2443	VERB	kana
+twapakana	2443	VERB	kana
+wapakana	2443	VERB	kana
+mwapakana	2443	VERB	kana
+apakana	2443	VERB	kana
+yapakana	2443	VERB	kana
+lapakana	2443	VERB	kana
+chapakana	2443	VERB	kana
+vyapakana	2443	VERB	kana
+zapakana	2443	VERB	kana
+kwapakana	2443	VERB	kana
+papakana	2443	VERB	kana
+kupakata	321593	VERB	kata
+kutopakata	321593	VERB	kata
+pakateni	321593	VERB	kata
+hupakata	321593	VERB	kata
+ninapakata	321593	VERB	kata
+napakata	321593	VERB	kata
+tunapakata	321593	VERB	kata
+unapakata	321593	VERB	kata
+mnapakata	321593	VERB	kata
+anapakata	321593	VERB	kata
+wanapakata	321593	VERB	kata
+sipakati	321593	VERB	kata
+hatupakati	321593	VERB	kata
+hupakati	321593	VERB	kata
+hampakati	321593	VERB	kata
+hapakati	321593	VERB	kata
+hawapakati	321593	VERB	kata
+nipakate	321593	VERB	kata
+tupakate	321593	VERB	kata
+upakate	321593	VERB	kata
+mpakate	321593	VERB	kata
+apakate	321593	VERB	kata
+wapakate	321593	VERB	kata
+twapakata	321593	VERB	kata
+wapakata	321593	VERB	kata
+mwapakata	321593	VERB	kata
+apakata	321593	VERB	kata
+yapakata	321593	VERB	kata
+lapakata	321593	VERB	kata
+chapakata	321593	VERB	kata
+vyapakata	321593	VERB	kata
+zapakata	321593	VERB	kata
+kwapakata	321593	VERB	kata
+papakata	321593	VERB	kata
 kutopakia	12	VERB	pakia
 pakieni	12	VERB	pakia
 hupakia	12	VERB	pakia
@@ -42933,40 +42933,40 @@ vyapakia	12	VERB	pakia
 zapakia	12	VERB	pakia
 kwapakia	12	VERB	pakia
 papakia	12	VERB	pakia
-kupalia	1585	VERB	palia
-kutopalia	1585	VERB	palia
-palieni	1585	VERB	palia
-hupalia	1585	VERB	palia
-ninapalia	1585	VERB	palia
-napalia	1585	VERB	palia
-tunapalia	1585	VERB	palia
-unapalia	1585	VERB	palia
-mnapalia	1585	VERB	palia
-anapalia	1585	VERB	palia
-wanapalia	1585	VERB	palia
-sipalii	1585	VERB	palia
-hatupalii	1585	VERB	palia
-hupalii	1585	VERB	palia
-hampalii	1585	VERB	palia
-hapalii	1585	VERB	palia
-hawapalii	1585	VERB	palia
-nipalie	1585	VERB	palia
-tupalie	1585	VERB	palia
-upalie	1585	VERB	palia
-mpalie	1585	VERB	palia
-apalie	1585	VERB	palia
-wapalie	1585	VERB	palia
-twapalia	1585	VERB	palia
-wapalia	1585	VERB	palia
-mwapalia	1585	VERB	palia
-apalia	1585	VERB	palia
-yapalia	1585	VERB	palia
-lapalia	1585	VERB	palia
-chapalia	1585	VERB	palia
-vyapalia	1585	VERB	palia
-zapalia	1585	VERB	palia
-kwapalia	1585	VERB	palia
-papalia	1585	VERB	palia
+kupalia	1585	VERB	lia
+kutopalia	1585	VERB	lia
+palieni	1585	VERB	lia
+hupalia	1585	VERB	lia
+ninapalia	1585	VERB	lia
+napalia	1585	VERB	lia
+tunapalia	1585	VERB	lia
+unapalia	1585	VERB	lia
+mnapalia	1585	VERB	lia
+anapalia	1585	VERB	lia
+wanapalia	1585	VERB	lia
+sipalii	1585	VERB	lia
+hatupalii	1585	VERB	lia
+hupalii	1585	VERB	lia
+hampalii	1585	VERB	lia
+hapalii	1585	VERB	lia
+hawapalii	1585	VERB	lia
+nipalie	1585	VERB	lia
+tupalie	1585	VERB	lia
+upalie	1585	VERB	lia
+mpalie	1585	VERB	lia
+apalie	1585	VERB	lia
+wapalie	1585	VERB	lia
+twapalia	1585	VERB	lia
+wapalia	1585	VERB	lia
+mwapalia	1585	VERB	lia
+apalia	1585	VERB	lia
+yapalia	1585	VERB	lia
+lapalia	1585	VERB	lia
+chapalia	1585	VERB	lia
+vyapalia	1585	VERB	lia
+zapalia	1585	VERB	lia
+kwapalia	1585	VERB	lia
+papalia	1585	VERB	lia
 kutopamba	1091	VERB	pamba
 pambeni	1091	VERB	pamba
 hupamba	1091	VERB	pamba
@@ -43097,36 +43097,36 @@ vyapanda	485	VERB	panda
 zapanda	485	VERB	panda
 kwapanda	485	VERB	panda
 papanda	485	VERB	panda
-kutopanga	224	VERB	panga
-pangeni	224	VERB	panga
-ninapanga	224	VERB	panga
-napanga	224	VERB	panga
-tunapanga	224	VERB	panga
-unapanga	224	VERB	panga
-mnapanga	224	VERB	panga
-sipangi	224	VERB	panga
-hatupangi	224	VERB	panga
-hupangi	224	VERB	panga
-hampangi	224	VERB	panga
-hapangi	224	VERB	panga
-hawapangi	224	VERB	panga
-nipange	224	VERB	panga
-tupange	224	VERB	panga
-upange	224	VERB	panga
-mpange	224	VERB	panga
-apange	224	VERB	panga
-wapange	224	VERB	panga
-twapanga	224	VERB	panga
-wapanga	224	VERB	panga
-mwapanga	224	VERB	panga
-apanga	224	VERB	panga
-yapanga	224	VERB	panga
-lapanga	224	VERB	panga
-chapanga	224	VERB	panga
-vyapanga	224	VERB	panga
-zapanga	224	VERB	panga
-kwapanga	224	VERB	panga
-papanga	224	VERB	panga
+kutopanga	224	VERB	upanga
+pangeni	224	VERB	upanga
+ninapanga	224	VERB	upanga
+napanga	224	VERB	upanga
+tunapanga	224	VERB	upanga
+unapanga	224	VERB	upanga
+mnapanga	224	VERB	upanga
+sipangi	224	VERB	upanga
+hatupangi	224	VERB	upanga
+hupangi	224	VERB	upanga
+hampangi	224	VERB	upanga
+hapangi	224	VERB	upanga
+hawapangi	224	VERB	upanga
+nipange	224	VERB	upanga
+tupange	224	VERB	upanga
+upange	224	VERB	upanga
+mpange	224	VERB	upanga
+apange	224	VERB	upanga
+wapange	224	VERB	upanga
+twapanga	224	VERB	upanga
+wapanga	224	VERB	upanga
+mwapanga	224	VERB	upanga
+apanga	224	VERB	upanga
+yapanga	224	VERB	upanga
+lapanga	224	VERB	upanga
+chapanga	224	VERB	upanga
+vyapanga	224	VERB	upanga
+zapanga	224	VERB	upanga
+kwapanga	224	VERB	upanga
+papanga	224	VERB	upanga
 kupangusa	8	VERB	pangusa
 kutopangusa	8	VERB	pangusa
 panguseni	8	VERB	pangusa
@@ -43286,39 +43286,39 @@ chapasi	904	VERB	pasi
 vyapasi	904	VERB	pasi
 zapasi	904	VERB	pasi
 kwapasi	904	VERB	pasi
-kutopasua	33	VERB	pasua
-pasueni	33	VERB	pasua
-hupasua	33	VERB	pasua
-ninapasua	33	VERB	pasua
-napasua	33	VERB	pasua
-tunapasua	33	VERB	pasua
-unapasua	33	VERB	pasua
-mnapasua	33	VERB	pasua
-anapasua	33	VERB	pasua
-wanapasua	33	VERB	pasua
-sipasui	33	VERB	pasua
-hatupasui	33	VERB	pasua
-hupasui	33	VERB	pasua
-hampasui	33	VERB	pasua
-hapasui	33	VERB	pasua
-hawapasui	33	VERB	pasua
-nipasue	33	VERB	pasua
-tupasue	33	VERB	pasua
-upasue	33	VERB	pasua
-mpasue	33	VERB	pasua
-apasue	33	VERB	pasua
-wapasue	33	VERB	pasua
-twapasua	33	VERB	pasua
-wapasua	33	VERB	pasua
-mwapasua	33	VERB	pasua
-apasua	33	VERB	pasua
-yapasua	33	VERB	pasua
-lapasua	33	VERB	pasua
-chapasua	33	VERB	pasua
-vyapasua	33	VERB	pasua
-zapasua	33	VERB	pasua
-kwapasua	33	VERB	pasua
-papasua	33	VERB	pasua
+kutopasua	33	VERB	sua
+pasueni	33	VERB	sua
+hupasua	33	VERB	sua
+ninapasua	33	VERB	sua
+napasua	33	VERB	sua
+tunapasua	33	VERB	sua
+unapasua	33	VERB	sua
+mnapasua	33	VERB	sua
+anapasua	33	VERB	sua
+wanapasua	33	VERB	sua
+sipasui	33	VERB	sua
+hatupasui	33	VERB	sua
+hupasui	33	VERB	sua
+hampasui	33	VERB	sua
+hapasui	33	VERB	sua
+hawapasui	33	VERB	sua
+nipasue	33	VERB	sua
+tupasue	33	VERB	sua
+upasue	33	VERB	sua
+mpasue	33	VERB	sua
+apasue	33	VERB	sua
+wapasue	33	VERB	sua
+twapasua	33	VERB	sua
+wapasua	33	VERB	sua
+mwapasua	33	VERB	sua
+apasua	33	VERB	sua
+yapasua	33	VERB	sua
+lapasua	33	VERB	sua
+chapasua	33	VERB	sua
+vyapasua	33	VERB	sua
+zapasua	33	VERB	sua
+kwapasua	33	VERB	sua
+papasua	33	VERB	sua
 pateni	274	VERB	pata
 ninapata	274	VERB	pata
 napata	274	VERB	pata
@@ -49105,40 +49105,40 @@ vyatasa	4360	VERB	tasa
 zatasa	4360	VERB	tasa
 kwatasa	4360	VERB	tasa
 patasa	4360	VERB	tasa
-kutata	1079	VERB	tata
-kutotata	1079	VERB	tata
-tateni	1079	VERB	tata
-hutata	1079	VERB	tata
-ninatata	1079	VERB	tata
-natata	1079	VERB	tata
-tunatata	1079	VERB	tata
-unatata	1079	VERB	tata
-mnatata	1079	VERB	tata
-anatata	1079	VERB	tata
-wanatata	1079	VERB	tata
-sitati	1079	VERB	tata
-hatutati	1079	VERB	tata
-hutati	1079	VERB	tata
-hamtati	1079	VERB	tata
-hatati	1079	VERB	tata
-hawatati	1079	VERB	tata
-nitate	1079	VERB	tata
-tutate	1079	VERB	tata
-utate	1079	VERB	tata
-mtate	1079	VERB	tata
-atate	1079	VERB	tata
-watate	1079	VERB	tata
-twatata	1079	VERB	tata
-watata	1079	VERB	tata
-mwatata	1079	VERB	tata
-atata	1079	VERB	tata
-yatata	1079	VERB	tata
-latata	1079	VERB	tata
-chatata	1079	VERB	tata
-vyatata	1079	VERB	tata
-zatata	1079	VERB	tata
-kwatata	1079	VERB	tata
-patata	1079	VERB	tata
+kutata	1079	VERB	utata
+kutotata	1079	VERB	utata
+tateni	1079	VERB	utata
+hutata	1079	VERB	utata
+ninatata	1079	VERB	utata
+natata	1079	VERB	utata
+tunatata	1079	VERB	utata
+unatata	1079	VERB	utata
+mnatata	1079	VERB	utata
+anatata	1079	VERB	utata
+wanatata	1079	VERB	utata
+sitati	1079	VERB	utata
+hatutati	1079	VERB	utata
+hutati	1079	VERB	utata
+hamtati	1079	VERB	utata
+hatati	1079	VERB	utata
+hawatati	1079	VERB	utata
+nitate	1079	VERB	utata
+tutate	1079	VERB	utata
+utate	1079	VERB	utata
+mtate	1079	VERB	utata
+atate	1079	VERB	utata
+watate	1079	VERB	utata
+twatata	1079	VERB	utata
+watata	1079	VERB	utata
+mwatata	1079	VERB	utata
+atata	1079	VERB	utata
+yatata	1079	VERB	utata
+latata	1079	VERB	utata
+chatata	1079	VERB	utata
+vyatata	1079	VERB	utata
+zatata	1079	VERB	utata
+kwatata	1079	VERB	utata
+patata	1079	VERB	utata
 kutotatanisha	4	VERB	tatanisha
 tatanisheni	4	VERB	tatanisha
 hutatanisha	4	VERB	tatanisha
@@ -49201,70 +49201,70 @@ vyatathmini	1738	VERB	tathmini
 zatathmini	1738	VERB	tathmini
 kwatathmini	1738	VERB	tathmini
 patathmini	1738	VERB	tathmini
-kutotawala	1688	VERB	tawala
-tawaleni	1688	VERB	tawala
-ninatawala	1688	VERB	tawala
-natawala	1688	VERB	tawala
-tunatawala	1688	VERB	tawala
-unatawala	1688	VERB	tawala
-mnatawala	1688	VERB	tawala
-wanatawala	1688	VERB	tawala
-sitawali	1688	VERB	tawala
-hatutawali	1688	VERB	tawala
-hutawali	1688	VERB	tawala
-hamtawali	1688	VERB	tawala
-hatawali	1688	VERB	tawala
-hawatawali	1688	VERB	tawala
-nitawale	1688	VERB	tawala
-tutawale	1688	VERB	tawala
-utawale	1688	VERB	tawala
-mtawale	1688	VERB	tawala
-atawale	1688	VERB	tawala
-watawale	1688	VERB	tawala
-twatawala	1688	VERB	tawala
-mwatawala	1688	VERB	tawala
-atawala	1688	VERB	tawala
-yatawala	1688	VERB	tawala
-latawala	1688	VERB	tawala
-chatawala	1688	VERB	tawala
-vyatawala	1688	VERB	tawala
-zatawala	1688	VERB	tawala
-kwatawala	1688	VERB	tawala
-patawala	1688	VERB	tawala
-kutaya	436	VERB	taya
-kutotaya	436	VERB	taya
-tayeni	436	VERB	taya
-hutaya	436	VERB	taya
-ninataya	436	VERB	taya
-nataya	436	VERB	taya
-tunataya	436	VERB	taya
-unataya	436	VERB	taya
-mnataya	436	VERB	taya
-anataya	436	VERB	taya
-wanataya	436	VERB	taya
-sitayi	436	VERB	taya
-hatutayi	436	VERB	taya
-hutayi	436	VERB	taya
-hamtayi	436	VERB	taya
-hatayi	436	VERB	taya
-hawatayi	436	VERB	taya
-nitaye	436	VERB	taya
-tutaye	436	VERB	taya
-utaye	436	VERB	taya
-mtaye	436	VERB	taya
-ataye	436	VERB	taya
-wataye	436	VERB	taya
-twataya	436	VERB	taya
-wataya	436	VERB	taya
-mwataya	436	VERB	taya
-ataya	436	VERB	taya
-yataya	436	VERB	taya
-lataya	436	VERB	taya
-chataya	436	VERB	taya
-vyataya	436	VERB	taya
-zataya	436	VERB	taya
-kwataya	436	VERB	taya
-pataya	436	VERB	taya
+kutotawala	1688	VERB	utawala
+tawaleni	1688	VERB	utawala
+ninatawala	1688	VERB	utawala
+natawala	1688	VERB	utawala
+tunatawala	1688	VERB	utawala
+unatawala	1688	VERB	utawala
+mnatawala	1688	VERB	utawala
+wanatawala	1688	VERB	utawala
+sitawali	1688	VERB	utawala
+hatutawali	1688	VERB	utawala
+hutawali	1688	VERB	utawala
+hamtawali	1688	VERB	utawala
+hatawali	1688	VERB	utawala
+hawatawali	1688	VERB	utawala
+nitawale	1688	VERB	utawala
+tutawale	1688	VERB	utawala
+utawale	1688	VERB	utawala
+mtawale	1688	VERB	utawala
+atawale	1688	VERB	utawala
+watawale	1688	VERB	utawala
+twatawala	1688	VERB	utawala
+mwatawala	1688	VERB	utawala
+atawala	1688	VERB	utawala
+yatawala	1688	VERB	utawala
+latawala	1688	VERB	utawala
+chatawala	1688	VERB	utawala
+vyatawala	1688	VERB	utawala
+zatawala	1688	VERB	utawala
+kwatawala	1688	VERB	utawala
+patawala	1688	VERB	utawala
+kutaya	436	VERB	utaya
+kutotaya	436	VERB	utaya
+tayeni	436	VERB	utaya
+hutaya	436	VERB	utaya
+ninataya	436	VERB	utaya
+nataya	436	VERB	utaya
+tunataya	436	VERB	utaya
+unataya	436	VERB	utaya
+mnataya	436	VERB	utaya
+anataya	436	VERB	utaya
+wanataya	436	VERB	utaya
+sitayi	436	VERB	utaya
+hatutayi	436	VERB	utaya
+hutayi	436	VERB	utaya
+hamtayi	436	VERB	utaya
+hatayi	436	VERB	utaya
+hawatayi	436	VERB	utaya
+nitaye	436	VERB	utaya
+tutaye	436	VERB	utaya
+utaye	436	VERB	utaya
+mtaye	436	VERB	utaya
+ataye	436	VERB	utaya
+wataye	436	VERB	utaya
+twataya	436	VERB	utaya
+wataya	436	VERB	utaya
+mwataya	436	VERB	utaya
+ataya	436	VERB	utaya
+yataya	436	VERB	utaya
+lataya	436	VERB	utaya
+chataya	436	VERB	utaya
+vyataya	436	VERB	utaya
+zataya	436	VERB	utaya
+kwataya	436	VERB	utaya
+pataya	436	VERB	utaya
 kutotazama	106733	VERB	tazama
 tazameni	106733	VERB	tazama
 hutazama	106733	VERB	tazama
@@ -51789,38 +51789,38 @@ vyawanga	477	VERB	wanga
 zawanga	477	VERB	wanga
 kwawanga	477	VERB	wanga
 pawanga	477	VERB	wanga
-kutowania	15523	VERB	wania
-wanieni	15523	VERB	wania
-huwania	15523	VERB	wania
-ninawania	15523	VERB	wania
-nawania	15523	VERB	wania
-tunawania	15523	VERB	wania
-unawania	15523	VERB	wania
-mnawania	15523	VERB	wania
-anawania	15523	VERB	wania
-wanawania	15523	VERB	wania
-siwanii	15523	VERB	wania
-hatuwanii	15523	VERB	wania
-huwanii	15523	VERB	wania
-hamuwanii	15523	VERB	wania
-hawawanii	15523	VERB	wania
-niwanie	15523	VERB	wania
-tuwanie	15523	VERB	wania
-uwanie	15523	VERB	wania
-muwanie	15523	VERB	wania
-awanie	15523	VERB	wania
-wawanie	15523	VERB	wania
-twawania	15523	VERB	wania
-wawania	15523	VERB	wania
-mwawania	15523	VERB	wania
-awania	15523	VERB	wania
-yawania	15523	VERB	wania
-lawania	15523	VERB	wania
-chawania	15523	VERB	wania
-vyawania	15523	VERB	wania
-zawania	15523	VERB	wania
-kwawania	15523	VERB	wania
-pawania	15523	VERB	wania
+kutowania	15523	VERB	nia
+wanieni	15523	VERB	nia
+huwania	15523	VERB	nia
+ninawania	15523	VERB	nia
+nawania	15523	VERB	nia
+tunawania	15523	VERB	nia
+unawania	15523	VERB	nia
+mnawania	15523	VERB	nia
+anawania	15523	VERB	nia
+wanawania	15523	VERB	nia
+siwanii	15523	VERB	nia
+hatuwanii	15523	VERB	nia
+huwanii	15523	VERB	nia
+hamuwanii	15523	VERB	nia
+hawawanii	15523	VERB	nia
+niwanie	15523	VERB	nia
+tuwanie	15523	VERB	nia
+uwanie	15523	VERB	nia
+muwanie	15523	VERB	nia
+awanie	15523	VERB	nia
+wawanie	15523	VERB	nia
+twawania	15523	VERB	nia
+wawania	15523	VERB	nia
+mwawania	15523	VERB	nia
+awania	15523	VERB	nia
+yawania	15523	VERB	nia
+lawania	15523	VERB	nia
+chawania	15523	VERB	nia
+vyawania	15523	VERB	nia
+zawania	15523	VERB	nia
+kwawania	15523	VERB	nia
+pawania	15523	VERB	nia
 kutokuwapo	1307	VERB	wapo
 huwapo	1307	VERB	wapo
 nipo	1307	VERB	wapo
@@ -52132,35 +52132,35 @@ vyazaa	29	VERB	zaa
 zazaa	29	VERB	zaa
 kwazaa	29	VERB	zaa
 pazaa	29	VERB	zaa
-kuzabuni	166	VERB	zabuni
-kutozabuni	166	VERB	zabuni
-zabunini	166	VERB	zabuni
-huzabuni	166	VERB	zabuni
-ninazabuni	166	VERB	zabuni
-nazabuni	166	VERB	zabuni
-tunazabuni	166	VERB	zabuni
-unazabuni	166	VERB	zabuni
-mnazabuni	166	VERB	zabuni
-anazabuni	166	VERB	zabuni
-wanazabuni	166	VERB	zabuni
-sizabuni	166	VERB	zabuni
-hatuzabuni	166	VERB	zabuni
-hamzabuni	166	VERB	zabuni
-hazabuni	166	VERB	zabuni
-hawazabuni	166	VERB	zabuni
-nizabuni	166	VERB	zabuni
-tuzabuni	166	VERB	zabuni
-uzabuni	166	VERB	zabuni
-azabuni	166	VERB	zabuni
-twazabuni	166	VERB	zabuni
-mwazabuni	166	VERB	zabuni
-yazabuni	166	VERB	zabuni
-lazabuni	166	VERB	zabuni
-chazabuni	166	VERB	zabuni
-vyazabuni	166	VERB	zabuni
-zazabuni	166	VERB	zabuni
-kwazabuni	166	VERB	zabuni
-pazabuni	166	VERB	zabuni
+kuzabuni	166	VERB	buni
+kutozabuni	166	VERB	buni
+zabunini	166	VERB	buni
+huzabuni	166	VERB	buni
+ninazabuni	166	VERB	buni
+nazabuni	166	VERB	buni
+tunazabuni	166	VERB	buni
+unazabuni	166	VERB	buni
+mnazabuni	166	VERB	buni
+anazabuni	166	VERB	buni
+wanazabuni	166	VERB	buni
+sizabuni	166	VERB	buni
+hatuzabuni	166	VERB	buni
+hamzabuni	166	VERB	buni
+hazabuni	166	VERB	buni
+hawazabuni	166	VERB	buni
+nizabuni	166	VERB	buni
+tuzabuni	166	VERB	buni
+uzabuni	166	VERB	buni
+azabuni	166	VERB	buni
+twazabuni	166	VERB	buni
+mwazabuni	166	VERB	buni
+yazabuni	166	VERB	buni
+lazabuni	166	VERB	buni
+chazabuni	166	VERB	buni
+vyazabuni	166	VERB	buni
+zazabuni	166	VERB	buni
+kwazabuni	166	VERB	buni
+pazabuni	166	VERB	buni
 kutozama	2286	VERB	zama
 zameni	2286	VERB	zama
 huzama	2286	VERB	zama
@@ -52194,40 +52194,40 @@ vyazama	2286	VERB	zama
 zazama	2286	VERB	zama
 kwazama	2286	VERB	zama
 pazama	2286	VERB	zama
-kuzawadia	50	VERB	zawadia
-kutozawadia	50	VERB	zawadia
-zawadieni	50	VERB	zawadia
-huzawadia	50	VERB	zawadia
-ninazawadia	50	VERB	zawadia
-nazawadia	50	VERB	zawadia
-tunazawadia	50	VERB	zawadia
-unazawadia	50	VERB	zawadia
-mnazawadia	50	VERB	zawadia
-anazawadia	50	VERB	zawadia
-wanazawadia	50	VERB	zawadia
-sizawadii	50	VERB	zawadia
-hatuzawadii	50	VERB	zawadia
-huzawadii	50	VERB	zawadia
-hamzawadii	50	VERB	zawadia
-hazawadii	50	VERB	zawadia
-hawazawadii	50	VERB	zawadia
-nizawadie	50	VERB	zawadia
-tuzawadie	50	VERB	zawadia
-uzawadie	50	VERB	zawadia
-mzawadie	50	VERB	zawadia
-azawadie	50	VERB	zawadia
-wazawadie	50	VERB	zawadia
-twazawadia	50	VERB	zawadia
-wazawadia	50	VERB	zawadia
-mwazawadia	50	VERB	zawadia
-azawadia	50	VERB	zawadia
-yazawadia	50	VERB	zawadia
-lazawadia	50	VERB	zawadia
-chazawadia	50	VERB	zawadia
-vyazawadia	50	VERB	zawadia
-zazawadia	50	VERB	zawadia
-kwazawadia	50	VERB	zawadia
-pazawadia	50	VERB	zawadia
+kuzawadia	50	VERB	wadia
+kutozawadia	50	VERB	wadia
+zawadieni	50	VERB	wadia
+huzawadia	50	VERB	wadia
+ninazawadia	50	VERB	wadia
+nazawadia	50	VERB	wadia
+tunazawadia	50	VERB	wadia
+unazawadia	50	VERB	wadia
+mnazawadia	50	VERB	wadia
+anazawadia	50	VERB	wadia
+wanazawadia	50	VERB	wadia
+sizawadii	50	VERB	wadia
+hatuzawadii	50	VERB	wadia
+huzawadii	50	VERB	wadia
+hamzawadii	50	VERB	wadia
+hazawadii	50	VERB	wadia
+hawazawadii	50	VERB	wadia
+nizawadie	50	VERB	wadia
+tuzawadie	50	VERB	wadia
+uzawadie	50	VERB	wadia
+mzawadie	50	VERB	wadia
+azawadie	50	VERB	wadia
+wazawadie	50	VERB	wadia
+twazawadia	50	VERB	wadia
+wazawadia	50	VERB	wadia
+mwazawadia	50	VERB	wadia
+azawadia	50	VERB	wadia
+yazawadia	50	VERB	wadia
+lazawadia	50	VERB	wadia
+chazawadia	50	VERB	wadia
+vyazawadia	50	VERB	wadia
+zazawadia	50	VERB	wadia
+kwazawadia	50	VERB	wadia
+pazawadia	50	VERB	wadia
 kuzia	79	VERB	zia
 kutozia	79	VERB	zia
 zieni	79	VERB	zia
