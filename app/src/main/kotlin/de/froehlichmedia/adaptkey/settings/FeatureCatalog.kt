@@ -14,7 +14,7 @@ object FeatureCatalog {
     
     /**
      * One entry in the overview: a short feature name and its one- or two-sentence explanation.
-     *
+     * 
      * @property titleResId string resource id of the feature's name
      * @property descriptionResId string resource id of the feature's explanation
      */
@@ -58,6 +58,16 @@ object FeatureCatalog {
         Entry(R.string.d89_f30_title, R.string.d89_f30_desc),
         Entry(R.string.d89_f31_title, R.string.d89_f31_desc),
         Entry(R.string.d89_f32_title, R.string.d89_f32_desc),
-        Entry(R.string.d89_f33_title, R.string.d89_f33_desc)
+        Entry(R.string.d89_f33_title, R.string.d89_f33_desc),
+        // D-472-followup: catalog refreshed again - these cover everything user-facing added since the
+        // D-316 refresh (v1.0.0) through D-472 (v1.2.46), none of which had ever been added here. f33's own
+        // description was also corrected in place - it named "double-tap" but actually described G-06
+        // (long-press Shift for Caps Lock); the real double-tap behaviour (G-05, flips a word's own case)
+        // had no entry of its own at all and is added below instead of being conflated with it further.
+        Entry(R.string.d89_f34_title, R.string.d89_f34_desc),
+        Entry(R.string.d89_f35_title, R.string.d89_f35_desc),
+        Entry(R.string.d89_f36_title, R.string.d89_f36_desc),
+        Entry(R.string.d89_f37_title, R.string.d89_f37_desc),
+        Entry(R.string.d89_f38_title, R.string.d89_f38_desc)
     )
 }

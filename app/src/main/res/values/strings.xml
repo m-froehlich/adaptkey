@@ -91,8 +91,18 @@
     <string name="d89_f31_desc">Alongside pasting the whole clipboard, two extra chips can offer just its first line or the first URL/code-like token found in it, whenever those actually differ from the full text.</string>
     <string name="d89_f32_title">Built-in calculator layer</string>
     <string name="d89_f32_desc">A dedicated calculator keyboard — digits, operators, and sin/cos/tan/log — is one swipe away from the symbol page, currency and decimal separators matching your device\'s own locale.</string>
-    <string name="d89_f33_title">Double-tap Shift for Caps Lock</string>
-    <string name="d89_f33_desc">Tapping Shift twice quickly locks it on, instead of having to hold it or tap it before every single letter.</string>
+    <string name="d89_f33_title">Long-press Shift for Caps Lock</string>
+    <string name="d89_f33_desc">Hold Shift a moment longer than a tap to lock it on, instead of holding it through a whole sentence or tapping it before every letter.</string>
+    <string name="d89_f34_title">Double-tap Shift to flip a word\'s capitalisation</string>
+    <string name="d89_f34_desc">Double-tap Shift right after finishing a word to flip its first letter\'s case either way — upper to lower or back again — without retyping anything.</string>
+    <string name="d89_f35_title">Search the emoji panel by typing</string>
+    <string name="d89_f35_desc">A dedicated search tab in the emoji panel finds matching emoji as you type a word for it, in English or German — no more hunting through category grids.</string>
+    <string name="d89_f36_title">Precise cursor and selection control</string>
+    <string name="d89_f36_desc">Long-press the space bar to drag the cursor exactly where you want it; hold a moment longer to start selecting text — all without leaving the keyboard.</string>
+    <string name="d89_f37_title">Adjustable autocorrect strength</string>
+    <string name="d89_f37_desc">Tune how eagerly autocorrect steps in, from cautious to aggressive, or switch it off entirely while every suggestion still stays available in the bar.</string>
+    <string name="d89_f38_title">Learned words can expire automatically</string>
+    <string name="d89_f38_desc">Optionally, a word AdaptKey taught itself quietly drops out again once it has gone unused long enough — off by default, so nothing is ever forgotten unless you choose to enable it.</string>
 
     <!-- Settings screen (C-01 … C-09). -->
     <string name="cat_key_behavior">Key Behaviour</string>

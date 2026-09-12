@@ -91,8 +91,18 @@
     <string name="d89_f31_desc">Neben dem Einfügen der gesamten Zwischenablage können zwei weitere Chips nur deren erste Zeile oder den ersten gefundenen URL-/Code-artigen Abschnitt anbieten, wann immer sich diese tatsächlich vom vollständigen Text unterscheiden.</string>
     <string name="d89_f32_title">Eingebauter Taschenrechner</string>
     <string name="d89_f32_desc">Ein eigenes Taschenrechner-Layout - Ziffern, Operatoren sowie sin/cos/tan/log - ist einen Wisch von der Symbolseite entfernt, Währungs- und Dezimaltrennzeichen richten sich nach der Ländereinstellung des Geräts.</string>
-    <string name="d89_f33_title">Doppeltipp auf Umschalt für Feststelltaste</string>
-    <string name="d89_f33_desc">Zweimal schnell auf Umschalt tippen aktiviert die Feststelltaste, statt sie halten oder vor jedem einzelnen Buchstaben antippen zu müssen.</string>
+    <string name="d89_f33_title">Umschalt gedrückt halten für Feststelltaste</string>
+    <string name="d89_f33_desc">Umschalt etwas länger als ein Antippen gedrückt halten aktiviert die Feststelltaste, statt sie durch einen ganzen Satz gedrückt zu halten oder vor jedem Buchstaben anzutippen.</string>
+    <string name="d89_f34_title">Doppeltipp auf Umschalt kippt die Groß-/Kleinschreibung eines Worts</string>
+    <string name="d89_f34_desc">Direkt nach einem fertig getippten Wort zweimal auf Umschalt tippen kippt dessen ersten Buchstaben in die jeweils andere Richtung - groß zu klein oder umgekehrt -, ohne das Wort neu zu tippen.</string>
+    <string name="d89_f35_title">Emoji-Panel durchsuchen</string>
+    <string name="d89_f35_desc">Ein eigener Such-Tab im Emoji-Panel findet passende Emoji, sobald du ein Wort dafür eintippst - auf Deutsch oder Englisch -, ohne die Kategorien durchsuchen zu müssen.</string>
+    <string name="d89_f36_title">Präzise Cursor- und Auswahl-Steuerung</string>
+    <string name="d89_f36_desc">Die Leertaste lang drücken, um den Cursor gezielt an die gewünschte Stelle zu ziehen; noch etwas länger halten startet die Textauswahl - alles ohne die Tastatur zu verlassen.</string>
+    <string name="d89_f37_title">Einstellbare Autokorrektur-Stärke</string>
+    <string name="d89_f37_desc">Stellt ein, wie eifrig die Autokorrektur eingreift, von zurückhaltend bis aggressiv, oder schaltet sie ganz ab, während jeder Vorschlag trotzdem in der Leiste bleibt.</string>
+    <string name="d89_f38_title">Gelernte Wörter können automatisch verfallen</string>
+    <string name="d89_f38_desc">Optional verschwindet ein von AdaptKey selbst gelerntes Wort still wieder aus dem Wörterbuch, sobald es lange genug ungenutzt blieb - standardmäßig aus, damit nichts vergessen wird, außer du aktivierst es bewusst.</string>
 
     <!-- Settings screen (C-01 … C-09). -->
     <string name="cat_key_behavior">Tasten-Verhalten</string>

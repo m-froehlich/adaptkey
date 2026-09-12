@@ -1253,6 +1253,39 @@ non-trivial changes).
   volume) is completely unaffected by this and ran exactly as planned. 446,015 lemma-column rows changed
   across the 31 packs; every pack passes `lemma_check.py` and `quality_gate.py`.
 
+- **§487 (v1.2.47): D-89-followup - the in-app feature-overview catalog (`FeatureCatalog`, D-89, Settings**
+  **→ Info & Privacy) refreshed for the first time since D-316/v1.0.0.** User's own direct request: "das
+  ist ganz sicher völlig veraltet. Bitte vervollständige das." Confirmed by reading the code before touching
+  it - the catalog's own `ENTRIES` list had not grown since the D-316 refresh (v1.0.0), so everything shipped
+  in the roughly 150 D-numbers since (D-317 through D-472) was genuinely missing, not merely suspected stale.
+
+  **One correctness fix, not only additions.** f33's title/description ("Double-tap Shift for Caps Lock")
+  described G-06 (long-press Shift) under G-05's own name (double-tap) - checked directly against the current
+  spec text, not assumed: double-tap Shift has never locked Caps on, it flips the current word's own first
+  letter in either direction (G-05). Fixed in place to correctly describe G-06 (long-press = Caps Lock); the
+  real double-tap behaviour it had been standing in for gets its own new entry instead (f34) rather than
+  being folded back into the same slot.
+
+  **Five new entries (f34-f38), selected deliberately - not every D-number since v1.0.0, only genuinely new,**
+  **user-recognisable capabilities at the same granularity the existing 33 already use** (a marketing-style
+  "what can this app do" list, not a changelog): f34 double-tap-Shift word-case flip (G-05, see the fix
+  above), f35 emoji search (D-317), f36 the space-bar cursor/selection-control gesture (D-401, G-08, now
+  default-on), f37 the C-22 autocorrect-aggressiveness slider (D-353), f38 W-05's automatic learned-word
+  expiry (D-389). Deliberately left out as too internal/subtle for this list (consistent with what the
+  existing 33 already choose not to cover): haptic-intensity tuning (D-396), the S-11 dual-casing chips,
+  acronym-protection (D-403-followup), sticky Backspace (D-361), auto-split mode (C-21) - each already
+  reachable as an ordinary side effect of autocorrect/suggestions working correctly, not a distinct thing a
+  user would say they chose this keyboard for.
+
+  All three locales (`values`/`values-de`/`values-el`) kept in lockstep - 38 titles + 38 descriptions each,
+  verified by count, not just by eye; German stays informal `du`-form, Greek stays informal, matching every
+  existing entry's own established tone. `FeatureCatalog.ENTRIES` grew from 33 to 38 plus the one in-place
+  fix; `FeatureCatalogTest`'s own two assertions (non-empty, no duplicate resource ids) pass unchanged - no
+  new test needed, since nothing about the catalog's own *shape* changed, only its content.
+
+  1651 unit tests unchanged. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 542 -> 543,
+  `versionName` `"1.2.46"` -> `"1.2.47"`. Not yet device-confirmed.
+
 - **§486 (v1.2.46): D-472 - the emoji panel's own "return to keyboard" tab moved into the extra row,**
   **replacing the emoji button's own slot with it while the panel is showing.** User's own explicit
   request, confirmed clear before implementing (no design questions needed - a mechanical relocation, not
@@ -2275,89 +2308,13 @@ non-trivial changes).
   1596 unit tests unchanged. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 518 -> 519,
   `versionName` `"1.2.22"` -> `"1.2.23"`.
 
-- **§462 (v1.2.22): D-401-followup - four real, device-reported problems with the cursor/selection-control**
-  **gesture fixed the same session it first went out, across two feedback rounds.** All from direct usage
-  ("das funktioniert schon außerordentlich gut" overall) - none guessed at, each with a concrete root cause;
-  two of the four (the checkmark chip and the line-clamp) only reached their real fix on a second report,
-  once the first attempt turned out incomplete.
+## Older Rounds (§1-§462, v0.7.6 through v1.2.22) - Pruned From This File
 
-  1. **"Tippen beendet" (a tap ends the mode) did not actually work in Stage 2 - "ich kann den Modus nur**
-     **durch warten beenden."** Root cause, confirmed by re-reading the code rather than assumed: the original
-     tap check ("zero movement since this touch-down began") was essentially unreachable in practice -
-     reaching Stage 2 at all, and extending a selection there, both already require dragging, so by the time
-     a real touch lifts its own applied-step counters are almost never still zero. Fixed by dropping the
-     zero-movement requirement entirely: **any** release while Stage 2 is active now ends the mode and
-     collapses the selection - `AdaptKeyboardView`'s own `onCursorControlTap()` callback renamed to
-     `onCursorControlSelectionReleased()` to match what it now actually means. Stage 1 releases are
-     unaffected - still the ordinary re-touch grace window. Confirmed working on the user's own re-test.
-  2. **No reclaim, no suggestion-chip computation while the gesture is active - explicit user request**
-     **("das verwirrt und macht die Sache nicht schneller und kann auch dazu führen, dass ungewollt Wörter**
-     **verstümmelt werden").** First pass only gated `scheduleReclaimAndChipRefresh()` (the D-62 reactive-
-     reclaim dispatcher, already known from D-347/D-350 to mis-fire on many fast intermediate caret positions
-     in quick succession - a cursor-handle drag being the exact precedent case) behind a new
-     `cursorControlSessionActive` check. Confirmed working on the user's own re-test ("das hat geklappt") -
-     but a second, independent problem surfaced alongside it (item 4 below), fixed with the same field.
-  3. **Dragging the cursor to the start/end of a line and continuing must not flip to the previous/next**
-     **line - explicit user request: "Ich bewege den Cursor hiermit bereits zweidimensional. Es gibt keinen**
-     **Grund für eine Weiterbewegung im Textfluss."** A plain absolute-document-offset `setSelection()` call
-     naturally crosses a real newline once the target goes far enough, which is exactly the flip the user does
-     not want given vertical movement is already its own separate, deliberate DPAD step (spec G-08).
-     **First attempt (reverted): a `clampToCurrentLine()` reading a bounded window via `getExtractedText()`**
-     - still crossed the boundary on the user's own re-test ("das Flippen des Cursors im Textflow ist
-     immernoch da"), described precisely down to the direction ("flippt der Cursor nach rechts in die Zeile
-     darüber"). `getExtractedText()`'s real-world reliability across arbitrary third-party apps was the
-     suspected weak point (a silent `null`/failed read there fell back to no clamping at all, indistinguishable
-     from the reported symptom) - this app already has a proven, simpler mechanism
-     (`getTextBeforeCursor()`/`getTextAfterCursor()`, `flipSignBeforeCaret()`'s own precedent) that was not
-     used the first time specifically because of Stage 2's own selection-relative reading ambiguity (these two
-     calls read relative to the *live selection's* start/end, not necessarily the gesture's own moving end,
-     once Stage 2 drags that end backward past its own anchor). **Rewritten**: `leftBoundary()`/
-     `rightBoundary()` now check only the one boundary actually at risk for the current `characterDelta`'s own
-     sign (never both at once), using the direct, proven calls whenever the moving end is on the expected side
-     (always true in Stage 1, where anchor and position coincide) and falling back to searching
-     `getSelectedText()` - the span between anchor and position - for the rarer case where Stage 2 has
-     already dragged past the anchor. Not yet re-confirmed by the user at time of writing.
-  4. **The new "done" checkmark chip (added in response to the user's own mid-session suggestion, see below)**
-     **was only ever visible right when the gesture armed, then disappeared during use - "ich kann ihn also**
-     **nicht drücken, um zu beenden."** Root cause, traced (not guessed) once reported: `resortRunnable`
-     (S-04's deferred re-sort) and `reclaimEnabledRunnable` (D-414-followup's own debounced chip-visibility
-     refresh) both call `showSuggestions()` **directly**, bypassing `refreshSuggestions()` entirely - neither
-     was covered by item 2's own gate, so a resort/reclaim-chip-refresh left pending from typing right before
-     the long-press would silently overwrite the gesture's own bar content once its own delay elapsed
-     mid-gesture. Fixed at the one real rendering choke point both of them (and everything inside
-     `refreshSuggestions()`) actually share: `showSuggestions()` itself now also gates on
-     `cursorControlSessionActive` - `showCursorControlHint()` never reaches it at all (pushes directly via
-     `setSuggestionBarItems()`), so this cannot suppress the gesture's own content, only every other, now-stale
-     caller. `onCursorControlArmed()` additionally now cancels `resortRunnable`/`reclaimEnabledRunnable`/
-     `reclaimWordAtCaretRunnable`/`expensiveSuggestionRunnable` outright (the user's own "keine Chips berechnet
-     werden" taken literally - avoids the now-pointless background computation entirely, not merely its
-     display). Not yet re-confirmed by the user at time of writing.
-
-  **Also added, on the user's own follow-up suggestion mid-session**: a green checkmark chip
-  (`SuggestionController.Kind.CURSOR_CONTROL_DONE`, `AdaptKeyboardView.dismissCursorControl()`) pinned first
-  in the suggestion bar's own hint slot in both stages - an explicit, discoverable way to end the gesture on
-  tap, on top of (not instead of) the gesture-only fixes above. Reuses the same green already used for the
-  Stage 2 crosshair (`suggestion_learned_text`). See item 4 above for why the first version of this chip did
-  not actually stay usable.
-
-  1596 unit tests unchanged (every fix this round is Android-glue behaviour - `CursorControlGesture` itself
-  untouched). `:app:assembleRelease`/`:app:testDebugUnitTest` green throughout. `versionCode` 517 -> 518,
-  `versionName` `"1.2.21"` -> `"1.2.22"`. Items 1/2 confirmed working; items 3/4 (the reworked line-clamp and
-  the checkmark-visibility fix) not yet re-confirmed - the calibration constants from §460 also remain
-  untested.
-
-- **§461 (v1.2.21): D-401-followup - `cursorControlEnabled` flipped to default ON.** User's own explicit
-  call, right after §460 shipped it default-off: genuine accidental activation is unlikely (G-01's own
-  space-bar language switch is a plain swipe, not a long-press, so the two gestures never actually compete
-  the way the original off-by-default reasoning worried about) and a useful feature should default to
-  discoverable rather than hidden behind an opt-in the user has to go find first. Flipped in all four places
-  a new boolean setting's default lives in this codebase: `AdaptSettings.cursorControlEnabled`,
-  `SettingsMapper.RawSettings.cursorControlEnabled`, `SettingsStore.DEF_CURSOR_CONTROL_ENABLED`, and
-  `settings_preferences.xml`'s own `android:defaultValue`. Spec G-08 updated to match. No test/behaviour
-  change beyond the default itself - 1596 unit tests unchanged, `:app:assembleRelease`/
-  `:app:testDebugUnitTest` green. `versionCode` 516 -> 517, `versionName` `"1.2.20"` -> `"1.2.21"`.
-
-## Older Rounds (§1-§460, v0.7.6 through v1.2.20) - Pruned From This File
+D-89 (§487): thirty-fourth pruning pass - §461 and §462 both removed, cutoff moved from §461 to §463,
+restoring the working set to the usual ~25 target (§463-§487, 25 rounds exactly - two removed this time
+since the working set had drifted to 27 across the two prior sessions' additions). Backfilled into
+History.md first, verbatim, reformatted from this file's own bullet shape into History.md's heading+paragraph
+style, no content summarised or dropped.
 
 D-472 (§486): thirty-third pruning pass - §460 removed, cutoff moved from §460 to §461, keeping the
 working set at 26 rounds (§461-§486; one over the usual ~25 target, not chased further this round).
