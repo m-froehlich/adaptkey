@@ -2332,7 +2332,38 @@ non-trivial changes).
   project's own already-accepted untested layers - `commitEmoji()` sits alongside `handleKey`/
   `appendLongPressLetter`, neither of which carries dedicated tests either. 1651 unit tests unchanged.
   `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 540 -> 541, `versionName` `"1.2.44"` ->
-  `"1.2.45"`. Not yet device-confirmed.
+  `"1.2.45"`. **D-469 device-confirmed (2026-09-12)**; D-470 (this app's own emoji panel) not yet
+  independently re-confirmed on device.
+
+- **D-471 - WON'T FIX, analysed and explicitly declined (2026-09-12), not guessed at.** The user's own
+  follow-up to D-470: two real device logs (WhatsApp, Signal), each showing the identical shape - after a
+  `.` commits (`onUpdateSelection old=[4,4] new=[5,5]`), a later `onUpdateSelection old=[5,5] new=[7,7]`
+  fires with `composing=""` and no `rawTap`/`handleKey` entry anywhere in between: two characters (a
+  surrogate-pair emoji) appear at the old caret position with no key ever reaching this app. Confirms the
+  D-470 hypothesis directly - both messengers' own in-chat emoji pickers write straight into the target
+  `EditText`, bypassing `InputConnection.commitText` entirely, so nothing here ever sees the emoji arrive
+  the way [commitEmoji] does; the only signal is this after-the-fact `onUpdateSelection` echo.
+
+  A fix was designed on paper, not implemented, and rejected on risk: the only place that ever observes
+  this is `onUpdateSelection`'s own `composing.isEmpty()` branch ([AdaptKeyService.kt:1673](app/src/main/kotlin/de/froehlichmedia/adaptkey/AdaptKeyService.kt:1673)) - reacting would mean (1) distinguishing a
+  genuine external *insertion* from an ordinary caret move by comparing old/new selection deltas, itself a
+  new class of inference this function does not currently make anywhere; (2) confirming a pending mark
+  really sat at the old caret position via a document read that must stay correctly offset relative to a
+  cursor that has already moved (surrogate-pair-aware, since the very evidence for this bug **is** a
+  surrogate pair - an off-by-one here does not merely misplace a space, it can split the emoji itself); and
+  (3) then actively mutating the document from *inside* `onUpdateSelection` - `setSelection()` back to the
+  old position, `commitText(" ")`, `setSelection()` forward again - a reactive edit issued synchronously
+  from the exact function spec §1's guiding principle already names as needing three full device-log rounds
+  to get right, and whose own `CallbackBurstGuard` (D-139) exists specifically because a reactive mutation
+  here can re-trigger this same callback. No existing mechanism in this app reaches back to edit text an
+  *external* app committed on its own via a path outside `InputConnection.commitText` at all - A-07/A-06's
+  own undo windows only ever reverse this app's own prior commits - so this would be a genuinely new
+  mechanism class, not an extension of a settled one, evaluated against only two same-shaped samples across
+  two apps. Weighed directly against the benefit (a missing space before a manually-picked emoji in
+  third-party messengers) and declined, per the user's own explicit call: "wenn das zu risikoreich ist, ist
+  es nicht wichtig genug." No code touched; spec A-12's existing D-470 addendum already documents this
+  exact limitation and needs no update. Revisit only with a materially different, lower-risk mechanism, not
+  by attempting the design above.
 
 ## Older Rounds (§1-§459, v0.7.6 through v1.2.19) - Pruned From This File
 
