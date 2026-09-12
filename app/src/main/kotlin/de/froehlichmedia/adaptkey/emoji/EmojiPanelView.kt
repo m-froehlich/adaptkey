@@ -22,9 +22,13 @@ import de.froehlichmedia.adaptkey.R
  * keyboard in the same screen area while shown. Emoji are delivered as raw Unicode codepoints via
  * [OnEmojiSelectedListener] - the caller is responsible for committing them via `commitText` (no
  * app-side support needed) and for finalising any in-progress composing token first, exactly like a
- * delimiter. A dedicated "recent" tab shows the most recently used emoji (MRU, see [RecentEmojis]);
- * the back button ([OnBackListener]) returns to the letter keyboard.
- *
+ * delimiter. A dedicated "recent" tab shows the most recently used emoji (MRU, see [RecentEmojis]).
+ * 
+ * D-472: the panel's own former "return to keyboard" tab moved into the extra row
+ * ([de.froehlichmedia.adaptkey.keyboard.ExtraRowView]), which doubles the emoji button's own slot
+ * into that return button while this panel is showing - see [de.froehlichmedia.adaptkey.AdaptKeyService]'s
+ * `setSurface()`. This view itself no longer offers a way back on its own.
+ * 
  * Thin Android glue over the pure [EmojiDataset] / [RecentEmojis]; left to instrumented tests.
  */
 class EmojiPanelView @JvmOverloads constructor(
@@ -38,11 +42,6 @@ class EmojiPanelView @JvmOverloads constructor(
         fun onEmojiSelected(emoji: String)
     }
     
-    fun interface OnBackListener {
-        
-        fun onBack()
-    }
-    
     /** D-317: the search tab was tapped - the panel itself hosts no search UI; the host switches to its
      * own live-search capture mode (see [de.froehlichmedia.adaptkey.AdaptKeyService]). */
     fun interface OnSearchListener {
@@ -51,8 +50,6 @@ class EmojiPanelView @JvmOverloads constructor(
     }
     
     var onEmojiSelectedListener: OnEmojiSelectedListener? = null
-    
-    var onBackListener: OnBackListener? = null
     
     var onSearchListener: OnSearchListener? = null
     
@@ -98,7 +95,7 @@ class EmojiPanelView @JvmOverloads constructor(
     
     /**
      * Updates the recent/frequently-used emoji shown on the recent tab (MRU).
-     *
+     * 
      * @param recents the current recent-emoji list, most recent first
      */
     fun setRecentEmojis(recents: List<String>) {
@@ -110,10 +107,9 @@ class EmojiPanelView @JvmOverloads constructor(
     
     private fun rebuildTabs() {
         tabBar.removeAllViews()
-        // D-318: back/search are actions, not category tabs like everything else in this bar - framed with
-        // a visible button border so they read as "tap to leave/search", not as one more grid to select.
-        // Reported as poorly discoverable once the search tab sat plainly next to the back icon.
-        tabBar.addView(tabButton(BACK_ICON, framed = true) { onBackListener?.onBack() })
+        // D-318: search is an action, not a category tab like everything else in this bar - framed with a
+        // visible button border so it reads as "tap to search", not as one more grid to select. D-472: the
+        // back button that used to sit ahead of it here (also framed) moved into the extra row instead.
         tabBar.addView(tabButton(SEARCH_ICON, framed = true) { onSearchListener?.onSearchRequested() })
         tabBar.addView(tabButton(RECENT_ICON) { selectTab(null) })
         for (category in EmojiCategory.entries) {
@@ -195,7 +191,6 @@ class EmojiPanelView @JvmOverloads constructor(
         private const val FRAMED_TAB_CORNER_RADIUS_DP = 8
         private const val EMOJI_TEXT_SIZE_SP = 22f
         private const val TAB_TEXT_SIZE_SP = 18f
-        private const val BACK_ICON = "⌨"
         private const val SEARCH_ICON = "🔍"
         private const val RECENT_ICON = "🕐"
     }

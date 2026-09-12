@@ -1223,6 +1223,97 @@ non-trivial changes).
   volume) is completely unaffected by this and ran exactly as planned. 446,015 lemma-column rows changed
   across the 31 packs; every pack passes `lemma_check.py` and `quality_gate.py`.
 
+- **§486 (v1.2.46): D-472 - the emoji panel's own "return to keyboard" tab moved into the extra row,**
+  **replacing the emoji button's own slot with it while the panel is showing.** User's own explicit
+  request, confirmed clear before implementing (no design questions needed - a mechanical relocation, not
+  a trade-off decision): `EmojiPanelView`'s tab bar loses its `BACK_ICON`/`OnBackListener` tab and interface
+  entirely (the search tab, `OnSearchListener`, is untouched); `ExtraRowView` gains a settable
+  `emojiPanelActive: Boolean`, following the exact same externally-driven-boolean pattern
+  `credentialModeActive`/`urlModeActive`/`touchZoneVisible` already use there - it swaps the emoji button's
+  own glyph between 😊 and ⌨ (the identical glyph the removed panel tab used, so the relocated button reads
+  as "the same button, moved" rather than a new one) without touching the click listener itself.
+  `AdaptKeyService.setSurface()` - the one place `surface` ever actually changes, verified by grepping every
+  assignment - sets `extraRow?.emojiPanelActive = (next == InputSurface.EMOJI)`, so every path that ever
+  leaves the emoji surface (the new return tap, emoji search's own `setSurface(LETTERS)`, the ordinary
+  per-field reset) keeps the button in sync for free, with no separate reset needed anywhere.
+  `openEmojiPanelFromExtraRow()` renamed `toggleEmojiPanelFromExtraRow()` and now branches on the current
+  `surface` instead of always opening. The row itself is never auto-closed by this (D-187's existing rule,
+  unchanged) - it stays open exactly as before, so the return button stays reachable the whole time the
+  panel is shown, matching the user's own "so that it looks like it sits in the same spot" ask.
+
+  No new tests: both touched views are this project's own already-accepted untested Android-glue layer
+  (`EmojiPanelView`/`ExtraRowView`, "left to instrumented tests" per their own class KDocs). 1651 unit tests
+  unchanged. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 541 -> 542, `versionName`
+  `"1.2.45"` -> `"1.2.46"`. Spec L-03/R-01 updated with the new D-472 addenda. **Device-confirmed
+  (2026-09-12)** - the user confirmed the relocated button works as intended.
+
+- **§485 (v1.2.45): D-469/D-470 - two independently-reported bugs closed in one round.** D-469 (dictionary):
+  typing "Lebensmüde" was silently split into "Lebens müde" - root-caused, not guessed: "lebensmüde" was
+  entirely absent from `dictionaries/de/dict.tsv`, while both halves - "Lebens" (2007, `NOUN`, lemma `Leben`,
+  the genitive) and "müde" (28, `ADJECTIVE`) - are real, independently-existing dictionary words. A-05's own
+  "not both halves nouns" split gate found nothing to veto (one noun, one adjective), so it split cleanly with
+  no protective mechanism ever engaging. Added `lebensmüde` (freq 15, `ADJECTIVE,OTHER`) as its own entry,
+  calibrated against sibling `lebens-` adjectives already present (`lebenswichtig` 8, `lebenslänglich` 9,
+  `lebensnotwendig` 10, `kriegsmüde` 10 as the closest `-müde` peer, `lebensbedrohlich` 20, `lebensfähig` 29,
+  `lebenslang` 88) - A-01 now protects it as a known word, so A-05 never reaches it at all. The word already
+  has a full, real declension/degree paradigm in `wiktionary_adjektive.tsv` (it was simply never picked up,
+  since the base lemma never made it into the frequency corpus in the first place, the identical shape as
+  D-462's verb gap) - the inflected forms themselves are a deliberately separate, not-yet-done extension, not
+  part of this fix. `dictionaries/de/version.txt` 41 -> 42, pack rebuilt and verified byte-identical after
+  unzip, `LanguagePackCatalog` version 41 -> 42; `quality_gate.py --capitalises-nouns` and `lemma_check.py`
+  both PASS.
+
+  D-470 (code, spec A-12): an emoji tapped from this app's own emoji panel (L-03) never materialised a
+  genuinely pending A-12 sentence-punctuation space - typing `.` then opening the panel and tapping an emoji
+  committed `"Ja.😀"`, never `"Ja. 😀"`. Root cause: `commitEmoji()` went straight to `ic.commitText(emoji, 1)`
+  with no awareness of the deferred-space mechanism at all, unlike the two other typing-triggered entry points
+  (`handleKey`'s `CHAR` branch, `appendLongPressLetter`) that already run the identical
+  `pendingSentenceMark()`/`shouldMaterializeSpace()` idiom before appending. Fixed by adding the same three-line
+  idiom to `commitEmoji()` - an emoji is now treated exactly like a letter for this purpose, per the user's own
+  framing. **Deliberately out of scope, and said so rather than guessed at**: an emoji inserted by a
+  third-party app's own picker (the user's own second example, WhatsApp) that writes directly into the target
+  field - bypassing this app's `InputConnection.commitText` entirely - is invisible to this mechanism the same
+  way any other externally-inserted text already is; reacting to it would mean touching the composing-state/
+  `onUpdateSelection` area spec §1's guiding principle already flags as historically fragile, and was not
+  attempted without a design discussion first. See spec A-12's own D-470 addendum.
+
+  No new tests: both touched areas (dictionary content; `AdaptKeyService`'s emoji-commit glue) are this
+  project's own already-accepted untested layers - `commitEmoji()` sits alongside `handleKey`/
+  `appendLongPressLetter`, neither of which carries dedicated tests either. 1651 unit tests unchanged.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 540 -> 541, `versionName` `"1.2.44"` ->
+  `"1.2.45"`. **D-469 device-confirmed (2026-09-12)**; D-470 (this app's own emoji panel) not yet
+  independently re-confirmed on device.
+
+- **D-471 - WON'T FIX, analysed and explicitly declined (2026-09-12), not guessed at.** The user's own
+  follow-up to D-470: two real device logs (WhatsApp, Signal), each showing the identical shape - after a
+  `.` commits (`onUpdateSelection old=[4,4] new=[5,5]`), a later `onUpdateSelection old=[5,5] new=[7,7]`
+  fires with `composing=""` and no `rawTap`/`handleKey` entry anywhere in between: two characters (a
+  surrogate-pair emoji) appear at the old caret position with no key ever reaching this app. Confirms the
+  D-470 hypothesis directly - both messengers' own in-chat emoji pickers write straight into the target
+  `EditText`, bypassing `InputConnection.commitText` entirely, so nothing here ever sees the emoji arrive
+  the way [commitEmoji] does; the only signal is this after-the-fact `onUpdateSelection` echo.
+
+  A fix was designed on paper, not implemented, and rejected on risk: the only place that ever observes
+  this is `onUpdateSelection`'s own `composing.isEmpty()` branch ([AdaptKeyService.kt:1673](app/src/main/kotlin/de/froehlichmedia/adaptkey/AdaptKeyService.kt:1673)) - reacting would mean (1) distinguishing a
+  genuine external *insertion* from an ordinary caret move by comparing old/new selection deltas, itself a
+  new class of inference this function does not currently make anywhere; (2) confirming a pending mark
+  really sat at the old caret position via a document read that must stay correctly offset relative to a
+  cursor that has already moved (surrogate-pair-aware, since the very evidence for this bug **is** a
+  surrogate pair - an off-by-one here does not merely misplace a space, it can split the emoji itself); and
+  (3) then actively mutating the document from *inside* `onUpdateSelection` - `setSelection()` back to the
+  old position, `commitText(" ")`, `setSelection()` forward again - a reactive edit issued synchronously
+  from the exact function spec §1's guiding principle already names as needing three full device-log rounds
+  to get right, and whose own `CallbackBurstGuard` (D-139) exists specifically because a reactive mutation
+  here can re-trigger this same callback. No existing mechanism in this app reaches back to edit text an
+  *external* app committed on its own via a path outside `InputConnection.commitText` at all - A-07/A-06's
+  own undo windows only ever reverse this app's own prior commits - so this would be a genuinely new
+  mechanism class, not an extension of a settled one, evaluated against only two same-shaped samples across
+  two apps. Weighed directly against the benefit (a missing space before a manually-picked emoji in
+  third-party messengers) and declined, per the user's own explicit call: "wenn das zu risikoreich ist, ist
+  es nicht wichtig genug." No code touched; spec A-12's existing D-470 addendum already documents this
+  exact limitation and needs no update. Revisit only with a materially different, lower-risk mechanism, not
+  by attempting the design above.
+
 - **D-461 cross-language effect - CHECKED, no action needed (2026-09-10).** D-461 switched off forced
   capitalisation for 1,295 rows across all languages (rows carrying `PROPER_NOUN` plus some other reading).
   The frequency-strongest were sampled per language and the outcome is right almost everywhere, because
@@ -2236,136 +2327,12 @@ non-trivial changes).
   change beyond the default itself - 1596 unit tests unchanged, `:app:assembleRelease`/
   `:app:testDebugUnitTest` green. `versionCode` 516 -> 517, `versionName` `"1.2.20"` -> `"1.2.21"`.
 
-- **§460 (v1.2.20): D-401 - the space-bar cursor/selection-control gesture, implemented end to end from**
-  **history §276's own verbatim four-stage capture.** New opt-in setting (`cursorControlEnabled`, C-01-style
-  toggle in the Key Behaviour category, default **off** - a new, screen-consuming gesture on the app's own
-  most-tapped key needs an explicit opt-in, not a risk of accidental activation during ordinary typing).
+## Older Rounds (§1-§460, v0.7.6 through v1.2.20) - Pruned From This File
 
-  **Design discussed first, per this project's own convention**, resolving six real open points before any
-  code: (1) the drag-distance-per-character/line calibration - explicit user call to start from Gboard's own
-  known feel rather than inventing one, expecting it to change once tried for real; (2) horizontal *and*
-  vertical movement both in scope from the start, not horizontal-only; (3) **a currently-composing word is
-  deliberately left completely untouched when the gesture arms** - the user's own explicit call, reasoning
-  through it directly: committing it first (matching every other long-press action, L-05/L-06) risked an
-  unwanted autocorrect firing before the user gets a chance to reject it, and the free-cursor-move-while-
-  composing case is already handled identically to any other external caret change (D-313/D-406) with no new
-  special case needed; (4) the two tap-semantics questions (Stage 1 tap; where a Stage 2 tap's collapse
-  lands) resolved by this session's own judgement, per the user's explicit "arbeiten mit deinen Vermutungen";
-  (5) the platform's own text-selection context menu at timeout - accepted as "probably automatic, verify on
-  a real device" rather than adding an explicit, uncertain trigger call; (6) a dedicated Settings toggle,
-  confirmed worth having.
-
-  **Mechanism.** New pure `keyboard/CursorControlGesture` object (mirrors `BackspaceRepeat`'s own split -
-  stateless stage/timing/geometry constants and a `stepsFor(dx, dy, density)` pure function; all running
-  state lives on the Android side) plus 7 new JUnit5 tests. `AdaptKeyboardView` gained the entire touch state
-  machine: `scheduleLongPress()` now also arms for `KeyCode.SPACE` when `cursorControlEnabled` is set
-  (`KeyboardLayout.hasLongPressAction()` itself stays unaware of this feature-toggle-gated case, deliberately
-  kept pure); once armed, `onTouchEvent()` routes every subsequent motion event for that touch session to a
-  dedicated `handleCursorControlTouch()` instead of threading more conditionals through the already
-  finely-tuned ordinary key-press handling - re-touch within the 1000ms lift-grace window is recognised
-  before ordinary key resolution even runs, anywhere on the keyboard, not only the space key. 30% key-dimming
-  is one `Canvas.saveLayerAlpha()` wrapped around the existing `drawKeys()` call (never touches the shared,
-  reused per-key `Paint` objects themselves); the crosshair reuses the app's own established accent-blue
-  (Stage 1) and "confirmed/active" green (Stage 2, `suggestion_learned_text`) colours rather than introducing
-  new ones, and its lift-grace fade-back-to-centre is an ordinary `ValueAnimator`, the same mechanism the
-  space-bar language-change label fade already uses.
-
-  A new `AdaptKeyboardView.OnCursorControlListener` (armed / move / stage-changed / tap / ended) carries the
-  gesture to `AdaptKeyService`, which applies it: a character delta calls `InputConnection.setSelection()`
-  directly (collapsed for Stage 1, against a frozen anchor for Stage 2); a line delta is sent as synthetic
-  `KEYCODE_DPAD_UP`/`DOWN` key events instead of a computed offset - this app has no reliable way to know a
-  target field's real line-wrap layout across every app (the same reliability gap already named for
-  `CursorAnchorInfo` elsewhere), so the target app's own text layout decides what "one line up" means, the
-  same way a hardware d-pad already would. The two are deliberately never combined in the same tick (the
-  absolute offset after a DPAD jump is unknown here until a fresh `onUpdateSelection` reports it back), a
-  documented, imperceptible-at-real-drag-speed simplification, not an oversight. A new `liveSelectionEnd`
-  field, updated unconditionally in `onUpdateSelection` exactly like the existing `selectionCollapsed` already
-  is, seeds and continuously resyncs the gesture's own optimistic running caret offset - added, not
-  substituted, so nothing about the existing D-139-flagged reactive machinery there changed.
-
-  Suggestion-bar hint text uses a new `SuggestionController.Kind.CURSOR_CONTROL_HINT`, the same "built outside
-  `SuggestionController`, pushed directly" shape `LOADING`/`EMOJI_SEARCH_QUERY` already use. Explicitly
-  disabled while D-317 emoji search owns the keyboard (`enterEmojiSearch()`/`exitEmojiSearch()`, plus
-  `applySettings()`'s own `&& !emojiSearchActive` guard against a settings reload mid-search re-enabling it) -
-  the identical "nothing from an alternate input mode may reach the real document" guarantee that function's
-  own class KDoc already documents for every other listener.
-
-  New spec §4 requirement G-08. 1596 unit tests (1589 -> 1596, +7 new, all in `CursorControlGestureTest`).
-  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 515 -> 516, `versionName` `"1.2.19"` ->
-  `"1.2.20"`.
-
-  **Not yet device-confirmed** - this is a genuinely new touch/gesture mechanism with real ergonomic
-  unknowns (the calibration constants above, the context-menu-at-timeout behaviour) that only a real device
-  can actually settle; the user's own next step is trying it and reporting what needs to change.
-
-- **§485 (v1.2.45): D-469/D-470 - two independently-reported bugs closed in one round.** D-469 (dictionary):
-  typing "Lebensmüde" was silently split into "Lebens müde" - root-caused, not guessed: "lebensmüde" was
-  entirely absent from `dictionaries/de/dict.tsv`, while both halves - "Lebens" (2007, `NOUN`, lemma `Leben`,
-  the genitive) and "müde" (28, `ADJECTIVE`) - are real, independently-existing dictionary words. A-05's own
-  "not both halves nouns" split gate found nothing to veto (one noun, one adjective), so it split cleanly with
-  no protective mechanism ever engaging. Added `lebensmüde` (freq 15, `ADJECTIVE,OTHER`) as its own entry,
-  calibrated against sibling `lebens-` adjectives already present (`lebenswichtig` 8, `lebenslänglich` 9,
-  `lebensnotwendig` 10, `kriegsmüde` 10 as the closest `-müde` peer, `lebensbedrohlich` 20, `lebensfähig` 29,
-  `lebenslang` 88) - A-01 now protects it as a known word, so A-05 never reaches it at all. The word already
-  has a full, real declension/degree paradigm in `wiktionary_adjektive.tsv` (it was simply never picked up,
-  since the base lemma never made it into the frequency corpus in the first place, the identical shape as
-  D-462's verb gap) - the inflected forms themselves are a deliberately separate, not-yet-done extension, not
-  part of this fix. `dictionaries/de/version.txt` 41 -> 42, pack rebuilt and verified byte-identical after
-  unzip, `LanguagePackCatalog` version 41 -> 42; `quality_gate.py --capitalises-nouns` and `lemma_check.py`
-  both PASS.
-
-  D-470 (code, spec A-12): an emoji tapped from this app's own emoji panel (L-03) never materialised a
-  genuinely pending A-12 sentence-punctuation space - typing `.` then opening the panel and tapping an emoji
-  committed `"Ja.😀"`, never `"Ja. 😀"`. Root cause: `commitEmoji()` went straight to `ic.commitText(emoji, 1)`
-  with no awareness of the deferred-space mechanism at all, unlike the two other typing-triggered entry points
-  (`handleKey`'s `CHAR` branch, `appendLongPressLetter`) that already run the identical
-  `pendingSentenceMark()`/`shouldMaterializeSpace()` idiom before appending. Fixed by adding the same three-line
-  idiom to `commitEmoji()` - an emoji is now treated exactly like a letter for this purpose, per the user's own
-  framing. **Deliberately out of scope, and said so rather than guessed at**: an emoji inserted by a
-  third-party app's own picker (the user's own second example, WhatsApp) that writes directly into the target
-  field - bypassing this app's `InputConnection.commitText` entirely - is invisible to this mechanism the same
-  way any other externally-inserted text already is; reacting to it would mean touching the composing-state/
-  `onUpdateSelection` area spec §1's guiding principle already flags as historically fragile, and was not
-  attempted without a design discussion first. See spec A-12's own D-470 addendum.
-
-  No new tests: both touched areas (dictionary content; `AdaptKeyService`'s emoji-commit glue) are this
-  project's own already-accepted untested layers - `commitEmoji()` sits alongside `handleKey`/
-  `appendLongPressLetter`, neither of which carries dedicated tests either. 1651 unit tests unchanged.
-  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 540 -> 541, `versionName` `"1.2.44"` ->
-  `"1.2.45"`. **D-469 device-confirmed (2026-09-12)**; D-470 (this app's own emoji panel) not yet
-  independently re-confirmed on device.
-
-- **D-471 - WON'T FIX, analysed and explicitly declined (2026-09-12), not guessed at.** The user's own
-  follow-up to D-470: two real device logs (WhatsApp, Signal), each showing the identical shape - after a
-  `.` commits (`onUpdateSelection old=[4,4] new=[5,5]`), a later `onUpdateSelection old=[5,5] new=[7,7]`
-  fires with `composing=""` and no `rawTap`/`handleKey` entry anywhere in between: two characters (a
-  surrogate-pair emoji) appear at the old caret position with no key ever reaching this app. Confirms the
-  D-470 hypothesis directly - both messengers' own in-chat emoji pickers write straight into the target
-  `EditText`, bypassing `InputConnection.commitText` entirely, so nothing here ever sees the emoji arrive
-  the way [commitEmoji] does; the only signal is this after-the-fact `onUpdateSelection` echo.
-
-  A fix was designed on paper, not implemented, and rejected on risk: the only place that ever observes
-  this is `onUpdateSelection`'s own `composing.isEmpty()` branch ([AdaptKeyService.kt:1673](app/src/main/kotlin/de/froehlichmedia/adaptkey/AdaptKeyService.kt:1673)) - reacting would mean (1) distinguishing a
-  genuine external *insertion* from an ordinary caret move by comparing old/new selection deltas, itself a
-  new class of inference this function does not currently make anywhere; (2) confirming a pending mark
-  really sat at the old caret position via a document read that must stay correctly offset relative to a
-  cursor that has already moved (surrogate-pair-aware, since the very evidence for this bug **is** a
-  surrogate pair - an off-by-one here does not merely misplace a space, it can split the emoji itself); and
-  (3) then actively mutating the document from *inside* `onUpdateSelection` - `setSelection()` back to the
-  old position, `commitText(" ")`, `setSelection()` forward again - a reactive edit issued synchronously
-  from the exact function spec §1's guiding principle already names as needing three full device-log rounds
-  to get right, and whose own `CallbackBurstGuard` (D-139) exists specifically because a reactive mutation
-  here can re-trigger this same callback. No existing mechanism in this app reaches back to edit text an
-  *external* app committed on its own via a path outside `InputConnection.commitText` at all - A-07/A-06's
-  own undo windows only ever reverse this app's own prior commits - so this would be a genuinely new
-  mechanism class, not an extension of a settled one, evaluated against only two same-shaped samples across
-  two apps. Weighed directly against the benefit (a missing space before a manually-picked emoji in
-  third-party messengers) and declined, per the user's own explicit call: "wenn das zu risikoreich ist, ist
-  es nicht wichtig genug." No code touched; spec A-12's existing D-470 addendum already documents this
-  exact limitation and needs no update. Revisit only with a materially different, lower-risk mechanism, not
-  by attempting the design above.
-
-## Older Rounds (§1-§459, v0.7.6 through v1.2.19) - Pruned From This File
+D-472 (§486): thirty-third pruning pass - §460 removed, cutoff moved from §460 to §461, keeping the
+working set at 26 rounds (§461-§486; one over the usual ~25 target, not chased further this round).
+Backfilled into History.md first, verbatim, reformatted from this file's own bullet shape into History.md's
+heading+paragraph style, no content summarised or dropped.
 
 D-469/D-470 (§485): thirty-second pruning pass - §459 removed, cutoff moved from §459 to §460, keeping the
 working set at 25 rounds (§460-§485). Backfilled into History.md first, verbatim, reformatted from this

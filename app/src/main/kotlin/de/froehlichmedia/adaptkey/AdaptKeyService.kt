@@ -1120,7 +1120,6 @@ class AdaptKeyService : InputMethodService() {
         panel.dataset = emojiDataset
         panel.setRecentEmojis(recentEmojis)
         panel.onEmojiSelectedListener = EmojiPanelView.OnEmojiSelectedListener { emoji -> commitEmoji(emoji) }
-        panel.onBackListener = EmojiPanelView.OnBackListener { setSurface(InputSurface.LETTERS) }
         panel.onSearchListener = EmojiPanelView.OnSearchListener { enterEmojiSearch() }
         panel.visibility = View.GONE
         emojiPanel = panel
@@ -1219,7 +1218,7 @@ class AdaptKeyService : InputMethodService() {
         // §48 / §51: the swipe-up extra row - sits above the suggestion bar (the topmost row while
         // open), reserved at zero height and hidden until an upward swipe opens it.
         val row = ExtraRowView(this)
-        row.onEmojiClick = ExtraRowView.OnEmojiClickListener { openEmojiPanelFromExtraRow() }
+        row.onEmojiClick = ExtraRowView.OnEmojiClickListener { toggleEmojiPanelFromExtraRow() }
         row.onSettingsClick = ExtraRowView.OnSettingsClickListener { openSettingsAppFromExtraRow() }
         row.onCredentialModeClick = ExtraRowView.OnCredentialModeClickListener { toggleCredentialModeFromExtraRow() }
         row.onTouchZoneToggleClick = ExtraRowView.OnTouchZoneToggleClickListener { toggleTouchZoneVisualizationFromExtraRow() }
@@ -3782,6 +3781,11 @@ class AdaptKeyService : InputMethodService() {
         if (next == InputSurface.EMOJI) {
             emojiPanel?.setRecentEmojis(recentEmojis)
         }
+        // D-472: the extra row's own emoji button doubles as the panel's "return to keyboard" button while
+        // it is showing - the single choke point every surface change already goes through, so every path
+        // (the field-reset in onStartInputView, emoji search's own setSurface(LETTERS), the ordinary back
+        // tap) keeps it correctly in sync without needing its own separate reset.
+        extraRow?.emojiPanelActive = next == InputSurface.EMOJI
         symbolPage = page
     }
     
@@ -3953,9 +3957,14 @@ class AdaptKeyService : InputMethodService() {
      * §48: the extra row's emoji button - opens the emoji panel, exactly like the combined key used to
      * before §49 retired its dual purpose. D-187: no longer closes the row - see [closeExtraRow]'s own
      * KDoc for why button taps stopped auto-closing it.
+     * 
+     * D-472: the same button slot now also returns to the letter keyboard while the panel is already
+     * showing (the panel's own former back tab, moved here) - [ExtraRowView.emojiPanelActive] swaps the
+     * button's glyph to match, driven from [setSurface] itself, so this function only ever needs to check
+     * the current [surface] to know which direction a tap means.
      */
-    private fun openEmojiPanelFromExtraRow() {
-        setSurface(InputSurface.EMOJI)
+    private fun toggleEmojiPanelFromExtraRow() {
+        setSurface(if (surface == InputSurface.EMOJI) InputSurface.LETTERS else InputSurface.EMOJI)
     }
     
     /**

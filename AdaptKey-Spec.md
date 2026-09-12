@@ -141,11 +141,14 @@ document; only Space, Backspace and letters/digits/punctuation are active (no lo
 gestures, no symbol layer) while search is active. Tapping a result commits it exactly like an ordinary
 emoji-panel tap and leaves search mode; a dedicated cancel button next to the suggestion bar, and Enter, are
 the two other ways back to ordinary typing - search mode is also defensively cleared whenever the field
-itself is left, so it can never carry over into the next field. D-318: the back and search tabs are drawn
-with a visible rounded button frame (unlike the plain category/recent tabs), so the two actions read as
-buttons rather than one more tab to select; the query typed so far is always shown as its own pinned,
-italicised, non-tappable chip at the left of the result list (even while still empty, right when search
-mode is entered), so search never runs with no visible feedback of what has been typed.
+itself is left, so it can never carry over into the next field. D-318: the search tab is drawn with a
+visible rounded button frame (unlike the plain category/recent tabs), so it reads as a button rather than
+one more tab to select; the query typed so far is always shown as its own pinned, italicised, non-tappable
+chip at the left of the result list (even while still empty, right when search mode is entered), so search
+never runs with no visible feedback of what has been typed.
+
+**Returning to the keyboard (D-472):** the panel's own tab bar no longer carries a back button - see R-01's
+own D-472 addendum for where it moved.
 
 ### L-04 - Enlarged Backspace
 The backspace key is widened relative to the Gboard default (recommended ~10%) to reduce mis-hits. The
@@ -1979,6 +1982,14 @@ URL field is focused, §11). A downward swipe closes the row first, and a second
 already closed) dismisses the keyboard (G-03). Activating a button in the row does not auto-close it. The
 clear-clipboard button that used to live here now sits in the suggestion bar itself instead (§16, V-03) - as
 does the manual Reclaim chip that used to live here too (D-414/D-414-followup, §5, S-10).
+
+**D-472: the emoji-panel button doubles as its own return button.** While the emoji panel is showing, the
+same slot's glyph swaps from the emoji icon to a keyboard icon, and a tap now returns to the letter keyboard
+instead of opening the panel - it reads as though the button itself changed meaning in place, not a second,
+separate control appearing elsewhere. This replaces the emoji panel's own former back tab (L-03), which is
+gone; the panel itself no longer offers a way back on its own. The row is never auto-closed by this (D-187's
+existing rule, unchanged) - it stays open exactly as it was, so the return button stays reachable the whole
+time the panel is shown.
 
 ---
 

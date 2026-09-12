@@ -25,15 +25,15 @@ import de.froehlichmedia.adaptkey.gesture.SwipeGesture
  * §48 / §51: the swipe-up extra row - the emoji button (left edge) and a settings gear (right edge),
  * revealed above the suggestion bar (the topmost row while open) by an upward swipe anywhere on the
  * keyboard (mirroring G-03's downward-dismiss-anywhere).
- *
+ * 
  * D-267: the clear-clipboard button (§69) that used to sit here moved into the suggestion bar itself,
  * shown only alongside the clipboard chips it actually clears - see
  * [de.froehlichmedia.adaptkey.suggestion.SuggestionBarView]'s own KDoc.
- *
+ * 
  * D-189: renamed from `SettingsRowView` - the row grew well past its original settings-button-only purpose
  * (emoji/clear-clipboard/touch-zone/credential-mode/URL-mode buttons all followed), and "settings" as the
  * name kept reading as narrower than what the row actually does, by direct request.
- *
+ * 
  * D-132 (second pass - the first attempt below didn't fix the reported "pops in" complaint): the row sits
  * in the same parent [android.widget.LinearLayout] as the suggestion bar and keyboard *below* it, so the
  * originally-D-86-inspired "jump `layoutParams.height` to the target immediately, only animate content
@@ -43,7 +43,7 @@ import de.froehlichmedia.adaptkey.gesture.SwipeGesture
  * first place; the *device-visible* pop was the sibling views jumping, not a background appearing). D-86's
  * "resize right away" shortcut works for [AdaptKeyboardView]'s own self-contained page-slide, which has no
  * siblings to push around - it does not transfer to a row stacked above other views.
- *
+ * 
  * Fixed properly: [layoutParams] `height` itself is now animated (`ValueAnimator.ofInt` +
  * `requestLayout()` per frame, the standard Android pattern for an animatable view height - there is no
  * dedicated height property to animate directly), so the suggestion bar and keyboard shift down/up in the
@@ -52,7 +52,7 @@ import de.froehlichmedia.adaptkey.gesture.SwipeGesture
  * smaller-than-`content`) bounds clip `content` (a `ViewGroup`'s default `clipChildren`), progressively more
  * of it becomes visible from the bottom up as the row grows, which is what makes the buttons read as
  * sliding up into place without any separate `translationY` animation being needed at all.
- *
+ * 
  * D-144: a downward swipe anywhere on the row (over any button, or the gaps between them) notifies
  * [onSwipeDown] - mirroring [AdaptKeyboardView]'s own G-03 swipe-down-to-dismiss, which previously only
  * reacted on the keyboard's own key field, not this row.
@@ -170,11 +170,25 @@ class ExtraRowView @JvmOverloads constructor(
             emojiButton.requestLayout()
         }
     
+    /**
+     * D-472: whether the emoji panel is currently showing - [emojiButton] doubles as the "return to
+     * keyboard" button while true, so its own glyph swaps to match (the panel's former back button, itself
+     * removed, used to sit at the same spot the emoji button was tapped from - see
+     * [de.froehlichmedia.adaptkey.emoji.EmojiPanelView]'s own KDoc). [onEmojiClick] still fires unchanged
+     * either way; the caller (the one place that actually knows the current surface) decides what a tap
+     * means from there.
+     */
+    var emojiPanelActive: Boolean = false
+        set(value) {
+            field = value
+            emojiButton.text = if (value) BACK_TO_KEYBOARD_ICON else EMOJI_ICON
+        }
+    
     private val buttonSizePx = dp(BUTTON_SIZE_DP)
     private val marginPx = dp(BUTTON_MARGIN_DP)
     
     private val credentialModeButton = buttonFor("🔑") { onCredentialModeClick?.onCredentialModeClick() }
-    private val emojiButton = buttonFor("😊") { onEmojiClick?.onEmojiClick() }
+    private val emojiButton = buttonFor(EMOJI_ICON) { onEmojiClick?.onEmojiClick() }
     private val settingsButton = buttonFor("⚙") { onSettingsClick?.onSettingsClick() }
     private val touchZoneToggleButton = buttonFor("🎯") { onTouchZoneToggleClick?.onTouchZoneToggleClick() }
     
@@ -450,6 +464,10 @@ class ExtraRowView @JvmOverloads constructor(
         
         private const val BUTTON_SIZE_DP = 36
         private const val BUTTON_MARGIN_DP = 8
+        // D-472: matches EmojiPanelView's own former back-button glyph, so the relocated button reads as
+        // "the same button, moved" rather than a new, different action.
+        private const val EMOJI_ICON = "😊"
+        private const val BACK_TO_KEYBOARD_ICON = "⌨"
         // D-142: three reverse-repeats of a 220ms fade reads as a clear, brief pulse without lingering.
         private const val FLASH_DURATION_MS = 220L
         private const val FLASH_REPEAT_COUNT = 3

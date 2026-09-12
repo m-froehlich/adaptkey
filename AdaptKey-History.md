@@ -22023,3 +22023,66 @@ back once it happens again).
 1589 unit tests unchanged (diagnostic-only, no new logic branch worth a dedicated test - same as §451's own
 first round of timers). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 514 -> 515,
 `versionName` `"1.2.18"` -> `"1.2.19"`.
+
+## §460 - D-401 - the space-bar cursor/selection-control gesture, implemented end to end from history §276's own verbatim four-stage capture.
+
+New opt-in setting (`cursorControlEnabled`, C-01-style toggle in the Key Behaviour category, default **off**
+- a new, screen-consuming gesture on the app's own most-tapped key needs an explicit opt-in, not a risk of
+accidental activation during ordinary typing).
+
+**Design discussed first, per this project's own convention**, resolving six real open points before any
+code: (1) the drag-distance-per-character/line calibration - explicit user call to start from Gboard's own
+known feel rather than inventing one, expecting it to change once tried for real; (2) horizontal *and*
+vertical movement both in scope from the start, not horizontal-only; (3) **a currently-composing word is
+deliberately left completely untouched when the gesture arms** - the user's own explicit call, reasoning
+through it directly: committing it first (matching every other long-press action, L-05/L-06) risked an
+unwanted autocorrect firing before the user gets a chance to reject it, and the free-cursor-move-while-
+composing case is already handled identically to any other external caret change (D-313/D-406) with no new
+special case needed; (4) the two tap-semantics questions (Stage 1 tap; where a Stage 2 tap's collapse
+lands) resolved by this session's own judgement, per the user's explicit "arbeiten mit deinen Vermutungen";
+(5) the platform's own text-selection context menu at timeout - accepted as "probably automatic, verify on
+a real device" rather than adding an explicit, uncertain trigger call; (6) a dedicated Settings toggle,
+confirmed worth having.
+
+**Mechanism.** New pure `keyboard/CursorControlGesture` object (mirrors `BackspaceRepeat`'s own split -
+stateless stage/timing/geometry constants and a `stepsFor(dx, dy, density)` pure function; all running
+state lives on the Android side) plus 7 new JUnit5 tests. `AdaptKeyboardView` gained the entire touch state
+machine: `scheduleLongPress()` now also arms for `KeyCode.SPACE` when `cursorControlEnabled` is set
+(`KeyboardLayout.hasLongPressAction()` itself stays unaware of this feature-toggle-gated case, deliberately
+kept pure); once armed, `onTouchEvent()` routes every subsequent motion event for that touch session to a
+dedicated `handleCursorControlTouch()` instead of threading more conditionals through the already
+finely-tuned ordinary key-press handling - re-touch within the 1000ms lift-grace window is recognised
+before ordinary key resolution even runs, anywhere on the keyboard, not only the space key. 30% key-dimming
+is one `Canvas.saveLayerAlpha()` wrapped around the existing `drawKeys()` call (never touches the shared,
+reused per-key `Paint` objects themselves); the crosshair reuses the app's own established accent-blue
+(Stage 1) and "confirmed/active" green (Stage 2, `suggestion_learned_text`) colours rather than introducing
+new ones, and its lift-grace fade-back-to-centre is an ordinary `ValueAnimator`, the same mechanism the
+space-bar language-change label fade already uses.
+
+A new `AdaptKeyboardView.OnCursorControlListener` (armed / move / stage-changed / tap / ended) carries the
+gesture to `AdaptKeyService`, which applies it: a character delta calls `InputConnection.setSelection()`
+directly (collapsed for Stage 1, against a frozen anchor for Stage 2); a line delta is sent as synthetic
+`KEYCODE_DPAD_UP`/`DOWN` key events instead of a computed offset - this app has no reliable way to know a
+target field's real line-wrap layout across every app (the same reliability gap already named for
+`CursorAnchorInfo` elsewhere), so the target app's own text layout decides what "one line up" means, the
+same way a hardware d-pad already would. The two are deliberately never combined in the same tick (the
+absolute offset after a DPAD jump is unknown here until a fresh `onUpdateSelection` reports it back), a
+documented, imperceptible-at-real-drag-speed simplification, not an oversight. A new `liveSelectionEnd`
+field, updated unconditionally in `onUpdateSelection` exactly like the existing `selectionCollapsed` already
+is, seeds and continuously resyncs the gesture's own optimistic running caret offset - added, not
+substituted, so nothing about the existing D-139-flagged reactive machinery there changed.
+
+Suggestion-bar hint text uses a new `SuggestionController.Kind.CURSOR_CONTROL_HINT`, the same "built outside
+`SuggestionController`, pushed directly" shape `LOADING`/`EMOJI_SEARCH_QUERY` already use. Explicitly
+disabled while D-317 emoji search owns the keyboard (`enterEmojiSearch()`/`exitEmojiSearch()`, plus
+`applySettings()`'s own `&& !emojiSearchActive` guard against a settings reload mid-search re-enabling it) -
+the identical "nothing from an alternate input mode may reach the real document" guarantee that function's
+own class KDoc already documents for every other listener.
+
+New spec §4 requirement G-08. 1596 unit tests (1589 -> 1596, +7 new, all in `CursorControlGestureTest`).
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 515 -> 516, `versionName` `"1.2.19"` ->
+`"1.2.20"`.
+
+**Not yet device-confirmed** - this is a genuinely new touch/gesture mechanism with real ergonomic
+unknowns (the calibration constants above, the context-menu-at-timeout behaviour) that only a real device
+can actually settle; the user's own next step is trying it and reporting what needs to change.
