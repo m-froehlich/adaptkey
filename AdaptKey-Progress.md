@@ -201,21 +201,26 @@ in every prompt.
 - **GitHub Release `v1.0.10` ("AdaptKey first official release") confirmed live**, with the signed
   `AdaptKey.apk` (36.9 MB) attached - checked via the GitHub API directly (`.../releases/tags/v1.0.10`),
   not just assumed from the page rendering.
-- **Known, deliberately-deferred quirk:** the 5 `phoneScreenshots` under
-  `fastlane/metadata/android/en-US/images/` are actually German-language captures, not English - the user
-  noticed and explicitly chose to leave this as-is for now ("das soll erstmal egal sein, damit kommt jeder
-  klar"). Not a bug to silently "fix" by moving them to `de-DE/` in a future session - revisit only if the
-  user raises it again.
+- **Real English `en-US` screenshots - RESOLVED (2026-09-12).** The 5 `phoneScreenshots` under
+  `fastlane/metadata/android/en-US/images/` were German-language captures (a deliberately-deferred quirk,
+  "das soll erstmal egal sein, damit kommt jeder klar" - see git history for the earlier note); the user has
+  now dropped in real English-language captures in their place, deliberate and confirmed (viewed directly,
+  not assumed) - genuine English keyboard/suggestion-bar/touch-zone-overlay screenshots, not a placeholder.
+  Committed locally; **still needs the user's own push to `origin/main`** (screenshots live with the app's
+  own source, read directly by F-Droid from `Repo:` - no separate `fdroiddata` submission needed, same
+  mechanism as the original screenshot request) before F-Droid's own next build picks them up.
+- **F-Droid maintainer review reply - now actually arrived, response pending (2026-09-12).** The user has a
+  reply email from F-Droid to react to - still needs retrieving/reading before anything here can be acted
+  on; nothing about its content is known yet, so nothing is assumed.
 - **Still open:**
-  - Respond to further F-Droid maintainer review feedback if/when it comes (first-time inclusion review
-    commonly takes weeks, sometimes months).
+  - React to the F-Droid maintainer's review reply once retrieved (see immediately above).
+  - Push the new English screenshots (see immediately above).
   - Once merged: F-Droid's own build/publish cycle still needs to run before the app actually appears in
     the client - merged is not yet live.
-  - Optional, still not done: real English `en-US` screenshots, and/or `de-DE`/`el-GR` screenshot sets.
+  - Optional, still not done: `de-DE`/`el-GR` screenshot sets (English `en-US` is now real, see above).
   - Verify the `Categories: [Keyboard & IME]` choice and the exact current build-metadata field set
     against F-Droid's own docs/`fdroiddata` at MR time - both were checked against the live F-Droid docs
-    and `config/categories.yml` this session, but that project's conventions can move on.
-  - Await F-Droid maintainer review (expect weeks, not days, for first inclusion).
+    and `config/categories.yml` in an earlier session, but that project's conventions can move on.
 
 ## Guardrail - Read Before Touching `onUpdateSelection` / Composing State
 
