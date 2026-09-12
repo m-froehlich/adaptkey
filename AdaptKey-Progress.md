@@ -225,24 +225,33 @@ in every prompt.
     managed signing key regardless of anything done here, so even a perfectly reproducible F-Droid build
     could never unify signatures across all three channels (GitHub/F-Droid/Play) anyway. `Binaries:`/
     `AllowedAPKSigningKeys:` were therefore NOT added.
-  - **Builds: block trimmed to a single entry - v1.2.46/versionCode 542, commit `00a9cc6`** - matches the
-    reviewer's ask exactly, and the user's own stated goal. `scandelete`'s list re-derived live from
-    `git ls-tree -r --name-only v1.2.46 -- language-packs/` rather than copied forward from the July
-    draft - it had grown from 2 entries (`de`/`el`) to 30 (the D-441 through D-450-era language-pack
-    rollout), which would otherwise have silently reintroduced the exact "Found ZIP file archive" scanner
-    failure from July, just for 28 more files. Confirmed no other unexpected binary/archive files exist
-    anywhere else in the tagged tree (`gradle-wrapper.jar` is the one hit besides the language packs -
-    standard Gradle Wrapper JAR, F-Droid's own build tooling uses its own `gradlew-fdroid` instead of the
-    project's, and it wasn't flagged by the scanner back in July either - left alone, not added to
-    scandelete). Re-verified against a real local `fdroid rewritemeta` run again - still an exact,
-    stable, canonical match.
+  - **Builds: block trimmed to a single entry** - matches the reviewer's ask exactly, and the user's own
+    stated goal. `scandelete`'s list re-derived live from `git ls-tree -r --name-only <tag> --
+    language-packs/` rather than copied forward from the July draft - it had grown from 2 entries
+    (`de`/`el`) to 31 (the D-441 through D-450-era language-pack rollout), which would otherwise have
+    silently reintroduced the exact "Found ZIP file archive" scanner failure from July, just for the many
+    new languages. Confirmed no other unexpected binary/archive files exist anywhere else in the tagged
+    tree (`gradle-wrapper.jar` is the one hit besides the language packs - standard Gradle Wrapper JAR,
+    F-Droid's own build tooling uses its own `gradlew-fdroid` instead of the project's, and it wasn't
+    flagged by the scanner back in July either - left alone, not added to scandelete). Re-verified against
+    a real local `fdroid rewritemeta` run again - still an exact, stable, canonical match.
+  - **Target version bumped once already, live-verified each time rather than assumed stale:** first
+    prepared for v1.2.46/542 (commit `00a9cc6`), then the user did unrelated further work in a separate
+    session (D-89-followup, the feature-overview catalog refresh) that landed as v1.2.47/543 (commit
+    `8a87934`) before the v1.2.46 draft was ever pushed/uploaded anywhere - re-derived the tag, the
+    `commit:`/`versionCode`/`versionName`/`CurrentVersion` fields, and re-checked the language-pack list
+    (unchanged, still 31) against this newer commit rather than trusting the just-prepared v1.2.46 values.
+    Nothing was lost by the intervening work since none of it had been pushed/uploaded externally yet.
 - **Still open:**
+  - Push the new `v1.2.47` tag (local only so far).
   - Upload the corrected `metadata/de.froehlichmedia.adaptkey.yml` (see `scratchpad/
-    de.froehlichmedia.adaptkey.yml`, confirmed 0 `\r` bytes) to the MR's branch via GitLab's "Replace
-    file"/Web IDE upload - not copy/paste, per the CRLF lesson from the original submission round.
+    de.froehlichmedia.adaptkey.yml`, confirmed 0 `\r` bytes, now targeting v1.2.47) to the MR's branch via
+    GitLab's "Replace file"/Web IDE upload - not copy/paste, per the CRLF lesson from the original
+    submission round.
   - Optional cleanup, not urgent: delete the stray `backup-before-bigram-fix-20260906` tag (not a real
     release, versionCode 502 is well below current so it poses no real risk to `UpdateCheckMode: Tags`,
-    but it's not meant to be a discoverable release marker either).
+    but it's not meant to be a discoverable release marker either); the now-superseded local-only
+    `v1.2.46` tag can also just be left alone or dropped, whichever - it was never pushed.
   - Once merged: F-Droid's own build/publish cycle still needs to run before the app actually appears in
     the client - merged is not yet live.
   - Optional, still not done: `de-DE`/`el-GR` screenshot sets (English `en-US` is now real, see above).

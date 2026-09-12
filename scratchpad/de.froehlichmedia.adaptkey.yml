@@ -11,9 +11,9 @@ RepoType: git
 Repo: https://github.com/m-froehlich/adaptkey.git
 
 Builds:
-  - versionName: 1.2.46
-    versionCode: 542
-    commit: 00a9cc6afdcd6839fc61334a53321d613c80667b
+  - versionName: 1.2.47
+    versionCode: 543
+    commit: 8a879342ff08d6dfc7a2bf8bf756583dcb04a2d7
     gradle:
       - yes
     output: app/build/outputs/apk/release/AdaptKey.apk
@@ -52,5 +52,5 @@ Builds:
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: 1.2.46
-CurrentVersionCode: 542
+CurrentVersion: 1.2.47
+CurrentVersionCode: 543
