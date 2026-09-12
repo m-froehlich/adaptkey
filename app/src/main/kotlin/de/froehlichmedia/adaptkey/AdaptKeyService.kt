@@ -932,7 +932,7 @@ class AdaptKeyService : InputMethodService() {
      * not inside [SqliteDictionaryStore]'s own synchronous `init {}` migration, which must stay fast since
      * every store open goes through it - runs the pass). A cheap no-op on every later startup once the
      * version has already been bumped.
-     *
+     * 
      * Every learned word still missing a category or a lemma link is reprocessed - a plain word-by-word
      * loop, no original sentence context available for a backfilled word (see [Tier3FamilyRequest]'s own
      * KDoc on why that is fine). Runs entirely on [tier3Executor], one store and one word at a time however
@@ -1090,7 +1090,7 @@ class AdaptKeyService : InputMethodService() {
      * first run (or one after a long gap) could otherwise un-learn a meaningful number of words in one
      * pass, and per-word `forget()` SQLite deletes belong off the main thread the same way every other
      * per-language load already is.
-     *
+     * 
      * @param loadedStores the just-loaded real per-language stores, not yet installed onto [stores]
      */
     private fun maybeSweepExpiredLearnedWords(loadedStores: Map<Language, DictionaryStore>) {
@@ -1786,14 +1786,14 @@ class AdaptKeyService : InputMethodService() {
      * debounced identically - extracted so [onUpdateSelection] and [onStartInputView]'s own initial-focus
      * reclaim (see that function's own D-421 note) share one single scheduling point rather than two
      * independently-maintained copies of the same two `postDelayed` calls.
-     *
+     * 
      * D-351: the composing-region reclaim itself is skipped in a field where it is suppressed (Gemini); the
      * chip's own refresh is scheduled unconditionally regardless - see [reclaimEnabledRunnable]'s own KDoc
      * for why. [reclaimPending] is set only in the non-suppressed branch, matching that same distinction -
      * see its own field KDoc. D-455: a suppressed field still gets its own debounced
      * [rearmShiftForCaretMoveRunnable] instead - Shift/Caps must still be re-derived fresh for the new caret
      * position even though the composing-region reclaim itself stays suppressed there.
-     *
+     * 
      * D-36-followup: a no-op while [reclaimChipRefreshSuppressedUntil] is still in the future -
      * [openClipboardPeek] arms a short window there right before its own `finalizeAndCommit()` call, whose
      * `commitText()` generates an asynchronous `onUpdateSelection` echo (composing already empty by the time
@@ -1805,7 +1805,7 @@ class AdaptKeyService : InputMethodService() {
      * (composing may already have been empty with nothing to commit), so a flag that is only ever cleared by
      * the echo it is waiting for could otherwise stay wrongly armed and swallow the next genuine caret move
      * indefinitely. A short, self-expiring time window degrades safely either way.
-     *
+     * 
      * D-401-followup: also a no-op for as long as [cursorControlSessionActive] is true - the user's own
      * explicit call, reported directly ("verwirrt und macht die Sache nicht schneller und kann auch dazu
      * führen, dass ungewollt Wörter verstümmelt werden"). The gesture already leaves composing state
@@ -2172,7 +2172,7 @@ class AdaptKeyService : InputMethodService() {
      * text, so a single-line/single-token clipboard does not grow redundant duplicate chips of the main one.
      * Sensitive content (e.g. a password) is masked in every chip's preview. §40: null once the clip is older
      * than [ClipboardPreview.MAX_AGE_MS] - a long-forgotten clipboard entry should not keep resurfacing.
-     *
+     * 
      * @return the chips to show, or null when there is nothing fresh/readable to offer
      */
     private fun buildClipboardChips(): List<SuggestionController.DisplayItem>? {
@@ -2206,7 +2206,7 @@ class AdaptKeyService : InputMethodService() {
      * D-36: shows a direct-paste chip in the suggestion bar when a fresh field opens and the clipboard
      * holds text; a tap pastes it. Typing anything replaces the chip with the normal suggestions - unlike
      * [openClipboardPeek], this field-open case never finalises a composing token (there is none yet).
-     *
+     * 
      * @return true when a chip was actually shown - D-421-followup: [onStartInputView] uses this to decide
      *         whether it is safe to also schedule the reclaim/chip-refresh debounce (which would otherwise
      *         silently wipe this chip again ~100ms later, see that call site's own note)
@@ -2229,7 +2229,7 @@ class AdaptKeyService : InputMethodService() {
      * relies on - so the [SuggestionController.Kind.CLIPBOARD]/[..._FIRST_LINE]/[..._FIRST_CODE] tap handlers
      * a chip tap reaches afterwards never have to reason about a still-live composing span; those were written
      * assuming one never exists, true under the field-open-only trigger but not here.
-     *
+     * 
      * The [reclaimChipRefreshSuppressedUntil] window is armed *before* [finalizeAndCommit] - see
      * [scheduleReclaimAndChipRefresh]'s own KDoc for the race it closes (reported directly: the chips flashed
      * and immediately vanished again). The cursor genuinely moving back off this position afterwards still
@@ -2640,7 +2640,7 @@ class AdaptKeyService : InputMethodService() {
      * (never reset by this method before) staying up at the same time this method now shows the new field's
      * own ordinary content, doubling the row visually. See [resetInlineSuggestions] for the field-change case
      * this complements, not replaces.
-     *
+     * 
      * D-36-followup: also keeps [clipboardPeekButtonView] in sync, in the same square - shown exactly when
      * [showsClipboard] is false and [clipboardPeekAvailable] is true, i.e. the bar is showing something other
      * than the clipboard chips themselves while the clipboard still holds a fresh clip worth reopening. Reads
@@ -3218,11 +3218,11 @@ class AdaptKeyService : InputMethodService() {
      * one cursor-control gesture is running - the single piece of information the screen-space model is
      * built on, since it makes a soft wrap observable (as a jump in the caret's own y coordinate) without
      * the app's text layout ever being exposed.
-     *
+     * 
      * Requested per gesture rather than permanently: an editor that honours this recomputes and reports on
      * every caret move, scroll and layout pass, which is real work for the target app and is of no use to
      * this keyboard at any other time.
-     *
+     * 
      * Not every editor honours it (the return value says whether this one accepted at all, and some accept
      * and then report nothing). That needs no handling here - [applyCursorControlMove] simply keeps using
      * the newline-based model for as long as [cursorControlServo] has been told nothing.
@@ -3240,12 +3240,12 @@ class AdaptKeyService : InputMethodService() {
     /**
      * D-401-followup: feeds each reported caret position into [cursorControlServo] as one "text offset N is
      * drawn at screen point (x, y)" fact, and drives the loop a step further towards its target.
-     *
+     * 
      * **Only a collapsed selection is usable here, and that is a device-confirmed property of the reports
      * rather than caution** (§475): while a selection exists, the reported insertion marker sits at its
      * *anchor*, not at the end being dragged - so Stage 2's moving end is not observable at all, which is
      * why it stays on the newline-based model (see [applyCursorControlMove]).
-     *
+     * 
      * Ignored entirely outside an active gesture, since [startCursorAnchorInfoUpdates] is the only caller
      * that ever asks for these reports in the first place.
      */
@@ -3305,7 +3305,7 @@ class AdaptKeyService : InputMethodService() {
      * there", which is the loop's own termination condition; [CURSOR_CONTROL_SERVO_MAX_PASSES] is the
      * safety net for an editor whose reports never converge, so a pathological one costs a few wasted
      * `setSelection()` calls rather than a livelock.
-     *
+     * 
      * The addressable range is derived from what can actually be read around the caret rather than assumed:
      * `getTextBeforeCursor()`/`getTextAfterCursor()` return however much text exists, so their lengths bound
      * the document exactly whenever it is shorter than the scan window, and harmlessly under-report it when
@@ -3333,27 +3333,27 @@ class AdaptKeyService : InputMethodService() {
     
     /**
      * D-401-followup (§473): routes the drag to whichever of the two models can actually serve it.
-     *
+     * 
      * **The screen-space model** ([VisualCaretServo]) applies whenever the target app reports caret
      * coordinates and this drag has an origin to measure from - then the finger's own travel, scaled by
      * [CursorControlGesture.SCREEN_SPACE_GAIN_HORIZONTAL] and its own lower vertical counterpart, names a
      * point on screen and the caret is driven towards it.
      * That is the only one of the two that can express a *visible* line, so it is the one that matches what
      * the user is actually dragging against.
-     *
+     * 
      * **The newline-based model below** is the fallback, unchanged, for an editor that reports nothing (and,
      * deliberately, for Stage 2 in every editor: while a selection exists, the reported insertion marker
      * sits at its *anchor* rather than at the end being dragged - device-confirmed in §475 - so Stage 2's
      * moving end is not observable and there is nothing for the screen-space model to steer towards. That
      * is a structural property of the reports, not a deferral).
-     *
+     * 
      * D-401-followup: applies the gesture's own current total offset directly and absolutely - never as an
      * incremental delta - matching the user's own explicit correction of this whole mechanism's mental
      * model: dragging right always means "as far right as the current line allows," independent of how far
      * that ends up being, and a line change is a distinct action ([CursorControlGesture.stepsFor]'s own
      * dominant-axis gate already keeps it from ever being a side effect of horizontal dragging) rather than
      * something layered on top of the same incremental character-stepping this used to share.
-     *
+     * 
      * A line change is still walked one real line at a time via [adjacentLineStart] - `InputConnection` has
      * no way to jump to an arbitrary line directly, every read is relative to wherever the real caret
      * currently is - but no longer needs to preserve "column" itself: once however many line-steps [lines]
@@ -3432,7 +3432,7 @@ class AdaptKeyService : InputMethodService() {
      * back to that). Deliberately does not compute or preserve "column" itself any more - the caller's own
      * subsequent, always-direct column clamp in [applyCursorControlMove] settles the exact position once
      * the caret has actually landed on the target line.
-     *
+     * 
      * @return the target line's own start offset, or null if there is no further line in that direction
      *         within [CURSOR_CONTROL_LINE_SCAN_WINDOW] (including an `InputConnection` read failure) - the
      *         caller then leaves [cursorControlPosition] on whichever line it already reached
@@ -3464,28 +3464,28 @@ class AdaptKeyService : InputMethodService() {
      * D-401-followup: the start and end of the line [cursorControlPosition] currently sits on - both at
      * once, since [applyCursorControlMove]'s direct-positioning model needs both on every move to clamp
      * [cursorControlOriginColumn] `+` `characters` into whichever line is active.
-     *
+     * 
      * All this does is read the three pieces of text `InputConnection` can supply and hand them to
      * [CursorLineBounds], which owns the actual reasoning (and its unit tests). The one non-obvious part is
      * *which* piece is which: both read calls are anchored to the selection's own ends, not to the moving
      * end - `getTextBeforeCursor()` returns the text before the selection's start and
      * `getTextAfterCursor()` the text after its end - so in Stage 2 the selection's own content sits
      * between the moving end and one of the two, and has to be stitched back in on that side.
-     *
+     * 
      * **Fixes a device-reported freeze (§475).** The previous version split this into two functions that
      * searched *only* the selection for a line break on that side, and returned null - abandoning the move
      * outright - whenever it found none. Since a selection almost never spans a line break, Stage 2 stopped
      * responding after its very first move, in both directions ("line bounds unavailable - column
      * unchanged", repeated for every subsequent move in the log). Stage 1 was never affected: its selection
      * is always collapsed, so it always took the other branch.
-     *
+     * 
      * A zero-width (empty) line's own start and end are the exact same offset, so the caret cannot leave a
      * blank line via horizontal dragging at all, only via a vertical (line) move - the user's own explicit,
      * repeated requirement that a horizontal drag must never cross a line boundary under any circumstances;
      * "getting stuck" on a blank line until a vertical move actually leaves it is correct, intended
      * behaviour, not a bug (two earlier rounds tried unclamping this case specifically and both reopened
      * the flip this whole mechanism exists to prevent).
-     *
+     * 
      * @return the line's own first and last addressable offset, or null if the text could not be read at
      *         all (in which case the caller leaves the caret where it is)
      */
@@ -3623,10 +3623,22 @@ class AdaptKeyService : InputMethodService() {
      * Delivers [emoji] as a raw Unicode codepoint via `commitText` (L-03): no app-side support is
      * needed. Any in-progress composing token is finalised first, exactly like a delimiter, so it is
      * not silently dropped, then the emoji itself is committed and recorded as the most recent use.
+     * 
+     * D-469: an emoji is exactly as much a new "word" as a typed letter for A-12's deferred
+     * sentence-punctuation space - see [handleKey]'s CHAR branch / [appendLongPressLetter] for the
+     * identical idiom at the other two typing-triggered entry points. Without this, a bare mark
+     * (`.`/`!`/`?`/`,`) left pending right before the emoji panel is opened never gets its trailing
+     * space materialised, since committing an emoji previously went straight through `commitText`
+     * with no awareness of the pending state at all.
      */
     private fun commitEmoji(emoji: String) {
         val ic = currentInputConnection ?: return
         finalizeAndCommit(ic, "")
+        val pendingMark = pendingSentenceMark(ic.getTextBeforeCursor(2, 0)?.toString() ?: "")
+        if (shouldMaterializeSpace(pendingMark, ic)) {
+            ic.commitText(" ", 1)
+        }
+        keyboardView?.pendingSpaceIndicator = false
         ic.commitText(emoji, 1)
         recentEmojis = RecentEmojis.recordUse(recentEmojis, emoji)
         RecentEmojiStore.save(this, recentEmojis)
@@ -4142,7 +4154,7 @@ class AdaptKeyService : InputMethodService() {
      * be mid-word, not the end, while a reclaimed "after" fragment still follows), keeping the ambiguity
      * flags (A-05) in step and refreshing the composing text / suggestions. Re-arms Shift when the removed
      * character was uppercase (G-05 addendum).
-     *
+     * 
      * When the edit point is already at the very start of composing - nothing left to remove on this side,
      * though a reclaimed "after" fragment may still be sitting there - the real character just before the
      * composing region is deleted instead, via [deleteOneBefore]. D-357: that deletion can expose a
@@ -4163,7 +4175,7 @@ class AdaptKeyService : InputMethodService() {
      * going through it here. A non-letter newly exposed (the ordinary case - the deleted character merely
      * uncovers a genuine word boundary, e.g. another space or the start of the field) keeps the original,
      * simpler behaviour unchanged.
-     *
+     * 
      * @param duringRepeat D-138: true when called from [handleBackspaceRepeat] - passed through to
      *        [refreshSuggestions] to skip its more expensive per-keystroke lookups for this tick (see there)
      */
@@ -4319,14 +4331,14 @@ class AdaptKeyService : InputMethodService() {
      * delete-then-retype reproduces exactly what was there); a position reached by deleting anything else
      * (punctuation, whitespace, a digit) is not special at all and gets the same context re-derivation any
      * other newly-reached position does ([armShiftForNextWord]).
-     *
+     * 
      * Addendum to G-05 (+ D-08): when the deleted character was an uppercase letter, Shift is re-armed so
      * the next keystroke reproduces an uppercase character. A deleted lowercase letter sets Shift off
      * outright - not merely left alone, which is the exact bug this reworks: a stale "on" from elsewhere
      * (e.g. a sentence-start arm that never got the chance to re-derive before the delete) must not survive
      * past deleting an ordinary lowercase letter, since a plain letter deletion is never itself a sentence
      * start.
-     *
+     * 
      * D-406: no longer a third, hard "off" branch for whitespace - the deliberately-simpler fix. Deleting
      * punctuation or whitespace was never actually a sentence-start signal by itself (unlike a deleted
      * letter, whose own case *is* the whole signal) - re-deriving from [armShiftForNextWord] already yields
@@ -4334,7 +4346,7 @@ class AdaptKeyService : InputMethodService() {
      * off otherwise) without a separate hard-coded "off" step first. This also folds in and replaces D-45's
      * former standalone re-check in [handleBackspace] (which only ever handled the "on" direction, gated to
      * one call site) - every caller of this function now gets the same full, bidirectional re-derivation.
-     *
+     * 
      * @param ic threaded through to [armShiftForNextWord] for the non-letter case
      */
     private fun applyShiftAfterDelete(deleted: Char, ic: InputConnection) {
@@ -4365,7 +4377,7 @@ class AdaptKeyService : InputMethodService() {
      * space is still owed. A quote right after a bare `SENTENCE_PUNCTUATION` mark with nothing composing is
      * structurally unambiguous as closing - nobody opens a new quote with no space directly after `.`/`!`/
      * `?`/`,`.
-     *
+     * 
      * @param textBeforeCursor the last one or two characters immediately before the cursor
      * @return the pending mark, or `null` when no space is actually pending here
      */
@@ -4389,7 +4401,7 @@ class AdaptKeyService : InputMethodService() {
      * here" is re-derived live from the real document on every call: composing empty (a genuine boundary,
      * not mid-word) and the character immediately before the cursor already a bare mark from
      * `SENTENCE_PUNCTUATION` (`.!?,`) with nothing materialised after it yet.
-     *
+     * 
      * When a space is pending, [raw] decides what happens to it:
      * - another mark from `SENTENCE_PUNCTUATION` glues directly onto the previous one (a run, e.g. `"!?"`) -
      *   no space is ever inserted between them;
@@ -4401,24 +4413,24 @@ class AdaptKeyService : InputMethodService() {
      *   materialising the space here would land it inside the quotes (`"Ja. "` instead of `"Ja."`);
      * - anything else materialises the pending space now, right before committing [raw] - the first point
      *   that genuinely needs the separator to exist.
-     *
+     * 
      * D-370: "pending right here" is resolved via [pendingSentenceMark], which looks one character further
      * back when the character immediately before the cursor is a `"` left behind by the bullet above - so
      * whatever commits *after* the quote (another mark, or the next word's first letter via
      * [shouldMaterializeSpace]) still sees the mark underneath the quote and knows a space is still owed.
-     *
+     * 
      * D-119/D-120: deliberately skipped when the delimiter would land mid-word (the caret sits before the
      * composing token's own end, so [finalizeAndCommit] delegates to `splitComposingAtCaretAndCommit`) - a
      * mid-word delimiter inserts the mark somewhere in the *middle* of the reconstructed text, where a
      * materialised space would land in the wrong place entirely.
-     *
+     * 
      * E-01/U-01/P-01: also skipped entirely for a login/URL field - a `.` inside an e-mail address or a
      * domain name must never grow an uninvited space into the middle of it.
-     *
+     * 
      * Shift is armed ([armShiftForNextWord]) immediately after a sentence-ending mark commits - safe to do
      * right away under the deferred model, unlike the old eager one, since [sentenceStartBefore]'s own
      * virtual-trailing-space handling (D-416) no longer needs a physical space to already exist first.
-     *
+     * 
      * @param ic the current input connection
      * @param raw the punctuation (or leading-digit) character that delimits the token
      */
@@ -4849,7 +4861,7 @@ class AdaptKeyService : InputMethodService() {
      * sustained run of them is a different, stronger signal that the user has genuinely switched languages,
      * not just borrowed one word. D-398: a stored threshold of 0 disables this promotion entirely - only the
      * manual G-01 swipe still changes the active language.
-     *
+     * 
      * D-450-followup: generalised from `trackSustainedEnglishUsage` (English was the only possible
      * [tokenLanguage] `resolveDict()` could ever route to while some other Latin language stayed active,
      * so the old field only needed a plain counter) once `resolveDict()` gained a second routing target -
@@ -4861,7 +4873,7 @@ class AdaptKeyService : InputMethodService() {
      * always either [activeLanguage] itself (resets the counter, exactly as `!= Language.ENGLISH` used to)
      * or [Language.ENGLISH] (accumulates, exactly as before) - it is never a third value, so this
      * generalisation is a strict superset of the old logic, not a behaviour change for it.
-     *
+     * 
      * D-400: [applyActiveLanguageToView] IS now called here (the old English-only version deliberately did
      * NOT, since "this promotion can only ever fire between already-Latin-typeable languages... the layout
      * ... is already correct and simply stays exactly as it was" - true for English, since it needs no
@@ -4872,7 +4884,7 @@ class AdaptKeyService : InputMethodService() {
      * system language regardless of [activeLanguage] whenever [activeLanguage] itself is not
      * [LayoutRegistry.NON_LATIN_LANGUAGES], so re-deriving it for an English promotion yields the identical
      * result the old code left untouched, just computed instead of assumed.
-     *
+     * 
      * @param ic the current input connection
      * @param tokenLanguage the language [finalizeAndCommit] actually routed the just-committed token to
      */
@@ -4936,7 +4948,7 @@ class AdaptKeyService : InputMethodService() {
      * [rawCoordinateCorrection]'s own call site). Evidence-gated at the input level exactly like
      * [rawCoordinateCorrection] - see [MissedBackspaceRecovery]'s own KDoc for why this is not a generic
      * fuzzy-dictionary widen.
-     *
+     * 
      * @param typed the composing token as typed
      * @return a missed-Backspace-derived correction, or null when there is none
      */
@@ -5105,7 +5117,7 @@ class AdaptKeyService : InputMethodService() {
      * noun still capitalises, an editor's field mandate still applies); [sentenceStart] is conservatively
      * assumed false, since a genuine sentence start immediately followed by another already-committed word
      * that then gets fused is a rare edge case, and the fallback (no forced capital) is the safe direction.
-     *
+     * 
      * @param previousWordText the already-committed word whose own first character now leads the fused word
      * @return the context [capitalisation.capitalise] should use for the fused word
      */
@@ -5127,7 +5139,7 @@ class AdaptKeyService : InputMethodService() {
      * (mirrors [performAutocorrectUndo]'s own "verify against ground truth before touching anything"
      * discipline) - [previousWord] is instance-tracked state, never re-read from the document at the moment
      * it was set, so it must not be trusted blindly for a deletion reaching this far back.
-     *
+     * 
      * @param previousWordText the word committed immediately before [typed] (any case, as it actually reads
      *        in the document)
      * @param typed the just-composed current token, exactly as typed (restored on undo)
@@ -6452,7 +6464,7 @@ class AdaptKeyService : InputMethodService() {
      * [Suggestion.word] - both would collapse to the identical (ambiguous-default-lowercase) text.
      * Confirmed directly with the user: both casings must be independently offered, since the app can never
      * know from context alone which one is actually meant.
-     *
+     * 
      * - While [input] is only a genuine *prefix* of the ambiguous word (not yet an exact match): both
      *   casings are offered, so either can be picked while still typing.
      * - Once [input] exactly matches the ambiguous word (case-insensitively): only the *other* casing is
@@ -6467,13 +6479,13 @@ class AdaptKeyService : InputMethodService() {
      *   [expandAmbiguousCasingInPlace] instead of here, because a prediction must keep its own rank rather
      *   than be appended - see that function. The empty-[input] early return below is the boundary between
      *   the two, not a gap.
-     *
+     * 
      * Scans [candidates] (this call's own already-fetched suggestion list) rather than issuing a separate
      * dictionary query - an ambiguous word only matters here if the ordinary search already considered it
      * relevant enough to surface, which also naturally satisfies "may be crowded out by more important
      * words" (see the caller's own slot-budget check in [showSuggestions]) with no extra ranking logic of
      * its own.
-     *
+     * 
      * @param input the composing token
      * @param candidates this call's own ordinary ranked candidates
      * @return the dual-casing chips to offer - one per genuinely ambiguous candidate word once [input]
@@ -6512,20 +6524,20 @@ class AdaptKeyService : InputMethodService() {
      * prediction for a §6-rule-5-ambiguous word only ever offered the single casing
      * `SqliteDictionaryStore.canonicalWordFor()` happened to resolve - the open design question D-440
      * closed with, now answered by the user directly: always offer both.
-     *
+     * 
      * Expands **in place** rather than appending, unlike the typing-time path. While typing, the ambiguous
      * word is pulled out of the ranked list and its chips go to the back, where a better ordinary
      * suggestion may crowd them out (D-404-followup's own explicit design). A prediction can itself be the
      * single best entry in the bar, so appending would demote it to last place - here each ambiguous
      * prediction is replaced by its two casings at its own rank instead, leaving every other prediction's
      * position untouched.
-     *
+     * 
      * The store's own resolved casing keeps the original slot and the alternate follows directly after it,
      * so the ranking's own best guess still reads first. Both are emitted as
      * [SuggestionController.Kind.AMBIGUOUS_CASE] so a tap commits the chosen spelling verbatim - the
      * `NORMAL` branch reaches the identical outcome for an empty `composing` (D-440-followup), but saying
      * so in the kind keeps it from depending on that.
-     *
+     * 
      * @param items the already-rendered display items for this bar
      * @return the same list with every ambiguous entry expanded into both casings, capped at C-03
      */
@@ -6641,7 +6653,7 @@ class AdaptKeyService : InputMethodService() {
      * suggestion, so it always sorts first among whatever [showNextWordPredictions] otherwise finds. Null
      * for a language with no such convention (D-410 fix: previously offered unconditionally regardless of
      * [activeLanguage]).
-     *
+     * 
      * @return the time-suggestion word, or null when the text just committed does not end in a time or the
      *         active language has no such convention
      */
@@ -6657,7 +6669,7 @@ class AdaptKeyService : InputMethodService() {
      * Trigger-1 chip), completing to `"km/h"` with the glued remainder `"h"`. Deliberately not gated through
      * [de.froehlichmedia.adaptkey.language.LanguageRules] unlike [timeSuggestion] - see
      * [SpeedUnitCompletion]'s own KDoc for why `"km/h"` is not treated as a German-specific word here.
-     *
+     * 
      * @return the `"h"` completion, or null when the text just committed does not end in a word-bounded
      *         `"km/"`
      */
@@ -6671,7 +6683,7 @@ class AdaptKeyService : InputMethodService() {
      * standalone digit/punctuation commit (see [finalizeAndCommit]'s own call site for why that path, not
      * [showNextWordPredictions], is what actually needs this for a typed time). Null for a language with
      * no time-suggestion word, same as [timeSuggestion].
-     *
+     * 
      * @param ic the current input connection
      * @return true when a time was found and the suggestion bar now shows the time-suggestion prediction
      */
@@ -6696,7 +6708,7 @@ class AdaptKeyService : InputMethodService() {
      * common case, `/` typed immediately after `"km"` with nothing in between, instead reaches
      * [speedUnitSuffixSuggestion] via the ordinary word-commit path's own [showNextWordPredictions] call, the
      * same split [timeSuggestion]/[showTimeSuggestion] already have for the identical structural reason.
-     *
+     * 
      * @param ic the current input connection
      * @return true when a word-bounded `"km/"` was found and the suggestion bar now shows the `"h"` completion
      */
@@ -6759,7 +6771,7 @@ class AdaptKeyService : InputMethodService() {
      * auto-split more aggressively while typing. A false positive here just delays an ordinary word's
      * promotion by a couple more repetitions, not a real loss - traded deliberately for fewer incorrectly
      * glued-together compounds ending up in the learned-words list.
-     *
+     * 
      * D-404-followup: checked first, ahead of both compound signals - a fully-uppercase token
      * ([Acronym.isAcronym]) is never a suspected unsplit compound (its embedded capitals are exactly what
      * *makes* it an acronym, not evidence of a missing space), so it always gets the ordinary
@@ -6769,7 +6781,7 @@ class AdaptKeyService : InputMethodService() {
      * purpose" - the same embedded-capital signal that correctly flags "MeinAuto" is a false positive for
      * "ETF". [Acronym] is shared with [DictionarySuggestionProvider.bestCorrection]'s own identical check,
      * which vetoes autocorrect against an acronym outright - see its own KDoc.
-     *
+     * 
      * @param word the word being considered for learning (any case)
      * @return [LEARN_THRESHOLD] for an acronym, [COMPOUND_LEARN_THRESHOLD] for a suspected compound, or the
      *         ordinary [LEARN_THRESHOLD] otherwise
@@ -6800,16 +6812,16 @@ class AdaptKeyService : InputMethodService() {
      * is deliberately typing this word in its own, different casing" - without it, D-264's differently-cased
      * learning path wrongly treated *every* sentence-start-capitalised ordinary word (bundled lower-case) as
      * a deliberate casing override and started promoting it as one.
-     *
+     * 
      * Both strings always share the same length here (they come from the same case-insensitive dictionary
      * key, and a case change never alters length), so no length check is needed beyond the empty guard.
-     *
+     * 
      * D-439: this check alone cannot tell "capitalised only because of sentence start" apart from "a
      * homograph proper noun deliberately capitalised mid-sentence" (e.g. the surname "Fröhlich" against the
      * bundled adjective "fröhlich") - both callers must also require [tokenSentenceStart] themselves before
      * treating a match here as nothing to learn; a genuine mid-sentence match must fall through to the
      * ordinary not-yet-known-word path instead, so it can accumulate its own, separately-cased learned entry.
-     *
+     * 
      * @param word the word actually committed/typed
      * @param bundledCasing the bundled entry's own exact stored casing for the same word
      * @return true when the two differ only in their first character's case (or not at all)
@@ -6919,14 +6931,14 @@ class AdaptKeyService : InputMethodService() {
      * `categoryHint`). A no-op with the inert [NoopTier3Provider] ([onnxProvider] is only non-null once a
      * real backend has actually been built - see [loadTier3ProviderAsync]) or when [outcome] made no write
      * ([LearnOutcome.SKIPPED]/[LearnOutcome.PENDING] - nothing yet worth enriching).
-     *
+     * 
      * [dictionaryStore]/[onnxProvider] are captured here on the calling (main) thread before dispatching, so
      * the background task never reads either reassignable field directly once queued - mirrors
      * `refreshSuggestions()`'s own orchestrator-capture pattern (a later language switch or model
      * removal must not make an in-flight background task write into the wrong store or crash on a closed
      * one). [Tier3Provider.predictFamily] is synchronous and heavy, like [Tier3Provider.predict] itself, so
      * it must never run on this (the IME's) calling thread.
-     *
+     * 
      * @param word the word just learned (its own canonical casing)
      * @param outcome this call's own [learnWord]/[learnWordStrong] outcome
      */
@@ -7117,7 +7129,7 @@ class AdaptKeyService : InputMethodService() {
      * D-271: also bails out when the casing difference is confined to the first character AND the token was
      * genuinely at a sentence start ([differsOnlyInFirstChar]), mirroring [learnWord]'s own exception - see
      * its KDoc, including D-439's own fix for the mid-sentence homograph gap.
-     *
+     * 
      * @param word the word to promote
      */
     private fun learnWordStrong(word: String?) {
@@ -7398,7 +7410,7 @@ class AdaptKeyService : InputMethodService() {
     /**
      * D-29: whether [delimiter] is a punctuation mark that should absorb the trailing space left by an
      * accepted suggestion (sentence / clause punctuation, not a space, newline or opening bracket).
-     *
+     * 
      * @param delimiter the committed delimiter
      * @return true when it should eat a preceding accepted-suggestion space
      */
@@ -7418,7 +7430,7 @@ class AdaptKeyService : InputMethodService() {
      * *inside* the composing token, not at its end - the remaining-composing-chars skip lands the check
      * on the real document position right after the whole token regardless of where inside it the tap
      * happened.
-     *
+     * 
      * @param ic the current input connection
      * @return " " when a real trailing space belongs here, "" when the position already needs none
      */
@@ -7485,7 +7497,7 @@ class AdaptKeyService : InputMethodService() {
      * from English regardless of which other language is actually active, so this must route to whatever
      * *is* active rather than assuming it is always German. Conservative by construction (see
      * [LanguageClassifier.isForeign]).
-     *
+     * 
      * D-450-followup: the non-Latin branch below is NOT "these languages can never be auto-switched away
      * from" in general - it is "[languageClassifier]'s own n-gram profiles are exclusively Latin-script and
      * its [LanguageClassifier.isForeign] guard specifically measures GERMAN's own margin, so consulting
@@ -7679,7 +7691,7 @@ class AdaptKeyService : InputMethodService() {
      * composing-empty branch - too narrow: every other commit branch (split, merge, verbatim, the ordinary
      * word-commit path, the A-07 revert retry) still called [armShiftForNextWord] directly and still
      * clobbered Shift, confirmed by a real device report right after that first, incomplete fix.
-     *
+     * 
      * D-378-followup (v2): confirmed by a real device log still broken even after the above - this function
      * itself was already correctly leaving Shift untouched at commit time, but [reclaimWordAtCaret]'s own
      * `armShiftForNextWord` call, ~100ms later via the debounced D-62 reactive reclaim (fires because
@@ -7704,7 +7716,7 @@ class AdaptKeyService : InputMethodService() {
      * indefinitely, since nothing else re-evaluates this outside a commit/field-entry. Never armed in a
      * login/URL/no-suggestions field - those bypass A-12's deferred-space mechanism entirely (see
      * [handlePunctuationDelimiter]'s own guard), so the dot would be actively misleading there.
-     *
+     * 
      * D-370: also stays lit through a closing double-quote (`pendingSentenceMark` sees the mark underneath
      * it) - the space really is still pending at that point, only deferred past the quote, not resolved.
      */
@@ -7723,7 +7735,7 @@ class AdaptKeyService : InputMethodService() {
      * live even where the reactive *reclaim itself* is deliberately suppressed, e.g. Gemini). A login/URL/
      * no-suggestions field never offers it, matching every other §6-bypass point in this file. Composing must
      * be empty too - an already-reclaimed/composing word has nothing further to reclaim.
-     *
+     * 
      * D-414-followup (v2): reported visible with no word anywhere near the caret. Root cause: the first
      * version read `getTextBeforeCursor`/`getTextAfterCursor` as two separate calls - exactly the pattern
      * [reclaimSurroundingWord]'s own D-347 v2 fix deliberately moved away from, after a real device log
@@ -7734,7 +7746,7 @@ class AdaptKeyService : InputMethodService() {
      * function the real reclaim commits with, not a hand-rolled reimplementation of the same "is there a
      * word touching the caret" truth value that could silently drift out of sync with it. Purely a read,
      * never `setComposingRegion` - safe to call regardless of suppression.
-     *
+     * 
      * D-421: reported showing briefly, then hiding again, right after tapping into a *second* word (the
      * first tap into a fresh field never auto-reclaimed at all - see [onStartInputView]'s own D-421 note -
      * so the chip that call should have shown correctly stayed visible into the second tap, then vanished
@@ -7880,7 +7892,7 @@ class AdaptKeyService : InputMethodService() {
      * re-derived fresh here, exactly like [armShiftForNextWord] itself already does). A comma is exempt
      * outright - it never arms a capital in the first place, so Caps being off there carries no such signal
      * and the space still materialises as always.
-     *
+     * 
      * D-404-followup: the original version assumed [isUpperArmed] could only be false here because of that
      * explicit user override - true for an ordinary sentence end, but wrong for a known abbreviation/
      * enumerator ("bzgl.", "1.") deliberately excluded from sentence-start auto-arming in the first place
@@ -7889,7 +7901,7 @@ class AdaptKeyService : InputMethodService() {
      * suppressed the space too, even though two genuinely separate tokens are still being typed. Reported
      * directly: the space-key's own pending dot stayed lit (a space genuinely was still pending), but no
      * space actually materialised once the next letter arrived.
-     *
+     * 
      * @param pendingMark the mark a space is pending against, from [pendingSentenceMark], or `null` when
      *        none is pending
      * @param ic the current input connection, for the fresh [sentenceStartBefore] re-derivation

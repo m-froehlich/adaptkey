@@ -408,7 +408,19 @@ object LanguagePackCatalog {
             // and a link would either chain or assert that the verb form belongs to the noun's family.
             // `dictionaries/de/version.txt` 40 -> 41, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 40 -> 41.
-            version = 41
+            //
+            // D-469 (v1.2.45): "lebensmüde" was missing from `dict.tsv` entirely - "Lebens" (2007, NOUN,
+            // lemma "Leben") and "müde" (28, ADJECTIVE) are each real dictionary words on their own, so
+            // A-05's split gate ("not both halves nouns") found nothing to veto it and silently split the
+            // typed word into "Lebens müde". Added directly as its own entry (freq 15, ADJECTIVE,OTHER,
+            // calibrated against sibling "lebens-" adjectives already in the dictionary - lebenswichtig 8,
+            // lebenslänglich 9, lebensnotwendig 10, kriegsmüde 10, lebensbedrohlich 20, lebensfähig 29,
+            // lebenslang 88); already fully attested with a real declension/degree paradigm in
+            // `wiktionary_adjektive.tsv`, just never picked up because the base lemma never made it into
+            // the frequency corpus - the inflected forms themselves are left for a future paradigm-import
+            // round, not generated here. `dictionaries/de/version.txt` 41 -> 42, pack rebuilt and verified
+            // byte-identical after unzip, `LanguagePackCatalog` version 41 -> 42.
+            version = 42
         ),
         Entry(
             Language.GREEK,

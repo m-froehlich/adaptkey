@@ -1510,9 +1510,11 @@ is a genuine pending boundary, exactly like §6 rule 2's own live capitalisation
 now covering the space as well as the capital. The space (and, for `.`/`!`/`?`, the capital) is materialised
 only once the very next real keystroke resolves what actually belongs there:
 
-- **A letter or digit** that genuinely starts a new word: a real space is inserted first, then the character
-  (capitalised per the already-armed Shift state, same as always). **Exception (D-416-followup):** for a
-  genuine sentence-ending mark (`.`/`!`/`?`, never a comma - a comma never arms a capital in the first place),
+- **A letter or digit** that genuinely starts a new word, **or an emoji tapped from the emoji panel** (L-03,
+  D-470 - the identical entry point [commitEmoji] shares with the letter/long-press-letter paths, since an
+  emoji is exactly as much a new "word" for this purpose as a typed character): a real space is inserted
+  first, then the character/emoji (capitalised per the already-armed Shift state, same as always, for a
+  letter). **Exception (D-416-followup):** for a genuine sentence-ending mark (`.`/`!`/`?`, never a comma - a comma never arms a capital in the first place),
   if Shift's own auto-armed capital has been explicitly disarmed right there before the letter is typed, no
   space is materialised either - continuing directly with no separator, on the understanding that a deliberate
   lower-case override at exactly this position means "carry on, do not start a new, separated word". Whether
@@ -1577,6 +1579,17 @@ S-10's own Reclaim chip already uses.
 D-370: the dot also stays lit through a closing double-quote committed right after the mark, matching the
 closing-quote bullet above - the space really is still pending at that point, only deferred past the quote, not
 resolved, so the dot going dark there would be actively misleading.
+
+D-470: an emoji committed via this app's own emoji panel (L-03) now materialises a genuinely pending mark's
+trailing space exactly like a letter does - previously `commitEmoji` went straight to `commitText` with no
+awareness of the pending state at all, so a period followed immediately by an emoji tap committed with no
+space in between (`"Ja.😀"` instead of `"Ja. 😀"`). Scoped deliberately narrowly to this app's own panel: an
+emoji inserted by a third-party app's own picker (e.g. WhatsApp's in-chat emoji button, which - where it
+draws its own picker rather than deferring to this app's soft-keyboard emoji layer - writes directly into the
+target field, bypassing this app's `InputConnection.commitText` calls entirely) is invisible to this
+mechanism the same way any other externally-inserted text already is; there is no reliable, already-considered
+hook for it that does not touch the composing-state/`onUpdateSelection` area §1's guiding principle flags as
+historically fragile - left as a known, out-of-scope gap rather than guessed at.
 
 ---
 

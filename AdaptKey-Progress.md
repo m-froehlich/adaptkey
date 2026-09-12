@@ -2298,34 +2298,47 @@ non-trivial changes).
   unknowns (the calibration constants above, the context-menu-at-timeout behaviour) that only a real device
   can actually settle; the user's own next step is trying it and reporting what needs to change.
 
-- **§459 (v1.2.19): D-452-followup - diagnostic-only, no behaviour change.** A real device log the user sent
-  (see §459's own D-452 backlog entry above for the full narration) narrowed the still-open "recurring
-  performance problem" to a ~1.3s gap sitting inside `refreshSuggestions()`, between the two points §451
-  already instrumented - both fast in this log too, confirming the stall is genuinely elsewhere in that
-  function. Traced through the code (not guessed) to the strongest remaining suspect: `ambiguousCasingChips()`
-  calls `dictionaryStore.partsOfSpeech()` once per candidate, each doing two uncached SQLite queries
-  (`SqliteDictionaryStore.entryOf()`), up to 24 synchronous main-thread round-trips for a 12-candidate case -
-  right at the exact moment the background deferred/expensive-fallback search (D-160/D-208/D-211) hands its
-  result back for re-entry. The same "redundant per-candidate queries" cost class D-207-D-221 already fixed
-  once elsewhere, apparently never covered for this specific, later-added (D-404-followup) call site.
+- **§485 (v1.2.45): D-469/D-470 - two independently-reported bugs closed in one round.** D-469 (dictionary):
+  typing "Lebensmüde" was silently split into "Lebens müde" - root-caused, not guessed: "lebensmüde" was
+  entirely absent from `dictionaries/de/dict.tsv`, while both halves - "Lebens" (2007, `NOUN`, lemma `Leben`,
+  the genitive) and "müde" (28, `ADJECTIVE`) - are real, independently-existing dictionary words. A-05's own
+  "not both halves nouns" split gate found nothing to veto (one noun, one adjective), so it split cleanly with
+  no protective mechanism ever engaging. Added `lebensmüde` (freq 15, `ADJECTIVE,OTHER`) as its own entry,
+  calibrated against sibling `lebens-` adjectives already present (`lebenswichtig` 8, `lebenslänglich` 9,
+  `lebensnotwendig` 10, `kriegsmüde` 10 as the closest `-müde` peer, `lebensbedrohlich` 20, `lebensfähig` 29,
+  `lebenslang` 88) - A-01 now protects it as a known word, so A-05 never reaches it at all. The word already
+  has a full, real declension/degree paradigm in `wiktionary_adjektive.tsv` (it was simply never picked up,
+  since the base lemma never made it into the frequency corpus in the first place, the identical shape as
+  D-462's verb gap) - the inflected forms themselves are a deliberately separate, not-yet-done extension, not
+  part of this fix. `dictionaries/de/version.txt` 41 -> 42, pack rebuilt and verified byte-identical after
+  unzip, `LanguagePackCatalog` version 41 -> 42; `quality_gate.py --capitalises-nouns` and `lemma_check.py`
+  both PASS.
 
-  Three new temporary timers added exactly where the gap was narrowed to, mirroring §451's own diagnostic
-  style: `ambiguousCasingMs` (wraps the suspect call directly), `extrasMs` (the split/raw-coordinate/
-  autocorrect-chip/speed-unit/missed-backspace block), `pendingMs` (the capitalised-preview computation), and
-  `tier3InlineMs` (the `!tier3Async` inline `tier3.predict()` call, verifying its own "the orchestrator is
-  instant" comment directly rather than trusting it). All four logged via the same `diag("AdaptKeySuggest",
-  ...)` channel §451/§452 already use.
+  D-470 (code, spec A-12): an emoji tapped from this app's own emoji panel (L-03) never materialised a
+  genuinely pending A-12 sentence-punctuation space - typing `.` then opening the panel and tapping an emoji
+  committed `"Ja.😀"`, never `"Ja. 😀"`. Root cause: `commitEmoji()` went straight to `ic.commitText(emoji, 1)`
+  with no awareness of the deferred-space mechanism at all, unlike the two other typing-triggered entry points
+  (`handleKey`'s `CHAR` branch, `appendLongPressLetter`) that already run the identical
+  `pendingSentenceMark()`/`shouldMaterializeSpace()` idiom before appending. Fixed by adding the same three-line
+  idiom to `commitEmoji()` - an emoji is now treated exactly like a letter for this purpose, per the user's own
+  framing. **Deliberately out of scope, and said so rather than guessed at**: an emoji inserted by a
+  third-party app's own picker (the user's own second example, WhatsApp) that writes directly into the target
+  field - bypassing this app's `InputConnection.commitText` entirely - is invisible to this mechanism the same
+  way any other externally-inserted text already is; reacting to it would mean touching the composing-state/
+  `onUpdateSelection` area spec §1's guiding principle already flags as historically fragile, and was not
+  attempted without a design discussion first. See spec A-12's own D-470 addendum.
 
-  **Not yet device-confirmed** - the evidence is a traced, plausible code path, not a live measurement; per
-  this project's own diagnosis convention, nothing was changed behaviourally and no fix was attempted before
-  a real number confirms it. Waiting on the user's next captured log from an actual repro (they will report
-  back once it happens again).
+  No new tests: both touched areas (dictionary content; `AdaptKeyService`'s emoji-commit glue) are this
+  project's own already-accepted untested layers - `commitEmoji()` sits alongside `handleKey`/
+  `appendLongPressLetter`, neither of which carries dedicated tests either. 1651 unit tests unchanged.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 540 -> 541, `versionName` `"1.2.44"` ->
+  `"1.2.45"`. Not yet device-confirmed.
 
-  1589 unit tests unchanged (diagnostic-only, no new logic branch worth a dedicated test - same as §451's own
-  first round of timers). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 514 -> 515,
-  `versionName` `"1.2.18"` -> `"1.2.19"`.
+## Older Rounds (§1-§459, v0.7.6 through v1.2.19) - Pruned From This File
 
-## Older Rounds (§1-§458, v0.7.6 through v1.2.18) - Pruned From This File
+D-469/D-470 (§485): thirty-second pruning pass - §459 removed, cutoff moved from §459 to §460, keeping the
+working set at 25 rounds (§460-§485). Backfilled into History.md first, verbatim, reformatted from this
+file's own bullet shape into History.md's heading+paragraph style, no content summarised or dropped.
 
 D-462 (§483): thirty-first pruning pass - §458 removed, cutoff moved to §459, keeping the working
 set at 25 rounds. Backfilled into History.md first, token-count verified.

@@ -21995,3 +21995,31 @@ instrumented rather than unit tests") - not a new gap this round introduces.
 
 1589 unit tests (1587 -> 1589, +2 new). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
 `versionCode` 513 -> 514, `versionName` `"1.2.17"` -> `"1.2.18"`.
+
+## §459 - D-452-followup - diagnostic-only, no behaviour change: a real device log narrowed D-452's own still-open "recurring performance problem" to a gap sitting inside `refreshSuggestions()`, between the two points §451 already instrumented.
+
+A real device log the user sent (see the D-452 backlog entry for the full narration) narrowed the still-open
+"recurring performance problem" to a ~1.3s gap sitting inside `refreshSuggestions()`, between the two points
+§451 already instrumented - both fast in this log too, confirming the stall is genuinely elsewhere in that
+function. Traced through the code (not guessed) to the strongest remaining suspect: `ambiguousCasingChips()`
+calls `dictionaryStore.partsOfSpeech()` once per candidate, each doing two uncached SQLite queries
+(`SqliteDictionaryStore.entryOf()`), up to 24 synchronous main-thread round-trips for a 12-candidate case -
+right at the exact moment the background deferred/expensive-fallback search (D-160/D-208/D-211) hands its
+result back for re-entry. The same "redundant per-candidate queries" cost class D-207-D-221 already fixed
+once elsewhere, apparently never covered for this specific, later-added (D-404-followup) call site.
+
+Three new temporary timers added exactly where the gap was narrowed to, mirroring §451's own diagnostic
+style: `ambiguousCasingMs` (wraps the suspect call directly), `extrasMs` (the split/raw-coordinate/
+autocorrect-chip/speed-unit/missed-backspace block), `pendingMs` (the capitalised-preview computation), and
+`tier3InlineMs` (the `!tier3Async` inline `tier3.predict()` call, verifying its own "the orchestrator is
+instant" comment directly rather than trusting it). All four logged via the same `diag("AdaptKeySuggest",
+...)` channel §451/§452 already use.
+
+**Not yet device-confirmed** - the evidence is a traced, plausible code path, not a live measurement; per
+this project's own diagnosis convention, nothing was changed behaviourally and no fix was attempted before
+a real number confirms it. Waiting on the user's next captured log from an actual repro (they will report
+back once it happens again).
+
+1589 unit tests unchanged (diagnostic-only, no new logic branch worth a dedicated test - same as §451's own
+first round of timers). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 514 -> 515,
+`versionName` `"1.2.18"` -> `"1.2.19"`.
