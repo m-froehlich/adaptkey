@@ -203,24 +203,49 @@ in every prompt.
   not just assumed from the page rendering.
 - **Real English `en-US` screenshots - RESOLVED (2026-09-12).** The 5 `phoneScreenshots` under
   `fastlane/metadata/android/en-US/images/` were German-language captures (a deliberately-deferred quirk,
-  "das soll erstmal egal sein, damit kommt jeder klar" - see git history for the earlier note); the user has
-  now dropped in real English-language captures in their place, deliberate and confirmed (viewed directly,
-  not assumed) - genuine English keyboard/suggestion-bar/touch-zone-overlay screenshots, not a placeholder.
-  Committed locally; **still needs the user's own push to `origin/main`** (screenshots live with the app's
-  own source, read directly by F-Droid from `Repo:` - no separate `fdroiddata` submission needed, same
-  mechanism as the original screenshot request) before F-Droid's own next build picks them up.
-- **F-Droid maintainer review reply - now actually arrived, response pending (2026-09-12).** The user has a
-  reply email from F-Droid to react to - still needs retrieving/reading before anything here can be acted
-  on; nothing about its content is known yet, so nothing is assumed.
+  "das soll erstmal egal sein, damit kommt jeder klar" - see git history for the earlier note); the user
+  dropped in real English-language captures in their place. Pushed to `origin/main` (confirmed - `git
+  status` shows `main` even with `origin/main`, nothing pending).
+- **F-Droid maintainer review reply (2026-09-12) - a different reviewer, `duckniii`/`seeker`, not**
+  **`Licaon_Kter` from the original round - asked for three things:** "check Enable Reproducible Builds",
+  "add Binaries and AllowedAPKSigningKeys", "remove all other version from Builds block only keep the
+  latest version". Also unrelated but discovered while investigating: the user had created several more
+  version tags since the original submission (`v1.0.13`/`v1.0.20`/`v1.0.21`/`v1.0.22`/`v1.0.24`, plus a
+  non-release `backup-before-bigram-fix-20260906` tag at versionCode 502) intending to eventually push them
+  toward F-Droid, but wanted the *current* solid state to be F-Droid's actual first listing instead - now
+  reached (v1.2.46/versionCode 542, pushed).
+  - **Reproducible Builds: investigated, deliberately declined again, not just re-accepted from the July**
+    **decision unquestioned.** Checked the MR's own template: "Enable Reproducible Builds" sits under
+    "Suggested", not "Required" or "Strongly Recommended" - not a merge blocker. F-Droid's own docs confirm
+    a non-reproducible build only skips *publishing that one version*, it doesn't block the app's
+    inclusion. The original July rationale for skipping it (avoiding a forced reinstall for existing
+    GitHub-Release users) turned out to not really apply - the user judged there's essentially no real
+    install base yet given the app's current lack of visibility. Separately, the user raised - and this
+    holds regardless of the above - that Play Store distribution (already planned) uses Google's own
+    managed signing key regardless of anything done here, so even a perfectly reproducible F-Droid build
+    could never unify signatures across all three channels (GitHub/F-Droid/Play) anyway. `Binaries:`/
+    `AllowedAPKSigningKeys:` were therefore NOT added.
+  - **Builds: block trimmed to a single entry - v1.2.46/versionCode 542, commit `00a9cc6`** - matches the
+    reviewer's ask exactly, and the user's own stated goal. `scandelete`'s list re-derived live from
+    `git ls-tree -r --name-only v1.2.46 -- language-packs/` rather than copied forward from the July
+    draft - it had grown from 2 entries (`de`/`el`) to 30 (the D-441 through D-450-era language-pack
+    rollout), which would otherwise have silently reintroduced the exact "Found ZIP file archive" scanner
+    failure from July, just for 28 more files. Confirmed no other unexpected binary/archive files exist
+    anywhere else in the tagged tree (`gradle-wrapper.jar` is the one hit besides the language packs -
+    standard Gradle Wrapper JAR, F-Droid's own build tooling uses its own `gradlew-fdroid` instead of the
+    project's, and it wasn't flagged by the scanner back in July either - left alone, not added to
+    scandelete). Re-verified against a real local `fdroid rewritemeta` run again - still an exact,
+    stable, canonical match.
 - **Still open:**
-  - React to the F-Droid maintainer's review reply once retrieved (see immediately above).
-  - Push the new English screenshots (see immediately above).
+  - Upload the corrected `metadata/de.froehlichmedia.adaptkey.yml` (see `scratchpad/
+    de.froehlichmedia.adaptkey.yml`, confirmed 0 `\r` bytes) to the MR's branch via GitLab's "Replace
+    file"/Web IDE upload - not copy/paste, per the CRLF lesson from the original submission round.
+  - Optional cleanup, not urgent: delete the stray `backup-before-bigram-fix-20260906` tag (not a real
+    release, versionCode 502 is well below current so it poses no real risk to `UpdateCheckMode: Tags`,
+    but it's not meant to be a discoverable release marker either).
   - Once merged: F-Droid's own build/publish cycle still needs to run before the app actually appears in
     the client - merged is not yet live.
   - Optional, still not done: `de-DE`/`el-GR` screenshot sets (English `en-US` is now real, see above).
-  - Verify the `Categories: [Keyboard & IME]` choice and the exact current build-metadata field set
-    against F-Droid's own docs/`fdroiddata` at MR time - both were checked against the live F-Droid docs
-    and `config/categories.yml` in an earlier session, but that project's conventions can move on.
 
 ## Guardrail - Read Before Touching `onUpdateSelection` / Composing State
 

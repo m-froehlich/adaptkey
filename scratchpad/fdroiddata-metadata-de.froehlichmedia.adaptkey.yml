@@ -1,23 +1,28 @@
 # Draft for fdroiddata's metadata/de.froehlichmedia.adaptkey.yml
 #
 # This file is NOT consumed by this repo's own build - it is the exact content to place at
-# metadata/de.froehlichmedia.adaptkey.yml in a fork of https://gitlab.com/fdroid/fdroiddata,
-# as part of the initial F-Droid submission merge request. Kept here (scratchpad) as the durable,
-# version-controlled source of truth for every future update to that file, since the canonical
-# copy lives in a different repository this project does not control.
+# metadata/de.froehlichmedia.adaptkey.yml in the MR's own branch (m-froehlich-master-patch-41126) on
+# gitlab.com/fdroid/fdroiddata. Kept here (scratchpad) as the durable, version-controlled source of
+# truth for every future update to that file, since the canonical copy lives in a different repository
+# this project does not control.
 #
-# Commit hashes below are the dereferenced targets of the vX.Y.Z annotated tags (see `git tag -l -n1`
-# / `git show <tag>` in this repo) - fdroiddata's `commit:` field requires a full commit hash, not a
-# tag name.
+# 2026-09-12 revision: trimmed to a single Builds entry (the reviewer duckniii/seeker's explicit ask -
+# "remove all other version from Builds block only keep the latest version"), pointing at v1.2.46
+# (versionCode 542), the version the user deliberately brought to a solid state before wanting F-Droid's
+# very first listing to reflect it. Reproducible Builds (Binaries:/AllowedAPKSigningKeys:) deliberately
+# NOT added - that item sits under the MR template's own "Suggested" tier, not "Required", non-
+# reproducibility only skips publishing that one version rather than blocking inclusion, and there is no
+# existing install base via GitHub Releases to protect from a signing-key switch (also, Play Store
+# distribution - already planned - would use Google's own managed signing key regardless, so even a
+# perfectly reproducible F-Droid build could never unify all three channels' signatures anyway).
 #
-# `scandelete` on every entry: F-Droid's build-time scanner rejects any binary archive found anywhere
-# in the checked-out source tree, regardless of whether the Gradle build actually references it. This
-# repo ships two prebuilt language-pack ZIPs at the root (language-packs/adaptkey-lang-{de,el}.zip) -
-# real, intentional downloadable content for the app's own language-pack feature (see
-# AdaptKey-Language-Contribution-Guide.md), not a build input. First CI run on this MR failed with
-# "Found ZIP file archive at language-packs/adaptkey-lang-de.zip" (and -el.zip) for exactly this
-# reason - scandelete tells fdroidserver to remove them before scanning/building, since the compiled
-# APK never needs them.
+# `scandelete` covers every language-pack ZIP actually in the repo at v1.2.46 (30, not the original 2 -
+# the roster grew hugely between the July submission and this revision; re-derive this list live from
+# `git ls-tree -r --name-only <tag> -- language-packs/` if it changes again, never copy forward). F-Droid's
+# scandelete of gradle-wrapper.jar deliberately.
+#
+# `AutoName: AdaptKey` matches what fdroidserver's own checkupdates auto-detects from the real built
+# AndroidManifest.xml - verified against a real `fdroid checkupdates` CI run, not guessed.
 
 Categories:
   - Keyboard & IME
@@ -32,87 +37,46 @@ RepoType: git
 Repo: https://github.com/m-froehlich/adaptkey.git
 
 Builds:
-  - versionName: 1.0.2
-    versionCode: 306
-    commit: d59d66733fb5901cc4ff032d48c446f4175ea76f
+  - versionName: 1.2.46
+    versionCode: 542
+    commit: 00a9cc6afdcd6839fc61334a53321d613c80667b
     gradle:
       - yes
     output: app/build/outputs/apk/release/AdaptKey.apk
     scandelete:
+      - language-packs/adaptkey-lang-az.zip
+      - language-packs/adaptkey-lang-bs.zip
+      - language-packs/adaptkey-lang-cs.zip
+      - language-packs/adaptkey-lang-da.zip
       - language-packs/adaptkey-lang-de.zip
       - language-packs/adaptkey-lang-el.zip
-
-  - versionName: 1.0.3
-    versionCode: 307
-    commit: 1f6cd0b768ee2c94b080f70d6000c379c6d3ba66
-    gradle:
-      - yes
-    output: app/build/outputs/apk/release/AdaptKey.apk
-    scandelete:
-      - language-packs/adaptkey-lang-de.zip
-      - language-packs/adaptkey-lang-el.zip
-
-  - versionName: 1.0.4
-    versionCode: 308
-    commit: 2b2c3cf430d563ec1efaa65ce2f945b97d1af7f6
-    gradle:
-      - yes
-    output: app/build/outputs/apk/release/AdaptKey.apk
-    scandelete:
-      - language-packs/adaptkey-lang-de.zip
-      - language-packs/adaptkey-lang-el.zip
-
-  - versionName: 1.0.5
-    versionCode: 309
-    commit: 1a29d21faa422aa7b7c0bf7aa9c01a879fc77333
-    gradle:
-      - yes
-    output: app/build/outputs/apk/release/AdaptKey.apk
-    scandelete:
-      - language-packs/adaptkey-lang-de.zip
-      - language-packs/adaptkey-lang-el.zip
-
-  - versionName: 1.0.6
-    versionCode: 310
-    commit: c3c546b97f7b3e77e690ce786d33fc22a3ff67dd
-    gradle:
-      - yes
-    output: app/build/outputs/apk/release/AdaptKey.apk
-    scandelete:
-      - language-packs/adaptkey-lang-de.zip
-      - language-packs/adaptkey-lang-el.zip
-
-  - versionName: 1.0.7
-    versionCode: 311
-    commit: e1fab370a636333ef3c635ca370683be1cfeff34
-    gradle:
-      - yes
-    output: app/build/outputs/apk/release/AdaptKey.apk
-    scandelete:
-      - language-packs/adaptkey-lang-de.zip
-      - language-packs/adaptkey-lang-el.zip
-
-  - versionName: 1.0.8
-    versionCode: 312
-    commit: 45dbb3d34b97a4b64f6c897e418b2529e1047029
-    gradle:
-      - yes
-    output: app/build/outputs/apk/release/AdaptKey.apk
-    scandelete:
-      - language-packs/adaptkey-lang-de.zip
-      - language-packs/adaptkey-lang-el.zip
-
-  - versionName: 1.0.10
-    versionCode: 314
-    commit: cc281fa299e65818cc347b88c5919005ab2949f0
-    gradle:
-      - yes
-    output: app/build/outputs/apk/release/AdaptKey.apk
-    scandelete:
-      - language-packs/adaptkey-lang-de.zip
-      - language-packs/adaptkey-lang-el.zip
+      - language-packs/adaptkey-lang-es.zip
+      - language-packs/adaptkey-lang-et.zip
+      - language-packs/adaptkey-lang-fi.zip
+      - language-packs/adaptkey-lang-fr.zip
+      - language-packs/adaptkey-lang-hr.zip
+      - language-packs/adaptkey-lang-hu.zip
+      - language-packs/adaptkey-lang-id.zip
+      - language-packs/adaptkey-lang-it.zip
+      - language-packs/adaptkey-lang-lt.zip
+      - language-packs/adaptkey-lang-lv.zip
+      - language-packs/adaptkey-lang-ms.zip
+      - language-packs/adaptkey-lang-nb.zip
+      - language-packs/adaptkey-lang-nl.zip
+      - language-packs/adaptkey-lang-pl.zip
+      - language-packs/adaptkey-lang-pt.zip
+      - language-packs/adaptkey-lang-ro.zip
+      - language-packs/adaptkey-lang-ru.zip
+      - language-packs/adaptkey-lang-sk.zip
+      - language-packs/adaptkey-lang-sr.zip
+      - language-packs/adaptkey-lang-sv.zip
+      - language-packs/adaptkey-lang-sw.zip
+      - language-packs/adaptkey-lang-tl.zip
+      - language-packs/adaptkey-lang-tr.zip
+      - language-packs/adaptkey-lang-uk.zip
+      - language-packs/adaptkey-lang-uz.zip
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: 1.0.10
-CurrentVersionCode: 314
+CurrentVersion: 1.2.46
+CurrentVersionCode: 542
