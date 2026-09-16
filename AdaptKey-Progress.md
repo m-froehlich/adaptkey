@@ -1158,6 +1158,51 @@ non-trivial changes).
   regression of that existing fix or a related race it does not fully cover. Needs a real device log to
   root-cause properly, per this project's own convention - not attempted blind.
 
+- **D-473 - OPEN, in progress (2026-09-16). Six real-device false-positive-autocorrect reports from the user**
+  **in one batch, each individually root-caused from real code/data before touching anything.** Three closed
+  as pure dictionary content - see §488 (v1.2.48) above for `ek`/`Wert`/`naja`-family. Three remain, split into
+  two genuine design questions and one data recalibration awaiting exact numbers:
+  1. **A-05 split has no confidence gate of its own at all, unlike every other correction mechanism in this**
+     **app.** Root-caused from `"trotzde"` -> `"trotz de"`, `"allerding"` -> `"aller Ding"`, `"direk"` ->
+     `"dir ek"` and `"Schwimmtasche"` -> `"Schwimmt Asche"`: in `AdaptKeyService.finalizeAndCommit()`, the
+     split-veto condition only checks `bestCorrection?.highConfidence` - which means `best.cost <=
+     ADJACENT_SUB_COST` (a pure single-substitution typo), not the candidate's actual `CorrectionConfidence`
+     score. All three word cases had a real, confidence-cleared whole-word candidate (0.85, well above
+     MEDIUM's 0.75 auto-apply bar) that was discarded outright purely because its edit cost was 2 (a missing
+     letter, an insertion) rather than 1. `TokenRepair.trySplit()`/`candidateAt()` itself has no aggregate
+     confidence score at all - only structural gates (per-half frequency >=10, not both nouns, not
+     blacklisted, no protected split-prefix) - so once nothing vetoes it, any structurally-valid two-word
+     pairing wins unconditionally, however coincidental (`"Schwimmtasche"`, where no competing correction even
+     exists). Needs a design discussion: either widen the split-veto condition to any confidence-cleared
+     `bestCorrection` (not only cost<=1), or give the split itself a real `CorrectionConfidence`-style score
+     compared against `AutocorrectAggressiveness`, the way every other correction path already works.
+  2. **The D-39 raw-coordinate-correction fallback (T-02) bypasses `CorrectionConfidence`/`prefixShiftsAway`**
+     **entirely for a typed token that is not itself a known word.** Original report: `"anspringen"` (absent
+     from the dictionary) silently corrected to `"abspringen"` (13, NOUN,OTHER,VERB) - traced to
+     `AdaptKeyService.rawCoordinateCorrection()`, which only requires the geometrically-plausible respelling
+     to be a known word; `provider.shouldOverrideKnownWord()` (the one place `prefixShiftsAway`'s protection
+     lives) is only consulted when the *typed* word is itself already known, which an unknown token by
+     definition is not. `bestCorrection()`'s own ordinary search correctly declines this exact pair
+     (`prefixShiftsAway("anspringen","abspringen")` caps confidence at 0.55, below every auto-apply
+     threshold) - the raw-coordinate fallback then fires afterwards with none of that protection. The
+     user separately reported the reverse direction (`"abspringen"` typed, replaced by `"anspringen"`) and
+     asked to add `"ab"` to `CorrectionConfidence.PLAUSIBLE_GERMAN_PREFIXES` - checked directly against the
+     current source: `"ab"` is already the first entry in that list, so adding it again would be a no-op:
+     for that exact direction, `prefixShiftsAway("abspringen","anspringen")` already evaluates true and
+     should already cap confidence at 0.55 via `shouldOverrideKnownWord`, contradicting the report as
+     described. Flagged back to the user rather than applying a change verified to do nothing - needs
+     either a fresh device log or a re-check of which word was actually typed before any code changes here.
+  3. **`dich`/`dir` frequency recalibration** - same register-skew shape D-304 already fixed for `dein`/`sein`
+     (Wikipedia's encyclopedic register underrepresents direct address). Confirmed via real dictionary data:
+     `dich` (291) vs `sich` (159213, ratio 547x) is the reported case; `dir` (273) vs `die` (889897, ratio
+     3260x) is a matching, not-yet-reported live risk found while investigating (`e`/`r` are QWERTZ-adjacent,
+     same as `d`/`s`). Both exceed `CorrectionConfidence.REQUIRED_OVERRIDE_RATIO` (500) enough to saturate
+     `shouldOverrideKnownWord`'s confidence to 1.0. Exact target frequencies awaiting the user's confirmation
+     - matching D-304's own margin (dein/sein ended at ~53x, safely under the confirmed-bad "Ohren"/"Ihren"
+     70x floor every `AutocorrectAggressiveness` level must stay under) would put `dich` around 3,200 and
+     `dir` around 12,700-17,800, both far above what a naive "match a comparable sibling word" calibration
+     would suggest, purely because `sich`/`die` are themselves so extreme - not applied yet, pending sign-off.
+
 - **D-461 - RESOLVED, device-confirmed (§478, v1.2.38; confirmed 2026-09-09).** Automatic capitalisation now fires only
   for a word with no reading beyond noun/proper noun - §6's rules 3 and 4 collapsed into one `isNounOnly`
   predicate, closing a live bug where a `PROPER_NOUN` tag silently overrode a correctly-detected ambiguity
@@ -1261,6 +1306,38 @@ non-trivial changes).
   for the proof and the numbers. Chain flattening (the larger share of the originally measured defect
   volume) is completely unaffected by this and ran exactly as planned. 446,015 lemma-column rows changed
   across the 31 packs; every pack passes `lemma_check.py` and `quality_gate.py`.
+
+- **§488 (v1.2.48): D-473, first tranche - three of six real-device false-positive-autocorrect reports fixed**
+  **as pure dictionary content, root-caused from actual code/data tracing before touching anything (this**
+  **project's own standing convention), not guessed.** The user reported six distinct bad silent corrections in
+  one batch; each was traced individually rather than assumed to share one cause - three turned out to be
+  content-only, three need a design discussion first (see the D-473 bullet below for the still-open half).
+  - `ek` (50, NOUN,OTHER) removed - confirmed dictionary noise, flagged by the user directly; not itself the
+    root cause of the reported `"direk"` -> `"dir ek"` split (that is a real code gap, see below), just
+    suspicious data cleaned up while already there.
+  - `Wert` (3802) retagged `NOUN` -> `NOUN,ADJECTIVE` - the dictionary carried only the noun reading, so
+    D-461's `isNounOnly` force-capitalised every lower-case `"wert"` (the genuine predicate-adjective use,
+    `"das ist mir viel wert"`). Same missing-homograph-tag shape D-368's campaign already fixed for many other
+    words, this one just was not caught.
+  - Five words in `"naja"`'s own filler/discourse-particle family, entirely absent from the dictionary
+    (confirmed via direct lookup, not assumed): `naja` 900, `tja` 500, `joa` 350, `nunja` 150, `jein` 150 - all
+    tagged `OTHER`, matching the existing convention for interjections/particles (`"Ach"`, `"vielleicht"`).
+    Each candidate's real QWERTZ-adjacent single-substitution neighbours were checked against the live
+    dictionary before its frequency was fixed, not assumed safe - `jein` sits one substitution from `kein`
+    (6304); 150 keeps that ratio (~42x) comfortably under the confirmed-bad "Ohren"/"Ihren" 70x floor every
+    `AutocorrectAggressiveness` level must stay under.
+  
+  `dictionaries/de/dict.tsv` 193,835 -> 193,839 rows; `quality_gate.py --capitalises-nouns` and
+  `lemma_check.py` both PASS. `dictionaries/de/version.txt` 42 -> 43, pack rebuilt and verified byte-identical
+  after unzip, `LanguagePackCatalog` version 42 -> 43. No Kotlin touched, 1651 unit tests unchanged,
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 543 -> 544, `versionName` `"1.2.47"` ->
+  `"1.2.48"`. Not yet device-confirmed. **The other three reported items are still open** - two are real design
+  questions (A-05 split has no confidence gate of its own at all, unlike every other correction mechanism in
+  this app; the D-39 raw-coordinate-correction fallback bypasses `CorrectionConfidence`/`prefixShiftsAway`
+  entirely for an unknown typed token) and one (the `dich`/`dir` frequency recalibration) is a data fix whose
+  exact target numbers are being confirmed with the user before writing them, following the same
+  register-skew precedent D-304 already established for `dein`/`sein`. See the D-473 bullet in this section
+  for the structured breakdown of what remains.
 
 - **§487 (v1.2.47): D-89-followup - the in-app feature-overview catalog (`FeatureCatalog`, D-89, Settings**
   **→ Info & Privacy) refreshed for the first time since D-316/v1.0.0.** User's own direct request: "das

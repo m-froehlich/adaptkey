@@ -506,7 +506,7 @@ bildet	3817	OTHER
 lediglich	3816	OTHER
 kleine	3813	OTHER
 darin	3807	OTHER
-Wert	3802	NOUN
+Wert	3802	NOUN,ADJECTIVE
 zehn	3799	OTHER
 Frage	3796	NOUN,VERB
 Straße	3782	NOUN
@@ -1526,6 +1526,7 @@ verhindern	1439	VERB
 religiösen	1439	OTHER
 ermöglichen	1437	VERB
 vorher	1437	OTHER
+naja	900	OTHER
 vorhin	900	OTHER
 Standort	1437	NOUN
 wirken	1436	VERB
@@ -4298,6 +4299,7 @@ römischer	501	OTHER
 Dur	501	NOUN
 Rückgang	501	NOUN
 Kontinent	501	NOUN
+tja	500	OTHER
 vorliegen	500	VERB
 regelmäßigen	500	OTHER
 Theologen	500	NOUN	Theologe
@@ -6074,6 +6076,7 @@ charakteristische	351	OTHER
 Scott	351	NOUN
 Kindes	351	NOUN	Kind
 Bandbreite	351	NOUN
+joa	350	OTHER
 Ergebnissen	350	NOUN	Ergebnisse
 verkürzt	350	OTHER
 Stickstoff	350	NOUN
@@ -12798,6 +12801,8 @@ Fette	151	NOUN,OTHER	Fett
 Anschlüsse	151	NOUN	Anschluss
 Gewerbegebiet	151	NOUN
 Wismar	151	NOUN,PROPER_NOUN
+jein	150	OTHER
+nunja	150	OTHER
 Hauptfigur	150	NOUN
 behandelten	150	OTHER
 glücklich	150	ADJECTIVE,OTHER
@@ -30999,7 +31004,6 @@ Carters	50	NOUN	Carter
 Magdeburgs	50	NOUN	Magdeburg
 StVO	50	NOUN
 Saljut	50	NOUN
-ek	50	NOUN,OTHER
 Kartäuser	50	NOUN
 Ullstein	50	NOUN
 Galicisch	50	NOUN,OTHER

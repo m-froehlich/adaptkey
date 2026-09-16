@@ -420,7 +420,25 @@ object LanguagePackCatalog {
             // the frequency corpus - the inflected forms themselves are left for a future paradigm-import
             // round, not generated here. `dictionaries/de/version.txt` 41 -> 42, pack rebuilt and verified
             // byte-identical after unzip, `LanguagePackCatalog` version 41 -> 42.
-            version = 42
+            //
+            // D-473 (v1.2.48, first tranche of a real-device false-positive-autocorrect report, root-caused
+            // from actual code tracing per this project's own convention, not guessed): three of six reported
+            // items are pure dictionary content, applied directly, no code change.
+            // (1) "ek" (50, NOUN,OTHER) removed outright - confirmed noise (not the actual root cause of the
+            // reported "direk" -> "dir ek" split, which is a real code gap tracked separately as part of D-473,
+            // but suspicious data worth cleaning up while here).
+            // (2) "Wert" (3802) retagged NOUN -> NOUN,ADJECTIVE - the dictionary carried only the noun reading,
+            // so D-461's isNounOnly forced every lower-case "wert" (the genuine predicate-adjective use, "das
+            // ist mir viel wert") to auto-capitalise; the same missing-homograph-tag shape D-368's campaign
+            // already fixed for many other words, just never caught for this one.
+            // (3) five filler/discourse-particle words in "naja"'s own family were entirely absent - each
+            // checked for collision risk against every real QWERTZ-adjacent neighbour before its frequency was
+            // set, since one of them ("jein") sits one substitution away from "kein" (6304): naja 900, tja 500,
+            // joa 350, nunja 150, jein 150 (kein/jein ratio ~42x, comfortably under the confirmed-bad "Ohren"/
+            // "Ihren" 70x floor). All five tagged OTHER, per the existing convention for interjections/
+            // particles ("Ach", "vielleicht"). `dictionaries/de/version.txt` 42 -> 43, pack rebuilt and
+            // verified byte-identical after unzip, `LanguagePackCatalog` version 42 -> 43.
+            version = 43
         ),
         Entry(
             Language.GREEK,
