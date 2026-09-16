@@ -245,6 +245,21 @@ silent correction applied at commit time was never affected by this - it has alw
 and more tightly gated condition (nothing found by the ordinary, close-cost autocorrect search) - only the
 live chip previewing that upcoming correction while still typing could go missing.
 
+D-473: **the silent commit-time correction previously applied its first known-word respelling**
+**unconditionally whenever the typed token was itself unknown, bypassing every other correction mechanism's**
+**prefix-shift protection entirely.** Real report: `"anspringen"` (absent from the dictionary) silently
+corrected to `"abspringen"` - a genuine prefix-changing substitution (`"an-"` -> `"ab-"`) the ordinary
+edit-distance search already correctly declines. Fixed with real weight given to the touch evidence itself,
+not merely a borrowed cap: each candidate now also carries the exact gap between the touch model's own score
+for the key actually resolved and its runner-up at that tap (previously computed only to *rank* candidates,
+then discarded). A non-negative gap - the touch model's own top pick for that exact tap already disagreed with
+what was resolved - is direct evidence about which key was actually pressed, not a guess from spelling
+closeness, and is trusted outright, past both the ordinary prefix-shift caution and A-01's known-word ratio
+requirement alike; this app's own founding touch-evidence signal (T-01/T-03) earns real weight for the first
+time here. An ordinary (negative) gap keeps exactly the previous ratio-based protection for an already-known
+typed word, and gains the same `prefixShiftsAway` cap every other correction mechanism already has for an
+unknown one.
+
 ### T-04 - Typing Style (Explicit Selection, Load-Bearing for T-03)
 The typing style is **not** auto-detected from taps - it is chosen explicitly during onboarding/calibration
 (K-01) from an ordered list: Both Thumbs, Right Thumb, Left Thumb, Right Index, Left Index (ordered by
@@ -1280,9 +1295,10 @@ umlaut/ß-unfolding (e.g. "uber" resolves via "über") before giving up, per the
 restored, diacritic-complete spelling is what actually gets committed for that half (e.g. "gehortes" ->
 "gehört es", not the literal "gehort es"), while the still-composing preview's own colour spans (S-05) stay
 positioned over the literal typed characters, since that is what is actually on screen while the token is
-still being edited. A split is vetoed if it would lose to a high-confidence single-word correction instead.
-A live two-span colour preview is shown while composing (S-05). Spatial proximity alone is never sufficient -
-a valid linguistic split is required.
+still being edited. A split is vetoed whenever any confidence-cleared single-word correction exists at all, and - when nothing
+vetoes it - the split itself must also clear its own confidence bar before it may apply silently (D-473, see
+below). A live two-span colour preview is shown while composing (S-05). Spatial proximity alone is never
+sufficient - a valid linguistic split is required.
 
 D-352: a configurable mode (C-21) governs how eagerly this whole mechanism may act, independent of the
 gating above - **Automatic** (the default, described above), **Chip only** (a found split is never applied
@@ -1330,6 +1346,27 @@ glued to a noun - the shape a genuine compound takes, since normal phrase syntax
 before a noun ("volles Glas", never bare "voll Glas"); the same particle followed by something that is not a
 noun ("schon gut") still splits normally. Curated by hand, not algorithmically derived, and not claimed to be
 exhaustive.
+
+D-473: **the split-veto condition and the split's own confidence were both real gaps, closed together after a
+real-device false-positive report batch.** Previously, a competing single-word correction only vetoed a split
+when it was found within a single adjacent-key edit (`bestCorrectionFor().highConfidence`) - a cost-2
+correction (e.g. a missing letter: `"trotzde"` -> `"trotzdem"`, `"allerding"` -> `"allerdings"`, `"direk"` ->
+`"direkt"`) could already clear the same confidence bar every other silent correction in this app needs, and
+still be discarded outright in favour of a split with no confidence check of its own at all. Two fixes,
+addressing each half of that gap:
+- The veto now fires whenever *any* confidence-cleared correction was found, not only a single-adjacent-edit
+  one - "found at all" and "confidence-cleared" are the same condition by construction, since the correction
+  search itself already requires clearing that bar to return non-null.
+- `CorrectionConfidence.forSplit` gives the split candidate itself a real, graduated `[0, 1]` score for the
+  first time - each half's dictionary frequency run through the same noun-aware curve `forUnknownToken`
+  already applies to an ordinary correction candidate (D-227's "a rare noun is disproportionately a Wikipedia
+  extraction artefact" reasoning), multiplied together so the split is only as confident as its weakest half.
+  Compared against the active `AutocorrectAggressiveness` level's own auto-apply threshold before the split
+  may apply silently - `TokenRepair.trySplit()` itself is never filtered by it, so a low-confidence split
+  still surfaces as a chip/live preview exactly as before, only silent auto-apply is newly gated. This is the
+  backstop for the case the veto above cannot reach: no competing correction exists at all (`"Schwimmtasche"`
+  -> `"schwimmt"` + `"Asche"`, the other reported case) - confidence 0.73 there, clearing only the most
+  permissive level, down from firing at every level unconditionally before this fix.
 
 ### A-06 - Retroactive Word Merge on Spurious Space
 The inverse of A-05. When a space was registered from a letter-ambiguous tap (T-05) and the following token is not a valid word, the system tests whether removing that space and prepending the letter inferred from the tap's x-coordinate yields a valid or high-probability word. If so, the spurious space is removed and the reconstructed word is committed (e.g. `aber  ald` -> `aber bald`, where the intended `b` landed on the space bar). As with A-05, a valid linguistic result is mandatory; the spatial signal only nominates the candidate.

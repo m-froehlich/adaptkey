@@ -14,10 +14,16 @@ import org.junit.jupiter.api.Test
 /**
  * Unit tests for the pure retroactive token repair: word split (A-05) and word merge (A-06), each
  * requiring a valid linguistic result rather than mere spatial proximity.
- *
+ * 
  * §128 / D-203: the split-candidate gate no longer requires prior bigram co-occurrence (see
  * [TokenRepair]'s own class-level KDoc for why that gate was replaced) - these tests set up frequencies at
  * or above [TokenRepair.MIN_SPLIT_HALF_FREQUENCY] for every word meant to be a valid split half.
+ * 
+ * D-473: every [SplitResult] equality assertion now also pins the real, computed
+ * [CorrectionConfidence.forSplit] value (not `1.0`, [SplitResult]'s own default) - each is the exact
+ * output of that pure function for the test's own fixture frequencies, not guessed. The shared `setUp()`
+ * fixture words ("und"/"das"/"aber"/"bald"/"ist"/"ich") all share frequency 10L and no noun tag, which is
+ * why several otherwise-unrelated splits below land on the identical confidence value.
  */
 class TokenRepairTest {
     
@@ -37,20 +43,20 @@ class TokenRepairTest {
     fun `a flagged space-ambiguous character is split into two words`() {
         // "undxdas" with the 'x' at index 3 flagged -> drop it and split.
         val result = repair.trySplit("undxdas", setOf(3))
-        assertEquals(SplitResult("und", "das"), result)
+        assertEquals(SplitResult("und", "das", confidence = 0.5117088534551829), result)
     }
     
     @Test
     fun `an over-space letter splits even without a T-05 ambiguity flag`() {
         // 'x' physically sits over the space bar, so it is a drop candidate even without a T-05 flag.
         val result = repair.trySplit("undxdas", emptySet())
-        assertEquals(SplitResult("und", "das"), result)
+        assertEquals(SplitResult("und", "das", confidence = 0.5117088534551829), result)
     }
     
     @Test
     fun `a fully missed space is split by inserting a space`() {
         val result = repair.trySplit("aberdas", emptySet())
-        assertEquals(SplitResult("aber", "das"), result)
+        assertEquals(SplitResult("aber", "das", confidence = 0.5117088534551829), result)
     }
     
     @Test
@@ -64,7 +70,7 @@ class TokenRepairTest {
         // recorded, and none is needed any more (D-203): a first-time-typed compound typo has, by
         // definition, never co-occurred as two separate words before, so requiring it rejected exactly the
         // cases this mechanism exists to catch.
-        assertEquals(SplitResult("und", "bald"), repair.trySplit("undbald", emptySet()))
+        assertEquals(SplitResult("und", "bald", confidence = 0.5117088534551829), repair.trySplit("undbald", emptySet()))
     }
     
     @Test
@@ -77,13 +83,13 @@ class TokenRepairTest {
     
     @Test
     fun `D-216 an isCancelled that never returns true leaves the result unchanged`() {
-        assertEquals(SplitResult("und", "bald"), repair.trySplit("undbald", emptySet()) { false })
+        assertEquals(SplitResult("und", "bald", confidence = 0.5117088534551829), repair.trySplit("undbald", emptySet()) { false })
     }
     
     @Test
     fun `an over-space letter is dropped as a likely space mis-tap even without a flag`() {
         // 'c' sits over the space bar on QWERTZ, so "undcdas" is treated as "und" + "das".
-        assertEquals(SplitResult("und", "das"), repair.trySplit("undcdas", emptySet()))
+        assertEquals(SplitResult("und", "das", confidence = 0.5117088534551829), repair.trySplit("undcdas", emptySet()))
     }
     
     @Test
@@ -148,11 +154,15 @@ class TokenRepairTest {
     fun `§128 a function word followed by a noun is a valid split, unlike two nouns`() {
         // "der" (untagged here, matching the real dictionary's OTHER-only article entries) + "kinderarzt"
         // (NOUN) is an entirely ordinary German phrase shape and must still split - only a *both-nouns*
-        // pairing is rejected, not "any pairing involving a noun".
+        // pairing is rejected, not "any pairing involving a noun". D-473: this pair's own confidence (0.35,
+        // since "kinderarzt" at frequency 14 is exactly the kind of rare noun CorrectionConfidence.forSplit
+        // already treats with suspicion) sits below every AutocorrectAggressiveness auto-apply threshold -
+        // trySplit() itself is still expected to find and return it (this test's own subject), only the
+        // caller's silent-apply decision is now gated on confidence separately.
         store.putWord(WordEntry("der", frequency = 1_004_234L))
         store.putWord(WordEntry("kinderarzt", frequency = 14L, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
         
-        assertEquals(SplitResult("der", "kinderarzt"), repair.trySplit("derkinderarzt", emptySet()))
+        assertEquals(SplitResult("der", "kinderarzt", confidence = 0.347203156949109), repair.trySplit("derkinderarzt", emptySet()))
     }
     
     @Test
@@ -183,7 +193,7 @@ class TokenRepairTest {
         store.putWord(WordEntry("übrig", frequency = 325L))
         store.putWord(WordEntry("EBS", frequency = TokenRepair.MIN_SPLIT_ACRONYM_FREQUENCY, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
         
-        assertEquals(SplitResult("übrig", "ebs"), repair.trySplit("übrigebs", emptySet()))
+        assertEquals(SplitResult("übrig", "ebs", confidence = 0.7504085870087361), repair.trySplit("übrigebs", emptySet()))
     }
     
     @Test
@@ -192,7 +202,7 @@ class TokenRepairTest {
         store.putWord(WordEntry("Dock", frequency = TokenRepair.MIN_SPLIT_HALF_FREQUENCY, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
         store.putWord(WordEntry("er", frequency = 120_975L))
         
-        assertEquals(SplitResult("dock", "er"), repair.trySplit("docker", emptySet()))
+        assertEquals(SplitResult("dock", "er", confidence = 0.30293575075462364), repair.trySplit("docker", emptySet()))
     }
     
     @Test
@@ -205,7 +215,7 @@ class TokenRepairTest {
         // The identical pair clears the floor once "mini" is frequent enough - confirming the frequency
         // check, not some other gate, was what rejected it above.
         store.putWord(WordEntry("mini", frequency = TokenRepair.MIN_SPLIT_HALF_FREQUENCY))
-        assertEquals(SplitResult("mini", "wort"), repair.trySplit("miniwort", emptySet()))
+        assertEquals(SplitResult("mini", "wort", confidence = 0.7153382790366967), repair.trySplit("miniwort", emptySet()))
     }
     
     @Test
@@ -370,7 +380,7 @@ class TokenRepairTest {
         store.putWord(WordEntry("schon", frequency = 11_685L, partsOfSpeech = setOf(PartOfSpeech.OTHER)))
         store.putWord(WordEntry("fenster", frequency = 572L, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
         
-        assertEquals(SplitResult("schon", "fenster"), noOpRepair.trySplit("schonfenster", emptySet()))
+        assertEquals(SplitResult("schon", "fenster", confidence = 0.8353138361102325), noOpRepair.trySplit("schonfenster", emptySet()))
     }
     
     @Test
@@ -479,7 +489,7 @@ class TokenRepairTest {
         store.putWord(WordEntry("undcdas", frequency = 15L)) // an unlikely but present "word" for this test
         store.putWord(WordEntry("ist", frequency = 500L))
         
-        assertEquals(SplitResult("undcdas", "ist"), repair.splitAtUnresolvedConnector("undcdasnist"))
+        assertEquals(SplitResult("undcdas", "ist", confidence = 0.8413030972429927), repair.splitAtUnresolvedConnector("undcdasnist"))
     }
     
     @Test

@@ -8,7 +8,7 @@ import de.froehlichmedia.adaptkey.touch.TapPoint
 
 /**
  * D-39: raw-coordinate per-character correction.
- *
+ * 
  * Correction should not work from the committed characters alone but from the retained raw tap coordinates
  * per character (T-02 / T-05). For an unknown word, this walks it character by character and, using each
  * tap's raw position and the personal offset model (T-03), considers the geometrically next-most-plausible
@@ -16,7 +16,7 @@ import de.froehlichmedia.adaptkey.touch.TapPoint
  * under the user's own learned strike distribution at that exact tap. This recovers cases where the original
  * per-tap key resolution ([OffsetModel.resolve]) picked the wrong key out of two genuinely close candidates -
  * something the static adjacency map cannot see, since it never looks at where the tap actually landed.
- *
+ * 
  * Only a single-position substitution is attempted per candidate spelling, since most single-key slips are
  * one position off; heavily garbled tokens (many typos at once) are left to the tier-3 mini-LLM, which tends
  * to recognise the intended word from context instead.
@@ -24,11 +24,27 @@ import de.froehlichmedia.adaptkey.touch.TapPoint
 object RawCoordinateCorrection {
     
     /**
+     * D-473: a single candidate respelling and the real evidence behind it - previously [respellings] threw
+     * the score away after using it only to order candidates, so the caller (D-39's own consumer,
+     * [de.froehlichmedia.adaptkey.AdaptKeyService.rawCoordinateCorrection]) had no way to tell a genuinely
+     * ambiguous tap apart from a merely plausible one; [CorrectionConfidence.forRawCoordinateCorrection]'s
+     * own caller-side gating is exactly what that missing information is for.
+     * 
+     * @property word the respelled candidate (original case preserved)
+     * @property gap the runner-up key's own score minus the actually-resolved key's own score, at the exact
+     *           tap this substitution came from - negative in the normal case (the resolved key was itself
+     *           the model's own best match, the runner-up merely close); non-negative means the touch
+     *           model's own top pick for that tap already disagreed with what was resolved, which is direct
+     *           evidence about which key was actually pressed, not a guess from spelling closeness
+     */
+    data class Respelling(val word: String, val gap: Double)
+    
+    /**
      * Candidate respellings of [token], one per character position, each substituting that position with the
      * geometrically next-most-plausible key under [offsetModel] - ordered best (most confident substitution)
      * first, by how close the runner-up key came to beating the key that was actually chosen. The caller is
      * expected to test each spelling against the dictionary and use the first known word.
-     *
+     * 
      * @param token the composing token as typed (original case preserved in the output)
      * @param taps the raw `ACTION_DOWN` tap for each character, same order and length as [token]; a length
      *   mismatch (e.g. a desync after an edit) yields no candidates rather than risk a wrong substitution
@@ -42,11 +58,11 @@ object RawCoordinateCorrection {
         taps: List<TapPoint>,
         keyCandidates: List<OffsetModel.Candidate>,
         offsetModel: OffsetModel
-    ): List<String> {
+    ): List<Respelling> {
         if (token.isEmpty() || token.length != taps.size || keyCandidates.isEmpty()) {
             return emptyList()
         }
-        val scored = ArrayList<Pair<String, Double>>()
+        val scored = ArrayList<Respelling>()
         for (i in token.indices) {
             val original = token[i]
             val actualId = keyId(original)
@@ -61,9 +77,9 @@ object RawCoordinateCorrection {
             val respelling = token.substring(0, i) + substituted + token.substring(i + 1)
             // The gap is <= 0 in the normal case (the actual key was resolved as the best match); the closer
             // to zero, the more genuinely ambiguous the tap was between the two keys.
-            scored.add(respelling to (runnerUpScore - actualScore))
+            scored.add(Respelling(respelling, runnerUpScore - actualScore))
         }
-        return scored.sortedByDescending { it.second }.map { it.first }
+        return scored.sortedByDescending { it.gap }
     }
     
     private fun keyId(c: Char): String {

@@ -13,7 +13,7 @@ import de.froehlichmedia.adaptkey.suggestion.NoOpDiacriticFolding
 /**
  * The two words a token was split into (A-05); both are returned in lower case, so the caller applies
  * the capitalisation hierarchy (§6) to each part.
- *
+ * 
  * @property left the first word, exactly as typed - kept as the literal substring (not umlaut/ß-restored)
  *           specifically so [spanRanges]' length arithmetic over the still-displayed composing text stays
  *           correct; use [resolvedLeft] for the text that should actually be committed
@@ -22,12 +22,19 @@ import de.froehlichmedia.adaptkey.suggestion.NoOpDiacriticFolding
  *           to a real dictionary word (`resolveWord`'s own umlaut-aware lookup) - e.g. "gehort" -> "gehört".
  *           Defaults to [left] itself when no unfolding was needed (the common case).
  * @property resolvedRight the equivalent of [resolvedLeft] for [right]
+ * @property confidence D-473: [CorrectionConfidence.forSplit]'s own `[0, 1]` score for this split - the
+ *           caller compares it against [AutocorrectAggressiveness] before applying the split silently;
+ *           [TokenRepair] itself never filters on it, so a low-confidence split still surfaces as a chip/
+ *           live preview exactly as before, only silent auto-apply is newly gated. Defaults to `1.0` so
+ *           every caller that constructs a [SplitResult] directly (D-263's own case-locked commit path,
+ *           existing tests) keeps its previous, unfiltered behaviour unless it explicitly says otherwise.
  */
 data class SplitResult(
     val left: String,
     val right: String,
     val resolvedLeft: String = left,
-    val resolvedRight: String = right
+    val resolvedRight: String = right,
+    val confidence: Double = 1.0
 ) {
     
     /**
@@ -36,7 +43,7 @@ data class SplitResult(
      * The strategy is not tracked explicitly; it is recovered from the length arithmetic alone, since a
      * drop split's halves are always exactly one character shorter than [token] combined, while a
      * missed-space split's halves add up to [token] exactly.
-     *
+     * 
      * @param token the exact composing token this result was computed from
      * @return the left and right span ranges, in that order
      */
@@ -50,7 +57,7 @@ data class SplitResult(
 /**
  * D-391: the winning candidate from [TokenRepair.tryFuseAcrossSpace] - two already-committed words replaced
  * by one.
- *
+ * 
  * @property fused the reconstructed word, lower-case (the caller applies §6 capitalisation)
  * @property confidence [MergeConfidence]'s own `[0, 1]` score for this candidate, compared against
  *           [AutoMergeAggressiveness]'s threshold by the caller
@@ -61,11 +68,11 @@ data class FusionCandidate(val fused: String, val confidence: Double)
  * Retroactive token repair for the space/letter confusion bands (T-05): word split (A-05) and word merge
  * (A-06). Pure logic over the {@link DictionaryStore} abstraction, so it is unit-tested with the
  * in-memory store, mirroring {@link DictionarySuggestionProvider} and {@code CapitalisationEngine}.
- *
+ * 
  * Both rules require a valid linguistic result, not mere spatial proximity: a split or merge is applied
  * only when the dictionary (or a high-probability bigram) confirms it. A token that is already a known
  * word is never touched (consistent with A-01).
- *
+ * 
  * §128 (D-203): the split-candidate gate was redesigned after a real, data-confirmed finding - requiring
  * a prior bigram co-occurrence (the old `MIN_SPLIT_BIGRAM`) rejected *every* first-time-typed compound
  * typo by construction (a compound accidentally glued together has, by definition, never been recorded as
@@ -86,14 +93,14 @@ data class FusionCandidate(val fused: String, val confidence: Double)
  * ordinary phrase shape; (4) bigram co-occurrence is no longer a gate at all - it still weights ranking via
  * [score] exactly as before, so a candidate *with* co-occurrence evidence still wins over one without, but
  * a plausible novel pairing is no longer rejected outright for lacking prior evidence.
- *
+ * 
  * D-410: every genuinely language-specific grammar/orthography rule this class applies (the inseparable-
  * prefix and feminine-agent-suffix split vetoes, the verb/adjective inflection protections) is delegated to
  * [languageRules] rather than hardcoded here - see [LanguageRules] for the full rationale. Defaults to
  * [GermanRules] so every existing caller that does not pass one explicitly keeps this class's historical
  * behaviour unchanged; [de.froehlichmedia.adaptkey.AdaptKeyService] is the one production caller that
  * resolves and passes the value matching the actually active language.
- *
+ * 
  * @property store the backing dictionary store
  * @property languageRules the active language's own split/inflection rules (see class KDoc above)
  * @property diacriticFolding D-435: the active language's own diacritic unfold handling (see
@@ -124,7 +131,7 @@ class TokenRepair(
     
     /**
      * Attempts to split [token] into two words (A-05).
-     *
+     * 
      * D-69 / §45: two split strategies are tried and the higher-scoring result wins overall - neither one
      * gets an unconditional priority over the other. A "hit a letter instead of space" mis-tap drops one
      * character and replaces it with a space: the character must be either a T-05 space-ambiguous tap or a
@@ -135,14 +142,14 @@ class TokenRepair(
      * typo be cut into two "known" fragments if either half happened to be an obscure dictionary entry
      * nobody would plausibly have typed there. In all modes each half must also be non-blacklisted; among
      * every valid candidate from both strategies the highest-scoring split wins.
-     *
+     * 
      * D-216: polls [isCancelled] once per split position tried - each position costs several store
      * round-trips via [candidateAt] (D-214), so a token superseded partway through (this now runs on a
      * background thread, see [de.froehlichmedia.adaptkey.AdaptKeyService]'s own `composingPreviewExecutor`)
      * stops there instead of finishing every remaining position for a result nobody is waiting on any more.
      * Whatever was already found is still returned rather than discarded - harmless either way, since the
      * caller re-checks staleness again before ever applying it.
-     *
+     * 
      * @param token the committed token (any case); a known word (or plausible inflection of one) is never split
      * @param spaceAmbiguousIndices the indices flagged space-ambiguous by the T-05 bands
      * @param previousWord the word committed before the token, for bigram scoring; may be null
@@ -194,7 +201,7 @@ class TokenRepair(
      * [trySplit] - there is no longer a *co-occurrence* difference between the two (bigram was never a gate
      * either function still needs), only a difference in which strategies/positions are tried. The caller is
      * responsible for treating the result as a suggestion only, never a silent autocorrect.
-     *
+     * 
      * @param token the composing token (any case); a known word (or plausible inflection of one) is never split
      * @param previousWord the word committed before the token, used only for ranking between multiple
      *        candidate connector positions (via the shared [score]), not as a gate; may be null
@@ -217,7 +224,7 @@ class TokenRepair(
      * [inferredChar] from the tap's x-coordinate and tests whether the result is a valid word or a
      * high-probability continuation of [previousWord]. Only applies when [token] itself is not a valid
      * word.
-     *
+     * 
      * @param previousWord the word before the spurious space, for bigram confirmation; may be null
      * @param inferredChar the letter inferred from the letter-ambiguous tap
      * @param token the token following the spurious space (any case)
@@ -248,7 +255,7 @@ class TokenRepair(
      * [tryMerge] (which only ever repairs the *right*-hand word, gated on a specific T-05 letter-ambiguous
      * tap): here every connector letter is tried unconditionally, with no raw-coordinate evidence needed,
      * and the two original words genuinely fuse into one rather than staying separate.
-     *
+     * 
      * Real example this was designed against: `"Ar eitstag"` -> `"Arbeitstag"` - neither `"Ar"` (itself a
      * real, if obscure, dictionary word - an area unit) nor `"eitstag"` (nonsense) makes sense as the
      * intended text on its own, but inserting `"b"` between them spells a common, everyday compound.
@@ -256,12 +263,12 @@ class TokenRepair(
      * `store.isKnownWord(t)` gate on the right-hand token) - see [MergeConfidence]'s own KDoc for why
      * frequency-based confidence, not a hard "must not already resolve" precondition, is the right gate: a
      * rare real word must still be overridable by a dramatically more common fused reading.
-     *
+     * 
      * Deliberately does not itself decide whether [previousWord] should be un-learned when it does not
      * independently resolve as a real word - the caller already has its own reach-back mechanism for a
      * recently-learned word's record (A-11) and is better placed to decide that; this function is pure
      * dictionary-lookup logic only, mirroring [trySplit]/[tryMerge]'s own scope.
-     *
+     * 
      * @param previousWord the word committed immediately before [currentToken] (any case); never merged
      *        across anything but a plain space, mirroring [tryMerge]'s own scope
      * @param currentToken the just-committed token (any case); only attempted when this is not itself
@@ -294,7 +301,7 @@ class TokenRepair(
      * "mei" + "st" false positive at the source: "meinst" is never itself in the dictionary, so the old
      * `isKnownWord(t)`-only guard let it fall through to split-candidate generation at all - the adjective
      * check closes the analogous "zuversichtlicher" -> "zuversichtlich er" false positive the same way.
-     *
+     * 
      * D-252: the adjective check's own stem test deliberately excludes a noun (`!isNoun(entry)`) - German
      * nouns take no comparative/superlative degree at all, and without this exclusion a bare known-word
      * check wrongly treats "docker" as a plausible comparative of "dock" (`NOUN`), blocking D-244's own
@@ -320,7 +327,7 @@ class TokenRepair(
      * typed substrings ([left]/[right] as passed in, not the umlaut-restored form) so [SplitResult.spanRanges]
      * - which maps back onto the exact characters of the currently displayed composing text - stays correct;
      * only the *resolved* forms are used for the frequency/noun/score lookups below.
-     *
+     * 
      * D-249 / D-410: [languageRules] rejects [left] outright when it is a known inseparable prefix and not
      * also, itself, a genuinely common standalone word - see
      * [de.froehlichmedia.adaptkey.language.GermanRules]'s own KDoc for why "er" is deliberately exempted
@@ -328,7 +335,7 @@ class TokenRepair(
      * of whether [left] happens to independently resolve to a dictionary entry (several of the protected
      * prefixes, e.g. "ent"/"emp"/"be", are not themselves dictionary words at all - this still guards
      * against a future dictionary addition making one of them resolvable).
-     *
+     * 
      * @param left the left half exactly as typed (lower-cased)
      * @param right the right half exactly as typed (lower-cased)
      * @param previousWord the word committed before the token, for bigram scoring; may be null
@@ -388,7 +395,11 @@ class TokenRepair(
         // always-lower-case contract (candidateAt/trySplit both operate on an already-lower-cased token) -
         // the caller's own capitalisation pipeline decides final casing, exactly as it already does for
         // left/right themselves.
-        return SplitResult(left, right, leftEntry.word.lowercase(), rightEntry.word.lowercase()) to
+        // D-473: confidence computed once here (both entries' frequency/POS are already in hand) rather than
+        // re-derived by the caller, mirroring how leftEntry/rightEntry are already reused instead of
+        // re-fetched - see CorrectionConfidence.forSplit's own KDoc for why it is multiplicative.
+        val confidence = CorrectionConfidence.forSplit(leftEntry.frequency, isNoun(leftEntry), rightEntry.frequency, isNoun(rightEntry))
+        return SplitResult(left, right, leftEntry.word.lowercase(), rightEntry.word.lowercase(), confidence) to
             score(leftEntry, rightEntry, previousWord)
     }
     
@@ -396,11 +407,11 @@ class TokenRepair(
      * §128 / D-203: [raw] itself first (the common case - nothing to unfold), then every plausible
      * diacritic-restored spelling ([diacriticFolding]'s own `unfoldCandidates`, D-435), so a half typed
      * without its diacritic still resolves to its real dictionary entry.
-     *
+     * 
      * D-214: returns the resolved [WordEntry] itself, not just its word - [candidateAt] needs the
      * frequency and part-of-speech [isNoun]/[score] would otherwise each independently re-fetch from the
      * store for the very word this call just resolved.
-     *
+     * 
      * @param raw the lower-cased, literally-typed half
      * @return the matched, non-blacklisted entry, or null when no variant matches
      */

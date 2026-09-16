@@ -10,10 +10,10 @@ import kotlin.math.ln
  * gates {@link DictionarySuggestionProvider#bestCorrection} previously used (D-114/D-227's frequency floor
  * plus noun exemption, D-244's flat 100x ratio bar) with one calibrated, graduated measure that
  * {@link AutocorrectAggressiveness}'s two thresholds are compared against.
- *
+ * 
  * Two genuinely different scenarios get their own formula - they measure different things and do not
  * belong on one shared curve:
- *
+ * 
  * - {@link #forUnknownToken}: the typed token has no dictionary entry of its own - confidence rests on how
  *   close the edit is and how plausible the *candidate* is on its own merits (its frequency, weighed
  *   against a much higher bar when it is noun-tagged - D-227's own finding that a rare noun in this
@@ -23,20 +23,20 @@ import kotlin.math.ln
  *   instead rests on how much more frequent the candidate is *relative to the typed word itself* (D-244's
  *   own ratio idea), since a bare candidate frequency says nothing about whether overriding a valid word is
  *   ever justified.
- *
+ * 
  * D-354: {@link #prefixShiftsAway} is folded into both as a **cap**, not a multiplier - deliberately, so a
  * prefix-changing correction can still surface as an ordinary suggestion-bar candidate (confidence still
  * has to clear {@link AutocorrectAggressiveness#chipOfferThreshold} normally) while never being confident
  * enough to silently apply, at any {@link AutocorrectAggressiveness} level. See
  * [PREFIX_CONFIDENCE_CAP]'s own KDoc for why a cap, not a factor.
- *
+ * 
  * D-371: a typed token ending in a digit (e.g. a house/model number glued onto a word) gets the same
  * treatment in {@link #forUnknownToken}, via its own [DIGIT_SUFFIX_CONFIDENCE_CAP] - but this cap sits
  * strictly between [AutocorrectAggressiveness.MEDIUM]'s and [AutocorrectAggressiveness.AGGRESSIVE]'s own
  * auto-apply thresholds rather than below every level's like [PREFIX_CONFIDENCE_CAP], so an otherwise
  * high-confidence candidate can still auto-apply, but only at the most permissive level - see that
  * constant's own KDoc for the exact reasoning and numbers.
- *
+ * 
  * See {@link AutocorrectAggressiveness}'s own KDoc for the full worked calibration of every constant here
  * against the real regression corpus (`due`/`die`, `ddr`/`der`, `Ohren`/`Ihren`, `übrigens`, `Virgin`,
  * `komplezz`/`komplett`, `aberkennen`/`anerkennen`, ...).
@@ -45,7 +45,7 @@ object CorrectionConfidence {
     
     /**
      * Confidence for correcting an unknown (not itself a dictionary word) typed token to [candidate].
-     *
+     * 
      * @param cost the candidate's edit cost from the typed token (D-28)
      * @param candidateFrequency the candidate's own dictionary frequency
      * @param candidateIsNounLike whether the candidate is tagged [PartOfSpeech.NOUN] / [PartOfSpeech.PROPER_NOUN]
@@ -67,11 +67,11 @@ object CorrectionConfidence {
     
     /**
      * Confidence for overriding A-01's protection of a typed token that is itself a known dictionary word.
-     *
+     * 
      * D-113: never fires beyond a single adjacent-key edit ([cost] > 1 returns 0.0 outright) - a genuine
      * frequency-ratio gap between two entirely unrelated, real words (`spreche`/`Sprache`) is not itself
      * evidence that the rarer one was a typo, unlike a genuine cost-1 slip (`due`/`die`).
-     *
+     * 
      * @param cost the candidate's edit cost from the typed token
      * @param typedFrequency the typed word's own dictionary frequency
      * @param candidateFrequency the candidate's own dictionary frequency
@@ -87,18 +87,81 @@ object CorrectionConfidence {
     }
     
     /**
+     * D-473: confidence for an A-05 split of a token into [left]/[right], given each half's own resolved
+     * dictionary entry - previously missing entirely: unlike every other correction mechanism in this file,
+     * {@link de.froehlichmedia.adaptkey.dictionary.TokenRepair#trySplit}'s own gates (per-half frequency
+     * floor, not-both-nouns, no protected split-prefix, ...) had no aggregate confidence of their own at
+     * all, so once nothing vetoed it, any structurally-valid two-word pairing won unconditionally, however
+     * coincidental - e.g. `"Schwimmtasche"` -> `"schwimmt"` + `"Asche"`, neither half individually rare, no
+     * competing correction to prefer instead. Reuses {@link #frequencyFactor} - the same noun-aware curve
+     * {@link #forUnknownToken} already applies to a single correction candidate - multiplicatively over both
+     * halves, so a split is only as confident as its weakest half (D-227's "a rare noun is
+     * disproportionately a Wikipedia extraction artefact" reasoning applies equally to either side of a
+     * split): the historical `"der"` + `"Kinderarzt"` case (D-203) now scores ~0.35, since `"Kinderarzt"`
+     * (frequency 14) is exactly the kind of rare noun {@link #NOUN_REFERENCE_FREQUENCY} already treats with
+     * suspicion elsewhere - it still clears every {@link AutocorrectAggressiveness#chipOfferThreshold}, so
+     * the split still surfaces, just no longer applies silently, consistent with the same "rare noun ->
+     * chip, not silent" precedent {@link #NOUN_REFERENCE_FREQUENCY} was calibrated for in the first place.
+     * 
+     * D-473: this alone does not close every reported false-positive split - a coincidentally frequent
+     * short fragment (e.g. `"trotz"` + `"de"`, both individually unremarkable) can still score high on pure
+     * frequency while being the wrong reading when a much better single-word correction exists. That case is
+     * closed separately, at the call site: [AdaptKeyService.finalizeAndCommit]'s own split-veto condition
+     * now blocks a split whenever *any* confidence-cleared whole-word correction was found at all, not only
+     * one within a single adjacent-key edit - this function is the backstop for when no such correction
+     * exists to veto against.
+     * 
+     * @param leftFrequency the left half's own resolved dictionary frequency
+     * @param leftIsNounLike whether the left half is tagged [PartOfSpeech.NOUN] / [PartOfSpeech.PROPER_NOUN]
+     * @param rightFrequency the right half's own resolved dictionary frequency
+     * @param rightIsNounLike whether the right half is tagged [PartOfSpeech.NOUN] / [PartOfSpeech.PROPER_NOUN]
+     * @return the confidence in `[0, 1]`
+     */
+    fun forSplit(leftFrequency: Long, leftIsNounLike: Boolean, rightFrequency: Long, rightIsNounLike: Boolean): Double {
+        return frequencyFactor(leftFrequency, leftIsNounLike) * frequencyFactor(rightFrequency, rightIsNounLike)
+    }
+    
+    /**
+     * D-473: confidence for a D-39 raw-coordinate-correction candidate (T-02) - previously missing entirely
+     * for a typed token that is not itself a known dictionary word: [de.froehlichmedia.adaptkey.
+     * AdaptKeyService.rawCoordinateCorrection] applied whatever [de.froehlichmedia.adaptkey.suggestion.
+     * RawCoordinateCorrection.respellings] found unconditionally in that case, bypassing [prefixShiftsAway]'s
+     * protection entirely - confirmed root cause of a real report (`"anspringen"`, absent from the
+     * dictionary, silently corrected to `"abspringen"` - a genuine prefix-changing substitution the ordinary
+     * edit-distance search already correctly declines via this exact mechanism). Deliberately simpler than
+     * [forUnknownToken]: the candidate is already dictionary-verified by construction (unlike a free-form
+     * edit-distance guess), so no cost/frequency factor is needed here - only the same prefix-shift caution
+     * every other mechanism in this file already applies.
+     * 
+     * D-473: **not** consulted at all when the touch model's own top pick for the exact tap in question
+     * already disagreed with what was actually resolved (a non-negative gap, see [de.froehlichmedia.
+     * adaptkey.suggestion.RawCoordinateCorrection.Respelling]) - that is direct evidence about which key was
+     * actually pressed, not a guess from spelling closeness, and is treated as strong enough to look past
+     * this caution (and A-01's known-word ratio requirement alike) the same way a pure edit-distance guess
+     * never could. See [de.froehlichmedia.adaptkey.AdaptKeyService.rawCoordinateCorrection] for exactly where
+     * that short-circuit happens - kept there, not folded into this function, since it is a binary
+     * "touch evidence is strong enough to skip this whole check" decision, not itself a graduated confidence.
+     * 
+     * @param prefixShiftsAway [prefixShiftsAway]'s own result for this typed/candidate pair (D-354)
+     * @return the confidence in `[0, 1]`
+     */
+    fun forRawCoordinateCorrection(prefixShiftsAway: Boolean): Double {
+        return if (prefixShiftsAway) PREFIX_CONFIDENCE_CAP else 1.0
+    }
+    
+    /**
      * D-354: whether correcting [typed] to [candidate] changes a plausible German verb/word prefix at the
      * very start of the typed token - e.g. "aberkennen" ("ab-" + "erkennen") corrected to "anerkennen"
      * ("an-" + "erkennen"): the typed token, though not itself in the dictionary, may still be a genuine,
      * simply unlisted, prefixed word - a correction must never *silently* discard that possibility.
-     *
+     * 
      * Deliberately broader than {@link TokenRepair#INSEPARABLE_PREFIXES} - that set exists to gate an A-05
      * *split*, where the Wechselpräfixe (über-/um-/durch-/unter-/voll-/hinter-/wieder-) are deliberately
      * excluded because each is also a common standalone word, so blocking them there would reject far more
      * genuine two-word splits than it would prevent. That reasoning does not apply here at all - this is
      * not a split gate, only a soft plausibility signal that caps how confident an outright substitution
      * may be, so the broader set is used deliberately, not merely reused without thought.
-     *
+     * 
      * @param typed the lower-cased typed token
      * @param candidate the lower-cased correction candidate
      * @return true when the longest matching prefix of [typed] is not also a prefix of [candidate]

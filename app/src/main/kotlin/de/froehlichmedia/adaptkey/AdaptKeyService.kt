@@ -68,6 +68,7 @@ import de.froehlichmedia.adaptkey.dictionary.AutoMergeAggressiveness
 import de.froehlichmedia.adaptkey.dictionary.AutoSplitMode
 import de.froehlichmedia.adaptkey.dictionary.AutocorrectAggressiveness
 import de.froehlichmedia.adaptkey.dictionary.BlacklistCategory
+import de.froehlichmedia.adaptkey.dictionary.CorrectionConfidence
 import de.froehlichmedia.adaptkey.dictionary.DictionaryLoader
 import de.froehlichmedia.adaptkey.dictionary.DictionaryStore
 import de.froehlichmedia.adaptkey.dictionary.DictionarySuggestionProvider
@@ -4588,10 +4589,14 @@ class AdaptKeyService : InputMethodService() {
             // D-352: a case-locked commit still respects the auto-split mode - only AUTOMATIC still applies
             // a found split silently here; CHIP_ONLY/OFF fall through to the plain commitVerbatim() below,
             // exactly like the ordinary (non-case-locked) path further down.
+            // D-473: no competing whole-word correction is ever computed on this path (a case-locked token
+            // bypasses autocorrect entirely, by design) - so CorrectionConfidence.forSplit is the only gate
+            // available here, same backstop role it plays below.
             val split = if ('_' in typed || settings.autoSplitMode != AutoSplitMode.AUTOMATIC) {
                 null
             } else {
                 tokenRepair.trySplit(typed, spaceAmbiguousIndices(), previousWord)
+                    ?.takeIf { it.confidence >= settings.autocorrectAggressiveness.autoApplyThreshold }
             }
             if (split != null) {
                 val committedLength = applySplit(ic, split, delimiter, typed)
@@ -4749,16 +4754,31 @@ class AdaptKeyService : InputMethodService() {
         // correction mechanism - diacritic restoration, the dictionary/edit-distance search, and now the
         // raw-coordinate fallback too - has already had its own chance and found nothing; it must never win
         // merely because it was decided first, only because nothing safer was actually available.
+        // D-473: the veto above was never actually reaching that stated intent - bestCorrection?.highConfidence
+        // means "the correction is a pure single adjacent-key edit" (cost <= ADJACENT_SUB_COST), not "the
+        // correction is confidence-cleared". A cost-2 correction (e.g. a missing letter - "trotzde" ->
+        // "trotzdem", "allerding" -> "allerdings", "direk" -> "direkt") could clear the same
+        // AutocorrectAggressiveness.autoApplyThreshold every other silent correction needs and still be
+        // discarded outright in favour of a split with no confidence check of its own at all. Widened to
+        // autocorrected != null - any correction bestCorrection() actually returned already cleared that
+        // exact threshold internally, so "found at all" and "confidence-cleared" are the same condition here.
         val split = if (
             diacriticWord != null ||
-            bestCorrection?.highConfidence == true ||
+            autocorrected != null ||
             rawCorrected != null ||
             suppressAutocorrect ||
             settings.autoSplitMode != AutoSplitMode.AUTOMATIC
         ) {
             null
         } else {
+            // D-473: the backstop for when no competing correction exists at all to veto against (e.g.
+            // "Schwimmtasche" -> "schwimmt"+"Asche", where nothing else in this chain found anything) -
+            // TokenRepair.trySplit()'s own structural gates (frequency floor, not-both-nouns, ...) never had
+            // an aggregate confidence check of their own; this compares the winning split's own
+            // CorrectionConfidence.forSplit score against the same threshold every other silent correction
+            // in this function already needs, rather than applying unconditionally once structurally valid.
             tokenRepair.trySplit(typed, spaceAmbiguousIndices(), previousWord)
+                ?.takeIf { it.confidence >= settings.autocorrectAggressiveness.autoApplyThreshold }
         }
         val splitMs = SystemClock.uptimeMillis() - splitStartedAt
         if (split != null) {
@@ -4931,23 +4951,47 @@ class AdaptKeyService : InputMethodService() {
      * scored against the personal offset model (T-03), and returns the first one that is a known,
      * non-blacklisted word - or null when none qualifies.
      * 
+     * D-473: previously applied that first respelling unconditionally whenever [typed] was itself not a
+     * known word - bypassing [CorrectionConfidence.prefixShiftsAway]'s protection entirely, unlike the
+     * ordinary edit-distance search right above it. Confirmed root cause of a real report: `"anspringen"`
+     * (absent from the dictionary) silently corrected to `"abspringen"` - a genuine prefix-changing
+     * substitution ([provider.bestCorrectionFor] already declines this exact pair for that reason, at
+     * confidence 0.55). Two tiers now, both keyed off [RawCoordinateCorrection.Respelling.gap]:
+     * - **Strong touch evidence** (`gap >= 0` - the touch model's own top pick for that exact tap already
+     *   disagreed with what was resolved): trusted outright, past both the prefix caution below and A-01's
+     *   known-word ratio requirement alike - this is direct evidence about which key was actually pressed,
+     *   not a guess from spelling closeness, and this app's own founding signal (T-01/T-02/T-03) earns real
+     *   weight for it.
+     * - **Ordinary evidence** (`gap < 0`, ambiguous but not overturning): unchanged behaviour otherwise -
+     *   [CorrectionConfidence.forRawCoordinateCorrection]'s own prefix cap for an unknown [typed], the
+     *   existing [provider.shouldOverrideKnownWord] ratio check for a known one.
+     * 
      * @param typed the composing token as typed
      * @return a raw-coordinate-derived correction, or null when there is none
      */
     private fun rawCoordinateCorrection(typed: String): String? {
         val model = offsetModel ?: return null
         val geometry = keyboardView?.charKeyGeometry() ?: return null
-        val candidate = RawCoordinateCorrection.respellings(typed, composingTaps, geometry, model)
-            .firstOrNull { provider.isKnownWord(it) } ?: return null
+        val match = RawCoordinateCorrection.respellings(typed, composingTaps, geometry, model)
+            .firstOrNull { provider.isKnownWord(it.word) } ?: return null
+        if (match.gap >= 0.0) {
+            return match.word
+        }
+        val confidence = CorrectionConfidence.forRawCoordinateCorrection(
+            CorrectionConfidence.prefixShiftsAway(typed.lowercase(), match.word.lowercase())
+        )
+        if (confidence < settings.autocorrectAggressiveness.autoApplyThreshold) {
+            return null
+        }
         // A-01: never override a word that is already valid (autocorrectFor enforces this too, but it
         // returns null for a known word just like it does for "no correction found" - this fallback must
         // not then reinterpret that as "try harder") - except (§44) when the typed word is itself
         // dramatically rarer than [candidate], matching autocorrectFor's own A-01 override so the two paths
         // agree rather than one silently re-protecting what the other already decided to correct.
-        if (provider.isKnownWord(typed) && !provider.shouldOverrideKnownWord(typed, candidate)) {
+        if (provider.isKnownWord(typed) && !provider.shouldOverrideKnownWord(typed, match.word)) {
             return null
         }
-        return candidate
+        return match.word
     }
     
     /**

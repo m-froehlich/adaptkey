@@ -28,7 +28,29 @@ class RawCoordinateCorrectionTest {
         
         val respellings = RawCoordinateCorrection.respellings("ax", taps, candidates, OffsetModel())
         
-        assertEquals(listOf("bx", "ab"), respellings)
+        assertEquals(listOf("bx", "ab"), respellings.map { it.word })
+    }
+    
+    @Test
+    fun `D-473 - a tap closer to the alternative than the resolved key yields a non-negative gap`() {
+        // Position 0's tap (x=3) sits closer to "b" (distance 2) than to "a" (distance 3, the resolved key) -
+        // the touch model's own top pick already disagrees with what was resolved.
+        val taps = listOf(TapPoint(3f, 0f), TapPoint(100f, 0f))
+        
+        val gap = RawCoordinateCorrection.respellings("ax", taps, candidates, OffsetModel()).first().gap
+        
+        assertTrue(gap >= 0.0)
+    }
+    
+    @Test
+    fun `D-473 - a tap dead-centre on the resolved key yields a negative gap`() {
+        // Position 0's tap sits exactly on "a" - the resolved key is unambiguously the best match, the
+        // runner-up "b" (distance 5) is merely plausible, not competitive.
+        val taps = listOf(TapPoint(0f, 0f), TapPoint(100f, 0f))
+        
+        val gap = RawCoordinateCorrection.respellings("ax", taps, candidates, OffsetModel()).first().gap
+        
+        assertTrue(gap < 0.0)
     }
     
     @Test
@@ -37,7 +59,7 @@ class RawCoordinateCorrectionTest {
         
         val respellings = RawCoordinateCorrection.respellings("Ax", taps, candidates, OffsetModel())
         
-        assertEquals("Bx", respellings.first())
+        assertEquals("Bx", respellings.first().word)
     }
     
     @Test

@@ -1158,46 +1158,38 @@ non-trivial changes).
   regression of that existing fix or a related race it does not fully cover. Needs a real device log to
   root-cause properly, per this project's own convention - not attempted blind.
 
-- **D-473 - OPEN, in progress (2026-09-16). Six real-device false-positive-autocorrect reports from the user**
-  **in one batch, each individually root-caused from real code/data before touching anything.** Three closed
-  as pure dictionary content - see §488 (v1.2.48) above for `ek`/`Wert`/`naja`-family; the `dich`/`dir`
-  frequency recalibration (item 3 below) closed too - see §489 (v1.2.49). Two genuine design questions remain
-  open:
-  1. **A-05 split has no confidence gate of its own at all, unlike every other correction mechanism in this**
-     **app.** Root-caused from `"trotzde"` -> `"trotz de"`, `"allerding"` -> `"aller Ding"`, `"direk"` ->
-     `"dir ek"` and `"Schwimmtasche"` -> `"Schwimmt Asche"`: in `AdaptKeyService.finalizeAndCommit()`, the
-     split-veto condition only checks `bestCorrection?.highConfidence` - which means `best.cost <=
-     ADJACENT_SUB_COST` (a pure single-substitution typo), not the candidate's actual `CorrectionConfidence`
-     score. All three word cases had a real, confidence-cleared whole-word candidate (0.85, well above
-     MEDIUM's 0.75 auto-apply bar) that was discarded outright purely because its edit cost was 2 (a missing
-     letter, an insertion) rather than 1. `TokenRepair.trySplit()`/`candidateAt()` itself has no aggregate
-     confidence score at all - only structural gates (per-half frequency >=10, not both nouns, not
-     blacklisted, no protected split-prefix) - so once nothing vetoes it, any structurally-valid two-word
-     pairing wins unconditionally, however coincidental (`"Schwimmtasche"`, where no competing correction even
-     exists). Needs a design discussion: either widen the split-veto condition to any confidence-cleared
-     `bestCorrection` (not only cost<=1), or give the split itself a real `CorrectionConfidence`-style score
-     compared against `AutocorrectAggressiveness`, the way every other correction path already works.
-  2. **The D-39 raw-coordinate-correction fallback (T-02) bypasses `CorrectionConfidence`/`prefixShiftsAway`**
-     **entirely for a typed token that is not itself a known word.** Original report: `"anspringen"` (absent
-     from the dictionary) silently corrected to `"abspringen"` (13, NOUN,OTHER,VERB) - traced to
-     `AdaptKeyService.rawCoordinateCorrection()`, which only requires the geometrically-plausible respelling
-     to be a known word; `provider.shouldOverrideKnownWord()` (the one place `prefixShiftsAway`'s protection
-     lives) is only consulted when the *typed* word is itself already known, which an unknown token by
-     definition is not. `bestCorrection()`'s own ordinary search correctly declines this exact pair
-     (`prefixShiftsAway("anspringen","abspringen")` caps confidence at 0.55, below every auto-apply
-     threshold) - the raw-coordinate fallback then fires afterwards with none of that protection. The
-     user separately reported the reverse direction (`"abspringen"` typed, replaced by `"anspringen"`) and
-     asked to add `"ab"` to `CorrectionConfidence.PLAUSIBLE_GERMAN_PREFIXES` - checked directly against the
-     current source: `"ab"` is already the first entry in that list, so adding it again would be a no-op:
-     for that exact direction, `prefixShiftsAway("abspringen","anspringen")` already evaluates true and
-     should already cap confidence at 0.55 via `shouldOverrideKnownWord`, contradicting the report as
-     described. Flagged back to the user rather than applying a change verified to do nothing - needs
-     either a fresh device log or a re-check of which word was actually typed before any code changes here.
-  3. **`dich`/`dir` frequency recalibration - RESOLVED, §489 (v1.2.49).** Same register-skew shape D-304
-     already fixed for `dein`/`sein` (Wikipedia's encyclopedic register underrepresents direct address).
-     `dich` 291 -> 2275 (vs. `sich`, the reported case), `dir` 273 -> 12713 (vs. `die`, a matching,
-     not-yet-reported risk found while investigating every real QWERTZ-adjacent collision candidate for both
-     words). See §489 for the full method and numbers.
+- **D-473 - RESOLVED except one still-open sub-question (2026-09-16). Six real-device false-positive-**
+  **autocorrect reports from the user in one batch, each individually root-caused from real code/data before**
+  **touching anything.** Three closed as pure dictionary content - see §488 (v1.2.48) for `ek`/`Wert`/
+  `naja`-family and §489 (v1.2.49) for `dich`/`dir`. Both design questions proposed, discussed, and
+  implemented on explicit go-ahead - see §490 (v1.2.50):
+  1. **A-05 split confidence - RESOLVED, §490.** Root-caused from `"trotzde"` -> `"trotz de"`,
+     `"allerding"` -> `"aller Ding"`, `"direk"` -> `"dir ek"` and `"Schwimmtasche"` -> `"Schwimmt Asche"`: the
+     split-veto condition only checked `bestCorrection?.highConfidence` (`best.cost <= ADJACENT_SUB_COST`, a
+     pure single-substitution typo), not the candidate's actual `CorrectionConfidence` score - all three word
+     cases had a real, confidence-cleared whole-word candidate (0.85) discarded purely for having edit cost 2
+     (a missing letter) instead of 1. `TokenRepair.trySplit()` itself had no aggregate confidence of its own
+     at all. Fixed both halves: the veto widened to any confidence-cleared correction (`autocorrected !=
+     null`), and a new `CorrectionConfidence.forSplit` gives the split its own multiplicative, noun-aware
+     confidence, carried on a new `SplitResult.confidence` field and checked only at the silent-apply call
+     sites (chip/preview untouched). See §490 for the full mechanism, the historical `"der"`+`"Kinderarzt"`
+     regression check, and the disclosed `"Schwimmtasche"` residual (reduced to AGGRESSIVE-only, not
+     eliminated - no competing correction exists there to veto against).
+  2. **T-02 raw-coordinate correction now weighs real touch evidence - RESOLVED, §490.** Original report:
+     `"anspringen"` (absent from the dictionary) silently corrected to `"abspringen"` - traced to
+     `AdaptKeyService.rawCoordinateCorrection()` applying its first known-word respelling unconditionally for
+     an unknown typed token, bypassing `CorrectionConfidence.prefixShiftsAway` entirely (the ordinary
+     edit-distance search already declines this exact pair, confidence 0.55). Fixed per the user's own
+     explicit direction to give touch evidence more weight, not less: `RawCoordinateCorrection.respellings()`
+     already computed a real per-candidate ambiguity score (the touch model's own gap between the resolved
+     key and its runner-up) and threw it away after using it only to rank candidates - now threaded out via a
+     new `Respelling(word, gap)` type. A non-negative gap (the touch model's own top pick already disagreed
+     with what was resolved) is trusted outright, past both the prefix cap and A-01's ratio requirement alike;
+     an ordinary negative gap keeps the previous protections, now including the missing prefix cap for an
+     unknown typed word. **The reverse-direction report (`"abspringen"` typed, replaced by `"anspringen"`)**
+     **is still open** - `"ab"` is confirmed already present in `PLAUSIBLE_GERMAN_PREFIXES` (checked again
+     against the current source), so this fix does not explain that direction on its own; needs a fresh
+     device log or a re-check of which word was actually typed before any further code change there.
 
 - **D-461 - RESOLVED, device-confirmed (§478, v1.2.38; confirmed 2026-09-09).** Automatic capitalisation now fires only
   for a word with no reading beyond noun/proper noun - §6's rules 3 and 4 collapsed into one `isNounOnly`
@@ -1302,6 +1294,63 @@ non-trivial changes).
   for the proof and the numbers. Chain flattening (the larger share of the originally measured defect
   volume) is completely unaffected by this and ran exactly as planned. 446,015 lemma-column rows changed
   across the 31 packs; every pack passes `lemma_check.py` and `quality_gate.py`.
+
+- **§490 (v1.2.50): D-473, third tranche - closes the batch. Both remaining design questions resolved on**
+  **explicit user go-ahead ("Ja, beide Vorschläge bitte umsetzen"), after each was proposed and discussed**
+  **first per this project's own convention.**
+  
+  **A-05 split confidence (the "trotzde"/"allerding"/"direk"/"Schwimmtasche" root cause).** Two parts, both
+  needed: (1) `AdaptKeyService.finalizeAndCommit()`'s own split-veto widened from `bestCorrection?.
+  highConfidence == true` (cost <= 1 only) to `autocorrected != null` (any confidence-cleared correction,
+  matching what the surrounding KDoc already claimed the mechanism did) - closes the three word-splitting
+  reports outright, since all three had a cost-2 whole-word correction that already cleared
+  `AutocorrectAggressiveness`'s own threshold but was discarded for having the wrong edit cost. (2) new
+  `CorrectionConfidence.forSplit(leftFrequency, leftIsNounLike, rightFrequency, rightIsNounLike)` - reuses
+  the existing noun-aware `frequencyFactor` curve multiplicatively over both halves (a split is only as
+  confident as its weakest half), computed once in `TokenRepair.candidateAt()` and carried on a new
+  `SplitResult.confidence` field (default `1.0`, mirroring `FusionCandidate`'s own D-391 precedent so every
+  existing direct-construction call site - the case-locked commit path, a tapped mid-word-split chip -
+  keeps its prior, unfiltered behaviour). Compared against the aggressiveness threshold only at the two
+  silent-apply call sites (the ordinary commit path and the case-locked one); `trySplit()` itself is never
+  filtered, so the chip/live preview is unaffected - a low-confidence split still surfaces, only silent
+  auto-apply is newly gated. Verified against the historical D-203 good-split precedent (`"der"` +
+  `"Kinderarzt"`) before shipping: it now scores 0.35 (`"Kinderarzt"`, frequency 14, is exactly the kind of
+  rare noun this reuses `forUnknownToken`'s own D-114/D-227 suspicion for) - demoted from silent-apply to
+  chip-only, a real, disclosed, and accepted behaviour change (findable in the exact same rare-noun shape
+  `forUnknownToken` already treats this way for an ordinary correction). `"Schwimmtasche"` itself scores 0.73
+  - reduced from firing at every level to only the most permissive one, not eliminated (no competing
+  correction exists there at all to veto against - the honest residual, named up front when this was
+  proposed).
+  
+  **T-02 raw-coordinate correction now gives real weight to touch evidence, per explicit user direction**
+  **("die Touch Evidenz ist die ursprüngliche Seele des Projekts... lass uns ihr mehr Bedeutung geben").**
+  Root cause of the `"anspringen"` -> `"abspringen"` report: `AdaptKeyService.rawCoordinateCorrection()`
+  applied its first known-word respelling unconditionally whenever the typed token was itself unknown,
+  bypassing `CorrectionConfidence.prefixShiftsAway`'s protection entirely - the ordinary edit-distance search
+  already correctly declines this exact pair (confidence 0.55, `"an-"` -> `"ab-"`). Fixed by finally using a
+  value that existed all along and was thrown away: `RawCoordinateCorrection.respellings()` already computed,
+  per candidate, the gap between the touch model's own score for the actually-resolved key and its runner-up
+  at that exact tap - used only to *rank* candidates, never exposed. New `Respelling(word, gap)` return type
+  threads it out. A non-negative gap (the touch model's own top pick for that tap already disagreed with what
+  was resolved - direct evidence about which key was actually pressed, not a spelling guess) is now trusted
+  outright in `rawCoordinateCorrection()`, past both the prefix-shift cap and A-01's known-word ratio
+  requirement alike; an ordinary (negative) gap keeps the previous ratio check for a known typed word and
+  gains the same `prefixShiftsAway` cap (new `CorrectionConfidence.forRawCoordinateCorrection`) for an unknown
+  one. The reverse-direction report (`"abspringen"` typed, replaced by `"anspringen"`) stays unresolved as its
+  own open question - checked again against the now-current source, `"ab"` is still already in
+  `PLAUSIBLE_GERMAN_PREFIXES`, so this fix does not by itself explain that direction; needs its own fresh
+  device log per the D-473 bullet below.
+  
+  Two new pure-logic test classes extended: `CorrectionConfidenceTest` (+6: `forSplit`'s clamp/weakest-link/
+  real-`Kinderarzt`/real-`Schwimmtasche` cases, `forRawCoordinateCorrection`'s real `anspringen` case) and
+  `RawCoordinateCorrectionTest` (+2: the non-negative/negative gap cases, using the existing ambiguous-tap
+  fixture). `TokenRepairTest`'s existing `SplitResult` equality assertions updated to pin the real, computed
+  confidence value for each fixture pair, not guessed - the shared `setUp()` fixture words all share
+  frequency 10L and no noun tag, which is why several otherwise-unrelated splits land on the identical
+  0.5117088534551829 confidence value. 1659 unit tests (1651 -> 1659, +8). `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green. `versionCode` 545 -> 546, `versionName` `"1.2.49"` -> `"1.2.50"`. Spec A-05/
+  T-02 updated with the new D-473 addenda. Not yet device-confirmed. **D-473 is now fully closed** except the
+  still-open `"abspringen"`/`"anspringen"` direction question named above.
 
 - **§489 (v1.2.49): D-473, second tranche - "dich"/"dir" frequency recalibration, the same Wikipedia**
   **register-skew D-304 already fixed for "dein"/"sein".** User confirmed the target range from §488's own

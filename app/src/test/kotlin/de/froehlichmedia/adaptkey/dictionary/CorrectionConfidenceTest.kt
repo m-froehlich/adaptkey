@@ -153,4 +153,60 @@ class CorrectionConfidenceTest {
             assertTrue(score >= level.chipOfferThreshold, "expected >= ${level.chipOfferThreshold} at $level, was $score")
         }
     }
+    
+    @Test
+    fun `forSplit clamps to 1_0 when both halves are well above their own reference frequency`() {
+        assertEquals(1.0, CorrectionConfidence.forSplit(100_000L, false, 100_000L, false))
+    }
+    
+    @Test
+    fun `forSplit D-473 der plus Kinderarzt scores low due to the rare noun half - real bundled frequencies`() {
+        // "derkinderarzt" -> "der" (1,004,234, OTHER) + "Kinderarzt" (14, NOUN) - the historical D-203 good
+        // split. The rare noun half now drags confidence below every auto-apply threshold (consistent with
+        // forUnknownToken's own D-114 "Virgin" precedent for a rare noun candidate) - trySplit() itself
+        // still finds and returns it (TokenRepairTest's own subject), only silent auto-apply is newly gated.
+        val score = CorrectionConfidence.forSplit(1_004_234L, false, 14L, true)
+        for (level in AutocorrectAggressiveness.entries) {
+            assertTrue(score < level.autoApplyThreshold, "expected < ${level.autoApplyThreshold} at $level, was $score")
+        }
+    }
+    
+    @Test
+    fun `forSplit D-473 Schwimmtasche - schwimmt plus Asche - clears AGGRESSIVE but not MEDIUM or CAUTIOUS`() {
+        // "Schwimmtasche" -> "schwimmt" (51, OTHER) + "Asche" (264, NOUN) - the reported false-positive
+        // split (nothing else in the dictionary is close enough to compete against it). Neither half is
+        // rare enough to fall below every level the way the Kinderarzt case does - reduced from firing at
+        // every level (the pre-D-473 behaviour) to only the most permissive one, not eliminated outright.
+        val score = CorrectionConfidence.forSplit(51L, false, 264L, true)
+        assertTrue(
+            score >= AutocorrectAggressiveness.AGGRESSIVE.autoApplyThreshold,
+            "expected >= AGGRESSIVE (${AutocorrectAggressiveness.AGGRESSIVE.autoApplyThreshold}), was $score"
+        )
+        assertTrue(score < AutocorrectAggressiveness.MEDIUM.autoApplyThreshold, "expected < MEDIUM, was $score")
+        assertTrue(score < AutocorrectAggressiveness.CAUTIOUS.autoApplyThreshold, "expected < CAUTIOUS, was $score")
+    }
+    
+    @Test
+    fun `forSplit is multiplicative - one weak half tanks confidence even when the other is at maximum`() {
+        val bothStrong = CorrectionConfidence.forSplit(100_000L, false, 100_000L, false)
+        val oneWeak = CorrectionConfidence.forSplit(100_000L, false, 1L, true)
+        assertTrue(oneWeak < bothStrong)
+        assertTrue(oneWeak < AutocorrectAggressiveness.AGGRESSIVE.autoApplyThreshold, "expected a weak half to fail every level, was $oneWeak")
+    }
+    
+    @Test
+    fun `forRawCoordinateCorrection is 1_0 when the candidate does not shift the typed word's own prefix`() {
+        assertEquals(1.0, CorrectionConfidence.forRawCoordinateCorrection(prefixShiftsAway = false))
+    }
+    
+    @Test
+    fun `forRawCoordinateCorrection D-473 a prefix-shifting candidate never clears any auto threshold - anspringen to abspringen`() {
+        // "anspringen" (absent from the dictionary) silently corrected to "abspringen" (13, a genuine
+        // prefix-changing substitution "an-" -> "ab-") - the reported bug: this path previously applied its
+        // first known-word respelling unconditionally, bypassing prefixShiftsAway entirely.
+        val score = CorrectionConfidence.forRawCoordinateCorrection(prefixShiftsAway = true)
+        for (level in AutocorrectAggressiveness.entries) {
+            assertTrue(score < level.autoApplyThreshold, "expected < ${level.autoApplyThreshold} at $level, was $score")
+        }
+    }
 }
