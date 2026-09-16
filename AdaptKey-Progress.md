@@ -1160,8 +1160,9 @@ non-trivial changes).
 
 - **D-473 - OPEN, in progress (2026-09-16). Six real-device false-positive-autocorrect reports from the user**
   **in one batch, each individually root-caused from real code/data before touching anything.** Three closed
-  as pure dictionary content - see §488 (v1.2.48) above for `ek`/`Wert`/`naja`-family. Three remain, split into
-  two genuine design questions and one data recalibration awaiting exact numbers:
+  as pure dictionary content - see §488 (v1.2.48) above for `ek`/`Wert`/`naja`-family; the `dich`/`dir`
+  frequency recalibration (item 3 below) closed too - see §489 (v1.2.49). Two genuine design questions remain
+  open:
   1. **A-05 split has no confidence gate of its own at all, unlike every other correction mechanism in this**
      **app.** Root-caused from `"trotzde"` -> `"trotz de"`, `"allerding"` -> `"aller Ding"`, `"direk"` ->
      `"dir ek"` and `"Schwimmtasche"` -> `"Schwimmt Asche"`: in `AdaptKeyService.finalizeAndCommit()`, the
@@ -1192,16 +1193,11 @@ non-trivial changes).
      should already cap confidence at 0.55 via `shouldOverrideKnownWord`, contradicting the report as
      described. Flagged back to the user rather than applying a change verified to do nothing - needs
      either a fresh device log or a re-check of which word was actually typed before any code changes here.
-  3. **`dich`/`dir` frequency recalibration** - same register-skew shape D-304 already fixed for `dein`/`sein`
-     (Wikipedia's encyclopedic register underrepresents direct address). Confirmed via real dictionary data:
-     `dich` (291) vs `sich` (159213, ratio 547x) is the reported case; `dir` (273) vs `die` (889897, ratio
-     3260x) is a matching, not-yet-reported live risk found while investigating (`e`/`r` are QWERTZ-adjacent,
-     same as `d`/`s`). Both exceed `CorrectionConfidence.REQUIRED_OVERRIDE_RATIO` (500) enough to saturate
-     `shouldOverrideKnownWord`'s confidence to 1.0. Exact target frequencies awaiting the user's confirmation
-     - matching D-304's own margin (dein/sein ended at ~53x, safely under the confirmed-bad "Ohren"/"Ihren"
-     70x floor every `AutocorrectAggressiveness` level must stay under) would put `dich` around 3,200 and
-     `dir` around 12,700-17,800, both far above what a naive "match a comparable sibling word" calibration
-     would suggest, purely because `sich`/`die` are themselves so extreme - not applied yet, pending sign-off.
+  3. **`dich`/`dir` frequency recalibration - RESOLVED, §489 (v1.2.49).** Same register-skew shape D-304
+     already fixed for `dein`/`sein` (Wikipedia's encyclopedic register underrepresents direct address).
+     `dich` 291 -> 2275 (vs. `sich`, the reported case), `dir` 273 -> 12713 (vs. `die`, a matching,
+     not-yet-reported risk found while investigating every real QWERTZ-adjacent collision candidate for both
+     words). See §489 for the full method and numbers.
 
 - **D-461 - RESOLVED, device-confirmed (§478, v1.2.38; confirmed 2026-09-09).** Automatic capitalisation now fires only
   for a word with no reading beyond noun/proper noun - §6's rules 3 and 4 collapsed into one `isNounOnly`
@@ -1306,6 +1302,26 @@ non-trivial changes).
   for the proof and the numbers. Chain flattening (the larger share of the originally measured defect
   volume) is completely unaffected by this and ran exactly as planned. 446,015 lemma-column rows changed
   across the 31 packs; every pack passes `lemma_check.py` and `quality_gate.py`.
+
+- **§489 (v1.2.49): D-473, second tranche - "dich"/"dir" frequency recalibration, the same Wikipedia**
+  **register-skew D-304 already fixed for "dein"/"sein".** User confirmed the target range from §488's own
+  proposal ("dir ist auch ein häufiges Wort... setze es auf die niedrigste Frequenz, für die diese ungewollte
+  Ersetzung nicht passiert") - applied to both `dich` and `dir` together, since both share the identical
+  mechanism. `dich` 291 -> 2275 (vs. `sich` 159213, the originally reported case); `dir` 273 -> 12713 (vs.
+  `die` 889897, a matching, not-yet-reported live risk found while investigating every real QWERTZ-adjacent
+  collision candidate for both words, not just the one reported - `e`/`r` are neighbours exactly like `d`/`s`
+  are). Both land at ratio ~70x against their respective collision word, matching the margin the confirmed-bad
+  "Ohren"/"Ihren" precedent already established as the floor no `AutocorrectAggressiveness` level may cross -
+  deliberately not the bare mathematical minimum (`dir`'s own exact floor, protecting even AGGRESSIVE via
+  `500^0.7`, is ~11,483), to avoid depending on an exact floating-point threshold boundary.
+  `dictionaries/de/dict.tsv` unchanged row count (293,839 rows - kept in place, not moved, despite the large
+  frequency jump - the file's own rough frequency ordering is not itself enforced anywhere); `quality_gate.py
+  --capitalises-nouns` and `lemma_check.py` both PASS. `dictionaries/de/version.txt` 43 -> 44, pack rebuilt
+  and verified byte-identical after unzip, `LanguagePackCatalog` version 43 -> 44. No Kotlin touched, 1651
+  unit tests unchanged, `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 544 -> 545,
+  `versionName` `"1.2.48"` -> `"1.2.49"`. Not yet device-confirmed. **The other two reported items (A-05
+  split confidence; the D-39 raw-coordinate fallback's prefix-protection bypass) are still open, now under
+  active design discussion** - see the D-473 bullet in this section.
 
 - **§488 (v1.2.48): D-473, first tranche - three of six real-device false-positive-autocorrect reports fixed**
   **as pure dictionary content, root-caused from actual code/data tracing before touching anything (this**

@@ -438,7 +438,25 @@ object LanguagePackCatalog {
             // "Ihren" 70x floor). All five tagged OTHER, per the existing convention for interjections/
             // particles ("Ach", "vielleicht"). `dictionaries/de/version.txt` 42 -> 43, pack rebuilt and
             // verified byte-identical after unzip, `LanguagePackCatalog` version 42 -> 43.
-            version = 43
+            //
+            // D-473 (v1.2.49, second tranche): "dich"/"dir" frequency recalibration - the same Wikipedia
+            // register-skew D-304 already fixed for "dein"/"sein" (direct address is rare in encyclopedic
+            // text). "dich" (291) vs. "sich" (159213, the reported case) and "dir" (273) vs. "die" (889897,
+            // a matching, not-yet-reported live risk found while investigating - "e"/"r" are QWERTZ-adjacent
+            // exactly like "d"/"s") both cleared CorrectionConfidence.REQUIRED_OVERRIDE_RATIO (500), so A-01's
+            // shouldOverrideKnownWord silently replaced either with its far more frequent neighbour at every
+            // AutocorrectAggressiveness level. Every real QWERTZ-adjacent single-substitution neighbour of
+            // both words was checked against the live dictionary first (not just the one reported pair) to
+            // confirm "sich"/"die" are each the only binding constraint. Set to the lowest frequency that
+            // clears every level, per explicit user instruction, with a small buffer above the exact
+            // mathematical floor rather than riding the boundary: "dich" -> 2275, "dir" -> 12713 (both land
+            // ratio ~70x against their respective collision word, matching the same margin the confirmed-bad
+            // "Ohren"/"Ihren" precedent already established as the floor no level may ever cross). "dir"'s own
+            // true minimum (protecting even AGGRESSIVE, 500^0.7) is ~11,483 - deliberately not used as-is, to
+            // avoid depending on an exact floating-point threshold boundary. `dictionaries/de/version.txt`
+            // 43 -> 44, pack rebuilt and verified byte-identical after unzip, `LanguagePackCatalog` version
+            // 43 -> 44.
+            version = 44
         ),
         Entry(
             Language.GREEK,
