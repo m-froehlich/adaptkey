@@ -1223,6 +1223,18 @@ non-trivial changes).
   code fix here without that confirmation would risk fixing nothing again exactly like this bullet's own
   finding warns against.
 
+  **Blacklist hypothesis DISPROVEN (2026-09-17) - user checked Settings -> Blacklist, no `"dich"` entry**
+  **there.** Since the data/formula are confirmed mathematically identical to the working `dir`/`die` pair and
+  the one plausible state-divergence explanation is now ruled out, this needs a real device log rather than a
+  further guess - see §491 (v1.2.51) for the temporary diagnostic added to get one. Ruled out along the way,
+  not by device data but by re-reading the code: `TABLE_LEARNED`'s own frequency merge
+  (`SqliteDictionaryStore.entryOf()`) *adds* a learned count on top of the bundled one, so even a learned
+  `"dich"` could only raise its effective frequency, never lower it - and `MIN_AUTOCORRECT_LENGTH` (2) is
+  nowhere close to excluding a 4-letter word the way it might have for a much shorter one. Nothing else found
+  by code reading alone explains an identical formula producing two different live outcomes; the remaining
+  candidates (a caching layer holding a pre-update value, the pack import genuinely not completing for this
+  one row, something the code review cannot see) all need the log to distinguish between.
+
 - **D-461 - RESOLVED, device-confirmed (§478, v1.2.38; confirmed 2026-09-09).** Automatic capitalisation now fires only
   for a word with no reading beyond noun/proper noun - §6's rules 3 and 4 collapsed into one `isNounOnly`
   predicate, closing a live bug where a `PROPER_NOUN` tag silently overrode a correctly-detected ambiguity
@@ -1326,6 +1338,21 @@ non-trivial changes).
   for the proof and the numbers. Chain flattening (the larger share of the originally measured defect
   volume) is completely unaffected by this and ran exactly as planned. 446,015 lemma-column rows changed
   across the 31 packs; every pack passes `lemma_check.py` and `quality_gate.py`.
+
+- **§491 (v1.2.51): D-473-followup - diagnostic-only round, no fix attempted.** User confirmed 7 of 8 D-473
+  reports fixed on v1.2.50, but `"dich"` -> `"sich"` persists despite `"dir"` -> `"die"` (the identical
+  mechanism, same commit, same ~70x protection ratio) being confirmed fixed. Checked the Blacklist editor
+  (C-05) on the user's own device first, per this project's own convention of checking the cheapest real-data
+  source before guessing further - no `"dich"` entry there, ruling out the leading hypothesis. Per this
+  project's own established diagnostic-round convention (§451/§465/§477: stop guessing, add logging exactly
+  where a real log could distinguish between competing explanations), a new temporary diag call in
+  `AdaptKeyService.finalizeAndCommit()` fires whenever a known-word override is about to apply (not scoped to
+  `"dich"` specifically, so it also catches a future case shaped like it) and dumps every value
+  `shouldOverrideKnownWord`'s own ratio check reads: both words' live frequency and full `WordEntry` (frequency/
+  POS/lemma), `"dich"`'s own learned casing/frequency, bundled/blacklist status, and the actual
+  `shouldOverrideKnownWord` result. No behaviour change. 1659 unit tests unchanged. `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green. `versionCode` 546 -> 547, `versionName` `"1.2.50"` -> `"1.2.51"`. Next step is
+  the user reproducing `"dich"` -> `"sich"` on this build and sending the captured `AdaptKeyJitter` log line.
 
 - **§490 (v1.2.50): D-473, third tranche - closes the batch. Both remaining design questions resolved on**
   **explicit user go-ahead ("Ja, beide Vorschläge bitte umsetzen"), after each was proposed and discussed**
