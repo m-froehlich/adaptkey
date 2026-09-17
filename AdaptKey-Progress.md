@@ -254,13 +254,12 @@ in every prompt.
     `v1.2.46` tag can also just be left alone or dropped, whichever - it was never pushed.
   - Once merged: F-Droid's own build/publish cycle still needs to run before the app actually appears in
     the client - merged is not yet live.
-  - Optional, still not done: `de-DE`/`el-GR` screenshot sets (English `en-US` is now real, see above).
-    Checked directly against the repo (2026-09-17), not assumed either way: neither `fastlane/metadata/
-    android/de-DE/images/` nor `el-GR/images/` has ever held a `phoneScreenshots/` folder in this repo's
-    history (each holds only the D-321/D-322 `icon.png`, added to every locale uniformly) - the user recalled
-    German screenshots existing "quasi von Anfang an", but that was the `en-US` folder's own original
-    (German-language) placeholder captures, later replaced with real English ones, never a separate `de-DE`
-    set. Both `de-DE` and `el-GR` are genuinely still open, not just Greek.
+  - `de-DE` screenshots - RESOLVED (2026-09-17): recovered byte-identical from git history (`00a9cc6~1`,
+    the `en-US` folder's own original German-language placeholder captures) into their own
+    `fastlane/metadata/android/de-DE/images/phoneScreenshots/`, no new capture needed. `el-GR` and every
+    other installable-only language's own screenshots are deliberately **not** tracked as their own separate
+    backlog item any more - see the native-speaker-review bullet under "D-280/D-281 follow-up" below, which
+    this folds into.
 
 ## Guardrail - Read Before Touching `onUpdateSelection` / Composing State
 
@@ -544,6 +543,22 @@ non-trivial changes).
   `UNKNOWN` now covered. Separately, the Python script that originally built `language_profiles.tsv` (A-03's
   trigram classifier data) is not in this repository - reconstructing it is only needed if a future language
   falls outside the eight already covered there.
+
+- **The ~30 installable-only language packs beyond German/English/Greek (the maintainer's own three) still**
+  **need native-speaker review - OPEN, not started as a dedicated pass for most of them.** Every one of them
+  was built by the same autonomous pipeline (real corpus frequencies + real Wiktionary POS/paradigms), which
+  produces a genuinely "pretty good" pack, not a native-reviewed one - the Language Contribution Guide's own
+  step 11 names this explicitly, and French (D-441) and Spanish (D-443) already carry it as their own
+  individually-recorded caveat ("no native speaker has sanity-checked the output yet"), but the other ~28
+  packs (the D-445/D-446/D-447 trio, the 17-language D-450 round, Serbian, and everything since) have never
+  had this spelled out per-language at all - not because they are any more trustworthy, only because nobody
+  has gone back to add the same note. Explicit user decision (2026-09-17): F-Droid store-listing screenshots
+  for these languages are **not** a separate backlog item any more - generating one would need the phone's
+  own system language changed to match, which would make the device unusable in the meantime for a task with
+  no real deadline, and a screenshot is naturally one small deliverable of a proper native review anyway, not
+  something worth chasing on its own ahead of it. This single bullet is the umbrella for "a fluent speaker of
+  language X should look at `dictionaries/X/dict.tsv`, its confusables curation, and yes, eventually a real
+  screenshot" - revisit per-language only once an actual reviewer is lined up, not proactively.
 
 - **Tier-3 mini-LLM and first-run dictionary import: code-complete, real-device validation still outstanding.**
   Everything code-side (orchestration, the C-06 setting, §6 rule-6 hook, adaptive learning, tokenizer +
