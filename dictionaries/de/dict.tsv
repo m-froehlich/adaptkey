@@ -4554,7 +4554,7 @@ sonstige	472	OTHER
 Haft	472	NOUN
 finanziell	472	ADJECTIVE,OTHER
 Disziplin	472	NOUN
-Bitte	472	NOUN,VERB
+Bitte	472	NOUN,VERB,OTHER
 Sklaverei	472	NOUN
 Beatles	472	NOUN
 besagt	471	OTHER
@@ -12898,7 +12898,6 @@ identifizierte	149	OTHER
 Romanum	149	NOUN
 Verfassungen	149	NOUN	Verfassung
 zerbrach	149	OTHER
-muß	149	OTHER
 Informations	149	NOUN	Information
 planen	149	VERB
 Alliance	149	NOUN
@@ -14208,7 +14207,7 @@ Olaf	133	NOUN,PROPER_NOUN
 Ausrufung	133	NOUN
 Nachfolgern	133	NOUN	Nachfolger
 Inspiration	133	NOUN
-Fair	133	NOUN,OTHER
+fair	133	ADJECTIVE,OTHER
 ruht	133	OTHER
 Vaterland	133	NOUN
 schilderte	133	OTHER
@@ -29527,7 +29526,6 @@ Traven	53	NOUN
 Task	53	NOUN
 Mönchtum	53	NOUN
 entfernter	53	OTHER
-läßt	53	OTHER
 abgebremst	53	OTHER
 zusammengewachsen	53	VERB
 Bellevue	53	NOUN
@@ -50043,7 +50041,6 @@ BBS	26	NOUN
 Corneille	26	NOUN
 CES	26	NOUN
 unzufriedenen	26	OTHER
-Bewußtsein	26	NOUN
 Umschläge	26	NOUN	Umschlag
 gefaltete	26	OTHER
 Agriculture	26	NOUN,OTHER
@@ -50673,7 +50670,6 @@ Kuhpocken	26	NOUN
 meldepflichtig	26	ADJECTIVE,OTHER
 Puente	26	NOUN
 Zeul	26	NOUN
-mußte	26	OTHER
 Klammerzusatz	26	NOUN
 Tumult	26	NOUN
 Stapelspeicher	26	NOUN
@@ -52343,7 +52339,6 @@ Gegenmaßnahme	24	NOUN
 Gegenschlag	24	NOUN
 abgeschnittenen	24	OTHER
 Bailey	24	NOUN
-wußte	24	OTHER
 Zweifels	24	NOUN	Zweifel
 entpuppt	24	OTHER
 Abenteuern	24	NOUN	Abenteuer
@@ -54119,7 +54114,6 @@ angeredet	23	OTHER
 festgeschriebene	23	OTHER
 Volkstums	23	NOUN	Volkstum
 DEK	23	NOUN
-Einfluß	23	NOUN
 Gebietsverluste	23	NOUN
 Dreimächtepakt	23	NOUN
 françaises	23	OTHER
@@ -59901,7 +59895,6 @@ Treueeid	20	NOUN
 Vierjahresplan	20	NOUN
 beschoss	20	OTHER
 Kriegsmaterial	20	NOUN
-bißchen	20	OTHER
 Gewahrsam	20	NOUN
 Instruktion	20	NOUN
 Sopade	20	NOUN
@@ -60848,7 +60841,6 @@ wiederhergestellten	20	OTHER
 Simbabwes	20	NOUN	Simbabwe
 Mombasa	20	NOUN,PROPER_NOUN
 ausgedruckt	20	OTHER
-Prozeß	20	NOUN
 Themenwahl	20	NOUN
 rundem	20	OTHER
 surrealen	20	OTHER
@@ -62348,7 +62340,6 @@ entbehrt	19	OTHER
 Anfangsstadium	19	NOUN
 aufgeschmolzen	19	VERB
 Bühler	19	NOUN
-gewiß	19	OTHER
 autobahnähnliche	19	OTHER
 laotischen	19	OTHER
 Preston	19	NOUN,PROPER_NOUN
@@ -67092,7 +67083,6 @@ straffällig	17	OTHER
 Staatskosten	17	NOUN
 Rassenideologie	17	NOUN
 Verweigerer	17	NOUN
-Rußland	17	NOUN
 Parteipolitik	17	NOUN
 Chauffeur	17	NOUN
 auswählte	17	OTHER
@@ -69314,7 +69304,6 @@ Krimkrieges	17	NOUN
 CFR	17	NOUN
 București	17	NOUN
 Wiesbadens	17	NOUN	Wiesbaden
-müßte	17	OTHER
 exegetischen	17	OTHER
 Hüterin	17	NOUN
 Hiskija	17	NOUN
@@ -76110,7 +76099,6 @@ Spreewaldes	15	NOUN
 Elektronenstrahlen	15	NOUN	Elektronenstrahl
 Wolfen	15	NOUN,PROPER_NOUN	Wolf
 Reinbek	15	NOUN,PROPER_NOUN
-Schluß	15	NOUN
 Rastplatz	15	NOUN
 Rebflächen	15	NOUN	Rebfläche
 Universitätscampus	15	NOUN
@@ -77977,7 +77965,6 @@ Industrieprodukte	14	NOUN
 Haarfarbe	14	NOUN
 Vadim	14	NOUN
 Enttäuschungen	14	NOUN	Enttäuschung
-Fluß	14	NOUN
 Kopfgeldjäger	14	NOUN
 Unknown	14	NOUN,OTHER
 Randy	14	NOUN
@@ -80118,7 +80105,6 @@ Schwänze	14	NOUN	Schwanz
 Springers	14	NOUN	Springer
 weilenden	14	OTHER
 Schiffbrüchiger	14	NOUN
-bewußt	14	OTHER
 PCE	14	NOUN
 Sturmbannführer	14	NOUN
 Radrennfahrer	14	NOUN
@@ -84047,7 +84033,6 @@ Aufruhrs	13	NOUN	Aufruhr
 Idris	13	NOUN
 Vorauswahl	13	NOUN
 Sezessionskriegs	13	NOUN	Sezessionskrieg
-Kongreß	13	NOUN
 Schwerkranke	13	NOUN,OTHER
 Mystifikation	13	NOUN
 ausgebeuteten	13	OTHER
@@ -87940,7 +87925,6 @@ Notabitur	12	NOUN
 Kriegserlebnisse	12	NOUN
 Lietz	12	NOUN
 germanistischen	12	OTHER
-Unbewußten	12	NOUN,OTHER
 schleichen	12	NOUN,OTHER,VERB
 Mescalin	12	NOUN
 Kriegstagebuch	12	NOUN
@@ -89363,7 +89347,6 @@ Motorradrennen	12	NOUN
 Brick	12	NOUN,OTHER
 Trams	12	NOUN	Tram
 Scherzen	12	NOUN,OTHER	Scherz
-laß	12	NOUN,OTHER
 Emu	12	NOUN
 Zellkulturen	12	NOUN	Zellkultur
 Interferometrie	12	NOUN
@@ -93037,7 +93020,6 @@ Werbebranche	11	NOUN
 Werbefilme	11	NOUN
 Projektleiter	11	NOUN
 Mulholland	11	NOUN
-Haß	11	NOUN
 Bride	11	NOUN
 Daryl	11	NOUN
 Doppelfolge	11	NOUN
@@ -102908,7 +102890,6 @@ TiO	10	NOUN,OTHER
 Strukturanalyse	10	NOUN
 Rochade	10	NOUN
 Kopier	10	NOUN,VERB
-Kuß	10	NOUN
 Fredric	10	NOUN
 Haines	10	NOUN	Hain
 Parallelschwingkreis	10	NOUN
@@ -109640,7 +109621,6 @@ Gelehrtenschule	9	NOUN
 verenden	9	VERB
 epigenetischen	9	OTHER
 Kulturleistungen	9	NOUN
-Bewußtseins	9	NOUN
 Kreditbegriff	9	NOUN
 Handelshäuser	9	NOUN
 kreisunmittelbare	9	OTHER
@@ -112092,7 +112072,6 @@ Feldstärken	9	NOUN
 Gewitterzelle	9	NOUN
 Raumladung	9	NOUN
 Schieder	9	NOUN
-häßlich	9	OTHER
 zweiundzwanzig	9	OTHER
 Huelsenbeck	9	NOUN
 Passionsbericht	9	NOUN
@@ -113750,7 +113729,6 @@ Selbstbeobachtung	8	NOUN
 gedankliches	8	OTHER
 Leidensgeschichte	8	NOUN
 zeitweiliges	8	OTHER
-mußt	8	OTHER
 Metapsychologie	8	NOUN
 willentliche	8	OTHER
 handschriftlicher	8	OTHER
@@ -115613,7 +115591,6 @@ Bauers	8	NOUN	Bauer
 Generalkommando	8	NOUN
 Seewald	8	NOUN
 Imprimatur	8	NOUN
-Anschluß	8	NOUN
 Interessensgruppen	8	NOUN
 zustimmenden	8	OTHER
 Verfassungswandel	8	NOUN
@@ -117481,7 +117458,6 @@ Diskussions	8	NOUN	Diskussion
 auseinandertreiben	8	NOUN,OTHER,VERB
 terreur	8	NOUN,OTHER
 grüßte	8	OTHER
-Laßt	8	NOUN,OTHER
 Vorschlagsliste	8	NOUN
 Friedensbereitschaft	8	NOUN
 jakobinische	8	OTHER

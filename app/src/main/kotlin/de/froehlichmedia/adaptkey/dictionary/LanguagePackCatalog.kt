@@ -456,7 +456,26 @@ object LanguagePackCatalog {
             // avoid depending on an exact floating-point threshold boundary. `dictionaries/de/version.txt`
             // 43 -> 44, pack rebuilt and verified byte-identical after unzip, `LanguagePackCatalog` version
             // 43 -> 44.
-            version = 44
+            //
+            // D-473-followup (v1.2.53): five small, user-requested corrections in one round. (1) "fair" -
+            // only present as "Fair" (133, NOUN,OTHER, no legitimate German noun sense found) - recased to
+            // lowercase and retagged ADJECTIVE,OTHER (dropping NOUN as likely corpus noise), matching every
+            // other bundled adjective's own casing convention. (2) "Bitte" - already NOUN,VERB (the user's
+            // own premise that "frage" carried only NOUN was checked and found not to hold either - both
+            // "Frage"/"Fragen" already carry NOUN,VERB with a real lemma link, so no change was needed
+            // there) - OTHER added alongside for its own genuine discourse-particle use ("bitte" = please),
+            // per explicit request. (3) 24 archaic pre-1996-spelling-reform ß-words removed from the
+            // dictionary entirely, not merely blacklisted any more - see `GermanRules.kt`'s own updated
+            // D-473-followup comment for the corrected design (the user's original D-206 ask was
+            // misunderstood as "blacklist", the actual intent was "does not exist in the dictionary at
+            // all"): `muß`/`mußt`/`mußte`/`müßte`/`wußte`/`läßt`/`laß`/`laßt`/`einfluß`/`anschluß`/`schluß`/
+            // `fluß`/`prozeß`/`kongreß`/`rußland`/`bewußt`/`bewußtsein(s)`/`unbewußten`/`haß`/`gewiß`/`kuß`/
+            // `bißchen`/`häßlich`. Checked first (none had one): no lemma-linked family member of its own,
+            // so nothing else needed to go with them. Every modern ss-counterpart (`muss`, `Einfluss`,
+            // `bisschen`, `hässlich`, ...) independently confirmed present and untouched. `dictionaries/de/
+            // version.txt` 44 -> 45, pack rebuilt and verified byte-identical after unzip, `LanguagePackCatalog`
+            // version 44 -> 45.
+            version = 45
         ),
         Entry(
             Language.GREEK,

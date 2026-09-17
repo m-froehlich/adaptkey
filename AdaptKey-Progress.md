@@ -1376,6 +1376,51 @@ non-trivial changes).
   volume) is completely unaffected by this and ran exactly as planned. 446,015 lemma-column rows changed
   across the 31 packs; every pack passes `lemma_check.py` and `quality_gate.py`.
 
+- **§493 (v1.2.53): five small, user-requested dictionary/data corrections in one round.**
+  1. **"fair"** - only present as "Fair" (133, NOUN,OTHER) - no legitimate German noun sense found for it, so
+     recased to lowercase and retagged `ADJECTIVE,OTHER` (NOUN dropped), matching every other bundled
+     adjective's own casing convention (`direkt`, `eigentlich`, ...).
+  2. **"frage"** - user's own premise ("nur als NOUN?") checked and found not to hold: `Frage`/`Fragen`
+     already carry `NOUN,VERB` with a real lemma link (`Fragen` -> `Frage`). No change made. (Noted in
+     passing, not fixed: `fragt`/`fragte` are tagged `OTHER` rather than `VERB` - cosmetically inaccurate,
+     but per this project's own established finding "no code path anywhere reads VERB to make a decision",
+     behaviourally inert; left alone since it wasn't the actual ask.)
+  3. **"bitte"** - already `NOUN,VERB` (`Bitte`/`bitten`) - `OTHER` added alongside for its own genuine
+     discourse-particle use ("bitte" = please), per explicit request.
+  4. **"aber"** - found in the user's own Learned Words despite being a common, correctly-cased bundled word
+     (38185, `OTHER`) that should never have been individually learned at all under normal typing (D-264's
+     `bundledCasing == word` skip, D-271's sentence-start exception). Investigated by reading every `learn()`
+     call site (the ordinary commit path, D-391's cross-word-fusion path) - all of them route through the
+     same `learnWord()` guard, which should have skipped it. Also checked and ruled out: the now-deleted
+     `SeedData.kt` (its own 34-word hardcoded seed list, live until §478/v1.2.38) never contained "aber" at
+     all. **Still unexplained** - no mechanism found by code reading alone that would learn an
+     already-correctly-cased bundled word under ordinary use; asked the user for the exact casing shown in
+     the editor and, if convenient, its recency-sort "last touched" position, rather than guess further.
+  5. **24 archaic pre-1996-spelling-reform ß-words removed from the dictionary entirely, not merely**
+     **blacklisted any more.** Corrects a real misunderstanding of the user's own original D-206 ask - the
+     original instruction ("words that used to be spelled with ß and are now spelled with ss should
+     disappear") was implemented as a blacklist (kept the words typeable/known, just suppressed from
+     suggestions), when the actual intent was that they should not exist in the dictionary at all: "das
+     Wörterbuch muss damit nicht geflutet werden... wenn jemand unbedingt die archaische Rechtschreibung
+     nutzen will, soll er die Wörter eben selbst anlernen." `muß`/`mußt`/`mußte`/`müßte`/`wußte`/`läßt`/
+     `laß`/`laßt`/`einfluß`/`anschluß`/`schluß`/`fluß`/`prozeß`/`kongreß`/`rußland`/`bewußt`/`bewußtsein(s)`/
+     `unbewußten`/`haß`/`gewiß`/`kuß`/`bißchen`/`häßlich` removed from both `dictionaries/de/dict.tsv` and
+     `GermanRules.BUNDLED_CONFUSABLES_BLACKLIST` (which now holds only the four genuinely unrelated
+     confusables, `due`/`sue`/`ddr`/`aks`). Checked first, not assumed: none of the 24 had any other row's
+     `lemma` pointing to it (no family to take along), and every modern ss-counterpart
+     (`muss`/`Einfluss`/`bisschen`/`hässlich`/...) independently confirmed still present, untouched.
+     `daß`/`Strasse` already got this exact treatment back in D-206's own original round (2026-09-03) - this
+     closes out the remaining 24 the same way, per the user's own correction that blacklisting was always
+     the wrong mechanism, not a special case for `daß` alone.
+  
+  `dictionaries/de/dict.tsv` 193,839 -> 193,815 rows (24 removed, 0 added, 2 retagged in place);
+  `quality_gate.py --capitalises-nouns` and `lemma_check.py` both PASS. `dictionaries/de/version.txt` 44 -> 45,
+  pack rebuilt and verified byte-identical after unzip, `LanguagePackCatalog` version 44 -> 45. 1659 unit
+  tests unchanged (no test referenced any of the touched words or the removed blacklist entries).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 548 -> 549, `versionName` `"1.2.52"` ->
+  `"1.2.53"`. Not yet device-confirmed - and per the D-473-followup lesson two rounds ago, **remember to
+  actually push this round before expecting a language-pack re-import to pick it up.**
+
 - **§492 (v1.2.52): D-473-followup closed - the §491 diagnostic did its job, removed again.** The captured**
   **log's own `typedFreq=291` line settled it: the live device had never actually re-imported the updated**
   **German pack at all - a deployment gap (the pack is hosted on `origin/main`, and this whole session's work**

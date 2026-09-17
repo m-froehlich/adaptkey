@@ -127,35 +127,38 @@ object GermanRules : LanguageRules {
     // tripping knownInOtherLanguage()'s cross-language shield and blocking "Aks" -> "als" - the identical
     // failure mode as "due"/"sue", fixed the identical way.
     //
-    // D-206: pre-1996-spelling-reform relics of otherwise ordinary, high-frequency common words - a
-    // curated subset of dict_de.tsv's own ß-containing entries, hand-picked (not a blanket rule) by
-    // checking each candidate against the real corpus frequencies: kept only where the modern ss-form
-    // is the dominant, living spelling in the very same corpus (e.g. "muß" vs. "muss") -
-    // never a genuinely modern long-vowel ß word that merely has a rarer Swiss-spelling ss-counterpart
-    // present too (e.g. "große"/"grosse", "außerdem"/"ausserdem" - those stay untouched, ß is correct
-    // and current there). Deliberately excludes proper nouns/surnames/place names sharing the same
-    // ß-vs-ss shape (e.g. "Keßler", "Reuß", "Elsaß") - a person's or place's own spelling is not an
-    // error to silently correct - and excludes two outright coincidental collisions between different
-    // words that the naive ß->ss substitution alone cannot tell apart ("Maße" != "Masse", "Buße" !=
-    // "Busse"). Blacklisting (not purging from the dictionary) keeps each word typeable/known - so
-    // quoting genuinely old text still works - while it can never surface as its own suggestion again;
-    // the existing ß->"ss" fold (Umlaut.fold, unrelated to D-204's own newer host-key fold) already
-    // makes each of these a cost-0 match for its modern form, so autocorrect can still silently fix a
-    // live typing of one of these to the modern spelling via the existing §44 known-word override.
+    // D-206 (superseded 2026-09-17, see below): pre-1996-spelling-reform relics of otherwise ordinary,
+    // high-frequency common words - originally a curated subset of dict_de.tsv's own ß-containing entries,
+    // hand-picked (not a blanket rule) by checking each candidate against the real corpus frequencies: kept
+    // only where the modern ss-form is the dominant, living spelling in the very same corpus (e.g. "muß"
+    // vs. "muss") - never a genuinely modern long-vowel ß word that merely has a rarer Swiss-spelling
+    // ss-counterpart present too (e.g. "große"/"grosse", "außerdem"/"ausserdem" - those were never on this
+    // list, ß is correct and current there, and this distinction still matters exactly as much now that the
+    // rest are gone). Deliberately excluded proper nouns/surnames/place names sharing the same ß-vs-ss shape
+    // (e.g. "Keßler", "Reuß", "Elsaß") - a person's or place's own spelling is not an error to silently
+    // correct - and excluded two outright coincidental collisions between different words that the naive
+    // ß->ss substitution alone cannot tell apart ("Maße" != "Masse", "Buße" != "Busse"). This same curation
+    // is exactly what makes the D-473-followup removal below safe: every remaining word on it had already
+    // been vetted as "genuinely archaic, never a legitimately-still-current ß word."
     //
-    // "daß" moved OFF this list (2026-09-03): explicit user instruction to remove the word from the
-    // dictionary entirely instead of merely blacklisting it - see dictionaries/de/dict.tsv's own removal,
-    // same round. Kept here it would have been redundant (nothing left in the dictionary to blacklist)
-    // and, per the user's own explicit preference, blacklisting is no longer the intended mechanism for
-    // this word going forward. "Strasse" (the Swiss ss-spelling of "Straße") got the identical
-    // dictionary-removal treatment in the same round, for the same explicit reason - it was never on this
-    // list at all (Swiss ss-spellings are deliberately NOT covered by the rule above), so nothing to
-    // remove here.
+    // "daß" moved OFF this list (2026-09-03) as the first case of this exact pattern: explicit user
+    // instruction to remove the word from the dictionary entirely instead of merely blacklisting it - kept
+    // here would have been redundant once nothing was left in the dictionary to blacklist. "Strasse" (the
+    // Swiss ss-spelling of "Straße") got the identical dictionary-removal treatment the same round, for the
+    // same reason - it was never on this list at all (Swiss ss-spellings are deliberately not covered by
+    // the rule above), so nothing to remove for it here.
+    //
+    // D-473-followup (2026-09-17): every remaining ß-archaic entry moved off this list too, per the user's
+    // own correction of the original D-206 ask - blacklisting was the wrong mechanism throughout, not just
+    // for "daß": "sie sollten wirklich aus dem Wörterbuch fliegen... das Wörterbuch muss damit nicht
+    // geflutet werden." A blacklisted-but-present row still counts as a real, typeable dictionary word (by
+    // design, so quoting old text still worked) - the user's actual intent was that these 24 words should
+    // not exist in the dictionary at all any more; anyone who deliberately wants the archaic spelling can
+    // teach it to their own personal dictionary instead. Removed from `dictionaries/de/dict.tsv` in the same
+    // round (verified first: none of the 24 had any lemma-linked family member of their own to take with
+    // them). "due"/"sue"/"ddr"/"aks" are a structurally different case - genuine cross-language/other-typo
+    // confusables, not archaic spellings - and stay exactly as they were.
     private val BUNDLED_CONFUSABLES_BLACKLIST = setOf(
-        "due", "sue", "ddr", "aks",
-        "muß", "mußt", "mußte", "müßte", "wußte", "läßt", "laß", "laßt",
-        "einfluß", "anschluß", "schluß", "fluß", "prozeß", "kongreß", "rußland",
-        "bewußt", "bewußtsein", "bewußtseins", "unbewußten",
-        "haß", "gewiß", "kuß", "bißchen", "häßlich"
+        "due", "sue", "ddr", "aks"
     )
 }
