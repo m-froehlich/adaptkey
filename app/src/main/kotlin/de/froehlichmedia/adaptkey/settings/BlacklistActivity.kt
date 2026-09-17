@@ -170,7 +170,7 @@ class BlacklistActivity : AppCompatActivity() {
             setPadding(padding, dp(8), padding, 0)
             addView(fieldRow)
         }
-        AlertDialog.Builder(this)
+        val dialog = AlertDialog.Builder(this)
             .setTitle(R.string.blacklist_entry_title)
             .setView(container)
             .setNegativeButton(android.R.string.cancel, null)
@@ -179,7 +179,21 @@ class BlacklistActivity : AppCompatActivity() {
                 Toast.makeText(this, getString(R.string.blacklist_removed, word), Toast.LENGTH_SHORT).show()
                 refresh()
             }
-            .show()
+            // D-473-followup: a real positive button reserves that slot's own layout space - without one at
+            // all, the button bar only knows about two buttons and Cancel slides into the now-vacant
+            // rightmost slot instead of staying in its usual middle position. Hidden (not omitted) right
+            // after the dialog is created instead, so the slot renders empty while Cancel still lands where
+            // it always has, one position to its left, matching the Learned Words dialog's own Cancel/Save
+            // layout exactly, just with nothing actually in the Save slot.
+            .setPositiveButton("", null)
+            .create()
+        dialog.setOnShowListener {
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.apply {
+                visibility = View.INVISIBLE
+                isEnabled = false
+            }
+        }
+        dialog.show()
     }
     
     private fun copyToClipboard(value: String) {

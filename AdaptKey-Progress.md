@@ -1376,6 +1376,19 @@ non-trivial changes).
   volume) is completely unaffected by this and ran exactly as planned. 446,015 lemma-column rows changed
   across the 31 packs; every pack passes `lemma_check.py` and `quality_gate.py`.
 
+- **§496 (v1.2.56): D-473-followup - §495's own omitted positive button let Cancel slide into the now-vacant**
+  **rightmost slot instead of staying in its usual middle position, caught on first real device use.**
+  `AlertDialog`'s own button bar only reserves layout space for the buttons it actually knows about - with no
+  positive button set at all, only two slots existed, and Cancel (negative) moved into the rightmost one
+  rather than leaving it empty the way the user actually wanted ("der Platz ganz rechts bleibt leer und
+  Abbrechen steht links daneben"). Fixed by adding a real (blank-text) positive button back - so the layout
+  reserves all three slots exactly as the Learned Words dialog's own Save/Cancel/Forget always has - then
+  hiding it (`View.INVISIBLE`, `isEnabled = false`) once the dialog is actually showing: invisible so the
+  slot renders empty, disabled so a stray tap there does nothing, and reserving its layout space either way
+  so Cancel lands back in the middle. No dictionary/pack change; code only. 1659 unit tests unchanged (still
+  the same untested Android-glue layer). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
+  551 -> 552, `versionName` `"1.2.55"` -> `"1.2.56"`. Not yet device-confirmed.
+
 - **§495 (v1.2.55): D-473-followup - Blacklist editor's per-entry dialog realigned to match the Learned**
   **Words editor's own dialog shape, per explicit user request** ("Ich möchte es gerne in der Bedienbarkeit
   angleichen"). `BlacklistActivity.confirmRemove()` rebuilt from a plain three-button `AlertDialog` into a
