@@ -1242,24 +1242,37 @@ both call sites that build this string.
 ### A-04 - Blacklist for Unwanted Words
 Words can be permanently excluded from suggestions and autocorrect. The blacklist is persisted in SQLite and
 survives app updates, with a category distinction between a bundled entry and a user-added one. A small
-bundled cross-language-confusables set (`due`, `sue`, `ddr`, `aks`) is seeded by default (see A-01), alongside
-a curated set of pre-1996-spelling-reform relics of otherwise ordinary common words (e.g. `daß`, `muß`,
-`Rußland`) - hand-picked against the bundled dictionary's own real corpus frequencies (kept only where the
-modern spelling is demonstrably the dominant, living form in the same corpus), deliberately excluding any
-proper noun/surname/place name sharing the same ß-vs-ss shape, whose own spelling is not an error to correct.
-Blacklisting keeps a word typeable/known (quoting genuinely old text still works) while it can never surface
-as its own suggestion again. D-442: English curates its own small, separate bundled set too (`ij`, `iz`,
-`iy`, `ae`, `ne` - short tokens confirmed not to be real standalone English words, found via a real
-QWERTY-keyboard-adjacency confusables scan) - each language's own list is independent and never shared or
-generalised across languages (confirmed explicit design intent, see the A-04 closure note in
-`AdaptKey-Progress.md`). The blacklist editor (C-05) shows only user-added entries by default - a bundled
-entry is rarely of interest and should rarely be removed at all - with an explicit toggle to reveal bundled
-entries too. Its own language selector opens on whichever language the keyboard itself currently/last had
-active (G-01), not always the first entry in the list - the same default the Learned Words editor (W-01) also
-uses. Also interacts with the provisional pending-blacklist mechanism for a self-taught word
-(G-04/W-01). The exclusion is lasting across every learning pipeline, not merely suggestions/autocorrect: a
-blacklisted word is never counted toward W-02's promotion threshold and never force-learned (D-13) either, so
-simply retyping it enough times cannot silently promote it straight back into the learned dictionary.
+bundled cross-language-confusables set (`due`, `sue`, `ddr`, `aks`) is seeded by default (see A-01).
+Blacklisting keeps a word typeable/known while it can never surface as its own suggestion again. D-442:
+English curates its own small, separate bundled set too (`ij`, `iz`, `iy`, `ae`, `ne` - short tokens confirmed
+not to be real standalone English words, found via a real QWERTY-keyboard-adjacency confusables scan) - each
+language's own list is independent and never shared or generalised across languages (confirmed explicit
+design intent, see the A-04 closure note in `AdaptKey-Progress.md`). The blacklist editor (C-05) shows only
+user-added entries by default - a bundled entry is rarely of interest and should rarely be removed at all -
+with an explicit toggle to reveal bundled entries too. Its own language selector opens on whichever language
+the keyboard itself currently/last had active (G-01), not always the first entry in the list - the same
+default the Learned Words editor (W-01) also uses. Also interacts with the provisional pending-blacklist
+mechanism for a self-taught word (G-04/W-01). The exclusion is lasting across every learning pipeline, not
+merely suggestions/autocorrect: a blacklisted word is never counted toward W-02's promotion threshold and
+never force-learned (D-13) either, so simply retyping it enough times cannot silently promote it straight
+back into the learned dictionary.
+
+D-473-followup: pre-1996-spelling-reform relics of otherwise ordinary common words (e.g. `daß`, `muß`,
+`Rußland`) are **not** a blacklist mechanism any more - they were originally seeded as a curated bundled
+blacklist entry set, but this kept each word typeable/known by design, which turned out to be the wrong
+shape for what was actually wanted: these words should not exist in the dictionary at all, so that someone
+who deliberately wants the archaic spelling has to teach it to their own personal dictionary first. Removed
+from the dictionary outright instead (data-only; the modern spelling was independently confirmed to already
+be the dominant, living form in the same corpus before any of this was curated, and stays completely
+untouched either way, as does any proper noun/surname/place name sharing the same ß-vs-ss shape, whose own
+spelling was never an error to correct in the first place).
+
+D-473-followup: the blacklist editor's own per-entry dialog (tapping an entry to remove it) now matches the
+Learned Words editor's (W-01) dialog shape, for consistent usability between the two screens - a neutral
+title (not repeating the tapped word, unlike W-01's own word-as-title), the word itself shown directly below
+exactly as W-01 shows it, next to the same copy-to-clipboard button, but read-only here (there is nothing to
+save, unlike W-01's own casing-correction field) with no positive/save button at all. "Remove" takes the same
+position W-01's own "Forget" occupies; Cancel is unchanged.
 
 ### A-05 - Retroactive Word Split on Missed Space
 D-410: the inseparable-verb-prefix veto, the feminine-`-in` exception, and the regular-verb/adjective-
@@ -2124,7 +2137,7 @@ Unconditionally excludes any content typed into a password field, regardless of 
 | C-02 | Suggestion re-sort delay | 0-600 ms | 300 ms |
 | C-03 | Maximum number of suggestions | Integer (3-10, D-399: widened from a 6 floor) | 8 |
 | C-04 | Word confirmation highlight colour, or "no highlighting" (D-298: folds the former separate on/off toggle into this one list); the settings row and its picker dialog preview each colour directly as its own entry's text colour (D-302) | Colour, or off | Green |
-| C-05 | Word blacklist | List + categories (bundled/user), editor defaults to user-only view | Seeded with a small bundled confusables + archaic-spelling set |
+| C-05 | Word blacklist | List + categories (bundled/user), editor defaults to user-only view | Seeded with a small bundled cross-language-confusables set only (D-473-followup: the archaic-spelling set is now a dictionary removal, not a blacklist) |
 | C-06 | LLM activation threshold, or "disabled" (D-297: folds the former separate tier-3-enabled toggle into this one list) | N-gram confidence value, or off | medium |
 | C-07 | Shift grace window vs. surprising field capitalisation | 0-500 ms | 300 ms |
 | C-09 | Persistent number row (with shifted-symbol long-press) | On/Off | On |

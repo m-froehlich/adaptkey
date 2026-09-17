@@ -310,7 +310,7 @@
     <string name="blacklist_add">Hinzufügen</string>
     <string name="blacklist_empty">Keine Einträge.</string>
     <string name="blacklist_removed">%1$s entfernt.</string>
-    <string name="blacklist_remove_confirm_title">„%1$s“ aus der Blacklist entfernen?</string>
+    <string name="blacklist_entry_title">Blacklist-Eintrag</string>
     <string name="blacklist_remove_confirm_action">Entfernen</string>
     <!-- D-206: mitgelieferte Einträge interessieren so gut wie nie und sollen kaum je gelöscht werden -
          die Liste startet daher gefiltert auf selbst hinzugefügte Einträge; dies blendet die mitgelieferten

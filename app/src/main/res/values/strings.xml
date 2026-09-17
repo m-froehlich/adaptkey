@@ -323,7 +323,9 @@
     <string name="blacklist_add">Add</string>
     <string name="blacklist_empty">No entries.</string>
     <string name="blacklist_removed">%1$s removed.</string>
-    <string name="blacklist_remove_confirm_title">Remove “%1$s” from the blacklist?</string>
+    <!-- D-473-followup: neutral, does not repeat the entry's own word (matches Learned Words' own dialog
+         title choosing the opposite - the word itself - deliberately: here the word is shown in the body). -->
+    <string name="blacklist_entry_title">Blacklist Entry</string>
     <string name="blacklist_remove_confirm_action">Remove</string>
     <!-- D-206: bundled entries are rarely of interest and should rarely be removed, so the list starts
          filtered to user-added entries only; this reveals the bundled ones too. -->

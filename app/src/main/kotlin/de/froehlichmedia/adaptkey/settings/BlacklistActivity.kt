@@ -7,12 +7,14 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
+import android.view.Gravity
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.Spinner
 import android.widget.TextView
@@ -138,16 +140,45 @@ class BlacklistActivity : AppCompatActivity() {
         refresh()
     }
     
+    /**
+     * D-473-followup: matches [LearnedWordsActivity]'s own per-entry dialog layout (a word row with a copy
+     * button beside it), per explicit request to align the two screens' usability - a neutral title (not
+     * repeating [word], unlike the Learned Words dialog's own word-as-title), the word itself shown
+     * read-only (no edit affordance - there is nothing here to save, unlike a Learned Words casing edit) with
+     * the copy button beside it exactly as there, and no positive button at all (nothing to save, so that
+     * slot simply stays empty rather than being filled with a placeholder). "Entfernen" takes the neutral
+     * slot - the same position "Vergessen" (Forget) occupies in the Learned Words dialog - and Cancel (negative)
+     * is untouched.
+     */
     private fun confirmRemove(word: String) {
+        val wordView = TextView(this).apply {
+            text = word
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+        }
+        val copyButton = squareIconButton(COPY_GLYPH, getString(R.string.copy_to_clipboard_action)).apply {
+            setOnClickListener { copyToClipboard(word) }
+        }
+        val fieldRow = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            addView(wordView)
+            addView(copyButton)
+        }
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            val padding = dp(20)
+            setPadding(padding, dp(8), padding, 0)
+            addView(fieldRow)
+        }
         AlertDialog.Builder(this)
-            .setTitle(getString(R.string.blacklist_remove_confirm_title, word))
-            .setPositiveButton(R.string.blacklist_remove_confirm_action) { _, _ ->
+            .setTitle(R.string.blacklist_entry_title)
+            .setView(container)
+            .setNegativeButton(android.R.string.cancel, null)
+            .setNeutralButton(R.string.blacklist_remove_confirm_action) { _, _ ->
                 store.unblacklist(word)
                 Toast.makeText(this, getString(R.string.blacklist_removed, word), Toast.LENGTH_SHORT).show()
                 refresh()
             }
-            .setNegativeButton(android.R.string.cancel, null)
-            .setNeutralButton(R.string.copy_to_clipboard_action) { _, _ -> copyToClipboard(word) }
             .show()
     }
     
@@ -160,7 +191,7 @@ class BlacklistActivity : AppCompatActivity() {
     /**
      * (Re)opens the SQLite store for [language], closing any previously open one. The store name matches
      * the one the running keyboard uses for that language ([DictionaryLoader]), so edits take effect there.
-     *
+     * 
      * @param language the language whose blacklist to edit
      */
     private fun openStore(language: Language) {
@@ -173,7 +204,7 @@ class BlacklistActivity : AppCompatActivity() {
     
     /**
      * The display (endonym) name for a dictionary language in the selector.
-     *
+     * 
      * @param language the language
      * @return its native name
      */

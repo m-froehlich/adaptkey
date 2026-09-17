@@ -1376,6 +1376,29 @@ non-trivial changes).
   volume) is completely unaffected by this and ran exactly as planned. 446,015 lemma-column rows changed
   across the 31 packs; every pack passes `lemma_check.py` and `quality_gate.py`.
 
+- **§495 (v1.2.55): D-473-followup - Blacklist editor's per-entry dialog realigned to match the Learned**
+  **Words editor's own dialog shape, per explicit user request** ("Ich möchte es gerne in der Bedienbarkeit
+  angleichen"). `BlacklistActivity.confirmRemove()` rebuilt from a plain three-button `AlertDialog` into a
+  custom-view dialog matching `LearnedWordsActivity.showEntryDialog()`'s own layout: a neutral title
+  (`R.string.blacklist_entry_title`, new string, all three locales - no longer repeats the tapped word,
+  unlike Learned Words' own word-as-title, which stays as it was) over a word row showing the entry next to
+  the same copy-to-clipboard button - here a plain, non-editable `TextView` rather than Learned Words' own
+  casing-edit `EditText`, since there is nothing to save. No positive button at all (that slot simply stays
+  empty), "Entfernen" moved into the neutral slot - the exact position "Vergessen" occupies in the Learned
+  Words dialog - and Cancel (negative) untouched. `dp()`/`squareIconButton()` (previously private to
+  `LearnedWordsActivity`) extracted into new shared `settings/DialogUiHelpers.kt` (`Context` extensions) once
+  a second activity needed the identical word+copy-button shape, rather than duplicated; `LearnedWordsActivity`
+  itself updated to use the shared versions, dropping its own now-redundant copies. The stale, now-unused
+  `blacklist_remove_confirm_title` string (the old templated "Remove '%1$s'?" title) removed from all three
+  locale files. Spec (A-04/W-01 area) corrected in the same round - it still described the old, now-removed
+  pre-1996-spelling-reform bundled-blacklist set (`daß`/`muß`/`Rußland`) from before this session's own
+  D-473-followup dictionary-removal round; rewritten to describe the current mechanism and to add this
+  round's own dialog-alignment addendum. No dictionary/pack change this round - code and strings only. 1659
+  unit tests unchanged (this project's own accepted untested Android-glue layer - Activity/dialog code has no
+  unit coverage, per the Testing Gaps section). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+  `versionCode` 550 -> 551, `versionName` `"1.2.54"` -> `"1.2.55"`. **Not yet device-confirmed - no emulator/
+  device is available in this session, so the visual layout itself has not actually been seen rendered.**
+
 - **§494 (v1.2.54): D-473-followup closed out - `fragt`/`fragte` folded into the VERB family, `"aber"`**
   **closed without a root cause.** `fragt`(151)/`fragte`(189) retagged `OTHER` -> `VERB,OTHER`, on the user's
   own explicit follow-up request after §493 named the gap in passing rather than fixing it - purely cosmetic

@@ -43,20 +43,20 @@ import java.util.Locale
  * dictionary asset - see [SqliteDictionaryStore]'s own KDoc for the split), so any of them can be removed
  * directly - including one that could never be reached via the ordinary G-04 drag-to-trash gesture at all,
  * because it happens to match the current input and S-02 then never shows it as its own suggestion.
- *
+ * 
  * Removing an entry here runs the exact same action as G-04's own learned-word branch
  * ([de.froehlichmedia.adaptkey.AdaptKeyService.onBlacklistWord]): forget it outright, then mark it
  * provisionally pending rather than blacklisting it immediately - see [SqliteDictionaryStore.markPendingBlacklist]'s
  * own KDoc for why. Structurally mirrors [BlacklistActivity] (language spinner, list, tap-to-remove with
  * confirmation); backed directly by SQLite, so - like the other Android-facing store layers - it is covered
  * by instrumented rather than unit tests.
- *
+ * 
  * D-292: tapping an entry now also lets its own casing be corrected in place ([SqliteDictionaryStore.
  * recaseLearnedWord]) - deliberately restricted to a casing-only edit (Save stays disabled unless the edited
  * text is case-insensitively identical to the original), so this can never be used to sneak an entirely
  * different word into the learned lexicon under someone else's frequency/history; a genuinely different word
  * still has to be typed and learned normally.
- *
+ * 
  * D-404: the list itself is consolidated - only entries with no base-form link ([LearnedWordEntry.lemma] ==
  * null) are shown as their own row, so an inflected form the keyboard already linked to a base (e.g.
  * "Hundes" once "Hund" is also known) no longer clutters the list on its own. An entry whose category is
@@ -179,17 +179,17 @@ class LearnedWordsActivity : AppCompatActivity() {
      * disabled, which a real [Button] already does automatically, unlike a hand-rolled icon-only touch
      * target. D-430: Save and Forget's own button *roles* (not their text/behaviour) were later swapped -
      * see the dialog's own `setPositiveButton`/`setNeutralButton` calls below for the current arrangement.
-     *
+     * 
      * D-293: the field itself opts out of [de.froehlichmedia.adaptkey.AdaptKeyService]'s own suggestion/
      * learning pipeline entirely via `TYPE_TEXT_FLAG_NO_SUGGESTIONS` - editing a word's casing here must
      * never itself feed back into the dictionary or show a suggestion bar.
-     *
+     * 
      * D-404: also offers a category multi-select ([CATEGORY_CHOICES], one [CheckBox] per tag) and a
      * "Grundform" [Spinner] (every other learned word, plus [R.string.learned_words_lemma_unknown] for "no
      * link") - a power-user-only correction surface for whatever the capitalisation heuristic / conservative
      * lookup-linker got wrong or missed. Both save unconditionally on Save (independent of the casing-only
      * gate below, which only concerns the text field itself).
-     *
+     * 
      * @param entry the learned-word entry tapped
      */
     private fun showEntryDialog(entry: LearnedWordEntry) {
@@ -316,7 +316,7 @@ class LearnedWordsActivity : AppCompatActivity() {
     
     /**
      * D-404: the localised label for [pos] in the category multi-select.
-     *
+     * 
      * @param pos the tag to label
      * @return its string resource id
      */
@@ -335,36 +335,13 @@ class LearnedWordsActivity : AppCompatActivity() {
         Toast.makeText(this, getString(R.string.copy_to_clipboard_done, value), Toast.LENGTH_SHORT).show()
     }
     
-    private fun dp(value: Int): Int = (value * resources.displayMetrics.density).toInt()
-    
-    /**
-     * D-296: a compact, square (width == height) [Button] for a glyph-only action - the ordinary [Button]
-     * style's own minimum width/generous padding is exactly what made [showEntryDialog]'s Copy/Save pair
-     * needlessly wide; still a real [Button] (not a hand-rolled touch target), so [Button.isEnabled] still
-     * greys the glyph out automatically, matching D-294's own reasoning.
-     *
-     * @param glyph the button's own label (an emoji glyph)
-     * @param description the accessible name ([View.setContentDescription]), since the visible label itself
-     *        is a glyph, not descriptive text
-     * @return the configured button, side length [SQUARE_ICON_BUTTON_SIZE_DP], not yet added to any parent
-     */
-    private fun squareIconButton(glyph: String, description: String): Button {
-        return Button(this, null, android.R.attr.borderlessButtonStyle).apply {
-            text = glyph
-            contentDescription = description
-            minWidth = 0
-            minimumWidth = 0
-            minHeight = 0
-            minimumHeight = 0
-            setPadding(0, 0, 0, 0)
-            layoutParams = LinearLayout.LayoutParams(dp(SQUARE_ICON_BUTTON_SIZE_DP), dp(SQUARE_ICON_BUTTON_SIZE_DP))
-        }
-    }
+    // D-296: dp()/squareIconButton() moved into DialogUiHelpers.kt once BlacklistActivity's own per-entry
+    // dialog needed the identical word+copy-button layout shape (D-473-followup).
     
     /**
      * (Re)opens the SQLite store for [language], closing any previously open one. The store name matches
      * the one the running keyboard uses for that language ([DictionaryLoader]), so edits take effect there.
-     *
+     * 
      * @param language the language whose learned words to edit
      */
     private fun openStore(language: Language) {
@@ -377,7 +354,7 @@ class LearnedWordsActivity : AppCompatActivity() {
     
     /**
      * The display (endonym) name for a dictionary language in the selector.
-     *
+     * 
      * @param language the language
      * @return its native name
      */
@@ -389,7 +366,7 @@ class LearnedWordsActivity : AppCompatActivity() {
      * umlauts/accents sort at their natural alphabetic position rather than by raw UTF-8 byte value).
      * Frequency is deliberately not shown - it is internal bookkeeping (the promotion/reinforcement count),
      * not something a normal user reviewing this list needs to see.
-     *
+     * 
      * D-404: [words] (what is actually shown) is filtered down to entries with no base-form link - see this
      * class's own KDoc; [allWords] keeps every entry, for the "Grundform" dropdown's own candidate list. An
      * entry with a still-undetermined category ("unbekannt") is shown with a trailing asterisk.
@@ -418,12 +395,6 @@ class LearnedWordsActivity : AppCompatActivity() {
     }
     
     private companion object {
-        private const val COPY_GLYPH = "📋"
-        
-        // D-296: a standard-sized touch target (matches the Android accessibility guideline minimum),
-        // just square instead of the ordinary Button's own wide/padded shape.
-        private const val SQUARE_ICON_BUTTON_SIZE_DP = 48
-        
         // D-404: every category offered in the edit dialog's multi-select, in a fixed, stable order.
         private val CATEGORY_CHOICES = listOf(
             PartOfSpeech.NOUN,

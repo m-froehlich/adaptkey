@@ -310,7 +310,7 @@
     <string name="blacklist_add">Προσθήκη</string>
     <string name="blacklist_empty">Καμία καταχώριση.</string>
     <string name="blacklist_removed">%1$s αφαιρέθηκε.</string>
-    <string name="blacklist_remove_confirm_title">Αφαίρεση της λέξης «%1$s» από τη λίστα αποκλεισμού;</string>
+    <string name="blacklist_entry_title">Καταχώριση λίστας αποκλεισμού</string>
     <string name="blacklist_remove_confirm_action">Αφαίρεση</string>
     <!-- D-206: οι ενσωματωμένες καταχωρίσεις σπάνια ενδιαφέρουν και σχεδόν ποτέ δεν πρέπει να διαγράφονται -
          η λίστα ξεκινά φιλτραρισμένη μόνο στις καταχωρίσεις του χρήστη· αυτό εμφανίζει επιπλέον και τις
