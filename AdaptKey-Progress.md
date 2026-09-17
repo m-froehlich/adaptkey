@@ -1179,13 +1179,13 @@ non-trivial changes).
   regression of that existing fix or a related race it does not fully cover. Needs a real device log to
   root-cause properly, per this project's own convention - not attempted blind.
 
-- **D-473 - seven of eight reported symptoms device-confirmed fixed on v1.2.50 (2026-09-17); "dich" ->**
-  **"sich" is NOT fixed and needs re-diagnosis, not a re-application of the same fix - see its own bullet**
-  **directly below.** Six real-device false-positive-autocorrect reports from the user in one batch, each
-  individually root-caused from real code/data before touching anything. Three closed as pure dictionary
-  content - see §488 (v1.2.48) for `ek`/`Wert`/`naja`-family (device-confirmed) and §489 (v1.2.49) for
-  `dich`/`dir` (`dir` device-confirmed; `dich` itself is the one exception, see below). Both design questions
-  proposed, discussed, and implemented on explicit go-ahead - see §490 (v1.2.50), both device-confirmed:
+- **D-473 - CLOSED IN FULL, all eight reported symptoms device-confirmed fixed (2026-09-17).** Six
+  real-device false-positive-autocorrect reports from the user in one batch, each individually root-caused
+  from real code/data before touching anything. Three closed as pure dictionary content - see §488 (v1.2.48)
+  for `ek`/`Wert`/`naja`-family and §489 (v1.2.49) for `dich`/`dir` (both, including `dich` itself - see the
+  D-473-followup bullet above for why it briefly looked unfixed: a deployment gap, not a data/code issue).
+  Both design questions proposed, discussed, and implemented on explicit go-ahead - see §490 (v1.2.50), both
+  device-confirmed:
   1. **A-05 split confidence - RESOLVED, §490.** Root-caused from `"trotzde"` -> `"trotz de"`,
      `"allerding"` -> `"aller Ding"`, `"direk"` -> `"dir ek"` and `"Schwimmtasche"` -> `"Schwimmt Asche"`: the
      split-veto condition only checked `bestCorrection?.highConfidence` (`best.cost <= ADJACENT_SUB_COST`, a
@@ -1214,7 +1214,29 @@ non-trivial changes).
      against the current source), so this fix does not explain that direction on its own; needs a fresh
      device log or a re-check of which word was actually typed before any further code change there.
 
-- **D-473-followup - OPEN, real puzzle, not yet root-caused on real device data (2026-09-17).** User confirmed
+- **D-473-followup - RESOLVED, device-confirmed (2026-09-17). Root cause was never the code or the data -**
+  **it was a deployment gap this session's own deliberate caution created.** The real, final answer, found from
+  a second device log captured on the actual v1.2.51 build: `typedFreq=291` - the live on-device dictionary
+  still held `dich`'s original, pre-fix frequency, unchanged. The German language pack is a separate,
+  independently-hosted download (D-280) fetched from `raw.githubusercontent.com/.../main/language-packs/
+  adaptkey-lang-de.zip` - and every fix in this whole D-473 session had been kept deliberately unpushed, per
+  the user's own opening instruction not to disturb the F-Droid tag/MR. Since the hosted archive is served
+  directly from `origin/main`, "not pushed" meant the real, already-correct `dich 2275` row in this repo was
+  never actually reachable by the device's own update-check/download/import flow - no matter how many times
+  the app itself was updated, the *pack* content underneath it never changed. `"dir"` appearing to already
+  work was very likely never independently re-tested on its own (an easy, understandable gap in a busy
+  multi-item confirmation round) - every code-only fix in this session (the A-05 split confidence, the T-02
+  touch-evidence weighting) worked immediately regardless of pack state, which is what made the picture look
+  more inconsistent than it actually was. **Clarified for next time, since it resolves the tension the user's**
+  **original caution was reacting to**: an ordinary `git push` to `origin/main` never moves or creates a tag,
+  and F-Droid's own `UpdateCheckMode: Tags` only reacts to new tags - pushing plain commits was never actually
+  a risk to the F-Droid MR/tag, and withholding them only self-inflicted this exact confusion. User confirmed
+  after pushing and re-importing the updated pack: `"dich"` -> `"sich"` no longer fires. The temporary
+  diagnostic from §491 removed (its job is done); see §492 for the removal round. D-473 is now closed in
+  full, all eight originally-reported items device-confirmed.
+
+  **Superseded investigation, kept for the record of the method (real bugs ruled out one at a time, not**
+  **guessed away) rather than deleted:**
   on v1.2.50: `"dich"` still autocorrects to `"sich"`, while `"dir"` -> `"die"` (the exact same mechanism,
   fixed in the same commit/pack version) is confirmed working. Re-verified the repo data directly rather than
   assuming staleness: `dictionaries/de/dict.tsv` genuinely has `dich 2275` (single row, no duplicate) and
@@ -1353,6 +1375,18 @@ non-trivial changes).
   for the proof and the numbers. Chain flattening (the larger share of the originally measured defect
   volume) is completely unaffected by this and ran exactly as planned. 446,015 lemma-column rows changed
   across the 31 packs; every pack passes `lemma_check.py` and `quality_gate.py`.
+
+- **§492 (v1.2.52): D-473-followup closed - the §491 diagnostic did its job, removed again.** The captured**
+  **log's own `typedFreq=291` line settled it: the live device had never actually re-imported the updated**
+  **German pack at all - a deployment gap (the pack is hosted on `origin/main`, and this whole session's work**
+  **had been deliberately kept unpushed to protect the F-Droid tag), not a code or data defect. Clarified for**
+  **the record: an ordinary commit push never moves or creates a tag, so it was never actually in tension**
+  **with that original caution - the withholding was the thing that caused the confusion.** User pushed and
+  re-imported the pack; `"dich"` -> `"sich"` confirmed gone on-device. The temporary diagnostic added in §491
+  (the `D-473-followup:` known-word-override dump in `AdaptKeyService.finalizeAndCommit()`) removed outright,
+  no behaviour change. 1659 unit tests unchanged. `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+  `versionCode` 547 -> 548, `versionName` `"1.2.51"` -> `"1.2.52"`. **Device-confirmed.** D-473 is now closed
+  in full - see its own bullet above.
 
 - **§491 (v1.2.51): D-473-followup - diagnostic-only round, no fix attempted.** User confirmed 7 of 8 D-473
   reports fixed on v1.2.50, but `"dich"` -> `"sich"` persists despite `"dir"` -> `"die"` (the identical

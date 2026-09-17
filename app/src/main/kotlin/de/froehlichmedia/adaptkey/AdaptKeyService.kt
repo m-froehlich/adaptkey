@@ -4734,26 +4734,6 @@ class AdaptKeyService : InputMethodService() {
         // as a last resort once a split had already had its own, unprotected chance to win) - see trySplit's
         // own gating comment right below for why.
         val autocorrected = bestCorrection?.word
-        // D-473-followup (temporary diagnostic, 2026-09-17): "dich" -> "sich" persists on-device despite
-        // dictionaries/de/dict.tsv (pack v44) carrying a mathematically identical protection ratio to the
-        // confirmed-fixed "dir"/"die" pair - something must differ live on that specific device for "dich"
-        // that this repo's own source cannot see. Dumps every value shouldOverrideKnownWord's own ratio
-        // check actually reads, plus the learned/blacklist state that could route around it entirely, for
-        // any known-word override about to apply - not "dich" specifically, so this also catches a future
-        // case shaped like it. Remove once a real log has settled this (matches this project's own
-        // established diagnostic-round convention, e.g. §451/§465/§477).
-        if (autocorrected != null && provider.isKnownWord(typed)) {
-            diag(
-                "AdaptKeyJitter",
-                "D-473-followup: known-word override about to apply typed=\"$typed\" candidate=\"$autocorrected\" " +
-                    "typedFreq=${dictionaryStore.frequencyOf(typed)} candidateFreq=${dictionaryStore.frequencyOf(autocorrected)} " +
-                    "typedEntry=${dictionaryStore.entryOf(typed)} candidateEntry=${dictionaryStore.entryOf(autocorrected)} " +
-                    "typedLearnedCasing=${dictionaryStore.learnedCasingOf(typed)} typedLearnedFreq=${dictionaryStore.learnedFrequencyOf(typed)} " +
-                    "typedIsBundled=${dictionaryStore.isBundledWord(typed)} typedIsBlacklisted=${dictionaryStore.isBlacklisted(typed)} " +
-                    "typedBlacklistCategory=${dictionaryStore.blacklistCategory(typed)} " +
-                    "shouldOverride=${provider.shouldOverrideKnownWord(typed, autocorrected)}"
-            )
-        }
         val rawCorrectedStartedAt = SystemClock.uptimeMillis()
         val rawCorrected = if (diacriticWord == null && !suppressAutocorrect && autocorrected == null) rawCoordinateCorrection(typed) else null
         val rawCorrectedMs = SystemClock.uptimeMillis() - rawCorrectedStartedAt
