@@ -255,6 +255,12 @@ in every prompt.
   - Once merged: F-Droid's own build/publish cycle still needs to run before the app actually appears in
     the client - merged is not yet live.
   - Optional, still not done: `de-DE`/`el-GR` screenshot sets (English `en-US` is now real, see above).
+    Checked directly against the repo (2026-09-17), not assumed either way: neither `fastlane/metadata/
+    android/de-DE/images/` nor `el-GR/images/` has ever held a `phoneScreenshots/` folder in this repo's
+    history (each holds only the D-321/D-322 `icon.png`, added to every locale uniformly) - the user recalled
+    German screenshots existing "quasi von Anfang an", but that was the `en-US` folder's own original
+    (German-language) placeholder captures, later replaced with real English ones, never a separate `de-DE`
+    set. Both `de-DE` and `el-GR` are genuinely still open, not just Greek.
 
 ## Guardrail - Read Before Touching `onUpdateSelection` / Composing State
 
@@ -1158,11 +1164,13 @@ non-trivial changes).
   regression of that existing fix or a related race it does not fully cover. Needs a real device log to
   root-cause properly, per this project's own convention - not attempted blind.
 
-- **D-473 - RESOLVED except one still-open sub-question (2026-09-16). Six real-device false-positive-**
-  **autocorrect reports from the user in one batch, each individually root-caused from real code/data before**
-  **touching anything.** Three closed as pure dictionary content - see §488 (v1.2.48) for `ek`/`Wert`/
-  `naja`-family and §489 (v1.2.49) for `dich`/`dir`. Both design questions proposed, discussed, and
-  implemented on explicit go-ahead - see §490 (v1.2.50):
+- **D-473 - seven of eight reported symptoms device-confirmed fixed on v1.2.50 (2026-09-17); "dich" ->**
+  **"sich" is NOT fixed and needs re-diagnosis, not a re-application of the same fix - see its own bullet**
+  **directly below.** Six real-device false-positive-autocorrect reports from the user in one batch, each
+  individually root-caused from real code/data before touching anything. Three closed as pure dictionary
+  content - see §488 (v1.2.48) for `ek`/`Wert`/`naja`-family (device-confirmed) and §489 (v1.2.49) for
+  `dich`/`dir` (`dir` device-confirmed; `dich` itself is the one exception, see below). Both design questions
+  proposed, discussed, and implemented on explicit go-ahead - see §490 (v1.2.50), both device-confirmed:
   1. **A-05 split confidence - RESOLVED, §490.** Root-caused from `"trotzde"` -> `"trotz de"`,
      `"allerding"` -> `"aller Ding"`, `"direk"` -> `"dir ek"` and `"Schwimmtasche"` -> `"Schwimmt Asche"`: the
      split-veto condition only checked `bestCorrection?.highConfidence` (`best.cost <= ADJACENT_SUB_COST`, a
@@ -1190,6 +1198,30 @@ non-trivial changes).
      **is still open** - `"ab"` is confirmed already present in `PLAUSIBLE_GERMAN_PREFIXES` (checked again
      against the current source), so this fix does not explain that direction on its own; needs a fresh
      device log or a re-check of which word was actually typed before any further code change there.
+
+- **D-473-followup - OPEN, real puzzle, not yet root-caused on real device data (2026-09-17).** User confirmed
+  on v1.2.50: `"dich"` still autocorrects to `"sich"`, while `"dir"` -> `"die"` (the exact same mechanism,
+  fixed in the same commit/pack version) is confirmed working. Re-verified the repo data directly rather than
+  assuming staleness: `dictionaries/de/dict.tsv` genuinely has `dich 2275` (single row, no duplicate) and
+  `sich 159213` - identical ~70x protection ratio to `dir`/`die`'s own (889897/12713 = 70.0 vs. 159213/2275 =
+  70.0), same edit cost (1, `d`/`s` and `e`/`r` are both real QWERTZ neighbours), same code path
+  (`shouldOverrideKnownWord`/`forKnownWordOverride`). Since the formula and the data are mathematically
+  identical in shape for both words, and `dir` demonstrably works on the very same device/pack version, the
+  fault cannot be the ratio calibration or a stale pack - something else must differ specifically for `dich`.
+  **Leading hypothesis, not yet confirmed**: `dich` may be blacklisted on this device (C-05, `BlacklistCategory
+  .USER`) from an earlier G-04 drag-to-trash - a bundled word is blacklisted immediately, no grace period, and
+  a blacklisted word's `isKnownWord()` returns `false` regardless of what its own dictionary frequency is
+  (`store.isKnownWord(word) && !store.isBlacklisted(word)`), which would route it entirely around
+  `shouldOverrideKnownWord`/A-01 into the *unknown-token* path (`forUnknownToken`) instead - there, only the
+  *candidate*'s frequency (`sich`, 159213, saturates to confidence 1.0 regardless of cost) matters, and
+  `dich`'s own frequency is never consulted at all. This would exactly explain why raising `dich`'s frequency
+  had zero effect while the mathematically identical fix for `dir` worked. D-334 also independently supports
+  why a pack update could never have fixed this even if it were the cause: the blacklist table is explicitly
+  untouched by a pack reseed. Not yet verified against the user's own device state - asked the user to check
+  Settings -> Blacklist (C-05, defaults to showing user-added entries) for a `dich` entry before any further
+  code change; a stray blacklist entry needs removing by hand, not a dictionary/code fix, and guessing at a
+  code fix here without that confirmation would risk fixing nothing again exactly like this bullet's own
+  finding warns against.
 
 - **D-461 - RESOLVED, device-confirmed (§478, v1.2.38; confirmed 2026-09-09).** Automatic capitalisation now fires only
   for a word with no reading beyond noun/proper noun - §6's rules 3 and 4 collapsed into one `isNounOnly`
@@ -1280,12 +1312,12 @@ non-trivial changes).
   correct. The other three checks pass. Needs a per-language flag ("this language capitalises common
   nouns") rather than dropping the check - it is genuinely right for every other language.
 
-- **D-467 - RESOLVED (§482, v1.2.42), not yet device-confirmed.** German's `lemma` column had two wrong
+- **D-467 - RESOLVED, device-confirmed (§482, v1.2.42; confirmed 2026-09-17).** German's `lemma` column had two wrong
   links plus 223 cyclic and 605 chained rows; all repaired mechanically, the cycle directions decided from
   `wiktionary_verben.tsv` rather than guessed. New `dictionaries/lemma_check.py` guards the three structural
   classes going forward. Data-only, no code touched.
 
-- **D-468 - RESOLVED (§484, v1.2.44), not yet device-confirmed.** The same structural repair as D-467
+- **D-468 - RESOLVED, device-confirmed (§484, v1.2.44; confirmed 2026-09-17).** The same structural repair as D-467
   (chain flattening + attested-direction cycle resolution), generalised to all 31 remaining dictionaries
   (30 packs + bundled English) via new `dictionaries/lemma_repair.py`. Doing so found a real limit of the
   method itself that the original scoping got wrong: unlike German, the other packs' own Wiktionary
@@ -1435,7 +1467,7 @@ non-trivial changes).
   new test needed, since nothing about the catalog's own *shape* changed, only its content.
 
   1651 unit tests unchanged. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 542 -> 543,
-  `versionName` `"1.2.46"` -> `"1.2.47"`. Not yet device-confirmed.
+  `versionName` `"1.2.46"` -> `"1.2.47"`. **Device-confirmed (2026-09-17).**
 
 - **§486 (v1.2.46): D-472 - the emoji panel's own "return to keyboard" tab moved into the extra row,**
   **replacing the emoji button's own slot with it while the panel is showing.** User's own explicit
@@ -1495,8 +1527,8 @@ non-trivial changes).
   project's own already-accepted untested layers - `commitEmoji()` sits alongside `handleKey`/
   `appendLongPressLetter`, neither of which carries dedicated tests either. 1651 unit tests unchanged.
   `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 540 -> 541, `versionName` `"1.2.44"` ->
-  `"1.2.45"`. **D-469 device-confirmed (2026-09-12)**; D-470 (this app's own emoji panel) not yet
-  independently re-confirmed on device.
+  `"1.2.45"`. **D-469 device-confirmed (2026-09-12)**; D-470 (this app's own emoji panel) now also
+  device-confirmed (2026-09-17).
 
 - **D-471 - WON'T FIX, analysed and explicitly declined (2026-09-12), not guessed at.** The user's own
   follow-up to D-470: two real device logs (WhatsApp, Signal), each showing the identical shape - after a
@@ -1937,8 +1969,9 @@ non-trivial changes).
   code change: `rawCoordinateCorrection()`/`missedBackspaceCorrection()` (the extras block's only other
   per-keystroke work in this path) are both O(token length) with no store-scanning cost of their own, so
   §477's fix - both `hasObviousCandidate()` calls now served from the value already computed on the
-  background executor - should collapse this specific freeze close to zero, not merely halve it. Not yet
-  device-confirmed for a token this long; worth a fresh log on v1.2.37 with a similarly long unknown word.
+  background executor - should collapse this specific freeze close to zero, not merely halve it.
+  **Device-confirmed for a token this long (2026-09-08, see the D-452 bullet above)** - this paragraph's own
+  "not yet confirmed" caveat had gone stale without being updated here; left as a pointer, not duplicated.
 
 - **§476 (v1.2.36): D-401 closed - the gesture's temporary diagnostics removed, no behaviour change.** User's
   own call after §475: "so lassen wir das, das Thema können wir abhaken" plus an explicit request to remove
