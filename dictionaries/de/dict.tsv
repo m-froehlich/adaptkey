@@ -10511,7 +10511,7 @@ Funktionalität	189	NOUN
 People	189	NOUN,OTHER
 einführte	189	OTHER
 Verabschiedung	189	NOUN
-fragte	189	OTHER
+fragte	189	VERB,OTHER
 Amtsinhaber	189	NOUN
 zurückgegangen	189	VERB
 größerem	189	OTHER
@@ -12740,7 +12740,7 @@ feucht	151	ADJECTIVE,OTHER
 Abmessungen	151	NOUN	Abmessung
 Malaria	151	NOUN
 Abbas	151	NOUN,PROPER_NOUN
-fragt	151	OTHER
+fragt	151	VERB,OTHER
 Deutungen	151	NOUN	Deutung
 mitgeteilt	151	OTHER
 Vorwand	151	NOUN

@@ -1376,26 +1376,40 @@ non-trivial changes).
   volume) is completely unaffected by this and ran exactly as planned. 446,015 lemma-column rows changed
   across the 31 packs; every pack passes `lemma_check.py` and `quality_gate.py`.
 
+- **§494 (v1.2.54): D-473-followup closed out - `fragt`/`fragte` folded into the VERB family, `"aber"`**
+  **closed without a root cause.** `fragt`(151)/`fragte`(189) retagged `OTHER` -> `VERB,OTHER`, on the user's
+  own explicit follow-up request after §493 named the gap in passing rather than fixing it - purely cosmetic
+  POS accuracy, no behaviour change (neither row was ever `NOUN`-tagged, so §46/D-461's capitalisation
+  mechanism was never affected either way). `"aber"`'s own Learned Words mystery (§493, item 4) is closed
+  without ever finding a mechanism - the user deleted the stray entry directly and cannot answer the
+  follow-up questions that would have narrowed it further; watching for a recurrence is the only path left,
+  not further guessing. `dictionaries/de/dict.tsv` 193,815 rows unchanged (2 retagged in place);
+  `quality_gate.py --capitalises-nouns` and `lemma_check.py` both PASS. `dictionaries/de/version.txt` 45 ->
+  46, pack rebuilt and verified byte-identical after unzip, `LanguagePackCatalog` version 45 -> 46. 1659 unit
+  tests unchanged, `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 549 -> 550,
+  `versionName` `"1.2.53"` -> `"1.2.54"`. Not yet device-confirmed.
+
 - **§493 (v1.2.53): five small, user-requested dictionary/data corrections in one round.**
   1. **"fair"** - only present as "Fair" (133, NOUN,OTHER) - no legitimate German noun sense found for it, so
      recased to lowercase and retagged `ADJECTIVE,OTHER` (NOUN dropped), matching every other bundled
      adjective's own casing convention (`direkt`, `eigentlich`, ...).
   2. **"frage"** - user's own premise ("nur als NOUN?") checked and found not to hold: `Frage`/`Fragen`
      already carry `NOUN,VERB` with a real lemma link (`Fragen` -> `Frage`). No change made. (Noted in
-     passing, not fixed: `fragt`/`fragte` are tagged `OTHER` rather than `VERB` - cosmetically inaccurate,
-     but per this project's own established finding "no code path anywhere reads VERB to make a decision",
-     behaviourally inert; left alone since it wasn't the actual ask.)
+     passing, not fixed here: `fragt`/`fragte` were tagged `OTHER` rather than `VERB` - cosmetically
+     inaccurate, but per this project's own established finding "no code path anywhere reads VERB to make a
+     decision", behaviourally inert. **Folded in on explicit follow-up request - see §494 (v1.2.54).**)
   3. **"bitte"** - already `NOUN,VERB` (`Bitte`/`bitten`) - `OTHER` added alongside for its own genuine
      discourse-particle use ("bitte" = please), per explicit request.
-  4. **"aber"** - found in the user's own Learned Words despite being a common, correctly-cased bundled word
-     (38185, `OTHER`) that should never have been individually learned at all under normal typing (D-264's
-     `bundledCasing == word` skip, D-271's sentence-start exception). Investigated by reading every `learn()`
-     call site (the ordinary commit path, D-391's cross-word-fusion path) - all of them route through the
-     same `learnWord()` guard, which should have skipped it. Also checked and ruled out: the now-deleted
-     `SeedData.kt` (its own 34-word hardcoded seed list, live until §478/v1.2.38) never contained "aber" at
-     all. **Still unexplained** - no mechanism found by code reading alone that would learn an
-     already-correctly-cased bundled word under ordinary use; asked the user for the exact casing shown in
-     the editor and, if convenient, its recency-sort "last touched" position, rather than guess further.
+  4. **"aber" - CLOSED, no root cause found, not pursued further (2026-09-17).** Found in the user's own
+     Learned Words despite being a common, correctly-cased bundled word (38185, `OTHER`) that should never
+     have been individually learned at all under normal typing (D-264's `bundledCasing == word` skip, D-271's
+     sentence-start exception). Investigated by reading every `learn()` call site (the ordinary commit path,
+     D-391's cross-word-fusion path) - all of them route through the same `learnWord()` guard, which should
+     have skipped it. Also checked and ruled out: the now-deleted `SeedData.kt` (its own 34-word hardcoded
+     seed list, live until §478/v1.2.38) never contained "aber" at all. No mechanism found by code reading
+     alone. The user deleted the stray entry directly and cannot answer the follow-up questions (exact
+     casing, recency-sort position) that would have narrowed it further - closed without a diagnosis; revisit
+     only if it recurs and a fresh repro is available.
   5. **24 archaic pre-1996-spelling-reform ß-words removed from the dictionary entirely, not merely**
      **blacklisted any more.** Corrects a real misunderstanding of the user's own original D-206 ask - the
      original instruction ("words that used to be spelled with ß and are now spelled with ss should

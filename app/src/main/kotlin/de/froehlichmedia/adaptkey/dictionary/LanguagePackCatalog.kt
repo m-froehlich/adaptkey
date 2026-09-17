@@ -475,7 +475,13 @@ object LanguagePackCatalog {
             // `bisschen`, `hässlich`, ...) independently confirmed present and untouched. `dictionaries/de/
             // version.txt` 44 -> 45, pack rebuilt and verified byte-identical after unzip, `LanguagePackCatalog`
             // version 44 -> 45.
-            version = 45
+            //
+            // D-473-followup (v1.2.54): `fragt`/`fragte` retagged `OTHER` -> `VERB,OTHER` (the "frage" family
+            // completeness note from the previous round, now folded in per explicit user request). `"aber"`'s
+            // own Learned Words mystery closed without a root cause - the user deleted the stray entry
+            // directly and will re-report only if it recurs. `dictionaries/de/version.txt` 45 -> 46, pack
+            // rebuilt and verified byte-identical after unzip, `LanguagePackCatalog` version 45 -> 46.
+            version = 46
         ),
         Entry(
             Language.GREEK,
