@@ -1387,7 +1387,9 @@ non-trivial changes).
   slot renders empty, disabled so a stray tap there does nothing, and reserving its layout space either way
   so Cancel lands back in the middle. No dictionary/pack change; code only. 1659 unit tests unchanged (still
   the same untested Android-glue layer). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
-  551 -> 552, `versionName` `"1.2.55"` -> `"1.2.56"`. Not yet device-confirmed.
+  551 -> 552, `versionName` `"1.2.55"` -> `"1.2.56"`. **Device-confirmed (2026-09-17)** - "Perfekt! So sieht
+  es gut aus." §495's own dialog-shape work is confirmed correct by the same sign-off, now that this round's
+  button-position fix is what made the layout actually match Learned Words on screen.
 
 - **§495 (v1.2.55): D-473-followup - Blacklist editor's per-entry dialog realigned to match the Learned**
   **Words editor's own dialog shape, per explicit user request** ("Ich möchte es gerne in der Bedienbarkeit
@@ -1409,8 +1411,8 @@ non-trivial changes).
   round's own dialog-alignment addendum. No dictionary/pack change this round - code and strings only. 1659
   unit tests unchanged (this project's own accepted untested Android-glue layer - Activity/dialog code has no
   unit coverage, per the Testing Gaps section). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
-  `versionCode` 550 -> 551, `versionName` `"1.2.54"` -> `"1.2.55"`. **Not yet device-confirmed - no emulator/
-  device is available in this session, so the visual layout itself has not actually been seen rendered.**
+  `versionCode` 550 -> 551, `versionName` `"1.2.54"` -> `"1.2.55"`. First real device look found the Cancel-
+  button-position gap §496 fixed; device-confirmed correct as a whole once that landed - see §496.
 
 - **§494 (v1.2.54): D-473-followup closed out - `fragt`/`fragte` folded into the VERB family, `"aber"`**
   **closed without a root cause.** `fragt`(151)/`fragte`(189) retagged `OTHER` -> `VERB,OTHER`, on the user's
