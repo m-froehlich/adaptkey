@@ -350,7 +350,7 @@ non-trivial changes).
   strong edit-distance-1 neighbour is `darum` (1023), 31x more frequent, well below A-01's ~106x override ratio
   (the `dich`/`dir` check D-473 did). See §500.
 
-- **D-477 - FIXED (§498 v1.2.58 + §499 v1.2.59), awaiting device confirmation (2026-09-20): the A-06/D-391**
+- **D-477 - FIXED and device-tested by the user (§498 v1.2.58 + §499 v1.2.59; confirmed 2026-09-20): the A-06/D-391**
   **merge did not turn `"Na hbarn"` back into `"Nachbarn"` - four independent obstacles.** User
   report: intending `Nachbarn`, the `c` tap landed as a space, giving `"Na hbarn"` (first reported as `"Nah
   hbarn"`; the logs show `Na` + space + `hbarn`). The user enabled the merge (C-25 defaults to Off) and saw
@@ -1541,7 +1541,7 @@ non-trivial changes).
   `applyFusion`'s glue (§498) plus the new candidate classes. +14 net unit tests (`AutoMergeAggressivenessTest`
   rewritten, seven new `TokenRepairTest` cases, six evaluation tests, `MergeConfidenceTest` removed) - 1677
   total. `:app:assembleRelease`/`:app:testDebugUnitTest` green, APK confirmed via `output-metadata.json`.
-  `versionCode` 554 -> 555, `versionName` `"1.2.58"` -> `"1.2.59"`. Not yet device-confirmed.
+  `versionCode` 554 -> 555, `versionName` `"1.2.58"` -> `"1.2.59"`. Device-tested by the user (2026-09-20).
 
 - **§498 (v1.2.58): D-477 - two defects that made the cross-word fusion (D-391) dead code on a real device,**
   **found by chasing "Na hbarn" -> "Nachbarn" through two user-supplied Diagnostics logs.** User request
@@ -1562,8 +1562,8 @@ non-trivial changes).
   `applyFusion`'s batch-edit and undo glue, so device confirmation covers more than the check itself. +1 unit
   test (`TokenRepairTest`, `fusionSpan`) - 1663 total; the service glue stays this project's accepted untested
   Android layer. `:app:assembleRelease`/`:app:testDebugUnitTest` green, APK confirmed via
-  `output-metadata.json`. `versionCode` 553 -> 554, `versionName` `"1.2.57"` -> `"1.2.58"`. Not yet
-  device-confirmed. Spec §44 got a D-477 addendum.
+  `output-metadata.json`. `versionCode` 553 -> 554, `versionName` `"1.2.57"` -> `"1.2.58"`. Device-tested by the
+  user together with §499 (2026-09-20). Spec §44 got a D-477 addendum.
 
 - **§497 (v1.2.57): D-474 - a switch to freeze touch-zone learning, requested after the user found that**
   **learned zones eventually bleed into neighbouring keys and cause the very mistaps they were meant to absorb.**
