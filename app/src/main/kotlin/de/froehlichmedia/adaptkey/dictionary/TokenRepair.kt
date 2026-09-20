@@ -466,6 +466,15 @@ class TokenRepair(
     companion object {
         
         /**
+         * D-477: the exact document text a fusion expects right before the caret while [typed] is still
+         * composing - the previously committed word, the single space between them, then the composing
+         * token itself. Verified against the real document before anything is deleted.
+         */
+        fun fusionSpan(previousWord: String, typed: String): String {
+            return "$previousWord $typed"
+        }
+        
+        /**
          * D-230 (reverted): a 2->3 bump was tried to close the `"Docker"`/`"darfst"` regressions (see history
          * §157/§158) but was wrong - it also blocks every genuine missed-space split ending in a real
          * 2-letter German function word (`"an"`, `"im"`, `"um"`, `"es"`, `"zu"`, ...), e.g. `"gehtes"` ->

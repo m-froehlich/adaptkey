@@ -4668,10 +4668,27 @@ class AdaptKeyService : InputMethodService() {
         // its own dedicated setting (deliberately separate from C-21/C-22, see AutoMergeAggressiveness's own
         // KDoc for why) plus the same suppressAutocorrect this function's other silent-correction mechanisms
         // already respect.
+        // D-477: deliberately NOT gated on dictChoice.suppressAutocorrect (A-03's "this context is foreign"
+        // verdict). That verdict is computed from a context that includes the very token suspected of being
+        // a typo - "Na hbarn" alone classifies as Tagalog on the real profiles - and a fusion is validated
+        // against the *active* dictionary anyway (the fused word must exist there), which already
+        // contradicts "this text is foreign". knownElsewhere, the autocorrect toggle and a confirmed revert
+        // still veto it.
+        val suppressFusion = knownElsewhere || !settings.autocorrectEnabled || revertConfirmed
         val previousWordForFusion = previousWord
-        if (settings.autoMergeEnabled && !suppressAutocorrect && previousWordForFusion != null) {
+        if (settings.autoMergeEnabled && !suppressFusion && previousWordForFusion != null) {
             val fusion = tokenRepair.tryFuseAcrossSpace(previousWordForFusion, typed)
-            if (fusion != null && fusion.confidence >= settings.autoMergeAggressiveness.autoApplyThreshold) {
+            val threshold = settings.autoMergeAggressiveness.autoApplyThreshold
+            if (fusion != null) {
+                diag(
+                    "AdaptKeyJitter",
+                    "finalizeAndCommit: fusion candidate previous=\"$previousWordForFusion\" typed=\"$typed\" " +
+                        "fused=\"${fusion.fused}\" confidence=${fusion.confidence} threshold=$threshold " +
+                        "aggressiveness=${settings.autoMergeAggressiveness} " +
+                        "a03Foreign=${dictChoice.suppressAutocorrect}"
+                )
+            }
+            if (fusion != null && fusion.confidence >= threshold) {
                 val committedLength = applyFusion(ic, previousWordForFusion, typed, fusion.fused, delimiter)
                 if (committedLength != null) {
                     armShiftForNextWordUnlessOpener(ic, delimiter)
@@ -5207,7 +5224,14 @@ class AdaptKeyService : InputMethodService() {
      */
     private fun applyFusion(ic: InputConnection, previousWordText: String, typed: String, fused: String, delimiter: String): Int? {
         val deleteLen = previousWordText.length + 1
-        if (ic.getTextBeforeCursor(deleteLen, 0)?.toString() != "$previousWordText ") {
+        // D-477: the composing token is still part of the document at this point, so the text right before
+        // the caret ends with [typed], not with "$previousWordText " - the original check compared only the
+        // last previousWordText.length + 1 characters (the tail of typed) against that, which can never
+        // match, so every fusion was silently abandoned. Verify the whole span, composing token included.
+        val expectedSpan = TokenRepair.fusionSpan(previousWordText, typed)
+        val actualSpan = ic.getTextBeforeCursor(expectedSpan.length, 0)?.toString()
+        if (actualSpan != expectedSpan) {
+            diag("AdaptKeyJitter", "applyFusion: abandoned - document before caret is \"$actualSpan\", expected \"$expectedSpan\"")
             return null
         }
         val cased = capitalisation.capitalise(fused, fusionContext(previousWordText))

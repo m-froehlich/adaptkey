@@ -3125,6 +3125,21 @@ layout-derived row at the same time, rather than leaving that inconsistency to b
 separate pass - the user's own explicit call, made once it became clear the fix would otherwise touch the
 same code twice.
 
+**D-477 addendum - two defects found the first time this was actually exercised on a device.** (1) The
+fusion is no longer gated on A-03's "this context is foreign" verdict (`dictChoice.suppressAutocorrect`).
+That verdict is computed from a context containing the very token suspected of being a typo - on the real
+bundled profiles the two-word context `"Na hbarn"` classifies as Tagalog and is flagged foreign - and a
+fusion is validated against the *active* dictionary anyway (the fused word has to exist there), which already
+contradicts "this text is foreign". The other vetoes stay: the token being a known word in another language,
+the autocorrect toggle, and a just-confirmed A-07 revert. (2) `applyFusion()`'s pre-deletion document check
+compared the text before the caret against `"$previousWord "` while the current token was still composing -
+so the last `previousWord.length + 1` characters were the *tail of the composing token* and the check could
+never match, silently abandoning every fusion. It now verifies the whole span
+(`TokenRepair.fusionSpan(previousWord, typed)` = `"$previousWord $typed"`). A `finalizeAndCommit: fusion
+candidate ...` diagnostic line (previous word, token, fused word, confidence, threshold, level, A-03
+verdict) and an `applyFusion: abandoned ...` line make the outcome visible in the in-app log. The
+[MergeConfidence] calibration itself is a separate open item - see `AdaptKey-Progress.md`'s D-477.
+
 ---
 
 ## 45. A Literally-Typed Umlaut Breaks an Autocorrect Tie in Its Own Favour (D-356)

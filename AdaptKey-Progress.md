@@ -352,45 +352,49 @@ non-trivial changes).
   Worth checking once done: `drum`'s A-01 override ratio against keyboard-adjacent frequent words, the way
   D-473 did for `dich`/`dir`, before assuming it is protected.
 
-- **D-477 - OPEN, bug, ROOT-CAUSED 2026-09-20 (fix awaiting the user's go): the A-06/D-391 merge does not**
-  **turn `"Na hbarn"` back into `"Nachbarn"` - three independent obstacles, evaluated in this order.** User
-  report: intending `Nachbarn`, the `c` tap landed as a space, giving `"Na hbarn"` (the report first said
-  `"Nah hbarn"`; the log shows `Na` + space + `hbarn`). The user enabled the merge (C-25 defaults to Off) and
-  saw identical behaviour on all three levels, then captured a Diagnostics log at Aggressive. Traced from that
-  log plus a throwaway JVM probe against the real bundled `language_profiles.tsv` and the real
-  `dictionaries/de/dict.tsv` (probe deleted afterwards):
-  1. **The A-03 foreign-language guard switches the fusion off before any confidence is computed - PROVEN.**
-     The log's second `finalizeAndCommit` line reads `dictChoice.suppressAutocorrect=true
-     knownInOtherLanguage=false` for `typed="hbarn"` with `tokenContextBefore="Na "`. `LanguageClassifier
-     .isForeign("Na hbarn")` is **true** on the real profiles (best match Tagalog, confidence 0.15, German
-     >=15% worse) - a two-word context is barely above `minWords = 2` and the typo token itself is what tips
-     it. `finalizeAndCommit` gates the fusion on `!suppressAutocorrect` (AdaptKeyService, the `tryFuseAcrossSpace`
-     call site), so nothing below it ever ran - which is exactly why the level made no difference. With a longer
-     context the same typo is not flagged (`"Das sind meine Na hbarn"` -> German, not foreign), so it bites
-     mostly on the first two words of a note/field. The T-05 tap-evidence A-06 path was never eligible either:
-     the space tap was `ambiguity=NONE` (`y=705.6`, well inside the space bar, not in the ambiguous edge band).
-  2. **`hbarn` is very likely already a *learned* word - inferred, not yet confirmed.** `tryFuseAcrossSpace`
-     returns null whenever the right-hand token is already recognised (`isAlreadyRecognised`). On the real
-     German dictionary `hbarn` is unknown (fusion works), but the same probe with `hbarn` merely present in the
-     store returns null. The log shows `hbarn` offered as a *next-word prediction* right after committing
-     `"Na "` (`final=[ja, dem, hbarn, ...]`), i.e. a learned bigram - consistent with the user having typed this
-     exact test several times (LEARN_THRESHOLD = 2 promotes it). Working as designed, but it silently
-     contaminates any repeat test: check Settings -> Learned Words for `hbarn` and forget it, and use a fresh
-     nonsense typo per test.
-  3. **Even with 1 and 2 out of the way, only Aggressive would merge it.** On the real data
-     `tryFuseAcrossSpace("Na", "hbarn")` finds `nachbarn` with `MergeConfidence` **0.672** (`Nachbarn 418
-     NOUN`; `forFusedCandidate` = ln(freq) / ln(8000) for a noun) against thresholds Cautious 0.90 / Medium
-     0.75 / Aggressive 0.55 - Medium needs a noun frequency >= ~848, Cautious >= ~3,268. D-391's own design
-     example `"Ar eitstag"` -> `"Arbeitstag"` scores only **0.322**, i.e. clears no level at all. The score is
-     pure absolute frequency and ignores that the right fragment is guaranteed *unrecognised* (a strong signal
-     on its own) - a calibration question, not a bug, in a mechanism the KDoc itself calls not yet device-tuned.
-  Candidate fixes, none applied: for (1) exempt the fusion from the A-03 component of `suppressAutocorrect`
-  (keep `knownInOtherLanguage`, the autocorrect toggle and the revert guard) - the fused result is validated
-  against the *active* dictionary, so "this text is foreign" is exactly the hypothesis it already contradicts;
-  the broader weakness (a typo token drags a two-word context to "foreign" and mutes ordinary autocorrect for
-  it too) is a separate, larger A-03 question. For (3) recalibrate `MergeConfidence` and/or credit the
-  unrecognised right fragment, with the numbers above as the regression corpus. Needs the user's decision on
-  both before any code.
+- **D-477 - PARTLY FIXED (§498, v1.2.58), the confidence calibration awaits the user's go (2026-09-20): the**
+  **A-06/D-391 merge did not turn `"Na hbarn"` back into `"Nachbarn"` - four independent obstacles.** User
+  report: intending `Nachbarn`, the `c` tap landed as a space, giving `"Na hbarn"` (first reported as `"Nah
+  hbarn"`; the logs show `Na` + space + `hbarn`). The user enabled the merge (C-25 defaults to Off) and saw
+  identical behaviour on all three levels. Traced from two Diagnostics logs plus throwaway JVM probes against
+  the real bundled `language_profiles.tsv` and the real `dictionaries/de/dict.tsv` (probes deleted afterwards):
+  1. **A-03's foreign-language guard switched the fusion off - FIXED §498.** Log 1: `dictChoice
+     .suppressAutocorrect=true` for `typed="hbarn"`, `tokenContextBefore="Na "`. `LanguageClassifier
+     .isForeign("Na hbarn")` is true on the real profiles (Tagalog, confidence 0.15) - two words is barely above
+     `minWords = 2` and the typo itself tips it; the fusion was gated on `!suppressAutocorrect`. With a longer
+     context (`"Das sind meine Na hbarn"`) it is not flagged, so this bites mostly on the first two words of a
+     note. The fusion is now gated on `knownElsewhere`, the autocorrect toggle and the revert guard only.
+  2. **`hbarn` was a learned word - user-side, resolved.** `tryFuseAcrossSpace` returns null when the right token
+     is already recognised; log 1 showed `hbarn` as a next-word prediction (learned bigram) from earlier test
+     repetitions. The user forgot it (log 2 no longer offers it). Lesson for repeat tests: use a fresh typo.
+  3. **`applyFusion()`'s document check could never match - FIXED §498, found from log 2.** Log 2 (long context,
+     `suppressAutocorrect=false`, `hbarn` unknown) still did not merge. `applyFusion` compared
+     `getTextBeforeCursor(previousWord.length + 1)` with `"$previousWord "` while `hbarn` was still composing,
+     i.e. it compared the *tail of the composing token* (`"arn"`) with `"Na "` and silently abandoned every fusion
+     ever attempted. D-391's glue was never device-run or unit-tested (this project's Android-glue convention),
+     which is how it survived; my first probe covered `TokenRepair` only and wrongly implied the rest worked.
+     Now verifies `TokenRepair.fusionSpan(previous, typed)` = `"Na hbarn"`; new diagnostics report the candidate,
+     confidence, threshold and any abandonment.
+  4. **The confidence metric itself is far too strict - OPEN, needs the user's go.** `MergeConfidence` is pure
+     absolute frequency (`ln(freq)/ln(300)`, nouns `/ln(8000)`), ignoring that the right fragment is guaranteed
+     unrecognised. `nachbarn` (freq 418, noun) scores 0.672 - only Aggressive (0.55) passes, Medium (0.75) and
+     Cautious (0.90) reject it - and D-391's own example `"Ar eitstag"` scores 0.322, clearing no level.
+     Measured on the real data: of **61,186** simulated spurious-space errors in everyday words (freq >= 10, length
+     >= 6, right fragment unrecognised) the current metric lets **4.8 % / 10.2 % / 26.1 %** through at
+     Cautious / Medium / Aggressive. The other side: 300 very common German words x 15,000 unknown foreign tokens
+     (4.5 M pairs) produce only **36** coincidental fusions at all (0.0008 %), and **all 36 have a right fragment
+     of 3-6 letters, 27 of them 3-4** (`der ster`->`derbster`, `im une`->`immune`, `nach arn`->`nachbarn`); a
+     separate 8,155-pair keyboard-typo set produced none. So frequency barely discriminates, while the length of
+     the unrecognised right fragment does (a longer residue is far less likely to be a chance dictionary tail).
+     Candidates measured (true merges cleared / false merges of 4.5 M, at Cautious/Medium/Aggressive): current
+     4.8/10.2/26.1 % and 2/2/5; C1 `0.45 + 0.10*(rightLen-2)` 59.3/84.1/96.4 % and 0/9/36; **C2 the same times
+     `ln(freq)/ln(30)` as a soft floor 28.0/57.5/89.0 % and 0/3/13 (recommended)**; C3 = C2 plus 0.10 for fused
+     length >= 8, 34.3/65.2/94.1 % and 1/3/16. A length-only score with a frequency floor of 10 admitted junk
+     dictionary rows (`derbster`, freq 10), which is why frequency stays as a soft factor. `nachbarn` would score
+     0.75 (Medium boundary - the final constants should keep a margin off the exact threshold), `arbeitstag` about
+     0.8. Not applied: needs the user's go on the formula and constants.
+  Still to do after the go: replace `MergeConfidence.forFusedCandidate` (new signature carrying the right
+  fragment's length), extend `MergeConfidenceTest`/`TokenRepairTest` with the real-data cases above, spec §44.
 
 - **D-478 - OPEN, decision + spec cleanup (2026-09-20): UI-string localisation is still written as "DE/EN/EL"**
   **although ~31 languages exist now.** Source of the habit: spec N-01 ("localised into English and Greek in
@@ -1471,6 +1475,28 @@ non-trivial changes).
   volume) is completely unaffected by this and ran exactly as planned. 446,015 lemma-column rows changed
   across the 31 packs; every pack passes `lemma_check.py` and `quality_gate.py`.
 
+- **§498 (v1.2.58): D-477 - two defects that made the cross-word fusion (D-391) dead code on a real device,**
+  **found by chasing "Na hbarn" -> "Nachbarn" through two user-supplied Diagnostics logs.** User request
+  (2026-09-20): fix obstacles 1 and 3 of the D-477 analysis together, "frequency may simply not be a good
+  contributor to the metric". Log 2 (captured after the user forgot the learned `hbarn`) showed
+  `suppressAutocorrect=false` yet no merge - which the first analysis had not predicted - and reading
+  `applyFusion` explained it: its pre-deletion check `getTextBeforeCursor(previousWord.length + 1) ==
+  "$previousWord "` ran while the current token was still composing, so it compared the last three characters
+  of `hbarn` with `"Na "`; unlike `applyMerge` (A-06), which removes the composing text first, it could never
+  match, and every fusion was silently abandoned. Fixed by verifying the whole span via new
+  `TokenRepair.fusionSpan(previousWord, typed)`. Obstacle 1 (A-03's foreign verdict for the two-word context
+  `"Na hbarn"`, confirmed on the real profiles) fixed by gating the fusion on `knownElsewhere`, the autocorrect
+  toggle and the revert guard only - see the comment at the call site. New diagnostics: `finalizeAndCommit: fusion
+  candidate ...` (previous, token, fused, confidence, threshold, level, A-03 verdict) and `applyFusion:
+  abandoned ...`, so the next log is conclusive. **Not done:** the confidence metric (obstacle 4 in D-477) - the
+  real-data measurements and a recommendation are recorded there, awaiting the user's go on the formula.
+  Until then `nachbarn` (0.672) merges at Aggressive only. Honest caveat: this is the first real execution of
+  `applyFusion`'s batch-edit and undo glue, so device confirmation covers more than the check itself. +1 unit
+  test (`TokenRepairTest`, `fusionSpan`) - 1663 total; the service glue stays this project's accepted untested
+  Android layer. `:app:assembleRelease`/`:app:testDebugUnitTest` green, APK confirmed via
+  `output-metadata.json`. `versionCode` 553 -> 554, `versionName` `"1.2.57"` -> `"1.2.58"`. Not yet
+  device-confirmed. Spec §44 got a D-477 addendum.
+
 - **§497 (v1.2.57): D-474 - a switch to freeze touch-zone learning, requested after the user found that**
   **learned zones eventually bleed into neighbouring keys and cause the very mistaps they were meant to absorb.**
   Requested 2026-09-20 with the reasoning attached: over time mistaps drag the learned zones out of their own
@@ -2376,64 +2402,13 @@ non-trivial changes).
   -> `"1.2.34"`. Both gains and the quantisation are single, independent constants - the expected next
   adjustment is one number, not another rearchitecture.
 
-- **§473 (v1.2.33): D-401-followup - the probe came back positive, so the gesture's Stage 1 is now a**
-  **screen-space model: the caret is driven towards a *point*, and a soft-wrapped line is finally a real line.**
-
-  **The device log settled all three questions §472 asked** (Google Keep, one note = three paragraphs across
-  five visible rows). (1) Callbacks arrive: `accepted=true`, then a dense stream, one per applied
-  `setSelection()`. (2) Coordinates are real: never `NaN`, `visible=true` throughout. (3) **y genuinely
-  changes across a soft wrap**: within the 107-character paragraph that contains no `'\n'` at all, offset 0
-  was drawn at screen y 539 and offsets 55-80 at y 596 - one row lower, in the same paragraph. The visible
-  line is observable after all; the conclusion recorded in §472 that it was not is now definitively closed.
-
-  Three further facts the same log gave for free, each of which shaped the design:
-  - **The font is proportional.** Per-character advances between offsets 55 and 80 ranged from 11 to 24 px.
-    No fixed character width could ever have placed the caret correctly, which is why this is a *feedback
-    loop* and not a calculation.
-  - **Reports lag by one step.** `trackedOffset=68 reportedSel=[67,67]` recurs throughout, followed by the
-    settled report. So a report must be paired with the offset it actually names, never with whatever this
-    app currently believes - `VisualCaretServo.expect()` exists exactly for that.
-  - **The old line-step constant was wildly out.** `DP_PER_LINE_STEP` = 200 dp = 525 px of finger travel per
-    line against a 53 px row - the mechanical reason "changing lines is nearly impossible" was a fair report.
-
-  **What was built.** New pure, fully unit-tested `keyboard/VisualCaretServo` (18 tests): it accumulates
-  reported "offset N is drawn at (x, y)" facts, learns the average character advance and each row's own
-  offset range from them, and proposes the next offset to move to in order to get closer to a target point.
-  The caller applies it, the editor reports back, and the error feeds the next proposal - so holding the
-  finger still settles the caret within a few frames instead of needing the first estimate to be right. The
-  test fixture is a synthetic proportional, soft-wrapping layout, so the whole loop runs to convergence in a
-  plain JVM test; the soft-wrap cases are the ones the newline-based model could not express at all.
-
-  **The user's own two rules now fall out of the geometry instead of being enforced by thresholds.** A
-  sideways drag names a point on the same row, so it cannot change lines - and the row an offset belongs to
-  is *learned from real reports* (`rowBounds()`), so the clamp is exact rather than guessed. A downward drag
-  names a point one row height lower, so it moves one *visible* line. `stepsFor()`'s dominant-axis gate and
-  both `DP_PER_*` constants are therefore unnecessary on this path: 40 px of hand wobble against a 53 px row
-  simply names the same row, with nothing to tune. Re-touching now *keeps* everything learned about the
-  field's layout and only re-anchors where the finger started - the opposite of the newline-based model,
-  where every re-touch re-derived a guessed column reference (§472's first finding).
-
-  **The gain is now a real parameter.** `CursorControlGesture.SCREEN_SPACE_GAIN` = 0.5, the user's explicit
-  requirement that the caret move *less* than the finger ("otherwise you may as well tap in the text
-  directly"). For the first time it is a plain ratio between two distances on the same screen rather than a
-  dp-per-character constant that silently depended on the target app's font - and for reference, the old
-  `DP_PER_CHARACTER_STEP` worked out to roughly 0.6 against the advances the device actually reported.
-  Expect to tune it; it is one constant.
-
-  **Deliberately scoped out, with the reason.** Stage 2 (selection extension) keeps the newline-based path in
-  every editor: the reported insertion marker is only unambiguous while the selection is *collapsed*, and
-  this round has device evidence for the collapsed case only. Assuming otherwise is precisely the mistake
-  that cost rounds §462-§470, so the existing probe logging will answer it on the next device round instead.
-  The handover is explicit - when Stage 2 begins, the fallback's "origin column + total characters" reference
-  is re-based onto wherever the servo actually left the caret, so the drag continues rather than jumping.
-  The newline-based path also remains the full fallback for any editor that reports no coordinates at all.
-
-  1620 unit tests (1599 -> 1620: +18 `VisualCaretServoTest`, +3 `CursorControlGestureTest`).
-  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 528 -> 529, `versionName` `"1.2.32"`
-  -> `"1.2.33"`. **Not yet device-confirmed** - the mechanism is new and the gain is a first guess.
 
 
-## Older Rounds (§1-§472, v0.7.6 through v1.2.32) - Pruned From This File
+## Older Rounds (§1-§473, v0.7.6 through v1.2.33) - Pruned From This File
+
+D-477 (§498): thirty-sixth pruning pass - §473 removed, cutoff moved from §473 to §474, keeping the working
+set at 25 rounds (§474-§498). Backfilled into History.md first with the same token-multiset check as the
+pass below (delta 0), nothing summarised or dropped.
 
 D-474 (§497): thirty-fifth pruning pass - §463-§472 removed (the ten D-401-followup rounds, all superseded by
 §476's own closure of D-401), cutoff moved from §463 to §473, bringing the working set back to the usual 25

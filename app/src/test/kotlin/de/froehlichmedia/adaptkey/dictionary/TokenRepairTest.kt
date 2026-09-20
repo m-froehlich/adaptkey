@@ -532,6 +532,13 @@ class TokenRepairTest {
     }
     
     @Test
+    fun `D-477 fusionSpan covers previous word, the space and the still-composing token`() {
+        // The document at fusion time reads "... Na hbarn" with hbarn composing - the span checked before
+        // deleting must include the composing token, not merely "previous + space".
+        assertEquals("Na hbarn", TokenRepair.fusionSpan("Na", "hbarn"))
+    }
+    
+    @Test
     fun `D-391 no fusion when the current token is already a known word`() {
         store.putWord(WordEntry("bald", frequency = 10L))
         store.putWord(WordEntry("aberbald", frequency = 1_000L)) // exists, but must never be reached
