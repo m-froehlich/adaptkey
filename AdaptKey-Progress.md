@@ -339,18 +339,16 @@ non-trivial changes).
   raw-tap recording or the D-243 `rawTap` diagnostic lines. Until then D-474's switch is the on-device A/B
   tool (Reset calibration, then switch learning off).
 
-- **D-476 - OPEN, awaiting the user's go (2026-09-20): `Drum` is tagged bare `NOUN` in the German dictionary**
-  **and therefore auto-capitalises.** Live-checked: `dictionaries/de/dict.tsv` holds `Drum 33 NOUN` and
+- **D-476 - FIXED (§500, v1.2.60), awaiting device confirmation (2026-09-20): `Drum` was tagged bare `NOUN` in**
+  **the German dictionary and therefore auto-capitalised.** `dictionaries/de/dict.tsv` held `Drum 33 NOUN` and
   `Drums 27 NOUN,OTHER` (lemma `Drum`) - both the English word (band/drum kit) from the Wikipedia corpus - and
-  no lower-case `drum` row at all, although German has a real lower-case adverb `drum` (= "darum": "sei's
-  drum", "Drum und Dran", "drum herum"). Recommendation (the user's own `OTHER` idea, refined): rather than
-  only re-tagging the capitalised row, replace it with a lower-case `drum` row tagged `OTHER`, the same shape
-  as the existing `drin 16` / `drauf 12` / `drüber 15` (so frequency 33 stays in a plausible range). **`Drums`
-  is dropped entirely (user's call, 2026-09-20)** - it is only the English plural of the word whose capitalised
-  singular this fix removes, so it has no German reading left to keep and needs no lemma re-pointing. Same procedure as §493's small data corrections: rebuild and republish `adaptkey-lang-de.zip`, which
-  is served from `origin/main`, so the user's push is what makes it reachable (D-473-followup's own lesson).
-  Worth checking once done: `drum`'s A-01 override ratio against keyboard-adjacent frequent words, the way
-  D-473 did for `dich`/`dir`, before assuming it is protected.
+  no lower-case `drum` row, although German has a real lower-case adverb `drum` (= "darum": "sei's drum",
+  "Drum und Dran", "drum herum"). Fixed as recommended and agreed: `Drum` replaced by a lower-case `drum 33
+  OTHER` (the shape of `drin`/`drauf`/`drüber`), and `Drums` **removed entirely** (the user's call: it is only
+  the English plural of the word whose capitalised singular went). Checked before applying: no other row had
+  `Drum` as its lemma, no bigram mentions either form, and `drum` stays protected from autocorrect - its only
+  strong edit-distance-1 neighbour is `darum` (1023), 31x more frequent, well below A-01's ~106x override ratio
+  (the `dich`/`dir` check D-473 did). See §500.
 
 - **D-477 - FIXED (§498 v1.2.58 + §499 v1.2.59), awaiting device confirmation (2026-09-20): the A-06/D-391**
   **merge did not turn `"Na hbarn"` back into `"Nachbarn"` - four independent obstacles.** User
@@ -1506,6 +1504,21 @@ non-trivial changes).
   volume) is completely unaffected by this and ran exactly as planned. 446,015 lemma-column rows changed
   across the 31 packs; every pack passes `lemma_check.py` and `quality_gate.py`.
 
+- **§500 (v1.2.60): D-476 - `Drum` re-cast as the lower-case German adverb `drum`, `Drums` removed (German data**
+  **pack only).** User-reported: `Drum` auto-capitalised because `Drum 33 NOUN` (the English word, from the
+  Wikipedia corpus) is a bare noun, which §6's `isNounOnly` rule forces to a capital. Agreed: no re-tag of the
+  capitalised row (it would still have been the canonical spelling offered as a chip) but a lower-case `drum
+  33 OTHER` like `drin`/`drauf`/`drüber` - German `drum` is a real everyday word ("sei's drum") that had no row
+  at all - and the English plural `Drums` (27, lemma `Drum`) dropped entirely, per the user. `dictionaries/de/
+  dict.tsv` 193,815 -> 193,814 rows; `quality_gate.py --capitalises-nouns` and `lemma_check.py` both PASS;
+  `dictionaries/de/version.txt` 46 -> 47, `language-packs/adaptkey-lang-de.zip` rebuilt (same four members, same
+  order) and verified byte-identical after unzip, `LanguagePackCatalog` version 46 -> 47. No code change beyond
+  that version and its comment; 1677 unit tests unchanged (none references the touched words).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green, APK confirmed via `output-metadata.json`.
+  `versionCode` 555 -> 556, `versionName` `"1.2.59"` -> `"1.2.60"`. Not yet device-confirmed - and per the
+  D-473-followup lesson, **the pack is served from `origin/main`: push this round, then re-import the German pack
+  in Settings -> Language Packs before expecting `drum` to stop capitalising.**
+
 - **§499 (v1.2.59): D-477 - the cross-word fusion's metric replaced by the user's "which of the two tokens are**
   **words" model, tuned and pinned against the real dictionary.** Request (2026-09-20): drop the fused word's
   frequency as the deciding score - "die Länge des zweiten Teils ... erscheint mir willkürlich" (rightly: it
@@ -2386,44 +2399,15 @@ non-trivial changes).
   `:app:assembleRelease`/`:app:testDebugUnitTest` green, no warnings. `versionCode` 531 -> 532, `versionName`
   `"1.2.35"` -> `"1.2.36"`.
 
-- **§475 (v1.2.35): D-401-followup - Stage 2 (selection) froze after its very first move; a real bug in the**
-  **newline-based line-boundary logic, not in the new screen-space model.** Device report: "the selection
-  mode on hold no longer works." The log names the failure directly - `applyCursorControlMove: line bounds
-  unavailable - column unchanged`, repeated for every single move after the first, in both drag directions.
-
-  **Root cause.** `getTextBeforeCursor()` returns the text before the *selection's start* and
-  `getTextAfterCursor()` the text after its *end* - both anchored to the selection, not to the gesture's
-  moving end. So in Stage 2 the selection's own text sits between the moving end and the surrounding text on
-  one side, and has to be stitched back in there. The old `leftBoundary()`/`rightBoundary()` instead searched
-  **only the selection** for a line break on that side and returned null when they found none - abandoning
-  the move outright. A selection almost never spans a line break, so that was the normal case: the first move
-  worked (still collapsed, other branch), and every one after it did nothing. Stage 1 was never affected,
-  which is why this survived §471-§474 unnoticed.
-
-  **Fix.** Both functions replaced by one `lineBoundsFor()` that reads all three pieces of text and hands
-  them to a new pure `keyboard/CursorLineBounds` (13 tests, including both freeze directions as explicit
-  regression cases). Getting this stitching wrong is demonstrably not hypothetical, which is why the
-  reasoning was extracted somewhere it can actually be tested rather than left in the Android glue. A null
-  `getSelectedText()` now degrades to treating the selection as empty rather than abandoning the move - the
-  clamp then misses by the selection's length instead of freezing, a far better failure mode.
-
-  **Bonus finding, and it closes an open question with evidence rather than assumption.** §473 deliberately
-  kept Stage 2 on the newline model because it was not known whether `CursorAnchorInfo` reports anything
-  usable during a selection. This log answers it: **it reports the insertion marker at the selection's
-  anchor, never at the moving end.** Three independent confirmations - `reportedSel=[66,67]` with
-  `markerX=474.4961` (offset 66's own x), `reportedSel=[67,61]` and `reportedSel=[67,133]` both with
-  `markerX=484.4961` (offset 67's). The moving end is therefore *not observable*, so the screen-space servo
-  structurally cannot drive Stage 2, and Stage 2 staying on the newline model is now a documented
-  consequence rather than a deferred decision.
-
-  1640 unit tests (1627 -> 1640, +13 `CursorLineBoundsTest`).
-  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 530 -> 531, `versionName` `"1.2.34"`
-  -> `"1.2.35"`.
 
 
 
 
-## Older Rounds (§1-§474, v0.7.6 through v1.2.34) - Pruned From This File
+## Older Rounds (§1-§475, v0.7.6 through v1.2.35) - Pruned From This File
+
+D-476 (§500): thirty-eighth pruning pass - §475 removed, cutoff moved from §475 to §476, keeping the working
+set at 25 rounds (§476-§500). Backfilled into History.md first with the same token-multiset check (delta 0),
+nothing summarised or dropped.
 
 D-477 (§499): thirty-seventh pruning pass - §474 removed, cutoff moved from §474 to §475, keeping the working
 set at 25 rounds (§475-§499). Backfilled into History.md first with the same token-multiset check (delta 0),

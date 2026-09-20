@@ -42002,7 +42002,7 @@ interaktiv	33	ADJECTIVE,OTHER
 artige	33	OTHER
 Brutreaktoren	33	NOUN	Brutreaktor
 Metallindustrie	33	NOUN
-Drum	33	NOUN
+drum	33	OTHER
 imperiale	33	OTHER
 angespielt	33	OTHER
 Ablasshandel	33	NOUN
@@ -48800,7 +48800,6 @@ beschert	27	OTHER
 Ubuntu	27	NOUN,PROPER_NOUN
 Videosignal	27	NOUN
 waagerechte	27	OTHER
-Drums	27	NOUN,OTHER	Drum
 Rückversicherung	27	NOUN
 Breitengrade	27	NOUN	Breitengrad
 gebraut	27	OTHER

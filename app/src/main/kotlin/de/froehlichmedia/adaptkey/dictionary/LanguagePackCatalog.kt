@@ -481,7 +481,14 @@ object LanguagePackCatalog {
             // own Learned Words mystery closed without a root cause - the user deleted the stray entry
             // directly and will re-report only if it recurs. `dictionaries/de/version.txt` 45 -> 46, pack
             // rebuilt and verified byte-identical after unzip, `LanguagePackCatalog` version 45 -> 46.
-            version = 46
+            //
+            // D-476 (v1.2.60): the capitalised `Drum` (33, bare NOUN - the English word from the Wikipedia
+            // corpus, which made "drum" auto-capitalise) replaced by the lower-case German adverb `drum`
+            // ("sei's drum", "Drum und Dran") tagged OTHER, same shape as `drin`/`drauf`/`drüber`; its English
+            // plural `Drums` (27, lemma `Drum`) removed entirely. Nothing else carried `Drum` as a lemma.
+            // `dictionaries/de/version.txt` 46 -> 47, pack rebuilt and verified byte-identical after unzip,
+            // `LanguagePackCatalog` version 46 -> 47.
+            version = 47
         ),
         Entry(
             Language.GREEK,
