@@ -8,6 +8,9 @@ need to change and why, in the order that actually matters.
 If you only remember one thing: **run the two checklists below** (§1 for "my language is already in the
 `Language` enum", §2 for "it isn't yet") before writing a single line of Kotlin.
 
+Translating the app's *own screens* (settings, onboarding, dialogs) is a separate and much smaller job that
+needs no dictionary and no Kotlin - see §9.
+
 ---
 
 ## 0. The three things a language needs, and why they are separate
@@ -603,3 +606,54 @@ rather than silently treating it as equivalent to a language that does have its 
     no dictionary at all (§0's own honest "typable, no smart features" fallback tells the truth about its own
     limits; a wrong dictionary does not). Do not skip this step because every earlier step ran cleanly - a
     clean pipeline run is not the same thing as a correct one.
+
+
+---
+
+## 9. Translating the app's own screens (`values-xx`) - a separate, much smaller job
+
+Everything above is about how the keyboard *types*. The app's own screens (settings, onboarding, dialogs, the
+calibration flow) are translated separately, and that job does **not** need a dictionary, a keyboard layout
+or any Kotlin.
+
+**Where the strings live.** `app/src/main/res/values/strings.xml` is the English reference and the fallback
+(about 340 strings). Every supported language has its own `app/src/main/res/values-xx/strings.xml`. The UI
+language follows the *system* language (or, on Android 13+, the per-app language chosen under Settings ->
+Info -> "App language"); it is independent of which input languages are installed. UI strings are deliberately
+**not** part of a language pack - the pack-download screen is itself UI, and Android resolves `@string`
+references in preference screens from the APK's own resources.
+
+**Status of the existing translations.** English, German and Greek are maintained by the maintainer. Every
+other language currently has a **draft translation written by an AI assistant**, not reviewed by a native
+speaker. They are meant to be good enough to use and easy to improve - if you speak the language and a string
+reads wrongly, awkwardly or is simply mistranslated, fixing it is the most useful contribution you can make.
+Open an issue with the string name (`d353_autocorrect_aggressiveness_title`, ...) and your wording, or send a
+pull request that edits `values-xx/strings.xml` directly. Unlike a dictionary (§8, step 11), a UI draft does
+not need a speaker's sign-off before it ships; it is corrected as people notice.
+
+**Rules when editing a translation.**
+
+- Keep every `name="..."` exactly as in English, and keep every format placeholder (`%1$s`, `%2$s`, `%1$d`)
+  and every `\n` escape. Word order around a placeholder may change; the placeholder itself may not.
+- A literal apostrophe inside a value is written `\'` in the XML (or use the typographic `’`).
+- Do not translate `app_name` / `ime_name`, code identifiers, licence names or the short feature IDs in
+  brackets such as `(D-32)` or `(L-02)`.
+- Filipino uses the resource directory `values-fil` (Android resolves the system locale `fil`), although its
+  language-pack code is `tl`. Every other directory uses the pack code, e.g. `values-nb` for Norwegian Bokmål.
+
+**Adding the UI for a new language** (do this in the same change that adds the `Language` enum entry, §2):
+
+1. Copy `values/strings.xml` to `values-xx/strings.xml` and translate the values.
+2. Add `<locale android:name="xx" />` to `app/src/main/res/xml/locales_config.xml` (this is what makes the
+   language appear in Android 13+'s per-app language list).
+3. Run `:app:testDebugUnitTest --tests "*UiLocaleConsistencyTest*"`. It fails if a translation misses or adds a
+   string name, changes a format placeholder, if `locales_config.xml` does not list exactly English plus the
+   translation directories, or if a language in the `Language` enum has no UI translation at all.
+
+A string that is missing from a `values-xx` file falls back to English at run time, so an unfinished
+translation is never a crash - but the test above still fails, so a half-translated language cannot be merged
+by accident.
+
+**When you add or change a string in the app**, add it to *all* locale files in the same change (an AI
+assistant may draft the translations; mark them as drafts in the pull request). The store listing under
+`fastlane/metadata/android/<locale>/` is translated the same way and is likewise welcome as a contribution.

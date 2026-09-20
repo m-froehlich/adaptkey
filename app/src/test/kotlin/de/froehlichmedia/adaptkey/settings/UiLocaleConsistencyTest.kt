@@ -3,6 +3,7 @@
 
 package de.froehlichmedia.adaptkey.settings
 
+import de.froehlichmedia.adaptkey.language.Language
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -68,5 +69,19 @@ class UiLocaleConsistencyTest {
         val listed = (0 until nodes.length).map { nodes.item(it).attributes.getNamedItem("android:name").nodeValue }
         val expected = listOf("en") + translationDirs().map { it.name.removePrefix("values-") }
         assertEquals(expected.sorted(), listed.sorted())
+    }
+    
+    @Test
+    fun `every language with a language pack also has a UI translation`() {
+        // D-478: the UI locales to maintain are exactly the languages AdaptKey can type in, so adding a Language
+        // entry without a values-xx directory fails here instead of leaving that language's users on English.
+        // Filipino is the one case where Android's resource qualifier (`fil`) differs from the pack code (`tl`).
+        val uiCodeOverrides = mapOf("tl" to "fil")
+        val present = translationDirs().map { it.name.removePrefix("values-") }.toSet()
+        val missing = Language.entries
+            .filter { it != Language.ENGLISH && it != Language.UNKNOWN }
+            .map { uiCodeOverrides[it.code] ?: it.code }
+            .filter { it !in present }
+        assertTrue(missing.isEmpty(), "languages without a values-xx UI translation: $missing")
     }
 }

@@ -425,8 +425,8 @@ non-trivial changes).
   unnecessary if the class model (§499) works well - revisit only if device use shows the lexical evidence
   is not enough, e.g. ambiguous connectors.
 
-- **D-478 - OPEN, decision + spec cleanup (2026-09-20): UI-string localisation is still written as "DE/EN/EL"**
-  **although ~31 languages exist now.** Source of the habit: spec N-01 ("localised into English and Greek in
+- **D-478 - RESOLVED (§501-§503, 2026-09-20; the recommendation below on (1) was overruled by the user):**
+  **UI-string localisation was still written as "DE/EN/EL" although ~31 languages exist.** Source of the habit: spec N-01 ("localised into English and Greek in
   addition to German") and every §-entry since (`values`/`values-de`/`values-el`, ~334 strings each) - it
   predates D-280's language packs and was never revisited. Two questions: (1) should the UI be translated into
   the other ~28 languages, and (2) should those strings live in the language packs. Recommendation: (1) only
@@ -440,7 +440,13 @@ non-trivial changes).
   the workable route. Cleanup to do on go: rewrite N-01 to state the real policy (English default; German and
   Greek maintained by the maintainer; any other locale community-contributed as `values-xx`, never a
   language-pack concern) and replace the implicit "always write all three" habit with that explicit, narrower
-  rule. Not started.
+  rule. **Outcome:** (2) stood - UI strings stay in the APK, never in the packs. (1) went the other way: the
+  user judged AI-written drafts good enough and a grown community the right review mechanism, so every
+  language the app supports now gets a `values-xx` translation (drafts by Claude, no review by his wife or
+  anyone else asked for), N-01 was rewritten accordingly, the standing rule lives under "Notes / gotchas"
+  and in the assistant's memory, and `UiLocaleConsistencyTest` enforces it (§502/§503). Follow-up still open:
+  the F-Droid store listing (`fastlane/metadata/android/<locale>/`) only exists for en-US/de-DE/el-GR - to be
+  translated from the same drafts in its own round.
 
 - **Three long-standing gaps named only in narrative history entries, never previously tracked here -**
   **ALL THREE NOW RESOLVED (same session, 2026-09-06).** Recorded here specifically so this section (whose
@@ -1504,6 +1510,39 @@ non-trivial changes).
   volume) is completely unaffected by this and ran exactly as planned. 446,015 lemma-column rows changed
   across the 31 packs; every pack passes `lemma_check.py` and `quality_gate.py`.
 
+- **§503 (v1.2.63): D-478 - draft UI translations for every supported language, plus the contribution path.**
+  **The app's own screens now exist in all 32 languages the keyboard supports (31 `values-xx` directories +**
+  **English).** Agreed with the user (2026-09-20): every language in the `Language` enum gets a `values-xx`
+  translation, written as a draft by Claude (338 strings each); no native-speaker review is requested up
+  front - the user's wife is deliberately not to be involved, and a community that has grown will report
+  wrong wording. New directories: `values-{fr,es,it,pt,nl,pl,tr,sv,nb,da,fi,cs,sk,hu,ro,hr,bs,sr,et,lv,lt,id,ms,
+  sw,fil,ru,uk,az,uz}` (Serbian in Cyrillic, Uzbek in Latin script; Filipino is `values-fil` because Android
+  resolves the system locale `fil`, not the pack code `tl`); German and Greek stay maintainer-owned.
+  Production was mechanical, not free-hand: the English strings were extracted once into a numbered list, each
+  language was drafted as numbered plain text, and a small generator refused to write a file unless every
+  index was present and every format placeholder (`%1$s`, `%2$d`, ...) and every `\n` count equalled the
+  English original, then emitted correctly escaped XML (apostrophes as `\'`); that check caught several
+  draft errors before they reached a resource file. A read-through of the drafts then fixed the typos that
+  had slipped past the mechanical check (Dutch, Polish, Turkish, Hungarian, Serbian, Lithuanian, Ukrainian and
+  Azerbaijani entries - e.g. a Serbian string left in Latin script, a garbled word or phrase in the Polish,
+  Hungarian and Turkish ones).
+  `res/xml/locales_config.xml` now lists English plus all 31 directories, so Android 13+ offers every one in
+  its per-app language picker. `UiLocaleConsistencyTest` gained a fourth check: every `Language` except
+  English/UNKNOWN must have a UI translation (Filipino mapped `tl` -> `fil`), so adding a language to the enum
+  without its `values-xx` now fails the build instead of quietly leaving that language's users on English.
+  Docs: spec N-01 rewritten (localised into every supported language, drafts acceptable, per-app selection,
+  never inside a language pack, enforced by the test); `AdaptKey-Language-Contribution-Guide.md` got a new §9
+  ("Translating the app's own screens") - where the strings live, that the existing translations are AI drafts
+  and corrections are welcome as issues or pull requests, the editing rules (placeholders, `\'`, untranslated
+  names/IDs), and the steps for a brand-new language. D-478 backlog entry marked resolved; the standing rule
+  ("UI strings - which languages") already in "Notes / gotchas" is unchanged. Not verified by a native
+  speaker anywhere except the maintainer's own German/English - expect wording reports once the app is used in
+  those languages. Follow-up: the F-Droid store listing (`fastlane/metadata/android/`) still exists only for
+  en-US/de-DE/el-GR and can now be translated from these drafts (own round). +1 unit test - 1681 total.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 558 -> 559, `versionName`
+  `"1.2.62"` -> `"1.2.63"`. Not device-confirmed (per-app language screen needs Android 13+; a spot check of a
+  non-Latin script such as Russian/Greek/Serbian on a device would be worthwhile for glyph/wrapping problems).
+
 - **§502 (v1.2.62): D-478 - UI-localisation infrastructure: the two missing German/Greek strings, an "App**
   **language" entry, the per-app language list, and a test that keeps every translation in sync.** Agreed with
   the user (2026-09-20) after the D-478 discussion: UI strings stay in the APK as `values-xx` (never in the
@@ -2282,133 +2321,17 @@ non-trivial changes).
   `"1.2.38"` -> `"1.2.39"`. **D-463 device-confirmed (2026-09-09)**; D-464 is a tooling/data-only change
   with no device-observable behaviour, nothing to confirm there.
 
-- **§478 (v1.2.38): D-461 - automatic capitalisation now requires genuine unambiguity, plus the German**
-  **verb-tagging gap behind it.** Started as a question about this file's own point 7 below ("the German
-  dictionary carries zero VERB tags") - which turned out to be **materially wrong**, and chasing why
-  surfaced a live capitalisation bug that had been silently reverting D-368's work for months.
-
-  **What point 7 actually got wrong.** It described the state *before* §322's Wortfamilien project, and was
-  never revisited afterwards. Measured directly: 10,265 VERB-bearing rows (not 210), 1,089 `NOUN,VERB` (not
-  210), and `gehen`/`kommen`/`haben`/`können`/`machen`/`sprechen` are all `VERB`-tagged, not `OTHER` as the
-  text claimed. The §306-§315 sweep had done that work properly across every frequency band. Point 7 is
-  rewritten below rather than patched.
-
-  **The real gap it was hiding.** Of 14,373 single-word infinitives in `wiktionary_verben.tsv`, only 2,250
-  have their infinitive in `dict.tsv` at all, and 392 of those carried no VERB tag - the §306-§315 sweep
-  targeted pure-`OTHER` rows and never reached them. 349 were tagged (`schreiben`, `treffen`, `fehlen`,
-  `geschehen`, `lernen`, `messen`, `sitzen`, `feiern`, `prüfen`, `singen`, ... down to `decodieren`),
-  applying only where `isPureNoun` was **already false**, so no capitalisation outcome could change - the
-  safety is a property of the transformation, asserted per row, not a per-word judgement. 43 were held back
-  by a mechanical filter (the spelling is also an attested adjective form: `freien`, `langen`, `festen`,
-  `gesunden`, ...) rather than guessed at.
-
-  **A naive "tag every verb form" pass would have been a disaster, and the measurement is why it was not**
-  **attempted.** Run against the real conjugation tables, 1,955 bare-`NOUN` rows collide with an attested
-  verb form - `Gebiet`, `Werk`, `Tag`, `Wasser`, `Vater`, `Mutter`, `Grenze`, `Schule`. Tagging those would
-  have silently switched off auto-capitalisation for ordinary German nouns. The noise is not a paradigm-slot
-  artefact (`praes1` is as noisy as `imp_sg`, checked) but marginal denominal verbs in the Wiktionary source
-  itself (`vatern`, `muttern`, `wassern`, `berlinern`). Restricting propagation to infinitives the
-  dictionary *already* accepts as verbs cut the candidate set to 98 reviewable rows.
-
-  **All 98 retagged `NOUN,VERB`, per explicit user instruction to tag every real double reading.** The
-  original proposal split them into "everyday finite forms" (35) / "unclear" (10) / "bare-stem imperatives"
-  (53) and recommended only the first two, since a bare-stem imperative collides with a noun by
-  construction and `Vertrag`(2329)/`Stich`/`Ertrag` would lose their automatic capital for a reading used
-  once a month. The user overrode that deliberately and it is worth recording verbatim: *"die automatische
-  Großschreibung soll nur dann gemacht werden, wenn es wirklich keine Zweifel gibt ... Es ist viel besser,
-  einmal einen Chip zu akzeptieren als dass ich wenn auch nur gelegentlich falsche
-  Auto-korrekt-Großschreibungen erlebe. die führen nur dazu, dass Leute die Autokorrektur ausschalten."*
-  The candidate scan now runs out at 0.
-
-  **Then the actual bug (D-461, spec §46).** `CapitalisationEngine.capitalise()` ranked `isProper -> true`
-  *above* `isPureNoun -> true`, so a `PROPER_NOUN` tag overrode a correctly-detected ambiguity outright.
-  `Weg` is `NOUN,VERB,PROPER_NOUN`: D-368 gave it the VERB tag precisely so `"weg sein"` would stop being
-  capitalised, a later corpus pass added `PROPER_NOUN`, and the force-capitalisation came back unnoticed.
-  `waren`(31549) committed as `"wir Waren"`. 159 German rows were affected including `Arbeit`, `Rolle`,
-  `Bau`, `Band`, `Park`, `Liebe`, `Recht`, `Alter`. Fixed by collapsing rules 3 and 4 into one
-  `isNounOnly(pos)` predicate - capitalise exactly when the word has no reading beyond noun/proper noun.
-  `isAmbiguousCasing` lost its own `!isProper` exclusion in lockstep (otherwise the freed words would have
-  lost the capital *and* gained no S-11 chips). B-02 was deliberately **not** widened - its hyphen branch
-  still tests `isProper && isNounOnly`, since using the general rule there would capitalise the second half
-  of any plain compound (`"Haus-tür"`).
-
-  **The literal user proposal ("Eigennamen braucht es nie") was checked and would have broken 31**
-  **languages.** German is the only language whose every `PROPER_NOUN` row also carries `NOUN`; everywhere
-  else bare `PROPER_NOUN` rows are the norm (English 29,458, Greek 29,963, French 24,854) and `isProper`
-  is the only thing capitalising them. The generalised `isNounOnly` formulation achieves the user's stated
-  rule without that cost.
-
-  **Data corrections in both directions.** 57 genuine German proper nouns carried a spurious `OTHER` from
-  corpus noise and would have lost their capital under the new rule - tag removed (`Ben`, `Nova`, `Terra`,
-  `Ella`, `Papa`, `Felicitas`, `Wikimedia`, ...). Five English rows needed the opposite fix (`German`,
-  `Jewish`, `Mussolini`, `Lindy`, `Frenchy`): English capitalises nationality adjectives, German does not,
-  so the `ADJECTIVE` tag is dropped there - the same per-language data decision D-441 already established.
-  Surnames that are genuinely also ordinary words (`Ehrlich`, `Rau`, `Kühn`, `Jung`, `Kluge`, `Wunderlich`,
-  `Treuen`, `Frechen`) were deliberately **left** ambiguous; W-04 learns the user's own casing from real use.
-
-  **Two unrelated finds, both fixed.** `ines` sat in the dictionary at frequency **261,120** (higher than
-  `Jahr`, 33,028) as `ADJECTIVE,NOUN,PROPER_NOUN` with `lemma = in` - a generated "declension" of the
-  preposition *in*, the exact over-generation bug §457 fixed for English, unnoticed here. Corrected to
-  `Ines 60 NOUN,PROPER_NOUN`, calibrated against real siblings in the same corpus (`Monika` 45, `Ilse` 80),
-  not an invented number. Its siblings were worse and are simply not words: `inem`/`inen`/`iner` (261,120
-  each) and `zue`/`zuem`/`zuen`/`zuer`/`zues` (97,088 each) - all eight removed. The `ADJECTIVE` tags on
-  `in`/`zu` themselves are kept: *"das ist in"* / *"die Tür ist zu"* are real adjectival uses, they simply
-  do not decline.
-
-  **`SeedData.kt` + `SeedDataTest.kt` deleted.** 34 hardcoded German words and 5 bigrams whose only caller
-  was its own test; its KDoc described a replacement ("in a later session") that happened at D-280. English
-  is bundled and every pack ships its own dictionary, so the "no dictionary at all" state it guarded against
-  does not exist.
-
-  1646 unit tests (1640 -> 1637 after removing `SeedDataTest`, -> 1646 with 9 new `CapitalisationEngineTest`
-  cases covering the verb-homograph proper noun, the noun-only proper noun, B-02 both ways, and
-  `isAmbiguousCasing`'s widened contract). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
-  `dictionaries/de/version.txt` 37 -> 38, pack rebuilt and verified byte-identical after unzip,
-  `LanguagePackCatalog` version 37 -> 38. `versionCode` 533 -> 534, `versionName` `"1.2.37"` ->
-  `"1.2.38"`. **Device-confirmed (2026-09-09)** - the user confirmed the broad capitalisation change on
-  real typing, no word came back under-capitalised.
-
-- **§477 (v1.2.37): D-452-followup - the ~1.3s "Habeck" suggestion-bar stall, root-caused and fixed.** User
-  pasted a real device log for a genuinely unknown word ("Habeck", tapped for autocorrect) with §459's own
-  timing diagnostics finally populated: `ambiguousCasingMs=1` (§459's own suspect, disproved) but
-  `extrasMs=1335` - the real cost sits in `refreshSuggestions()`'s own extras block. Cause: `provider.
-  hasObviousCandidate()` was called twice there (once per gate, `rawCoordinateSuggestion` and
-  `missedBackspaceSuggestion`), each call independently re-running the entire expensive candidate search
-  (prefix + D-328 neighbour-prefix + D-453 doubled-consonant + D-12 fuzzy + D-116 compound) from scratch on
-  the main thread - for a token nothing matches, every escalation stage runs to completion, twice.
-  `dispatchExpensiveSuggestionSearch()` (D-211) already computes this exact value once, on the background
-  executor - the extras block's own two calls silently defeated that. Fix: a fourth `precomputed*` parameter
-  (`precomputedHasObviousCandidate`, matching the shape of the three `refreshSuggestions()` already had)
-  threads the background result through, removing both synchronous main-thread calls for the deferred-pass
-  case entirely; the remaining direct-call fallback (no precomputed value supplied) now also computes it at
-  most once, shared between both gates, not twice. §459's own "ambiguousCasingChips()/partsOfSpeech() is the
-  strongest suspect" comment corrected in place - the new log actively disproves it, not merely supersedes
-  it. See D-452 in Current State (above) for the full before/after story. Build green, 1640 tests green,
-  -0/+~35 lines (mostly KDoc explaining the precomputed-value shape and why it replaced two full-cost calls).
-
-  **Second log, same session: a "Ersetzungsproblem" (garbled final text) traced to the identical stall, not**
-  **a separate bug.** User typed `"hqllervoorden"` (a garbled `"Hallervorden"`) - the deferred search
-  correctly found it, but `extrasMs=3450` (worse than "Habeck"'s 1335ms, since the doubled escalation search
-  scales with token length: 13 characters vs. 6). For that whole multi-second window the main thread (and
-  therefore all key/touch dispatch) was blocked; Android still queued the user's frustrated `DELETE, DELETE,
-  'a', DELETE` taps and delivered all four in one burst the instant the block ended - visible in the log as
-  four `rawTap` lines sharing the identical `-13,0s` timestamp, landing right as the deferred result was also
-  being applied (`onUpdateSelection: EXTERNAL (expected=31, actual=[21,21])`, followed by `STALE ECHO`
-  entries as the tracked and real cursor positions fought to resync). The correctly-found `"Hallervorden"`
-  was lost and the composing token ended up mangled to `"hlervoorden"` instead. Analysis only, no further
-  code change: `rawCoordinateCorrection()`/`missedBackspaceCorrection()` (the extras block's only other
-  per-keystroke work in this path) are both O(token length) with no store-scanning cost of their own, so
-  §477's fix - both `hasObviousCandidate()` calls now served from the value already computed on the
-  background executor - should collapse this specific freeze close to zero, not merely halve it.
-  **Device-confirmed for a token this long (2026-09-08, see the D-452 bullet above)** - this paragraph's own
-  "not yet confirmed" caveat had gone stale without being updated here; left as a pointer, not duplicated.
 
 
 
 
 
 
-## Older Rounds (§1-§476, v0.7.6 through v1.2.36) - Pruned From This File
+## Older Rounds (§1-§478, v0.7.6 through v1.2.38) - Pruned From This File
+
+D-478 (§503): fortieth pruning pass - §477 and §478 removed, cutoff moved from §476 to §478, keeping the
+working set at 25 rounds (§479-§503). Backfilled into History.md first with the same token-multiset check
+(delta 0), nothing summarised or dropped.
 
 D-478 (§501): thirty-ninth pruning pass - §476 removed, cutoff moved from §476 to §477, keeping the working
 set at 25 rounds (§477-§501). Backfilled into History.md first with the same token-multiset check (delta 0),

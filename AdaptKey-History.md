@@ -22697,3 +22697,127 @@ structural property, not a deferral.
 1640 unit tests (unchanged - pure logging and comment removal).
 `:app:assembleRelease`/`:app:testDebugUnitTest` green, no warnings. `versionCode` 531 -> 532, `versionName`
 `"1.2.35"` -> `"1.2.36"`.
+
+## §477 - D-452-followup - the ~1.3s "Habeck" suggestion-bar stall, root-caused and fixed.
+
+User
+pasted a real device log for a genuinely unknown word ("Habeck", tapped for autocorrect) with §459's own
+timing diagnostics finally populated: `ambiguousCasingMs=1` (§459's own suspect, disproved) but
+`extrasMs=1335` - the real cost sits in `refreshSuggestions()`'s own extras block. Cause: `provider.
+hasObviousCandidate()` was called twice there (once per gate, `rawCoordinateSuggestion` and
+`missedBackspaceSuggestion`), each call independently re-running the entire expensive candidate search
+(prefix + D-328 neighbour-prefix + D-453 doubled-consonant + D-12 fuzzy + D-116 compound) from scratch on
+the main thread - for a token nothing matches, every escalation stage runs to completion, twice.
+`dispatchExpensiveSuggestionSearch()` (D-211) already computes this exact value once, on the background
+executor - the extras block's own two calls silently defeated that. Fix: a fourth `precomputed*` parameter
+(`precomputedHasObviousCandidate`, matching the shape of the three `refreshSuggestions()` already had)
+threads the background result through, removing both synchronous main-thread calls for the deferred-pass
+case entirely; the remaining direct-call fallback (no precomputed value supplied) now also computes it at
+most once, shared between both gates, not twice. §459's own "ambiguousCasingChips()/partsOfSpeech() is the
+strongest suspect" comment corrected in place - the new log actively disproves it, not merely supersedes
+it. See D-452 in Current State (above) for the full before/after story. Build green, 1640 tests green,
+-0/+~35 lines (mostly KDoc explaining the precomputed-value shape and why it replaced two full-cost calls).
+
+**Second log, same session: a "Ersetzungsproblem" (garbled final text) traced to the identical stall, not**
+**a separate bug.** User typed `"hqllervoorden"` (a garbled `"Hallervorden"`) - the deferred search
+correctly found it, but `extrasMs=3450` (worse than "Habeck"'s 1335ms, since the doubled escalation search
+scales with token length: 13 characters vs. 6). For that whole multi-second window the main thread (and
+therefore all key/touch dispatch) was blocked; Android still queued the user's frustrated `DELETE, DELETE,
+'a', DELETE` taps and delivered all four in one burst the instant the block ended - visible in the log as
+four `rawTap` lines sharing the identical `-13,0s` timestamp, landing right as the deferred result was also
+being applied (`onUpdateSelection: EXTERNAL (expected=31, actual=[21,21])`, followed by `STALE ECHO`
+entries as the tracked and real cursor positions fought to resync). The correctly-found `"Hallervorden"`
+was lost and the composing token ended up mangled to `"hlervoorden"` instead. Analysis only, no further
+code change: `rawCoordinateCorrection()`/`missedBackspaceCorrection()` (the extras block's only other
+per-keystroke work in this path) are both O(token length) with no store-scanning cost of their own, so
+§477's fix - both `hasObviousCandidate()` calls now served from the value already computed on the
+background executor - should collapse this specific freeze close to zero, not merely halve it.
+**Device-confirmed for a token this long (2026-09-08, see the D-452 bullet above)** - this paragraph's own
+"not yet confirmed" caveat had gone stale without being updated here; left as a pointer, not duplicated.
+
+## §478 - D-461 - automatic capitalisation now requires genuine unambiguity, plus the German verb-tagging gap behind it.
+
+Started as a question about this file's own point 7 below ("the German
+dictionary carries zero VERB tags") - which turned out to be **materially wrong**, and chasing why
+surfaced a live capitalisation bug that had been silently reverting D-368's work for months.
+
+**What point 7 actually got wrong.** It described the state *before* §322's Wortfamilien project, and was
+never revisited afterwards. Measured directly: 10,265 VERB-bearing rows (not 210), 1,089 `NOUN,VERB` (not
+210), and `gehen`/`kommen`/`haben`/`können`/`machen`/`sprechen` are all `VERB`-tagged, not `OTHER` as the
+text claimed. The §306-§315 sweep had done that work properly across every frequency band. Point 7 is
+rewritten below rather than patched.
+
+**The real gap it was hiding.** Of 14,373 single-word infinitives in `wiktionary_verben.tsv`, only 2,250
+have their infinitive in `dict.tsv` at all, and 392 of those carried no VERB tag - the §306-§315 sweep
+targeted pure-`OTHER` rows and never reached them. 349 were tagged (`schreiben`, `treffen`, `fehlen`,
+`geschehen`, `lernen`, `messen`, `sitzen`, `feiern`, `prüfen`, `singen`, ... down to `decodieren`),
+applying only where `isPureNoun` was **already false**, so no capitalisation outcome could change - the
+safety is a property of the transformation, asserted per row, not a per-word judgement. 43 were held back
+by a mechanical filter (the spelling is also an attested adjective form: `freien`, `langen`, `festen`,
+`gesunden`, ...) rather than guessed at.
+
+**A naive "tag every verb form" pass would have been a disaster, and the measurement is why it was not**
+**attempted.** Run against the real conjugation tables, 1,955 bare-`NOUN` rows collide with an attested
+verb form - `Gebiet`, `Werk`, `Tag`, `Wasser`, `Vater`, `Mutter`, `Grenze`, `Schule`. Tagging those would
+have silently switched off auto-capitalisation for ordinary German nouns. The noise is not a paradigm-slot
+artefact (`praes1` is as noisy as `imp_sg`, checked) but marginal denominal verbs in the Wiktionary source
+itself (`vatern`, `muttern`, `wassern`, `berlinern`). Restricting propagation to infinitives the
+dictionary *already* accepts as verbs cut the candidate set to 98 reviewable rows.
+
+**All 98 retagged `NOUN,VERB`, per explicit user instruction to tag every real double reading.** The
+original proposal split them into "everyday finite forms" (35) / "unclear" (10) / "bare-stem imperatives"
+(53) and recommended only the first two, since a bare-stem imperative collides with a noun by
+construction and `Vertrag`(2329)/`Stich`/`Ertrag` would lose their automatic capital for a reading used
+once a month. The user overrode that deliberately and it is worth recording verbatim: *"die automatische
+Großschreibung soll nur dann gemacht werden, wenn es wirklich keine Zweifel gibt ... Es ist viel besser,
+einmal einen Chip zu akzeptieren als dass ich wenn auch nur gelegentlich falsche
+Auto-korrekt-Großschreibungen erlebe. die führen nur dazu, dass Leute die Autokorrektur ausschalten."*
+The candidate scan now runs out at 0.
+
+**Then the actual bug (D-461, spec §46).** `CapitalisationEngine.capitalise()` ranked `isProper -> true`
+*above* `isPureNoun -> true`, so a `PROPER_NOUN` tag overrode a correctly-detected ambiguity outright.
+`Weg` is `NOUN,VERB,PROPER_NOUN`: D-368 gave it the VERB tag precisely so `"weg sein"` would stop being
+capitalised, a later corpus pass added `PROPER_NOUN`, and the force-capitalisation came back unnoticed.
+`waren`(31549) committed as `"wir Waren"`. 159 German rows were affected including `Arbeit`, `Rolle`,
+`Bau`, `Band`, `Park`, `Liebe`, `Recht`, `Alter`. Fixed by collapsing rules 3 and 4 into one
+`isNounOnly(pos)` predicate - capitalise exactly when the word has no reading beyond noun/proper noun.
+`isAmbiguousCasing` lost its own `!isProper` exclusion in lockstep (otherwise the freed words would have
+lost the capital *and* gained no S-11 chips). B-02 was deliberately **not** widened - its hyphen branch
+still tests `isProper && isNounOnly`, since using the general rule there would capitalise the second half
+of any plain compound (`"Haus-tür"`).
+
+**The literal user proposal ("Eigennamen braucht es nie") was checked and would have broken 31**
+**languages.** German is the only language whose every `PROPER_NOUN` row also carries `NOUN`; everywhere
+else bare `PROPER_NOUN` rows are the norm (English 29,458, Greek 29,963, French 24,854) and `isProper`
+is the only thing capitalising them. The generalised `isNounOnly` formulation achieves the user's stated
+rule without that cost.
+
+**Data corrections in both directions.** 57 genuine German proper nouns carried a spurious `OTHER` from
+corpus noise and would have lost their capital under the new rule - tag removed (`Ben`, `Nova`, `Terra`,
+`Ella`, `Papa`, `Felicitas`, `Wikimedia`, ...). Five English rows needed the opposite fix (`German`,
+`Jewish`, `Mussolini`, `Lindy`, `Frenchy`): English capitalises nationality adjectives, German does not,
+so the `ADJECTIVE` tag is dropped there - the same per-language data decision D-441 already established.
+Surnames that are genuinely also ordinary words (`Ehrlich`, `Rau`, `Kühn`, `Jung`, `Kluge`, `Wunderlich`,
+`Treuen`, `Frechen`) were deliberately **left** ambiguous; W-04 learns the user's own casing from real use.
+
+**Two unrelated finds, both fixed.** `ines` sat in the dictionary at frequency **261,120** (higher than
+`Jahr`, 33,028) as `ADJECTIVE,NOUN,PROPER_NOUN` with `lemma = in` - a generated "declension" of the
+preposition *in*, the exact over-generation bug §457 fixed for English, unnoticed here. Corrected to
+`Ines 60 NOUN,PROPER_NOUN`, calibrated against real siblings in the same corpus (`Monika` 45, `Ilse` 80),
+not an invented number. Its siblings were worse and are simply not words: `inem`/`inen`/`iner` (261,120
+each) and `zue`/`zuem`/`zuen`/`zuer`/`zues` (97,088 each) - all eight removed. The `ADJECTIVE` tags on
+`in`/`zu` themselves are kept: *"das ist in"* / *"die Tür ist zu"* are real adjectival uses, they simply
+do not decline.
+
+**`SeedData.kt` + `SeedDataTest.kt` deleted.** 34 hardcoded German words and 5 bigrams whose only caller
+was its own test; its KDoc described a replacement ("in a later session") that happened at D-280. English
+is bundled and every pack ships its own dictionary, so the "no dictionary at all" state it guarded against
+does not exist.
+
+1646 unit tests (1640 -> 1637 after removing `SeedDataTest`, -> 1646 with 9 new `CapitalisationEngineTest`
+cases covering the verb-homograph proper noun, the noun-only proper noun, B-02 both ways, and
+`isAmbiguousCasing`'s widened contract). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+`dictionaries/de/version.txt` 37 -> 38, pack rebuilt and verified byte-identical after unzip,
+`LanguagePackCatalog` version 37 -> 38. `versionCode` 533 -> 534, `versionName` `"1.2.37"` ->
+`"1.2.38"`. **Device-confirmed (2026-09-09)** - the user confirmed the broad capitalisation change on
+real typing, no word came back under-capitalised.

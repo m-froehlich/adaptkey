@@ -2115,9 +2115,24 @@ result view after a typing-style (re-)selection (K-01).
 ## 18. App Localisation (I18N)
 
 ### N-01 - App-Chrome Localisation
-The app's own UI strings (settings, onboarding, dialogs, calibration) are localised into English and Greek
-in addition to German, selected by the system's own language setting - a separate concern from which
-language(s) the keyboard itself types in (§9/G-01).
+The app's own UI strings (settings, onboarding, dialogs, calibration) are localised into **every language the
+keyboard itself supports** (§9/G-01): English is the reference and default (`values/strings.xml`); every other
+`Language` has its own `values-xx/strings.xml` (Filipino: `values-fil`, since Android resolves the system locale
+`fil`, not the pack code `tl`). German and Greek are maintained by the maintainer; all other translations are
+draft translations written by an AI assistant and corrected as native speakers report problems - a UI draft
+needs no native-speaker sign-off before release (unlike a dictionary, D-280). A string missing from a locale
+falls back to English at run time.
+
+- **Selection.** The UI language follows the system language. On Android 13+ the user can also pick a UI
+  language for AdaptKey alone (`android:localeConfig` -> `res/xml/locales_config.xml`); an "App language"
+  entry in the Info category opens that system screen (`Settings.ACTION_APP_LOCALE_SETTINGS`) and is hidden
+  below API 33. This choice is independent of which input languages are installed (§9/G-01).
+- **UI strings are never part of a language pack.** The language-pack download screen is itself UI, and
+  `@string` references in preference screens and layouts are resolved from the APK's own resources.
+- **Consistency is a test, not a habit.** `UiLocaleConsistencyTest` requires every `values-xx` to define exactly
+  English's string names with the same format placeholders, `locales_config.xml` to list English plus exactly
+  the translation directories, and every `Language` (except English/UNKNOWN) to have a UI translation.
+- **Contribution path:** `AdaptKey-Language-Contribution-Guide.md` §9.
 
 ---
 
