@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.Typeface
+import android.os.Build
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
@@ -80,6 +81,8 @@ class SettingsActivity : AppCompatActivity() {
         
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.settings_preferences, rootKey)
+            // D-478: the system's per-app language screen only exists from Android 13 (API 33).
+            findPreference<Preference>("d478_ui_language")?.isVisible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
             
             // D-361-followup: monochrome glyph icons (GlyphIconDrawable) for the settings screen's own
             // sub-screen entry points, plus (v3) every PreferenceCategory header and two further individual

@@ -21,6 +21,8 @@
     <string name="info_license_title">Άδεια</string>
     <string name="info_license_summary">Ελεύθερο λογισμικό: GPL-3.0-or-later. Copyright © 2026 Froehlich Media.</string>
     <string name="info_version_title">Έκδοση</string>
+    <string name="d478_ui_language_title">Γλώσσα εφαρμογής</string>
+    <string name="d478_ui_language_summary">Επίλεξε τη γλώσσα των οθονών του AdaptKey (Android 13 ή νεότερο). Ανεξάρτητη από τις γλώσσες πληκτρολόγησης.</string>
 
     <!-- D-89: πλήρης επισκόπηση λειτουργιών, ώστε καμία λειτουργία να μη μένει κρυφή. -->
     <string name="d89_title">Τι μπορεί να κάνει το AdaptKey</string>
@@ -234,6 +236,10 @@
     <string name="d280_download">1. Λήψη (στον περιηγητή)</string>
     <string name="d280_import">2. Εισαγωγή του αρχείου που κατέβηκε</string>
     <string name="d280_remove">Αφαίρεση</string>
+    <!-- D-454: η γραμμή της αγγλικής - ένα απενεργοποιημένο κουμπί στη θέση των συνηθισμένων κουμπιών κατάστασης/ενέργειας, αφού είναι πάντα ενσωματωμένη και δεν μπορεί ούτε να εγκατασταθεί ούτε να αφαιρεθεί. -->
+    <string name="d280_builtin">Ενσωματωμένο</string>
+    <!-- D-454: %1$s = η ονομασία της γλώσσας στη δική της γλώσσα, π.χ. "Français". -->
+    <string name="d280_remove_confirm_title">Αφαίρεση %1$s;</string>
     <string name="d280_imported">Η γλώσσα εγκαταστάθηκε.</string>
     <string name="d280_already_current">Ήδη ενημερωμένο.</string>
     <string name="d280_older_than_installed">Το αρχείο που βρέθηκε είναι παλαιότερο από το εγκατεστημένο - δεν εφαρμόστηκε.</string>

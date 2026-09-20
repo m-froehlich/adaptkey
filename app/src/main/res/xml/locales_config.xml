@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- D-478: the UI locales AdaptKey ships (Android 13+ per-app language picker). One entry per values-xx
+     directory plus English (the default); UiLocaleConsistencyTest keeps this list, the values-xx directories
+     and the language packs in sync. -->
+<locale-config xmlns:android="http://schemas.android.com/apk/res/android">
+    <locale android:name="en" />
+    <locale android:name="de" />
+    <locale android:name="el" />
+</locale-config>

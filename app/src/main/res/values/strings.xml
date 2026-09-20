@@ -21,6 +21,8 @@
     <string name="info_license_title">Licence</string>
     <string name="info_license_summary">Free software: GPL-3.0-or-later. Copyright © 2026 Froehlich Media.</string>
     <string name="info_version_title">Version</string>
+    <string name="d478_ui_language_title">App language</string>
+    <string name="d478_ui_language_summary">Choose the language of AdaptKey\'s own screens (Android 13 or newer). Independent of the languages you type in.</string>
 
     <!-- D-89: full feature overview, listing everything AdaptKey does so nothing stays hidden. -->
     <string name="d89_title">What AdaptKey can do</string>

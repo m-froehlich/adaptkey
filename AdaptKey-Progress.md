@@ -1504,6 +1504,24 @@ non-trivial changes).
   volume) is completely unaffected by this and ran exactly as planned. 446,015 lemma-column rows changed
   across the 31 packs; every pack passes `lemma_check.py` and `quality_gate.py`.
 
+- **§502 (v1.2.62): D-478 - UI-localisation infrastructure: the two missing German/Greek strings, an "App**
+  **language" entry, the per-app language list, and a test that keeps every translation in sync.** Agreed with
+  the user (2026-09-20) after the D-478 discussion: UI strings stay in the APK as `values-xx` (never in the
+  language packs - the packs' own download screen is UI, and `@string` references in preference screens are
+  resolved from APK resources); every language the app supports gets a translation, written as a draft by
+  Claude; the standing rule is recorded under "Notes / gotchas" and in the assistant's memory so it outweighs
+  the old DE/EN/EL habit. This round: (1) `d280_builtin` and `d280_remove_confirm_title` (used by
+  `LanguagePacksActivity`) were missing from `values-de` and `values-el`, so German and Greek users saw
+  English there - added ("Integriert" / "%1$s entfernen?", "Ενσωματωμένο" / "Αφαίρεση %1$s;"); (2) new
+  `res/xml/locales_config.xml` + `android:localeConfig` on `<application>`, which makes Android 13+ offer a
+  per-app language in the system settings; (3) a new Info-category preference "App language" that opens that
+  system screen (`android.settings.APP_LOCALE_SETTINGS`), hidden below API 33 in `SettingsFragment`; (4) new
+  `UiLocaleConsistencyTest`: every `values-xx` must define exactly English's string names with the same format
+  placeholders, and `locales_config.xml` must list English plus exactly the translation directories - the
+  check that would have caught the two missing strings. The draft translations themselves follow in §503.
+  +3 unit tests - 1680 total. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 557 -> 558,
+  `versionName` `"1.2.61"` -> `"1.2.62"`. Not yet device-confirmed (the system language screen needs Android 13+).
+
 - **§501 (v1.2.61): D-478 (found while reviewing the UI) - the "Learn more" feature overview slid under the**
   **status bar / display cutout.** User-reported (2026-09-20): the screen behind Settings -> "Learn more"
   ("Was AdaptKey alles kann", `FeatureOverviewActivity`, D-89) extends into the notch. Cause: it was the one
@@ -3258,6 +3276,22 @@ since the project has no convention of retroactively clearing it once a round is
   the whole `prediction/` package is fully JVM-unit-tested.
 
 ## Notes / gotchas
+
+- **UI strings - which languages (D-478; this REPLACES the old habit of writing "DE/EN/EL", which predates the**
+  **language packs and must not be followed any more).** Every user-visible string is defined in English
+  (`app/src/main/res/values/strings.xml`, the reference and the fallback) **and in every `values-xx/strings.xml`**
+  - one translation directory per language the app supports: English (default), German and Greek (maintained)
+  plus one for every other language pack in `LanguagePackCatalog` / the `Language` enum. Filipino uses
+  `values-fil` although the pack code is `tl` (Android resolves the system locale `fil`, not `tl`). All
+  translations other than de/el/en are **draft translations written by Claude** - the user decided this
+  explicitly (2026-09-20): drafts are good enough, a community that has grown will report problems, and his wife
+  is deliberately *not* to be asked to review Greek or anything else. When adding or changing a string, add it
+  to **all** locale files in the same change. `UiLocaleConsistencyTest` fails on a missing or extra name or a
+  changed format placeholder, and requires `res/xml/locales_config.xml` (the Android 13+ per-app language list)
+  to name English plus exactly the translation directories. Do not translate `app_name`/`ime_name`, code
+  identifiers or licence names; keep `%1$s`-style placeholders and `\n` escapes exactly; a literal
+  apostrophe in a value is written `\'` in the XML. The UI language follows the system locale and is
+  independent of which input-language packs are installed - packs never carry UI strings (see spec N-01).
 
 - JUnit 5 (Jupiter). For `assertThrows`, import `org.junit.jupiter.api.Assertions.assertThrows`
   and use the `(Class, executable)` form, or Kotlin picks the reified overload and fails to compile.

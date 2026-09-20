@@ -35,6 +35,17 @@
                 android:targetClass="de.froehlichmedia.adaptkey.settings.FeatureOverviewActivity" />
         </Preference>
 
+        <!-- D-478: Android 13+ has a per-app language screen once the app declares its supported UI locales
+             (res/xml/locales_config.xml); hidden below API 33 by SettingsActivity. -->
+        <Preference
+            android:key="d478_ui_language"
+            android:title="@string/d478_ui_language_title"
+            android:summary="@string/d478_ui_language_summary">
+            <intent
+                android:action="android.settings.APP_LOCALE_SETTINGS"
+                android:data="package:de.froehlichmedia.adaptkey" />
+        </Preference>
+
     </PreferenceCategory>
 
     <PreferenceCategory android:key="cat_calibration_group" android:title="@string/cat_calibration">

@@ -21,6 +21,8 @@
     <string name="info_license_title">Lizenz</string>
     <string name="info_license_summary">Freie Software: GPL-3.0-or-later. Copyright © 2026 Froehlich Media.</string>
     <string name="info_version_title">Version</string>
+    <string name="d478_ui_language_title">App-Sprache</string>
+    <string name="d478_ui_language_summary">Wähle die Sprache der AdaptKey-Bildschirme (Android 13 oder neuer). Unabhängig von den Sprachen, in denen du tippst.</string>
 
     <!-- D-89: vollständige Feature-Übersicht, damit kein Feature unentdeckt bleibt. -->
     <string name="d89_title">Was AdaptKey alles kann</string>
@@ -234,6 +236,10 @@
     <string name="d280_download">1. Herunterladen (im Browser)</string>
     <string name="d280_import">2. Heruntergeladene Datei importieren</string>
     <string name="d280_remove">Entfernen</string>
+    <!-- D-454: Englisch hat eine eigene Zeile - eine deaktivierte Schaltfläche statt der üblichen Status-/Aktionsknöpfe, da es immer eingebaut ist und weder installiert noch entfernt werden kann. -->
+    <string name="d280_builtin">Integriert</string>
+    <!-- D-454: %1$s = die Eigenbezeichnung der Sprache, z. B. "Français". -->
+    <string name="d280_remove_confirm_title">%1$s entfernen?</string>
     <string name="d280_imported">Sprache installiert.</string>
     <string name="d280_already_current">Bereits aktuell.</string>
     <string name="d280_older_than_installed">Gefundene Datei ist älter als die installierte - nicht übernommen.</string>
