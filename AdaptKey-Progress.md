@@ -1504,6 +1504,22 @@ non-trivial changes).
   volume) is completely unaffected by this and ran exactly as planned. 446,015 lemma-column rows changed
   across the 31 packs; every pack passes `lemma_check.py` and `quality_gate.py`.
 
+- **§501 (v1.2.61): D-478 (found while reviewing the UI) - the "Learn more" feature overview slid under the**
+  **status bar / display cutout.** User-reported (2026-09-20): the screen behind Settings -> "Learn more"
+  ("Was AdaptKey alles kann", `FeatureOverviewActivity`, D-89) extends into the notch. Cause: it was the one
+  sub-screen without any window-inset handling, and targetSdk 35 enforces edge-to-edge, so its heading was
+  drawn under the status bar. Fixed exactly like `LanguagePacksActivity`'s own D-188 fix: the layout's root
+  `ScrollView` now carries the 16 dp padding and an id (`feature_overview_root`), and the activity adds the
+  larger of the status-bar/cutout inset on top and the larger of the navigation-bar/gesture inset at the
+  bottom to that base padding. Audited the other sub-screens - Backup, Blacklist, Calibration, Credentials,
+  DiagnosticLog, LanguagePacks, LearnedWords and Tier3Model all already do this. **`SettingsActivity` (the main
+  preference screen) has no inset code either** - not reported and not touched here, since a PreferenceFragment
+  hosted directly in `android.R.id.content` may already look right on the user's device and a second guess at
+  it could double the gap; verify on a device and say so if it shows the same problem. Layout/window glue:
+  no unit test possible (this project's accepted untested Android layer), 1677 tests unchanged.
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 556 -> 557, `versionName` `"1.2.60"` ->
+  `"1.2.61"`. Not yet device-confirmed.
+
 - **§500 (v1.2.60): D-476 - `Drum` re-cast as the lower-case German adverb `drum`, `Drums` removed (German data**
   **pack only).** User-reported: `Drum` auto-capitalised because `Drum 33 NOUN` (the English word, from the
   Wikipedia corpus) is a bare noun, which §6's `isNounOnly` rule forces to a capital. Agreed: no re-tag of the
@@ -2369,41 +2385,16 @@ non-trivial changes).
   **Device-confirmed for a token this long (2026-09-08, see the D-452 bullet above)** - this paragraph's own
   "not yet confirmed" caveat had gone stale without being updated here; left as a pointer, not duplicated.
 
-- **§476 (v1.2.36): D-401 closed - the gesture's temporary diagnostics removed, no behaviour change.** User's
-  own call after §475: "so lassen wir das, das Thema können wir abhaken" plus an explicit request to remove
-  the jitter log and tidy up around Stage 2. -186/+51 lines.
-
-  **Removed**: every `AdaptKeyJitter` line this feature added - the view's per-move `cursorControlMove` trace
-  (and the two `cursorControlLastSentChars`/`Lines` fields that existed *only* to gate it, now that the
-  listener is called on every move anyway), `applyCursorControlMove`'s entry/settle/clamp traces,
-  `adjacentLineStart`'s four, `lineBoundsFor`'s two, `driveCursorControlServo`'s one, and
-  `onUpdateSelection`'s "echo (session active)" line. The 29 remaining `diag()` calls in the service all
-  belong to other features (D-139, D-347, autocorrect, clipboard) and were left untouched.
-
-  **Kept, deliberately**: `requestCursorUpdates()` itself. It began life as §472's probe but is now
-  load-bearing - it is what makes the caret's drawn position observable at all - so only the probe's
-  *scaffolding* went (`cursorControlAnchorInfoSeen`, its 500 ms "nothing arrived" runnable, and
-  `CURSOR_CONTROL_ANCHOR_PROBE_MS`). Renamed `start`/`stopCursorAnchorInfoProbe()` to
-  `start`/`stopCursorAnchorInfoUpdates()` to stop the name implying a diagnostic, and rewrote both KDocs
-  around what they now do (request per gesture, not permanently: an editor that honours this recomputes on
-  every caret move, scroll and layout pass, which is real work for the target app and useless to this
-  keyboard between gestures).
-
-  **Stage 2 comments corrected to match §475's evidence.** Two places still described Stage 2's exclusion as
-  "we only have evidence for the collapsed case, extending a selection needs its own probe" - written before
-  the log answered it. It now reads as what it is: while a selection exists the reported insertion marker
-  sits at its *anchor*, so the moving end is not observable and there is nothing to steer towards. A
-  structural property, not a deferral.
-
-  1640 unit tests (unchanged - pure logging and comment removal).
-  `:app:assembleRelease`/`:app:testDebugUnitTest` green, no warnings. `versionCode` 531 -> 532, `versionName`
-  `"1.2.35"` -> `"1.2.36"`.
 
 
 
 
 
-## Older Rounds (§1-§475, v0.7.6 through v1.2.35) - Pruned From This File
+## Older Rounds (§1-§476, v0.7.6 through v1.2.36) - Pruned From This File
+
+D-478 (§501): thirty-ninth pruning pass - §476 removed, cutoff moved from §476 to §477, keeping the working
+set at 25 rounds (§477-§501). Backfilled into History.md first with the same token-multiset check (delta 0),
+nothing summarised or dropped.
 
 D-476 (§500): thirty-eighth pruning pass - §475 removed, cutoff moved from §475 to §476, keeping the working
 set at 25 rounds (§476-§500). Backfilled into History.md first with the same token-multiset check (delta 0),

@@ -5,10 +5,13 @@ package de.froehlichmedia.adaptkey.settings
 
 import android.graphics.Typeface
 import android.os.Bundle
+import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import de.froehlichmedia.adaptkey.R
 
 /**
@@ -22,6 +25,25 @@ class FeatureOverviewActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_feature_overview)
         title = getString(R.string.d89_title)
+        
+        // D-478 (found while reviewing the app's UI): the only sub-screen without any inset handling - with
+        // targetSdk 35's enforced edge-to-edge its heading slid under the status bar / display cutout. Same fix
+        // as LanguagePacksActivity's own D-188 one: the root's own padding plus the system-bar/cutout insets.
+        val root = findViewById<View>(R.id.feature_overview_root)
+        val basePadding = root.paddingTop
+        ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
+            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
+            val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
+            v.setPadding(
+                basePadding,
+                basePadding + maxOf(statusBars.top, cutout.top),
+                basePadding,
+                basePadding + maxOf(navBars.bottom, gestures.bottom)
+            )
+            insets
+        }
         
         val list = findViewById<LinearLayout>(R.id.feature_overview_list)
         val topMarginPx = (ENTRY_SPACING_DP * resources.displayMetrics.density).toInt()
