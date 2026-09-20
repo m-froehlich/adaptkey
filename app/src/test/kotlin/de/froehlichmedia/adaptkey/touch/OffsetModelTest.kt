@@ -83,6 +83,29 @@ class OffsetModelTest {
     }
     
     @Test
+    fun `D-474 unrecord of a never-recorded tap leaves the statistics untouched`() {
+        val model = OffsetModel()
+        model.record("c:k", 10f, 10f, 12f, 14f)
+        model.record("c:k", 10f, 10f, 16f, 18f)
+        val before = model.statFor("c:k")!!
+        
+        model.unrecord("c:k", 10f, 10f, 9f, 20f, weight = OffsetModel.NOT_RECORDED_WEIGHT)
+        
+        assertEquals(before, model.statFor("c:k"))
+    }
+    
+    @Test
+    fun `D-474 unrecord of a never-recorded tap does not drop a key holding a single real sample`() {
+        val model = OffsetModel()
+        model.record("c:k", 10f, 10f, 12f, 14f)
+        val before = model.statFor("c:k")!!
+        
+        model.unrecord("c:k", 10f, 10f, 12f, 14f, weight = OffsetModel.NOT_RECORDED_WEIGHT)
+        
+        assertEquals(before, model.statFor("c:k"))
+    }
+    
+    @Test
     fun `unrecord restores the exact prior mean and variance among several samples`() {
         val model = OffsetModel()
         model.record("c:k", 10f, 10f, 12f, 14f)

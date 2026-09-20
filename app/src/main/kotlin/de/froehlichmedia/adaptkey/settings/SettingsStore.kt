@@ -59,6 +59,7 @@ object SettingsStore {
     const val KEY_CONTACTS_SUGGESTIONS_ENABLED = "d191_contacts_suggestions_enabled"
     const val KEY_DOUBLE_TAP_BACKSPACE_UNDO = "d348_double_tap_backspace_undo"
     const val KEY_BACKSPACE_STICKY_ENABLED = "d361_backspace_sticky"
+    const val KEY_TOUCH_LEARNING_ENABLED = "d474_touch_learning"
     const val KEY_AUTO_SPLIT_MODE = "d352_auto_split_mode"
     // D-407: the former, separate D-234 "d234_autocorrect_enabled" toggle is gone - merged into this one
     // slider's own "Off" position (AutocorrectAggressiveness.OFF_KEY), no migration of any old stored value.
@@ -133,6 +134,9 @@ object SettingsStore {
     /** Default stored boolean for the D-361 Backspace sticky-zone toggle (on). */
     const val DEF_BACKSPACE_STICKY_ENABLED = true
     
+    /** Default stored boolean for the D-474 touch-zone learning toggle (on). */
+    const val DEF_TOUCH_LEARNING_ENABLED = true
+    
     /** Default stored boolean for the D-401 cursor-control gesture toggle (on - see AdaptSettings' own KDoc). */
     const val DEF_CURSOR_CONTROL_ENABLED = true
     
@@ -189,6 +193,7 @@ object SettingsStore {
             contactsSuggestionsEnabled = p.getBoolean(KEY_CONTACTS_SUGGESTIONS_ENABLED, false),
             doubleTapBackspaceUndo = p.getBoolean(KEY_DOUBLE_TAP_BACKSPACE_UNDO, DEF_DOUBLE_TAP_BACKSPACE_UNDO),
             backspaceStickyEnabled = p.getBoolean(KEY_BACKSPACE_STICKY_ENABLED, DEF_BACKSPACE_STICKY_ENABLED),
+            touchLearningEnabled = p.getBoolean(KEY_TOUCH_LEARNING_ENABLED, DEF_TOUCH_LEARNING_ENABLED),
             autoSplitModeKey = p.getString(KEY_AUTO_SPLIT_MODE, null),
             autocorrectAggressivenessKey = p.getString(KEY_AUTOCORRECT_AGGRESSIVENESS, null),
             autoMergeAggressivenessKey = p.getString(KEY_AUTO_MERGE_AGGRESSIVENESS, null),
@@ -221,7 +226,7 @@ object SettingsStore {
      * D-434: loads the §6 sentence-boundary abbreviation list, always [language]'s own default - not
      * user-configurable, mirroring [loadLetterHints]'s own per-language-default (not per-key-override)
      * philosophy (D-301's own rejected override editor).
-     *
+     * 
      * @param context any valid context
      * @param language the language whose own abbreviation list to resolve; defaults to whichever language
      *        is currently active ([ActiveLanguageStore])
@@ -238,7 +243,7 @@ object SettingsStore {
      * cannot; otherwise [language]'s own installed/bundled `diacritics.tsv` ([LanguageDiacriticsLoader]) is
      * loaded into a [DataDiacriticFolding]; a language with neither gets [NoOpDiacriticFolding] - never
      * German's own map, which would help nothing for a language that does not have German's diacritics.
-     *
+     * 
      * @param context any valid context
      * @param language the language whose own diacritic folding to resolve; defaults to whichever language
      *        is currently active ([ActiveLanguageStore])
@@ -323,6 +328,7 @@ object SettingsStore {
         KEY_LONGPRESS_DELAY,
         KEY_DOUBLE_TAP_DELAY,
         KEY_BACKSPACE_STICKY_ENABLED,
+        KEY_TOUCH_LEARNING_ENABLED,
         KEY_CURSOR_CONTROL_ENABLED,
         KEY_NUMBER_ROW,
         KEY_SYMBOL_KEY,

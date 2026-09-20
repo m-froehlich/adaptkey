@@ -171,7 +171,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
          * document-relative totals the newline-based model needs, [dx]/[dy] the raw finger travel the
          * screen-space model ([VisualCaretServo]) needs - which one applies depends on whether the target
          * app reports caret coordinates at all, and only the listener knows that.
-         *
+         * 
          * @param characters total horizontal offset from the gesture's own origin, absolute, never a delta
          * @param lines total vertical (line) offset from the gesture's own origin, likewise absolute
          * @param dx raw horizontal finger travel since the origin, in pixels, unquantised and unscaled
@@ -536,9 +536,10 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private var pendingAmbiguity = AmbiguityResult(TapAmbiguity.NONE)
     
     // D-159: the weight OffsetModel.record() applied for this tap at ACTION_DOWN, carried to the listener
-    // on release exactly like pendingAmbiguity above - 1.0 (an ordinary, undownweighted sample) when the
-    // ambiguity check skipped recording altogether (T-05) or no model is attached at all.
-    private var pendingRecordWeight = 1.0
+    // on release exactly like pendingAmbiguity above - OffsetModel.NOT_RECORDED_WEIGHT when nothing was
+    // recorded (T-05 ambiguity, learning switched off (D-474), or no model attached), so a later
+    // unrecord() for this tap is a no-op instead of subtracting a sample that was never added.
+    private var pendingRecordWeight = OffsetModel.NOT_RECORDED_WEIGHT
     
     private val longPressHandler = Handler(Looper.getMainLooper())
     private var longPressRunnable: Runnable? = null
@@ -608,6 +609,12 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * for any key geometrically adjacent to it - set from the settings (default on).
      */
     var backspaceStickyEnabled: Boolean = true
+    
+    /**
+     * D-474: whether an ordinary key tap is fed into [offsetModel] (T-03) - set from the settings (default
+     * on). Off means nothing new is recorded; what the model already holds still drives key resolution.
+     */
+    var touchLearningEnabled: Boolean = true
     
     /**
      * D-361: how long after the last Backspace activation the sticky zone above stays active. Set from the
@@ -1246,7 +1253,8 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 // (space vs. a bottom-row letter, or vice versa), so training the resolved key on it risks
                 // reinforcing exactly the wrong lesson; this is what drove the reported bottom-row-into-space
                 // drift from repeated space mistaps.
-                pendingRecordWeight = if (pendingAmbiguity.kind == TapAmbiguity.NONE) {
+                // D-474: nor while the user has switched touch-zone learning off.
+                pendingRecordWeight = if (touchLearningEnabled && pendingAmbiguity.kind == TapAmbiguity.NONE) {
                     offsetModel?.record(
                         key.id,
                         rect.centerX(),
@@ -1256,9 +1264,9 @@ class AdaptKeyboardView @JvmOverloads constructor(
                         event.size,
                         rect.width() / 2f,
                         rect.height() / 2f
-                    ) ?: 1.0
+                    ) ?: OffsetModel.NOT_RECORDED_WEIGHT
                 } else {
-                    1.0
+                    OffsetModel.NOT_RECORDED_WEIGHT
                 }
                 // D-243: every raw ACTION_DOWN, resolved or ambiguous alike - lets the user see exactly
                 // where a tap actually landed relative to the key it resolved to (e.g. a chronically missed
@@ -1826,7 +1834,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * [fireCorrectionHaptic] - each already confirmed its own setting is on before calling this; this
      * function only still applies the [systemHapticLevel] gate (shared by all three, unlike the
      * per-feature settings above) before actually reaching hardware.
-     *
+     * 
      * D-193 (temporary diagnostic): D-06/D-34/D-66/D-75 have now failed three separate device rounds
      * without ever confirming what actually happens at runtime - this very `runCatching` previously
      * swallowed everything silently, including the exception itself. Every branch below is now logged
@@ -2027,12 +2035,12 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * [spaceSwipeThresholdPx] (D-57: +15%) for the space-bar language swipe (G-01), a three-key-width
      * distance (D-46; D-57: -15%) for the horizontal page swipe, and the plain [fieldSwipeThresholdPx]
      * three-key-width distance for the vertical field gestures (dismiss-down, up-to-symbols).
-     *
+     * 
      * D-380: shared between [resolveSwipe]'s own release-time dispatch and the ACTION_MOVE handler's own
      * long-press-cancel gate - a smear that has left the pressed key's bounds but not yet reached here
      * (returns null) is not a real swipe attempt, so it must not cancel a pending long-press either; only a
      * smear that already clears the exact distance a real release would need to consume as a swipe should.
-     *
+     * 
      * @param key the key the gesture started on
      * @param dx the horizontal displacement so far
      * @param dy the vertical displacement so far
@@ -2063,7 +2071,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
     
     /**
      * Resolves a release displacement into a swipe and offers it to the listener (§4 / D-20).
-     *
+     * 
      * @param key the key the swipe started on
      * @param dx the horizontal release displacement
      * @param dy the vertical release displacement
@@ -2138,7 +2146,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * *upward* drift, mirroring [downwardOffsetFactorFor]'s own reasoning - Backspace sits directly above it
      * at the same column, one row up, and was reported bleeding into it the same way the bottom letter row
      * bled into the space bar (D-109/D-133).
-     *
+     * 
      * @return the tighter upward factor for Enter; failing that, D-397's generic
      *         [GENERIC_VERTICAL_OFFSET_FACTOR] for any char key with a genuine row above it
      *         ([RowGeometry.hasRowAbove] - the persistent number row counts here exactly like any other row,
@@ -2160,13 +2168,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * so a key's learned zone reaches less far into whichever row happens to sit next to it - on every
      * layout this app builds, present or future, with no per-key/per-language list to maintain (unlike the
      * hand-picked overrides above, each added for one specific device-reported pair).
-     *
+     * 
      * Only ever consulted for [KeyCode.CHAR] keys - the symbol/calculator surfaces reuse some of the same
      * characters (digits especially) in an entirely different, unrelated grid that [RowGeometry] knows
      * nothing about, so this is scoped to [InputSurface.LETTERS] (which url/email mode also stays on, per
      * [KeyboardLayout]/[GreekLayout]/etc. - their letter rows are unchanged, only the bottom control row
      * differs).
-     *
+     * 
      * @param key the candidate key
      * @param hasNeighborRow [RowGeometry.hasRowAbove] or [RowGeometry.hasRowBelow], whichever direction is
      *        being asked about
@@ -2261,7 +2269,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * per-layout/per-language neighbour list - holds for whichever key genuinely sits next to Backspace on
      * the active layout/surface (a punctuation key, Enter, a differently-shaped calculator-page neighbour,
      * ...) without any changes here.
-     *
+     * 
      * D-361-followup (v5): the fixed `gapPx * 1.5f` tolerance this shipped with only ever covered the plain
      * inter-row gap [layoutKeys] always leaves - never the *additional* D-55 gap it adds specifically above
      * the space/Enter row ([extraSpaceAboveSpaceRowDp], 7dp by default, up to 25dp) or below the number row
@@ -2270,7 +2278,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * at all, i.e. never into Enter, the one neighbour D-361 actually exists for. Both D-55 values are added
      * to the tolerance now (defensively, both directions, rather than assuming which specific boundary a
      * given neighbour sits across).
-     *
+     * 
      * D-361-followup (v6): a real device log (`AdaptKeyTouch`) found the actual remaining gap - this
      * originally required the raw tap to land literally inside [neighbor]'s own rect before considering it at
      * all (`neighbor.contains(x, y)`). A raw tap during fast repeated Backspace tapping very often lands in

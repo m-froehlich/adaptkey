@@ -22169,3 +22169,371 @@ untouched). `:app:assembleRelease`/`:app:testDebugUnitTest` green throughout. `v
 `versionName` `"1.2.21"` -> `"1.2.22"`. Items 1/2 confirmed working; items 3/4 (the reworked line-clamp and
 the checkmark-visibility fix) not yet re-confirmed - the calibration constants from §460 also remain
 untested.
+
+## §463 - D-401-followup - the real bug behind the still-open line-clamp (§462's own fix did not work), plus the clipboard peek button suppressed inside the gesture, plus a separate pre-existing clipboard bug flagged (not fixed) for its own investigation.
+
+**The line-clamp bug, found by re-reading `leftBoundary()`/`rightBoundary()` line by line rather than**
+**guessing again**: `cursorControlAnchor` is only ever updated at Stage 2's own start (`onCursorControl-
+StageChanged`) - it stays frozen at the gesture's arm-time position throughout the whole of Stage 1, while
+`cursorControlPosition` moves freely as the drag continues. §462's own `position <= anchor`/`position >=
+anchor` check (added specifically to disambiguate Stage 2's live-selection-relative
+`getTextBeforeCursor()`/`getTextAfterCursor()` reads) was silently wrong for Stage 1 the moment the drag
+passed that frozen point in either direction: it fell into the "past the anchor" branch meant for Stage 2,
+found no real selection to read via `getSelectedText()` (Stage 1 is always collapsed), and gave up clamping
+entirely - exactly the reported "still flips" symptom, confirmed as a real logic bug, not merely another
+reliability gap in the underlying `InputConnection` calls. Fixed by threading `stage` through
+`clampToCurrentLine()`/`leftBoundary()`/`rightBoundary()`: Stage 1 now always takes the direct
+`getTextBeforeCursor()`/`getTextAfterCursor()` path unconditionally (correct by construction - the
+selection is never anything but collapsed at `cursorControlPosition` itself there), and only Stage 2 still
+compares against the anchor to decide. Not yet re-confirmed by the user at time of writing.
+
+**The checkmark chip's own remaining disappearance, traced to a second competing UI element**: the D-36
+clipboard-peek button (`clipboardPeekButtonView`, a dedicated square next to the bar, not a suggestion
+chip) is shown by `setSuggestionBarItems()` - the same single choke point `showCursorControlHint()` itself
+calls - whenever the bar's own content isn't already clipboard chips and the clipboard holds something
+peek-worthy, entirely independently of §462's own `showSuggestions()`/`refreshSuggestions()` gates (neither
+of which this button's visibility ever went through). With clipboard content present, the button reappeared
+right alongside the gesture's own checkmark/hint on every `showCursorControlHint()` call, and tapping it
+(`openClipboardPeek()`) replaced the bar with clipboard chips - the user's own precise report ("weil die
+Chips dort immer wieder eingeblendet werden"). Fixed at that same choke point: the peek button (and, by the
+same reasoning, nothing new needed for `clearClipboardButtonView`, which only ever shows *for* clipboard
+chips already being displayed) now also stays hidden for as long as `cursorControlSessionActive` is true.
+
+**A separate, pre-existing clipboard bug flagged, not fixed**: tapping the peek button while the caret
+touches an existing word shows the clipboard chips only briefly before the word gets reclaimed and the
+chips disappear again - explicitly reported as reproducing **outside** this gesture too ("das passiert
+völlig unabhängig von dem neuen Tool"), and confirmed here not to trace to anything touched this session
+(`cursorControlSessionActive` is false throughout ordinary use, so none of this round's new gates apply).
+`openClipboardPeek()`'s own KDoc already documents a `reclaimChipRefreshSuppressedUntil` window
+(`RECLAIM_DEBOUNCE_MS` + `CLIPBOARD_PEEK_ECHO_GUARD_MARGIN_MS`, 350 ms total) built specifically for "the
+chips flashed and immediately vanished again" - the identical symptom now reported again, either a
+regression of that existing fix or a related race it does not fully cover. Left open rather than guessed at
+- needs its own real device log to root-cause properly, per this project's own convention, not attempted
+blind in the middle of an already-large round.
+
+1596 unit tests unchanged. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 518 -> 519,
+`versionName` `"1.2.22"` -> `"1.2.23"`.
+
+## §464 - D-401-followup - the real reason §462/§463's own fixes produced no observable change at all ("es ist als hättest du gar nichts gemacht"), found only after first ruling out a deployment gap.
+
+User confirmed the Settings screen's own live `PackageManager`-read version showed `1.2.23` - the fix
+genuinely had reached the device, so the problem was real code, not staleness.
+
+**Root cause, found by re-reading the whole D-401 caret-tracking mechanism end to end rather than the**
+**clamp function alone again**: `onUpdateSelection` resynced `cursorControlPosition` from its own
+`newSelEnd` **unconditionally** on every single callback while a session was active - originally added so
+a DPAD-driven line jump's own (otherwise uncomputable) resulting offset would be picked up. `onUpdateSelection`
+is asynchronous and its callbacks are **not** guaranteed to arrive in the order a fast drag's own rapid-fire
+`setSelection()` calls were issued in - this project's own extensively-documented history of exactly this
+class of race (spec §1's guiding principle, D-139/D-149) applied here too, just not yet connected to this
+gesture specifically. A stale echo from *before* a clamp had taken effect could land after a newer,
+already-correctly-clamped one and silently stomp `cursorControlPosition` back, so the very next delta's own
+baseline was wrong - defeating §463's own (independently correct) `leftBoundary()`/`rightBoundary()` fix
+completely, on every single character move, not merely at the boundary. This is why nothing appeared to
+change at all, not only the line-clamp.
+
+Fixed by only ever trusting the echo when actually needed: new one-shot `cursorControlAwaitingLineSync` flag,
+armed right before the DPAD events are sent and consumed only by the very next `onUpdateSelection` call.
+Every character-based move now keeps trusting its own synchronous, already-clamped result unconditionally,
+exactly like it always should have - `cursorControlPosition` is now written from exactly one of two places
+at any given moment: the clamp function itself (character moves), or this one gated echo (line moves), never
+both racing for the same field.
+
+1596 unit tests unchanged (Android-glue timing behaviour, no new pure logic). `:app:assembleRelease`/
+`:app:testDebugUnitTest` green. `versionCode` 519 -> 520, `versionName` `"1.2.23"` -> `"1.2.24"`. Not yet
+re-confirmed by the user - the checkmark-visibility fix from §463 is a logically separate mechanism from
+this race and was not obviously implicated by it, but has also not been independently re-verified since.
+
+## §465 - D-401-followup - diagnostic-only round, no fix attempted.
+
+User reported v1.2.24 (§464's**
+**own async-echo-race fix) STILL produced "no observable change at all"** - the third consecutive report of
+that exact phrasing across three logically-reasoned, verified-compiling fixes (§462's tap/reclaim/clamp
+attempt, §463's anchor-comparison rewrite, §464's echo-race fix), this time accompanied by a real device
+log (Google Keep) showing chaotic, non-monotonic `onUpdateSelection` position jumps during a cursor-control
+drag that don't match any hypothesis formed by reading the code alone.
+
+Per this project's own established convention (root-cause from real device data, never guess repeatedly -
+the same discipline D-452's own stall investigation already used successfully), stopped attempting a fourth
+blind fix and instead added comprehensive diagnostic logging at every point in the pipeline a real log could
+distinguish between competing explanations: `AdaptKeyboardView.handleCursorControlTouch()`'s ACTION_MOVE
+branch now logs raw `dx`/`dy`/density, the computed `Steps`, the applied-before counters and the resulting
+delta, and the active stage (`AdaptKeyTouch`); `AdaptKeyService.applyCursorControlMove()` logs its own entry
+parameters and the position both before and after clamping; `leftBoundary()`/`rightBoundary()` log which
+branch was taken, the read text length, the found newline index (or its absence) and the computed result;
+and `onUpdateSelection()`'s own resync decision now logs explicitly which of its two outcomes fired -
+`"line-sync resync"` (the one-shot flag consumed) vs. `"echo ignored"` (an echo arriving while not awaiting
+one) - so a fresh log can show directly whether §464's own guard is actually preventing echo-driven
+stomping, or whether the chaos has some other, still-unidentified source entirely (all tagged
+`AdaptKeyJitter`, this project's own established tag for this exact historically-fragile race class).
+
+1596 unit tests unchanged (diagnostic Android-glue additions only, no logic changed). `:app:assembleRelease`/
+`:app:testDebugUnitTest` green. `versionCode` 520 -> 521, `versionName` `"1.2.24"` -> `"1.2.25"`. Deliberately
+no spec-prose update this round - no user-facing behaviour changed. Next step is the user reproducing the
+issue again on this build so a fully-instrumented log can actually explain the chaotic jumps, rather than
+another guess.
+
+## §466 - D-401-followup - the real root cause(s), found from §465's own instrumented device log, not another guess.
+
+The user reproduced the drag again in Google Keep and attached the full log. Two
+genuine, independent bugs, both confirmed directly against the log rather than inferred:
+
+**Bug 1 - the DPAD-driven line move could leave the field entirely, and this explains all three still-open**
+**symptoms at once, not only the caret "flip".** The log showed `onStartInput`/`onStartInputView` firing
+*mid-gesture*, alternating `hintText=Titel` and `hintText=Notiz` - Google Keep's Title and Body are separate
+`EditText` fields, and `KEYCODE_DPAD_UP` sent at the top of the Body was moving **system input focus** to the
+sibling Title field, not just an imprecise vertical jump within the same field. This is the real reason
+three previously-separate-looking symptoms never resolved despite three rounds of real fixes: (a) the caret
+"flipping" (§462/§463's own line-clamp work only ever guarded *within* one field's own text, powerless
+against a focus change to a different field entirely), (b) the clipboard chip repeatedly reappearing and (c)
+the checkmark chip never staying, both because `onStartInputView` unconditionally calls
+`showClipboardChipIfAvailable()`/`showCredentialSuggestions()` on every field focus - each spurious
+Title/Body bounce silently overwrote the gesture's own checkmark/hint bar content with ordinary field-open
+content. **Fixed at the actual source, not by patching around it**: line movement no longer sends any DPAD
+key event at all. New `moveOneLine()` (`AdaptKeyService.kt`) computes the target line purely from this
+field's own text via `getTextBeforeCursor()`/`getTextAfterCursor()` - the same text-scanning approach
+`clampToCurrentLine()` already used horizontally - finds the previous/next line's start and length by
+scanning for newlines, and preserves the horizontal column as closely as possible; by construction this can
+never move focus to a different view. This also fully removes the entire async-echo-race class §464 was
+fighting: a line move is now exactly as synchronous and self-trusting as a character move already was, so
+`cursorControlAwaitingLineSync` is deleted outright and `onUpdateSelection`'s own resync branch is now
+diagnostic-only (never mutates `cursorControlPosition`). **Belt-and-suspenders**: `onStartInputView`'s own
+credential-list/clipboard-chip calls are now also directly gated on `!cursorControlSessionActive`, so even a
+genuinely different cause of a mid-gesture field-focus event can no longer stomp the bar.
+
+**Bug 2 - a separate, independent seeding bug**, found by re-reading `onCursorControlArmed()` against the
+log's very first move: `cursorControlPosition` is seeded from `liveSelectionEnd`, which - exactly like
+`selectionCollapsed` already had its own documented D-152 fix for - is only ever updated by
+`onUpdateSelection`, never guaranteed to fire again once a field is simply refocused with an already-existing
+caret position (that initial position is delivered via `EditorInfo` instead). The log's very first
+`applyCursorControlMove` call showed `positionBefore=0` while the field's own `getTextBeforeCursor()` read
+back 67 real characters - the tracked position and the field's real caret were never the same value to begin
+with, so the gesture's first move warped the real caret to a wrong location before any drag-clamping logic
+even ran. Fixed the same way D-152 was: `onStartInput` now seeds `liveSelectionEnd` from
+`info.initialSelEnd` (falling back to 0 only when the field reports none) instead of leaving it stale from
+whatever the *previous* field's last callback happened to report.
+
+1596 unit tests unchanged (Android-glue logic, no new pure-logic units). `:app:assembleRelease`/
+`:app:testDebugUnitTest` green. `versionCode` 521 -> 522, `versionName` `"1.2.25"` -> `"1.2.26"`. Diagnostic
+logging (§465) deliberately kept in place one more round, not yet stripped - not independently re-confirmed
+by the user on a real device yet. Spec (`G-08`) updated to describe the computed line move and the arm-time
+seeding fix.
+
+## §467 - D-401-followup - user confirmed §466's own two fixes both hold on device ("Das hat definitiv geklappt" - chip suppression reliable, checkmark tap ends the mode), plus one more real bug found from a third device log.
+
+User reported the caret now "sticks stubbornly" at what looked
+like the end of the text block, was hard to move away from, and occasionally "flipped" into the next line
+when finally dragged out.
+
+**Root cause, found directly in the log, not guessed**: the field's real content contains a genuinely
+empty line (two adjacent newlines - a blank paragraph break). At that exact offset, `leftBoundary()` and
+`rightBoundary()` both resolve to the caret's own current position (an empty line has zero width - there is
+nothing to its left *within the line* and nothing to its right either), so `clampToCurrentLine()` clamped
+every character move straight back to where the caret already was, in *both* directions at once - the log
+showed `target=109 clampedPosition=108` and `target=107 clampedPosition=108` for dozens of consecutive
+moves in a row. This is a real, previously-unconsidered edge case of the D-401-followup no-flip clamp
+(§462/§463): the clamp assumed a line always has positive width to move around within, true for every
+earlier test but not for a blank line. The caret was not "stuck" by any timer or debounce - it was
+mathematically unable to satisfy `target != position` via a character move alone. Escaping only ever
+happened by accident, when the same drag's accumulated vertical distance coincidentally crossed a line-move
+threshold too - which is also exactly the "flip" the user reported, since that vertical move could land
+anywhere, not where a further horizontal drag was actually aimed.
+
+**Fixed by recognising the degenerate case explicitly**: when a computed boundary equals the caret's own
+current position, `leftBoundary()`/`rightBoundary()` now return `null` (this project's own existing
+"unclamped" signal) instead of that self-referential result - the character move is then applied without
+clamping, crossing into the adjacent line by exactly the drag's own delta, matching what an ordinary text
+editor's arrow key already does from an empty line. The very next move re-reads a fresh boundary from
+wherever it landed, so this does not reopen the original flip bug for any line with real width - only a
+genuinely zero-width line is affected.
+
+1596 unit tests unchanged (Android-glue logic, no new pure logic - both changed functions are already
+Android-glue-only, per their own existing KDoc). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+`versionCode` 522 -> 523, `versionName` "1.2.26" -> "1.2.27". Spec (`G-08`) updated with this exception.
+Diagnostic logging (§465) still kept in place, one more round - not yet independently re-confirmed on
+device for this specific fix.
+
+## §468 - D-401-followup - §467's own empty-line fix was itself a real regression, caught on the very next device test.
+
+User reported: "Jetzt ist es wieder wie vorher... man flippt einfach durch die
+Zeilen" (back to flipping through lines again) - the fourth log in this saga, and it pinpointed the exact
+mistake immediately.
+
+**Root cause**: §467's own `result == position` check could not tell a genuinely empty line apart from the
+caret simply sitting at the very start or end of an ordinary, *non-empty* line - both produce
+`result == position` when only ONE direction is checked (which is all `leftBoundary()`/`rightBoundary()`
+ever compute per call). The log showed this precisely: at position 109 - the real, content-bearing start of
+a genuine third line - `leftBoundary()` correctly computed `result = 109 = position`, and §467's fix
+unclamped it exactly as it would a true empty line, letting the caret cross straight back into the previous
+(actually empty) line and beyond - the reopened flip.
+
+**Fixed by actually distinguishing the two cases**, not by another single-direction check: new
+`isOnZeroWidthLine()` reads one character before and one character after the caret directly - true only
+when *both* are a newline (or the field's own start/end respectively). Only then does the boundary
+actually get left unclamped; every ordinary line boundary (content on at least one side) keeps clamping to
+`result` exactly as it did before §466/§467, correctly blocking the flip again. Verified against the same
+device log line by line: position 109 (real line start) is no longer treated as zero-width (character
+after the caret is real content, not a newline) and stays clamped; position 108 (the log's own confirmed
+empty line) still reads as zero-width on both sides and still escapes correctly.
+
+1596 unit tests unchanged (Android-glue logic only). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
+`versionCode` 523 -> 524, `versionName` "1.2.27" -> "1.2.28". Spec (`G-08`) updated to describe the
+corrected two-sided detection and name the regression explicitly, so a future round does not repeat the
+same single-direction mistake. Diagnostic logging (§465) still kept in place - not yet independently
+re-confirmed by the user on device for this specific fix.
+
+## §469 - D-401-followup - both empty-line "fixes" (§467, §468) reverted outright; the premise itself was wrong, not the implementation.
+
+User's fifth log on this exact area: "Es hat sich nichts
+geändert" (nothing changed) - §468's own corrected two-sided `isOnZeroWidthLine()` check compiled, tested
+green, and was logically sound, yet the user still perceived a "flip" on the device.
+
+**Re-reading the user's own original D-401 requirement, not the log, settled it**: from the very first
+round of this feature, the explicit, repeated call was that a horizontal drag must never cross a line
+boundary under any circumstances ("Ich bewege den Cursor hiermit bereits zweidimensional. Es gibt keinen
+Grund für eine Weiterbewegung im Textfluss."). §467's own diagnosis of the original "sticking" report as a
+bug was the actual mistake - a zero-width line clamping to a single point in both directions, forcing the
+user to leave it via a vertical (line) move rather than a horizontal one, is not stuck at all: it is this
+gesture's own two-independent-dimensions design working exactly as originally specified. §467/§468's own
+"escape" logic was solving a problem that, per the user's own standing requirement, was never actually a
+problem - it was reintroducing the one behaviour (crossing a line horizontally) the user had explicitly and
+consistently ruled out from the start, just via a character move instead of an accidental line move.
+
+**Fixed by reverting, not patching a third time**: `isOnZeroWidthLine()` deleted outright;
+`leftBoundary()`/`rightBoundary()` restored to their pre-§467 form - `return result` unconditionally, no
+unclamping exception for any boundary value, empty line or not. A blank line now clamps firmly like every
+other line boundary; leaving it requires an explicit vertical move, exactly as G-08 always specified.
+
+1596 unit tests unchanged. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 524 -> 525,
+`versionName` "1.2.28" -> "1.2.29". Spec (`G-08`) updated to record both reverted attempts and why, so a
+future round does not re-litigate the same "stuck" report as a bug a third time. Diagnostic logging (§465)
+still kept in place - this round's own device confirmation is the next open item.
+
+## §470 - D-401-followup - the sixth log finally isolated the real mechanism: this was never a clamp bug at all, it was gesture-calibration sensitivity.
+
+§469's revert compiled clean, and this log
+confirms it held: every single `leftBoundary()`/`rightBoundary()` call in the new log correctly clamps
+(`target=107 clampedPosition=108`, never crossing) - the horizontal boundary logic is, and now stays,
+entirely correct. The user's continued "flipping" was coming from a completely different code path this
+whole investigation had not yet looked at closely: `moveOneLine()`, firing on ordinary, mostly-horizontal
+drags that the user never intended as a line change at all.
+
+**Root cause, measured directly from the log's own numbers, not guessed**: `CursorControlGesture.stepsFor()`
+computes `lines` from vertical distance *accumulated from the gesture's own origin*, independently of how
+large the horizontal distance already is. One log entry shows a line step firing at a cumulative drag of
+`dx=-514, dy=42` - a drag that is overwhelmingly horizontal (514px) with only 42px (16dp) of vertical
+drift, yet `DP_PER_LINE_STEP`'s own 32dp threshold rounds anything past *half* of itself (16dp) up to a
+full line step. 16dp is trivially exceeded by ordinary hand wobble over any drag long enough to cover more
+than a few characters - this is why the flipping tracked with drag length/duration rather than with any
+deliberate vertical intent, and why it survived three straight rounds of clamp-logic changes untouched:
+the clamp was never the mechanism producing it.
+
+**Fixed by raising `DP_PER_LINE_STEP` from 32f to 200f** (`CursorControlGesture.kt`) - a real, deliberate
+vertical drag (~2 keyboard key-rows tall at the reporting device's own density, per that same log) is now
+required before a line step registers at all, while `DP_PER_CHARACTER_STEP` is untouched: only line
+movement had this failure mode, since an unwanted character move is immediately visible and
+self-correcting on screen, but an unwanted line jump silently teleports the caret somewhere else entirely
+with no visual warning. Existing `CursorControlGestureTest` cases reference the constant symbolically, not
+as a hardcoded magic number, so all pass unchanged against the new value with no test edits needed.
+
+1596 unit tests unchanged. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 525 -> 526,
+`versionName` "1.2.29" -> "1.2.30". Spec (`G-08`'s own "Calibration status" paragraph) updated with the
+measured numbers and reasoning. This is the first D-401-followup round in this whole saga addressing
+gesture *sensitivity* rather than clamp *logic* - if the flipping persists after this, the next log should
+specifically distinguish "still a boundary/clamp symptom" from "still a spurious line-step symptom" so the
+two failure classes are not conflated again.
+
+## §471 - D-401-followup - complete rearchitecture, prompted by the user directly correcting this gesture's own mental model rather than reporting another symptom.
+
+After a 7th round still showed
+flipping and a "stuck at the empty line, then stuck at the left edge - unbenutzbar" report, the user
+rejected further incremental tuning and instead restated the actual intent from scratch: the caret is
+positioned *directly and absolutely*, never by moving it through the document's own text flow. Dragging
+right must always mean "as far right as the current line allows, however far that is" - never "wander
+further right in the text, wherever that leads." A line change is a separate action, driven only by
+genuinely vertical motion.
+
+**This reframes the whole D-401 saga (§462-§470) as symptoms of the wrong mental model, not a string of
+unrelated bugs**: the old design tracked an *incremental* running caret offset, updated by a signed delta
+each move and clamped after the fact - every round's fix (the DPAD-focus bug, the arm-time seeding bug,
+the empty-line clamp flip-flop, the line-step threshold) patched a real symptom of that model without
+ever addressing that the model itself, not any one clamp or threshold, was the actual source of fragility.
+
+**Rearchitected around direct, stateless positioning**: `applyCursorControlMove()` no longer accumulates
+characters as a delta at all - `cursorControlOriginColumn` (the column at arm time or the last re-touch)
+plus the gesture's own *total* signed horizontal offset from origin is recomputed and re-clamped to
+whichever line is active on every single move, never accumulated. `CursorControlGesture.stepsFor()`
+gained a dominant-axis gate: a line change (`lines`) is now forced to zero whenever the horizontal
+distance is at least as large as the vertical one, directly preventing the exact real-device shape that
+caused an unwanted line change in §470's own log (514px sideways against only 42px of drift) - a line
+change can now only ever come from motion that is recognisably more "up/down" than "left/right" at the
+moment it fires. `moveOneLine()` (which used to compute and preserve "column" itself) is replaced by a
+simpler `adjacentLineStart()` that only finds the target line's own start; the same direct column
+computation then settles the exact position once the caret has landed there, so column preservation
+across a line change now falls out of the model for free. New `onCursorControlReTouched()` listener
+callback (a real, previously-missing gap) refreshes `cursorControlOriginColumn` on every lift/re-touch,
+not just at arm time, so resuming a drag after a re-touch doesn't snap the caret back to wherever it
+started at the very beginning of the whole gesture.
+
+The empty-line "stuck" behaviour is unchanged and is now, finally, framed correctly in the spec as
+intentional, not a defect: a zero-width line clamps to a single column in both directions by construction
+(start == end), so a horizontal drag genuinely cannot leave it - only a real line change can, exactly
+matching the user's own restated intent.
+
+1599 unit tests (was 1596: 3 new `CursorControlGestureTest` cases for the dominant-axis gate).
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 526 -> 527, `versionName`
+"1.2.30" -> "1.2.31". Spec (`G-08`) rewritten (not merely amended) for Stage 1 and the calibration
+section, to describe the new model on its own terms rather than as a patch history. Diagnostic logging
+(§465) still kept in place - this is now genuinely new logic, not a re-verification of old logic, so a
+fresh device log matters more than ever for the next round.
+
+## §472 - D-401-followup - a premise probe, not a fix: does the target editor report the caret's own drawn coordinates?
+
+No behaviour change at all; nothing reads the probed values yet.
+
+**Where this came from.** §471's rearchitecture was device-tested and produced two findings. The first was
+cosmetic: horizontal positioning really is absolute *within* one touch contact (`targetColumn =
+originColumn + characters`, `originColumn` fixed), but `originColumn` is re-established on every re-touch
+inside the lift-grace window, and the log showed that happening every few seconds - which sums to
+something that *looks* incremental without being it. The second is structural and is the real blocker:
+line detection reads only real `'\n'` characters, and the tested note effectively had two of them - a
+107-character paragraph with no embedded newline (soft-wrapping across several visible lines) and an empty
+line after it. So "drag down = one visible line down" cannot work by construction, and a line change can
+only ever jump to the next real paragraph - which is exactly the reported "flip" and "changing lines is
+nearly impossible".
+
+That analysis then concluded the gap was unbridgeable, since `InputConnection` offers no way to ask the
+target app for its text layout, and DPAD navigation (which would have used the app's own layout) was
+already tried and rejected in an earlier round - it moved system focus to a different field entirely in
+Google Keep (see `adjacentLineStart`'s own KDoc). **That conclusion was wrong, and this entry exists to
+record the correction**: `CursorAnchorInfo`/`requestCursorUpdates` does not expose the layout, but it does
+expose where the caret is *drawn* - and a soft wrap is directly observable there as a jump in the caret's
+own y coordinate. `CursorAnchorInfo` appears twice elsewhere in this file (D-418, and §460's own DPAD
+note), both times dismissed for *drawing an overlay* on the grounds that app support is inconsistent; it
+was never considered as a layout oracle for this gesture.
+
+**Why a probe and not the rearchitecture.** Rounds §462-§470 were each built on a premise that only failed
+on a real device. The premise here is "Google Keep reports caret coordinates", which is cheap to test and
+expensive to assume, so this round tests only that. `startCursorAnchorInfoProbe()` requests
+`CURSOR_UPDATE_IMMEDIATE or CURSOR_UPDATE_MONITOR` when the gesture arms (logging the editor's own accept/
+decline return), `onUpdateCursorAnchorInfo()` logs every reported position next to this app's own tracked
+text offset - so the log reads as "offset N is drawn at screen point (x, y)" - and
+`stopCursorAnchorInfoProbe()` cancels the request again when the gesture ends, so nothing is requested
+outside an active gesture. A `cursorControlAnchorInfoProbeRunnable` fires after 500 ms without a callback
+and records the negative verdict explicitly, so "no support" reads as a real log line rather than silence.
+
+**What the log has to answer**: (1) do callbacks arrive at all, (2) are the coordinates real rather than
+`NaN`, (3) does y genuinely change across a soft wrap *inside one paragraph*. If yes, the planned direction
+is a screen-space rearchitecture - drive the caret towards a target *point* rather than a target character,
+with the visual line falling out for free and `stepsFor()`'s dominant-axis gate becoming unnecessary
+(40 px of drift against a ~60 px line height simply targets the same line, geometrically, with no threshold
+involved). A user requirement captured for that round and not to be lost: **the finger-to-caret ratio must
+stay well below 1:1, at least horizontally** - the point of the gesture is precision, and 1:1 would be no
+better than tapping in the text directly. In a screen-space model that is a plain gain factor applied to
+`(dx, dy)`, and calibratable in real screen millimetres for the first time. If the log says no, that whole
+direction is closed and the gesture's line handling gets honestly re-scoped to "jumps between real
+paragraphs" instead.
+
+1599 unit tests (unchanged - Android-only glue, per this project's own accepted testing gap).
+`:app:assembleDebug`/`:app:testDebugUnitTest` green. `versionCode` 527 -> 528, `versionName` `"1.2.31"` ->
+`"1.2.32"`.

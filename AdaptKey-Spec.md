@@ -285,7 +285,8 @@ row genuinely sits above or below it on the active layout, wherever no tighter h
 T-05-ambiguous is never used as training data. The model exposes an exact
 algebraic inverse (`unrecord()`) of a single weighted update, used narrowly by A-07's undo to reverse one
 specific raw-coordinate correction. The model makes no assumption about handedness or finger beyond its
-T-04 seed and continues to adapt from every confirmed word.
+T-04 seed and continues to adapt from every confirmed word - unless the user has switched learning off
+(D-474, §48), in which case nothing new is recorded and the zones stay exactly where they are.
 
 ### T-05 - Space/Letter Confusion in the Bottom Row
 The boundary between the space bar and the bottom letter row (`c v b n m`) is treated as a high-risk zone for swapped space/letter input - a risk aggravated by the narrower space bar (L-02). Two ambiguous bands are defined:
@@ -2156,6 +2157,7 @@ Unconditionally excludes any content typed into a password field, regardless of 
 | C-23 | Automatic language switch threshold (G-01, D-130/D-398) | Consecutive foreign words (0-8, 0 = off) | 5 |
 | C-24 | Learned-word expiry window (W-05, D-389) | 1 month / 4 months / 1 year / Never | Never |
 | C-25 | Cross-word merge across space (A-06, D-391, §44) | Off / Cautious / Medium / Aggressive | Off |
+| C-26 | Keep learning touch zones (T-03, D-474, §48) | On / Off | On |
 
 Individual feature sections above also document domain-specific, non-configurable defaults (e.g. the
 calculator layout's fixed key weights) that intentionally are not exposed here.
@@ -3263,6 +3265,36 @@ handling.
 dictionary that grows by 64% used to make every keystroke 64% more expensive, because the scan was over the
 whole table; now the cost tracks the prefix's own match count. That is the standing constraint any future
 decision about importing more words (see `AdaptKey-Progress.md`'s own D-462) has to be weighed against.
+
+---
+
+## 48. Touch-Zone Learning Can Be Frozen (D-474)
+
+T-03's personal offset model learns from every ordinary tap, and its "confirmed key" is simply the key the
+model itself resolved at `ACTION_DOWN` - the learning is unsupervised. Long-term device use showed the cost:
+mistaps that land in one key's zone but were meant for its neighbour train that key toward the neighbour, and
+the zones eventually bleed far enough into adjacent keys to *cause* further mistaps. The seed (T-04) is
+already a good starting point, so for most typing styles further learning may not help at all - it may only
+be worthwhile for Both Thumbs, whose seed is flat and unbiased. The existing caps (D-109/D-133/D-231/D-233/
+D-397) bound only the learned mean offset; see `AdaptKey-Progress.md`'s backlog item D-475 for why that is
+not the whole story and for the candidate root-cause fixes.
+
+**The setting** (`d474_touch_learning`, C-26): a switch in the Calibration category directly below the typing
+style entry, default **on** - a keyboard called AdaptKey does not ship its core feature disabled.
+Switched off, `AdaptKeyboardView` simply does not call `OffsetModel.record()` at `ACTION_DOWN`:
+
+- **Nothing is discarded.** The model keeps the seed plus everything learned so far and key resolution
+  (T-01/T-03) uses it exactly as before; the touch-zone overview (§17, T-06) still renders it. The contact-area
+  statistic is recorded through the same call and freezes with it.
+- Choosing a typing style (D-68) still re-seeds, and "Reset calibration" (D-237) still resets to the current
+  style's seed - both are independent of this switch. Freezing an already-bled state keeps it bled, so the
+  recommended way to test the seed alone is Reset calibration first, then switch learning off.
+- **A-07's undo of a raw-coordinate correction (D-140)** reverses one recorded sample through
+  `OffsetModel.unrecord()`. A tap that was never recorded (learning off, or a T-05-ambiguous tap, which has
+  never been recorded either) now carries `OffsetModel.NOT_RECORDED_WEIGHT`, and `unrecord()` treats that as
+  a no-op - subtracting a sample that was never added would corrupt the mean/variance (and could drop a
+  key's entire entry). Switching the setting mid-word is safe in both directions: a tap keeps the weight it
+  was actually recorded with.
 
 ---
 

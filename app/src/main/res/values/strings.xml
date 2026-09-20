@@ -303,6 +303,8 @@
     <!-- Calibration / onboarding (K-01). -->
     <string name="cat_calibration">Calibration (K-01)</string>
     <string name="k01_title">Typing style</string>
+    <string name="d474_touch_learning_title">Keep learning touch zones</string>
+    <string name="d474_touch_learning_summary">When on, every tap keeps refining where your keys respond. When off, the zones stay exactly as they are now - nothing already learned is discarded. Tip: to freeze the clean starting zones, first use \"Reset calibration\" under Typing style, then switch this off.</string>
     <string name="k01_summary">Tell AdaptKey how you type, so key detection fits you from the start (K-01).</string>
     <string name="k01_current_style">Currently: %1$s</string>
     <string name="k01_activity_title">Typing style</string>

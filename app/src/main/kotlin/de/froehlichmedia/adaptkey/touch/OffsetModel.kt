@@ -10,13 +10,13 @@ import kotlin.math.sqrt
 
 /**
  * Personal 2D offset model (T-03) - typing-style agnostic.
- *
+ * 
  * For every confirmed tap the model accumulates the deviation `(dx, dy) = (touch - keyCentre)`
  * per key as an incremental 2D Gaussian (weighted Welford mean and variance, D-159). The learned
  * per-key mean compensates for the user's systematic deviation; [resolve] then picks the candidate
  * whose compensated Gaussian best explains a new tap. The model makes no assumption about
  * handedness or finger - it learns purely from observed deviations and improves continuously.
- *
+ * 
  * D-159: each recorded tap is downweighted by how far it falls from the key's *currently learned*
  * expected strike point, relative to the currently learned spread (the same Gaussian [logLikelihood]
  * itself already scores candidates with) - a single wildly-off but still-resolved tap can no longer
@@ -27,18 +27,18 @@ import kotlin.math.sqrt
  * (the learned/seeded spread once available, otherwise a geometric estimate from the key's own
  * size), so an initial K-01 calibration seed is trusted as "real" spread immediately, exactly as
  * [resolve] already treats it (the seed's sample count already clears [warmupSamples] on its own).
- *
+ * 
  * While fewer than [warmupSamples] taps have been seen, [resolve] falls back to plain geometry
  * so early typing behaves predictably. The learned mean offset is capped to a fraction of the
  * key size ([maxOffsetFactor]) so the resolution cannot run away from the physical key.
- *
+ * 
  * The class is intentionally free of Android dependencies so it can be unit-tested on the JVM;
  * persistence is delegated to {@link OffsetStore}.
- *
+ * 
  * Note: until word-level confirmation (T-02) and the retroactive correction rules (A-05 / A-06)
  * exist, the "confirmed key" is simply the key this model resolved. Capping and the variance
  * floor keep that feedback bounded; a stronger confirmation signal will replace it later.
- *
+ * 
  * @property maxOffsetFactor the learned mean offset is capped to this fraction of the key half-size
  * @property warmupSamples number of recorded taps below which [resolve] uses pure geometry
  */
@@ -49,7 +49,7 @@ class OffsetModel(
     
     /**
      * Incremental sufficient statistics for one key's deviation distribution.
-     *
+     * 
      * @property weightSum D-159: the running sum of per-sample weights [record] actually applied -
      *        the true "effective sample size" the weighted [meanDx]/[meanDy]/[m2Dx]/[m2Dy] were
      *        accumulated against, distinct from [count] (the plain number of taps recorded, used for
@@ -70,7 +70,7 @@ class OffsetModel(
     
     /**
      * A candidate key with the geometry needed to score and record a tap.
-     *
+     * 
      * @property maxDownwardOffsetFactor D-133: overrides [maxOffsetFactor] for this candidate's downward
      *           (+y) learned offset only, when set - e.g. the bottom letter row's own harder,
      *           direction-specific bound against drifting toward the space bar below it (D-109 already
@@ -117,7 +117,7 @@ class OffsetModel(
     
     /**
      * Records a confirmed tap, updating the key's running mean and variance (weighted Welford, D-159).
-     *
+     * 
      * D-159: the sample is weighted by [weightFor] before being folded in - a tap far from the key's
      * *currently learned* expected strike point (relative to its currently learned spread) contributes
      * less than a tap close to it, so one wild outlier can no longer swing the mean as hard as an
@@ -125,12 +125,12 @@ class OffsetModel(
      * more gradually. [halfWidth]/[halfHeight] feed only the geometric fallback spread used before any
      * real (or seeded) variance exists for this key - once one does, it is used instead, exactly as
      * [logLikelihood] already does at resolve time.
-     *
+     * 
      * The optional contact area ([size], from {@code MotionEvent.getSize()}) feeds a separate running
      * mean used by the typing-pattern detection (T-04). It is only accumulated when strictly positive,
      * so devices that report no contact size simply leave [Stat.sizeCount] at zero and the pattern
      * detection falls back gracefully. Contact area is never weighted - only the positional deviation.
-     *
+     * 
      * @param id the confirmed key's id
      * @param centerX the key centre x in view pixels
      * @param centerY the key centre y in view pixels
@@ -197,16 +197,21 @@ class OffsetModel(
      * arguments the corresponding [record] call used, [weight] included - it is the caller's
      * responsibility to have retained them (neither the sample to remove nor the weight it was originally
      * given can be inferred afterwards, once further taps have moved the key's mean/variance on).
-     *
+     * 
      * @param id the key id whose most recent matching sample is reversed
      * @param centerX the key centre x in view pixels, as passed to the original [record] call
      * @param centerY the key centre y in view pixels, as passed to the original [record] call
      * @param x the raw tap x, as passed to the original [record] call
      * @param y the raw tap y, as passed to the original [record] call
-     * @param weight D-159: the weight [record] returned for this exact sample
+     * @param weight D-159: the weight [record] returned for this exact sample, or [NOT_RECORDED_WEIGHT] for
+     *        a tap that was never recorded at all (D-474: learning switched off; an ambiguous T-05 tap) -
+     *        reversing a sample that was never added would corrupt the statistics, so that is a no-op
      * @param size the contact area, as passed to the original [record] call
      */
     fun unrecord(id: String, centerX: Float, centerY: Float, x: Float, y: Float, weight: Double, size: Float = 0f) {
+        if (weight <= NOT_RECORDED_WEIGHT) {
+            return
+        }
         val stat = stats[id] ?: return
         if (stat.count <= 0L) {
             return
@@ -258,7 +263,7 @@ class OffsetModel(
     /**
      * The learned strike spread for a key (D-24 touch-pattern visualisation): where the user's taps land
      * relative to the key centre (mean offset) and how scattered they are (per-axis standard deviation).
-     *
+     * 
      * @param id the key id
      * @return the spread, or null when the key is untrained
      */
@@ -276,7 +281,7 @@ class OffsetModel(
     
     /**
      * The mean contact area learned for a key (T-04), or null when no sized taps have been seen.
-     *
+     * 
      * @param id the key id
      * @return the mean {@code MotionEvent.getSize()} for the key, or null when unavailable
      */
@@ -290,7 +295,7 @@ class OffsetModel(
     
     /**
      * The learned mean offset for a key, clamped to the given absolute bounds.
-     *
+     * 
      * @param id the key id
      * @param maxAbsX maximum absolute x offset to return
      * @param maxAbsY maximum absolute y offset to return, in the upward (negative) direction
@@ -317,12 +322,12 @@ class OffsetModel(
     
     /**
      * Resolves a tap to the most likely candidate.
-     *
+     * 
      * During warm-up (fewer than [warmupSamples] total taps) this returns the geometric result:
      * the containing candidate, or the nearest centre when the tap falls in a gap. Afterwards it
      * returns the candidate with the highest 2D-Gaussian log-likelihood under the compensated,
      * per-key model.
-     *
+     * 
      * @param candidates the keys eligible for this tap; must not be empty for a non-null result
      * @param x the raw tap x
      * @param y the raw tap y
@@ -354,7 +359,7 @@ class OffsetModel(
      * in both regimes). Unlike [resolve], which only returns the single best match, this exposes the full
      * ordering so a caller can find the *runner-up* - the key a tap could plausibly have meant instead of
      * the one actually chosen - e.g. for raw-coordinate correction of an unknown word.
-     *
+     * 
      * @param candidates the keys to rank; may be empty
      * @param x the raw tap x
      * @param y the raw tap y
@@ -380,7 +385,7 @@ class OffsetModel(
     
     /**
      * Replaces the model's contents with [data] (used when loading persisted statistics).
-     *
+     * 
      * @param data per-key statistics to load; copied defensively
      */
     fun restore(data: Map<String, Stat>) {
@@ -390,13 +395,13 @@ class OffsetModel(
     
     /**
      * Folds another model's statistics into this one (K-01 calibration seeding).
-     *
+     * 
      * Per key the sufficient statistics are combined with the parallel (Chan) form of Welford's
      * algorithm, so merging a freshly calibrated model into the persisted one is mathematically
      * identical to having recorded every tap in a single model - this lets a repeated calibration
      * add to the learned data instead of discarding it. Keys present only in [other] are copied in;
      * the contact-area means (T-04) are combined as sample-count-weighted averages.
-     *
+     * 
      * @param other the model whose statistics are folded in; it is left unchanged
      */
     fun merge(other: OffsetModel) {
@@ -480,6 +485,12 @@ class OffsetModel(
     }
     
     companion object {
+        
+        /**
+         * D-474: the weight a caller retains for a tap that was never passed to [record]. [record] itself
+         * never returns anything at or below [MIN_SAMPLE_WEIGHT], so zero cannot collide with a real weight.
+         */
+        const val NOT_RECORDED_WEIGHT = 0.0
         
         // D-109: tightened from 0.9 (a learned zone could sit within 10% of a key's edge, effectively
         // crowding into the neighbouring key's own territory) - a starting, more conservative point per

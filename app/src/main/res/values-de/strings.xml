@@ -290,6 +290,8 @@
     <!-- Calibration / onboarding (K-01). -->
     <string name="cat_calibration">Kalibrierung (K-01)</string>
     <string name="k01_title">Tipp-Stil</string>
+    <string name="d474_touch_learning_title">Tippzonen weiter lernen</string>
+    <string name="d474_touch_learning_summary">Wenn aktiv, verfeinert jeder Tastendruck, wo deine Tasten reagieren. Wenn aus, bleiben die Zonen genau so, wie sie jetzt sind – nichts bereits Gelerntes geht verloren. Tipp: Um die saubere Ausgangsform einzufrieren, setze zuerst unter „Tipp-Stil“ die Kalibrierung zurück und schalte dies dann aus.</string>
     <string name="k01_summary">Sag AdaptKey, wie du tippst, damit die Tastenerkennung von Anfang an zu dir passt (K-01).</string>
     <string name="k01_current_style">Aktuell: %1$s</string>
     <string name="k01_activity_title">Tipp-Stil</string>

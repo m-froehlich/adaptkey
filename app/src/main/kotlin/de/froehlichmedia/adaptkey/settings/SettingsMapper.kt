@@ -51,6 +51,7 @@ data class RawSettings(
     val contactsSuggestionsEnabled: Boolean = false,
     val doubleTapBackspaceUndo: Boolean = false,
     val backspaceStickyEnabled: Boolean = true,
+    val touchLearningEnabled: Boolean = true,
     val autoSplitModeKey: String? = null,
     val autocorrectAggressivenessKey: String? = null,
     val autoMergeAggressivenessKey: String? = null,
@@ -191,7 +192,7 @@ object SettingsMapper {
     /**
      * Resolves the D-352 auto-split mode, falling back to the spec default for an unknown, blank or
      * missing stored value (the validation point for this enum-valued setting).
-     *
+     * 
      * @param raw the raw stored values
      * @return the resolved [AutoSplitMode]
      */
@@ -202,7 +203,7 @@ object SettingsMapper {
     /**
      * Resolves the D-353 autocorrect aggressiveness, falling back to the spec default for an unknown,
      * blank or missing stored value (the validation point for this enum-valued setting).
-     *
+     * 
      * @param raw the raw stored values
      * @return the resolved [AutocorrectAggressiveness]
      */
@@ -215,7 +216,7 @@ object SettingsMapper {
      * or missing stored value (the validation point for this enum-valued setting) - the same fallback
      * [AutoMergeAggressiveness.OFF_KEY] itself resolves to, since [toAutoMergeEnabled] is the single place
      * that decides whether the mechanism runs at all.
-     *
+     * 
      * @param raw the raw stored values
      * @return the resolved [AutoMergeAggressiveness]
      */
@@ -229,7 +230,7 @@ object SettingsMapper {
      * fail-safe direction from [toAutocorrectEnabled]: a missing/null stored value here means "never
      * touched this setting", which must default to **off** (a brand-new, undevice-tested mechanism that
      * rewrites already-committed text), not silently on - see [AutoMergeAggressiveness]'s own KDoc.
-     *
+     * 
      * @param raw the raw stored values
      * @return true only when the stored value names a real level, never for null/blank/"off"/unrecognised
      */
@@ -241,7 +242,7 @@ object SettingsMapper {
     /**
      * Resolves the D-389 learned-word expiry window, falling back to the spec default for an unknown,
      * blank or missing stored value (the validation point for this enum-valued setting).
-     *
+     * 
      * @param raw the raw stored values
      * @return the resolved [LearnedWordExpiryWindow]
      */
@@ -256,7 +257,7 @@ object SettingsMapper {
      * value (including unrecognised/corrupt ones, which [toAutocorrectAggressiveness] already degrades to
      * [AutocorrectAggressiveness.DEFAULT]) leaves autocorrect enabled, matching D-234's own original
      * fail-safe default.
-     *
+     * 
      * @param raw the raw stored values
      * @return true unless the stored value is exactly "off"
      */
@@ -269,7 +270,7 @@ object SettingsMapper {
      * mapping so the keyboard never ends up with no secondary symbols at all; an empty abbreviation set
      * (D-434) falls back to [Abbreviations.GERMAN] the same way, so sentence-boundary detection never ends
      * up with none at all either.
-     *
+     * 
      * @param raw the raw stored values
      * @return the validated [AdaptSettings]
      */
@@ -299,6 +300,7 @@ object SettingsMapper {
             autocorrectEnabled = toAutocorrectEnabled(raw),
             doubleTapBackspaceUndo = raw.doubleTapBackspaceUndo,
             backspaceStickyEnabled = raw.backspaceStickyEnabled,
+            touchLearningEnabled = raw.touchLearningEnabled,
             autoSplitMode = toAutoSplitMode(raw),
             autocorrectAggressiveness = toAutocorrectAggressiveness(raw),
             autoMergeEnabled = toAutoMergeEnabled(raw),

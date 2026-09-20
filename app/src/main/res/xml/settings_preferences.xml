@@ -50,6 +50,13 @@
                 android:targetClass="de.froehlichmedia.adaptkey.settings.CalibrationActivity" />
         </Preference>
 
+        <!-- D-474: freezes T-03's learning (nothing already learned is discarded). -->
+        <SwitchPreferenceCompat
+            android:key="d474_touch_learning"
+            android:title="@string/d474_touch_learning_title"
+            android:summary="@string/d474_touch_learning_summary"
+            android:defaultValue="true" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:key="cat_dictionary_group" android:title="@string/cat_dictionary">

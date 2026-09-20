@@ -95,6 +95,10 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  *           Enter/a punctuation key/etc. instead. Reuses [doubleTapDelayMs] as the "how recent counts as
  *           fast" window rather than its own separately tuned duration - the user's own call, that window
  *           already having proven itself for the same class of decision (G-05/A-07).
+ * @property touchLearningEnabled D-474: whether every ordinary key tap keeps refining the personal touch
+ *           zones (T-03) - default **on**. When off, nothing already learned is discarded and key resolution
+ *           still uses the seed plus what was learned so far; new taps are simply no longer recorded, so the zones stay exactly where
+ *           they are (the seed plus whatever was learned so far).
  * @property autoSplitMode D-352: how eagerly the A-05 retroactive word split may act (default
  *           [AutoSplitMode.AUTOMATIC], unchanged A-05 behaviour). [AutoSplitMode.CHIP_ONLY] still finds and
  *           offers a split as a suggestion chip, never silently applying it; [AutoSplitMode.OFF] disables
@@ -152,6 +156,7 @@ data class AdaptSettings(
     val autocorrectEnabled: Boolean = true,
     val doubleTapBackspaceUndo: Boolean = false,
     val backspaceStickyEnabled: Boolean = true,
+    val touchLearningEnabled: Boolean = true,
     val autoSplitMode: AutoSplitMode = AutoSplitMode.DEFAULT,
     val autocorrectAggressiveness: AutocorrectAggressiveness = AutocorrectAggressiveness.DEFAULT,
     val autoMergeEnabled: Boolean = false,

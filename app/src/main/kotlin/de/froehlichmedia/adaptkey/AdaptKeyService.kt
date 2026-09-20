@@ -1377,6 +1377,8 @@ class AdaptKeyService : InputMethodService() {
             // the window, per the user's own call, rather than a separately tuned duration.
             view.backspaceStickyEnabled = s.backspaceStickyEnabled
             view.backspaceStickyDelayMs = s.doubleTapDelayMs
+            // D-474: freezes T-03's touch-zone learning without discarding anything already learned.
+            view.touchLearningEnabled = s.touchLearningEnabled
             // D-401: gated off outright while emoji search owns the keyboard (enterEmojiSearch()'s own
             // note) - a settings reload mid-search would otherwise silently re-enable it there too.
             view.cursorControlEnabled = s.cursorControlEnabled && !emojiSearchActive

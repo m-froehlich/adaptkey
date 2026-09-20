@@ -136,6 +136,12 @@ class SettingsMapperTest {
     }
     
     @Test
+    fun `D-474 touchLearningEnabled flag passes through unchanged, defaulting to on`() {
+        assertTrue(SettingsMapper.toAdaptSettings(RawSettings()).touchLearningEnabled)
+        assertFalse(SettingsMapper.toAdaptSettings(RawSettings(touchLearningEnabled = false)).touchLearningEnabled)
+    }
+    
+    @Test
     fun `D-361 backspaceStickyEnabled flag passes through unchanged, defaulting to on`() {
         assertTrue(SettingsMapper.toAdaptSettings(RawSettings()).backspaceStickyEnabled)
         assertFalse(SettingsMapper.toAdaptSettings(RawSettings(backspaceStickyEnabled = false)).backspaceStickyEnabled)
