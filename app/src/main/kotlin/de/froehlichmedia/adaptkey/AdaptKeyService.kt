@@ -4678,17 +4678,19 @@ class AdaptKeyService : InputMethodService() {
         val previousWordForFusion = previousWord
         if (settings.autoMergeEnabled && !suppressFusion && previousWordForFusion != null) {
             val fusion = tokenRepair.tryFuseAcrossSpace(previousWordForFusion, typed)
-            val threshold = settings.autoMergeAggressiveness.autoApplyThreshold
+            val level = settings.autoMergeAggressiveness
+            val rejection = fusion?.let { level.rejection(it) }
             if (fusion != null) {
                 diag(
                     "AdaptKeyJitter",
                     "finalizeAndCommit: fusion candidate previous=\"$previousWordForFusion\" typed=\"$typed\" " +
-                        "fused=\"${fusion.fused}\" confidence=${fusion.confidence} threshold=$threshold " +
-                        "aggressiveness=${settings.autoMergeAggressiveness} " +
-                        "a03Foreign=${dictChoice.suppressAutocorrect}"
+                        "fused=\"${fusion.fused}\" frequency=${fusion.frequency} fragments=${fusion.fragments} " +
+                        "oneLetter=${fusion.oneLetterFragment} level=$level " +
+                        (rejection?.let { "rejected: $it" } ?: "accepted") +
+                        " a03Foreign=${dictChoice.suppressAutocorrect}"
                 )
             }
-            if (fusion != null && fusion.confidence >= threshold) {
+            if (fusion != null && rejection == null) {
                 val committedLength = applyFusion(ic, previousWordForFusion, typed, fusion.fused, delimiter)
                 if (committedLength != null) {
                     armShiftForNextWordUnlessOpener(ic, delimiter)

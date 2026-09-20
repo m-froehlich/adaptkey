@@ -352,8 +352,8 @@ non-trivial changes).
   Worth checking once done: `drum`'s A-01 override ratio against keyboard-adjacent frequent words, the way
   D-473 did for `dich`/`dir`, before assuming it is protected.
 
-- **D-477 - PARTLY FIXED (§498, v1.2.58), the confidence calibration awaits the user's go (2026-09-20): the**
-  **A-06/D-391 merge did not turn `"Na hbarn"` back into `"Nachbarn"` - four independent obstacles.** User
+- **D-477 - FIXED (§498 v1.2.58 + §499 v1.2.59), awaiting device confirmation (2026-09-20): the A-06/D-391**
+  **merge did not turn `"Na hbarn"` back into `"Nachbarn"` - four independent obstacles.** User
   report: intending `Nachbarn`, the `c` tap landed as a space, giving `"Na hbarn"` (first reported as `"Nah
   hbarn"`; the logs show `Na` + space + `hbarn`). The user enabled the merge (C-25 defaults to Off) and saw
   identical behaviour on all three levels. Traced from two Diagnostics logs plus throwaway JVM probes against
@@ -375,7 +375,7 @@ non-trivial changes).
      which is how it survived; my first probe covered `TokenRepair` only and wrongly implied the rest worked.
      Now verifies `TokenRepair.fusionSpan(previous, typed)` = `"Na hbarn"`; new diagnostics report the candidate,
      confidence, threshold and any abandonment.
-  4. **The confidence metric itself is far too strict - OPEN, design agreed in outline, awaiting the go.**
+  4. **The confidence metric itself was far too strict - FIXED §499 by replacing it with the user's class model.**
      `MergeConfidence` is pure absolute frequency (`ln(freq)/ln(300)`, nouns `/ln(8000)`), ignoring which of the
      two tokens is unrecognised. `nachbarn` (freq 418, noun) scores 0.672 - only Aggressive (0.55) passes - and
      D-391's own example `"Ar eitstag"` scores 0.322, clearing no level. **Correction of an earlier claim:** the
@@ -397,15 +397,32 @@ non-trivial changes).
      (`der e`, `in a`) and frequency alone does not separate them by type - the usage-weighted view (where
      `auch` dominates) does. The connector set does not matter much: the whole bottom row `y x c v b n m` (what
      the code uses) vs `c v b n m` (what T-05 names) differs by ~3 % of positives and 0-3 coincidences; `c v b`
-     alone would drop 60 % of the positives (`n`/`m` are common letters). Proposed level table (not applied):
-     **Niedrig** - both tokens unknown, frequency floor high; **Mittel** - at least one unknown, lower floor,
-     a higher floor for one-letter fragments; **Aggressiv** - additionally both known, only when the fused word
-     is at least as frequent as the rarer part and the pair is unattested, lowest floor. Frequency then acts as
-     a degressive floor per level rather than a blended score. Cost is not a concern: 5-7 point lookups (plus
-     one bigram lookup for both-known) per commit.
-  Still to do after the go: replace `MergeConfidence`/`AutoMergeAggressiveness` with the class gate + per-level
-  frequency floors above (`tryFuseAcrossSpace` must also report which fragments are unrecognised, and accept an
-  unrecognised *left* token), extend `MergeConfidenceTest`/`TokenRepairTest` with the real-data cases, spec §44.
+     alone would drop 60 % of the positives (`n`/`m` are common letters).
+     **Implemented (§499):** `MergeConfidence` and the numeric thresholds are gone. `tryFuseAcrossSpace()` returns
+     the raw evidence (`FusionCandidate`: fused word and frequency, `FusionClass` BOTH_UNKNOWN / ONE_UNKNOWN /
+     BOTH_KNOWN, one-letter flag, the parts' frequencies, attested-pair flag) and accepts an unrecognised
+     *left* token too; `AutoMergeAggressiveness.rejection()` decides per level - **Cautious** both unknown,
+     fused freq >= 30 (1,000 for a one-letter token); **Medium** at least one unknown, same floors; **Aggressive**
+     also both known, floors 10 / 300, and then only if the fused word is >= the rarer part's frequency and the
+     pair is not an attested bigram. Frequency is a degressive per-level floor (a junk-row guard), no longer
+     a score. The floors were tuned from the measurements above, adding one more set (unknown token x single
+     letter) to bound Cautious. Measured by the new `FusionEvaluationTest` (real dictionary; recall weighted by
+     usage): **recall Cautious 18.3 % / Medium 64.5 % / Aggressive 86.3 %**; **no level fused any of 38,388 real
+     attested phrases or 90,000 random common pairs**; coincidences over 582,000 unknown-token pairs: Cautious
+     0, Medium 5, Aggressive 8; over 46,400 single-letter pairs: 1 / 19 / 46. `Na hbarn` -> `Nachbarn` (one
+     unknown fragment) is accepted at Medium and Aggressive, refused at Cautious by design; `au h` -> `auch` at
+     Medium. Not adopted: a length-of-fragment bonus (arbitrary - the dropped connector can sit anywhere) and
+     the spurious space's tap position (see D-479).
+
+- **D-479 - OPEN, idea only, deliberately not started (2026-09-20): use the spurious space's own tap position**
+  **as soft evidence for the fusion.** In the user's logs the space tap sits at x = 434-436 while the `c` key's
+  centre is ~427 (key pitch ~106 px), i.e. within a tenth of a key - a physical signal for *which* connector
+  was meant that the lexical model does not use. It would need new state (the tap's x stored with the
+  previous word) and the key geometry at commit time, and could only ever be a soft factor, never a gate: the
+  user's own tests tap arbitrary places on the space bar on purpose. The user's own assessment (2026-09-20):
+  probably a source of confusion for traceability ("eher eine Störgröße in der Nachvollziehbarkeit") and likely
+  unnecessary if the class model (§499) works well - revisit only if device use shows the lexical evidence
+  is not enough, e.g. ambiguous connectors.
 
 - **D-478 - OPEN, decision + spec cleanup (2026-09-20): UI-string localisation is still written as "DE/EN/EL"**
   **although ~31 languages exist now.** Source of the habit: spec N-01 ("localised into English and Greek in
@@ -1486,6 +1503,30 @@ non-trivial changes).
   volume) is completely unaffected by this and ran exactly as planned. 446,015 lemma-column rows changed
   across the 31 packs; every pack passes `lemma_check.py` and `quality_gate.py`.
 
+- **§499 (v1.2.59): D-477 - the cross-word fusion's metric replaced by the user's "which of the two tokens are**
+  **words" model, tuned and pinned against the real dictionary.** Request (2026-09-20): drop the fused word's
+  frequency as the deciding score - "die Länge des zweiten Teils ... erscheint mir willkürlich" (rightly: it
+  would have scored `au h` -> `auch` worst; that C1-C3 recommendation was withdrawn) - and instead: check the
+  merge when at least one of the last two tokens is not a word, raise confidence when both are unknown, make
+  that a hard requirement at "Niedrig" and merely a boost at "Mittel", let "Aggressiv" also consider two known
+  words, and let frequency contribute degressively with the level. Design refined by measurement (all in the
+  D-477 entry): usage-weighted class shares, coincidence rates per class, the danger of two-real-word fusions
+  (0.1-0.2 % of real phrases such as `der er`), the extra risk of single-letter fragments (~1 %), and the
+  finding that unweighted-by-usage recall had exaggerated how badly the old metric did (53 / 67 / 83 % once
+  weighted, not 5 / 10 / 26 %). Code: new `FusionClass` and evidence-carrying `FusionCandidate`;
+  `TokenRepair.tryFuseAcrossSpace` no longer refuses a real right token, also accepts an unrecognised left one,
+  and requires letters-only tokens; `AutoMergeAggressiveness` now holds `allowedClasses` + per-level frequency
+  floors and exposes `rejection()`/`accepts()` (rewritten, thresholds removed); `MergeConfidence` and its test
+  deleted. The service call site logs the class, frequency, level and the rejection reason per candidate.
+  Setting summary rewritten in EN/DE/EL to explain the three levels. New permanent `FusionEvaluationTest`
+  (real `dictionaries/de`, skipped when not reachable): pins recall growth per level, "no level fuses a real
+  attested phrase or random common pair", and coincidence-rate ceilings. Spec §44 rewritten. Position of the
+  spurious space's tap recorded as backlog D-479 rather than built (user's call). Still first-run on a device:
+  `applyFusion`'s glue (§498) plus the new candidate classes. +14 net unit tests (`AutoMergeAggressivenessTest`
+  rewritten, seven new `TokenRepairTest` cases, six evaluation tests, `MergeConfidenceTest` removed) - 1677
+  total. `:app:assembleRelease`/`:app:testDebugUnitTest` green, APK confirmed via `output-metadata.json`.
+  `versionCode` 554 -> 555, `versionName` `"1.2.58"` -> `"1.2.59"`. Not yet device-confirmed.
+
 - **§498 (v1.2.58): D-477 - two defects that made the cross-word fusion (D-391) dead code on a real device,**
   **found by chasing "Na hbarn" -> "Nachbarn" through two user-supplied Diagnostics logs.** User request
   (2026-09-20): fix obstacles 1 and 3 of the D-477 analysis together, "frequency may simply not be a good
@@ -2376,46 +2417,14 @@ non-trivial changes).
   `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 530 -> 531, `versionName` `"1.2.34"`
   -> `"1.2.35"`.
 
-- **§474 (v1.2.34): D-401-followup - vertical tuning after the first device round on the screen-space model.**
-  User verdict on §473: "already quite good, not perfect - but let's leave it rather than doing 20 more
-  rounds." One concrete complaint: 0.5 is **"exactly right" horizontally**, but vertically the caret still
-  slips into the neighbouring line too easily. The question asked was whether that needs a threshold or just
-  a lower vertical gain. **It needs both, and they belong in different places** - which is what makes this
-  worth writing down rather than just retuning a number.
-
-  **Why a gain alone is not enough.** The unwanted vertical movement is not noise, it is a systematic arc: a
-  thumb pivots rather than sliding straight, and §472's log shows vertical travel running at a fairly
-  consistent ~20% of horizontal travel throughout a sideways drag (dx 459 against dy -95). Since that drift
-  is *proportional* to the horizontal distance, no fixed threshold absorbs it on a long swipe - only
-  weighting the axis down does. Hence `SCREEN_SPACE_GAIN_VERTICAL` = 0.35 next to the horizontal 0.5, which
-  stays at the value the user confirmed.
-
-  **Why a gain alone is still not enough.** With plain rounding, the boundary to the next row sits half a
-  row away from wherever the caret is, so a drag only has to produce `rowHeight / (2 x gain)` of travel to
-  cross it - about 5 mm at 0.5, which is nothing. So vertical travel is now quantised into *whole rows* at
-  the input (`CursorControlGesture.targetPointFor` truncates towards zero): a line change costs a full row
-  of scaled travel measured from the drag's own origin, and the resulting target always lands on a row's
-  *centre*, so the caret is never balanced on a boundary where a pixel of drift tips it either way. That is
-  the whole deadband - no threshold constant was added. Together the two put a line change at roughly one
-  and a half row heights of vertical finger travel, beyond the arc of even a full-width sideways swipe.
-
-  **A real bug the tests caught, worth recording because the first attempt was wrong.** Truncation was
-  initially put in the *servo* instead, replacing its `roundToInt`. `VisualCaretServoTest` failed
-  immediately, and the failure was genuine rather than a fixture artefact: an early proposal in a loop that
-  has learned nothing yet can land a row or two out, and a truncating servo then refuses to come back
-  (0.8 rows of error truncates to zero), stranding the caret on the wrong row permanently. The distinction
-  the fix rests on: the deadband belongs where *intent* is read (a drag's own travel), while the end that
-  *corrects* must stay free to go to whichever row the target names. `VisualCaretServo` therefore keeps
-  rounding, and gained a regression test for exactly that overshoot-recovery case.
-
-  1627 unit tests (1620 -> 1627; `VisualCaretServoTest` 18 -> 19, `CursorControlGestureTest` 13 -> 19).
-  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 529 -> 530, `versionName` `"1.2.33"`
-  -> `"1.2.34"`. Both gains and the quantisation are single, independent constants - the expected next
-  adjustment is one number, not another rearchitecture.
 
 
 
-## Older Rounds (§1-§473, v0.7.6 through v1.2.33) - Pruned From This File
+## Older Rounds (§1-§474, v0.7.6 through v1.2.34) - Pruned From This File
+
+D-477 (§499): thirty-seventh pruning pass - §474 removed, cutoff moved from §474 to §475, keeping the working
+set at 25 rounds (§475-§499). Backfilled into History.md first with the same token-multiset check (delta 0),
+nothing summarised or dropped.
 
 D-477 (§498): thirty-sixth pruning pass - §473 removed, cutoff moved from §473 to §474, keeping the working
 set at 25 rounds (§474-§498). Backfilled into History.md first with the same token-multiset check as the

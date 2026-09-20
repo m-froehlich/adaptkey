@@ -3067,27 +3067,44 @@ it - by the time enough evidence exists, chip-and-tap is already too late, unlik
 (C-21), which still has a genuinely composing token to offer a chip for. The mechanism is therefore always
 either silent or nothing at all, never a suggestion.
 
-**Trigger and candidate search.** At the ordinary commit of a token that is not itself already a valid word
-(mirrors A-05/A-06's own gate), `TokenRepair.tryFuseAcrossSpace()` tries every letter physically sitting in
-the row directly above the space bar *on the active layout* (D-397's `RowGeometry`, not a fixed character
-list - the same shared row model D-397 built for the touch-drift cap) as a connector between the
-*immediately preceding already-committed word* and the current token, testing whether the fused result
+**Trigger and candidate search.** At the ordinary commit of a token, `TokenRepair.tryFuseAcrossSpace()` tries
+every letter physically sitting in the bottom letter row *on the active layout* (D-397's `RowGeometry`, not a
+fixed character list - the same shared row model D-397 built for the touch-drift cap) as a connector between
+the *immediately preceding already-committed word* and the current token, testing whether the fused result
 resolves to a real dictionary or learned word (through the same diacritic-aware lookup A-05's own halves
-use). Deliberately broader than A-06 in every respect: no raw-tap evidence is required at all (any ordinary
-space qualifies), every connector letter is tried rather than one inferred one, and the winning candidate
-replaces *both* original words with one fused result rather than only ever correcting the right-hand one.
-The preceding word being itself a real word (like `"Ar"`) is deliberately **not** a veto - see the next
-paragraph for why a confidence measure, not a hard precondition, is the right gate.
+use); the most frequent match wins. Both tokens must consist of letters only. Deliberately broader than A-06
+in every respect: no raw-tap evidence is required at all (any ordinary space qualifies), every connector
+letter is tried rather than one inferred one, and the winning candidate replaces *both* original words with
+one fused result rather than only ever correcting the right-hand one.
 
-**Confidence, not a "must not already resolve" precondition.** A rare-but-real preceding word must still be
-overridable by a dramatically more common fused reading, the same "confidence beats a bare existence check"
-philosophy A-01's own known-word-override ratio already established. `MergeConfidence` (mirroring
-`CorrectionConfidence`'s own noun/non-noun reference-frequency split, D-227's finding that a rare noun is
-disproportionately a corpus artefact, reused here for the identical reason) scores the fused candidate's own
-frequency against a considered reference point - deliberately higher than `CorrectionConfidence`'s own
-equivalent, since a wrong fusion rewrites already-committed, finished text, a materially higher-stakes
-mistake than an ordinary same-token autocorrect substitution, and there is no edit-cost signal here to lean
-on alongside frequency the way an ordinary correction has.
+**The evidence is which of the two tokens are real words, not the fused word's frequency (D-477).** The
+first design (D-391) scored the fused candidate by its absolute frequency alone. Measured on the real German
+dictionary that signal barely discriminates - the fused words of realistic errors have a median frequency of
+about 22 whichever class they fall in, and `Nachbarn` (418) or `Arbeitstag` scored below the thresholds - while
+a different fact does: how many of the two tokens are recognised words (`FusionClass`). Two unrecognised
+fragments that jointly spell a word are essentially never a coincidence (2 in 6.25 M candidate pairs); exactly
+one unrecognised fragment coincides about once in 100,000; two real words coincide in 0.1-0.2 % of *real*
+phrases (`der er`, `den er`, `sei er` -> `seiner`). `tryFuseAcrossSpace()` therefore returns the raw
+evidence (fused word and frequency, the class, whether either token is a single letter, the two tokens' own
+frequencies, whether the pair is an attested bigram) and `AutoMergeAggressiveness.rejection()` decides per
+level:
+
+- **Cautious** - both tokens unrecognised; fused frequency at least 30 (1,000 for a single-letter token).
+  About 18 % of realistic errors recovered (weighted by how often each word is typed), no false merge in any
+  measured set.
+- **Medium** - at least one token unrecognised; the same floors. About 64 % recovered, roughly one coincidence
+  per 100,000 candidate pairs.
+- **Aggressive** - additionally two real words, but only when the fused word is at least as frequent as the
+  *rarer* of the two and the pair is not already an attested bigram (this refuses `der er`); floors 10 (300
+  for a single letter). About 86 % recovered, a few more coincidences accepted.
+
+The floors are a junk-row guard (they exclude generated low-frequency rows such as `derbster`), not a score -
+frequency is deliberately a *degressive* contribution: strongest at Cautious, weakest at Aggressive. A
+single-letter token (`"au h"` -> `"auch"`) coincides with some word about a hundred times as often as a longer
+one and is 32 % of the real error weight, so it carries its own higher floor per level; a very frequent fused
+word such as `auch` clears it easily. All figures come from `FusionEvaluationTest`, which measures recall
+against the real dictionary and pins the levels' shape (no level fuses a real attested phrase or a random pair
+of common words).
 
 **A dedicated setting (C-25), not C-21 or C-22.** Discussed directly and agreed: this is *not* folded into
 A-05's own C-21 (Automatic/Chip only/Off - the "Chip only" tier makes no sense here, see above) nor into
@@ -3136,9 +3153,8 @@ compared the text before the caret against `"$previousWord "` while the current 
 so the last `previousWord.length + 1` characters were the *tail of the composing token* and the check could
 never match, silently abandoning every fusion. It now verifies the whole span
 (`TokenRepair.fusionSpan(previousWord, typed)` = `"$previousWord $typed"`). A `finalizeAndCommit: fusion
-candidate ...` diagnostic line (previous word, token, fused word, confidence, threshold, level, A-03
-verdict) and an `applyFusion: abandoned ...` line make the outcome visible in the in-app log. The
-[MergeConfidence] calibration itself is a separate open item - see `AdaptKey-Progress.md`'s D-477.
+candidate ...` diagnostic line (previous word, token, fused word, frequency, class, level, verdict and
+reason, A-03 verdict) and an `applyFusion: abandoned ...` line make the outcome visible in the in-app log.
 
 ---
 

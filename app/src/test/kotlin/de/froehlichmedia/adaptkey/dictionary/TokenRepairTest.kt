@@ -519,7 +519,7 @@ class TokenRepairTest {
     }
     
     @Test
-    fun `D-391 the reported case - neither fragment alone makes sense, the fused word does`() {
+    fun `D-391 the reported case - the fused word is found and the evidence is reported`() {
         // "Ar" is deliberately a real (if obscure) dictionary word of its own - tryFuseAcrossSpace must not
         // veto on that alone (see its own KDoc); "eitstag" resolves to nothing on its own.
         store.putWord(WordEntry("ar", frequency = 20L))
@@ -527,8 +527,75 @@ class TokenRepairTest {
         
         val result = repair.tryFuseAcrossSpace("Ar", "eitstag")
         
-        assertEquals("arbeitstag", result?.fused)
-        assertEquals(1.0, result?.confidence ?: 0.0, 0.0001)
+        assertEquals(
+            FusionCandidate("arbeitstag", 1_000L, FusionClass.ONE_UNKNOWN, oneLetterFragment = false, leftFrequency = 20L, rightFrequency = 0L, pairAttested = false),
+            result
+        )
+    }
+    
+    @Test
+    fun `D-477 two unknown fragments are classified as such`() {
+        store.putWord(WordEntry("nachbarn", frequency = 418L, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
+        
+        val result = repair.tryFuseAcrossSpace("Na", "hbarn")
+        
+        assertEquals("nachbarn", result?.fused)
+        assertEquals(FusionClass.BOTH_UNKNOWN, result?.fragments)
+        assertEquals(418L, result?.frequency)
+    }
+    
+    @Test
+    fun `D-477 an unrecognised left token with a real right token is still a candidate`() {
+        // "ki" + "n" + "der": only the right token is a real word.
+        store.putWord(WordEntry("der", frequency = 900_000L))
+        store.putWord(WordEntry("kinder", frequency = 5_000L))
+        
+        val result = repair.tryFuseAcrossSpace("ki", "der")
+        
+        assertEquals("kinder", result?.fused)
+        assertEquals(FusionClass.ONE_UNKNOWN, result?.fragments)
+        assertEquals(0L, result?.leftFrequency)
+        assertEquals(900_000L, result?.rightFrequency)
+    }
+    
+    @Test
+    fun `D-477 two real words are reported as both-known with their own frequencies, not vetoed`() {
+        store.putWord(WordEntry("abernbald", frequency = 1_000L)) // "aber" and "bald" are known (setUp), both frequency 10; 'n' is a connector
+        
+        val result = repair.tryFuseAcrossSpace("aber", "bald")
+        
+        assertEquals(FusionClass.BOTH_KNOWN, result?.fragments)
+        assertEquals(10L, result?.leftFrequency)
+        assertEquals(10L, result?.rightFrequency)
+        assertEquals(false, result?.pairAttested)
+    }
+    
+    @Test
+    fun `D-477 an attested word pair is flagged so the aggressive level can refuse it`() {
+        store.putWord(WordEntry("abernbald", frequency = 1_000L))
+        store.putBigram("aber", "bald", 500L)
+        
+        assertEquals(true, repair.tryFuseAcrossSpace("aber", "bald")?.pairAttested)
+    }
+    
+    @Test
+    fun `D-477 a single-letter fragment is flagged`() {
+        store.putWord(WordEntry("au", frequency = 300L))
+        store.putWord(WordEntry("auch", frequency = 900_000L))
+        
+        val result = repair.tryFuseAcrossSpace("au", "h")
+        
+        assertEquals("auch", result?.fused)
+        assertEquals(true, result?.oneLetterFragment)
+    }
+    
+    @Test
+    fun `D-477 tokens containing anything but letters are never fused`() {
+        store.putWord(WordEntry("ab2c", frequency = 1_000L))
+        store.putWord(WordEntry("abcd", frequency = 1_000L))
+        
+        assertNull(repair.tryFuseAcrossSpace("ab2", "d"))
+        assertNull(repair.tryFuseAcrossSpace("a", "3d"))
     }
     
     @Test
@@ -536,14 +603,6 @@ class TokenRepairTest {
         // The document at fusion time reads "... Na hbarn" with hbarn composing - the span checked before
         // deleting must include the composing token, not merely "previous + space".
         assertEquals("Na hbarn", TokenRepair.fusionSpan("Na", "hbarn"))
-    }
-    
-    @Test
-    fun `D-391 no fusion when the current token is already a known word`() {
-        store.putWord(WordEntry("bald", frequency = 10L))
-        store.putWord(WordEntry("aberbald", frequency = 1_000L)) // exists, but must never be reached
-        
-        assertNull(repair.tryFuseAcrossSpace("aber", "bald"))
     }
     
     @Test
@@ -560,7 +619,7 @@ class TokenRepairTest {
     }
     
     @Test
-    fun `D-391 the highest-confidence candidate wins among several matching connectors`() {
+    fun `D-391 the most frequent candidate wins among several matching connectors`() {
         // Both "arxeitstag" (via 'x') and "arbeitstag" (via 'b') are QWERTZ space-row connectors; the far
         // more frequent one must win regardless of iteration order.
         store.putWord(WordEntry("arxeitstag", frequency = 5L))

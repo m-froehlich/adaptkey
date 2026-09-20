@@ -55,14 +55,38 @@ data class SplitResult(
 }
 
 /**
- * D-391: the winning candidate from [TokenRepair.tryFuseAcrossSpace] - two already-committed words replaced
- * by one.
+ * D-477: which of the two tokens around a suspected spurious space are recognised words - the strongest
+ * single signal for a fusion. Two nonsense fragments that jointly spell a word are almost never a
+ * coincidence (measured on the real German dictionary: 2 coincidences in 6.25 M pairs); exactly one
+ * unrecognised fragment is still very selective (~1 in 100,000); two real words are the dangerous case
+ * (0.1-0.2 % of real two-word phrases such as `der er` also spell a word once a letter is inserted).
+ */
+enum class FusionClass { BOTH_UNKNOWN, ONE_UNKNOWN, BOTH_KNOWN }
+
+/**
+ * D-391 / D-477: the winning candidate from [TokenRepair.tryFuseAcrossSpace] - two already-committed words
+ * replaced by one. Carries the raw evidence; [AutoMergeAggressiveness.rejection] decides, per level.
  * 
  * @property fused the reconstructed word, lower-case (the caller applies §6 capitalisation)
- * @property confidence [MergeConfidence]'s own `[0, 1]` score for this candidate, compared against
- *           [AutoMergeAggressiveness]'s threshold by the caller
+ * @property frequency the fused word's own dictionary/learned frequency
+ * @property fragments which of the two original tokens are recognised words
+ * @property oneLetterFragment whether either original token is a single letter (`"au h"` -> `"auch"`) - a
+ *           single-letter token coincides with some dictionary word far more often (~1 %) than a longer one
+ * @property leftFrequency the left token's own frequency, 0 when it is not a dictionary word (or only
+ *           recognised through a plausible-inflection rule)
+ * @property rightFrequency the right token's own frequency, 0 under the same conditions
+ * @property pairAttested whether the two tokens already occur next to each other as a known bigram;
+ *           only computed for [FusionClass.BOTH_KNOWN], `false` otherwise
  */
-data class FusionCandidate(val fused: String, val confidence: Double)
+data class FusionCandidate(
+    val fused: String,
+    val frequency: Long,
+    val fragments: FusionClass,
+    val oneLetterFragment: Boolean,
+    val leftFrequency: Long,
+    val rightFrequency: Long,
+    val pairAttested: Boolean
+)
 
 /**
  * Retroactive token repair for the space/letter confusion bands (T-05): word split (A-05) and word merge
@@ -260,9 +284,14 @@ class TokenRepair(
      * real, if obscure, dictionary word - an area unit) nor `"eitstag"` (nonsense) makes sense as the
      * intended text on its own, but inserting `"b"` between them spells a common, everyday compound.
      * [previousWord] being itself a real word is deliberately *not* a veto here (unlike [tryMerge]'s own
-     * `store.isKnownWord(t)` gate on the right-hand token) - see [MergeConfidence]'s own KDoc for why
-     * frequency-based confidence, not a hard "must not already resolve" precondition, is the right gate: a
-     * rare real word must still be overridable by a dramatically more common fused reading.
+     * `store.isKnownWord(t)` gate on the right-hand token).
+     * 
+     * D-477: this function no longer scores anything or refuses a token for being a real word. It reports the
+     * raw evidence in a [FusionCandidate] - above all [FusionCandidate.fragments], which of the two tokens
+     * are recognised - and [AutoMergeAggressiveness.rejection] decides per level: only two unrecognised
+     * fragments at Cautious, at least one at Medium, and two real words only at Aggressive under an extra
+     * safeguard. Measured on the real German dictionary this is what actually separates a swallowed
+     * connector letter from a coincidence; the fused word's absolute frequency barely does.
      * 
      * Deliberately does not itself decide whether [previousWord] should be un-learned when it does not
      * independently resolve as a real word - the caller already has its own reach-back mechanism for a
@@ -271,26 +300,40 @@ class TokenRepair(
      * 
      * @param previousWord the word committed immediately before [currentToken] (any case); never merged
      *        across anything but a plain space, mirroring [tryMerge]'s own scope
-     * @param currentToken the just-committed token (any case); only attempted when this is not itself
-     *        already a known word (or a plausible inflection of one) - mirrors [trySplit]'s own gate
-     * @return the best-scoring fusion candidate and its [MergeConfidence] score, or null when either word is
-     *         empty, [currentToken] is already fine on its own, or no connector letter yields a real word
+     * @param currentToken the just-committed token (any case)
+     * @return the most frequent fusion candidate with its evidence, or null when either token is empty or
+     *         contains anything but letters, or no connector letter yields a real word
      */
     fun tryFuseAcrossSpace(previousWord: String, currentToken: String): FusionCandidate? {
         val left = previousWord.lowercase()
         val right = currentToken.lowercase()
-        if (left.isEmpty() || right.isEmpty() || isAlreadyRecognised(right)) {
+        if (left.isEmpty() || right.isEmpty() || !left.all { it.isLetter() } || !right.all { it.isLetter() }) {
             return null
         }
-        var best: FusionCandidate? = null
+        var best: WordEntry? = null
         for (connector in spaceRowLetters) {
             val entry = resolveWord(left + connector + right) ?: continue
-            val confidence = MergeConfidence.forFusedCandidate(entry.frequency, isNoun(entry))
-            if (best == null || confidence > best.confidence) {
-                best = FusionCandidate(entry.word.lowercase(), confidence)
+            if (best == null || entry.frequency > best.frequency) {
+                best = entry
             }
         }
-        return best
+        val fused = best ?: return null
+        val leftKnown = isAlreadyRecognised(left)
+        val rightKnown = isAlreadyRecognised(right)
+        val fragments = when {
+            leftKnown && rightKnown -> FusionClass.BOTH_KNOWN
+            !leftKnown && !rightKnown -> FusionClass.BOTH_UNKNOWN
+            else -> FusionClass.ONE_UNKNOWN
+        }
+        return FusionCandidate(
+            fused = fused.word.lowercase(),
+            frequency = fused.frequency,
+            fragments = fragments,
+            oneLetterFragment = left.length == 1 || right.length == 1,
+            leftFrequency = if (leftKnown) store.frequencyOf(left) else 0L,
+            rightFrequency = if (rightKnown) store.frequencyOf(right) else 0L,
+            pairAttested = fragments == FusionClass.BOTH_KNOWN && store.bigramFrequency(left, right) > 0L
+        )
     }
     
     /**
