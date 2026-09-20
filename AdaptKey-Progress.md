@@ -411,7 +411,10 @@ non-trivial changes).
      attested phrases or 90,000 random common pairs**; coincidences over 582,000 unknown-token pairs: Cautious
      0, Medium 5, Aggressive 8; over 46,400 single-letter pairs: 1 / 19 / 46. `Na hbarn` -> `Nachbarn` (one
      unknown fragment) is accepted at Medium and Aggressive, refused at Cautious by design; `au h` -> `auch` at
-     Medium. Not adopted: a length-of-fragment bonus (arbitrary - the dropped connector can sit anywhere) and
+     Medium. **Known, accepted looseness (user's call, 2026-09-20):** Cautious misses `au h` -> `auch` because
+     `au` (357) is a real word; the fused word is ~380x more frequent than that part. A possible later
+     refinement - Cautious also allowing one known part when the fused word is >= ~100x its frequency - was
+     not measured or built; the user judged the gap too rarely noticeable to matter. Not adopted: a length-of-fragment bonus (arbitrary - the dropped connector can sit anywhere) and
      the spurious space's tap position (see D-479).
 
 - **D-479 - OPEN, idea only, deliberately not started (2026-09-20): use the spurious space's own tap position**
