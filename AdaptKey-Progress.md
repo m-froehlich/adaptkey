@@ -345,26 +345,52 @@ non-trivial changes).
   no lower-case `drum` row at all, although German has a real lower-case adverb `drum` (= "darum": "sei's
   drum", "Drum und Dran", "drum herum"). Recommendation (the user's own `OTHER` idea, refined): rather than
   only re-tagging the capitalised row, replace it with a lower-case `drum` row tagged `OTHER`, the same shape
-  as the existing `drin 16` / `drauf 12` / `drüber 15` (so frequency 33 stays in a plausible range); `Drums`
-  needs a decision alongside (drop as English-only, or re-point its lemma - `lemma_check.py` flags a dangling
-  one). Same procedure as §493's small data corrections: rebuild and republish `adaptkey-lang-de.zip`, which
+  as the existing `drin 16` / `drauf 12` / `drüber 15` (so frequency 33 stays in a plausible range). **`Drums`
+  is dropped entirely (user's call, 2026-09-20)** - it is only the English plural of the word whose capitalised
+  singular this fix removes, so it has no German reading left to keep and needs no lemma re-pointing. Same procedure as §493's small data corrections: rebuild and republish `adaptkey-lang-de.zip`, which
   is served from `origin/main`, so the user's push is what makes it reachable (D-473-followup's own lesson).
   Worth checking once done: `drum`'s A-01 override ratio against keyboard-adjacent frequent words, the way
   D-473 did for `dich`/`dir`, before assuming it is protected.
 
-- **D-477 - OPEN, bug, not root-caused yet (2026-09-20): A-06 does not merge `"Nah hbarn"` back into**
-  **`"Nachbarn"`.** User report: intending `Nachbarn`, the `c` tap landed on the space bar and produced
-  `"Nah hbarn"`; the connector-letter merge (A-06 / D-391: try each space-row letter `c v b n m` between the
-  two fragments) should find `c` and produce the dictionary word `Nachbarn` (`Nachbarn 418 NOUN` exists; `nah`
-  is known too). The user's own framing: `Nah` might plausibly pass as a word, but `hbarn` cannot - exactly
-  the case the merge exists for. Not traced yet. Live-verified so far only that D-391's generic merge sits
-  behind its own setting `d391_auto_merge_aggressiveness` (C-25), whose default is **Off** - the first thing
-  to check is whether the user has it on. If so, the open questions in order: was the space tap flagged
-  `LETTER_AMBIGUOUS` (T-05 - `rawTap ... ambiguity=` in the Diagnostics log), which decides whether the older
-  tap-evidence A-06 path or D-391's generic path is even eligible; whether `MergeConfidence` clears the chosen
-  level for a *known-left + unknown-right* pair; and whether `hbarn` being unknown while `Nah` is known
-  changes which path runs. Needs a real device log (the D-243 rawTap lines plus the A-06 diagnostics) rather
-  than a guess, per this project's convention.
+- **D-477 - OPEN, bug, ROOT-CAUSED 2026-09-20 (fix awaiting the user's go): the A-06/D-391 merge does not**
+  **turn `"Na hbarn"` back into `"Nachbarn"` - three independent obstacles, evaluated in this order.** User
+  report: intending `Nachbarn`, the `c` tap landed as a space, giving `"Na hbarn"` (the report first said
+  `"Nah hbarn"`; the log shows `Na` + space + `hbarn`). The user enabled the merge (C-25 defaults to Off) and
+  saw identical behaviour on all three levels, then captured a Diagnostics log at Aggressive. Traced from that
+  log plus a throwaway JVM probe against the real bundled `language_profiles.tsv` and the real
+  `dictionaries/de/dict.tsv` (probe deleted afterwards):
+  1. **The A-03 foreign-language guard switches the fusion off before any confidence is computed - PROVEN.**
+     The log's second `finalizeAndCommit` line reads `dictChoice.suppressAutocorrect=true
+     knownInOtherLanguage=false` for `typed="hbarn"` with `tokenContextBefore="Na "`. `LanguageClassifier
+     .isForeign("Na hbarn")` is **true** on the real profiles (best match Tagalog, confidence 0.15, German
+     >=15% worse) - a two-word context is barely above `minWords = 2` and the typo token itself is what tips
+     it. `finalizeAndCommit` gates the fusion on `!suppressAutocorrect` (AdaptKeyService, the `tryFuseAcrossSpace`
+     call site), so nothing below it ever ran - which is exactly why the level made no difference. With a longer
+     context the same typo is not flagged (`"Das sind meine Na hbarn"` -> German, not foreign), so it bites
+     mostly on the first two words of a note/field. The T-05 tap-evidence A-06 path was never eligible either:
+     the space tap was `ambiguity=NONE` (`y=705.6`, well inside the space bar, not in the ambiguous edge band).
+  2. **`hbarn` is very likely already a *learned* word - inferred, not yet confirmed.** `tryFuseAcrossSpace`
+     returns null whenever the right-hand token is already recognised (`isAlreadyRecognised`). On the real
+     German dictionary `hbarn` is unknown (fusion works), but the same probe with `hbarn` merely present in the
+     store returns null. The log shows `hbarn` offered as a *next-word prediction* right after committing
+     `"Na "` (`final=[ja, dem, hbarn, ...]`), i.e. a learned bigram - consistent with the user having typed this
+     exact test several times (LEARN_THRESHOLD = 2 promotes it). Working as designed, but it silently
+     contaminates any repeat test: check Settings -> Learned Words for `hbarn` and forget it, and use a fresh
+     nonsense typo per test.
+  3. **Even with 1 and 2 out of the way, only Aggressive would merge it.** On the real data
+     `tryFuseAcrossSpace("Na", "hbarn")` finds `nachbarn` with `MergeConfidence` **0.672** (`Nachbarn 418
+     NOUN`; `forFusedCandidate` = ln(freq) / ln(8000) for a noun) against thresholds Cautious 0.90 / Medium
+     0.75 / Aggressive 0.55 - Medium needs a noun frequency >= ~848, Cautious >= ~3,268. D-391's own design
+     example `"Ar eitstag"` -> `"Arbeitstag"` scores only **0.322**, i.e. clears no level at all. The score is
+     pure absolute frequency and ignores that the right fragment is guaranteed *unrecognised* (a strong signal
+     on its own) - a calibration question, not a bug, in a mechanism the KDoc itself calls not yet device-tuned.
+  Candidate fixes, none applied: for (1) exempt the fusion from the A-03 component of `suppressAutocorrect`
+  (keep `knownInOtherLanguage`, the autocorrect toggle and the revert guard) - the fused result is validated
+  against the *active* dictionary, so "this text is foreign" is exactly the hypothesis it already contradicts;
+  the broader weakness (a typo token drags a two-word context to "foreign" and mutes ordinary autocorrect for
+  it too) is a separate, larger A-03 question. For (3) recalibrate `MergeConfidence` and/or credit the
+  unrecognised right fragment, with the numbers above as the regression corpus. Needs the user's decision on
+  both before any code.
 
 - **D-478 - OPEN, decision + spec cleanup (2026-09-20): UI-string localisation is still written as "DE/EN/EL"**
   **although ~31 languages exist now.** Source of the habit: spec N-01 ("localised into English and Greek in
