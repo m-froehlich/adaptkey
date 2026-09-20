@@ -375,26 +375,37 @@ non-trivial changes).
      which is how it survived; my first probe covered `TokenRepair` only and wrongly implied the rest worked.
      Now verifies `TokenRepair.fusionSpan(previous, typed)` = `"Na hbarn"`; new diagnostics report the candidate,
      confidence, threshold and any abandonment.
-  4. **The confidence metric itself is far too strict - OPEN, needs the user's go.** `MergeConfidence` is pure
-     absolute frequency (`ln(freq)/ln(300)`, nouns `/ln(8000)`), ignoring that the right fragment is guaranteed
-     unrecognised. `nachbarn` (freq 418, noun) scores 0.672 - only Aggressive (0.55) passes, Medium (0.75) and
-     Cautious (0.90) reject it - and D-391's own example `"Ar eitstag"` scores 0.322, clearing no level.
-     Measured on the real data: of **61,186** simulated spurious-space errors in everyday words (freq >= 10, length
-     >= 6, right fragment unrecognised) the current metric lets **4.8 % / 10.2 % / 26.1 %** through at
-     Cautious / Medium / Aggressive. The other side: 300 very common German words x 15,000 unknown foreign tokens
-     (4.5 M pairs) produce only **36** coincidental fusions at all (0.0008 %), and **all 36 have a right fragment
-     of 3-6 letters, 27 of them 3-4** (`der ster`->`derbster`, `im une`->`immune`, `nach arn`->`nachbarn`); a
-     separate 8,155-pair keyboard-typo set produced none. So frequency barely discriminates, while the length of
-     the unrecognised right fragment does (a longer residue is far less likely to be a chance dictionary tail).
-     Candidates measured (true merges cleared / false merges of 4.5 M, at Cautious/Medium/Aggressive): current
-     4.8/10.2/26.1 % and 2/2/5; C1 `0.45 + 0.10*(rightLen-2)` 59.3/84.1/96.4 % and 0/9/36; **C2 the same times
-     `ln(freq)/ln(30)` as a soft floor 28.0/57.5/89.0 % and 0/3/13 (recommended)**; C3 = C2 plus 0.10 for fused
-     length >= 8, 34.3/65.2/94.1 % and 1/3/16. A length-only score with a frequency floor of 10 admitted junk
-     dictionary rows (`derbster`, freq 10), which is why frequency stays as a soft factor. `nachbarn` would score
-     0.75 (Medium boundary - the final constants should keep a margin off the exact threshold), `arbeitstag` about
-     0.8. Not applied: needs the user's go on the formula and constants.
-  Still to do after the go: replace `MergeConfidence.forFusedCandidate` (new signature carrying the right
-  fragment's length), extend `MergeConfidenceTest`/`TokenRepairTest` with the real-data cases above, spec §44.
+  4. **The confidence metric itself is far too strict - OPEN, design agreed in outline, awaiting the go.**
+     `MergeConfidence` is pure absolute frequency (`ln(freq)/ln(300)`, nouns `/ln(8000)`), ignoring which of the
+     two tokens is unrecognised. `nachbarn` (freq 418, noun) scores 0.672 - only Aggressive (0.55) passes - and
+     D-391's own example `"Ar eitstag"` scores 0.322, clearing no level. **Correction of an earlier claim:** the
+     first measurement (61,186 spurious-space cases, "4.8 / 10.2 / 26.1 % pass") counted each dictionary word
+     once; weighted by how often words are typed (a real error hits a word in proportion to its usage) the
+     current metric lets through **53 / 67 / 83 %** at Cautious / Medium / Aggressive. The misses are mid- and
+     low-frequency words like `Nachbarn`, not the whole population. A first recommendation built on the
+     right fragment's length (C1-C3) was withdrawn on the user's objection - the dropped connector can sit
+     anywhere in a word, and it would have scored `au h` -> `auch` worst.
+     **The user's model, which the data supports:** classify the last two tokens by which of them is not a word.
+     Usage-weighted error mass (connectors `c v b n m`): both unknown **34 %**, left known / right unknown
+     **30 %**, left unknown / right known **23 %**, both known **14 %**; one-letter fragments (`au h`) are 32 % of
+     the mass. Coincidental-fusion rates per candidate pair: both unknown **0.000003 %** (2 of 6.25 M),
+     exactly one unknown **~0.001 %** (41 of 4.5 M, 18 of 1.2 M), both known **0.11-0.19 %** raw (real phrases such
+     as `der er`, `den er`, `war es`, `sei er`->`seiner`), but only **0.0026 %** (1 of 38,388 attested phrases,
+     1 of 90,000 random common pairs) once a both-known fusion additionally requires *fused frequency >=
+     min(part frequencies)*; that keeps 40 % of the both-known true errors by type, and 99.4 % of them are
+     unattested bigrams (an attested-pair veto costs nothing). One-letter fragments coincide ~1 % of the time
+     (`der e`, `in a`) and frequency alone does not separate them by type - the usage-weighted view (where
+     `auch` dominates) does. The connector set does not matter much: the whole bottom row `y x c v b n m` (what
+     the code uses) vs `c v b n m` (what T-05 names) differs by ~3 % of positives and 0-3 coincidences; `c v b`
+     alone would drop 60 % of the positives (`n`/`m` are common letters). Proposed level table (not applied):
+     **Niedrig** - both tokens unknown, frequency floor high; **Mittel** - at least one unknown, lower floor,
+     a higher floor for one-letter fragments; **Aggressiv** - additionally both known, only when the fused word
+     is at least as frequent as the rarer part and the pair is unattested, lowest floor. Frequency then acts as
+     a degressive floor per level rather than a blended score. Cost is not a concern: 5-7 point lookups (plus
+     one bigram lookup for both-known) per commit.
+  Still to do after the go: replace `MergeConfidence`/`AutoMergeAggressiveness` with the class gate + per-level
+  frequency floors above (`tryFuseAcrossSpace` must also report which fragments are unrecognised, and accept an
+  unrecognised *left* token), extend `MergeConfidenceTest`/`TokenRepairTest` with the real-data cases, spec §44.
 
 - **D-478 - OPEN, decision + spec cleanup (2026-09-20): UI-string localisation is still written as "DE/EN/EL"**
   **although ~31 languages exist now.** Source of the habit: spec N-01 ("localised into English and Greek in
