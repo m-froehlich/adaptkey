@@ -45,37 +45,7 @@ Builds:
       - yes
     output: build/outputs/apk/release/AdaptKey.apk
     scandelete:
-      - language-packs/adaptkey-lang-az.zip
-      - language-packs/adaptkey-lang-bs.zip
-      - language-packs/adaptkey-lang-cs.zip
-      - language-packs/adaptkey-lang-da.zip
-      - language-packs/adaptkey-lang-de.zip
-      - language-packs/adaptkey-lang-el.zip
-      - language-packs/adaptkey-lang-es.zip
-      - language-packs/adaptkey-lang-et.zip
-      - language-packs/adaptkey-lang-fi.zip
-      - language-packs/adaptkey-lang-fr.zip
-      - language-packs/adaptkey-lang-hr.zip
-      - language-packs/adaptkey-lang-hu.zip
-      - language-packs/adaptkey-lang-id.zip
-      - language-packs/adaptkey-lang-it.zip
-      - language-packs/adaptkey-lang-lt.zip
-      - language-packs/adaptkey-lang-lv.zip
-      - language-packs/adaptkey-lang-ms.zip
-      - language-packs/adaptkey-lang-nb.zip
-      - language-packs/adaptkey-lang-nl.zip
-      - language-packs/adaptkey-lang-pl.zip
-      - language-packs/adaptkey-lang-pt.zip
-      - language-packs/adaptkey-lang-ro.zip
-      - language-packs/adaptkey-lang-ru.zip
-      - language-packs/adaptkey-lang-sk.zip
-      - language-packs/adaptkey-lang-sr.zip
-      - language-packs/adaptkey-lang-sv.zip
-      - language-packs/adaptkey-lang-sw.zip
-      - language-packs/adaptkey-lang-tl.zip
-      - language-packs/adaptkey-lang-tr.zip
-      - language-packs/adaptkey-lang-uk.zip
-      - language-packs/adaptkey-lang-uz.zip
+      - language-packs/*.zip
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
