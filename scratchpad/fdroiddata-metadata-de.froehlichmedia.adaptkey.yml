@@ -40,9 +40,10 @@ Builds:
   - versionName: 1.2.47
     versionCode: 543
     commit: 8a879342ff08d6dfc7a2bf8bf756583dcb04a2d7
+    subdir: app
     gradle:
       - yes
-    output: app/build/outputs/apk/release/AdaptKey.apk
+    output: build/outputs/apk/release/AdaptKey.apk
     scandelete:
       - language-packs/adaptkey-lang-az.zip
       - language-packs/adaptkey-lang-bs.zip

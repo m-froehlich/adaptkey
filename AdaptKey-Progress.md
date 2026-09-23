@@ -242,8 +242,23 @@ in every prompt.
     `commit:`/`versionCode`/`versionName`/`CurrentVersion` fields, and re-checked the language-pack list
     (unchanged, still 31) against this newer commit rather than trusting the just-prepared v1.2.46 values.
     Nothing was lost by the intervening work since none of it had been pushed/uploaded externally yet.
+- **CI green on the single-entry v1.2.47 metadata (pipeline #2843153961, 2026-09-12), then `duckniii`/`seeker`**
+  **followed up (2026-09-23) with two more comments:** "are you going to make the suggested changes" (a nudge:
+  he evidently hasn't registered that the Builds trim is done and Reproducible Builds/`Binaries:`/
+  `AllowedAPKSigningKeys:` were deliberately declined - still open which way to answer him, user to reply)
+  and "even add subdir". `subdir: app` added to the Build entry. Verified against fdroidserver's own source
+  rather than assumed: `output:` is globbed relative to `root_dir` (= build dir + subdir), so it changed from
+  `app/build/outputs/apk/release/AdaptKey.apk` to `build/outputs/apk/release/AdaptKey.apk`, while
+  `scandelete:` stays repo-root-relative (`getpaths_map(build_dir, ...)`, scanner runs on the build dir, not
+  the subdir) - left unchanged. Also learned from the same source: a `scandelete` path that matches nothing
+  is a hard error ("Some glob paths did not match any files/dirs"), so the list must always equal the real
+  `language-packs/` content at the tagged commit. Canonical field order (`subdir` before `gradle`) confirmed
+  via a real local `fdroid rewritemeta` run. Not yet uploaded to the MR - needs a fresh GitLab token (the
+  previous one was revoked by design), applied via the same API-PUT route that fixed the CRLF problem
+  (`scratchpad/gitlab_api_payload.json`, CR-free). Note the app itself has since moved on to v1.2.63; the
+  MR still targets v1.2.47 and later versions only reach F-Droid once tagged.
 - **Still open:**
-  - Push the new `v1.2.47` tag (local only so far).
+  - Push the new `v1.2.47` tag (done - on origin).
   - Upload the corrected `metadata/de.froehlichmedia.adaptkey.yml` (see `scratchpad/
     de.froehlichmedia.adaptkey.yml`, confirmed 0 `\r` bytes, now targeting v1.2.47) to the MR's branch via
     GitLab's "Replace file"/Web IDE upload - not copy/paste, per the CRLF lesson from the original
