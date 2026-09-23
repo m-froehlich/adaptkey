@@ -257,6 +257,18 @@ in every prompt.
   previous one was revoked by design), applied via the same API-PUT route that fixed the CRLF problem
   (`scratchpad/gitlab_api_payload.json`, CR-free). Note the app itself has since moved on to v1.2.63; the
   MR still targets v1.2.47 and later versions only reach F-Droid once tagged.
+- **2026-09-23 follow-up: reviewers duckniii and linsui both pushed on reproducible builds ("So why not?"),**
+  **so it is enabled after all.** The "Suggested, not Required" argument did not persuade them; the risk is
+  bounded (a mismatch only skips publishing that one version). Evidence gathered first: two independent clean
+  checkouts of tag v1.2.47 at different paths built to APKs with identical entries/order/timestamps (912
+  entries; only the signing block differs, which F-Droid's check ignores by copying the signature). Not
+  verifiable here: an actual Linux/F-Droid build (WSL1 unsupported, no Docker). Also from linsui: `scandelete`
+  is now the single glob `language-packs/*.zip` (fdroidserver globs it). Metadata now has `Binaries:
+  https://github.com/m-froehlich/adaptkey/releases/download/v%v/AdaptKey.apk` and `AllowedAPKSigningKeys`
+  = 3201509b...ee3666e (read from the built APK via apksigner); rewritemeta-canonical and stable. A signed
+  v1.2.47 APK built from a clean checkout of the tag sits in `build/release-v1.2.47/AdaptKey.apk` (gitignored,
+  sha256 31cbcb1d...af04b); it must be attached as `AdaptKey.apk` to a GitHub release for tag v1.2.47 BEFORE
+  the metadata goes to the MR, since `Binaries:` resolves to that URL. Keystore copy and worktree removed.
 - **Still open:**
   - Push the new `v1.2.47` tag (done - on origin).
   - Upload the corrected `metadata/de.froehlichmedia.adaptkey.yml` (see `scratchpad/

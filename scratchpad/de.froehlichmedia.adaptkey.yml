@@ -9,6 +9,7 @@ AutoName: AdaptKey
 
 RepoType: git
 Repo: https://github.com/m-froehlich/adaptkey.git
+Binaries: https://github.com/m-froehlich/adaptkey/releases/download/v%v/AdaptKey.apk
 
 Builds:
   - versionName: 1.2.47
@@ -20,6 +21,8 @@ Builds:
     output: build/outputs/apk/release/AdaptKey.apk
     scandelete:
       - language-packs/*.zip
+
+AllowedAPKSigningKeys: 3201509b76f26c1c209b1a39aedb36a57fe331c4b418e0c0892115ed3ee3666e
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags

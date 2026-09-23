@@ -6,23 +6,19 @@
 # truth for every future update to that file, since the canonical copy lives in a different repository
 # this project does not control.
 #
-# 2026-09-12 revision: trimmed to a single Builds entry (the reviewer duckniii/seeker's explicit ask -
-# "remove all other version from Builds block only keep the latest version"), pointing at v1.2.46
-# (versionCode 542), the version the user deliberately brought to a solid state before wanting F-Droid's
-# very first listing to reflect it. Reproducible Builds (Binaries:/AllowedAPKSigningKeys:) deliberately
-# NOT added - that item sits under the MR template's own "Suggested" tier, not "Required", non-
-# reproducibility only skips publishing that one version rather than blocking inclusion, and there is no
-# existing install base via GitHub Releases to protect from a signing-key switch (also, Play Store
-# distribution - already planned - would use Google's own managed signing key regardless, so even a
-# perfectly reproducible F-Droid build could never unify all three channels' signatures anyway).
-#
-# `scandelete` covers every language-pack ZIP actually in the repo at v1.2.46 (30, not the original 2 -
-# the roster grew hugely between the July submission and this revision; re-derive this list live from
-# `git ls-tree -r --name-only <tag> -- language-packs/` if it changes again, never copy forward). F-Droid's
-# scandelete of gradle-wrapper.jar deliberately.
+# 2026-09-12 revision: trimmed to a single Builds entry (reviewer duckniii/seeker's ask). 2026-09-23:
+# `subdir: app` added and scandelete reduced to one glob (reviewers duckniii/seeker and linsui); both
+# reviewers then pressed on reproducible builds ("So why not?"), so it is now enabled: Binaries points at
+# the developer-signed AdaptKey.apk attached to the GitHub release of the same tag, AllowedAPKSigningKeys
+# is the SHA-256 of the release certificate (verified via apksigner on the built APK). Local evidence the
+# build is deterministic: two independent clean checkouts of v1.2.47 at different paths produced APKs with
+# identical entries, order and timestamps (only the signing block differs). Unverified: a Linux/F-Droid
+# build - no WSL/Docker on the dev machine. If F-Droid's comparison fails it skips publishing that one
+# version; fix from their diff or drop Binaries again.
 #
 # `AutoName: AdaptKey` matches what fdroidserver's own checkupdates auto-detects from the real built
 # AndroidManifest.xml - verified against a real `fdroid checkupdates` CI run, not guessed.
+
 
 Categories:
   - Keyboard & IME
@@ -35,6 +31,7 @@ AutoName: AdaptKey
 
 RepoType: git
 Repo: https://github.com/m-froehlich/adaptkey.git
+Binaries: https://github.com/m-froehlich/adaptkey/releases/download/v%v/AdaptKey.apk
 
 Builds:
   - versionName: 1.2.47
@@ -46,6 +43,8 @@ Builds:
     output: build/outputs/apk/release/AdaptKey.apk
     scandelete:
       - language-packs/*.zip
+
+AllowedAPKSigningKeys: 3201509b76f26c1c209b1a39aedb36a57fe331c4b418e0c0892115ed3ee3666e
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
