@@ -279,6 +279,17 @@ in every prompt.
   release APK: build from a real clone at the tagged commit, never a worktree. Durable alternative for the
   next version bump: `buildTypes { release { vcsInfo.include = false } }` (AGP 8.7 supports it) so the file
   disappears from both builds.
+- **Second reproducible-builds run (2026-09-24, after replacing the v1.2.47 release APK): `fdroid build`**
+  **passed - the comparison against the developer APK succeeded - but the next job `check apk` failed on**
+  **`found extra signing block 'Dependency metadata'`.** That blob is AGP's default `dependenciesInfo`; fixed
+  for good in app code (D-481, §505, v1.2.65: `dependenciesInfo.includeInApk/includeInBundle = false` plus
+  `vcsInfo.include = false`) rather than by re-signing the old v1.2.47 APK, since every later release APK
+  would otherwise hit the same check. The MR is therefore retargeted from v1.2.47 to v1.2.65 (`versionCode`
+  561, commit `8c12bf2`): metadata regenerated (rewritemeta-canonical, stable, CR-free payload), signed
+  v1.2.65 APK built from a real clone at the tag (`build/release-v1.2.65/AdaptKey.apk`, sha256 9d50ee20...
+  429d, cert unchanged, no vcs entry). Required order, because `Binaries:` resolves to the release asset and
+  `checkupdates` compares the newest tag against `CurrentVersion`: push `main` + tag `v1.2.65`, create the
+  GitHub release `v1.2.65` with the APK, THEN upload the metadata.
 - **Still open:**
   - Push the new `v1.2.47` tag (done - on origin).
   - Upload the corrected `metadata/de.froehlichmedia.adaptkey.yml` (see `scratchpad/

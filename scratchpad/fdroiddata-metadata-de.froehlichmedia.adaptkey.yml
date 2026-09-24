@@ -20,6 +20,11 @@
 # AndroidManifest.xml - verified against a real `fdroid checkupdates` CI run, not guessed.
 
 
+#
+# 2026-09-24: retargeted to v1.2.65 (versionCode 561). The APK of v1.2.47 failed F-Droid's `check apk`
+# (extra signing block 'Dependency metadata') after its build comparison had already passed except for
+# AGP's embedded git revision; v1.2.65 is the first version whose build config (D-481) removes both.
+
 Categories:
   - Keyboard & IME
 License: GPL-3.0-or-later
@@ -34,9 +39,9 @@ Repo: https://github.com/m-froehlich/adaptkey.git
 Binaries: https://github.com/m-froehlich/adaptkey/releases/download/v%v/AdaptKey.apk
 
 Builds:
-  - versionName: 1.2.47
-    versionCode: 543
-    commit: 8a879342ff08d6dfc7a2bf8bf756583dcb04a2d7
+  - versionName: 1.2.65
+    versionCode: 561
+    commit: 8c12bf20983704be23bb507bc9739628726e6deb
     subdir: app
     gradle:
       - yes
@@ -48,5 +53,5 @@ AllowedAPKSigningKeys: 3201509b76f26c1c209b1a39aedb36a57fe331c4b418e0c0892115ed3
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: 1.2.47
-CurrentVersionCode: 543
+CurrentVersion: 1.2.65
+CurrentVersionCode: 561
