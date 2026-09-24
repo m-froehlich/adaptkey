@@ -304,6 +304,14 @@ in every prompt.
   :app:assembleRelease --no-build-cache --no-configuration-cache`.** The day-to-day build keeps its caches.
   Replacement `build/release-v1.2.65/AdaptKey.apk`: sha256 ea78b962...d405, cert unchanged, no vcs entry, no
   dependency-metadata block.
+- **linsui's suggestion on the v1.2.65 metadata (2026-09-24): delete the `output:` line - correct.** Checked in
+  fdroidserver's `build.py` rather than taking it on faith: for `gradle: yes` the APK is searched at
+  `<build dir>/<subdir>/build/outputs/apk/release/*.apk`, so with `subdir: app` `output:` is redundant (it was
+  only needed in July because the missing `subdir` made fdroidserver look in the repo root, where no
+  `build/outputs` exists - i.e. the reviewers' `subdir` request also explains the original "Failed to find any
+  output apks"). Local scratchpad copies and the API payload updated to match; rewritemeta-canonical, stable.
+  Plan: let the running pipeline finish first, then apply the suggestion in the GitLab UI ("Apply
+  suggestion" needs no token).
 - **Still open:**
   - Push the new `v1.2.47` tag (done - on origin).
   - Upload the corrected `metadata/de.froehlichmedia.adaptkey.yml` (see `scratchpad/
