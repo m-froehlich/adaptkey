@@ -12,9 +12,9 @@ Repo: https://github.com/m-froehlich/adaptkey.git
 Binaries: https://github.com/m-froehlich/adaptkey/releases/download/v%v/AdaptKey.apk
 
 Builds:
-  - versionName: 1.2.65
-    versionCode: 561
-    commit: 8c12bf20983704be23bb507bc9739628726e6deb
+  - versionName: 1.2.66
+    versionCode: 562
+    commit: 83def9e0ceb12af1bbdb23b4b502ef78b49b8c62
     subdir: app
     gradle:
       - yes
@@ -25,5 +25,5 @@ AllowedAPKSigningKeys: 3201509b76f26c1c209b1a39aedb36a57fe331c4b418e0c0892115ed3
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: 1.2.65
-CurrentVersionCode: 561
+CurrentVersion: 1.2.66
+CurrentVersionCode: 562
