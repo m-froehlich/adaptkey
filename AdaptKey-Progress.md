@@ -48,11 +48,13 @@ in every prompt.
 
 - **F-Droid (official, sole channel by explicit user decision, 2026-07-28).** IzzyOnDroid and a
   self-hosted repo were both considered and explicitly declined in favour of official F-Droid only,
-  weighing discoverability against review latency and signing continuity. F-Droid will build and sign
-  the app with its own key (also an explicit choice over pursuing Reproducible Builds); anyone who has
-  sideloaded a self-signed `:app:assembleRelease` build will need one uninstall + reinstall to switch
-  once the F-Droid release goes live - export via the Y-01 backup screen first to avoid losing learned
-  words/settings.
+  weighing discoverability against review latency and signing continuity. **SUPERSEDED 2026-09-23/24: the
+  original "F-Droid signs with its own key, no reproducible builds" decision was reversed after two F-Droid
+  maintainers pressed for it. The MR now uses reproducible builds (`Binaries:` + `AllowedAPKSigningKeys:`), so
+  F-Droid publishes the developer-signed APK - same signature as the GitHub releases, no uninstall/reinstall
+  needed when switching channels between GitHub and F-Droid (Play Store, if ever used, still signs with
+  Google's own key). Every release APK must therefore match F-Droid's own build exactly - see the RELEASE
+  RECIPE below.**
 - **Prerequisites already satisfied:** GPL-3.0-or-later with SPDX headers, public GitHub repo
   (`github.com/m-froehlich/adaptkey`), no `INTERNET` permission at all (so no tracking/ads/Play-Services
   anti-feature applies), every runtime dependency Apache-2.0/MIT, every bundled data asset under a free
@@ -214,7 +216,8 @@ in every prompt.
   non-release `backup-before-bigram-fix-20260906` tag at versionCode 502) intending to eventually push them
   toward F-Droid, but wanted the *current* solid state to be F-Droid's actual first listing instead - now
   reached (v1.2.46/versionCode 542, pushed).
-  - **Reproducible Builds: investigated, deliberately declined again, not just re-accepted from the July**
+  - **(SUPERSEDED a few days later - see the 2026-09-23 follow-up below.) Reproducible Builds: investigated,**
+    **deliberately declined again, not just re-accepted from the July**
     **decision unquestioned.** Checked the MR's own template: "Enable Reproducible Builds" sits under
     "Suggested", not "Required" or "Strongly Recommended" - not a merge blocker. F-Droid's own docs confirm
     a non-reproducible build only skips *publishing that one version*, it doesn't block the app's
@@ -312,18 +315,35 @@ in every prompt.
   output apks"). Local scratchpad copies and the API payload updated to match; rewritemeta-canonical, stable.
   Plan: let the running pipeline finish first, then apply the suggestion in the GitLab UI ("Apply
   suggestion" needs no token).
+- **FINAL STATE (2026-09-24): MR !44142 is technically complete and only waits for the F-Droid maintainers'**
+  **merge.** Target version v1.2.65 (`versionCode` 561, commit `8c12bf2`), tag `v1.2.65` and GitHub release
+  `v1.2.65` (asset `AdaptKey.apk`, sha256 ea78b962...d405, cert `3201509b...ee3666e`) are live; the MR's
+  `metadata/de.froehlichmedia.adaptkey.yml` on GitLab is byte-identical to `scratchpad/
+  de.froehlichmedia.adaptkey.yml` (no `output:` - removed by linsui's suggestion, commit `b8eb5d60` which he
+  applied himself; 0 `` bytes). Pipelines #2878000291 (user's) and #2878075642 (linsui's commit) both
+  green, all 9-10 jobs including `fdroid build` (reproducible comparison against the GitHub APK) and
+  `check apk`. All reviewer comments (duckniii/seeker, linsui, Licaon_Kter) are answered/resolved. The
+  scratchpad files `upload-metadata.ps1` (hidden token prompt, PUT via the Repository Files API) and
+  `gitlab_api_payload.json` remain as the upload route if the metadata ever needs changing again; tokens
+  were only ever typed into the user's own PowerShell, never used by Claude (one was pasted into the chat
+  by mistake and had to be revoked).
+- **RELEASE RECIPE for every future F-Droid-relevant version (F-Droid compares its own build with the GitHub**
+  **APK, so any deviation fails):** (1) fresh `git clone` of the repo, never a `git worktree`; (2) check out
+  the tag; (3) `./gradlew :app:assembleRelease --no-build-cache --no-configuration-cache` with the
+  keystore copied in (remove it afterwards); (4) verify with `apksigner` (cert `3201509b...ee3666e`); (5)
+  attach as exactly `AdaptKey.apk` to the GitHub release of that tag. After the MR is merged, F-Droid picks
+  up new tags automatically (`AutoUpdateMode: Version`, `UpdateCheckMode: Tags`) - no new MR needed - but
+  the release asset MUST exist before/with the tag being noticed, and pushing a tag whose `versionCode` is
+  higher than the metadata's `CurrentVersion` while the MR is still unmerged makes the MR's `checkupdates`
+  job fail. `dependenciesInfo`/`vcsInfo` are already switched off in `app/build.gradle.kts` (D-481).
 - **Still open:**
-  - Push the new `v1.2.47` tag (done - on origin).
-  - Upload the corrected `metadata/de.froehlichmedia.adaptkey.yml` (see `scratchpad/
-    de.froehlichmedia.adaptkey.yml`, confirmed 0 `\r` bytes, now targeting v1.2.47) to the MR's branch via
-    GitLab's "Replace file"/Web IDE upload - not copy/paste, per the CRLF lesson from the original
-    submission round.
-  - Optional cleanup, not urgent: delete the stray `backup-before-bigram-fix-20260906` tag (not a real
-    release, versionCode 502 is well below current so it poses no real risk to `UpdateCheckMode: Tags`,
-    but it's not meant to be a discoverable release marker either); the now-superseded local-only
-    `v1.2.46` tag can also just be left alone or dropped, whichever - it was never pushed.
-  - Once merged: F-Droid's own build/publish cycle still needs to run before the app actually appears in
-    the client - merged is not yet live.
+  - Wait for the maintainers to merge MR !44142; then react to any last requests. Once merged, F-Droid's own
+    build/publish cycle still has to run before the app appears in the client - merged is not yet live.
+  - The next release after the merge: tag it and follow the RELEASE RECIPE above.
+  - Optional cleanup, not urgent: the stray local-only tags `backup-before-bigram-fix-20260906`, `v1.0.24`
+    and the superseded `v1.2.46` were never pushed and are invisible to F-Droid; delete or keep, no effect.
+  - Pre-merge caution: no tag with a `versionCode` above 561 may be pushed until the MR is merged and
+    `CurrentVersion` moves along.
   - `de-DE` screenshots - RESOLVED (2026-09-17): recovered byte-identical from git history (`00a9cc6~1`,
     the `en-US` folder's own original German-language placeholder captures) into their own
     `fastlane/metadata/android/de-DE/images/phoneScreenshots/`, no new capture needed. `el-GR` and every

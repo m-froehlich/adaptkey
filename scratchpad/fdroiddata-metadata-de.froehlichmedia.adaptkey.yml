@@ -6,24 +6,17 @@
 # truth for every future update to that file, since the canonical copy lives in a different repository
 # this project does not control.
 #
-# 2026-09-12 revision: trimmed to a single Builds entry (reviewer duckniii/seeker's ask). 2026-09-23:
-# `subdir: app` added and scandelete reduced to one glob (reviewers duckniii/seeker and linsui); both
-# reviewers then pressed on reproducible builds ("So why not?"), so it is now enabled: Binaries points at
-# the developer-signed AdaptKey.apk attached to the GitHub release of the same tag, AllowedAPKSigningKeys
-# is the SHA-256 of the release certificate (verified via apksigner on the built APK). Local evidence the
-# build is deterministic: two independent clean checkouts of v1.2.47 at different paths produced APKs with
-# identical entries, order and timestamps (only the signing block differs). Unverified: a Linux/F-Droid
-# build - no WSL/Docker on the dev machine. If F-Droid's comparison fails it skips publishing that one
-# version; fix from their diff or drop Binaries again.
+# History: 2026-09-12 trimmed to a single Builds entry (reviewer duckniii/seeker). 2026-09-23: `subdir: app`
+# added, scandelete reduced to one glob, reproducible builds enabled after two maintainers pressed for it
+# (Binaries -> developer-signed AdaptKey.apk on the GitHub release of the same tag; AllowedAPKSigningKeys =
+# SHA-256 of the release certificate, read with apksigner). 2026-09-24: retargeted to v1.2.65, the first
+# version whose build config (D-481) omits AGP's Google 'Dependency metadata' signing block and embedded git
+# revision, both of which failed F-Droid's checks; `output:` dropped on linsui's suggestion (with subdir the
+# APK is found automatically). VERIFIED by the MR's CI (pipelines #2878000291, #2878075642): F-Droid's own
+# Linux build is bit-identical to the GitHub APK when that APK is built from a fresh clone with
+# `--no-build-cache --no-configuration-cache` (see AdaptKey-Progress.md, Release Channels: RELEASE RECIPE).
 #
-# `AutoName: AdaptKey` matches what fdroidserver's own checkupdates auto-detects from the real built
-# AndroidManifest.xml - verified against a real `fdroid checkupdates` CI run, not guessed.
-
-
-#
-# 2026-09-24: retargeted to v1.2.65 (versionCode 561). The APK of v1.2.47 failed F-Droid's `check apk`
-# (extra signing block 'Dependency metadata') after its build comparison had already passed except for
-# AGP's embedded git revision; v1.2.65 is the first version whose build config (D-481) removes both.
+# `AutoName: AdaptKey` matches what fdroidserver's checkupdates auto-detects from the real manifest.
 
 Categories:
   - Keyboard & IME
