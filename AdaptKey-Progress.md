@@ -269,6 +269,16 @@ in every prompt.
   v1.2.47 APK built from a clean checkout of the tag sits in `build/release-v1.2.47/AdaptKey.apk` (gitignored,
   sha256 31cbcb1d...af04b); it must be attached as `AdaptKey.apk` to a GitHub release for tag v1.2.47 BEFORE
   the metadata goes to the MR, since `Binaries:` resolves to that URL. Keystore copy and worktree removed.
+- **First reproducible-builds pipeline (#2877892700, 2026-09-24): everything green except `fdroid build`,**
+  **whose comparison found exactly ONE differing file** in the 912-entry APK: `META-INF/version-control-info.textproto`
+  (AGP embeds the git revision there). The reference APK, built from a `git worktree`, had
+  `generate_error_reason: NO_VALID_GIT_FOUND` (a worktree's `.git` is a file AGP can't use); F-Droid's real
+  clone yields `revision: "8a879342..."`. Fix without any code change: rebuild the release APK from a normal
+  `git clone` checked out at the tag (file now contains the same revision, verified: only that entry differed
+  from the worktree build, cert unchanged) and replace the GitHub release asset. LESSON for every future
+  release APK: build from a real clone at the tagged commit, never a worktree. Durable alternative for the
+  next version bump: `buildTypes { release { vcsInfo.include = false } }` (AGP 8.7 supports it) so the file
+  disappears from both builds.
 - **Still open:**
   - Push the new `v1.2.47` tag (done - on origin).
   - Upload the corrected `metadata/de.froehlichmedia.adaptkey.yml` (see `scratchpad/
