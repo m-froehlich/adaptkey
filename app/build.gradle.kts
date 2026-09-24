@@ -40,8 +40,8 @@ android {
         // D-450-followup: explicit user request bumped 1.1.78 -> 1.2.0 - a minor-version milestone marker,
         // not a further third-digit step, requested on the same commit that adds the first Cyrillic-script
         // language pack (Serbian) and the non-Latin-layout generalisation it required.
-        versionCode = 561
-        versionName = "1.2.65"
+        versionCode = 562
+        versionName = "1.2.66"
         
         // The ONNX Runtime native libs (tier-3 mini-LLM) ship per ABI; keep only the ones real phones
         // use (arm64 + 32-bit arm), dropping the emulator-only x86/x86_64 libs (~43 MB). Device testing
@@ -77,7 +77,9 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            // D-482: R8 (shrink + optimise, no renaming - see proguard-rules.pro) enabled at F-Droid's request; was
+            // deliberately off since D-223.
+            isMinifyEnabled = true
             vcsInfo.include = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

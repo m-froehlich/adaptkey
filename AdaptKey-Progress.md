@@ -1606,6 +1606,19 @@ non-trivial changes).
   volume) is completely unaffected by this and ran exactly as planned. 446,015 lemma-column rows changed
   across the 31 packs; every pack passes `lemma_check.py` and `quality_gate.py`.
 
+- **§506 (v1.2.66): D-482 - R8 enabled for the release build at F-Droid maintainer linsui's request (MR 44142,**
+  **"Enable r8").** It had been off since D-223. Now `isMinifyEnabled = true` (shrink + optimise; NOT
+  `isShrinkResources`) with `-dontobfuscate` in `app/proguard-rules.pro`, so class/method names stay
+  readable: no JNI/name-lookup breakage possible and the in-app diagnostic log stays legible. Added
+  `-keep class ai.onnxruntime.** { *; }` because the ONNX Runtime AAR ships no consumer rules and its
+  native libs look Java members up by name; Activities/Service stay kept via the manifest plus the two
+  existing keeps, and the Kotlin code uses no reflection. Verified on the real build: R8 emits no warnings,
+  `usage.txt` removes 0 `ai.onnxruntime` classes, both ABI's `libonnxruntime*.so` are present,
+  `apksigner` reports the unchanged certificate `3201509b...ee3666e`; 1681 unit tests, 0 failures. Unit
+  tests run against the debug build, so they do NOT exercise R8 - the minified release APK needs a device
+  check (typing, suggestions, all settings screens, language-pack import, tier 3). `versionCode` 561 -> 562,
+  `versionName` `"1.2.65"` -> `"1.2.66"`. Release-cycle bookkeeping for the F-Droid retarget follows once
+  the user has tested and tagged.
 - **§505 (v1.2.65): D-481 - release APK made acceptable to F-Droid's reproducible-build pipeline: no Google**
   **"Dependency metadata" signing block, no embedded git revision.** Root cause traced from the MR's real CI
   logs, not guessed: after the first reproducible-builds run the `fdroid build` comparison found exactly one
