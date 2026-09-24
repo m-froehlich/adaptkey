@@ -488,7 +488,14 @@ object LanguagePackCatalog {
             // plural `Drums` (27, lemma `Drum`) removed entirely. Nothing else carried `Drum` as a lemma.
             // `dictionaries/de/version.txt` 46 -> 47, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 46 -> 47.
-            version = 47
+            //
+            // D-480 (v1.2.64): `wer` (1,397) was silently autocorrected to `der` (1,004,234) - a 719x ratio,
+            // far above A-01's override bar, with `w`/`d` QWERTZ neighbours. The same Wikipedia register
+            // skew D-473 fixed for `dir`/`dich` (a corpus of articles has few questions). `wer` raised to
+            // 14,400 (ratio ~69.7x, the confirmed-bad "Ohren"/"Ihren" floor no level may cross); no other
+            // adjacent-key rival is anywhere near (`Weg` 3,768). `dictionaries/de/version.txt` 47 -> 48, pack
+            // rebuilt and verified byte-identical after unzip, `LanguagePackCatalog` version 47 -> 48.
+            version = 48
         ),
         Entry(
             Language.GREEK,

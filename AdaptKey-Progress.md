@@ -376,7 +376,7 @@ non-trivial changes).
   raw-tap recording or the D-243 `rawTap` diagnostic lines. Until then D-474's switch is the on-device A/B
   tool (Reset calibration, then switch learning off).
 
-- **D-476 - FIXED (§500, v1.2.60), awaiting device confirmation (2026-09-20): `Drum` was tagged bare `NOUN` in**
+- **D-476 - FIXED and device-confirmed (§500, v1.2.60; confirmed 2026-09-24): `Drum` was tagged bare `NOUN` in**
   **the German dictionary and therefore auto-capitalised.** `dictionaries/de/dict.tsv` held `Drum 33 NOUN` and
   `Drums 27 NOUN,OTHER` (lemma `Drum`) - both the English word (band/drum kit) from the Wikipedia corpus - and
   no lower-case `drum` row, although German has a real lower-case adverb `drum` (= "darum": "sei's drum",
@@ -1454,7 +1454,7 @@ non-trivial changes).
   **not** fix: a surname that is also an ordinary word (`Ehrlich`, `Jung`, `Kluge`) stays ambiguous by
   design, with W-04 learning the user's own casing from real use.
 
-- **D-462 - RESOLVED for the conservative scope (§483, v1.2.43), not yet device-confirmed; the wider**
+- **D-462 - RESOLVED for the conservative scope (§483, v1.2.43), device-confirmed (2026-09-24); the wider**
   **import stays open.** 5,591 forms of 1,976 attested verbs added at floor frequency 1 after a real user
   review that turned 70 hand-rejections into a mechanical rule - see §483. What remains open is the ~100,000
   forms of verbs the corpus never attested, including ordinary everyday ones the user named as legitimate
@@ -1547,6 +1547,27 @@ non-trivial changes).
   volume) is completely unaffected by this and ran exactly as planned. 446,015 lemma-column rows changed
   across the 31 packs; every pack passes `lemma_check.py` and `quality_gate.py`.
 
+- **§504 (v1.2.64): D-480 - `wer` was silently autocorrected to `der`; its German frequency raised (German**
+  **data pack only).** User-reported (2026-09-24): "wer" always became "der". Traced to real data, not guessed:
+  `dictionaries/de/dict.tsv` held `wer 1397 OTHER` against `der 1004234` - a 719x ratio, far past A-01's
+  known-word override bar (`CorrectionConfidence.forKnownWordOverride`, log-scaled, reaching 1.0 at 500x), and
+  `w`/`d` are QWERTZ neighbours (cost 1). The same Wikipedia register skew D-473 fixed for `dir`/`dich`: an
+  encyclopaedia corpus contains few questions, so the interrogative is heavily under-counted. Fixed the same
+  way: `wer` raised to 14,400, which puts the ratio at ~69.7x - the confirmed-bad "Ohren"/"Ihren" floor (70x,
+  score ~0.684, below `AutocorrectAggressiveness.AGGRESSIVE`'s 0.70) that no level may cross - deliberately not
+  the bare mathematical minimum. Every other QWERTZ-adjacent single-substitution rival of `wer` was checked
+  against the live dictionary first: only `der` is a live risk (`Weg` 3,768 is ~2.6x, `ser` 22; the
+  rest of the neighbour set is absent). `dictionaries/de/dict.tsv` unchanged row count (193,814), one value
+  edited; `quality_gate.py --capitalises-nouns` and `lemma_check.py` both PASS. `dictionaries/de/version.txt`
+  47 -> 48, `language-packs/adaptkey-lang-de.zip` rebuilt (same four members, same order) and verified
+  byte-identical after unzip, `LanguagePackCatalog` version 47 -> 48. No logic change, 1681 unit tests
+  unchanged (`AutocorrectAggressivenessTest` already pins the 70x floor against Aggressive).
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 559 -> 560, `versionName` `"1.2.63"` ->
+  `"1.2.64"`. Device-confirmed (2026-09-24). Note, per the D-473-followup lesson **the pack is served from
+  `origin/main`: push this round, then re-import the German pack in Settings -> Language Packs before
+  expecting `wer` to stop changing.** Not tagged: F-Droid's MR still targets v1.2.47, and a tag is the user's
+  call (see Release Channels).
+
 - **§503 (v1.2.63): D-478 - draft UI translations for every supported language, plus the contribution path.**
   **The app's own screens now exist in all 32 languages the keyboard supports (31 `values-xx` directories +**
   **English).** Agreed with the user (2026-09-20): every language in the `Language` enum gets a `values-xx`
@@ -1612,7 +1633,7 @@ non-trivial changes).
   it could double the gap; verify on a device and say so if it shows the same problem. Layout/window glue:
   no unit test possible (this project's accepted untested Android layer), 1677 tests unchanged.
   `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 556 -> 557, `versionName` `"1.2.60"` ->
-  `"1.2.61"`. Not yet device-confirmed.
+  `"1.2.61"`. Device-confirmed (2026-09-24); the `SettingsActivity` inset check (the main preference screen has no inset code of its own) was confirmed in the same pass, nothing to fix.
 
 - **§500 (v1.2.60): D-476 - `Drum` re-cast as the lower-case German adverb `drum`, `Drums` removed (German data**
   **pack only).** User-reported: `Drum` auto-capitalised because `Drum 33 NOUN` (the English word, from the
@@ -1625,7 +1646,7 @@ non-trivial changes).
   order) and verified byte-identical after unzip, `LanguagePackCatalog` version 46 -> 47. No code change beyond
   that version and its comment; 1677 unit tests unchanged (none references the touched words).
   `:app:assembleRelease`/`:app:testDebugUnitTest` green, APK confirmed via `output-metadata.json`.
-  `versionCode` 555 -> 556, `versionName` `"1.2.59"` -> `"1.2.60"`. Not yet device-confirmed - and per the
+  `versionCode` 555 -> 556, `versionName` `"1.2.59"` -> `"1.2.60"`. Device-confirmed (2026-09-24). Note, per the
   D-473-followup lesson, **the pack is served from `origin/main`: push this round, then re-import the German pack
   in Settings -> Language Packs before expecting `drum` to stop capitalising.**
 
@@ -1707,7 +1728,7 @@ non-trivial changes).
   cases for the sentinel no-op incl. the single-sample key, one `SettingsMapperTest` default/pass-through) -
   1662 total; the view gate and the preference wiring are this project's own accepted untested Android-glue
   layer. `:app:assembleRelease`/`:app:testDebugUnitTest` green, APK confirmed via `output-metadata.json`.
-  `versionCode` 552 -> 553, `versionName` `"1.2.56"` -> `"1.2.57"`. Not yet device-confirmed.
+  `versionCode` 552 -> 553, `versionName` `"1.2.56"` -> `"1.2.57"`. Device-confirmed (2026-09-24).
 
 - **§496 (v1.2.56): D-473-followup - §495's own omitted positive button let Cancel slide into the now-vacant**
   **rightmost slot instead of staying in its usual middle position, caught on first real device use.**
@@ -1758,7 +1779,7 @@ non-trivial changes).
   `quality_gate.py --capitalises-nouns` and `lemma_check.py` both PASS. `dictionaries/de/version.txt` 45 ->
   46, pack rebuilt and verified byte-identical after unzip, `LanguagePackCatalog` version 45 -> 46. 1659 unit
   tests unchanged, `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 549 -> 550,
-  `versionName` `"1.2.53"` -> `"1.2.54"`. Not yet device-confirmed.
+  `versionName` `"1.2.53"` -> `"1.2.54"`. Device-confirmed (2026-09-24).
 
 - **§493 (v1.2.53): five small, user-requested dictionary/data corrections in one round.**
   1. **"fair"** - only present as "Fair" (133, NOUN,OTHER) - no legitimate German noun sense found for it, so
@@ -1803,7 +1824,7 @@ non-trivial changes).
   pack rebuilt and verified byte-identical after unzip, `LanguagePackCatalog` version 44 -> 45. 1659 unit
   tests unchanged (no test referenced any of the touched words or the removed blacklist entries).
   `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 548 -> 549, `versionName` `"1.2.52"` ->
-  `"1.2.53"`. Not yet device-confirmed - and per the D-473-followup lesson two rounds ago, **remember to
+  `"1.2.53"`. Device-confirmed (2026-09-24). Note, per the D-473-followup lesson two rounds ago, **remember to
   actually push this round before expecting a language-pack re-import to pick it up.**
 
 - **§492 (v1.2.52): D-473-followup closed - the §491 diagnostic did its job, removed again.** The captured**
@@ -2186,7 +2207,7 @@ non-trivial changes).
   Dictionary 188,243 -> 193,834 rows (+3.0%). 1651 unit tests unchanged, `:app:assembleRelease`/
   `:app:testDebugUnitTest` green. `dictionaries/de/version.txt` 40 -> 41, pack rebuilt and verified
   byte-identical after unzip, `LanguagePackCatalog` version 40 -> 41. `versionCode` 538 -> 539,
-  `versionName` `"1.2.42"` -> `"1.2.43"`. **Not yet device-confirmed.**
+  `versionName` `"1.2.42"` -> `"1.2.43"`. **Device-confirmed (2026-09-24).**
 
 - **§482 (v1.2.42): D-467 - the `lemma` column had structural defects, and a new checker now catches**
   **them.** Started as the small half of the D-462 round (fix two German links the §480 survey had flagged)
@@ -2311,60 +2332,17 @@ non-trivial changes).
   **Device-confirmed** (2026-09-10): the user confirmed several days of real-device use running smoothly
   ("läuft wie geschmiert seit ein paar Tagen") - no dedicated repro needed, closed on that basis.
 
-- **§479 (v1.2.39): D-463 (S-11 for next-word predictions, plus a stale-chip lifecycle bug) and D-464**
-  **(the quality gate reports German as FAIL by design).** Two of the three items the user asked to clear;
-  the third (D-462) turned into a much larger finding and is held for a decision - see its own bullet above.
-
-  **D-463, the decision first.** The user's instruction was "immer beide Chips anbieten". Split into two
-  questions and answered separately: (1) a next-word prediction now offers both casings, previously skipped
-  outright (`ambiguousCasingChips()` returns early on an empty input) - the exact open question D-440 closed
-  with; (2) once the typed token *exactly* matches, only the other casing is still offered, unchanged. The
-  user's own reasoning for keeping (2): "Nein, das getippte brauchen wir nicht als Chip. Das hat man ja
-  schon getippt. Es wird in dem fall aber nie auto-committet, weil definitiv keine Eindeutigkeit besteht.
-  Deshalb wird ein Commit es nicht kaputt korrigieren." - which D-461 is exactly what guarantees.
-
-  **In place, not appended - and this is the part worth recording.** While typing, the dual chips are
-  deliberately appended at the back so a better ordinary suggestion can crowd them out (D-404-followup's own
-  explicit design). Reusing that shape for predictions would have been wrong: a prediction can itself be the
-  single best entry in the bar, so appending demotes it to last place while `excludeAmbiguousCasingWords()`
-  simultaneously removes it from its real rank. New `expandAmbiguousCasingInPlace()` replaces each ambiguous
-  prediction with its two casings at its own position instead, store-resolved casing first; the typing path
-  is untouched. Split on the same `composing.isEmpty()` discriminator D-440 already uses two lines above.
-
-  **A real lifecycle bug found while reading that code, not reported by anyone.**
-  `pendingAmbiguousCasingChips` is filled only in `refreshSuggestions()` and was emptied only in
-  `clearSuggestions()` - but the ordinary commit path is `clearComposing()` -> `showNextWordPredictions()`
-  -> `showSuggestions()`, and the middle step only reaches `clearSuggestions()` when there is no prediction
-  at all. So committing an ambiguous word with a real prediction following it left its chips standing,
-  appended to the *next* word's bar, while `excludeAmbiguousCasingWords()` dropped a legitimate prediction
-  for that same word from the ranked list. Conclusive from the state lifecycle, not a timing suspicion.
-  Fixed by clearing them in `clearComposing()`, where the token they describe actually ends. D-461 made this
-  considerably more visible - 1,372 ambiguous words now instead of 1,089.
-
-  **D-464:** `dictionaries/quality_gate.py` gained `--capitalises-nouns`. Its bare-NOUN check encodes
-  D-441's convention for languages that do *not* capitalise common nouns; for German a bare `NOUN` is
-  precisely what drives auto-capitalisation, so the documented command reported `FAIL` with 108,779
-  "violations", every one correct. The flag skips that one check and prints why; the other three are
-  unchanged, and an unknown option now exits 2 with a usage line instead of being ignored. The Language
-  Contribution Guide's step-8 passage was corrected in the same pass - it still claimed "a row already
-  carrying `PROPER_NOUN` is correctly unaffected either way (`isProper` forces capitalisation regardless of
-  language)", which D-461 made false; a contributor following it would have switched a proper noun's
-  capitalisation off by adding `OTHER`.
-
-  No new tests: both `ambiguousCasingChips()` and the new `expandAmbiguousCasingInPlace()` are
-  `AdaptKeyService` suggestion-bar glue, this project's own established untested layer (the pure part they
-  rest on, `CapitalisationEngine.isAmbiguousCasing`, gained its own cases in §478). 1646 unit tests
-  unchanged, `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 534 -> 535, `versionName`
-  `"1.2.38"` -> `"1.2.39"`. **D-463 device-confirmed (2026-09-09)**; D-464 is a tooling/data-only change
-  with no device-observable behaviour, nothing to confirm there.
 
 
 
 
 
 
+## Older Rounds (§1-§479, v0.7.6 through v1.2.39) - Pruned From This File
 
-## Older Rounds (§1-§478, v0.7.6 through v1.2.38) - Pruned From This File
+D-480 (§504): forty-first pruning pass - §479 removed, cutoff moved from §478 to §479, keeping the working
+set at 25 rounds (§480-§504). Backfilled into History.md first with the same token-multiset check (delta 0
+apart from one stray colon left behind by dropping the version tag), nothing summarised or dropped.
 
 D-478 (§503): fortieth pruning pass - §477 and §478 removed, cutoff moved from §476 to §478, keeping the
 working set at 25 rounds (§479-§503). Backfilled into History.md first with the same token-multiset check

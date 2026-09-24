@@ -22821,3 +22821,51 @@ cases covering the verb-homograph proper noun, the noun-only proper noun, B-02 b
 `LanguagePackCatalog` version 37 -> 38. `versionCode` 533 -> 534, `versionName` `"1.2.37"` ->
 `"1.2.38"`. **Device-confirmed (2026-09-09)** - the user confirmed the broad capitalisation change on
 real typing, no word came back under-capitalised.
+
+## §479 - D-463 (S-11 for next-word predictions, plus a stale-chip lifecycle bug) and D-464 (the quality gate reports German as FAIL by design).
+
+Two of the three items the user asked to clear;
+the third (D-462) turned into a much larger finding and is held for a decision - see its own bullet above.
+
+**D-463, the decision first.** The user's instruction was "immer beide Chips anbieten". Split into two
+questions and answered separately: (1) a next-word prediction now offers both casings, previously skipped
+outright (`ambiguousCasingChips()` returns early on an empty input) - the exact open question D-440 closed
+with; (2) once the typed token *exactly* matches, only the other casing is still offered, unchanged. The
+user's own reasoning for keeping (2): "Nein, das getippte brauchen wir nicht als Chip. Das hat man ja
+schon getippt. Es wird in dem fall aber nie auto-committet, weil definitiv keine Eindeutigkeit besteht.
+Deshalb wird ein Commit es nicht kaputt korrigieren." - which D-461 is exactly what guarantees.
+
+**In place, not appended - and this is the part worth recording.** While typing, the dual chips are
+deliberately appended at the back so a better ordinary suggestion can crowd them out (D-404-followup's own
+explicit design). Reusing that shape for predictions would have been wrong: a prediction can itself be the
+single best entry in the bar, so appending demotes it to last place while `excludeAmbiguousCasingWords()`
+simultaneously removes it from its real rank. New `expandAmbiguousCasingInPlace()` replaces each ambiguous
+prediction with its two casings at its own position instead, store-resolved casing first; the typing path
+is untouched. Split on the same `composing.isEmpty()` discriminator D-440 already uses two lines above.
+
+**A real lifecycle bug found while reading that code, not reported by anyone.**
+`pendingAmbiguousCasingChips` is filled only in `refreshSuggestions()` and was emptied only in
+`clearSuggestions()` - but the ordinary commit path is `clearComposing()` -> `showNextWordPredictions()`
+-> `showSuggestions()`, and the middle step only reaches `clearSuggestions()` when there is no prediction
+at all. So committing an ambiguous word with a real prediction following it left its chips standing,
+appended to the *next* word's bar, while `excludeAmbiguousCasingWords()` dropped a legitimate prediction
+for that same word from the ranked list. Conclusive from the state lifecycle, not a timing suspicion.
+Fixed by clearing them in `clearComposing()`, where the token they describe actually ends. D-461 made this
+considerably more visible - 1,372 ambiguous words now instead of 1,089.
+
+**D-464:** `dictionaries/quality_gate.py` gained `--capitalises-nouns`. Its bare-NOUN check encodes
+D-441's convention for languages that do *not* capitalise common nouns; for German a bare `NOUN` is
+precisely what drives auto-capitalisation, so the documented command reported `FAIL` with 108,779
+"violations", every one correct. The flag skips that one check and prints why; the other three are
+unchanged, and an unknown option now exits 2 with a usage line instead of being ignored. The Language
+Contribution Guide's step-8 passage was corrected in the same pass - it still claimed "a row already
+carrying `PROPER_NOUN` is correctly unaffected either way (`isProper` forces capitalisation regardless of
+language)", which D-461 made false; a contributor following it would have switched a proper noun's
+capitalisation off by adding `OTHER`.
+
+No new tests: both `ambiguousCasingChips()` and the new `expandAmbiguousCasingInPlace()` are
+`AdaptKeyService` suggestion-bar glue, this project's own established untested layer (the pure part they
+rest on, `CapitalisationEngine.isAmbiguousCasing`, gained its own cases in §478). 1646 unit tests
+unchanged, `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 534 -> 535, `versionName`
+`"1.2.38"` -> `"1.2.39"`. **D-463 device-confirmed (2026-09-09)**; D-464 is a tooling/data-only change
+with no device-observable behaviour, nothing to confirm there.
