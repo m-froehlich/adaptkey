@@ -40,8 +40,8 @@ android {
         // D-450-followup: explicit user request bumped 1.1.78 -> 1.2.0 - a minor-version milestone marker,
         // not a further third-digit step, requested on the same commit that adds the first Cyrillic-script
         // language pack (Serbian) and the non-Latin-layout generalisation it required.
-        versionCode = 560
-        versionName = "1.2.64"
+        versionCode = 561
+        versionName = "1.2.65"
         
         // The ONNX Runtime native libs (tier-3 mini-LLM) ship per ABI; keep only the ones real phones
         // use (arm64 + 32-bit arm), dropping the emulator-only x86/x86_64 libs (~43 MB). Device testing
@@ -67,9 +67,18 @@ android {
         }
     }
     
+    // D-481: F-Droid's reproducible-build check needs an APK without Google's encrypted "Dependency metadata"
+    // signing block (its scanner rejects it) and without the git revision AGP embeds in META-INF (it differs
+    // between a local build and F-Droid's own clone).
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
+            vcsInfo.include = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

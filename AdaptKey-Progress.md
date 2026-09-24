@@ -1547,6 +1547,21 @@ non-trivial changes).
   volume) is completely unaffected by this and ran exactly as planned. 446,015 lemma-column rows changed
   across the 31 packs; every pack passes `lemma_check.py` and `quality_gate.py`.
 
+- **§505 (v1.2.65): D-481 - release APK made acceptable to F-Droid's reproducible-build pipeline: no Google**
+  **"Dependency metadata" signing block, no embedded git revision.** Root cause traced from the MR's real CI
+  logs, not guessed: after the first reproducible-builds run the `fdroid build` comparison found exactly one
+  differing APK entry (`META-INF/version-control-info.textproto`, AGP's embedded git revision), and once that
+  matched, the follow-up `check apk` job rejected the developer APK with `found extra signing block
+  'Dependency metadata'` (AGP's default `dependenciesInfo.includeInApk = true`, a Google-encrypted blob).
+  `app/build.gradle.kts` now sets `dependenciesInfo { includeInApk = false; includeInBundle = false }` and
+  `vcsInfo.include = false` in the release build type. Verified on a real build rather than assumed: the APK
+  has no `version-control-info` entry, its signing block holds only the v2 signature (`0x7109871a`) and the
+  ordinary verity padding block (`0x42726577`) - no `0x504b4453` dependency-metadata pair - and
+  `apksigner verify` still reports the same certificate (`3201509b...ee3666e`). No behaviour change to the
+  app itself. 1681 unit tests, 0 failures (`:app:testDebugUnitTest`). `versionCode` 560 -> 561, `versionName`
+  `"1.2.64"` -> `"1.2.65"`. This is also what makes the F-Droid submission robust for every LATER
+  release, not just one: each GitHub release APK now lacks both. Build each release APK from a real clone,
+  never a `git worktree` (see Release Channels). Not device-relevant.
 - **§504 (v1.2.64): D-480 - `wer` was silently autocorrected to `der`; its German frequency raised (German**
   **data pack only).** User-reported (2026-09-24): "wer" always became "der". Traced to real data, not guessed:
   `dictionaries/de/dict.tsv` held `wer 1397 OTHER` against `der 1004234` - a 719x ratio, far past A-01's
