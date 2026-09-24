@@ -327,6 +327,12 @@ in every prompt.
   `gitlab_api_payload.json` remain as the upload route if the metadata ever needs changing again; tokens
   were only ever typed into the user's own PowerShell, never used by Claude (one was pasted into the chat
   by mistake and had to be revoked).
+- **2026-09-24, later: linsui labelled the MR `reproducible-builds` and rebased the source branch onto the
+  current `fdroid:master` (5090 commits) - the branch's commit hashes changed (e.g. his suggestion commit
+  `b8eb5d60` is now `35ba64af`), the file content did not (re-checked: still byte-identical to the scratchpad
+  copy). A fresh MR pipeline (#2878195833) started on the rebased head; MR reads "ready to merge by
+  maintainers". One thread is still formally open - the one where the user asked whether reproducible builds
+  were a blocker (linsui: "So why not?"), answered by enabling them; the user can resolve it.**
 - **RELEASE RECIPE for every future F-Droid-relevant version (F-Droid compares its own build with the GitHub**
   **APK, so any deviation fails):** (1) fresh `git clone` of the repo, never a `git worktree`; (2) check out
   the tag; (3) `./gradlew :app:assembleRelease --no-build-cache --no-configuration-cache` with the
