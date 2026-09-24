@@ -290,6 +290,20 @@ in every prompt.
   429d, cert unchanged, no vcs entry). Required order, because `Binaries:` resolves to the release asset and
   `checkupdates` compares the newest tag against `CurrentVersion`: push `main` + tag `v1.2.65`, create the
   GitHub release `v1.2.65` with the APK, THEN upload the metadata.
+- **Third run (v1.2.65): metadata/vcs/signing-block problems gone, but the comparison found two differing**
+  **APK entries, `classes.dex` and `assets/dexopt/baseline.prof`.** Traced to the actual cause instead of
+  guessing: downloaded F-Droid's kept failed build from the job artifacts, parsed both dex files and compared
+  method by method - identical string/type/method tables, exactly two methods differed
+  (`Umlaut.unfold`, `DataDiacriticFolding.unfold`, +5 code units each): my build had an extra Kotlin
+  `Intrinsics.checkNotNullExpressionValue(..., "toString(...)")` after `current.toString()`, F-Droid's did
+  not, though the source of both files is unchanged since v1.2.47 (whose dex matched). Cause: the local
+  Gradle build cache (`org.gradle.caching=true`) served a stale `compileReleaseKotlin` result into a fresh
+  clone. Proof: rebuilding the same tag from a fresh clone with `--no-build-cache --no-configuration-cache`
+  gives an APK whose 912 entries all equal F-Droid's build. **RELEASE RECIPE (must be followed for every APK
+  that goes to a GitHub release): fresh `git clone` (never a worktree), checkout the tag, then `./gradlew
+  :app:assembleRelease --no-build-cache --no-configuration-cache`.** The day-to-day build keeps its caches.
+  Replacement `build/release-v1.2.65/AdaptKey.apk`: sha256 ea78b962...d405, cert unchanged, no vcs entry, no
+  dependency-metadata block.
 - **Still open:**
   - Push the new `v1.2.47` tag (done - on origin).
   - Upload the corrected `metadata/de.froehlichmedia.adaptkey.yml` (see `scratchpad/
