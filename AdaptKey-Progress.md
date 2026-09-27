@@ -343,10 +343,14 @@ in every prompt.
   higher than the metadata's `CurrentVersion` while the MR is still unmerged makes the MR's `checkupdates`
   job fail. `dependenciesInfo`/`vcsInfo` are already switched off in `app/build.gradle.kts` (D-481).
 - **2026-09-24, later: R8 request (linsui) DONE.** v1.2.66 (`versionCode` 562, commit `83def9e`) tagged, built from a fresh clone (sha256 6b5baa58...d53c, cert unchanged), GitHub release live, metadata retargeted and uploaded via the API; pipeline #2880033658 green incl. `fdroid build` (reproducible) and `checkupdates`. Only the reply to linsui and the maintainers' merge remain.
+- **MR !44142 MERGED (2026-09-26, 19:20 MESZ) by linsui, squashed into `fdroid:master` as `d99ede6d`. LIVE**
+  **on F-Droid as of 2026-09-27:** https://f-droid.org/packages/de.froehlichmedia.adaptkey/ serves v1.2.66
+  (562), "hergestellt sowie signiert vom Originalentwickler" (reproducible build confirmed by F-Droid's own
+  infra, not just the MR pipeline). AdaptKey is now a normal F-Droid app - end of the whole MR-review arc
+  that started with the original submission; only ordinary future releases (RELEASE RECIPE below) remain.
 - **Still open:**
-  - Wait for the maintainers to merge MR !44142; then react to any last requests. Once merged, F-Droid's own
-    build/publish cycle still has to run before the app appears in the client - merged is not yet live.
-  - The next release after the merge: tag it and follow the RELEASE RECIPE above.
+  - The next release: tag it and follow the RELEASE RECIPE above - F-Droid picks up new tags automatically
+    (`AutoUpdateMode: Version`, `UpdateCheckMode: Tags`), no new MR needed.
   - Optional cleanup, not urgent: the stray local-only tags `backup-before-bigram-fix-20260906`, `v1.0.24`
     and the superseded `v1.2.46` were never pushed and are invisible to F-Droid; delete or keep, no effect.
   - Pre-merge caution: no tag with a `versionCode` above 561 may be pushed until the MR is merged and
