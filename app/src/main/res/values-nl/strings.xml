@@ -342,7 +342,7 @@
     <string name="d278_result_imported">Geïmporteerde talen: %1$s</string>
     <string name="d278_result_skipped">Overgeslagen (taalpakket hier niet geïnstalleerd - installeer het en importeer daarna opnieuw): %1$s</string>
     <string name="d486_title">Ruimte onder het toetsenbord</string>
-    <string name="d486_summary">Hoeveel ruimte onder het toetsenbord vrij blijft. Automatisch volgt de navigatiemodus van de telefoon. Staat het toetsenbord te hoog, schuif de schuifbalk dan naar links.</string>
+    <string name="d486_summary">Hoeveel ruimte onder het toetsenbord vrij blijft. Automatisch volgt de navigatiemodus van de telefoon. Staat het toetsenbord te hoog, kies dan een kleinere waarde.</string>
     <string name="d486_mode_none">Geen</string>
     <string name="d486_mode_nav_bar">Navigatiebalk</string>
     <string name="d486_mode_auto">Automatisch</string>

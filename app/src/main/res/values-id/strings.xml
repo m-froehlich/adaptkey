@@ -342,7 +342,7 @@
     <string name="d278_result_imported">Bahasa yang diimpor: %1$s</string>
     <string name="d278_result_skipped">Dilewati (paket bahasa belum terpasang di sini - pasang, lalu impor lagi): %1$s</string>
     <string name="d486_title">Ruang di bawah keyboard</string>
-    <string name="d486_summary">Seberapa banyak ruang yang dikosongkan di bawah keyboard. Otomatis mengikuti mode navigasi ponsel. Jika keyboard terlalu tinggi, geser penggeser ke kiri.</string>
+    <string name="d486_summary">Seberapa banyak ruang yang dikosongkan di bawah keyboard. Otomatis mengikuti mode navigasi ponsel. Jika keyboard terlalu tinggi, pilih nilai yang lebih kecil.</string>
     <string name="d486_mode_none">Tidak ada</string>
     <string name="d486_mode_nav_bar">Bilah navigasi</string>
     <string name="d486_mode_auto">Otomatis</string>

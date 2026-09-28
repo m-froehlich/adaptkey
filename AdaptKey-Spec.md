@@ -3380,8 +3380,11 @@ key height is handed to the space key as an invisible touch strip (D-260) - assu
 gesture bar reports a gesture inset no larger than its navigation bar. A phone (seen on a Chinese ROM, without
 gesture navigation) that reports one anyway made the keyboard sit a gesture-bar-height too high for nothing.
 
-**The setting** (`d486_bottom_inset_mode`, last entry of the Layout category): a three-position slider, from
-least to most room, stored as `none` / `nav_bar_only` / `auto` (default **auto**):
+**The setting** (`d486_bottom_inset_mode`, last entry of the Layout category): an inline dropdown
+(`DropDownPreference` - a spinner in the row, no dialog or follow-up screen; the app's first, a prototype for the
+other pick-one settings), listing "none" first and running from least to most room, stored as `none` /
+`nav_bar_only` / `auto` (default **auto**). Its row shows the description plus the current choice (D-419). The
+`BottomInsetMode` enum is declared in the same order:
 
 - **None** - nothing is kept free; the keyboard extends to the very bottom edge.
 - **Navigation bar** - only the reported navigation-bar inset is kept free, never the gesture-recognition
@@ -3394,7 +3397,7 @@ least to most room, stored as `none` / `nav_bar_only` / `auto` (default **auto**
   like a gesture phone - so a gesture phone never loses its reserved strip through this automatism.
 
 The decision is the pure `BottomInsetPolicy.resolve`, shared by the insets listener and the D-161/D-250
-recheck so the two cannot disagree; changing the slider re-applies the padding immediately on the window's
+recheck so the two cannot disagree; changing the setting re-applies the padding immediately on the window's
 current insets. Every time the reported values change, one `insets: ...` line goes to the diagnostic log (SDK,
 manufacturer, navigation-bar/gesture/mandatory-gesture/tappable-element bottom insets, the navigation-mode
 values, the chosen mode and the resulting padding), so a phone whose insets do not match what is on screen can

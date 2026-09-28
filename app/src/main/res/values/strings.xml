@@ -413,7 +413,7 @@
     <string name="d278_result_imported">Imported languages: %1$s</string>
     <string name="d278_result_skipped">Skipped (language pack not installed here - install it, then import again): %1$s</string>
     <string name="d486_title">Room below the keyboard</string>
-    <string name="d486_summary">How much space is kept free below the keyboard. Automatic follows the navigation mode of your phone. If the keyboard sits too high, move the slider to the left.</string>
+    <string name="d486_summary">How much space is kept free below the keyboard. Automatic follows the navigation mode of your phone. If the keyboard sits too high, choose a smaller amount.</string>
     <string name="d486_mode_none">None</string>
     <string name="d486_mode_nav_bar">Navigation bar</string>
     <string name="d486_mode_auto">Automatic</string>

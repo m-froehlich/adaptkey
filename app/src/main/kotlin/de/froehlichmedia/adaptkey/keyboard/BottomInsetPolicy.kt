@@ -8,19 +8,20 @@ package de.froehlichmedia.adaptkey.keyboard
  * edge-to-edge, so the service pads it up by the bottom system-bar/gesture inset (D-136, D-260). On a phone
  * without any gesture bar (seen on a Chinese ROM) that reserved a gesture-bar-high strip for nothing.
  * 
- * The stored values are `auto` / `nav_bar_only` / `none` - keep them in sync with `arrays.xml`
- * (`d486_bottom_inset_values`).
+ * The stored values are `none` / `nav_bar_only` / `auto` - keep them in sync with `arrays.xml`
+ * (`d486_bottom_inset_values`). Declared from least to most room, with "none" first (the order of the
+ * dropdown).
  */
 enum class BottomInsetMode {
     
-    /** Follows the navigation mode the phone reports - see [BottomInsetPolicy.resolve]. The default. */
-    AUTO,
+    /** Nothing is kept free: the keyboard extends to the very bottom edge. */
+    NONE,
     
     /** Only the navigation bar itself is kept free, never the (invisible) gesture-recognition strip. */
     NAV_BAR_ONLY,
     
-    /** Nothing is kept free: the keyboard extends to the very bottom edge. */
-    NONE;
+    /** Follows the navigation mode the phone reports - see [BottomInsetPolicy.resolve]. The default. */
+    AUTO;
     
     companion object {
         

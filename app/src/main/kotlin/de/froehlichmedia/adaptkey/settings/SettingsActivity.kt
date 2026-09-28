@@ -161,11 +161,6 @@ class SettingsActivity : SettingsScreenActivity() {
                 R.array.d391_auto_merge_aggressiveness_labels,
                 R.array.d391_auto_merge_aggressiveness_values
             )
-            setupLabeledSlider(
-                SettingsStore.KEY_BOTTOM_INSET_MODE,
-                R.array.d486_bottom_inset_labels,
-                R.array.d486_bottom_inset_values
-            )
             
             // Read live from the actual installed package rather than a hand-maintained string resource,
             // which would inevitably drift out of sync with the real versionName in app/build.gradle.kts.
@@ -214,6 +209,8 @@ class SettingsActivity : SettingsScreenActivity() {
             // plain ListPreference in this screen goes through the shared helper below instead.
             setupListPreferenceCurrentValueSummary(SettingsStore.KEY_LLM_THRESHOLD, R.string.c06_summary)
             setupListPreferenceCurrentValueSummary(SettingsStore.KEY_LEARNED_WORD_EXPIRY_WINDOW, R.string.d389_summary)
+            // D-486: a DropDownPreference is a ListPreference, so the same helper applies.
+            setupListPreferenceCurrentValueSummary(SettingsStore.KEY_BOTTOM_INSET_MODE, R.string.d486_summary)
             
             // D-191: the runtime permission dialog only appears the moment the user actually opts in here,
             // never proactively - turning the toggle on with the permission not yet granted blocks the

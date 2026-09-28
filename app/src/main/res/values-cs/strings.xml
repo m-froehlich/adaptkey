@@ -342,7 +342,7 @@
     <string name="d278_result_imported">Importované jazyky: %1$s</string>
     <string name="d278_result_skipped">Přeskočeno (jazykový balíček zde není nainstalován - nainstalujte ho a importujte znovu): %1$s</string>
     <string name="d486_title">Místo pod klávesnicí</string>
-    <string name="d486_summary">Kolik místa zůstává volného pod klávesnicí. Automaticky se řídí navigačním režimem telefonu. Pokud je klávesnice příliš vysoko, posuňte posuvník doleva.</string>
+    <string name="d486_summary">Kolik místa zůstává volného pod klávesnicí. Automaticky se řídí navigačním režimem telefonu. Pokud je klávesnice příliš vysoko, zvolte menší hodnotu.</string>
     <string name="d486_mode_none">Žádné</string>
     <string name="d486_mode_nav_bar">Navigační lišta</string>
     <string name="d486_mode_auto">Automaticky</string>

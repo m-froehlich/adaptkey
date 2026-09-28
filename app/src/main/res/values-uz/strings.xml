@@ -342,7 +342,7 @@
     <string name="d278_result_imported">Import qilingan tillar: %1$s</string>
     <string name="d278_result_skipped">O‘tkazib yuborildi (til paketi bu yerda o‘rnatilmagan - uni o‘rnating, so‘ng qayta import qiling): %1$s</string>
     <string name="d486_title">Klaviatura ostidagi joy</string>
-    <string name="d486_summary">Klaviatura ostida qancha joy bo‘sh qoldiriladi. Avtomatik telefonning navigatsiya rejimiga amal qiladi. Klaviatura juda baland bo‘lsa, slayderni chapga suring.</string>
+    <string name="d486_summary">Klaviatura ostida qancha joy bo‘sh qoldiriladi. Avtomatik telefonning navigatsiya rejimiga amal qiladi. Klaviatura juda baland bo‘lsa, kichikroq qiymat tanlang.</string>
     <string name="d486_mode_none">Yo‘q</string>
     <string name="d486_mode_nav_bar">Navigatsiya paneli</string>
     <string name="d486_mode_auto">Avtomatik</string>

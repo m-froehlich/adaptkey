@@ -342,7 +342,7 @@
     <string name="d278_result_imported">Idiomas importados: %1$s</string>
     <string name="d278_result_skipped">Ignorado (pacote de idioma não instalado aqui - instale-o e importe de novo): %1$s</string>
     <string name="d486_title">Espaço sob o teclado</string>
-    <string name="d486_summary">Quanto espaço fica livre sob o teclado. Automático segue o modo de navegação do telefone. Se o teclado ficar demasiado alto, mova o controlo deslizante para a esquerda.</string>
+    <string name="d486_summary">Quanto espaço fica livre sob o teclado. Automático segue o modo de navegação do telefone. Se o teclado ficar demasiado alto, escolha um valor menor.</string>
     <string name="d486_mode_none">Nenhum</string>
     <string name="d486_mode_nav_bar">Barra de navegação</string>
     <string name="d486_mode_auto">Automático</string>

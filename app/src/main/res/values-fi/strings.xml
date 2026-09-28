@@ -342,7 +342,7 @@
     <string name="d278_result_imported">Tuodut kielet: %1$s</string>
     <string name="d278_result_skipped">Ohitettu (kielipakettia ei ole asennettu tänne - asenna se ja tuo sitten uudelleen): %1$s</string>
     <string name="d486_title">Tila näppäimistön alla</string>
-    <string name="d486_summary">Kuinka paljon tilaa jätetään vapaaksi näppäimistön alle. Automaattinen noudattaa puhelimen navigointitilaa. Jos näppäimistö on liian korkealla, siirrä liukusäädintä vasemmalle.</string>
+    <string name="d486_summary">Kuinka paljon tilaa jätetään vapaaksi näppäimistön alle. Automaattinen noudattaa puhelimen navigointitilaa. Jos näppäimistö on liian korkealla, valitse pienempi arvo.</string>
     <string name="d486_mode_none">Ei mitään</string>
     <string name="d486_mode_nav_bar">Navigointipalkki</string>
     <string name="d486_mode_auto">Automaattinen</string>

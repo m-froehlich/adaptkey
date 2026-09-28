@@ -342,7 +342,7 @@
     <string name="d278_result_imported">Importuotos kalbos: %1$s</string>
     <string name="d278_result_skipped">Praleista (kalbos paketas čia neįdiegtas - įdiekite jį ir importuokite iš naujo): %1$s</string>
     <string name="d486_title">Vieta po klaviatūra</string>
-    <string name="d486_summary">Kiek vietos paliekama laisvos po klaviatūra. Automatiškai atsižvelgia į telefono naršymo režimą. Jei klaviatūra per aukštai, pastumkite slankiklį į kairę.</string>
+    <string name="d486_summary">Kiek vietos paliekama laisvos po klaviatūra. Automatiškai atsižvelgia į telefono naršymo režimą. Jei klaviatūra per aukštai, pasirinkite mažesnę reikšmę.</string>
     <string name="d486_mode_none">Nėra</string>
     <string name="d486_mode_nav_bar">Naršymo juosta</string>
     <string name="d486_mode_auto">Automatiškai</string>

@@ -352,10 +352,13 @@
             app:seekBarIncrement="1"
             app:showSeekBarValue="true" />
 
-        <de.froehlichmedia.adaptkey.settings.LabeledSeekBarPreference
+        <!-- D-486: prototype of an inline dropdown (a spinner in the row, no dialog or follow-up screen). -->
+        <DropDownPreference
             android:key="d486_bottom_inset_mode"
             android:title="@string/d486_title"
             android:summary="@string/d486_summary"
+            android:entries="@array/d486_bottom_inset_labels"
+            android:entryValues="@array/d486_bottom_inset_values"
             android:defaultValue="auto" />
 
     </PreferenceCategory>

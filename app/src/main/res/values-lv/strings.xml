@@ -342,7 +342,7 @@
     <string name="d278_result_imported">Importētās valodas: %1$s</string>
     <string name="d278_result_skipped">Izlaists (valodu pakotne šeit nav instalēta - instalējiet to un pēc tam importējiet vēlreiz): %1$s</string>
     <string name="d486_title">Vieta zem tastatūras</string>
-    <string name="d486_summary">Cik daudz vietas tiek atstāts brīvas zem tastatūras. Automātiski seko tālruņa navigācijas režīmam. Ja tastatūra atrodas pārāk augstu, pabīdiet slīdni pa kreisi.</string>
+    <string name="d486_summary">Cik daudz vietas tiek atstāts brīvas zem tastatūras. Automātiski seko tālruņa navigācijas režīmam. Ja tastatūra atrodas pārāk augstu, izvēlieties mazāku vērtību.</string>
     <string name="d486_mode_none">Nav</string>
     <string name="d486_mode_nav_bar">Navigācijas josla</string>
     <string name="d486_mode_auto">Automātiski</string>

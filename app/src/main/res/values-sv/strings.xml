@@ -342,7 +342,7 @@
     <string name="d278_result_imported">Importerade språk: %1$s</string>
     <string name="d278_result_skipped">Hoppades över (språkpaketet inte installerat här - installera det och importera sedan igen): %1$s</string>
     <string name="d486_title">Utrymme under tangentbordet</string>
-    <string name="d486_summary">Hur mycket utrymme som hålls fritt under tangentbordet. Automatiskt följer telefonens navigeringsläge. Om tangentbordet sitter för högt, flytta reglaget åt vänster.</string>
+    <string name="d486_summary">Hur mycket utrymme som hålls fritt under tangentbordet. Automatiskt följer telefonens navigeringsläge. Om tangentbordet sitter för högt, välj ett mindre värde.</string>
     <string name="d486_mode_none">Inget</string>
     <string name="d486_mode_nav_bar">Navigeringsfält</string>
     <string name="d486_mode_auto">Automatiskt</string>

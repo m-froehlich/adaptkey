@@ -342,7 +342,7 @@
     <string name="d278_result_imported">Importerte språk: %1$s</string>
     <string name="d278_result_skipped">Hoppet over (språkpakken er ikke installert her - installer den og importer på nytt): %1$s</string>
     <string name="d486_title">Plass under tastaturet</string>
-    <string name="d486_summary">Hvor mye plass som holdes ledig under tastaturet. Automatisk følger telefonens navigasjonsmodus. Hvis tastaturet sitter for høyt, flytt glideren mot venstre.</string>
+    <string name="d486_summary">Hvor mye plass som holdes ledig under tastaturet. Automatisk følger telefonens navigasjonsmodus. Hvis tastaturet sitter for høyt, velg en mindre verdi.</string>
     <string name="d486_mode_none">Ingen</string>
     <string name="d486_mode_nav_bar">Navigasjonsfelt</string>
     <string name="d486_mode_auto">Automatisk</string>

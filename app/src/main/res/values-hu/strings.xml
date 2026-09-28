@@ -342,7 +342,7 @@
     <string name="d278_result_imported">Importált nyelvek: %1$s</string>
     <string name="d278_result_skipped">Kihagyva (a nyelvi csomag nincs itt telepítve - telepítsd, majd importáld újra): %1$s</string>
     <string name="d486_title">Hely a billentyűzet alatt</string>
-    <string name="d486_summary">Mennyi hely marad szabadon a billentyűzet alatt. Az automatikus a telefon navigációs módját követi. Ha a billentyűzet túl magasan van, húzza a csúszkát balra.</string>
+    <string name="d486_summary">Mennyi hely marad szabadon a billentyűzet alatt. Az automatikus a telefon navigációs módját követi. Ha a billentyűzet túl magasan van, válasszon kisebb értéket.</string>
     <string name="d486_mode_none">Nincs</string>
     <string name="d486_mode_nav_bar">Navigációs sáv</string>
     <string name="d486_mode_auto">Automatikus</string>
