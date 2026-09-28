@@ -415,7 +415,7 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
-- **D-487 - WITHDRAWN (2026-09-28, §510): the inline `DropDownPreference` prototype was rejected on the**
+- **D-487 - WITHDRAWN and closed (2026-09-28, §510; user confirmed the c06 look as final): the inline `DropDownPreference` prototype was rejected on the**
   **device; the existing `ListPreference` look (c06) stays the standard, so no other setting is converted.**
   Original entry, kept for the record: convert other pick-one settings to inline dropdowns - the user was still to
   choose which. Background: D-486 is the app's first `DropDownPreference` (a spinner in the row,
@@ -427,7 +427,8 @@ non-trivial changes).
   which the user has not asked to change. Standing rules (memory): "none/off/never" always first; a dropdown for
   unordered pick-one, a slider for ordered scales. Nothing to do until the user names the settings.
 
-- **D-486 - RESOLVED (§508 - §510, v1.2.70; reported 2026-09-28, not yet device-confirmed): the keyboard sits a**
+- **D-486 - RESOLVED (§508 - §510, v1.2.70; reported 2026-09-28; the list look device-confirmed 2026-09-28,**
+  **whether Automatic fixes the Chinese phone itself still unconfirmed): the keyboard sits a**
   **gesture-bar-height too high on a Chinese phone without gesture navigation.** Details and the (code-reading)
   root cause are in §508 and spec §50: a three-position "room below the keyboard" slider (None / Navigation bar /
   Automatic) as the last Layout entry, an automatic three-button detection, and one inset line in the diagnostic
@@ -1679,7 +1680,8 @@ non-trivial changes).
   `DropDownPreference`, `none` first with values in enum order, default `auto`, the row's summary ends with the
   "Currently: Automatic" line, every value resolves to its enum position). Spec §50 updated. Backlog D-487 (more
   dropdowns) is withdrawn with the prototype. `versionCode` 565 -> 566, `versionName` `"1.2.69"` -> `"1.2.70"`.
-  1704 tests total, 0 failures; `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not device-confirmed.
+  1704 tests total, 0 failures; `:app:assembleRelease`/`:app:testDebugUnitTest` green. Device-confirmed by the user on 2026-09-28 ("so ist es perfekt") for the look; the effect on the Chinese
+  phone's actual inset behaviour is not yet reported.
 - **§509 (v1.2.69): D-486 follow-up - the setting becomes an inline dropdown, and "none" comes first.** The user**
   **(2026-09-28) pointed out two things about §508: "none" must always be first (the enum was declared `AUTO,**
   **NAV_BAR_ONLY, NONE`, only the slider itself had it leftmost), and a real dropdown - not a slider or a radio/**
