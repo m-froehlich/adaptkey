@@ -415,8 +415,10 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
-- **D-487 - OPEN, not started (2026-09-28): convert other pick-one settings to inline dropdowns - the user**
-  **still has to choose which.** Background: D-486 is the app's first `DropDownPreference` (a spinner in the row,
+- **D-487 - WITHDRAWN (2026-09-28, §510): the inline `DropDownPreference` prototype was rejected on the**
+  **device; the existing `ListPreference` look (c06) stays the standard, so no other setting is converted.**
+  Original entry, kept for the record: convert other pick-one settings to inline dropdowns - the user was still to
+  choose which. Background: D-486 is the app's first `DropDownPreference` (a spinner in the row,
   no dialog), a prototype (§509) the user wants to judge on the device before deciding. Today's other choices:
   three `ListPreference` dialogs - `d389_learned_word_expiry_window` (forget unused words), `c04_highlight_color`
   (its dialog is a bespoke coloured list, D-302, so a plain dropdown would lose the colour rendering and needs its
@@ -425,7 +427,7 @@ non-trivial changes).
   which the user has not asked to change. Standing rules (memory): "none/off/never" always first; a dropdown for
   unordered pick-one, a slider for ordered scales. Nothing to do until the user names the settings.
 
-- **D-486 - RESOLVED (§508 + §509, v1.2.69; reported 2026-09-28, not yet device-confirmed): the keyboard sits a**
+- **D-486 - RESOLVED (§508 - §510, v1.2.70; reported 2026-09-28, not yet device-confirmed): the keyboard sits a**
   **gesture-bar-height too high on a Chinese phone without gesture navigation.** Details and the (code-reading)
   root cause are in §508 and spec §50: a three-position "room below the keyboard" slider (None / Navigation bar /
   Automatic) as the last Layout entry, an automatic three-button detection, and one inset line in the diagnostic
@@ -1666,6 +1668,18 @@ non-trivial changes).
   volume) is completely unaffected by this and ran exactly as planned. 446,015 lemma-column rows changed
   across the 31 packs; every pack passes `lemma_check.py` and `quality_gate.py`.
 
+- **§510 (v1.2.70): D-486 follow-up - the inline dropdown prototype is rejected; the setting is a plain**
+  **`ListPreference` like the mini-LLM threshold.** After trying §509's `DropDownPreference` on the device the**
+  **user (2026-09-28) found the mini-LLM threshold (`c06_llm_threshold`) looks much better - the current value is**
+  **clearly visible there - and asked for the same here.** `d486_bottom_inset_mode` is now a `ListPreference` with
+  the same entries/values/default (`none` first, enum order unchanged) and the same D-419 "Currently: X" summary
+  helper as the other plain list settings, so it reads exactly like c06. Nothing else changed: enum, pure logic,
+  diagnostic line and all 32 strings stay (the summary wording "choose a smaller amount" fits either widget).
+  `BottomInsetPreferenceRoboTest` rewritten to match (4 tests, was 3: it is a `ListPreference` and not a
+  `DropDownPreference`, `none` first with values in enum order, default `auto`, the row's summary ends with the
+  "Currently: Automatic" line, every value resolves to its enum position). Spec §50 updated. Backlog D-487 (more
+  dropdowns) is withdrawn with the prototype. `versionCode` 565 -> 566, `versionName` `"1.2.69"` -> `"1.2.70"`.
+  1704 tests total, 0 failures; `:app:assembleRelease`/`:app:testDebugUnitTest` green. Not device-confirmed.
 - **§509 (v1.2.69): D-486 follow-up - the setting becomes an inline dropdown, and "none" comes first.** The user**
   **(2026-09-28) pointed out two things about §508: "none" must always be first (the enum was declared `AUTO,**
   **NAV_BAR_ONLY, NONE`, only the slider itself had it leftmost), and a real dropdown - not a slider or a radio/**

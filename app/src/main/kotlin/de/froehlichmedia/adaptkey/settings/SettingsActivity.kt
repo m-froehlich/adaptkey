@@ -209,7 +209,7 @@ class SettingsActivity : SettingsScreenActivity() {
             // plain ListPreference in this screen goes through the shared helper below instead.
             setupListPreferenceCurrentValueSummary(SettingsStore.KEY_LLM_THRESHOLD, R.string.c06_summary)
             setupListPreferenceCurrentValueSummary(SettingsStore.KEY_LEARNED_WORD_EXPIRY_WINDOW, R.string.d389_summary)
-            // D-486: a DropDownPreference is a ListPreference, so the same helper applies.
+            // D-486: same treatment as the other plain ListPreferences.
             setupListPreferenceCurrentValueSummary(SettingsStore.KEY_BOTTOM_INSET_MODE, R.string.d486_summary)
             
             // D-191: the runtime permission dialog only appears the moment the user actually opts in here,

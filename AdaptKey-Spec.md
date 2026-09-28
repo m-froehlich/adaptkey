@@ -3380,9 +3380,9 @@ key height is handed to the space key as an invisible touch strip (D-260) - assu
 gesture bar reports a gesture inset no larger than its navigation bar. A phone (seen on a Chinese ROM, without
 gesture navigation) that reports one anyway made the keyboard sit a gesture-bar-height too high for nothing.
 
-**The setting** (`d486_bottom_inset_mode`, last entry of the Layout category): an inline dropdown
-(`DropDownPreference` - a spinner in the row, no dialog or follow-up screen; the app's first, a prototype for the
-other pick-one settings), listing "none" first and running from least to most room, stored as `none` /
+**The setting** (`d486_bottom_inset_mode`, last entry of the Layout category): a plain
+`ListPreference` like the mini-LLM threshold (c06) - an inline `DropDownPreference` was tried first (§509) and
+rejected by the user on the device - listing "none" first and running from least to most room, stored as `none` /
 `nav_bar_only` / `auto` (default **auto**). Its row shows the description plus the current choice (D-419). The
 `BottomInsetMode` enum is declared in the same order:
 

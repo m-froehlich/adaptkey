@@ -4,11 +4,14 @@
 package de.froehlichmedia.adaptkey.settings
 
 import androidx.preference.DropDownPreference
+import androidx.preference.ListPreference
 import androidx.preference.PreferenceFragmentCompat
 import de.froehlichmedia.adaptkey.R
 import de.froehlichmedia.adaptkey.keyboard.BottomInsetMode
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
@@ -17,23 +20,30 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 
 /**
- * D-486: the "room below the keyboard" setting is an inline dropdown (prototype), listing "none" first, whose
- * entry order matches [BottomInsetMode]'s declaration and whose stored values [BottomInsetMode.fromKey] reads.
+ * D-486: the "room below the keyboard" setting is a plain [ListPreference] like the mini-LLM threshold (the
+ * inline [DropDownPreference] prototype was rejected on the device), listing "none" first, whose entry order
+ * matches [BottomInsetMode]'s declaration, whose stored values [BottomInsetMode.fromKey] reads, and whose row
+ * shows the current choice.
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34])
 class BottomInsetPreferenceRoboTest {
     
-    private fun preference(): DropDownPreference {
+    private fun preference(): ListPreference {
         val activity = Robolectric.buildActivity(SettingsActivity::class.java).setup().get()
         val fragment = activity.supportFragmentManager.findFragmentById(R.id.settings_container) as PreferenceFragmentCompat
-        val preference = fragment.findPreference<DropDownPreference>(SettingsStore.KEY_BOTTOM_INSET_MODE)
-        assertNotNull("the setting must be a DropDownPreference", preference)
+        val preference = fragment.findPreference<ListPreference>(SettingsStore.KEY_BOTTOM_INSET_MODE)
+        assertNotNull("the setting must be a ListPreference", preference)
         return preference!!
     }
     
     @Test
-    fun `the dropdown lists none first and its values follow the enum order`() {
+    fun `it is a plain list preference, not the rejected inline dropdown`() {
+        assertFalse(preference() is DropDownPreference)
+    }
+    
+    @Test
+    fun `the list has none first and its values follow the enum order`() {
         val preference = preference()
         
         assertEquals(BottomInsetMode.entries.map { it.name.lowercase() }, preference.entryValues.map { it.toString() })
@@ -42,8 +52,13 @@ class BottomInsetPreferenceRoboTest {
     }
     
     @Test
-    fun `the dropdown defaults to automatic`() {
-        assertEquals("auto", preference().value)
+    fun `the default is automatic and the row shows it as the current value`() {
+        val preference = preference()
+        val application = RuntimeEnvironment.getApplication()
+        
+        assertEquals("auto", preference.value)
+        val current = application.getString(R.string.pref_current_value, application.getString(R.string.d486_mode_auto))
+        assertTrue(preference.summary.toString().endsWith(current))
     }
     
     @Test

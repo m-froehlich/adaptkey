@@ -352,8 +352,9 @@
             app:seekBarIncrement="1"
             app:showSeekBarValue="true" />
 
-        <!-- D-486: prototype of an inline dropdown (a spinner in the row, no dialog or follow-up screen). -->
-        <DropDownPreference
+        <!-- D-486: a plain ListPreference like c06_llm_threshold (the user's preferred look - the current
+             choice shown in the row, D-419); the inline DropDownPreference prototype was rejected. -->
+        <ListPreference
             android:key="d486_bottom_inset_mode"
             android:title="@string/d486_title"
             android:summary="@string/d486_summary"
