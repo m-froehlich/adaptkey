@@ -415,6 +415,44 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
+- **D-483 - OPEN, not started (2026-09-28): the launcher label "AdaptKey Settings" is truncated and confusable**
+  **with the system Settings, reported by the Ukrainian MR tester - check every language, not just Ukrainian.**
+  Report: in Ukrainian the label becomes "Налаштування AdaptKey" and is cut to "Налаштуван…" in the app drawer,
+  so it looks like the system Settings app; suggestion: just "AdaptKey". Cause (checked in the code): the
+  launcher entry is `SettingsActivity` (`AndroidManifest.xml`, `MAIN`/`LAUNCHER`) and carries
+  `android:label="@string/settings_title"`, so the launcher label is the settings screen's own title, translated
+  into all 31 `values-xx` (the tester's Ukrainian one is `Налаштування AdaptKey`; German/Greek follow the same
+  pattern `Ρυθμίσεις AdaptKey`). `app_name` is already plain `AdaptKey` everywhere. Direction: set the
+  `SettingsActivity` label to `@string/app_name` for the launcher; if the in-screen title should stay
+  "AdaptKey Settings", set it in code (the theme is `NoActionBar`, so check where the title is actually drawn
+  first) or leave it as the plain name. Also decide what happens to the other 31 `settings_title` translations
+  (drop, or keep for the in-screen title only). Small, but touches the manifest and every locale file, so it
+  needs the user's go before starting.
+
+- **D-484 - OPEN, not started (2026-09-28): Settings sub-screens have no visible Back button.** Reported as
+  generally perceived as odd. There are 9 `AppCompatActivity` sub-screens (`BackupActivity`,
+  `BlacklistActivity`, `CalibrationActivity`, `CredentialsActivity`, `DiagnosticLogActivity`,
+  `FeatureOverviewActivity`, `LanguagePacksActivity`, `LearnedWordsActivity`, `Tier3ModelActivity`) below
+  `SettingsActivity` as the root, all under `Theme.AdaptKey`, which is `Material3.DayNight.NoActionBar` - no
+  action bar, so no up-arrow exists anywhere and only the system back gesture/button leaves a screen (a grep
+  found no `HomeAsUp`/`supportActionBar`/`NavigateUp` code at all). Direction: one shared mechanism, not ten
+  copies - e.g. a small helper/toolbar layout (`MaterialToolbar` with a navigation icon calling `finish()`, plus
+  the screen's title), applied to every sub-screen and taking the edge-to-edge inset handling the D-188 fix
+  already added per Activity into account; the app-wide `NoActionBar` theme keeps working. New accessibility
+  string for the arrow's content description in every `values-xx` (project rule, see memory). Note that
+  D-483's title question overlaps: whatever draws the screen title becomes the toolbar.
+
+- **D-485 - OPEN, not started (2026-09-28): the calibration screen has no OK/Done button.** Seen in the
+  onboarding path (`OnboardingStep.CALIBRATION` opens `CalibrationActivity`), but it is the same screen as in
+  Settings. Nothing is actually missing functionally - choosing a style already persists immediately
+  (`previewAndConfirm` -> `persistPattern`) - it is only reassurance. Today the only way out is "Skip"
+  (`calibration_skip`, D-73: it silently applies TWO_THUMBS, so it is not a neutral "leave"), or the system
+  back. The risk to design around: an OK/Done that only calls `finish()` must not be confusable with "Skip"
+  (which overwrites the current style), so the label and behaviour need a decision - e.g. "Done" that just
+  closes and keeps whatever is selected, shown once a style has been chosen, and "Skip" only while nothing has
+  been chosen yet. Probably folds into D-484's Back button for the Settings path, but the onboarding path
+  still wants an explicit forward action. New string in every `values-xx`.
+
 - **D-475 - OPEN, not started (2026-09-20): the "clean fix" for the touch-zone learning signal - needs its**
   **own design discussion before any code.** Background: D-474 (§497) adds a switch that freezes touch-zone
   learning, because the user found that drifting zones eventually *cause* the mistaps they were meant to
