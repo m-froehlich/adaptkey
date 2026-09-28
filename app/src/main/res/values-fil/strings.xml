@@ -341,4 +341,9 @@
     <string name="d278_result_settings">Na-import ang mga setting at mga naka-save na username/email.</string>
     <string name="d278_result_imported">Mga na-import na wika: %1$s</string>
     <string name="d278_result_skipped">Nilaktawan (hindi naka-install dito ang language pack - i-install ito, saka mag-import muli): %1$s</string>
+    <string name="d486_title">Espasyo sa ilalim ng keyboard</string>
+    <string name="d486_summary">Gaano karaming espasyo ang iniiwang bakante sa ilalim ng keyboard. Sinusundan ng Awtomatiko ang navigation mode ng telepono. Kung masyadong mataas ang keyboard, ilipat ang slider pakaliwa.</string>
+    <string name="d486_mode_none">Wala</string>
+    <string name="d486_mode_nav_bar">Navigation bar</string>
+    <string name="d486_mode_auto">Awtomatiko</string>
 </resources>

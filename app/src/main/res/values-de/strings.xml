@@ -401,4 +401,9 @@
     <string name="d278_result_settings">Einstellungen und gespeicherte Benutzernamen/E-Mail-Adressen importiert.</string>
     <string name="d278_result_imported">Importierte Sprachen: %1$s</string>
     <string name="d278_result_skipped">Übersprungen (Sprachpaket hier nicht installiert - erst installieren, dann erneut importieren): %1$s</string>
+    <string name="d486_title">Platz unter der Tastatur</string>
+    <string name="d486_summary">Wie viel Platz unter der Tastatur freigehalten wird. Automatisch richtet sich nach dem Navigationsmodus des Telefons. Sitzt die Tastatur zu hoch, den Regler nach links schieben.</string>
+    <string name="d486_mode_none">Keiner</string>
+    <string name="d486_mode_nav_bar">Navigationsleiste</string>
+    <string name="d486_mode_auto">Automatisch</string>
 </resources>

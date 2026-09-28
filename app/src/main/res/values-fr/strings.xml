@@ -341,4 +341,9 @@
     <string name="d278_result_settings">Paramètres et identifiants/e-mails enregistrés importés.</string>
     <string name="d278_result_imported">Langues importées : %1$s</string>
     <string name="d278_result_skipped">Ignoré (pack de langue non installé ici - installez-le, puis importez à nouveau) : %1$s</string>
+    <string name="d486_title">Espace sous le clavier</string>
+    <string name="d486_summary">Espace laissé libre sous le clavier. Automatique suit le mode de navigation du téléphone. Si le clavier est trop haut, déplacez le curseur vers la gauche.</string>
+    <string name="d486_mode_none">Aucun</string>
+    <string name="d486_mode_nav_bar">Barre de navigation</string>
+    <string name="d486_mode_auto">Automatique</string>
 </resources>

@@ -341,4 +341,9 @@
     <string name="d278_result_settings">Seaded ja salvestatud kasutajanimed/e-posti aadressid imporditud.</string>
     <string name="d278_result_imported">Imporditud keeled: %1$s</string>
     <string name="d278_result_skipped">Vahele jäetud (keelepaketti pole siin installitud - installi see ja impordi seejärel uuesti): %1$s</string>
+    <string name="d486_title">Ruum klaviatuuri all</string>
+    <string name="d486_summary">Kui palju ruumi jäetakse klaviatuuri alla vabaks. Automaatne järgib telefoni navigeerimisrežiimi. Kui klaviatuur on liiga kõrgel, liiguta liugurit vasakule.</string>
+    <string name="d486_mode_none">Puudub</string>
+    <string name="d486_mode_nav_bar">Navigeerimisriba</string>
+    <string name="d486_mode_auto">Automaatne</string>
 </resources>

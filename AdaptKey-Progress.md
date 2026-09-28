@@ -415,6 +415,13 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
+- **D-486 - RESOLVED (§508, v1.2.68; reported 2026-09-28, not yet device-confirmed): the keyboard sits a**
+  **gesture-bar-height too high on a Chinese phone without gesture navigation.** Details and the (code-reading)
+  root cause are in §508 and spec §50: a three-position "room below the keyboard" slider (None / Navigation bar /
+  Automatic) as the last Layout entry, an automatic three-button detection, and one inset line in the diagnostic
+  log. Open question that only the device can answer: whether Automatic alone already fixes that phone (it does
+  only if the ROM reports `navigation_mode` = 0 and the surplus is the gesture inset, not the navigation bar).
+
 - **D-483 - RESOLVED (§507, v1.2.67; reported 2026-09-28, device-confirmed 2026-09-28): the launcher label "AdaptKey Settings" is truncated and confusable**
   **with the system Settings, reported by the Ukrainian MR tester - check every language, not just Ukrainian.**
   Report: in Ukrainian the label becomes "Налаштування AdaptKey" and is cut to "Налаштуван…" in the app drawer,
@@ -1649,6 +1656,33 @@ non-trivial changes).
   volume) is completely unaffected by this and ran exactly as planned. 446,015 lemma-column rows changed
   across the 31 packs; every pack passes `lemma_check.py` and `quality_gate.py`.
 
+- **§508 (v1.2.68): D-486 - "room below the keyboard": a three-position slider, an automatic three-button**
+  **detection, and an inset line in the diagnostic log.** Reported 2026-09-28 from a Chinese smartphone without
+  gesture navigation: the keyboard sat a gesture-bar-height too high. Root cause (code reading, not device-
+  verified - the phone's actual inset values are unknown, which is why the log line exists): D-260's rule
+  `max(navigationBars.bottom, systemGestures.bottom)` assumes such a phone reports no gesture inset beyond its
+  bar; a ROM that reports one anyway (or an inflated bar) reserves space for a bar that is not there. Agreed with
+  the user (2026-09-28, one setting + one automatism + logging, done immediately): (1) `BottomInsetMode`
+  (`none` / `nav_bar_only` / `auto`) as a `LabeledSeekBarPreference` (D-407 pattern), the very last entry of the
+  Layout category, stored under `d486_bottom_inset_mode`, wired through `SettingsStore` -> `RawSettings` ->
+  `SettingsMapper` -> `AdaptSettings.bottomInsetMode`, also in the backup key order; 5 new strings in all 32
+  `values*` (drafts, per the standing rule), labels via `@string` arrays like D-353. (2) Pure
+  `BottomInsetPolicy.resolve(mode, navBarPx, gesturePx, navigationMode)`: NONE -> 0; NAV_BAR_ONLY -> bar; AUTO ->
+  unchanged `max(bar, gesture)` (strip beyond the bar reclaimable for D-260) except for an explicit
+  `NavigationMode.THREE_BUTTON`, which drops the strip. Two-button keeps it (it has a swipe-up pill); UNKNOWN
+  behaves like gestural, and Xiaomi's `force_fsg_nav_bar` = 1 forces GESTURAL, so a gesture phone cannot lose its
+  strip through the automatism (the D-259 missed-taps protection stays). `NavigationModeReader` reads
+  `Settings.Secure.navigation_mode` (plain string key) defensively. (3) `AdaptKeyService.applyWindowInsetsPadding`
+  and the recheck runnable now share `resolveBottomInset()`; `applySettings()` re-applies the padding on the
+  window's current insets so the slider takes effect at once; `logBottomInsets()` writes one `insets: ...` line
+  (sdk, vendor, navBar/gestures/mandatory/tappable bottom, navigation_mode, vendor switch, chosen mode, total/
+  reclaimable/extension/padding) to the diagnostic log whenever the values change. Deliberately NOT done: switching
+  the strip to `mandatorySystemGestures` (unverifiable on the user's own gesture phones, where D-260 is tuned).
+  +11 unit tests (`BottomInsetPolicyTest` 10, `SettingsMapperTest` 1) - 1700 total, 0 failures;
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 563 -> 564, `versionName` `"1.2.67"` ->
+  `"1.2.68"`. Not device-confirmed: whether Automatic already fixes the Chinese phone (only if its ROM reports
+  `navigation_mode` = 0 and the excess is the gesture inset, not the bar), otherwise the slider is the answer, and
+  the log line then tells what the ROM really reports.
 - **§507 (v1.2.67): D-483/D-484/D-485 - launcher label, a toolbar with a back arrow on every settings screen,**
   **an OK button on the calibration screen, and the "Skip" trap closed.** Reported 2026-09-28 (the launcher label**
   **by the Ukrainian F-Droid MR tester); decisions agreed with the user the same day - see spec §49 and K-01.**

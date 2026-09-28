@@ -341,4 +341,9 @@
     <string name="d278_result_settings">Indstillinger og gemte brugernavne/e-mailadresser importeret.</string>
     <string name="d278_result_imported">Importerede sprog: %1$s</string>
     <string name="d278_result_skipped">Sprunget over (sprogpakken er ikke installeret her - installér den, og importér derefter igen): %1$s</string>
+    <string name="d486_title">Plads under tastaturet</string>
+    <string name="d486_summary">Hvor meget plads der holdes fri under tastaturet. Automatisk følger telefonens navigationstilstand. Hvis tastaturet sidder for højt, så flyt skyderen mod venstre.</string>
+    <string name="d486_mode_none">Ingen</string>
+    <string name="d486_mode_nav_bar">Navigationslinje</string>
+    <string name="d486_mode_auto">Automatisk</string>
 </resources>

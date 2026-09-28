@@ -161,6 +161,11 @@ class SettingsActivity : SettingsScreenActivity() {
                 R.array.d391_auto_merge_aggressiveness_labels,
                 R.array.d391_auto_merge_aggressiveness_values
             )
+            setupLabeledSlider(
+                SettingsStore.KEY_BOTTOM_INSET_MODE,
+                R.array.d486_bottom_inset_labels,
+                R.array.d486_bottom_inset_values
+            )
             
             // Read live from the actual installed package rather than a hand-maintained string resource,
             // which would inevitably drift out of sync with the real versionName in app/build.gradle.kts.

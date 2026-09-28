@@ -8,6 +8,7 @@ import de.froehlichmedia.adaptkey.dictionary.AutoMergeAggressiveness
 import de.froehlichmedia.adaptkey.dictionary.AutoSplitMode
 import de.froehlichmedia.adaptkey.dictionary.AutocorrectAggressiveness
 import de.froehlichmedia.adaptkey.dictionary.LearnedWordExpiryWindow
+import de.froehlichmedia.adaptkey.keyboard.BottomInsetMode
 import de.froehlichmedia.adaptkey.keyboard.KeyProportions
 import de.froehlichmedia.adaptkey.keyboard.KeyboardLayout
 import de.froehlichmedia.adaptkey.prediction.LlmActivationThreshold
@@ -131,6 +132,9 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  *           accidental activation is unlikely (G-01's own language swipe is a plain swipe, not a long-press,
  *           so the two do not actually compete) and a useful feature should default to discoverable rather
  *           than hidden behind an opt-in).
+ * @property bottomInsetMode D-486: how much room is kept free below the keyboard (default
+ *           [BottomInsetMode.DEFAULT], automatic) - a three-position slider, last in the Layout category, for
+ *           phones whose reported navigation/gesture insets do not match what is really on screen.
  */
 data class AdaptSettings(
     val keyProportions: KeyProportions = KeyProportions.DEFAULT,
@@ -163,7 +167,8 @@ data class AdaptSettings(
     val autoMergeAggressiveness: AutoMergeAggressiveness = AutoMergeAggressiveness.DEFAULT,
     val sustainedLanguageSwitchThreshold: Int = DEFAULT_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD,
     val learnedWordExpiryWindow: LearnedWordExpiryWindow = LearnedWordExpiryWindow.DEFAULT,
-    val cursorControlEnabled: Boolean = true
+    val cursorControlEnabled: Boolean = true,
+    val bottomInsetMode: BottomInsetMode = BottomInsetMode.DEFAULT
 ) {
     
     companion object {

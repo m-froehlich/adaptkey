@@ -83,6 +83,20 @@
         <item>@string/d353_autocorrect_aggressiveness_aggressive</item>
     </string-array>
 
+    <!-- D-486 room kept free below the keyboard (label / stored value), in slider order from least to most;
+         the values are BottomInsetMode's own names. Consumed by LabeledSeekBarPreference. -->
+    <string-array name="d486_bottom_inset_labels">
+        <item>@string/d486_mode_none</item>
+        <item>@string/d486_mode_nav_bar</item>
+        <item>@string/d486_mode_auto</item>
+    </string-array>
+
+    <string-array name="d486_bottom_inset_values">
+        <item>none</item>
+        <item>nav_bar_only</item>
+        <item>auto</item>
+    </string-array>
+
     <string-array name="d353_autocorrect_aggressiveness_values">
         <item>off</item>
         <item>cautious</item>

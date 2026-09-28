@@ -8,6 +8,7 @@ import de.froehlichmedia.adaptkey.dictionary.AutoMergeAggressiveness
 import de.froehlichmedia.adaptkey.dictionary.AutoSplitMode
 import de.froehlichmedia.adaptkey.dictionary.AutocorrectAggressiveness
 import de.froehlichmedia.adaptkey.dictionary.LearnedWordExpiryWindow
+import de.froehlichmedia.adaptkey.keyboard.BottomInsetMode
 import de.froehlichmedia.adaptkey.keyboard.KeyProportions
 import de.froehlichmedia.adaptkey.keyboard.KeyboardLayout
 import de.froehlichmedia.adaptkey.prediction.LlmActivationThreshold
@@ -57,7 +58,8 @@ data class RawSettings(
     val autoMergeAggressivenessKey: String? = null,
     val sustainedLanguageSwitchThreshold: Int = AdaptSettings.DEFAULT_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD,
     val learnedWordExpiryWindowKey: String? = null,
-    val cursorControlEnabled: Boolean = true
+    val cursorControlEnabled: Boolean = true,
+    val bottomInsetModeKey: String? = null
 )
 
 /**
@@ -309,7 +311,8 @@ object SettingsMapper {
                 MIN_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD, MAX_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD
             ),
             learnedWordExpiryWindow = toLearnedWordExpiryWindow(raw),
-            cursorControlEnabled = raw.cursorControlEnabled
+            cursorControlEnabled = raw.cursorControlEnabled,
+            bottomInsetMode = BottomInsetMode.fromKey(raw.bottomInsetModeKey)
         )
     }
 }

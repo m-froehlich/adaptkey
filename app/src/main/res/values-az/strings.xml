@@ -341,4 +341,9 @@
     <string name="d278_result_settings">Parametrlər və saxlanmış istifadəçi adları/e-poçtlar idxal edildi.</string>
     <string name="d278_result_imported">İdxal edilmiş dillər: %1$s</string>
     <string name="d278_result_skipped">Keçildi (dil paketi burada quraşdırılmayıb - onu quraşdırın, sonra yenidən idxal edin): %1$s</string>
+    <string name="d486_title">Klaviaturanın altındakı boşluq</string>
+    <string name="d486_summary">Klaviaturanın altında nə qədər boşluq saxlanılır. Avtomatik telefonun naviqasiya rejimini izləyir. Klaviatura çox yüksəkdədirsə, sürgünü sola çəkin.</string>
+    <string name="d486_mode_none">Yoxdur</string>
+    <string name="d486_mode_nav_bar">Naviqasiya paneli</string>
+    <string name="d486_mode_auto">Avtomatik</string>
 </resources>

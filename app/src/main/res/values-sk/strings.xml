@@ -341,4 +341,9 @@
     <string name="d278_result_settings">Nastavenia a uložené používateľské mená/e-maily importované.</string>
     <string name="d278_result_imported">Importované jazyky: %1$s</string>
     <string name="d278_result_skipped">Preskočené (jazykový balíček tu nie je nainštalovaný - nainštalujte ho a importujte znova): %1$s</string>
+    <string name="d486_title">Miesto pod klávesnicou</string>
+    <string name="d486_summary">Koľko miesta zostáva voľného pod klávesnicou. Automaticky sa riadi navigačným režimom telefónu. Ak je klávesnica príliš vysoko, posuňte posúvač doľava.</string>
+    <string name="d486_mode_none">Žiadne</string>
+    <string name="d486_mode_nav_bar">Navigačný panel</string>
+    <string name="d486_mode_auto">Automaticky</string>
 </resources>

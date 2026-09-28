@@ -341,4 +341,9 @@
     <string name="d278_result_settings">Zaimportowano ustawienia i zapisane nazwy użytkownika/e-maile.</string>
     <string name="d278_result_imported">Zaimportowane języki: %1$s</string>
     <string name="d278_result_skipped">Pominięto (pakiet językowy nie jest tu zainstalowany - zainstaluj go, a potem zaimportuj ponownie): %1$s</string>
+    <string name="d486_title">Miejsce pod klawiaturą</string>
+    <string name="d486_summary">Ile miejsca jest wolne pod klawiaturą. Automatycznie dopasowuje się do trybu nawigacji telefonu. Jeśli klawiatura jest zbyt wysoko, przesuń suwak w lewo.</string>
+    <string name="d486_mode_none">Brak</string>
+    <string name="d486_mode_nav_bar">Pasek nawigacji</string>
+    <string name="d486_mode_auto">Automatycznie</string>
 </resources>

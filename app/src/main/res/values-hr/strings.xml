@@ -341,4 +341,9 @@
     <string name="d278_result_settings">Postavke i spremljena korisnička imena/e-adrese uvezeni.</string>
     <string name="d278_result_imported">Uvezeni jezici: %1$s</string>
     <string name="d278_result_skipped">Preskočeno (jezični paket nije instaliran ovdje - instalirajte ga, a zatim ponovno uvezite): %1$s</string>
+    <string name="d486_title">Prostor ispod tipkovnice</string>
+    <string name="d486_summary">Koliko se prostora ostavlja slobodnim ispod tipkovnice. Automatski prati način navigacije telefona. Ako je tipkovnica previsoko, pomaknite klizač ulijevo.</string>
+    <string name="d486_mode_none">Nema</string>
+    <string name="d486_mode_nav_bar">Navigacijska traka</string>
+    <string name="d486_mode_auto">Automatski</string>
 </resources>

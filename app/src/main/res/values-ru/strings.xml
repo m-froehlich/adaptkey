@@ -341,4 +341,9 @@
     <string name="d278_result_settings">Настройки и сохранённые имена пользователей/адреса почты импортированы.</string>
     <string name="d278_result_imported">Импортированные языки: %1$s</string>
     <string name="d278_result_skipped">Пропущено (языковой пакет здесь не установлен — установите его и импортируйте снова): %1$s</string>
+    <string name="d486_title">Место под клавиатурой</string>
+    <string name="d486_summary">Сколько места остаётся свободным под клавиатурой. Автоматически следует режиму навигации телефона. Если клавиатура расположена слишком высоко, сдвиньте ползунок влево.</string>
+    <string name="d486_mode_none">Нет</string>
+    <string name="d486_mode_nav_bar">Панель навигации</string>
+    <string name="d486_mode_auto">Автоматически</string>
 </resources>

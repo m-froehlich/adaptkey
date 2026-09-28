@@ -341,4 +341,9 @@
     <string name="d278_result_settings">Ayarlar ve kayıtlı kullanıcı adları/e-postalar içe aktarıldı.</string>
     <string name="d278_result_imported">İçe aktarılan diller: %1$s</string>
     <string name="d278_result_skipped">Atlandı (dil paketi burada yüklü değil - yükle, sonra yeniden içe aktar): %1$s</string>
+    <string name="d486_title">Klavyenin altındaki boşluk</string>
+    <string name="d486_summary">Klavyenin altında ne kadar boşluk bırakılacağı. Otomatik, telefonun gezinme modunu izler. Klavye çok yüksekteyse kaydırıcıyı sola çekin.</string>
+    <string name="d486_mode_none">Yok</string>
+    <string name="d486_mode_nav_bar">Gezinme çubuğu</string>
+    <string name="d486_mode_auto">Otomatik</string>
 </resources>

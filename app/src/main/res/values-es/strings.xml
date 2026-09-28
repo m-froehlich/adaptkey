@@ -341,4 +341,9 @@
     <string name="d278_result_settings">Ajustes y usuarios/correos guardados importados.</string>
     <string name="d278_result_imported">Idiomas importados: %1$s</string>
     <string name="d278_result_skipped">Omitido (paquete de idioma no instalado aquí - instálalo y luego importa de nuevo): %1$s</string>
+    <string name="d486_title">Espacio bajo el teclado</string>
+    <string name="d486_summary">Cuánto espacio se deja libre bajo el teclado. Automático sigue el modo de navegación del teléfono. Si el teclado queda demasiado alto, mueve el control deslizante hacia la izquierda.</string>
+    <string name="d486_mode_none">Ninguno</string>
+    <string name="d486_mode_nav_bar">Barra de navegación</string>
+    <string name="d486_mode_auto">Automático</string>
 </resources>

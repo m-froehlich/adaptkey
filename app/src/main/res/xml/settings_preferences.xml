@@ -352,6 +352,12 @@
             app:seekBarIncrement="1"
             app:showSeekBarValue="true" />
 
+        <de.froehlichmedia.adaptkey.settings.LabeledSeekBarPreference
+            android:key="d486_bottom_inset_mode"
+            android:title="@string/d486_title"
+            android:summary="@string/d486_summary"
+            android:defaultValue="auto" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:key="cat_feedback_group" android:title="@string/cat_feedback">

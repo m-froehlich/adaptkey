@@ -341,4 +341,9 @@
     <string name="d278_result_settings">Tetapan dan nama pengguna/e-mel yang disimpan diimport.</string>
     <string name="d278_result_imported">Bahasa yang diimport: %1$s</string>
     <string name="d278_result_skipped">Dilangkau (pek bahasa belum dipasang di sini - pasang, kemudian import semula): %1$s</string>
+    <string name="d486_title">Ruang di bawah papan kekunci</string>
+    <string name="d486_summary">Berapa banyak ruang dikosongkan di bawah papan kekunci. Automatik mengikut mod navigasi telefon. Jika papan kekunci terlalu tinggi, alihkan peluncur ke kiri.</string>
+    <string name="d486_mode_none">Tiada</string>
+    <string name="d486_mode_nav_bar">Bar navigasi</string>
+    <string name="d486_mode_auto">Automatik</string>
 </resources>

@@ -341,4 +341,9 @@
     <string name="d278_result_settings">Setările și numele de utilizator/e-mailurile salvate au fost importate.</string>
     <string name="d278_result_imported">Limbi importate: %1$s</string>
     <string name="d278_result_skipped">Omis (pachetul de limbă nu este instalat aici - instalează-l, apoi importă din nou): %1$s</string>
+    <string name="d486_title">Spațiu sub tastatură</string>
+    <string name="d486_summary">Cât spațiu rămâne liber sub tastatură. Automat urmează modul de navigare al telefonului. Dacă tastatura este prea sus, mută glisorul spre stânga.</string>
+    <string name="d486_mode_none">Niciunul</string>
+    <string name="d486_mode_nav_bar">Bară de navigare</string>
+    <string name="d486_mode_auto">Automat</string>
 </resources>

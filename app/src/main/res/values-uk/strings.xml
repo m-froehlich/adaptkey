@@ -341,4 +341,9 @@
     <string name="d278_result_settings">Налаштування та збережені імена користувачів/адреси пошти імпортовано.</string>
     <string name="d278_result_imported">Імпортовані мови: %1$s</string>
     <string name="d278_result_skipped">Пропущено (мовний пакет тут не встановлено — встановіть його й імпортуйте знову): %1$s</string>
+    <string name="d486_title">Місце під клавіатурою</string>
+    <string name="d486_summary">Скільки місця залишається вільним під клавіатурою. Автоматично враховує режим навігації телефона. Якщо клавіатура розташована надто високо, посуньте повзунок ліворуч.</string>
+    <string name="d486_mode_none">Немає</string>
+    <string name="d486_mode_nav_bar">Панель навігації</string>
+    <string name="d486_mode_auto">Автоматично</string>
 </resources>

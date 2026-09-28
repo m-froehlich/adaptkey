@@ -95,6 +95,7 @@ import de.froehlichmedia.adaptkey.gesture.WordExtent
 import de.froehlichmedia.adaptkey.keyboard.AdaptKeyboardView
 import de.froehlichmedia.adaptkey.keyboard.AlternativeScript
 import de.froehlichmedia.adaptkey.keyboard.BackspaceRepeat
+import de.froehlichmedia.adaptkey.keyboard.BottomInsetPolicy
 import de.froehlichmedia.adaptkey.keyboard.CursorControlGesture
 import de.froehlichmedia.adaptkey.keyboard.CursorLineBounds
 import de.froehlichmedia.adaptkey.keyboard.InlineSuggestionsBarView
@@ -103,6 +104,7 @@ import de.froehlichmedia.adaptkey.keyboard.Key
 import de.froehlichmedia.adaptkey.keyboard.KeyCode
 import de.froehlichmedia.adaptkey.keyboard.LayoutKind
 import de.froehlichmedia.adaptkey.keyboard.LayoutRegistry
+import de.froehlichmedia.adaptkey.keyboard.NavigationModeReader
 import de.froehlichmedia.adaptkey.keyboard.PanelNavigation
 import de.froehlichmedia.adaptkey.keyboard.ExtraRowView
 import de.froehlichmedia.adaptkey.keyboard.HapticTier
@@ -840,15 +842,14 @@ class AdaptKeyService : InputMethodService() {
         if (root != null && root.isAttachedToWindow) {
             val insets = ViewCompat.getRootWindowInsets(root)
             if (insets != null) {
-                val bars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-                val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
                 val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
                 val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
                 val expectedTop = maxOf(statusBars.top, cutout.top)
                 // D-274: mirrors applyWindowInsetsPadding()'s own bottomInset computation exactly, including
                 // its D-260 space-touch-extension subtraction - see lastAppliedSpaceExtensionPx's own comment
-                // above for why comparing against the raw, un-subtracted inset here was wrong.
-                val expectedBottom = maxOf(bars.bottom, gestures.bottom) - lastAppliedSpaceExtensionPx
+                // above for why comparing against the raw, un-subtracted inset here was wrong. D-486: the
+                // shared resolveBottomInset() keeps the two in step.
+                val expectedBottom = (resolveBottomInset(insets).totalPx - lastAppliedSpaceExtensionPx).coerceAtLeast(0)
                 if (root.paddingTop != expectedTop || root.paddingBottom != expectedBottom) {
                     diag(
                         "AdaptKey",
@@ -1311,17 +1312,56 @@ class AdaptKeyService : InputMethodService() {
      * the real nav bar for no reason.
      */
     private fun applyWindowInsetsPadding(view: View, insets: WindowInsetsCompat) {
-        val bars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-        val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
         val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
         val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
-        val reclaimableGestureZonePx = (gestures.bottom - bars.bottom).coerceAtLeast(0)
-        val appliedExtensionPx = keyboardView?.setSpaceTouchExtension(reclaimableGestureZonePx) ?: 0
+        val inset = resolveBottomInset(insets)
+        val appliedExtensionPx = keyboardView?.setSpaceTouchExtension(inset.reclaimableGestureZonePx) ?: 0
         // D-274: recorded so windowInsetsRecheckRunnable's own "expected" computation can mirror this exact
         // subtraction instead of permanently disagreeing with it - see that field's own comment.
         lastAppliedSpaceExtensionPx = appliedExtensionPx
-        val bottomInset = maxOf(bars.bottom, gestures.bottom) - appliedExtensionPx
+        val bottomInset = (inset.totalPx - appliedExtensionPx).coerceAtLeast(0)
         view.setPadding(0, maxOf(statusBars.top, cutout.top), 0, bottomInset)
+        logBottomInsets(insets, inset, appliedExtensionPx, bottomInset)
+    }
+    
+    /**
+     * D-486: the bottom room to keep free, from the reported insets, the user's "room below the keyboard"
+     * choice and the navigation mode the phone reports - see [BottomInsetPolicy.resolve]. The one shared
+     * computation of [applyWindowInsetsPadding] and [windowInsetsRecheckRunnable], so the two cannot drift
+     * apart.
+     */
+    private fun resolveBottomInset(insets: WindowInsetsCompat): BottomInsetPolicy.Result {
+        val bars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+        val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
+        return BottomInsetPolicy.resolve(settings.bottomInsetMode, bars.bottom, gestures.bottom, NavigationModeReader.read(this))
+    }
+    
+    // D-486: the last inset line written to the diagnostic log, so an unchanged situation is logged once
+    // (per keyboard/settings change), not on every insets callback or recheck tick.
+    private var lastLoggedInsets: String? = null
+    
+    /**
+     * D-486: writes every raw value the bottom padding is derived from to the diagnostic log (only when
+     * they change), so a phone whose reported insets do not match what is on screen can be understood from
+     * a shared log instead of needing a device to be probed. `mandatory`/`tappable` are not used by the
+     * computation - they only show what else the ROM reports.
+     */
+    private fun logBottomInsets(insets: WindowInsetsCompat, inset: BottomInsetPolicy.Result, extensionPx: Int, paddingPx: Int) {
+        val bars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+        val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
+        val mandatory = insets.getInsets(WindowInsetsCompat.Type.mandatorySystemGestures())
+        val tappable = insets.getInsets(WindowInsetsCompat.Type.tappableElement())
+        val raw = NavigationModeReader.readRaw(this)
+        val line = "insets: sdk=${Build.VERSION.SDK_INT} vendor=${Build.MANUFACTURER} " +
+            "navBar.bottom=${bars.bottom} gestures.bottom=${gestures.bottom} " +
+            "mandatory.bottom=${mandatory.bottom} tappable.bottom=${tappable.bottom} " +
+            "navigation_mode=${raw.navigationMode} vendorGestures=${raw.vendorFullScreenGestures} " +
+            "mode=${settings.bottomInsetMode} -> total=${inset.totalPx} reclaimable=${inset.reclaimableGestureZonePx} " +
+            "extension=$extensionPx padding=$paddingPx"
+        if (line != lastLoggedInsets) {
+            lastLoggedInsets = line
+            diag("AdaptKey", line)
+        }
     }
     
     /**
@@ -1403,6 +1443,13 @@ class AdaptKeyService : InputMethodService() {
         // D-139/D-110: toggling diagnostic recording takes effect immediately; turning it off also clears
         // whatever was recorded so far (DiagnosticLog.enabled's own setter), not just stops adding to it.
         DiagnosticLog.enabled = s.diagnosticLogEnabled
+        // D-486: a changed "room below the keyboard" choice applies at once, on the insets the window already
+        // has - not only when the system next happens to deliver new ones.
+        inputRoot?.let { root ->
+            if (root.isAttachedToWindow) {
+                ViewCompat.getRootWindowInsets(root)?.let { insets -> applyWindowInsetsPadding(root, insets) }
+            }
+        }
     }
     
     /**

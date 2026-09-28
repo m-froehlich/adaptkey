@@ -8,6 +8,7 @@ import de.froehlichmedia.adaptkey.dictionary.AutoMergeAggressiveness
 import de.froehlichmedia.adaptkey.dictionary.AutoSplitMode
 import de.froehlichmedia.adaptkey.dictionary.AutocorrectAggressiveness
 import de.froehlichmedia.adaptkey.dictionary.LearnedWordExpiryWindow
+import de.froehlichmedia.adaptkey.keyboard.BottomInsetMode
 import de.froehlichmedia.adaptkey.keyboard.KeyProportions
 import de.froehlichmedia.adaptkey.keyboard.KeyboardLayout
 import de.froehlichmedia.adaptkey.prediction.LlmActivationThreshold
@@ -139,6 +140,19 @@ class SettingsMapperTest {
     fun `D-474 touchLearningEnabled flag passes through unchanged, defaulting to on`() {
         assertTrue(SettingsMapper.toAdaptSettings(RawSettings()).touchLearningEnabled)
         assertFalse(SettingsMapper.toAdaptSettings(RawSettings(touchLearningEnabled = false)).touchLearningEnabled)
+    }
+    
+    @Test
+    fun `D-486 bottomInsetMode resolves the stored key, defaulting to automatic`() {
+        assertEquals(BottomInsetMode.AUTO, SettingsMapper.toAdaptSettings(RawSettings()).bottomInsetMode)
+        assertEquals(
+            BottomInsetMode.NONE,
+            SettingsMapper.toAdaptSettings(RawSettings(bottomInsetModeKey = "none")).bottomInsetMode
+        )
+        assertEquals(
+            BottomInsetMode.AUTO,
+            SettingsMapper.toAdaptSettings(RawSettings(bottomInsetModeKey = "garbage")).bottomInsetMode
+        )
     }
     
     @Test

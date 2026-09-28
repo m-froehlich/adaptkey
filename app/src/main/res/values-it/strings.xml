@@ -341,4 +341,9 @@
     <string name="d278_result_settings">Impostazioni e nomi utente/e-mail salvati importati.</string>
     <string name="d278_result_imported">Lingue importate: %1$s</string>
     <string name="d278_result_skipped">Saltato (pacchetto lingua non installato qui - installalo, poi importa di nuovo): %1$s</string>
+    <string name="d486_title">Spazio sotto la tastiera</string>
+    <string name="d486_summary">Quanto spazio viene lasciato libero sotto la tastiera. Automatico segue la modalità di navigazione del telefono. Se la tastiera è troppo in alto, sposta il cursore verso sinistra.</string>
+    <string name="d486_mode_none">Nessuno</string>
+    <string name="d486_mode_nav_bar">Barra di navigazione</string>
+    <string name="d486_mode_auto">Automatico</string>
 </resources>

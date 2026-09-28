@@ -341,4 +341,9 @@
     <string name="d278_result_settings">Mipangilio na majina ya mtumiaji/barua pepe zilizohifadhiwa yameingizwa.</string>
     <string name="d278_result_imported">Lugha zilizoingizwa: %1$s</string>
     <string name="d278_result_skipped">Imerukwa (kifurushi cha lugha hakijasakinishwa hapa - kisakinishe, kisha uingize tena): %1$s</string>
+    <string name="d486_title">Nafasi chini ya kibodi</string>
+    <string name="d486_summary">Ni nafasi ngapi inayoachwa wazi chini ya kibodi. Otomatiki hufuata hali ya urambazaji ya simu. Ikiwa kibodi iko juu sana, sogeza kitelezi kushoto.</string>
+    <string name="d486_mode_none">Hakuna</string>
+    <string name="d486_mode_nav_bar">Upau wa urambazaji</string>
+    <string name="d486_mode_auto">Otomatiki</string>
 </resources>

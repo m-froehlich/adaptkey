@@ -341,4 +341,9 @@
     <string name="d278_result_settings">Подешавања и сачувана корисничка имена/е-адресе увезени.</string>
     <string name="d278_result_imported">Увезени језици: %1$s</string>
     <string name="d278_result_skipped">Прескочено (језички пакет није инсталиран овде - инсталирајте га, а затим поново увезите): %1$s</string>
+    <string name="d486_title">Простор испод тастатуре</string>
+    <string name="d486_summary">Колико се простора оставља слободним испод тастатуре. Аутоматски прати начин навигације телефона. Ако је тастатура превисоко, померите клизач улево.</string>
+    <string name="d486_mode_none">Нема</string>
+    <string name="d486_mode_nav_bar">Навигациона трака</string>
+    <string name="d486_mode_auto">Аутоматски</string>
 </resources>

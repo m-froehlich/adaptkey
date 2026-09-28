@@ -71,6 +71,7 @@ object SettingsStore {
     const val KEY_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD = "d398_sustained_language_switch_threshold"
     const val KEY_LEARNED_WORD_EXPIRY_WINDOW = "d389_learned_word_expiry_window"
     const val KEY_CURSOR_CONTROL_ENABLED = "d401_cursor_control"
+    const val KEY_BOTTOM_INSET_MODE = "d486_bottom_inset_mode"
     
     /**
      * D-389: epoch millis the daily [de.froehlichmedia.adaptkey.dictionary.LearnedWordExpirySweep] last
@@ -201,7 +202,8 @@ object SettingsStore {
                 KEY_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD, DEF_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD
             ),
             learnedWordExpiryWindowKey = p.getString(KEY_LEARNED_WORD_EXPIRY_WINDOW, null),
-            cursorControlEnabled = p.getBoolean(KEY_CURSOR_CONTROL_ENABLED, DEF_CURSOR_CONTROL_ENABLED)
+            cursorControlEnabled = p.getBoolean(KEY_CURSOR_CONTROL_ENABLED, DEF_CURSOR_CONTROL_ENABLED),
+            bottomInsetModeKey = p.getString(KEY_BOTTOM_INSET_MODE, null)
         )
         return SettingsMapper.toAdaptSettings(raw)
     }
@@ -339,6 +341,7 @@ object SettingsStore {
         KEY_PERIOD_WEIGHT,
         KEY_BACKSPACE_EXTRA,
         KEY_SHIFT_EXTRA,
+        KEY_BOTTOM_INSET_MODE,
         KEY_KEY_SOUND,
         KEY_KEY_HAPTICS,
         KEY_CAPS_LOCK_HAPTICS

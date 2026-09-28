@@ -3372,6 +3372,36 @@ silently replaced the user's chosen style and wiped its learned touch zones.
 
 ---
 
+## 50. Room Below the Keyboard (D-486)
+
+Android 15 draws the input view edge-to-edge, so the service pads it up by the bottom system-bar/gesture inset
+(D-136, D-260). The original rule - `max(navigation-bar inset, system-gesture inset)`, of which up to a quarter
+key height is handed to the space key as an invisible touch strip (D-260) - assumed that a phone without a
+gesture bar reports a gesture inset no larger than its navigation bar. A phone (seen on a Chinese ROM, without
+gesture navigation) that reports one anyway made the keyboard sit a gesture-bar-height too high for nothing.
+
+**The setting** (`d486_bottom_inset_mode`, last entry of the Layout category): a three-position slider, from
+least to most room, stored as `none` / `nav_bar_only` / `auto` (default **auto**):
+
+- **None** - nothing is kept free; the keyboard extends to the very bottom edge.
+- **Navigation bar** - only the reported navigation-bar inset is kept free, never the gesture-recognition
+  strip; D-260's space-key touch extension is then off.
+- **Automatic** - the pre-D-486 behaviour (whole `max(bar, gesture)`, strip beyond the bar reclaimable by D-260),
+  with one exception: when the phone explicitly reports **three-button navigation** (`Settings.Secure`
+  `navigation_mode` = 0) there is no gesture bar, so it behaves like *Navigation bar*. Two-button navigation
+  still has a swipe-up home pill and keeps the strip. A phone whose own full-screen gestures are on (Xiaomi's
+  `force_fsg_nav_bar`) counts as gestural whatever `navigation_mode` says, and an unreadable mode is treated
+  like a gesture phone - so a gesture phone never loses its reserved strip through this automatism.
+
+The decision is the pure `BottomInsetPolicy.resolve`, shared by the insets listener and the D-161/D-250
+recheck so the two cannot disagree; changing the slider re-applies the padding immediately on the window's
+current insets. Every time the reported values change, one `insets: ...` line goes to the diagnostic log (SDK,
+manufacturer, navigation-bar/gesture/mandatory-gesture/tappable-element bottom insets, the navigation-mode
+values, the chosen mode and the resulting padding), so a phone whose insets do not match what is on screen can
+be understood from a shared log.
+
+---
+
 ## Prerequisite
 
 Android Studio with a configured Android SDK.
