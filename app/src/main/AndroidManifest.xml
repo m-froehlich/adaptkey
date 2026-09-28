@@ -36,10 +36,13 @@
                 android:resource="@xml/method" />
         </service>
 
-        <!-- Settings entry point: launcher activity and IME settings activity (C-01 … C-09). -->
+        <!-- Settings entry point: launcher activity and IME settings activity (C-01 … C-09). D-483: the
+             label is the launcher label, so it is the plain app name - a translated "Settings" title got
+             truncated in the app drawer and was mistaken for the system Settings; the screen's own title is
+             set in code. -->
         <activity
             android:name=".settings.SettingsActivity"
-            android:label="@string/settings_title"
+            android:label="@string/app_name"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

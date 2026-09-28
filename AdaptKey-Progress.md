@@ -415,7 +415,7 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
-- **D-483 - OPEN, not started (2026-09-28): the launcher label "AdaptKey Settings" is truncated and confusable**
+- **D-483 - RESOLVED (§507, v1.2.67; reported 2026-09-28, not yet device-confirmed): the launcher label "AdaptKey Settings" is truncated and confusable**
   **with the system Settings, reported by the Ukrainian MR tester - check every language, not just Ukrainian.**
   Report: in Ukrainian the label becomes "Налаштування AdaptKey" and is cut to "Налаштуван…" in the app drawer,
   so it looks like the system Settings app; suggestion: just "AdaptKey". Cause (checked in the code): the
@@ -429,7 +429,7 @@ non-trivial changes).
   (drop, or keep for the in-screen title only). Small, but touches the manifest and every locale file, so it
   needs the user's go before starting.
 
-- **D-484 - OPEN, not started (2026-09-28): Settings sub-screens have no visible Back button.** Reported as
+- **D-484 - RESOLVED (§507, v1.2.67; reported 2026-09-28, not yet device-confirmed): Settings sub-screens have no visible Back button.** Reported as
   generally perceived as odd. There are 9 `AppCompatActivity` sub-screens (`BackupActivity`,
   `BlacklistActivity`, `CalibrationActivity`, `CredentialsActivity`, `DiagnosticLogActivity`,
   `FeatureOverviewActivity`, `LanguagePacksActivity`, `LearnedWordsActivity`, `Tier3ModelActivity`) below
@@ -442,7 +442,7 @@ non-trivial changes).
   string for the arrow's content description in every `values-xx` (project rule, see memory). Note that
   D-483's title question overlaps: whatever draws the screen title becomes the toolbar.
 
-- **D-485 - OPEN, not started (2026-09-28): the calibration screen has no OK/Done button.** Seen in the
+- **D-485 - RESOLVED (§507, v1.2.67; reported 2026-09-28, not yet device-confirmed): the calibration screen has no OK/Done button.** Seen in the
   onboarding path (`OnboardingStep.CALIBRATION` opens `CalibrationActivity`), but it is the same screen as in
   Settings. Nothing is actually missing functionally - choosing a style already persists immediately
   (`previewAndConfirm` -> `persistPattern`) - it is only reassurance. Today the only way out is "Skip"
@@ -1649,6 +1649,35 @@ non-trivial changes).
   volume) is completely unaffected by this and ran exactly as planned. 446,015 lemma-column rows changed
   across the 31 packs; every pack passes `lemma_check.py` and `quality_gate.py`.
 
+- **§507 (v1.2.67): D-483/D-484/D-485 - launcher label, a toolbar with a back arrow on every settings screen,**
+  **an OK button on the calibration screen, and the "Skip" trap closed.** Reported 2026-09-28 (the launcher label**
+  **by the Ukrainian F-Droid MR tester); decisions agreed with the user the same day - see spec §49 and K-01.**
+  (1) D-483: the launcher entry is `SettingsActivity`, whose manifest label was `@string/settings_title` - the
+  translated "AdaptKey Settings", truncated to "Налаштуван…" in the Ukrainian app drawer and confusable with the
+  system Settings, in every language. The label is now `@string/app_name`; the in-screen title is set in code.
+  (2) D-484: the theme is `NoActionBar`, so no screen had a title or an up arrow. New abstract
+  `SettingsScreenActivity` wraps the layout passed to `setContentView` in a vertical container with a
+  `MaterialToolbar` (registered via `setSupportActionBar`, so the activity `title` shows and the up arrow carries
+  AppCompat's own localised "Navigate up" description - no new string, no `values-xx` change);
+  `onSupportNavigateUp()` goes through the back dispatcher. All 10 settings activities extend it; only
+  `SettingsActivity` (new `activity_settings.xml` host for the preference fragment) turns the arrow off, since
+  back there leaves the app. The toolbar takes over the top status-bar/cutout inset, so the top part was
+  removed from the 9 screens' own D-80/D-151/D-188 inset listeners (their bottom part is untouched); the insets
+  are forwarded unmodified. Chosen over switching the theme to a real ActionBar because that would have fought
+  those per-screen inset listeners. (3) D-485: `activity_calibration.xml` now has `calibration_done` ("OK" =
+  `android.R.string.ok`, system-localised) next to `calibration_skip`; `updateExitButtons()` shows exactly one:
+  Skip only when `EXTRA_FROM_ONBOARDING` (set by `AdaptKeyService.onOpenCalibration`, nothing else) is true and
+  `OffsetStore.loadDetectedPattern` is still `UNKNOWN`, otherwise OK, which only `finish()`es. The trap found on
+  the way (code reading, agreed as unwanted): the Skip handler called `persistPattern(TWO_THUMBS)`
+  unconditionally, so Skip in the settings replaced a chosen style and wiped its learned zones - the handler now
+  persists only while the style is still `UNKNOWN`, and the button is not shown outside onboarding anyway.
+  Tests (Robolectric, JVM): `CalibrationActivityRoboTest` +5 (no Skip from settings; OK keeps style and learned
+  zones; onboarding Skip -> OK swap after choosing; onboarding Skip applies the default; Skip never overwrites),
+  new `SettingsScreenActivityRoboTest` +3 (title + up arrow that finishes a sub-screen, calibration has the arrow,
+  root has title without arrow). 1689 tests total, 0 failures; `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 562 -> 563, `versionName` `"1.2.66"` ->
+  `"1.2.67"`. Not device-confirmed - the visual result (toolbar height/colour, status-bar area, cutout and
+  gesture-nav handling on Android 15, the settings root's list under the toolbar) is untested here; please check
+  every settings screen once on the device.
 - **§506 (v1.2.66): D-482 - R8 enabled for the release build at F-Droid maintainer linsui's request (MR 44142,**
   **"Enable r8").** It had been off since D-223. Now `isMinifyEnabled = true` (shrink + optimise; NOT
   `isShrinkResources`) with `-dontobfuscate` in `app/proguard-rules.pro`, so class/method names stay

@@ -39,7 +39,7 @@ import java.util.Locale
  * store the running keyboard uses for that language. Backed directly by SQLite, so - like the other
  * Android-facing store layers - it is covered by instrumented rather than unit tests.
  */
-class BlacklistActivity : AppCompatActivity() {
+class BlacklistActivity : SettingsScreenActivity() {
     
     private lateinit var store: SqliteDictionaryStore
     private var language: Language = Language.ENGLISH
@@ -68,13 +68,11 @@ class BlacklistActivity : AppCompatActivity() {
         val root = findViewById<View>(R.id.blacklist_root)
         val basePadding = root.paddingTop
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
-            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-            val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
             val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
             val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
             v.setPadding(
                 basePadding,
-                basePadding + maxOf(statusBars.top, cutout.top),
+                basePadding,
                 basePadding,
                 basePadding + maxOf(navBars.bottom, gestures.bottom)
             )

@@ -37,27 +37,35 @@ import de.froehlichmedia.adaptkey.touch.TypingPattern
 
 /**
  * Settings entry point for the configurable parameters (C-01 … C-09).
- *
+ * 
  * Hosts a {@code androidx.preference} screen and is wired as both the launcher activity and the IME
  * settings activity (see {@code res/xml/method.xml}). The controls write to the default shared
  * preferences, which {@link SettingsStore} reads back and the running keyboard applies live. C-05
  * (blacklist) opens its own editor; C-06 (LLM threshold) is a plain list preference persisted here and
  * consumed by the tier-3 orchestration (inert while the mini-LLM backend is the no-op stub).
- *
+ * 
  * D-191: also the only place the {@code READ_CONTACTS} runtime permission is ever requested - deliberately
  * not from the keyboard itself. An {@code InputMethodService} has no {@code Activity} of its own and cannot
  * show the system permission dialog; only an {@code Activity} (like this one) can, which is also why the
  * "ask the first time an email field is focused" convenience that was considered is not built - it would
  * mean launching this settings screen out from under whatever app the user is actually typing in, mid-edit.
  */
-class SettingsActivity : AppCompatActivity() {
+class SettingsActivity : SettingsScreenActivity() {
+    
+    // D-484: the root has the title but no up arrow - back here leaves the app.
+    override val showUpButton: Boolean
+        get() = false
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_settings)
+        // D-483: the manifest label (= launcher label) is the plain app name, so the screen's own title is
+        // set here.
+        title = getString(R.string.settings_title)
         if (savedInstanceState == null) {
             supportFragmentManager
                 .beginTransaction()
-                .replace(android.R.id.content, SettingsFragment())
+                .replace(R.id.settings_container, SettingsFragment())
                 .commit()
         }
     }
@@ -226,7 +234,7 @@ class SettingsActivity : AppCompatActivity() {
          * [LabeledSeekBarPreference.values] from the given string-array resources - shared by every such
          * slider in this screen (C-22 autocorrect, D-352 word splitting, D-391 cross-word merge) rather than
          * duplicated per site.
-         *
+         * 
          * @param key the preference's own key
          * @param labelsRes the localised, displayed labels array (slider order)
          * @param valuesRes the persisted value array, same order as [labelsRes]
@@ -312,7 +320,7 @@ class SettingsActivity : AppCompatActivity() {
          * D-302: colours the C-04 preference row's own summary in the currently selected highlight
          * colour, so the label itself previews what it names (no colour for the "no highlighting"
          * sentinel, whose entry has nothing to preview).
-         *
+         * 
          * @param value the newly chosen stored value, or null to re-derive from the preference's current
          *        (already-persisted) value - used both from [onCreatePreferences] and from the preference's
          *        own change listener
@@ -337,7 +345,7 @@ class SettingsActivity : AppCompatActivity() {
          * entry's label - the initial render here, and a change listener that keeps it live afterwards,
          * mirroring [updateCalibrationSummary]'s own "base description + live current value" shape (that
          * one is a plain [Preference], not a [ListPreference], so it cannot share this exact helper).
-         *
+         * 
          * @param key the [ListPreference]'s own key
          * @param baseSummaryRes the setting's own static description string resource
          */
@@ -352,7 +360,7 @@ class SettingsActivity : AppCompatActivity() {
         /**
          * D-419-followup: the "Currently: X" line is rendered fully bold, so it visibly stands apart from
          * the plain-text description above it instead of blending in - explicit user request.
-         *
+         * 
          * @param key the [ListPreference]'s own key
          * @param baseSummaryRes the setting's own static description string resource
          * @param value the newly chosen stored value, or null to re-derive from the preference's current
@@ -378,7 +386,7 @@ class SettingsActivity : AppCompatActivity() {
          * [Preference.callChangeListener] / [ListPreference.setValue] exactly like the standard dialog
          * would, so persistence and [updateHighlightColorSummary] (wired as the change listener in
          * [onCreatePreferences]) both still fire normally.
-         *
+         * 
          * @param preference the C-04 list preference
          */
         private fun showHighlightColorDialog(preference: ListPreference) {

@@ -24,14 +24,14 @@ import de.froehlichmedia.adaptkey.touch.TypingPattern
 /**
  * Typing-pattern picker (K-01, skippable) and touch-zone visualisation (D-24), merged into one screen
  * (D-237) - reachable from onboarding and any time later from settings.
- *
+ * 
  * D-68: this used to be a three-sentence typing exercise whose result then had to be auto-classified into
  * a typing pattern (T-04) - too little data to classify reliably, and a wrong guess could seed some key
  * zones badly, taking a very long time for real typing to correct (the offset model has no forgetting
  * mechanism). Asking the pattern directly and deriving sensible initial per-key touch zones from it (see
  * [PatternSeed]) is both simpler and more reliable; ordinary typing then keeps refining those zones (T-03),
  * exactly as it already did before.
- *
+ * 
  * D-237: the currently selected pattern's button is highlighted, and the embedded keyboard always shows a
  * live D-24 zone overlay for the *actual persisted* model - there is no longer a separate "show touch
  * pattern" screen or setting. Tapping a style button previews that style's fresh seed live and asks for
@@ -41,11 +41,11 @@ import de.froehlichmedia.adaptkey.touch.TypingPattern
  * *currently selected* style's calibration back to its defaults without touching the style choice itself
  * (D-235's own reasoning: the style the user picked is not the thing that needs resetting when only the
  * learned drift has gone stale).
- *
+ * 
  * As an Android-facing layer it is left to instrumented tests; the testable logic lives in the pure
  * [PatternSeed].
  */
-class CalibrationActivity : AppCompatActivity() {
+class CalibrationActivity : SettingsScreenActivity() {
     
     // Also the live D-24 preview surface - shows the actual persisted model by default, or a fresh
     // (not-yet-applied) seed while a style switch is being confirmed.
@@ -53,10 +53,14 @@ class CalibrationActivity : AppCompatActivity() {
     private lateinit var emptyText: TextView
     private val patternButtons = HashMap<TypingPattern, Button>()
     
+    // D-485: opened from the keyboard's onboarding (see [EXTRA_FROM_ONBOARDING]) rather than the settings.
+    private var fromOnboarding = false
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_calibration)
         title = getString(R.string.k01_activity_title)
+        fromOnboarding = intent.getBooleanExtra(EXTRA_FROM_ONBOARDING, false)
         
         // §13 / K-01 fix: Android 15 (targetSdk 35) draws the activity edge-to-edge, so the embedded
         // keyboard's bottom row would sit under the gesture pill / navigation bar. Pad the whole screen up
@@ -67,9 +71,7 @@ class CalibrationActivity : AppCompatActivity() {
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
             val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
-            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-            val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
-            v.setPadding(0, maxOf(statusBars.top, cutout.top), 0, maxOf(bars.bottom, gestures.bottom))
+            v.setPadding(0, 0, 0, maxOf(bars.bottom, gestures.bottom))
             insets
         }
         
@@ -93,11 +95,18 @@ class CalibrationActivity : AppCompatActivity() {
         }
         // D-73: skipping is not "do nothing" - by far the most common pattern (both thumbs) is applied
         // quietly (no feedback dialog, unlike an explicit choice) so an undecided user still ends up with
-        // sensible touch zones instead of an unseeded, purely geometric model.
+        // sensible touch zones instead of an unseeded, purely geometric model. D-485: only when no style
+        // has been chosen yet - the button used to overwrite an existing choice and wipe its learned zones
+        // when opened from the settings; it is no longer even shown there, this is the second line of defence.
         findViewById<Button>(R.id.calibration_skip).setOnClickListener {
-            persistPattern(TypingPattern.TWO_THUMBS)
+            if (OffsetStore.loadDetectedPattern(this) == TypingPattern.UNKNOWN) {
+                persistPattern(TypingPattern.TWO_THUMBS)
+            }
             finish()
         }
+        // D-485: everything is saved the moment it is chosen, so this only closes the screen - it is purely
+        // the reassurance that nothing more needs to be confirmed.
+        findViewById<Button>(R.id.calibration_done).setOnClickListener { finish() }
         findViewById<Button>(R.id.calibration_reset).setOnClickListener { confirmReset() }
         
         showActualModel()
@@ -109,7 +118,19 @@ class CalibrationActivity : AppCompatActivity() {
         keyboard.offsetModel = model
         emptyText.visibility = if (model.totalSamples == 0L) View.VISIBLE else View.GONE
         highlightButtonFor(OffsetStore.loadDetectedPattern(this))
+        updateExitButtons()
         keyboard.invalidate()
+    }
+    
+    /**
+     * D-485: exactly one exit button is visible. "Skip" (which applies the both-thumbs default, D-73) only
+     * makes sense while onboarding has not got a style chosen yet; in every other case - a style exists, or
+     * the screen was opened from the settings - the plain "OK" just closes the screen.
+     */
+    private fun updateExitButtons() {
+        val skipOffered = fromOnboarding && OffsetStore.loadDetectedPattern(this) == TypingPattern.UNKNOWN
+        findViewById<Button>(R.id.calibration_skip).visibility = if (skipOffered) View.VISIBLE else View.GONE
+        findViewById<Button>(R.id.calibration_done).visibility = if (skipOffered) View.GONE else View.VISIBLE
     }
     
     private fun highlightButtonFor(pattern: TypingPattern) {
@@ -159,6 +180,7 @@ class CalibrationActivity : AppCompatActivity() {
         SettingsStore.applyPatternEnlargement(this, pattern)
         keyboard.offsetModel = model
         highlightButtonFor(pattern)
+        updateExitButtons()
         keyboard.invalidate()
     }
     
@@ -205,5 +227,13 @@ class CalibrationActivity : AppCompatActivity() {
                 TypingPattern.UNKNOWN -> R.string.t04_pattern_unknown
             }
         )
+    }
+    
+    companion object {
+        /**
+         * D-485: [Intent] boolean extra set by the keyboard's onboarding (and only by it) so this screen offers
+         * "Skip" while no style is chosen yet. Without it (opened from the settings) there is never a "Skip".
+         */
+        const val EXTRA_FROM_ONBOARDING = "de.froehlichmedia.adaptkey.extra.FROM_ONBOARDING"
     }
 }

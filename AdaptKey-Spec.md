@@ -304,7 +304,10 @@ On first launch, the user is offered a short setup step: pick a typing style fro
 sentence-typing exercise - the style choice alone seeds the offset model (T-03). Skipping silently applies
 "Both Thumbs"; the model still converges during normal use, just somewhat more slowly. The step can be
 repeated at any time from Settings. The touch-zone visualisation screen (§17, T-06) doubles as the result
-view after a (re-)selection.
+view after a (re-)selection. Since D-485 (§49) the screen offers exactly one exit button: "Skip" only during
+onboarding while no style has been chosen yet, otherwise a plain "OK" that just closes the screen (everything
+is already saved). Opened from Settings there is never a "Skip", and "Skip" can never overwrite an existing
+style.
 
 ---
 
@@ -3341,6 +3344,31 @@ Switched off, `AdaptKeyboardView` simply does not call `OffsetModel.record()` at
   a no-op - subtracting a sample that was never added would corrupt the mean/variance (and could drop a
   key's entire entry). Switching the setting mid-word is safe in both directions: a tap keeps the weight it
   was actually recorded with.
+
+---
+
+## 49. Settings Screens: Launcher Label, Toolbar With Back, Calibration Exit (D-483/D-484/D-485)
+
+**Launcher label (D-483).** The launcher entry is `SettingsActivity`; its manifest label is the plain app
+name (`@string/app_name`, "AdaptKey"). It used to be the settings screen's own translated title ("AdaptKey
+Settings"), which a Ukrainian tester found truncated in the app drawer ("Налаштуван…") and easy to mistake for
+the system Settings - the problem applies to every language, since the title is translated into all of them.
+The screen's own title (`settings_title`) is unchanged and is set in code.
+
+**Toolbar with a back arrow (D-484).** The app theme has no action bar, so no settings screen had a title or a
+way back other than the system gesture. Every settings screen - the root `SettingsActivity` and its nine
+sub-screens - now extends `SettingsScreenActivity`, which wraps the screen's layout in a `MaterialToolbar` and
+registers it as the support action bar: the activity title is shown, and sub-screens get an up arrow (AppCompat's
+own localised "Navigate up" description; the system back behaviour is used, so it behaves exactly like the back
+gesture). The settings root shows the title only - back there leaves the app. The toolbar owns the top
+status-bar/cutout inset; the sub-screens' own edge-to-edge handling (D-80/D-151/D-188) keeps only its bottom
+(navigation bar/gesture) part, otherwise the gap would appear twice.
+
+**Calibration exit (D-485).** See K-01: one exit button at a time - "Skip" (both-thumbs default, D-73) only
+when the screen was opened by the keyboard's onboarding (intent extra `EXTRA_FROM_ONBOARDING`) and no style has
+been chosen yet, otherwise "OK" (`android.R.string.ok`, system-localised), which only closes the screen. This
+also closed a trap: "Skip" used to call the both-thumbs seeding unconditionally, so tapping it in the settings
+silently replaced the user's chosen style and wiped its learned touch zones.
 
 ---
 

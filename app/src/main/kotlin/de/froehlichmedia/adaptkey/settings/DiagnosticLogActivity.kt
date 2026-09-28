@@ -30,7 +30,7 @@ import de.froehlichmedia.adaptkey.diagnostics.DiagnosticLog
  * screen. Export mirrors the existing D-09 raw-tap-recording precedent: [Intent.ACTION_SEND] plain text,
  * no storage permission needed - plus a plain clipboard copy for pasting directly into a chat.
  */
-class DiagnosticLogActivity : AppCompatActivity() {
+class DiagnosticLogActivity : SettingsScreenActivity() {
     
     private lateinit var contentView: TextView
     private lateinit var emptyView: TextView
@@ -49,11 +49,9 @@ class DiagnosticLogActivity : AppCompatActivity() {
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
             val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
-            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-            val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
             v.setPadding(
                 edgePaddingPx,
-                maxOf(statusBars.top, cutout.top, edgePaddingPx),
+                edgePaddingPx,
                 edgePaddingPx,
                 maxOf(bars.bottom, gestures.bottom, edgePaddingPx)
             )

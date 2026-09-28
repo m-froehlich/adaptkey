@@ -1152,7 +1152,11 @@ class AdaptKeyService : InputMethodService() {
             }
         }
         onboarding.onOpenModelImport = { launchFromKeyboard(Tier3ModelActivity::class.java) }
-        onboarding.onOpenCalibration = { launchFromKeyboard(CalibrationActivity::class.java) }
+        onboarding.onOpenCalibration = {
+            launchFromKeyboard(CalibrationActivity::class.java) {
+                putExtra(CalibrationActivity.EXTRA_FROM_ONBOARDING, true)
+            }
+        }
         // D-280: purely offline - the device's own configured locales against the languages that actually
         // have a real pack (LanguagePackCatalog), so the language-selection step can name a concrete
         // suggestion (e.g. "Deutsch") instead of a generic prompt. D-385-followup: also drives a direct,

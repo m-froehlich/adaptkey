@@ -32,7 +32,7 @@ import java.util.Locale
  * word and a stray tap should not risk deleting one. The remove dialog also offers a neutral "copy to
  * clipboard" button, for pulling a saved value back out somewhere else.
  */
-class CredentialsActivity : AppCompatActivity() {
+class CredentialsActivity : SettingsScreenActivity() {
     
     private lateinit var listView: ListView
     private lateinit var emptyView: TextView
@@ -50,13 +50,11 @@ class CredentialsActivity : AppCompatActivity() {
         val root = findViewById<View>(R.id.credentials_root)
         val basePadding = root.paddingTop
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
-            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-            val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
             val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
             val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
             v.setPadding(
                 basePadding,
-                basePadding + maxOf(statusBars.top, cutout.top),
+                basePadding,
                 basePadding,
                 basePadding + maxOf(navBars.bottom, gestures.bottom)
             )

@@ -37,7 +37,7 @@ import de.froehlichmedia.adaptkey.prediction.onnx.Tier3ModelStorage
  * (D-386's folder-grant automation turned out to be unusable on a real device; [DownloadFileSupport]'s
  * post-import cleanup is still shared by both screens).
  */
-class Tier3ModelActivity : AppCompatActivity() {
+class Tier3ModelActivity : SettingsScreenActivity() {
     
     private lateinit var statusView: TextView
     private lateinit var downloadButton: Button
@@ -65,13 +65,11 @@ class Tier3ModelActivity : AppCompatActivity() {
         val root = findViewById<View>(R.id.tier3_root)
         val basePadding = root.paddingTop
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
-            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-            val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
             val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
             val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
             v.setPadding(
                 basePadding,
-                basePadding + maxOf(statusBars.top, cutout.top),
+                basePadding,
                 basePadding,
                 basePadding + maxOf(navBars.bottom, gestures.bottom)
             )

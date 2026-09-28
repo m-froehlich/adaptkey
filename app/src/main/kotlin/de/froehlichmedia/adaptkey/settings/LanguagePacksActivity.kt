@@ -51,7 +51,7 @@ import java.text.Collator
  * file afterward when it is no older than [DownloadFileSupport.DELETE_MAX_AGE_MILLIS], and the D-386-followup
  * staleness/language checks in [LanguagePackInstaller] remain in place as a safety net.
  */
-class LanguagePacksActivity : AppCompatActivity() {
+class LanguagePacksActivity : SettingsScreenActivity() {
     
     private lateinit var scrollRoot: ScrollView
     private lateinit var container: LinearLayout
@@ -88,13 +88,11 @@ class LanguagePacksActivity : AppCompatActivity() {
         scrollRoot = findViewById(R.id.language_packs_root)
         val basePadding = scrollRoot.paddingTop
         ViewCompat.setOnApplyWindowInsetsListener(scrollRoot) { v, insets ->
-            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-            val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
             val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
             val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
             v.setPadding(
                 basePadding,
-                basePadding + maxOf(statusBars.top, cutout.top),
+                basePadding,
                 basePadding,
                 basePadding + maxOf(navBars.bottom, gestures.bottom)
             )

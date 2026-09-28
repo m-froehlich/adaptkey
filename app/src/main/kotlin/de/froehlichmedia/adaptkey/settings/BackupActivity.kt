@@ -31,7 +31,7 @@ import java.util.Locale
  * this class is UI glue only, covered by instrumented rather than unit tests, like every other settings
  * screen here.
  */
-class BackupActivity : AppCompatActivity() {
+class BackupActivity : SettingsScreenActivity() {
     
     private lateinit var resultView: TextView
     private lateinit var exportButton: Button
@@ -59,13 +59,11 @@ class BackupActivity : AppCompatActivity() {
         val root = findViewById<View>(R.id.backup_root)
         val basePadding = root.paddingTop
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
-            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-            val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
             val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
             val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
             v.setPadding(
                 basePadding,
-                basePadding + maxOf(statusBars.top, cutout.top),
+                basePadding,
                 basePadding,
                 basePadding + maxOf(navBars.bottom, gestures.bottom)
             )

@@ -19,7 +19,7 @@ import de.froehlichmedia.adaptkey.R
  * never happened to discover on their own does not simply stay hidden. Launched from the settings screen's
  * "Info & Privacy" category.
  */
-class FeatureOverviewActivity : AppCompatActivity() {
+class FeatureOverviewActivity : SettingsScreenActivity() {
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,13 +32,11 @@ class FeatureOverviewActivity : AppCompatActivity() {
         val root = findViewById<View>(R.id.feature_overview_root)
         val basePadding = root.paddingTop
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
-            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-            val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
             val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
             val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
             v.setPadding(
                 basePadding,
-                basePadding + maxOf(statusBars.top, cutout.top),
+                basePadding,
                 basePadding,
                 basePadding + maxOf(navBars.bottom, gestures.bottom)
             )

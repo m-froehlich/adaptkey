@@ -66,6 +66,8 @@
             android:layout_marginTop="8dp"
             android:text="@string/t04_pattern_left_index" />
 
+        <!-- D-485: exactly one of these two is visible (see CalibrationActivity.updateExitButtons()): "Skip"
+             only while onboarding has not chosen a style yet, otherwise the plain "OK" that just closes. -->
         <Button
             android:id="@+id/calibration_skip"
             style="?android:attr/buttonBarButtonStyle"
@@ -73,7 +75,17 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
+            android:visibility="gone"
             android:text="@string/k01_skip" />
+
+        <Button
+            android:id="@+id/calibration_done"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="@android:string/ok" />
 
         <!-- D-237: the reset action, spatially separated from the style buttons above (extra top margin +
              a divider) so it reads as a distinct, more consequential action rather than a sixth style

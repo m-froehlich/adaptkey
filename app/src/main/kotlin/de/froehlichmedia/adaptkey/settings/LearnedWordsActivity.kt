@@ -63,7 +63,7 @@ import java.util.Locale
  * still undetermined ("unbekannt") is marked with a trailing asterisk. The same tap-to-edit dialog now also
  * offers a category multi-select and a "Grundform" dropdown, so a power user can review or correct either.
  */
-class LearnedWordsActivity : AppCompatActivity() {
+class LearnedWordsActivity : SettingsScreenActivity() {
     
     private lateinit var store: SqliteDictionaryStore
     private var language: Language = Language.ENGLISH
@@ -97,13 +97,11 @@ class LearnedWordsActivity : AppCompatActivity() {
         val root = findViewById<View>(R.id.learned_words_root)
         val basePadding = root.paddingTop
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
-            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
-            val cutout = insets.getInsets(WindowInsetsCompat.Type.displayCutout())
             val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
             val gestures = insets.getInsets(WindowInsetsCompat.Type.systemGestures())
             v.setPadding(
                 basePadding,
-                basePadding + maxOf(statusBars.top, cutout.top),
+                basePadding,
                 basePadding,
                 basePadding + maxOf(navBars.bottom, gestures.bottom)
             )
