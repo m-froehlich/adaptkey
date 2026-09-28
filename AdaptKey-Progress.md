@@ -348,6 +348,7 @@ in every prompt.
   (562), "hergestellt sowie signiert vom Originalentwickler" (reproducible build confirmed by F-Droid's own
   infra, not just the MR pipeline). AdaptKey is now a normal F-Droid app - end of the whole MR-review arc
   that started with the original submission; only ordinary future releases (RELEASE RECIPE below) remain.
+- **2026-09-28: v1.2.70 (`versionCode` 566) released by RELEASE RECIPE** - tag `v1.2.70` on `88d6ac1`, fresh-clone APK sha256 6a2c6da5...4954 (cert unchanged, no vcs/dependency block), GitHub release asset verified byte-identical. First release after the merge: no MR/metadata upload, F-Droid's bot (`checkupdates`, `AutoUpdateMode: Version`) is expected to add the build entry itself; waiting for it to appear on f-droid.org.
 - **Still open:**
   - The next release: tag it and follow the RELEASE RECIPE above - F-Droid picks up new tags automatically
     (`AutoUpdateMode: Version`, `UpdateCheckMode: Tags`), no new MR needed.
