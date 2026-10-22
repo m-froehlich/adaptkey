@@ -346,4 +346,21 @@
     <string name="d486_mode_none">Ninguno</string>
     <string name="d486_mode_nav_bar">Barra de navegación</string>
     <string name="d486_mode_auto">Automático</string>
+
+    <!-- D-488: blacklist confirmation chip, its reject zone, and per-entry provenance (drafts). -->
+    <string name="suggestion_blacklist_confirm_label">Lista negra: %1$s</string>
+    <string name="suggestion_keep_label">Conservar</string>
+    <string name="learned_words_removed_pending">%1$s olvidada. Si la vuelves a escribir, AdaptKey te preguntará.</string>
+    <string name="blacklist_entry_info_action">Mostrar origen</string>
+    <string name="blacklist_info_origin_label">Origen</string>
+    <string name="blacklist_info_added_label">Añadida</string>
+    <string name="blacklist_info_copy_action">Copiar</string>
+    <string name="blacklist_info_close_action">Cerrar</string>
+    <string name="blacklist_origin_gesture_g04">Eliminada de la barra de sugerencias (confirmado)</string>
+    <string name="blacklist_origin_escalation">Palabra recurrente tras Olvidar (confirmado)</string>
+    <string name="blacklist_origin_w03_forbid">Palabra aprendida prohibida (confirmado)</string>
+    <string name="blacklist_origin_editor_manual">Añadida manualmente en el editor de la lista negra</string>
+    <string name="blacklist_origin_backup_import">Restaurada desde una copia de seguridad</string>
+    <string name="blacklist_origin_bundled_seed">Incluida con la aplicación</string>
+    <string name="blacklist_origin_unknown">Desconocido (de una versión anterior)</string>
 </resources>

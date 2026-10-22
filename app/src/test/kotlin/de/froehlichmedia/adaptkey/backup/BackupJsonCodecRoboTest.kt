@@ -5,14 +5,20 @@ package de.froehlichmedia.adaptkey.backup
 
 import de.froehlichmedia.adaptkey.credential.CredentialEntry
 import de.froehlichmedia.adaptkey.credential.LoginFieldKind
+import de.froehlichmedia.adaptkey.dictionary.BlacklistCategory
+import de.froehlichmedia.adaptkey.dictionary.BlacklistEntry
+import de.froehlichmedia.adaptkey.dictionary.BlacklistOrigin
 import de.froehlichmedia.adaptkey.dictionary.DictionaryAssetParser
 import de.froehlichmedia.adaptkey.dictionary.PartOfSpeech
 import de.froehlichmedia.adaptkey.dictionary.PendingBlacklistEntry
 import de.froehlichmedia.adaptkey.dictionary.TrigramEntry
 import de.froehlichmedia.adaptkey.dictionary.WordEntry
 import de.froehlichmedia.adaptkey.language.Language
+import org.json.JSONArray
+import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -50,7 +56,7 @@ class BackupJsonCodecRoboTest {
                     learnedWords = listOf(WordEntry("Nachbar", 5L, setOf(PartOfSpeech.NOUN))),
                     learnedBigrams = listOf(DictionaryAssetParser.Bigram("der", "nachbar", 5L)),
                     learnedTrigrams = listOf(TrigramEntry("ist", "der", "nachbar", 2L)),
-                    blacklist = listOf("unwort"),
+                    blacklist = listOf(BlacklistEntry("unwort", BlacklistCategory.USER, BlacklistOrigin.GESTURE_G04, 999L)),
                     pendingBlacklist = listOf(PendingBlacklistEntry("bla", 111L))
                 )
             )
@@ -114,5 +120,52 @@ class BackupJsonCodecRoboTest {
         val decoded = BackupJsonCodec.decode(BackupJsonCodec.encode(bundle))
         
         assertEquals(setOf("a", "b"), decoded?.settings?.get("some_key"))
+    }
+    
+    @Test
+    fun encodeWritesBlacklistProvenanceObjectsAndRoundTripsThem() {
+        val json = BackupJsonCodec.encode(sampleBundle())
+        
+        // D-488: the v2 shape is an array of provenance objects, not plain strings.
+        val section = JSONObject(json).getJSONObject("languages").getJSONObject("de")
+        val blacklist = section.getJSONArray("blacklist")
+        assertEquals(1, blacklist.length())
+        val entry = blacklist.getJSONObject(0)
+        assertEquals("unwort", entry.getString("word"))
+        assertEquals("GESTURE_G04", entry.getString("origin"))
+        assertEquals(999L, entry.getLong("addedAtMillis"))
+        
+        val decoded = BackupJsonCodec.decode(json)
+        val roundTripped = decoded?.languages?.get(Language.GERMAN)?.blacklist?.single()
+        assertEquals(BlacklistEntry("unwort", BlacklistCategory.USER, BlacklistOrigin.GESTURE_G04, 999L), roundTripped)
+    }
+    
+    @Test
+    fun decodeStillReadsAV1PlainStringBlacklistAsUnknownProvenance() {
+        // D-488: a pre-v2 file's blacklist is a plain string array - still accepted, read as
+        // UNKNOWN/0 so the importer can stamp it BACKUP_IMPORT on this device.
+        val languages = JSONObject().put(
+            "de",
+            JSONObject()
+                .put("learnedWords", JSONArray())
+                .put("learnedBigrams", JSONArray())
+                .put("learnedTrigrams", JSONArray())
+                .put("blacklist", JSONArray().put("unwort"))
+                .put("pendingBlacklist", JSONArray())
+        )
+        val json = JSONObject()
+            .put("formatVersion", 1)
+            .put("appVersionName", "1.2.70")
+            .put("exportedAtEpochMillis", 0L)
+            .put("settings", JSONObject())
+            .put("credentials", JSONArray())
+            .put("languages", languages)
+            .toString()
+        
+        val decoded = BackupJsonCodec.decode(json)
+        
+        val entry = decoded?.languages?.get(Language.GERMAN)?.blacklist?.single()
+        assertEquals(BlacklistEntry("unwort", BlacklistCategory.USER, BlacklistOrigin.UNKNOWN, 0L), entry)
+        assertTrue(decoded?.formatVersion == 1)
     }
 }

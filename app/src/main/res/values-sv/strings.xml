@@ -346,4 +346,21 @@
     <string name="d486_mode_none">Inget</string>
     <string name="d486_mode_nav_bar">Navigeringsfält</string>
     <string name="d486_mode_auto">Automatiskt</string>
+
+    <!-- D-488: blacklist confirmation chip, its reject zone, and per-entry provenance (drafts). -->
+    <string name="suggestion_blacklist_confirm_label">Svartlista: %1$s</string>
+    <string name="suggestion_keep_label">Behåll</string>
+    <string name="learned_words_removed_pending">%1$s glömt. Om du skriver det igen frågar AdaptKey.</string>
+    <string name="blacklist_entry_info_action">Visa ursprung</string>
+    <string name="blacklist_info_origin_label">Ursprung</string>
+    <string name="blacklist_info_added_label">Tillagd</string>
+    <string name="blacklist_info_copy_action">Kopiera</string>
+    <string name="blacklist_info_close_action">Stäng</string>
+    <string name="blacklist_origin_gesture_g04">Borttagen från förslagsraden (bekräftat)</string>
+    <string name="blacklist_origin_escalation">Återkommande ord efter Glöm (bekräftat)</string>
+    <string name="blacklist_origin_w03_forbid">Inlärt ord förbjudet (bekräftat)</string>
+    <string name="blacklist_origin_editor_manual">Tillagd manuellt i redigeraren för svartlistan</string>
+    <string name="blacklist_origin_backup_import">Återställd från en säkerhetskopia</string>
+    <string name="blacklist_origin_bundled_seed">Ingår i appen</string>
+    <string name="blacklist_origin_unknown">Okänt (från en tidigare version)</string>
 </resources>

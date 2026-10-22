@@ -27,7 +27,7 @@ object BackupExporter {
                 learnedWords = store.learnedWords(),
                 learnedBigrams = store.learnedBigramEntries(),
                 learnedTrigrams = store.learnedTrigramEntries(),
-                blacklist = store.userBlacklistedWords(),
+                blacklist = store.userBlacklistEntries(),
                 pendingBlacklist = store.pendingBlacklistEntries()
             )
         }

@@ -5,6 +5,9 @@ package de.froehlichmedia.adaptkey.backup
 
 import de.froehlichmedia.adaptkey.credential.CredentialEntry
 import de.froehlichmedia.adaptkey.credential.LoginFieldKind
+import de.froehlichmedia.adaptkey.dictionary.BlacklistCategory
+import de.froehlichmedia.adaptkey.dictionary.BlacklistEntry
+import de.froehlichmedia.adaptkey.dictionary.BlacklistOrigin
 import de.froehlichmedia.adaptkey.dictionary.DictionaryAssetParser
 import de.froehlichmedia.adaptkey.dictionary.PartOfSpeech
 import de.froehlichmedia.adaptkey.dictionary.PendingBlacklistEntry
@@ -48,6 +51,8 @@ object BackupJsonCodec {
     private const val FIELD_PREVIOUS_PREVIOUS_WORD = "previousPreviousWord"
     private const val FIELD_COUNT = "count"
     private const val FIELD_TIMESTAMP = "timestampMillis"
+    private const val FIELD_ORIGIN = "origin"
+    private const val FIELD_ADDED_AT = "addedAtMillis"
     
     /**
      * @param bundle the bundle to serialise
@@ -173,7 +178,16 @@ object BackupJsonCodec {
             trigrams.put(trigramObj)
         }
         obj.put(FIELD_LEARNED_TRIGRAMS, trigrams)
-        obj.put(FIELD_BLACKLIST, JSONArray(section.blacklist))
+        // D-488: each blacklist entry travels as an object with its own provenance (v2 shape).
+        val blacklist = JSONArray()
+        section.blacklist.forEach { entry ->
+            val entryObj = JSONObject()
+            entryObj.put(FIELD_WORD, entry.word)
+            entryObj.put(FIELD_ORIGIN, entry.origin.name)
+            entryObj.put(FIELD_ADDED_AT, entry.addedAtMillis)
+            blacklist.put(entryObj)
+        }
+        obj.put(FIELD_BLACKLIST, blacklist)
         val pending = JSONArray()
         section.pendingBlacklist.forEach { entry ->
             val pendingObj = JSONObject()
@@ -213,7 +227,25 @@ object BackupJsonCodec {
             )
         }
         val blacklistArray = obj.getJSONArray(FIELD_BLACKLIST)
-        val blacklist = (0 until blacklistArray.length()).map { blacklistArray.getString(it) }
+        // D-488: v2 carries objects {word, origin, addedAtMillis}; a v1 file's plain string elements are
+        // still accepted and read as UNKNOWN provenance (the importer decides what an unknown origin
+        // becomes on this device - see BackupImporter).
+        val blacklist = (0 until blacklistArray.length()).map { i ->
+            when (val element = blacklistArray.get(i)) {
+                is String -> BlacklistEntry(element, BlacklistCategory.USER, BlacklistOrigin.UNKNOWN, 0L)
+                is JSONObject -> {
+                    val origin = runCatching { BlacklistOrigin.valueOf(element.getString(FIELD_ORIGIN)) }
+                        .getOrDefault(BlacklistOrigin.UNKNOWN)
+                    BlacklistEntry(
+                        element.getString(FIELD_WORD),
+                        BlacklistCategory.USER,
+                        origin,
+                        element.optLong(FIELD_ADDED_AT, 0L)
+                    )
+                }
+                else -> throw IllegalArgumentException("unsupported blacklist element: $element")
+            }
+        }
         val pendingArray = obj.getJSONArray(FIELD_PENDING_BLACKLIST)
         val pendingBlacklist = (0 until pendingArray.length()).map { i ->
             val pendingObj = pendingArray.getJSONObject(i)

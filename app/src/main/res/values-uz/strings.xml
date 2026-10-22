@@ -346,4 +346,21 @@
     <string name="d486_mode_none">Yo‘q</string>
     <string name="d486_mode_nav_bar">Navigatsiya paneli</string>
     <string name="d486_mode_auto">Avtomatik</string>
+
+    <!-- D-488: blacklist confirmation chip, its reject zone, and per-entry provenance (drafts). -->
+    <string name="suggestion_blacklist_confirm_label">Qora roʻyxat: %1$s</string>
+    <string name="suggestion_keep_label">Saqlash</string>
+    <string name="learned_words_removed_pending">%1$s unutilildi. Yana kiritsangiz, AdaptKey soʻraydi.</string>
+    <string name="blacklist_entry_info_action">Manbani koʻrsatish</string>
+    <string name="blacklist_info_origin_label">Manba</string>
+    <string name="blacklist_info_added_label">Qoʻshildi</string>
+    <string name="blacklist_info_copy_action">Nusxalash</string>
+    <string name="blacklist_info_close_action">Yopish</string>
+    <string name="blacklist_origin_gesture_g04">Taklif panelidan olib tashlandi (tasdiqlandi)</string>
+    <string name="blacklist_origin_escalation">Unutilgandan keyin takrorlangan soʻz (tasdiqlandi)</string>
+    <string name="blacklist_origin_w03_forbid">Oʻrganilgan soʻz taqiqlandi (tasdiqlandi)</string>
+    <string name="blacklist_origin_editor_manual">Qora roʻyxat muharririga qoʻlda qoʻshildi</string>
+    <string name="blacklist_origin_backup_import">Zaxira nusxadan tiklandi</string>
+    <string name="blacklist_origin_bundled_seed">Ilova bilan birga keladi</string>
+    <string name="blacklist_origin_unknown">Nomaʼlum (avvalgi versiyadan)</string>
 </resources>

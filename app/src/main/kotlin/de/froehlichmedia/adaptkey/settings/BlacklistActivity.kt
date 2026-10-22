@@ -25,11 +25,14 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import de.froehlichmedia.adaptkey.R
 import de.froehlichmedia.adaptkey.dictionary.BlacklistCategory
+import de.froehlichmedia.adaptkey.dictionary.BlacklistOrigin
 import de.froehlichmedia.adaptkey.dictionary.DictionaryLoader
 import de.froehlichmedia.adaptkey.dictionary.SqliteDictionaryStore
 import de.froehlichmedia.adaptkey.language.ActiveLanguageStore
 import de.froehlichmedia.adaptkey.language.Language
+import java.text.DateFormat
 import java.text.Collator
+import java.util.Date
 import java.util.Locale
 
 /**
@@ -128,7 +131,8 @@ class BlacklistActivity : SettingsScreenActivity() {
                 return@setOnClickListener
             }
             val category = BlacklistCategory.entries[categorySpinner.selectedItemPosition]
-            store.blacklist(word, category)
+            // D-488: a hand-typed entry records its own provenance.
+            store.blacklist(word, category, BlacklistOrigin.EDITOR_MANUAL, System.currentTimeMillis())
             wordField.text.clear()
             refresh()
         }
@@ -156,11 +160,18 @@ class BlacklistActivity : SettingsScreenActivity() {
         val copyButton = squareIconButton(COPY_GLYPH, getString(R.string.copy_to_clipboard_action)).apply {
             setOnClickListener { copyToClipboard(word) }
         }
+        // D-488: the provenance button, same compact square shape as the copy button beside it - the
+        // dialog's own button bar (Entfernen/Cancel + the reserved empty positive slot, §496) stays
+        // untouched. Opens the D-488 info popup (origin + when, copyable).
+        val infoButton = squareIconButton(INFO_GLYPH, getString(R.string.blacklist_entry_info_action)).apply {
+            setOnClickListener { showBlacklistEntryInfo(word) }
+        }
         val fieldRow = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
             addView(wordView)
             addView(copyButton)
+            addView(infoButton)
         }
         val container = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
@@ -198,6 +209,44 @@ class BlacklistActivity : SettingsScreenActivity() {
         val clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager ?: return
         clipboard.setPrimaryClip(ClipData.newPlainText(getString(R.string.blacklist_title), value))
         Toast.makeText(this, getString(R.string.copy_to_clipboard_done, value), Toast.LENGTH_SHORT).show()
+    }
+    
+    /**
+     * D-488: the per-entry provenance popup - answers "when, how and why is this word on the blacklist"
+     * from the entry's own stored origin/timestamp. Copy hands over word + origin + when as text (the
+     * intended workflow is pasting it into a diagnosis session), Close dismisses. A pre-D-488 entry
+     * (origin UNKNOWN, timestamp 0) honestly says so.
+     */
+    private fun showBlacklistEntryInfo(word: String) {
+        val entry = store.blacklistEntry(word) ?: return
+        val originLabel = when (entry.origin) {
+            BlacklistOrigin.GESTURE_G04 -> getString(R.string.blacklist_origin_gesture_g04)
+            BlacklistOrigin.ESCALATION -> getString(R.string.blacklist_origin_escalation)
+            BlacklistOrigin.W03_FORBID -> getString(R.string.blacklist_origin_w03_forbid)
+            BlacklistOrigin.EDITOR_MANUAL -> getString(R.string.blacklist_origin_editor_manual)
+            BlacklistOrigin.BACKUP_IMPORT -> getString(R.string.blacklist_origin_backup_import)
+            BlacklistOrigin.BUNDLED_SEED -> getString(R.string.blacklist_origin_bundled_seed)
+            BlacklistOrigin.UNKNOWN -> getString(R.string.blacklist_origin_unknown)
+        }
+        val addedLabel = if (entry.addedAtMillis > 0L) {
+            DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT).format(Date(entry.addedAtMillis))
+        } else {
+            NO_TIMESTAMP_PLACEHOLDER
+        }
+        val infoText = getString(R.string.blacklist_info_origin_label) + ": " + originLabel + "\n" +
+            getString(R.string.blacklist_info_added_label) + ": " + addedLabel
+        val infoView = TextView(this).apply {
+            val padding = dp(20)
+            setPadding(padding, dp(8), padding, 0)
+            text = infoText
+            setTextIsSelectable(true)
+        }
+        AlertDialog.Builder(this)
+            .setTitle(word)
+            .setView(infoView)
+            .setPositiveButton(R.string.blacklist_info_copy_action) { _, _ -> copyToClipboard("$word\n$infoText") }
+            .setNegativeButton(R.string.blacklist_info_close_action, null)
+            .show()
     }
     
     /**
@@ -248,3 +297,9 @@ class BlacklistActivity : SettingsScreenActivity() {
         super.onDestroy()
     }
 }
+
+/** D-488: shown instead of a formatted date for a pre-D-488 entry (no timestamp was ever recorded). */
+private const val NO_TIMESTAMP_PLACEHOLDER = "–"
+
+/** D-488: the provenance button's glyph, matching the copy button's own compact-square idiom. */
+const val INFO_GLYPH = "ⓘ"

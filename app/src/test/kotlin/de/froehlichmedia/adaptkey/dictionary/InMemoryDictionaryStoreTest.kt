@@ -597,4 +597,48 @@ class InMemoryDictionaryStoreTest {
         assertEquals("hund", entries.getValue("hunde").lemma)
         assertTrue(entries.getValue("hund").lastTouched > 0L)
     }
+    
+    @Test
+    fun `D-488 blacklist records the origin and timestamp it was written with`() {
+        store.blacklist("unwort", BlacklistCategory.USER, BlacklistOrigin.ESCALATION, 1234L)
+        
+        val entry = store.blacklistEntry("UNWORT")
+        
+        assertEquals(BlacklistEntry("unwort", BlacklistCategory.USER, BlacklistOrigin.ESCALATION, 1234L), entry)
+    }
+    
+    @Test
+    fun `D-488 re-blacklisting keeps the original provenance and only updates the category`() {
+        store.blacklist("unwort", BlacklistCategory.USER, BlacklistOrigin.GESTURE_G04, 1234L)
+        
+        store.blacklist("unwort", BlacklistCategory.BUNDLED, BlacklistOrigin.BUNDLED_SEED, 9999L)
+        
+        assertEquals(
+            BlacklistEntry("unwort", BlacklistCategory.BUNDLED, BlacklistOrigin.GESTURE_G04, 1234L),
+            store.blacklistEntry("unwort")
+        )
+    }
+    
+    @Test
+    fun `D-488 unblacklisting clears the provenance so a re-add starts fresh`() {
+        store.blacklist("unwort", BlacklistCategory.USER, BlacklistOrigin.GESTURE_G04, 1234L)
+        store.unblacklist("unwort")
+        
+        assertNull(store.blacklistEntry("unwort"))
+        
+        store.blacklist("unwort", BlacklistCategory.USER, BlacklistOrigin.EDITOR_MANUAL, 5555L)
+        assertEquals(BlacklistOrigin.EDITOR_MANUAL, store.blacklistEntry("unwort")?.origin)
+    }
+    
+    @Test
+    fun `D-488 blacklistedEntries carries every row with its provenance`() {
+        store.blacklist("a", BlacklistCategory.USER, BlacklistOrigin.ESCALATION, 1L)
+        store.blacklist("b", BlacklistCategory.BUNDLED, BlacklistOrigin.BUNDLED_SEED, 2L)
+        
+        val entries = store.blacklistedEntries().associateBy { it.word }
+        
+        assertEquals(2, entries.size)
+        assertEquals(BlacklistOrigin.ESCALATION, entries.getValue("a").origin)
+        assertEquals(BlacklistOrigin.BUNDLED_SEED, entries.getValue("b").origin)
+    }
 }

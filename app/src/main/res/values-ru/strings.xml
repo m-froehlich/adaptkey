@@ -346,4 +346,21 @@
     <string name="d486_mode_none">Нет</string>
     <string name="d486_mode_nav_bar">Панель навигации</string>
     <string name="d486_mode_auto">Автоматически</string>
+
+    <!-- D-488: blacklist confirmation chip, its reject zone, and per-entry provenance (drafts). -->
+    <string name="suggestion_blacklist_confirm_label">Чёрный список: %1$s</string>
+    <string name="suggestion_keep_label">Оставить</string>
+    <string name="learned_words_removed_pending">%1$s забыто. Если вы введёте его снова, AdaptKey спросит.</string>
+    <string name="blacklist_entry_info_action">Показать источник</string>
+    <string name="blacklist_info_origin_label">Источник</string>
+    <string name="blacklist_info_added_label">Добавлено</string>
+    <string name="blacklist_info_copy_action">Копировать</string>
+    <string name="blacklist_info_close_action">Закрыть</string>
+    <string name="blacklist_origin_gesture_g04">Удалено из панели подсказок (подтверждено)</string>
+    <string name="blacklist_origin_escalation">Повторное слово после «Забыть» (подтверждено)</string>
+    <string name="blacklist_origin_w03_forbid">Заученное слово запрещено (подтверждено)</string>
+    <string name="blacklist_origin_editor_manual">Добавлено вручную в редакторе чёрного списка</string>
+    <string name="blacklist_origin_backup_import">Восстановлено из резервной копии</string>
+    <string name="blacklist_origin_bundled_seed">Поставляется с приложением</string>
+    <string name="blacklist_origin_unknown">Неизвестно (из более ранней версии)</string>
 </resources>

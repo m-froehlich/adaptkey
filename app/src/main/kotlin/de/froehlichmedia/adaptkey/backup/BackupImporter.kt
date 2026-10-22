@@ -6,6 +6,7 @@ package de.froehlichmedia.adaptkey.backup
 import android.content.Context
 import de.froehlichmedia.adaptkey.credential.CredentialStore
 import de.froehlichmedia.adaptkey.dictionary.BlacklistCategory
+import de.froehlichmedia.adaptkey.dictionary.BlacklistOrigin
 import de.froehlichmedia.adaptkey.dictionary.DictionaryLoader
 import de.froehlichmedia.adaptkey.dictionary.SqliteDictionaryStore
 import de.froehlichmedia.adaptkey.language.Language
@@ -73,7 +74,16 @@ object BackupImporter {
         section.learnedTrigrams.forEach { trigram ->
             store.restoreLearnedTrigram(trigram.previousPreviousWord, trigram.previousWord, trigram.word, trigram.count)
         }
-        section.blacklist.forEach { word -> store.blacklist(word, BlacklistCategory.USER) }
+        // D-488: provenance travels with the entry. A v2 record keeps its true origin and timestamp; a
+        // v1 word (unknown origin here) becomes BACKUP_IMPORT with the import moment - that much is
+        // always true, and better than a misleading UNKNOWN that reads as "older than the feature".
+        section.blacklist.forEach { entry ->
+            if (entry.origin == BlacklistOrigin.UNKNOWN) {
+                store.blacklist(entry.word, BlacklistCategory.USER, BlacklistOrigin.BACKUP_IMPORT, System.currentTimeMillis())
+            } else {
+                store.blacklist(entry.word, BlacklistCategory.USER, entry.origin, entry.addedAtMillis)
+            }
+        }
         // Never overwrites an already-pending local mark's own timestamp (G-04's expiry window is measured
         // from it) - only a word with no local mark at all adopts the imported one.
         section.pendingBlacklist.forEach { entry ->

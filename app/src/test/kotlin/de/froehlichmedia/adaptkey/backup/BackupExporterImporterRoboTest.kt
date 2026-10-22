@@ -7,6 +7,8 @@ import de.froehlichmedia.adaptkey.credential.CredentialEntry
 import de.froehlichmedia.adaptkey.credential.CredentialStore
 import de.froehlichmedia.adaptkey.credential.LoginFieldKind
 import de.froehlichmedia.adaptkey.dictionary.BlacklistCategory
+import de.froehlichmedia.adaptkey.dictionary.BlacklistEntry
+import de.froehlichmedia.adaptkey.dictionary.BlacklistOrigin
 import de.froehlichmedia.adaptkey.dictionary.DictionaryLoader
 import de.froehlichmedia.adaptkey.dictionary.PendingBlacklistEntry
 import de.froehlichmedia.adaptkey.dictionary.SqliteDictionaryStore
@@ -39,7 +41,7 @@ class BackupExporterImporterRoboTest {
         val germanStore = SqliteDictionaryStore(context, DictionaryLoader.databaseName(Language.GERMAN))
         germanStore.learn("Nachbar", "der")
         germanStore.learn("Nachbar", "der")
-        germanStore.blacklist("unwort", BlacklistCategory.USER)
+        germanStore.blacklist("unwort", BlacklistCategory.USER, BlacklistOrigin.GESTURE_G04, 777L)
         SettingsStore.prefs(context).edit().putInt(SettingsStore.KEY_MAX_SUGGESTIONS, 6).apply()
         CredentialStore.learn(context, "user@example.com", LoginFieldKind.EMAIL)
         
@@ -55,7 +57,11 @@ class BackupExporterImporterRoboTest {
         assertEquals(4L, germanStore.learnedWords().single().frequency)
         // Blacklisting/settings/credentials are idempotent upserts, so a re-import leaves them unchanged
         // rather than duplicating - still correct, not a regression of the additive-merge requirement.
-        assertEquals(listOf("unwort"), germanStore.userBlacklistedWords())
+        // D-488: the backup round-trip also preserves the entry's provenance (origin AND timestamp).
+        val blacklisted = germanStore.userBlacklistEntries().single()
+        assertEquals("unwort", blacklisted.word)
+        assertEquals(BlacklistOrigin.GESTURE_G04, blacklisted.origin)
+        assertEquals(777L, blacklisted.addedAtMillis)
         assertEquals(6, SettingsStore.prefs(context).getInt(SettingsStore.KEY_MAX_SUGGESTIONS, -1))
         assertEquals(2L, CredentialStore.all(context).single().frequency)
     }
@@ -75,7 +81,7 @@ class BackupExporterImporterRoboTest {
                     learnedWords = emptyList(),
                     learnedBigrams = emptyList(),
                     learnedTrigrams = emptyList(),
-                    blacklist = listOf("κακή"),
+                    blacklist = listOf(BlacklistEntry("κακή", BlacklistCategory.USER, BlacklistOrigin.UNKNOWN, 0L)),
                     pendingBlacklist = emptyList()
                 )
             )

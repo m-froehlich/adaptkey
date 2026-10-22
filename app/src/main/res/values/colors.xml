@@ -34,6 +34,11 @@
          blue (already means "keep as typed") or suggestion_search_query_text's muted grey (too subtle, the
          whole reason this bullet existed). -->
     <color name="suggestion_loading_text">#F57C00</color>
+    <!-- D-488: the blacklist confirmation chip ("❗ Blacklist: X") - a strong red (Material Red 700, the
+         same family the G-04 trash overlay's #D32F2F belongs to) reading as "stop, decide first". Its own
+         colour rather than a reuse: verbatim's blue means "keep as typed", learned's green means "just
+         learned", and white-on-trash-red would vanish against the drag overlays. -->
+    <color name="suggestion_blacklist_confirm_text">#C62828</color>
     <!-- D-385-followup: the background tint behind a device-locale-suggested language's own row in
          LanguagePacksActivity - a light tint of the app's own established accent blue (link_text/
          caps_lock_border's #1565C0), distinct enough to draw the eye toward the one row worth noticing

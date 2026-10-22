@@ -346,4 +346,21 @@
     <string name="d486_mode_none">Ingen</string>
     <string name="d486_mode_nav_bar">Navigasjonsfelt</string>
     <string name="d486_mode_auto">Automatisk</string>
+
+    <!-- D-488: blacklist confirmation chip, its reject zone, and per-entry provenance (drafts). -->
+    <string name="suggestion_blacklist_confirm_label">Svarteliste: %1$s</string>
+    <string name="suggestion_keep_label">Behold</string>
+    <string name="learned_words_removed_pending">%1$s glemt. Hvis du skriver det igjen, spør AdaptKey.</string>
+    <string name="blacklist_entry_info_action">Vis opprinnelse</string>
+    <string name="blacklist_info_origin_label">Opprinnelse</string>
+    <string name="blacklist_info_added_label">Lagt til</string>
+    <string name="blacklist_info_copy_action">Kopier</string>
+    <string name="blacklist_info_close_action">Lukk</string>
+    <string name="blacklist_origin_gesture_g04">Fjernet fra forslagsraden (bekreftet)</string>
+    <string name="blacklist_origin_escalation">Gjentagende ord etter Glemt (bekreftet)</string>
+    <string name="blacklist_origin_w03_forbid">Innlært ord forbudt (bekreftet)</string>
+    <string name="blacklist_origin_editor_manual">Lagt til manuelt i svarteliste-redigereren</string>
+    <string name="blacklist_origin_backup_import">Gjenopprettet fra en sikkerhetskopi</string>
+    <string name="blacklist_origin_bundled_seed">Leveres med appen</string>
+    <string name="blacklist_origin_unknown">Ukjent (fra en tidligere versjon)</string>
 </resources>

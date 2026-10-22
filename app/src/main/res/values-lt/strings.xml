@@ -346,4 +346,21 @@
     <string name="d486_mode_none">Nėra</string>
     <string name="d486_mode_nav_bar">Naršymo juosta</string>
     <string name="d486_mode_auto">Automatiškai</string>
+
+    <!-- D-488: blacklist confirmation chip, its reject zone, and per-entry provenance (drafts). -->
+    <string name="suggestion_blacklist_confirm_label">Juodasis sąrašas: %1$s</string>
+    <string name="suggestion_keep_label">Palikti</string>
+    <string name="learned_words_removed_pending">%1$s pamiršta. Jei parašysite dar kartą, AdaptKey paklaus.</string>
+    <string name="blacklist_entry_info_action">Rodyti kilmę</string>
+    <string name="blacklist_info_origin_label">Kilmė</string>
+    <string name="blacklist_info_added_label">Pridėta</string>
+    <string name="blacklist_info_copy_action">Kopijuoti</string>
+    <string name="blacklist_info_close_action">Uždaryti</string>
+    <string name="blacklist_origin_gesture_g04">Pašalinta iš siūlymų juostos (patvirtinta)</string>
+    <string name="blacklist_origin_escalation">Pasikartojantis žodis po Pamiršti (patvirtinta)</string>
+    <string name="blacklist_origin_w03_forbid">Išmoktas žodis uždraustas (patvirtinta)</string>
+    <string name="blacklist_origin_editor_manual">Rankiniu būdu pridėta juodojo sąrašo rengyklėje</string>
+    <string name="blacklist_origin_backup_import">Atkurta iš atsarginės kopijos</string>
+    <string name="blacklist_origin_bundled_seed">Pateikiama su programa</string>
+    <string name="blacklist_origin_unknown">Nežinoma (iš ankstesnės versijos)</string>
 </resources>

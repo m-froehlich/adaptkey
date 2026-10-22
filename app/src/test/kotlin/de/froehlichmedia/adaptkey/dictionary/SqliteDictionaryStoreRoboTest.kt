@@ -606,12 +606,15 @@ class SqliteDictionaryStoreRoboTest {
     }
     
     @Test
-    fun userBlacklistedWordsExcludesBundledEntries() {
+    fun userBlacklistEntriesExcludesBundledEntries() {
         val store = store("backup-user-blacklist.db")
-        store.blacklist("due", BlacklistCategory.BUNDLED)
-        store.blacklist("unwort", BlacklistCategory.USER)
+        store.blacklist("due", BlacklistCategory.BUNDLED, BlacklistOrigin.BUNDLED_SEED, 1L)
+        store.blacklist("unwort", BlacklistCategory.USER, BlacklistOrigin.GESTURE_G04, 2L)
         
-        assertEquals(listOf("unwort"), store.userBlacklistedWords())
+        assertEquals(
+            listOf(BlacklistEntry("unwort", BlacklistCategory.USER, BlacklistOrigin.GESTURE_G04, 2L)),
+            store.userBlacklistEntries()
+        )
         store.close()
     }
     
@@ -793,6 +796,65 @@ class SqliteDictionaryStoreRoboTest {
         store.putWord(WordEntry("haus", 4L))
         
         assertTrue(store.unigramsByPrefix("xyz", 10).isEmpty())
+        store.close()
+    }
+    
+    @Test
+    fun blacklistProvenanceRoundTripsAndSurvivesAReBlacklist() {
+        val store = store("blacklist-provenance.db")
+        
+        store.blacklist("unwort", BlacklistCategory.USER, BlacklistOrigin.ESCALATION, 1234L)
+        assertEquals(
+            BlacklistEntry("unwort", BlacklistCategory.USER, BlacklistOrigin.ESCALATION, 1234L),
+            store.blacklistEntry("UNWORT")
+        )
+        
+        // D-488: the idempotent D-278 reseed (and any repeat write) must not reset when/how the row
+        // came to be - only the category updates.
+        store.blacklist("unwort", BlacklistCategory.BUNDLED, BlacklistOrigin.BUNDLED_SEED, 9999L)
+        assertEquals(
+            BlacklistEntry("unwort", BlacklistCategory.BUNDLED, BlacklistOrigin.ESCALATION, 1234L),
+            store.blacklistEntry("unwort")
+        )
+        assertEquals(1, store.blacklistedEntries().size)
+        store.close()
+    }
+    
+    @Test
+    fun preD488BlacklistRowsMigrateToUnknownProvenanceWithoutAnyBackfill() {
+        // Build a pre-D-488 database by hand: the old two-column blacklist table with one row, exactly
+        // what an already-installed device has on disk before this version's first store open.
+        val context = RuntimeEnvironment.getApplication()
+        val name = "blacklist-migration.db"
+        context.deleteDatabase(name)
+        val oldDb = context.openOrCreateDatabase(name, android.content.Context.MODE_PRIVATE, null)
+        // Every table in its pre-D-488 shape (all other migrations already applied - exactly what an
+        // already-installed device has on disk), plus the old two-column blacklist table with one row.
+        oldDb.execSQL("CREATE TABLE words (wkey TEXT PRIMARY KEY, word TEXT NOT NULL, freq INTEGER NOT NULL, pos TEXT NOT NULL, lemma TEXT)")
+        oldDb.execSQL("CREATE TABLE bigrams (prevkey TEXT NOT NULL, wkey TEXT NOT NULL, count INTEGER NOT NULL, PRIMARY KEY (prevkey, wkey))")
+        oldDb.execSQL("CREATE TABLE blacklist (wkey TEXT PRIMARY KEY, category TEXT NOT NULL)")
+        oldDb.execSQL("CREATE TABLE learned (wkey TEXT PRIMARY KEY, word TEXT NOT NULL, freq INTEGER NOT NULL, pos TEXT NOT NULL, last_touched INTEGER NOT NULL DEFAULT 0, lemma TEXT)")
+        oldDb.execSQL("CREATE TABLE learned_bigrams (prevkey TEXT NOT NULL, wkey TEXT NOT NULL, count INTEGER NOT NULL, last_touched INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (prevkey, wkey))")
+        oldDb.execSQL("CREATE TABLE learned_trigrams (w1key TEXT NOT NULL, w2key TEXT NOT NULL, wkey TEXT NOT NULL, count INTEGER NOT NULL, last_touched INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (w1key, w2key, wkey))")
+        oldDb.execSQL("CREATE TABLE pending_blacklist (wkey TEXT PRIMARY KEY, ts INTEGER NOT NULL)")
+        oldDb.execSQL("CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)")
+        oldDb.execSQL("INSERT INTO blacklist (wkey, category) VALUES ('unwort', 'USER')")
+        // user_version at the current DATABASE_VERSION, so the helper opens this as an UP-TO-DATE
+        // database (no onCreate, no onUpgrade - the version stays 1) and only init's additive column
+        // migration runs. Left at 0, the framework would treat the file as brand-new and call
+        // onCreate, whose CREATE TABLE then collides with the hand-made table.
+        oldDb.version = 1
+        oldDb.close()
+        
+        val store = store(name)
+        
+        // The guarded ALTER must have added both columns without touching the row, and the row must
+        // read back as "unknown origin, no timestamp" - never crash, never guess a fake provenance.
+        assertEquals(
+            BlacklistEntry("unwort", BlacklistCategory.USER, BlacklistOrigin.UNKNOWN, 0L),
+            store.blacklistEntry("unwort")
+        )
+        assertTrue(store.isBlacklisted("unwort"))
         store.close()
     }
 }

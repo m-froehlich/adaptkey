@@ -346,4 +346,21 @@
     <string name="d486_mode_none">Hakuna</string>
     <string name="d486_mode_nav_bar">Upau wa urambazaji</string>
     <string name="d486_mode_auto">Otomatiki</string>
+
+    <!-- D-488: blacklist confirmation chip, its reject zone, and per-entry provenance (drafts). -->
+    <string name="suggestion_blacklist_confirm_label">Orodha nyeusi: %1$s</string>
+    <string name="suggestion_keep_label">Weka</string>
+    <string name="learned_words_removed_pending">%1$s imesahaulishwa. Ukiandika tena, AdaptKey itakuuliza.</string>
+    <string name="blacklist_entry_info_action">Onyesha chanzo</string>
+    <string name="blacklist_info_origin_label">Chanzo</string>
+    <string name="blacklist_info_added_label">Imeongezwa</string>
+    <string name="blacklist_info_copy_action">Nakili</string>
+    <string name="blacklist_info_close_action">Funga</string>
+    <string name="blacklist_origin_gesture_g04">Imeondolewa kutoka kwenye utepe wa mapendekezo (imethibitishwa)</string>
+    <string name="blacklist_origin_escalation">Neno linalojirudia baada ya Sahau (limethibitishwa)</string>
+    <string name="blacklist_origin_w03_forbid">Neno lililojifunza limezuiwa (limethibitishwa)</string>
+    <string name="blacklist_origin_editor_manual">Imeongezwa kwa mkono kwenye kihariri cha orodha nyeusi</string>
+    <string name="blacklist_origin_backup_import">Imerejeshwa kutoka kwenye nakala rudufu</string>
+    <string name="blacklist_origin_bundled_seed">Inakuja na programu</string>
+    <string name="blacklist_origin_unknown">Haijulikani (kutoka toleo la awali)</string>
 </resources>

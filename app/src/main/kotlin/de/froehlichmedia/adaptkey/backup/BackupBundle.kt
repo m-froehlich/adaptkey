@@ -4,6 +4,7 @@
 package de.froehlichmedia.adaptkey.backup
 
 import de.froehlichmedia.adaptkey.credential.CredentialEntry
+import de.froehlichmedia.adaptkey.dictionary.BlacklistEntry
 import de.froehlichmedia.adaptkey.dictionary.DictionaryAssetParser
 import de.froehlichmedia.adaptkey.dictionary.PendingBlacklistEntry
 import de.froehlichmedia.adaptkey.dictionary.TrigramEntry
@@ -43,8 +44,14 @@ data class BackupBundle(
     
     companion object {
         
-        /** The schema version this build writes and can read; see [formatVersion]'s own KDoc. */
-        const val CURRENT_FORMAT_VERSION = 1
+        /**
+         * The schema version this build writes and can read; see [formatVersion]'s own KDoc. v2 (D-488):
+         * the blacklist section carries provenance objects instead of plain word strings - an older
+         * build cleanly rejects a v2 file via [formatVersion] instead of crashing on the new shape,
+         * while this build still reads v1 files (their blacklist words import as
+         * [de.froehlichmedia.adaptkey.dictionary.BlacklistOrigin.BACKUP_IMPORT], origin-wise).
+         */
+        const val CURRENT_FORMAT_VERSION = 2
     }
 }
 
@@ -56,13 +63,14 @@ data class BackupBundle(
  * @property learnedWords every row of the learned-word overlay (W-01)
  * @property learnedBigrams every learned bigram row
  * @property learnedTrigrams every learned trigram row (S-07)
- * @property blacklist every [de.froehlichmedia.adaptkey.dictionary.BlacklistCategory.USER] blacklist word
+ * @property blacklist every [de.froehlichmedia.adaptkey.dictionary.BlacklistCategory.USER] blacklist
+ *           entry, each with its own D-488 provenance (origin + when it was added)
  * @property pendingBlacklist every still-pending provisional-blacklist mark (G-04/W-01)
  */
 data class LanguageSection(
     val learnedWords: List<WordEntry>,
     val learnedBigrams: List<DictionaryAssetParser.Bigram>,
     val learnedTrigrams: List<TrigramEntry>,
-    val blacklist: List<String>,
+    val blacklist: List<BlacklistEntry>,
     val pendingBlacklist: List<PendingBlacklistEntry>
 )

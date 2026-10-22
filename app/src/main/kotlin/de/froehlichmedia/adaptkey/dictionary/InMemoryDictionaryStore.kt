@@ -25,6 +25,10 @@ class InMemoryDictionaryStore(private val clock: () -> Long = { System.currentTi
     // D-246: personal-only, no bundled counterpart - unlike bigrams, no seeded "trigrams" map exists.
     private val learnedTrigrams = HashMap<String, Long>()
     private val blacklist = HashMap<String, BlacklistCategory>()
+    // D-488: provenance per blacklist entry, mirroring SqliteDictionaryStore's own origin/added_at
+    // columns. Kept in parallel maps the same way learnedTouch mirrors the last_touched column.
+    private val blacklistOrigin = HashMap<String, BlacklistOrigin>()
+    private val blacklistAddedAt = HashMap<String, Long>()
     private val pendingBlacklist = HashMap<String, Long>()
     // D-411: last-touched epoch millis per learned entry, mirroring SqliteDictionaryStore's own
     // last_touched column - stamped by every learned/unlearn write, uniformly, same reasoning as there.
@@ -315,12 +319,29 @@ class InMemoryDictionaryStore(private val clock: () -> Long = { System.currentTi
         return result.toList()
     }
     
-    override fun blacklist(word: String, category: BlacklistCategory) {
-        blacklist[word.lowercase()] = category
+    override fun blacklist(
+        word: String,
+        category: BlacklistCategory,
+        origin: BlacklistOrigin,
+        addedAtMillis: Long
+    ) {
+        val key = word.lowercase()
+        blacklist[key] = category
+        if (blacklistOrigin.containsKey(key)) {
+            // D-488: an existing row keeps its original provenance - only the category updates (see the
+            // interface's own contract; this is what keeps the idempotent D-278 seed from resetting an
+            // entry's age, and a repeat gesture from doing the same).
+            return
+        }
+        blacklistOrigin[key] = origin
+        blacklistAddedAt[key] = addedAtMillis
     }
     
     override fun unblacklist(word: String) {
-        blacklist.remove(word.lowercase())
+        val key = word.lowercase()
+        blacklist.remove(key)
+        blacklistOrigin.remove(key)
+        blacklistAddedAt.remove(key)
     }
     
     override fun isBlacklisted(word: String): Boolean {
@@ -329,6 +350,21 @@ class InMemoryDictionaryStore(private val clock: () -> Long = { System.currentTi
     
     override fun blacklistCategory(word: String): BlacklistCategory? {
         return blacklist[word.lowercase()]
+    }
+    
+    override fun blacklistEntry(word: String): BlacklistEntry? {
+        val key = word.lowercase()
+        val category = blacklist[key] ?: return null
+        return BlacklistEntry(
+            word = key,
+            category = category,
+            origin = blacklistOrigin[key] ?: BlacklistOrigin.UNKNOWN,
+            addedAtMillis = blacklistAddedAt[key] ?: 0L
+        )
+    }
+    
+    override fun blacklistedEntries(): List<BlacklistEntry> {
+        return blacklist.keys.mapNotNull { key -> blacklistEntry(key) }
     }
     
     override fun blacklistedWords(): List<String> {

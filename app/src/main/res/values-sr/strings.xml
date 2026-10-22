@@ -346,4 +346,21 @@
     <string name="d486_mode_none">Нема</string>
     <string name="d486_mode_nav_bar">Навигациона трака</string>
     <string name="d486_mode_auto">Аутоматски</string>
+
+    <!-- D-488: blacklist confirmation chip, its reject zone, and per-entry provenance (drafts). -->
+    <string name="suggestion_blacklist_confirm_label">Црна листа: %1$s</string>
+    <string name="suggestion_keep_label">Задржи</string>
+    <string name="learned_words_removed_pending">%1$s заборављено. Ако га поново укуцате, AdaptKey ће питати.</string>
+    <string name="blacklist_entry_info_action">Прикажи порекло</string>
+    <string name="blacklist_info_origin_label">Порекло</string>
+    <string name="blacklist_info_added_label">Додато</string>
+    <string name="blacklist_info_copy_action">Копирај</string>
+    <string name="blacklist_info_close_action">Затвори</string>
+    <string name="blacklist_origin_gesture_g04">Уклоњено из траке предлога (потврђено)</string>
+    <string name="blacklist_origin_escalation">Понављајућа реч након Заборави (потврђено)</string>
+    <string name="blacklist_origin_w03_forbid">Научена реч забрањена (потврђено)</string>
+    <string name="blacklist_origin_editor_manual">Ручно додато у уређивачу црне листе</string>
+    <string name="blacklist_origin_backup_import">Обновљено из резервне копије</string>
+    <string name="blacklist_origin_bundled_seed">Испоручује се са апликацијом</string>
+    <string name="blacklist_origin_unknown">Непознато (из старије верзије)</string>
 </resources>

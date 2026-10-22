@@ -346,4 +346,21 @@
     <string name="d486_mode_none">Žádné</string>
     <string name="d486_mode_nav_bar">Navigační lišta</string>
     <string name="d486_mode_auto">Automaticky</string>
+
+    <!-- D-488: blacklist confirmation chip, its reject zone, and per-entry provenance (drafts). -->
+    <string name="suggestion_blacklist_confirm_label">Černá listina: %1$s</string>
+    <string name="suggestion_keep_label">Ponechat</string>
+    <string name="learned_words_removed_pending">%1$s zapomenuto. Pokud jej napíšete znovu, AdaptKey se zeptá.</string>
+    <string name="blacklist_entry_info_action">Zobrazit původ</string>
+    <string name="blacklist_info_origin_label">Původ</string>
+    <string name="blacklist_info_added_label">Přidáno</string>
+    <string name="blacklist_info_copy_action">Kopírovat</string>
+    <string name="blacklist_info_close_action">Zavřít</string>
+    <string name="blacklist_origin_gesture_g04">Odebráno z lišty návrhů (potvrzeno)</string>
+    <string name="blacklist_origin_escalation">Opakované slovo po Zapomenout (potvrzeno)</string>
+    <string name="blacklist_origin_w03_forbid">Naučené slovo zakázáno (potvrzeno)</string>
+    <string name="blacklist_origin_editor_manual">Ručně přidáno v editoru černé listiny</string>
+    <string name="blacklist_origin_backup_import">Obnoveno ze zálohy</string>
+    <string name="blacklist_origin_bundled_seed">Součást aplikace</string>
+    <string name="blacklist_origin_unknown">Neznámý (ze starší verze)</string>
 </resources>

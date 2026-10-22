@@ -346,4 +346,21 @@
     <string name="d486_mode_none">Yok</string>
     <string name="d486_mode_nav_bar">Gezinme çubuğu</string>
     <string name="d486_mode_auto">Otomatik</string>
+
+    <!-- D-488: blacklist confirmation chip, its reject zone, and per-entry provenance (drafts). -->
+    <string name="suggestion_blacklist_confirm_label">Kara liste: %1$s</string>
+    <string name="suggestion_keep_label">Koru</string>
+    <string name="learned_words_removed_pending">%1$s unutuldu. Tekrar yazarsan AdaptKey sana sorar.</string>
+    <string name="blacklist_entry_info_action">Kaynağı göster</string>
+    <string name="blacklist_info_origin_label">Kaynak</string>
+    <string name="blacklist_info_added_label">Eklendi</string>
+    <string name="blacklist_info_copy_action">Kopyala</string>
+    <string name="blacklist_info_close_action">Kapat</string>
+    <string name="blacklist_origin_gesture_g04">Öneri çubuğundan kaldırıldı (onaylandı)</string>
+    <string name="blacklist_origin_escalation">Unutulduktan sonra tekrarlanan kelime (onaylandı)</string>
+    <string name="blacklist_origin_w03_forbid">Öğrenilen kelime yasaklandı (onaylandı)</string>
+    <string name="blacklist_origin_editor_manual">Kara liste düzenleyicisinde elle eklendi</string>
+    <string name="blacklist_origin_backup_import">Bir yedekten geri yüklendi</string>
+    <string name="blacklist_origin_bundled_seed">Uygulamayla birlikte gelir</string>
+    <string name="blacklist_origin_unknown">Bilinmiyor (önceki sürümden)</string>
 </resources>

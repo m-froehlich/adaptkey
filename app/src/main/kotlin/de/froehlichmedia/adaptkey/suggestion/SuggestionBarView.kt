@@ -78,6 +78,14 @@ class SuggestionBarView @JvmOverloads constructor(
         fun onForbidLearned(word: String)
     }
     
+    /** D-488: invoked when a [SuggestionController.Kind.BLACKLIST_CONFIRM] chip is dragged down into the
+     * keyboard area and released there - rejects the pending blacklist (the word is kept). By contract,
+     * a down-drag starting on this chip is ALWAYS this reject and never D-144's swipe-down-to-dismiss. */
+    fun interface OnBlacklistConfirmRejectedListener {
+        
+        fun onBlacklistConfirmRejected(word: String)
+    }
+    
     /** D-144: invoked when a downward swipe anywhere on the bar dismisses/closes, mirroring G-03. */
     fun interface OnSwipeDownListener {
         
@@ -91,6 +99,8 @@ class SuggestionBarView @JvmOverloads constructor(
     var onForgetLearned: OnForgetLearnedListener? = null
     
     var onForbidLearned: OnForbidLearnedListener? = null
+    
+    var onBlacklistConfirmRejected: OnBlacklistConfirmRejectedListener? = null
     
     var onSwipeDown: OnSwipeDownListener? = null
     
@@ -118,6 +128,12 @@ class SuggestionBarView @JvmOverloads constructor(
     private var dragIntercepting = false
     private var swipeDownIntercepting = false
     private var dragZone = DragZone.NONE
+    // D-488: the blacklist-confirmation chip's own reject drag. A downward drag STARTING ON the confirm
+    // chip (decided at ACTION_DOWN) is always this reject and never D-144's swipe-down-to-dismiss - the
+    // two share the same direction classifier, so the reject claim below must run ahead of it.
+    private var rejectWord: String? = null
+    private var rejectIntercepting = false
+    private var rejectArmed = false
     // D-247: also G-04's own single-zone arm distance, reused as-is for a LEARNED chip's shallow "Vergessen"
     // zone entry point per the user's own request ("das hat immer gut gepasst").
     private val dragThresholdPx = dp(48).toFloat()
@@ -209,6 +225,10 @@ class SuggestionBarView @JvmOverloads constructor(
             item.kind == SuggestionController.Kind.CURSOR_CONTROL_DONE -> R.color.suggestion_learned_text
             query -> R.color.suggestion_search_query_text
             loading -> R.color.suggestion_loading_text
+            // D-488: the blacklist confirmation chip - a dedicated, strong red ("stop, decide first"),
+            // its own colour rather than a reuse: verbatim's blue already means "keep as typed",
+            // learned's green means "just learned", and the trash overlay's red-on-red would vanish.
+            item.kind == SuggestionController.Kind.BLACKLIST_CONFIRM -> R.color.suggestion_blacklist_confirm_text
             else -> R.color.suggestion_text
         }
         return TextView(context).apply {
@@ -222,6 +242,11 @@ class SuggestionBarView @JvmOverloads constructor(
             setTextColor(ContextCompat.getColor(context, colorRes))
             setTextSize(TypedValue.COMPLEX_UNIT_SP, if (loading) LOADING_TEXT_SP else 16f)
             if (verbatim) {
+                setTypeface(typeface, Typeface.BOLD)
+            }
+            // D-488: bold - the confirmation chip must read as an action demanding a decision, not as one
+            // more suggestion in the row.
+            if (item.kind == SuggestionController.Kind.BLACKLIST_CONFIRM) {
                 setTypeface(typeface, Typeface.BOLD)
             }
             // D-318: italic marks it as "what you typed", not another tappable emoji result next to it.
@@ -284,6 +309,13 @@ class SuggestionBarView @JvmOverloads constructor(
                 dragIntercepting = false
                 swipeDownIntercepting = false
                 setDragZone(DragZone.NONE)
+                // D-488: a touch starting on the confirmation chip is tracked for its own downward
+                // reject drag - independent of the upward G-04/D-247 machinery above (the confirm chip
+                // is deliberately not upward-draggable; dragging it up means nothing).
+                val underTouch = itemAt(ev.x)
+                rejectWord = if (underTouch?.kind == SuggestionController.Kind.BLACKLIST_CONFIRM) underTouch.word else null
+                rejectIntercepting = false
+                rejectArmed = false
             }
             
             MotionEvent.ACTION_MOVE -> {
@@ -298,9 +330,17 @@ class SuggestionBarView @JvmOverloads constructor(
                     setDragZone(zoneFor(dx, dy))
                     return true
                 }
+                // D-488: claimed AHEAD of the swipe-down check below - a downward drag starting on the
+                // confirmation chip is its reject, never D-144's dismiss (the standing collision
+                // contract). The reject's own arm threshold is dragThresholdPx, checked in onTouchEvent.
+                if (rejectWord != null && SwipeGesture.classify(dx, dy, interceptThresholdPx) == SwipeDirection.DOWN) {
+                    rejectIntercepting = true
+                    return true
+                }
                 // D-144: the same early-claim reasoning as G-04 above, mirrored for the opposite (downward)
                 // direction - regardless of dragWord, so this also fires over the verbatim chip or a gap.
-                if (SwipeGesture.classify(dx, dy, interceptThresholdPx) == SwipeDirection.DOWN) {
+                // D-488: except over the confirmation chip - that case was claimed as the reject above.
+                if (rejectWord == null && SwipeGesture.classify(dx, dy, interceptThresholdPx) == SwipeDirection.DOWN) {
                     swipeDownIntercepting = true
                     return true
                 }
@@ -328,6 +368,39 @@ class SuggestionBarView @JvmOverloads constructor(
     }
     
     override fun onTouchEvent(ev: MotionEvent): Boolean {
+        // D-488: the confirmation chip's reject drag, fully owned here once claimed - arm the "keep"
+        // zone past the same distance G-04's trash zone uses (the mirror-image gesture feels consistent
+        // at the same threshold), release inside it rejects, release before it falls back to a tap
+        // (the chip's own click listener confirms).
+        if (rejectIntercepting) {
+            when (ev.actionMasked) {
+                MotionEvent.ACTION_MOVE -> {
+                    val dy = ev.y - dragDownY
+                    val armed = dy >= dragThresholdPx && dy >= kotlin.math.abs(ev.x - dragDownX)
+                    if (armed != rejectArmed) {
+                        rejectArmed = armed
+                        invalidate()
+                    }
+                    return true
+                }
+                
+                MotionEvent.ACTION_UP -> {
+                    val word = rejectWord
+                    val armed = rejectArmed
+                    cancelDrag()
+                    if (word != null && armed) {
+                        onBlacklistConfirmRejected?.onBlacklistConfirmRejected(word)
+                    }
+                    return true
+                }
+                
+                MotionEvent.ACTION_CANCEL -> {
+                    cancelDrag()
+                    return true
+                }
+            }
+            return true
+        }
         if (dragIntercepting) {
             when (ev.actionMasked) {
                 MotionEvent.ACTION_MOVE -> {
@@ -426,6 +499,16 @@ class SuggestionBarView @JvmOverloads constructor(
     
     override fun draw(canvas: Canvas) {
         super.draw(canvas)
+        // D-488: while the reject drag has armed its zone, paint the same green styling D-247's
+        // "Vergessen" zone uses - the semantic is the mirror image ("Behalten": release keeps the word,
+        // nothing is blacklisted). Drawn before the G-04 zones below can never matter - the two drags
+        // are mutually exclusive by direction, and rejectArmed is only ever true while the reject owns
+        // the gesture.
+        if (rejectArmed) {
+            canvas.drawRect(0f, 0f, width.toFloat(), height.toFloat(), forgetPaint)
+            val keepBaseline = height / 2f - (forgetTextPaint.descent() + forgetTextPaint.ascent()) / 2f
+            canvas.drawText(context.getString(R.string.suggestion_keep_label), width / 2f, keepBaseline, forgetTextPaint)
+        }
         // G-04 / D-247: while armed, paint the current drop zone over the visible bar (drawn after the
         // children, in view coordinates so it stays fixed regardless of horizontal scroll). FORGET only
         // ever arms for a LEARNED chip; BLACKLIST's own label differs by kind (an ordinary suggestion keeps
@@ -505,6 +588,24 @@ class SuggestionBarView @JvmOverloads constructor(
     }
     
     /**
+     * Maps a touch x (in this view's coordinates) to whichever entry is displayed there (D-488's reject
+     * drag needs the confirm chip; [draggableItemAt] narrows to its own draggable kinds).
+     *
+     * @param viewX the touch x in view coordinates
+     * @return the entry at that position, or null for a gap or an empty bar
+     */
+    private fun itemAt(viewX: Float): SuggestionController.DisplayItem? {
+        val contentX = viewX + scrollX
+        for (index in 0 until container.childCount) {
+            val child = container.getChildAt(index)
+            if (contentX >= child.left && contentX <= child.right) {
+                return items.getOrNull(index)
+            }
+        }
+        return null
+    }
+    
+    /**
      * Maps a touch x (in this view's coordinates) to the draggable suggestion under it (G-04 / D-247).
      *
      * @param viewX the touch x in view coordinates
@@ -512,19 +613,12 @@ class SuggestionBarView @JvmOverloads constructor(
      *         CLIPBOARD/CREDENTIAL chip, a gap, or an empty bar
      */
     private fun draggableItemAt(viewX: Float): SuggestionController.DisplayItem? {
-        val contentX = viewX + scrollX
-        for (index in 0 until container.childCount) {
-            val child = container.getChildAt(index)
-            if (contentX >= child.left && contentX <= child.right) {
-                val item = items.getOrNull(index) ?: return null
-                return if (item.kind == SuggestionController.Kind.NORMAL || item.kind == SuggestionController.Kind.LEARNED) {
-                    item
-                } else {
-                    null
-                }
-            }
+        val item = itemAt(viewX) ?: return null
+        return if (item.kind == SuggestionController.Kind.NORMAL || item.kind == SuggestionController.Kind.LEARNED) {
+            item
+        } else {
+            null
         }
-        return null
     }
     
     private fun setDragZone(value: DragZone) {
@@ -541,6 +635,10 @@ class SuggestionBarView @JvmOverloads constructor(
         // D-144: setItems() (a fresh suggestion refresh mid-gesture) also calls this - a stale downward-swipe
         // interception should not carry over into whatever now occupies the bar.
         swipeDownIntercepting = false
+        // D-488: same staleness reasoning for the reject drag - a bar rebuild mid-gesture cancels it.
+        rejectWord = null
+        rejectIntercepting = false
+        rejectArmed = false
         setDragZone(DragZone.NONE)
     }
     

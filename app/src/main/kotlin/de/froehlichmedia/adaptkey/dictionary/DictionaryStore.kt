@@ -398,12 +398,44 @@ interface DictionaryStore {
     fun diacriticCandidates(token: String, firstChars: Set<Char>): List<String> = correctionCandidates(token, firstChars)
     
     /**
-     * Adds [word] to the blacklist under [category] (A-04).
-     * 
+     * Adds [word] to the blacklist under [category] (A-04), recording D-488 provenance.
+     *
+     * An already-existing row for the same word keeps its original provenance - only its category is
+     * updated. This is what makes the idempotent per-start D-278 confusables seed
+     * ([BlacklistOrigin.BUNDLED_SEED]) unable to clobber when/how a row actually came to be, and a
+     * repeat gesture unable to reset an entry's age. A row removed via [unblacklist] is gone outright,
+     * so a later re-add starts a fresh provenance.
+     *
+     * The defaults exist for tests and legacy call shapes only - every production write site passes
+     * its real origin and timestamp explicitly.
+     *
      * @param word the word to exclude
      * @param category the blacklist category
+     * @param origin D-488: how this entry came to be (see [BlacklistOrigin])
+     * @param addedAtMillis D-488: when the entry was written (epoch millis)
      */
-    fun blacklist(word: String, category: BlacklistCategory)
+    fun blacklist(
+        word: String,
+        category: BlacklistCategory,
+        origin: BlacklistOrigin = BlacklistOrigin.UNKNOWN,
+        addedAtMillis: Long = 0L
+    )
+    
+    /**
+     * D-488: [word]'s blacklist row together with its provenance, or null when the word is not
+     * blacklisted.
+     *
+     * @param word the word to look up
+     * @return the entry (origin [BlacklistOrigin.UNKNOWN] and timestamp 0 for a pre-D-488 row), or null
+     */
+    fun blacklistEntry(word: String): BlacklistEntry?
+    
+    /**
+     * D-488: every blacklist row with its provenance, for the Blacklist editor's per-entry info popup.
+     *
+     * @return all entries, unordered
+     */
+    fun blacklistedEntries(): List<BlacklistEntry>
     
     /**
      * Removes [word] from the blacklist if present.

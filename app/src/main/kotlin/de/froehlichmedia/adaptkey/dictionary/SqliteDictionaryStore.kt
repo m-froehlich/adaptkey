@@ -45,6 +45,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         ensureLearnedLemmaColumn(db)
         ensureBigramLastTouchedColumn(db)
         ensureTrigramLastTouchedColumn(db)
+        ensureBlacklistProvenanceColumns(db)
     }
     
     /**
@@ -70,7 +71,7 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
             "CREATE TABLE $TABLE_BIGRAMS (prevkey TEXT NOT NULL, wkey TEXT NOT NULL, count INTEGER NOT NULL, PRIMARY KEY (prevkey, wkey))"
         )
         database.execSQL(
-            "CREATE TABLE $TABLE_BLACKLIST (wkey TEXT PRIMARY KEY, category TEXT NOT NULL)"
+            "CREATE TABLE $TABLE_BLACKLIST (wkey TEXT PRIMARY KEY, category TEXT NOT NULL, origin TEXT, added_at INTEGER)"
         )
         ensureAdditiveSchema(database)
     }
@@ -297,6 +298,28 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
             database.setTransactionSuccessful()
         } finally {
             database.endTransaction()
+        }
+    }
+    
+    /**
+     * D-488: adds [TABLE_BLACKLIST]'s `origin`/`added_at` provenance columns when this database predates
+     * them - the same guarded-`ALTER TABLE` pattern as every other column migration here
+     * (`PRAGMA table_info` presence check, since `ADD COLUMN` fails outright if the column already
+     * exists). No existing-row backfill is needed or possible: a pre-D-488 row's provenance was simply
+     * never recorded, so it stays `NULL` and reads back as [BlacklistOrigin.UNKNOWN] with timestamp 0 -
+     * displayed as "unknown (from an earlier version)". The blacklist is tiny (a handful of rows), so
+     * the two presence checks cost nothing on a store open.
+     */
+    private fun ensureBlacklistProvenanceColumns(database: SQLiteDatabase) {
+        val columns = database.rawQuery("PRAGMA table_info($TABLE_BLACKLIST)", null).use { cursor ->
+            val nameIndex = cursor.getColumnIndex("name")
+            generateSequence { if (cursor.moveToNext()) cursor.getString(nameIndex) else null }.toSet()
+        }
+        if ("origin" !in columns) {
+            database.execSQL("ALTER TABLE $TABLE_BLACKLIST ADD COLUMN origin TEXT")
+        }
+        if ("added_at" !in columns) {
+            database.execSQL("ALTER TABLE $TABLE_BLACKLIST ADD COLUMN added_at INTEGER")
         }
     }
     
@@ -845,18 +868,19 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
      * D-278: every [BlacklistCategory.USER] blacklist entry, for the backup/export feature (§21) - a bundled
      * category is deliberately excluded, since [de.froehlichmedia.adaptkey.AdaptKeyService] already reseeds
      * it idempotently on every service start (see [BlacklistCategory.BUNDLED]'s own KDoc), so it would only
-     * bloat the exported file with data the target device already has.
-     * 
-     * @return every user-added blacklist word (lower-cased key, as stored), ordered alphabetically
+     * bloat the exported file with data the target device already has. D-488: each entry travels with its
+     * own provenance, so a backup round-trip preserves when/how it came to be.
+     *
+     * @return every user-added blacklist entry with its provenance, ordered alphabetically
      */
-    fun userBlacklistedWords(): List<String> {
-        val result = ArrayList<String>()
+    fun userBlacklistEntries(): List<BlacklistEntry> {
+        val result = ArrayList<BlacklistEntry>()
         db.rawQuery(
-            "SELECT wkey FROM $TABLE_BLACKLIST WHERE category = ? ORDER BY wkey ASC",
+            "SELECT wkey, category, origin, added_at FROM $TABLE_BLACKLIST WHERE category = ? ORDER BY wkey ASC",
             arrayOf(BlacklistCategory.USER.name)
         ).use { cursor ->
             while (cursor.moveToNext()) {
-                result.add(cursor.getString(0))
+                result.add(blacklistEntryFromCursor(cursor))
             }
         }
         return result
@@ -1255,10 +1279,23 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         return result
     }
     
-    override fun blacklist(word: String, category: BlacklistCategory) {
+    override fun blacklist(word: String, category: BlacklistCategory, origin: BlacklistOrigin, addedAtMillis: Long) {
+        val key = word.lowercase()
+        if (blacklistCategory(key) != null) {
+            // D-488: an existing row keeps its original provenance - only the category updates (see the
+            // interface's own contract). The old INSERT OR REPLACE would have silently reset when/how the
+            // row came to be on every idempotent D-278 reseed and on every repeat gesture.
+            db.execSQL(
+                "UPDATE $TABLE_BLACKLIST SET category = ? WHERE wkey = ?",
+                arrayOf(category.name, key)
+            )
+            return
+        }
         val values = ContentValues().apply {
-            put("wkey", word.lowercase())
+            put("wkey", key)
             put("category", category.name)
+            put("origin", origin.name)
+            put("added_at", addedAtMillis)
         }
         db.insertWithOnConflict(TABLE_BLACKLIST, null, values, SQLiteDatabase.CONFLICT_REPLACE)
     }
@@ -1272,15 +1309,50 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
     }
     
     override fun blacklistCategory(word: String): BlacklistCategory? {
+        return blacklistEntry(word)?.category
+    }
+    
+    override fun blacklistEntry(word: String): BlacklistEntry? {
         db.rawQuery(
-            "SELECT category FROM $TABLE_BLACKLIST WHERE wkey = ?",
+            "SELECT wkey, category, origin, added_at FROM $TABLE_BLACKLIST WHERE wkey = ?",
             arrayOf(word.lowercase())
         ).use { cursor ->
             if (!cursor.moveToFirst()) {
                 return null
             }
-            return runCatching { BlacklistCategory.valueOf(cursor.getString(0)) }.getOrNull()
+            return blacklistEntryFromCursor(cursor)
         }
+    }
+    
+    override fun blacklistedEntries(): List<BlacklistEntry> {
+        val result = ArrayList<BlacklistEntry>()
+        db.rawQuery("SELECT wkey, category, origin, added_at FROM $TABLE_BLACKLIST", null).use { cursor ->
+            while (cursor.moveToNext()) {
+                result.add(blacklistEntryFromCursor(cursor))
+            }
+        }
+        return result
+    }
+    
+    /**
+     * D-488: maps one row of the blacklist table onto a [BlacklistEntry]. A pre-D-488 row (or an
+     * unparseable origin value) reads back as [BlacklistOrigin.UNKNOWN] with timestamp 0 - the same
+     * defensive `runCatching { valueOf(...) }` shape [blacklistCategory] historically used for the
+     * category, so a foreign/corrupt value degrades to "unknown" rather than crashing a read.
+     */
+    private fun blacklistEntryFromCursor(cursor: android.database.Cursor): BlacklistEntry {
+        val originIndex = cursor.getColumnIndex("origin")
+        val addedAtIndex = cursor.getColumnIndex("added_at")
+        return BlacklistEntry(
+            word = cursor.getString(0),
+            category = runCatching { BlacklistCategory.valueOf(cursor.getString(1)) }.getOrDefault(BlacklistCategory.USER),
+            origin = if (originIndex >= 0 && !cursor.isNull(originIndex)) {
+                runCatching { BlacklistOrigin.valueOf(cursor.getString(originIndex)) }.getOrDefault(BlacklistOrigin.UNKNOWN)
+            } else {
+                BlacklistOrigin.UNKNOWN
+            },
+            addedAtMillis = if (addedAtIndex >= 0 && !cursor.isNull(addedAtIndex)) cursor.getLong(addedAtIndex) else 0L
+        )
     }
     
     override fun blacklistedWords(): List<String> {

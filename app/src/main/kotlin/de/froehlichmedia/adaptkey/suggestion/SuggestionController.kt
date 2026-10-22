@@ -87,6 +87,15 @@ class SuggestionController(private val config: SuggestionConfig) {
          * [COMPOUND] already use. */
         RECLAIM,
         
+        /** D-488: the blacklist confirmation chip ("❗ Blacklist: X") - the bar's full takeover while a
+         * [BlacklistConfirmation] is pending. Tapping it confirms the blacklist; dragging it down into
+         * the keyboard area rejects it (never a G-03 dismiss - a down-drag starting on this chip is
+         * always the reject, see `SuggestionBarView`); ignoring it (typing on, a field change) rejects
+         * too. Nothing is ever written to the blacklist until the tap. Built and pushed directly to the
+         * suggestion bar by the service, bypassing this class's own [update]/[displayed] the same way
+         * every other pinned special chip does. */
+        BLACKLIST_CONFIRM,
+        
         /** D-404-followup: one casing variant of a §6-rule-5-ambiguous noun (`CapitalisationEngine.
          * isAmbiguousCasing` - "Weg" `NOUN,OTHER`), e.g. "Weg"/"weg". Built and pushed directly to the
          * suggestion bar - never routed through [update]/[displayed]'s own capitalisation-at-render step

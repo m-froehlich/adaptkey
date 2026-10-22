@@ -348,7 +348,9 @@ Swiping left on the backspace key deletes the entire previous word rather than a
 ### G-03 - Dismiss Keyboard
 Swiping downward dismisses the keyboard - recognised on the keyboard body, the suggestion bar, and the
 swipe-up extra row (§14) alike. When the extra row is open, a downward swipe closes the row first; only a
-second downward swipe (with the row already closed) dismisses the keyboard.
+second downward swipe (with the row already closed) dismisses the keyboard. D-488: a downward drag that
+*starts on the D-488 blacklist confirmation chip* is that chip's reject gesture, never a G-03 dismiss -
+the collision contract is a stated rule, not an implementation accident.
 
 ### G-04 - Remove/Un-learn a Suggestion (Drag-to-Trash)
 A suggestion in the suggestion bar can be dragged upward into a trash area that appears during the drag; a
@@ -361,6 +363,20 @@ a self-taught word. Because a word matching the current input can never appear a
 dedicated review screen (§13, W-01) exists as the only way to remove such a word directly. The W-03 promotion
 confirmation chip is the one exception to this single-zone behaviour, offering an explicit two-zone drag of
 its own instead - see §13.
+
+**D-488 addendum - no blacklist write without an explicit chip tap.** The escalation above no longer writes
+silently either, and G-04's bundled-word drag no longer writes at all: both arm the D-488 confirmation chip
+instead (as does W-03's "Verbieten" deep zone), a red "❗ Blacklist: X" chip that takes over the suggestion
+bar completely (S-01's alternate-content slot) until resolved - **tap = the only write** (permanently,
+with D-488 provenance recorded: origin + when, visible via the Blacklist editor's per-entry "ⓘ" popup and
+preserved through backups); **drag down into the keyboard = reject** (a down-drag starting on this chip is
+by contract never a G-03 dismiss); **typing on = ignore**, also rejecting: a field change or two committed
+words yield the chip, never writing. Reject/ignore also clear the escalation's provisional mark, so the chip
+never re-fires on the word; the escalation leaves the word learned, not forgotten-upfront. The D-177 window
+itself is unchanged. Companion rule (the round's root-cause fix): the Learned Words editor's "Vergessen" only
+sets the provisional mark for a word with no bundled entry in *any* casing - a learned casing variant of a
+bundled word can never be escalated into the blacklist any more. Every write site logs
+`blacklist-confirm`/`blacklist-write` diagnostics (D-150's password guard applies).
 
 ### G-05 - Double-Tap Shift to Toggle Word-Start Capitalisation
 A double-tap on Shift (two presses within the configurable double-tap delay, default 400 ms, range 200-800 ms)
@@ -1953,7 +1969,10 @@ permanently blacklisted); a deeper zone blacklists it immediately and permanentl
 bundled-vs-self-taught origin check entirely (a freshly-promoted word is never bundled, so that check would
 otherwise always resolve to the shallow outcome regardless of how far the drag travelled) - deliberately
 stronger than the shallow zone, for when the user is certain the word should never be reconsidered even if it
-recurs.
+recurs. **D-488 addendum:** the deep zone no longer writes outright - it arms the same confirmation chip
+G-04's own bundled-word drag arms (origin `W03_FORBID`), and only the chip tap writes; until then the word
+simply stays learned. No exception is carved out for this path: the D-488 invariant is "no permanent entry
+without an explicit chip tap", uniformly.
 
 ### W-04 - Case-Sensitive Override of a Bundled Word's Own Casing
 A bundled word typed in its own already-canonical casing has nothing to learn (unchanged - see A-04's own

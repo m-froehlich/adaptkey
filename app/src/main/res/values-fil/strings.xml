@@ -346,4 +346,21 @@
     <string name="d486_mode_none">Wala</string>
     <string name="d486_mode_nav_bar">Navigation bar</string>
     <string name="d486_mode_auto">Awtomatiko</string>
+
+    <!-- D-488: blacklist confirmation chip, its reject zone, and per-entry provenance (drafts). -->
+    <string name="suggestion_blacklist_confirm_label">Blacklist: %1$s</string>
+    <string name="suggestion_keep_label">Panatilihin</string>
+    <string name="learned_words_removed_pending">Nakalimutan ang %1$s. Kung i-type muli ito, magtatanong ang AdaptKey.</string>
+    <string name="blacklist_entry_info_action">Ipakita ang pinagmulan</string>
+    <string name="blacklist_info_origin_label">Pinagmulan</string>
+    <string name="blacklist_info_added_label">Naidagdag</string>
+    <string name="blacklist_info_copy_action">Kopyahin</string>
+    <string name="blacklist_info_close_action">Isara</string>
+    <string name="blacklist_origin_gesture_g04">Inalis mula sa suggestion bar (kumpirmado)</string>
+    <string name="blacklist_origin_escalation">Paulit-ulit na salita pagkatapos ng Kalimutan (kumpirmado)</string>
+    <string name="blacklist_origin_w03_forbid">Ipinagbawal ang natutunang salita (kumpirmado)</string>
+    <string name="blacklist_origin_editor_manual">Manual na idinagdag sa blacklist editor</string>
+    <string name="blacklist_origin_backup_import">Naibalik mula sa backup</string>
+    <string name="blacklist_origin_bundled_seed">Kasama ng app</string>
+    <string name="blacklist_origin_unknown">Hindi kilala (mula sa mas lumang bersyon)</string>
 </resources>

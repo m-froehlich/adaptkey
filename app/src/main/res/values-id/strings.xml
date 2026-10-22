@@ -346,4 +346,21 @@
     <string name="d486_mode_none">Tidak ada</string>
     <string name="d486_mode_nav_bar">Bilah navigasi</string>
     <string name="d486_mode_auto">Otomatis</string>
+
+    <!-- D-488: blacklist confirmation chip, its reject zone, and per-entry provenance (drafts). -->
+    <string name="suggestion_blacklist_confirm_label">Daftar hitam: %1$s</string>
+    <string name="suggestion_keep_label">Simpan</string>
+    <string name="learned_words_removed_pending">%1$s dilupakan. Jika Anda mengetiknya lagi, AdaptKey akan bertanya.</string>
+    <string name="blacklist_entry_info_action">Tampilkan asal</string>
+    <string name="blacklist_info_origin_label">Asal</string>
+    <string name="blacklist_info_added_label">Ditambahkan</string>
+    <string name="blacklist_info_copy_action">Salin</string>
+    <string name="blacklist_info_close_action">Tutup</string>
+    <string name="blacklist_origin_gesture_g04">Dihapus dari bilah saran (dikonfirmasi)</string>
+    <string name="blacklist_origin_escalation">Kata berulang setelah Lupakan (dikonfirmasi)</string>
+    <string name="blacklist_origin_w03_forbid">Kata yang dipelajari dilarang (dikonfirmasi)</string>
+    <string name="blacklist_origin_editor_manual">Ditambahkan manual di editor daftar hitam</string>
+    <string name="blacklist_origin_backup_import">Dipulihkan dari cadangan</string>
+    <string name="blacklist_origin_bundled_seed">Termasuk dalam aplikasi</string>
+    <string name="blacklist_origin_unknown">Tidak diketahui (dari versi sebelumnya)</string>
 </resources>

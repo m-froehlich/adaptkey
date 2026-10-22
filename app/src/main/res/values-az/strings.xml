@@ -346,4 +346,21 @@
     <string name="d486_mode_none">Yoxdur</string>
     <string name="d486_mode_nav_bar">Naviqasiya paneli</string>
     <string name="d486_mode_auto">Avtomatik</string>
+
+    <!-- D-488: blacklist confirmation chip, its reject zone, and per-entry provenance (drafts). -->
+    <string name="suggestion_blacklist_confirm_label">Qara siyahı: %1$s</string>
+    <string name="suggestion_keep_label">Saxla</string>
+    <string name="learned_words_removed_pending">%1$s unuduldu. Yenidən yazsanız, AdaptKey soruşacaq.</string>
+    <string name="blacklist_entry_info_action">Mənbəyi göstər</string>
+    <string name="blacklist_info_origin_label">Mənbə</string>
+    <string name="blacklist_info_added_label">Əlavə edildi</string>
+    <string name="blacklist_info_copy_action">Kopyala</string>
+    <string name="blacklist_info_close_action">Bağla</string>
+    <string name="blacklist_origin_gesture_g04">Təklif panelindən silindi (təsdiqləndi)</string>
+    <string name="blacklist_origin_escalation">Unutduqdan sonra təkrarlanan söz (təsdiqləndi)</string>
+    <string name="blacklist_origin_w03_forbid">Öyrənilən söz qadağan edildi (təsdiqləndi)</string>
+    <string name="blacklist_origin_editor_manual">Qara siyahı redaktorunda əl ilə əlavə edildi</string>
+    <string name="blacklist_origin_backup_import">Ehtiyat nüsxədən bərpa edildi</string>
+    <string name="blacklist_origin_bundled_seed">Tətbiqlə birlikdə gəlir</string>
+    <string name="blacklist_origin_unknown">Naməlum (əvvəlki versiyadan)</string>
 </resources>

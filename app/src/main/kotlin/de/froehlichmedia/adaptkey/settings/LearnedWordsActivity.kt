@@ -282,12 +282,31 @@ class LearnedWordsActivity : SettingsScreenActivity() {
             }
             .setNegativeButton(android.R.string.cancel, null)
             .setNeutralButton(R.string.learned_words_remove_confirm_action) { _, _ ->
-                // D-177: mirrors AdaptKeyService.onBlacklistWord()'s own learned-word branch exactly - every
-                // word listed here is by definition already in the learned lexicon (learnedWords() itself
-                // never returns a bundled one), so there is no isBundledWord() branch to make here at all.
+                // D-177 (behaviour kept for genuinely self-taught words): mirrors AdaptKeyService
+                // .onBlacklistWord()'s own learned-word branch - forget the word outright and mark it
+                // provisionally pending, so a genuine recurrence within the window escalates.
+                //
+                // D-488: the mark is now ONLY set for a word with no bundled entry in ANY casing
+                // (bundledCasingOf resolves case-insensitively). The comment this replaces claimed
+                // "learnedWords() itself never returns a bundled one" so no bundled check was needed -
+                // wrong: the list DOES contain learned casing VARIANTS of bundled words (W-04's whole
+                // purpose), and for those the old unconditional mark produced the verified silent
+                // escalation - the word, typed again normally within the window, landed permanently on
+                // the blacklist with no UI ever shown (the reported "völlig normales Wort, unklar wann/
+                // wie/warum"). For a bundled word the escalation is semantically wrong anyway: the
+                // "recurrence" is just the bundled dictionary (or a legitimate W-04 variant) doing its
+                // job, and plain forget() fully satisfies what the user asked for here.
+                val isBundledInAnyCasing = store.bundledCasingOf(entry.word) != null
                 store.forget(entry.word)
-                store.markPendingBlacklist(entry.word, System.currentTimeMillis())
-                Toast.makeText(this, getString(R.string.learned_words_removed, entry.word), Toast.LENGTH_SHORT).show()
+                if (isBundledInAnyCasing) {
+                    Toast.makeText(this, getString(R.string.learned_words_removed, entry.word), Toast.LENGTH_SHORT).show()
+                } else {
+                    store.markPendingBlacklist(entry.word, System.currentTimeMillis())
+                    // D-488: honest about what the mark means - the whole confusion class this round
+                    // exists to close. A bundled-casing word gets the plain message above instead (its
+                    // forget sets nothing that could ever ask later).
+                    Toast.makeText(this, getString(R.string.learned_words_removed_pending, entry.word), Toast.LENGTH_SHORT).show()
+                }
                 refresh()
             }
             .create()

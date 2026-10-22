@@ -68,6 +68,7 @@ import de.froehlichmedia.adaptkey.dictionary.AutoMergeAggressiveness
 import de.froehlichmedia.adaptkey.dictionary.AutoSplitMode
 import de.froehlichmedia.adaptkey.dictionary.AutocorrectAggressiveness
 import de.froehlichmedia.adaptkey.dictionary.BlacklistCategory
+import de.froehlichmedia.adaptkey.dictionary.BlacklistOrigin
 import de.froehlichmedia.adaptkey.dictionary.CorrectionConfidence
 import de.froehlichmedia.adaptkey.dictionary.DictionaryLoader
 import de.froehlichmedia.adaptkey.dictionary.DictionaryStore
@@ -138,6 +139,10 @@ import de.froehlichmedia.adaptkey.settings.SettingsActivity
 import de.froehlichmedia.adaptkey.settings.SettingsStore
 import de.froehlichmedia.adaptkey.settings.Tier3ModelActivity
 import de.froehlichmedia.adaptkey.suggestion.Acronym
+import de.froehlichmedia.adaptkey.suggestion.BlacklistConfirmation
+import de.froehlichmedia.adaptkey.suggestion.BlacklistConfirmationOutcome
+import de.froehlichmedia.adaptkey.suggestion.BlacklistConfirmationRequest
+import de.froehlichmedia.adaptkey.suggestion.BlacklistConfirmationResult
 import de.froehlichmedia.adaptkey.suggestion.ClipboardExtraction
 import de.froehlichmedia.adaptkey.suggestion.ClipboardPreview
 import de.froehlichmedia.adaptkey.suggestion.KeyboardProximityRegistry
@@ -190,6 +195,16 @@ class AdaptKeyService : InputMethodService() {
     
     private var keyboardView: AdaptKeyboardView? = null
     private var suggestionBar: SuggestionBarView? = null
+    // D-488: the blacklist confirmation chip's state machine - armed by the G-04 drag of a bundled word,
+    // the W-03 "Verbieten" deep zone, or the D-177 recurrence escalation; resolved by a tap (confirm),
+    // a drag-down (reject) or typing on / leaving the field (ignore). Nothing ever writes the blacklist
+    // until the tap - see confirmBlacklistConfirmation().
+    private val blacklistConfirmation = BlacklistConfirmation()
+    // D-488: true for exactly the one learnWord()/learnHyphenCompound() call that ARMED the chip from the
+    // escalation branch - the arming commit itself must not count toward the chip's two-commit yield
+    // threshold (the user has not typed past the chip yet at that moment); noteCommitForBlacklistConfirm()
+    // consumes it once and skips that count.
+    private var blacklistConfirmArmedDuringCommit = false
     // D-323: the fixed-height row hosting suggestionBar plus clearClipboardButtonView/cancelEmojiSearchButtonView
     // (see onCreateInputView) - a sibling of inlineSuggestionsBar in inputRoot with its own non-zero height that
     // never depended on its children's visibility, so hiding only suggestionBar left this row's own reserved
@@ -1065,7 +1080,10 @@ class AdaptKeyService : InputMethodService() {
      */
     private fun seedBundledBlacklist(language: Language, store: DictionaryStore) {
         for (word in LanguageRulesRegistry.rulesFor(language).bundledConfusablesBlacklist()) {
-            store.blacklist(word, BlacklistCategory.BUNDLED)
+            // D-488: the seed records its own provenance - though an already-existing row keeps its
+            // original one regardless (blacklist()'s contract), so a reseed can never reset an entry's
+            // age or origin.
+            store.blacklist(word, BlacklistCategory.BUNDLED, BlacklistOrigin.BUNDLED_SEED, System.currentTimeMillis())
         }
     }
     
@@ -1181,6 +1199,9 @@ class AdaptKeyService : InputMethodService() {
         // D-247: the D-246 "Gelernt: X" chip's own two-zone drag (Kind.LEARNED only, see SuggestionBarView).
         bar.onForgetLearned = SuggestionBarView.OnForgetLearnedListener { word -> onForgetLearnedWord(word) }
         bar.onForbidLearned = SuggestionBarView.OnForbidLearnedListener { word -> onForbidLearnedWord(word) }
+        // D-488: the blacklist confirmation chip's reject drag (drag down into the keyboard area).
+        bar.onBlacklistConfirmRejected =
+            SuggestionBarView.OnBlacklistConfirmRejectedListener { word -> rejectBlacklistConfirmation(word) }
         // D-144: a downward swipe on the bar itself dismisses/closes too, not only on the keyboard body.
         bar.onSwipeDown = SuggestionBarView.OnSwipeDownListener { dismissKeyboardOrCloseExtraRow() }
         bar.visibility = View.VISIBLE
@@ -1472,8 +1493,12 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * Handles a G-04 drag-to-trash: permanently blacklists [word] (A-04, category
-     * [BlacklistCategory.USER]) and refreshes the bar so the now-excluded word disappears immediately.
+     * Handles a G-04 drag-to-trash. D-488: the bundled-word half no longer blacklists outright - the
+     * drag arms the D-488 confirmation chip instead, and only an explicit tap on that chip writes the
+     * permanent entry ([BlacklistOrigin.GESTURE_G04]). A single drag - deliberate as the gesture tries
+     * to be - can therefore no longer silently condemn a normal word. The self-taught half is unchanged:
+     * it never wrote a blacklist entry in the first place, only the D-177 provisional forget, whose
+     * recurrence escalation is itself now chip-guarded (see [learnWord]).
      */
     private fun onBlacklistWord(word: String) {
         if (word.isBlank() || !this::dictionaryStore.isInitialized) {
@@ -1486,7 +1511,7 @@ class AdaptKeyService : InputMethodService() {
         // learnWord()'s own isPendingBlacklistRecurrence() check for what happens if it gets learned
         // again before the mark expires.
         if (dictionaryStore.isBundledWord(word)) {
-            dictionaryStore.blacklist(word, BlacklistCategory.USER)
+            armBlacklistConfirm(word, BlacklistOrigin.GESTURE_G04, clearsPendingMark = false)
         } else {
             forgetSelfTaughtWord(word)
         }
@@ -1532,19 +1557,118 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * D-247: the D-246 "Gelernt: X" chip's deep drag zone ("Verbieten") - blacklists a just-promoted word
-     * immediately and permanently, bypassing [onBlacklistWord]'s own origin check entirely (deliberately
-     * stronger than [onForgetLearnedWord]'s provisional mark, for when the user is certain the word should
-     * never be reconsidered even if it recurs).
-     * 
+     * D-247: the D-246 "Gelernt: X" chip's deep drag zone ("Verbieten"). D-488: the deep drag no longer
+     * blacklists outright - it arms the D-488 confirmation chip instead ([BlacklistOrigin.W03_FORBID]),
+     * and only an explicit tap writes. The word simply stays learned until then; a reject or ignore
+     * changes nothing at all. Deliberately still routed through the chip despite the gesture already
+     * being two-step (promotion chip + deep zone): the standing D-488 invariant is "no permanent entry
+     * without an explicit chip tap", with no exception carved out for this path.
+     *
      * @param word the just-promoted word to blacklist
      */
     private fun onForbidLearnedWord(word: String) {
         if (word.isBlank() || !this::dictionaryStore.isInitialized) {
             return
         }
-        dictionaryStore.blacklist(word, BlacklistCategory.USER)
+        armBlacklistConfirm(word, BlacklistOrigin.W03_FORBID, clearsPendingMark = false)
         showNextWordPredictions()
+    }
+    
+    /**
+     * D-488: arms the blacklist confirmation chip for [word], unless one is already pending (the first
+     * armed request wins - a word re-committed while its own chip is up must not reset the yield
+     * counter). Logs the arming, and refreshes the bar immediately when [refreshNow] is set - the
+     * commit-path arming sites pass false, since their caller's own next suggestion render picks the
+     * chip up through [setSuggestionBarItems]'s pinning anyway (and a mid-commit [refreshSuggestions]
+     * re-entry is exactly the class of reentrancy this service avoids).
+     */
+    private fun armBlacklistConfirm(word: String, origin: BlacklistOrigin, clearsPendingMark: Boolean, refreshNow: Boolean = true): Boolean {
+        if (!blacklistConfirmation.arm(BlacklistConfirmationRequest(word, origin, clearsPendingMark))) {
+            return false
+        }
+        diag("AdaptKeyBlacklist", "blacklist-confirm armed: word=$word origin=$origin")
+        if (refreshNow) {
+            refreshSuggestions()
+        }
+        return true
+    }
+    
+    /**
+     * D-488: the D-177 escalation branch's arming variant - the flag tells this same commit's own tail
+     * [noteCommitForBlacklistConfirm] call not to count the arming commit toward the yield threshold.
+     * Set only when the arm actually landed (a chip already pending for another word leaves the count
+     * untouched).
+     */
+    private fun armBlacklistConfirmDuringCommit(word: String) {
+        if (armBlacklistConfirm(word, BlacklistOrigin.ESCALATION, clearsPendingMark = true, refreshNow = false)) {
+            blacklistConfirmArmedDuringCommit = true
+        }
+    }
+    
+    /**
+     * D-488: the chip's "confirm" resolution - the ONLY path in the app that writes a
+     * [BlacklistCategory.USER] entry outside the explicit editor/backup UIs. Writes with the request's
+     * own origin and timestamp, clears a pending D-177 mark when the request carries one, and returns
+     * the bar to ordinary content.
+     */
+    private fun confirmBlacklistConfirmation() {
+        settleBlacklistConfirmation(blacklistConfirmation.confirm())
+    }
+    
+    /**
+     * D-488: the chip's "reject" resolution - the drag-down into the keyboard area. Never writes;
+     * clears a pending D-177 mark when the request carries one, so the chip does not re-fire on every
+     * subsequent typing of the word.
+     */
+    private fun rejectBlacklistConfirmation(word: String) {
+        settleBlacklistConfirmation(blacklistConfirmation.reject())
+    }
+    
+    /**
+     * D-488: applies one [BlacklistConfirmationResult] - the store write on [BlacklistConfirmationOutcome.
+     * CONFIRMED] (with the request's origin/provenance), the pending-mark cleanup on
+     * [BlacklistConfirmationOutcome.REJECTED] (reject and ignore share the same safe default), nothing
+     * on [BlacklistConfirmationOutcome.NONE] - then refreshes the bar so the chip (or its absence) is
+     * rendered.
+     */
+    private fun settleBlacklistConfirmation(result: BlacklistConfirmationResult, refreshBar: Boolean = true) {
+        val request = result.request ?: return
+        when (result.outcome) {
+            BlacklistConfirmationOutcome.CONFIRMED -> {
+                dictionaryStore.blacklist(request.word, BlacklistCategory.USER, request.origin, System.currentTimeMillis())
+                if (request.clearsPendingMark) {
+                    dictionaryStore.clearPendingBlacklist(request.word)
+                }
+                diag("AdaptKeyBlacklist", "blacklist-write: word=${request.word} origin=${request.origin}")
+            }
+            
+            BlacklistConfirmationOutcome.REJECTED -> {
+                if (request.clearsPendingMark) {
+                    dictionaryStore.clearPendingBlacklist(request.word)
+                }
+                diag("AdaptKeyBlacklist", "blacklist-confirm rejected: word=${request.word} origin=${request.origin}")
+            }
+            
+            BlacklistConfirmationOutcome.NONE -> return
+        }
+        if (refreshBar) {
+            refreshSuggestions()
+        }
+    }
+    
+    /**
+     * D-488: every ordinary word commit counts toward the pending chip's yield threshold
+     * ([BlacklistConfirmation.onCommit]) - two commits typed on past the chip count as "ignored", which
+     * rejects it (never blacklists) exactly like the drag-down would. The commit that ARMED the chip
+     * from the escalation branch is skipped once via [blacklistConfirmArmedDuringCommit]: at that
+     * moment the user has not typed past the chip yet.
+     */
+    private fun noteCommitForBlacklistConfirm() {
+        if (blacklistConfirmArmedDuringCommit) {
+            blacklistConfirmArmedDuringCommit = false
+            return
+        }
+        settleBlacklistConfirmation(blacklistConfirmation.onCommit())
     }
     
     /**
@@ -2700,8 +2824,27 @@ class AdaptKeyService : InputMethodService() {
      * the already-cached [clipboardPeekAvailable] rather than querying the clipboard again here - this method
      * runs on every keystroke and must stay IPC-free (see that field's own KDoc).
      */
+    /**
+     * D-488: the confirmation chip itself - a red exclamation, then the localized "Blacklist: X" label
+     * (the user's own requested wording). Tapping confirms, dragging down rejects, typing on ignores -
+     * see [BlacklistConfirmation] and the two settle functions.
+     */
+    private fun blacklistConfirmChip(request: BlacklistConfirmationRequest): SuggestionController.DisplayItem {
+        return SuggestionController.DisplayItem(
+            text = "❗ " + getString(R.string.suggestion_blacklist_confirm_label, request.word),
+            kind = SuggestionController.Kind.BLACKLIST_CONFIRM,
+            word = request.word
+        )
+    }
+    
     private fun setSuggestionBarItems(items: List<SuggestionController.DisplayItem>) {
-        suggestionBar?.setItems(items)
+        // D-488: while a blacklist confirmation is pending, the chip IS the bar (full takeover, the same
+        // slot precedence the loading/clipboard/credential chips' dedicated takeovers use) - pinned here,
+        // at the one choke point every ordinary refresh funnels through, so no keystroke's refresh can
+        // push it off the bar. Resolved via confirmBlacklistConfirmation()/rejectBlacklistConfirmation()
+        // or the two-commit yield.
+        val effectiveItems = blacklistConfirmation.pending?.let { listOf(blacklistConfirmChip(it)) } ?: items
+        suggestionBar?.setItems(effectiveItems)
         inlineSuggestionsBar?.visibility = View.GONE
         // D-323: the mirror of the line above - this is the one choke point every ordinary suggestion update
         // funnels through (D-267), so it is also the one place that must undo onInlineSuggestionsResponse()'s
@@ -5182,8 +5325,14 @@ class AdaptKeyService : InputMethodService() {
         try {
             ic.setComposingText(beforeText, 1)
             ic.finishComposingText()
-            clearComposing()
-            resetWordEndShift()
+        clearComposing()
+        // D-488: a field change resolves a pending blacklist confirmation as an ignore - never writes,
+        // clears the escalation's pending mark, and must never carry the chip over into the next field
+        // (the same defensive field-exit rule emoji-search capture mode follows). No bar refresh here:
+        // this field's own clearSuggestions() below rebuilds it anyway.
+        settleBlacklistConfirmation(blacklistConfirmation.reject(), refreshBar = false)
+        blacklistConfirmArmedDuringCommit = false
+        resetWordEndShift()
             ic.commitText(delimiter, 1)
             // D-174 / D-190: mirror what just landed in the real document into the in-memory fallback
             // snapshot - see captureCredentialIfLoginField's own KDoc. Only login-relevant fields ever get
@@ -7016,14 +7165,18 @@ class AdaptKeyService : InputMethodService() {
             dictionaryStore.learn(word, context, contextContext, categoryHint = categoryHint)
             LearnOutcome.LEARNED
         } else if (isPendingBlacklistRecurrence(word)) {
-            // D-177: this exact word was provisionally forgotten (G-04 drag-to-trash, or the learned-words
-            // editor) and is now trying to get learned again within the pending window - a genuinely
-            // recurring mistake, not the one-off typo/test word the provisional mark was betting on.
-            // Escalate straight to a real, permanent blacklist entry instead of ever learning it again.
-            dictionaryStore.forget(word)
-            dictionaryStore.blacklist(word, BlacklistCategory.USER)
-            dictionaryStore.clearPendingBlacklist(word)
-            LearnOutcome.SKIPPED
+            // D-177 / D-488: this exact word was provisionally forgotten (G-04 drag-to-trash, or the
+            // learned-words editor) and is now trying to get learned again within the pending window -
+            // a recurrence the mark was betting on being a genuine mistake. This branch USED to escalate
+            // straight to a permanent blacklist entry with no UI at all - the verified root cause behind
+            // "a completely normal word is on the blacklist and I never put it there" (the D-253/D-254
+            // repro class, still reachable via this path and the editor's own forget button). Now
+            // nothing is written here at all: the D-488 confirmation chip is armed instead (a tap on it
+            // is the only way the entry is ever written, with the ESCALATION origin), and the word goes
+            // through the ordinary learn path below - the user keeps typing their word normally, and a
+            // reject/ignore clears the stale mark together with the chip.
+            armBlacklistConfirmDuringCommit(word)
+            promoteOrCountPending(word, context, contextContext, categoryHint)
         } else if (dictionaryStore.isBlacklisted(word)) {
             // D-253: an already permanently blacklisted word (typically from the isPendingBlacklistRecurrence
             // escalation just above, an earlier commit) must never be allowed to count back up through the
@@ -7034,17 +7187,7 @@ class AdaptKeyService : InputMethodService() {
             PendingLearnStore.clear(this, word)
             LearnOutcome.SKIPPED
         } else {
-            val pendingCount = PendingLearnStore.increment(this, word)
-            if (pendingCount >= learnThresholdFor(word)) {
-                // D-388: seeds the new entry's frequency with the pending count it actually took to
-                // promote it (e.g. 4 for a compound-suspect word), rather than always resetting to 1 - the
-                // word was genuinely seen this many times already, not once.
-                dictionaryStore.learn(word, context, contextContext, seedFrequency = pendingCount.toLong(), categoryHint = categoryHint)
-                PendingLearnStore.clear(this, word)
-                LearnOutcome.PROMOTED
-            } else {
-                LearnOutcome.PENDING
-            }
+            promoteOrCountPending(word, context, contextContext, categoryHint)
         }
         dispatchFamilyLearning(word, outcome)
         // D-246: shift the two-word trigram context in lockstep, oldest value first.
@@ -7052,7 +7195,32 @@ class AdaptKeyService : InputMethodService() {
         previousWord = word
         val record = LearnRecord(word, context, contextContext, outcome)
         rememberForBackspaceUnlearn(record)
+        // D-488: this commit counts toward the pending confirmation chip's yield threshold (two commits
+        // typed on past the chip = ignored). The arming commit itself is skipped once via the flag the
+        // escalation branch set - the user had not typed past the chip yet at that point.
+        noteCommitForBlacklistConfirm()
         return record
+    }
+    
+    /**
+     * D-488: the shared tail of [learnWord]'s two "not learned yet" branches - the D-177 escalation
+     * branch (after arming its chip instead of writing) and the ordinary unknown-word branch. Counts the
+     * word up through the D-37 pending store and promotes it once [learnThresholdFor] is reached, seeding
+     * the new entry's frequency with the count it actually took (D-388).
+     */
+    private fun promoteOrCountPending(
+        word: String,
+        context: String?,
+        contextContext: String?,
+        categoryHint: PartOfSpeech?
+    ): LearnOutcome {
+        val pendingCount = PendingLearnStore.increment(this, word)
+        if (pendingCount >= learnThresholdFor(word)) {
+            dictionaryStore.learn(word, context, contextContext, seedFrequency = pendingCount.toLong(), categoryHint = categoryHint)
+            PendingLearnStore.clear(this, word)
+            return LearnOutcome.PROMOTED
+        }
+        return LearnOutcome.PENDING
     }
     
     /**
@@ -7141,10 +7309,10 @@ class AdaptKeyService : InputMethodService() {
             return LearnRecord(compound, null, null, LearnOutcome.SKIPPED)
         }
         if (isPendingBlacklistRecurrence(compound)) {
-            dictionaryStore.forget(compound)
-            dictionaryStore.blacklist(compound, BlacklistCategory.USER)
-            dictionaryStore.clearPendingBlacklist(compound)
-            return LearnRecord(compound, null, null, LearnOutcome.SKIPPED)
+            // D-488: the same de-escalation learnWord()'s own D-177 branch got - the chip is armed (a
+            // tap on it writes, with the same ESCALATION origin), the compound itself flows into the
+            // ordinary pending path below, and nothing is written here.
+            armBlacklistConfirmDuringCommit(compound)
         }
         val outcome = if (dictionaryStore.learnedCasingOf(compound) != null) {
             dictionaryStore.learn(compound, null, null)
@@ -7503,6 +7671,10 @@ class AdaptKeyService : InputMethodService() {
                 credentialCaptured = true
                 clearSuggestions()
             }
+            
+            // D-488: the explicit confirm - the ONLY tap that ever leads to a blacklist write from the
+            // keyboard surface (see settleBlacklistConfirmation for what it writes).
+            SuggestionController.Kind.BLACKLIST_CONFIRM -> confirmBlacklistConfirmation()
             
             // D-247: purely informational + a drag target (see SuggestionBarView's own two-zone handling) -
             // a plain tap commits nothing; it just dismisses the confirmation back to ordinary predictions,

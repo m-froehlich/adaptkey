@@ -346,4 +346,21 @@
     <string name="d486_mode_none">Niciunul</string>
     <string name="d486_mode_nav_bar">Bară de navigare</string>
     <string name="d486_mode_auto">Automat</string>
+
+    <!-- D-488: blacklist confirmation chip, its reject zone, and per-entry provenance (drafts). -->
+    <string name="suggestion_blacklist_confirm_label">Listă neagră: %1$s</string>
+    <string name="suggestion_keep_label">Păstrează</string>
+    <string name="learned_words_removed_pending">%1$s uitat. Dacă îl scrieți din nou, AdaptKey vă va întreba.</string>
+    <string name="blacklist_entry_info_action">Afișează originea</string>
+    <string name="blacklist_info_origin_label">Origine</string>
+    <string name="blacklist_info_added_label">Adăugat</string>
+    <string name="blacklist_info_copy_action">Copiază</string>
+    <string name="blacklist_info_close_action">Închide</string>
+    <string name="blacklist_origin_gesture_g04">Eliminat din bara de sugestii (confirmat)</string>
+    <string name="blacklist_origin_escalation">Cuvânt recurent după Uită (confirmat)</string>
+    <string name="blacklist_origin_w03_forbid">Cuvânt învățat interzis (confirmat)</string>
+    <string name="blacklist_origin_editor_manual">Adăugat manual în editorul listei negre</string>
+    <string name="blacklist_origin_backup_import">Restaurat dintr-o copie de siguranță</string>
+    <string name="blacklist_origin_bundled_seed">Inclus în aplicație</string>
+    <string name="blacklist_origin_unknown">Necunoscut (dintr-o versiune anterioară)</string>
 </resources>
