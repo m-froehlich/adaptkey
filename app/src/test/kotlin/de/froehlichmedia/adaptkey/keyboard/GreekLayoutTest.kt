@@ -109,6 +109,8 @@ class GreekLayoutTest {
         
         assertEquals(listOf("!", "¹"), numberRow.byChar('1').alternatives)
         assertEquals(listOf("=", "⁰"), numberRow.byChar('0').alternatives)
+        // D-498: the backslash rides along on the shared number-row builder, all layouts alike.
+        assertEquals(listOf("/", "\\", "⁷"), numberRow.byChar('7').alternatives)
     }
     
     @Test

@@ -9,7 +9,7 @@ import java.util.Locale
  * The ЙЦУКЕН (JCUKEN) Cyrillic key map shared by Russian and Ukrainian, researched (not guessed) against the
  * real Microsoft standards - `KBDRU` ("Russian", `learn.microsoft.com/en-us/globalization/keyboards/
  * kbdru.html`) and `KBDUR` ("Ukrainian", `.../kbdur.html`).
- *
+ * 
  * Unlike Serbian's own JUSCII-descended layout ([SerbianLayout], a completely different lineage phonetically
  * mapped onto the Latin QWERTZ grid), Russian and Ukrainian share ONE real historical keyboard standard with
  * only a handful of substituted/added positions - directly analogous to [KeyboardLayout]'s own QWERTY/QWERTZ
@@ -22,7 +22,7 @@ import java.util.Locale
  * - bottom row: Russian's own leading slot (the physical key to the left of "я") is a punctuation mark
  *   (backslash), while Ukrainian's is the letter `ґ` - Ukrainian's alphabet has one more letter (33) than
  *   Russian's own core layout letters (32, `ё` aside - see below), and this is where it goes.
- *
+ * 
  * `ё` (Russian's own "yo", a real distinct letter) sits on its own dedicated physical key on a real desktop
  * keyboard (the one before "1", which this app's own mobile row shape has no slot for, the same practical
  * constraint every other layout in this app already has for a desktop's own extra keys) - offered instead as
@@ -43,22 +43,9 @@ object JcukenLayout {
     /** Russian's own `е` -> `ё` long-press secondary (D-450-followup); not offered in Ukrainian mode. */
     private const val YO_HINT = "ё"
     
-    // L-06: German-QWERTZ shifted symbol per digit, shown as a corner hint (shared with the Latin layout).
-    private val NUMBER_HINTS = mapOf(
-        '1' to "!", '2' to "\"", '3' to "§", '4' to "$", '5' to "%",
-        '6' to "&", '7' to "/", '8' to "(", '9' to ")", '0' to "="
-    )
-    
-    // D-105: every digit's own superscript form, offered as a second D-01 popup alternative alongside its
-    // existing shifted symbol above (shared with the Latin layout's identical treatment).
-    private val NUMBER_SUPERSCRIPTS = mapOf(
-        '1' to "¹", '2' to "²", '3' to "³", '4' to "⁴", '5' to "⁵",
-        '6' to "⁶", '7' to "⁷", '8' to "⁸", '9' to "⁹", '0' to "⁰"
-    )
-    
     /**
      * Builds the JCUKEN keyboard for the given configuration.
-     *
+     * 
      * @param proportions the key-proportion configuration (C-01); defaults to [KeyProportions.DEFAULT]
      * @param showNumberRow whether the persistent number row is included (L-06 / C-09); defaults to true
      * @param urlMode D-143: true for a recognised URL-entry field - replaces the bottom row's comma/space/
@@ -85,7 +72,8 @@ object JcukenLayout {
         val result = ArrayList<List<Key>>()
         
         if (showNumberRow) {
-            result.add("1234567890".map { c -> numberKey(c) })
+            // L-06 / D-498: the shared number-row builder - byte-identical to the Latin layout's by construction.
+            result.add("1234567890".map { c -> KeyboardLayout.numberKey(c) })
         }
         
         result.add((if (ukrainian) ROW_TOP_UK else ROW_TOP_RU).map { c -> letterKey(c, ukrainian) })
@@ -128,13 +116,5 @@ object JcukenLayout {
     
     private fun charKey(c: Char, hint: String? = null, alternatives: List<String> = emptyList(), weight: Float = 1f): Key {
         return Key(label = c.toString(), code = KeyCode.CHAR, char = c, hint = hint, alternatives = alternatives, weight = weight)
-    }
-    
-    /** D-105: see [KeyboardLayout.numberKey] - identical treatment. */
-    private fun numberKey(c: Char): Key {
-        val hint = NUMBER_HINTS[c]
-        val superscript = NUMBER_SUPERSCRIPTS[c]
-        val alternatives = if (hint != null && superscript != null) listOf(hint, superscript) else emptyList()
-        return charKey(c, hint, alternatives = alternatives)
     }
 }

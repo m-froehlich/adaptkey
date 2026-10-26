@@ -134,7 +134,8 @@ class SymbolLayoutTest {
         val rows = SymbolLayout.rows(1)
         
         assertEquals(listOf("*", "×", "·"), rows[3].byChar('×').alternatives)
-        assertEquals(listOf("/", "÷", ":"), rows[4].byChar('÷').alternatives)
+        // D-498: the backslash joins the divide popup right after the slash; ÷ stays pre-selected by value.
+        assertEquals(listOf("/", "\\", "÷", ":"), rows[4].byChar('÷').alternatives)
         assertEquals(listOf("=", "→", "≈", "≙"), rows[3].byChar('=').alternatives)
     }
     
@@ -203,7 +204,17 @@ class SymbolLayoutTest {
         val row = SymbolLayout.rows(2)[2]
         
         assertEquals("!\"§$%&/()=".toList(), row.map { it.char })
-        assertTrue(row.none { it.char != '(' && it.char != ')' && (it.hint != null || it.alternatives.isNotEmpty()) })
+        // D-498: `/` additionally carries the backslash as its single direct-commit hint; everything else
+        // except the bracket keys stays plain.
+        assertTrue(row.none { it.char != '(' && it.char != ')' && it.char != '/' && (it.hint != null || it.alternatives.isNotEmpty()) })
+    }
+    
+    @Test
+    fun `D-498 page 2 row three's slash key carries the backslash as its single direct hint`() {
+        val row = SymbolLayout.rows(2)[2]
+        
+        assertEquals("\\", row.byChar('/').hint)
+        assertTrue(row.byChar('/').alternatives.isEmpty())
     }
     
     @Test

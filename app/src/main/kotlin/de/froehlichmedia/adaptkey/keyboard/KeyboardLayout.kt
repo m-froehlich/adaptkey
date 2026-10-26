@@ -366,16 +366,27 @@ object KeyboardLayout {
      * superscript pair above. D-417: the apostrophe was moved ahead of the superscript in the popup order
      * (`"` / `'` / `²` / `₂`), per the user's own preference.
      * 
+     * D-498: `7` additionally carries the backslash (`\`) directly after its slash, so the popup reads
+     * `/ \ ⁷` (order per the user's decision, 2026-10-26) - the one Latin-script character previously
+     * absent from every layout (the only backslash anywhere was Jcuken's own letter arrangement). The
+     * letters page's `v` key deliberately does NOT gain it: its `/` AltGr hint stays a direct-commit hint,
+     * and turning it into a popup would change an existing long-press behaviour beyond the request.
+     * 
      * D-282: `0` sits at the row's right edge, the same problem §34 originally hand-fixed for `p` above -
      * now handled the same dynamic way, by [AdaptKeyboardView.openPopup] itself, not by reversing the list
      * here.
+     * 
+     * D-314/D-498: not private - every dedicated layout's number row delegates here (their local copies
+     * already documented themselves as "identical treatment" to this one), so the six number rows stay
+     * byte-identical by construction instead of by six synchronized edits.
      */
-    private fun numberKey(c: Char): Key {
+    fun numberKey(c: Char): Key {
         val hint = NUMBER_HINTS[c]
         val superscript = NUMBER_SUPERSCRIPTS[c]
         val alternatives = when {
             hint == null || superscript == null -> emptyList()
             c == '2' -> listOf(hint, "'", superscript, "₂")
+            c == '7' -> listOf(hint, "\\", superscript)
             else -> listOf(hint, superscript)
         }
         return charKey(c, hint, alternatives = alternatives)

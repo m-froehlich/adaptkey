@@ -27,9 +27,10 @@ object SymbolLayout {
     private const val CALC_ROW1_SYMBOLS = "()°√π~&|"
     
     // Page 1 (calculator): ×'s alt-popup is the asterisk and the German "Malpunkt" middle dot; ÷'s mirrors
-    // it with the slash and colon; ='s offers the arrow, "approximately" and the German "Gleich mit Dach".
+    // it with the slash, the D-498 backslash and the colon; ='s offers the arrow, "approximately" and the
+    // German "Gleich mit Dach".
     private val MULTIPLY_ALTERNATIVES = listOf("*", "×", "·")
-    private val DIVIDE_ALTERNATIVES = listOf("/", "÷", ":")
+    private val DIVIDE_ALTERNATIVES = listOf("/", "\\", "÷", ":")
     private val EQUALS_ALTERNATIVES = listOf("=", "→", "≈", "≙")
     
     // §53 (D-103/D-104): row 1's two §53 TEXT keys, appended after CALC_ROW1_SYMBOLS - sin's D-01 popup
@@ -121,13 +122,18 @@ object SymbolLayout {
     // which is also why the standalone underscore key in row 1 above could be dropped (§29 follow-up).
     private const val UNDERSCORE_HINT = "_"
     
+    // D-498: the shifted-symbols row's own `/` key (the slash from the `7` position) carries the backslash
+    // as its single direct-commit long-press hint - the special-characters-page placement the request
+    // named, next to the slash (page 1's ÷ popup carries it there, order `/ \ ÷ :`).
+    private const val BACKSLASH_HINT = "\\"
+    
     /**
      * Builds the symbol/numeric keyboard for [page]. Both pages' `ABC` key is always present in the
      * returned rows, regardless of whether the combined `?123` key (D-59) is enabled - its slot must stay
      * reserved (page 1 for the calculator column's proportions, D-100; page 2 so `space` doesn't grow to
      * fill the gap and look oversized). [AdaptKeyboardView] hides it visually and makes it inert when the
      * setting is off, the same way it already treats the disabled combined key.
-     *
+     * 
      * @param page the symbol page, 1 (calculator) or 2 (leftover catch-all)
      * @param proportions the key-proportion configuration (C-01); defaults to [KeyProportions.DEFAULT]
      * @param locale the system locale the calculator page's currency key and decimal/thousands
@@ -266,11 +272,15 @@ object SymbolLayout {
         }
     }
     
-    /** D-102 (corrected): gives `(` / `)` in the shifted-symbols row their own bracket-family popup too. */
+    /** D-102 (corrected): gives `(` / `)` in the shifted-symbols row their own bracket-family popup too.
+     *  D-498: the row's own `/` gains `\` as its single direct-commit hint - the shifted-symbols row is
+     *  the one place the slash is a primary key, so this (not a popup cell) is where the backslash lands
+     *  next to it. */
     private fun catchAllNumberSymbolKey(c: Char): Key {
         return when (c) {
             '(' -> charKey(c, alternatives = OPEN_BRACKET_ALTERNATIVES)
             ')' -> charKey(c, alternatives = CLOSE_BRACKET_ALTERNATIVES)
+            '/' -> charKey(c, hint = BACKSLASH_HINT)
             else -> charKey(c)
         }
     }

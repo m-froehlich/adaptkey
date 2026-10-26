@@ -209,7 +209,10 @@ carries two long-press alternatives - its German-QWERTZ shifted symbol (`1`→`!
 via the same multi-alternative popup as L-05. D-382: the `2` key additionally offers an apostrophe (`'`) and
 its own subscript (`₂`) as a second and fourth alternative - D-417 reordered the popup to
 `"` / `'` / `²` / `₂` (apostrophe ahead of the superscript, subscript last) - unlike every other digit's
-plain two-alternative popup. C-09 governs only the main letters page; the dedicated URL-mode and email-mode
+plain two-alternative popup. D-498: the `7` key's popup carries the backslash (`\`) directly after its
+slash - `/ \ ⁷` - on **every** layout's number row (all six layouts share one number-row builder by
+construction, so Greek/Serbian/Jcuken/AZERTY/Azerbaijani ride along; the letters page's `v` key keeps its
+`/` direct-commit AltGr hint, no popup). C-09 governs only the main letters page; the dedicated URL-mode and email-mode
 bottom rows never show
 a number row at all, and symbol page 2 (§15) always shows a digit row regardless of C-09, as a guaranteed
 fallback when the main row is off.
@@ -220,12 +223,15 @@ persistent right-hand column (backspace, space, currency glyph, `ABC`, Enter), p
 and `deg`/`rad` keys. D-394: the digit block reads `1 2 3` / `4 5 6` / `7 8 9` / `0` top to bottom - the
 now-converged phone-style order - rather than the calculator-style `7 8 9` / `4 5 6` / `1 2 3` / `0` order it
 originally shipped with; the operator column (`+ − × ÷` top to bottom) and every other key's row position are
-unaffected by this mirror. The minus key's sign flips via long-press. Currency glyph and decimal/thousands
-separators are resolved from the device locale.
+unaffected by this mirror. The minus key's sign flips via long-press. D-498: the `÷` key's popup offers
+`/ \ ÷ :` (the backslash directly after the slash; `÷` itself stays pre-selected by value). Currency glyph
+and decimal/thousands separators are resolved from the device locale.
 
 ### L-08 - Catch-All Symbol Page
 A second symbol page always shows a digit row plus shifted symbols as a guaranteed fallback for when L-06's
-main-page number row is disabled.
+main-page number row is disabled. D-498: the shifted-symbols row's own `/` key carries `\` as its single
+direct-commit long-press hint - the slash is a primary key here, so the backslash lands next to it as a
+hint rather than a popup cell.
 
 ---
 

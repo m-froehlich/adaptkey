@@ -81,6 +81,8 @@ class AzerbaijaniLayoutTest {
         assertEquals(10, numberRow.size)
         assertEquals('1', numberRow.first().char)
         assertEquals("!", numberRow.byChar('1').hint)
+        // D-498: the backslash rides along on the shared number-row builder, all layouts alike.
+        assertEquals(listOf("/", "\\", "⁷"), numberRow.byChar('7').alternatives)
     }
     
     @Test

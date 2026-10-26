@@ -63,6 +63,18 @@ class KeyboardLayoutTest {
     }
     
     @Test
+    fun `D-498 the 7 key's popup carries the backslash directly after the slash, superscript last`() {
+        val numberRow = KeyboardLayout.rows().first()
+        
+        assertEquals(listOf("/", "\\", "⁷"), numberRow.byChar('7').alternatives)
+        // The corner hint stays the slash; the v key's AltGr hint deliberately remains a direct-commit
+        // hint without a popup (D-498 scoped the backslash to the number row and the symbol pages).
+        assertEquals("/", numberRow.byChar('7').hint)
+        val thirdRow = KeyboardLayout.rows()[3]
+        assertTrue(thirdRow.byChar('v').alternatives.isEmpty())
+    }
+    
+    @Test
     fun `D-105 the 0 key keeps its natural alternatives order - D-282 reverses it dynamically at popup time, not here`() {
         val numberRow = KeyboardLayout.rows().first()
         

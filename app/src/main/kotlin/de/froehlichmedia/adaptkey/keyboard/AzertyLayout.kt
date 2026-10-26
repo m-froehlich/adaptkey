@@ -24,22 +24,9 @@ object AzertyLayout {
     private const val MIDDLE_ROW = "qsdfghjklm"
     private const val THIRD_ROW = "wxcvbn"
     
-    // L-06: German-QWERTZ shifted symbol per digit, shown as a corner hint (shared with the Latin layout).
-    private val NUMBER_HINTS = mapOf(
-        '1' to "!", '2' to "\"", '3' to "§", '4' to "$", '5' to "%",
-        '6' to "&", '7' to "/", '8' to "(", '9' to ")", '0' to "="
-    )
-    
-    // D-105: every digit's own superscript form, offered as a second D-01 popup alternative alongside its
-    // existing shifted symbol above (shared with the Latin layout's identical treatment).
-    private val NUMBER_SUPERSCRIPTS = mapOf(
-        '1' to "¹", '2' to "²", '3' to "³", '4' to "⁴", '5' to "⁵",
-        '6' to "⁶", '7' to "⁷", '8' to "⁸", '9' to "⁹", '0' to "⁰"
-    )
-    
     /**
      * Builds the AZERTY keyboard for the given configuration.
-     *
+     * 
      * @param proportions the key-proportion configuration (C-01); defaults to [KeyProportions.DEFAULT]
      * @param showNumberRow whether the persistent number row is included (L-06 / C-09); defaults to true
      * @param letterHints the per-letter secondary-symbol map (L-05 / C-08); defaults to
@@ -67,7 +54,9 @@ object AzertyLayout {
         val result = ArrayList<List<Key>>()
         
         if (showNumberRow) {
-            result.add("1234567890".map { c -> numberKey(c) })
+            // L-06 / D-498: the shared number-row builder - the AZERTY number row is deliberately the
+            // Latin one (German-QWERTZ shifted symbols, D-105 popups), byte-identical by construction.
+            result.add("1234567890".map { c -> KeyboardLayout.numberKey(c) })
         }
         
         result.add(TOP_ROW.map { c -> KeyboardLayout.topRowKey(c, letterHints) })
@@ -103,13 +92,5 @@ object AzertyLayout {
     
     private fun charKey(c: Char, hint: String? = null, alternatives: List<String> = emptyList(), weight: Float = 1f): Key {
         return Key(label = c.toString(), code = KeyCode.CHAR, char = c, hint = hint, alternatives = alternatives, weight = weight)
-    }
-    
-    /** D-105: see [KeyboardLayout.numberKey] - identical treatment. */
-    private fun numberKey(c: Char): Key {
-        val hint = NUMBER_HINTS[c]
-        val superscript = NUMBER_SUPERSCRIPTS[c]
-        val alternatives = if (hint != null && superscript != null) listOf(hint, superscript) else emptyList()
-        return charKey(c, hint, alternatives = alternatives)
     }
 }
