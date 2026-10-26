@@ -114,6 +114,8 @@
     <string name="d401_cursor_control_summary">Pindutin nang matagal ang space bar para ilipat ang cursor sa pamamagitan ng pag-drag; manatiling tahimik para lumipat sa pagpili ng teksto.</string>
     <string name="d19_surface_swipe_title">Mag-swipe para lumipat ng pahina ng keyboard</string>
     <string name="d19_surface_swipe_summary">Mag-swipe pakaliwa o pakanan sa keyboard para lumipat sa pagitan ng mga titik at ng mga pahina ng numero/simbolo. Kapag naka-off, ang ?123 / ABC key lang ang lumilipat.</string>
+    <string name="g03_swipe_down_dismiss_title">Mag-swipe pababa para isara ang keyboard</string>
+    <string name="g03_swipe_down_dismiss_summary">Isinasara ang keyboard kapag nag-swipe pababa dito. Kapag naka-off, ang extra row lang ang isinasara at nananatiling bukas ang keyboard.</string>
     <string name="d401_hint_stage1">I-drag para ilipat ang cursor. Manatiling tahimik para pumili.</string>
     <string name="d401_hint_stage2">I-drag para pumili ng teksto. I-tap para tapusin.</string>
     <string name="c01_shift_title">Dagdag na lapad ng Shift</string>

@@ -114,6 +114,8 @@
     <string name="d401_cursor_control_summary">Ilgi turiet atstarpes taustiņu, lai pārvietotu kursoru, velkot; stāviet mierīgi, lai pārslēgtos uz teksta atlasi.</string>
     <string name="d19_surface_swipe_title">Tastatūras lapu pārslēgšana ar vilkšanu</string>
     <string name="d19_surface_swipe_summary">Velciet pa kreisi vai pa labi pāri tastatūrai, lai pārslēgtos starp burtiem un ciparu/simbolu lapām. Ja izslēgts, pārslēdz tikai taustiņš ?123 / ABC.</string>
+    <string name="g03_swipe_down_dismiss_title">Velciet uz leju, lai aizvērtu tastatūru</string>
+    <string name="g03_swipe_down_dismiss_summary">Vilkšana uz leju pa tastatūru to aizver. Ja izslēgts, tiek aizvērta tikai papildu rinda, un tastatūra paliek atvērta.</string>
     <string name="d401_hint_stage1">Velciet, lai pārvietotu kursoru. Stāviet mierīgi, lai atlasītu.</string>
     <string name="d401_hint_stage2">Velciet, lai atlasītu tekstu. Pieskarieties, lai pabeigtu.</string>
     <string name="c01_shift_title">Shift papildu platums</string>

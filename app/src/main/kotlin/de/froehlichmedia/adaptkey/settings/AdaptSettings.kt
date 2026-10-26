@@ -135,6 +135,9 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  * @property surfaceSwipeEnabled whether a horizontal swipe across the key field switches between the
  *           letters and the numeric/symbol pages (D-19, default **on**). When off, only the `?123` / `ABC`
  *           key switches surfaces, and a horizontal swipe on an ordinary key falls back to a plain tap.
+ * @property swipeDownDismissEnabled whether a downward swipe dismisses the keyboard (G-03, default **on**).
+ *           When off, a downward swipe still closes an open extra row (§48) but never hides the keyboard,
+ *           and on an ordinary key it falls back to a plain tap.
  * @property bottomInsetMode D-486: how much room is kept free below the keyboard (default
  *           [BottomInsetMode.DEFAULT], automatic) - a three-position slider, last in the Layout category, for
  *           phones whose reported navigation/gesture insets do not match what is really on screen.
@@ -172,6 +175,7 @@ data class AdaptSettings(
     val learnedWordExpiryWindow: LearnedWordExpiryWindow = LearnedWordExpiryWindow.DEFAULT,
     val cursorControlEnabled: Boolean = true,
     val surfaceSwipeEnabled: Boolean = true,
+    val swipeDownDismissEnabled: Boolean = true,
     val bottomInsetMode: BottomInsetMode = BottomInsetMode.DEFAULT
 ) {
     

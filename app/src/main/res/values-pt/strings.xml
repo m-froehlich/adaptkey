@@ -114,6 +114,8 @@
     <string name="d401_cursor_control_summary">Mantenha pressionada a barra de espaço para mover o cursor arrastando; fique parado para passar à seleção de texto.</string>
     <string name="d19_surface_swipe_title">Deslizar para mudar de página do teclado</string>
     <string name="d19_surface_swipe_summary">Deslize para a esquerda ou direita no teclado para alternar entre letras e as páginas de números/símbolos. Quando desativado, apenas a tecla ?123 / ABC alterna.</string>
+    <string name="g03_swipe_down_dismiss_title">Deslizar para baixo fecha o teclado</string>
+    <string name="g03_swipe_down_dismiss_summary">Deslizar para baixo sobre o teclado fecha-o. Quando desativado, fecha apenas a linha extra e o teclado continua aberto.</string>
     <string name="d401_hint_stage1">Arraste para mover o cursor. Fique parado para selecionar.</string>
     <string name="d401_hint_stage2">Arraste para selecionar o texto. Toque para terminar.</string>
     <string name="c01_shift_title">Largura extra do Shift</string>

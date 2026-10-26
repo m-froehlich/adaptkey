@@ -114,6 +114,8 @@
     <string name="d401_cursor_control_summary">Trykk lenge på mellomromstasten for å flytte markøren ved å dra; hold deg i ro for å bytte til tekstmarkering.</string>
     <string name="d19_surface_swipe_title">Sveip for å bytte tastaturside</string>
     <string name="d19_surface_swipe_summary">Sveip til venstre eller høyre over tastaturet for å bytte mellom bokstaver og tall-/symbolsidene. Når av, bytter bare ?123 / ABC-tasten.</string>
+    <string name="g03_swipe_down_dismiss_title">Sveip ned for å lukke tastaturet</string>
+    <string name="g03_swipe_down_dismiss_summary">Et sveip nedover på tastaturet lukker det. Når av, lukker det bare den ekstra raden, og tastaturet forblir åpent.</string>
     <string name="d401_hint_stage1">Dra for å flytte markøren. Hold deg i ro for å markere.</string>
     <string name="d401_hint_stage2">Dra for å markere tekst. Trykk for å avslutte.</string>
     <string name="c01_shift_title">Ekstra bredde for Skift</string>

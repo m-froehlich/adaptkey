@@ -114,6 +114,8 @@
     <string name="d401_cursor_control_summary">Vajuta pikalt tühikuklahvi, et liigutada kursorit lohistades; püsi paigal, et lülituda teksti valimisele.</string>
     <string name="d19_surface_swipe_title">Klaviatuuri lehtede vahetamine pühkides</string>
     <string name="d19_surface_swipe_summary">Pühi üle klaviatuuri vasakule või paremale, et vahetada tähtede ja numbrite/sümbolite lehtede vahel. Kui väljas, vahetab ainult klahv ?123 / ABC.</string>
+    <string name="g03_swipe_down_dismiss_title">Pühi alla, et klaviatuur sulgeda</string>
+    <string name="g03_swipe_down_dismiss_summary">Allapoole pühkimine klaviatuuril sulgeb selle. Kui väljas, sulgub ainult lisarida ja klaviatuur jääb avatuks.</string>
     <string name="d401_hint_stage1">Lohista kursori liigutamiseks. Püsi paigal valimiseks.</string>
     <string name="d401_hint_stage2">Lohista teksti valimiseks. Puuduta lõpetamiseks.</string>
     <string name="c01_shift_title">Shifti lisalaius</string>

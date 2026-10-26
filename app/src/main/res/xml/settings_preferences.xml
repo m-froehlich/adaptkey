@@ -274,6 +274,12 @@
             android:summary="@string/d19_surface_swipe_summary"
             android:defaultValue="true" />
 
+        <SwitchPreferenceCompat
+            android:key="g03_swipe_down_dismiss"
+            android:title="@string/g03_swipe_down_dismiss_title"
+            android:summary="@string/g03_swipe_down_dismiss_summary"
+            android:defaultValue="true" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:key="cat_layout_group" android:title="@string/cat_layout">

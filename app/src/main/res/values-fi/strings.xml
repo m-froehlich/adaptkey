@@ -114,6 +114,8 @@
     <string name="d401_cursor_control_summary">Paina välilyöntinäppäintä pitkään siirtääksesi kohdistinta vetämällä; pysy paikallaan siirtyäksesi tekstin valintaan.</string>
     <string name="d19_surface_swipe_title">Vaihda näppäimistön sivua pyyhkäisemällä</string>
     <string name="d19_surface_swipe_summary">Pyyhkäise näppäimistön yli vasemmalle tai oikealle vaihtaaksesi kirjainten ja numero-/symbolisivujen välillä. Kun pois päältä, vain ?123 / ABC -näppäin vaihtaa.</string>
+    <string name="g03_swipe_down_dismiss_title">Sulje näppäimistö pyyhkäisemällä alas</string>
+    <string name="g03_swipe_down_dismiss_summary">Pyyhkäisy alaspäin näppäimistön päällä sulkee sen. Kun pois päältä, se sulkee vain lisärivin ja näppäimistö pysyy auki.</string>
     <string name="d401_hint_stage1">Vedä siirtääksesi kohdistinta. Pysy paikallaan valitaksesi.</string>
     <string name="d401_hint_stage2">Vedä valitaksesi tekstiä. Napauta lopettaaksesi.</string>
     <string name="c01_shift_title">Shiftin lisäleveys</string>
