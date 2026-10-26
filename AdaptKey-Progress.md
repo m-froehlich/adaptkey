@@ -431,6 +431,20 @@ non-trivial changes).
   `/ \ ÷ :`, page 2's primary `/` gains `\` as its single direct-commit hint. `v`'s AltGr hint stays
   `/` (user decision). See §517.
 
+- **D-497-followup - OPEN, awaiting the user's per-language variant review (2026-10-26, no pack touched yet):** the D-497 mechanism is general, so the other diacritic-rich packs can gain their missing variants as pure data changes. Each changed pack = `hints.tsv` edit + `version.txt` +1 + `build_zip.py` + Catalog Entry version +1 (same recipe as lt). Grounded in the real shipped `hints.tsv`, not assumed. **Proposed multi-variant additions** (Taste: heute → Vorschlag):
+  - **cs:** `e`: é → `é,ě`; `u`: ú → `ú,ů` (ě/ů are the only missing Czech letters).
+  - **sk:** `a`: á → `á,ä`; `o`: ó → `ó,ô`; optional `l`: ľ → `ľ,ĺ` (ĺ is genuinely rare).
+  - **hr / bs:** `c`: č → `č,ć` (ć is the only missing letter of both alphabets).
+  - **pl:** `z`: ż → `ż,ź` (ź is the only missing Polish letter).
+  - **et:** `o`: õ → `õ,ö` (ö is the only missing Estonian letter).
+  - **hu:** `o`: ó → `ó,ö,ő`; `u`: ú → `ú,ü,ű` - the one genuine 3-variant case; review whether `ő`/`ű` (very frequent) should lead instead.
+  - **ro:** `a`: ă → `ă,â` (â is the only missing Romanian letter).
+  - **da / nb:** `a`: å → `å,æ` (æ is the only missing letter).
+  - **sv:** `a`: ä → `ä,å`. **fi:** optional same (`a`: ä → `ä,å` - å is a real Finnish alphabet letter, rare in practice).
+  - **pt:** `a`: ã → `á,ã,â,à`; `e`: é → `é,ê`; `o`: õ → `ó,õ,ô` - note the corner glyph changes for `a`/`o` (á/ó would lead); ordering needs the user's frequency judgement.
+  - **it:** `e`: è → `è,é`; `o`: ò → `ò,ó`; `u`: ù → `ù,ú`.
+  - **fr:** `a`: à → `à,â`; `e`: é → `é,è,ê,ë`; `i`: î → `î,ï`; `u`: ù → `ù,û` - today's pack works around the old one-hint ceiling by scattering diacritics across unrelated keys (`t`=ê, `w`=è, `y`=â, `z`=û, `k`=ë); after the multi-variant move those five hints become redundant - free them for other symbols or leave the duplication, user's call.
+  - **Verified complete, no change needed:** lv (all 11 special letters already keyed), tr (ç ğ ı ö ş ü all present), az (the dedicated AzerbaijaniLayout carries ə ı ğ ş ç ö ü as primary keys - hints never needed them), es (all of á é í ó ú ü ñ present; only oddity: ñ sits on `l` instead of `n` - separate UX question, not a missing variant), fi without the optional å.
 - **D-497 - RESOLVED (§518, v1.2.77).** Lithuanian `ė`/`ū` reachable: the L-05 pack-hint mechanism now
   accepts comma-separated multi-variant values (`e=ę,ė` → real popup, first variant pre-selected); lt
   `hints.tsv` carries `e=ę,ė` / `u=ų,ū`, pack v3 rebuilt, Catalog Entry 2 → 3. Mechanism general - the
