@@ -27,6 +27,7 @@ import de.froehlichmedia.adaptkey.dictionary.LanguagePackCatalog
 import de.froehlichmedia.adaptkey.dictionary.LanguagePackInstaller
 import de.froehlichmedia.adaptkey.dictionary.LanguagePackStorage
 import de.froehlichmedia.adaptkey.download.DownloadFileSupport
+import de.froehlichmedia.adaptkey.language.ActiveLanguageStore
 import de.froehlichmedia.adaptkey.language.InstalledLanguagesStore
 import de.froehlichmedia.adaptkey.language.Language
 import java.text.Collator
@@ -286,6 +287,10 @@ class LanguagePacksActivity : SettingsScreenActivity() {
      * deleteIfRecentlyCreated]) - on every outcome except a hard read/parse failure, so a stale archive that
      * genuinely failed to import is left behind for inspection rather than silently destroyed.
      *
+     * D-502: a genuine fresh install (the language was not installed at all) additionally selects the newly
+     * installed language as the active keyboard language via [ActiveLanguageStore]; an update never does -
+     * see the INSTALL branch below.
+     *
      * @param uri the resolved archive to import
      * @param entry the row whose Import button was tapped - only [LanguagePackCatalog.Entry.language] is
      *        actually used for the install itself; [LanguagePackCatalog.Entry.version] is not consulted for
@@ -304,6 +309,17 @@ class LanguagePacksActivity : SettingsScreenActivity() {
                     LanguagePackInstaller.VersionCheck.INSTALL -> {
                         LanguagePackInstaller.write(LanguagePackStorage.packDir(this), pack)
                         InstalledLanguagesStore.add(this, language, pack.version)
+                        // D-502: a genuinely fresh install - the language had no pack before this archive
+                        // was imported - selects the new language in the keyboard right away, so it is
+                        // actually visible the next time the keyboard opens (the reason a user installs a
+                        // pack in the first place). An update of an existing pack deliberately does NOT
+                        // touch the active language: re-importing a newer dictionary must never yank the
+                        // keyboard out from under whichever language the user is currently typing in.
+                        // The resident AdaptKeyService picks the persisted switch up via installStores()'s
+                        // own re-read of ActiveLanguageStore (no keyboard restart needed).
+                        if (!alreadyInstalled) {
+                            ActiveLanguageStore.save(this, language)
+                        }
                     }
                     LanguagePackInstaller.VersionCheck.ALREADY_CURRENT, LanguagePackInstaller.VersionCheck.OLDER_THAN_INSTALLED -> {
                         // D-334: the hosted archive is stale relative to the catalog's claimed version (or,

@@ -22932,3 +22932,62 @@ plus the full `:app:testDebugUnitTest` were run on the imported branch before ad
 `"1.2.78"` -> `"1.2.79"` -> `"1.2.80"`. Not yet device-confirmed - with both switches on, behaviour is
 bit-identical to the previous unconditional code by construction (the new guards only ever add an
 off-branch), so device confirmation matters only for the off states.
+
+## §521 - D-502 (part 1): a freshly installed language pack selects its language in the keyboard (v1.2.81)
+
+User request (2026-10-26): "Die Benutzer sehen nicht, dass man die Sprache wechseln kann." Agreed as a
+two-part round - (1) a fresh pack install selects the language, (2) the space bar shows swipe chevrons for
+the G-01 gesture; this entry is part 1, part 2 follows as §522. The backlog entry went into Progress's
+"Open TODOs" section first, per the usual flow, and the two design questions (chevron glyphs, one-language
+swipe behaviour) were settled with the user up front (see §522 for the second one).
+
+**Part 1's exact contract, pinned before coding:** a *genuine* fresh install - the language had no pack at
+all before the archive was imported - becomes the active keyboard language immediately; an *update* of an
+existing pack never touches the active language (re-importing a newer dictionary must not yank the keyboard
+out from under whichever language the user is currently typing in), matching the user's own "frisch
+installiert (nicht beim Update)" wording verbatim.
+
+**Traced before writing any code, not assumed:**
+- `LanguagePacksActivity.importPack()` already distinguishes exactly the two cases: `alreadyInstalled` is
+  read from `InstalledLanguagesStore` *before* anything is written, and `LanguagePackInstaller.
+  compareVersions` yields `INSTALL` for a first install (no recorded version) or for a strictly newer
+  archive. So `check == INSTALL && !alreadyInstalled` is precisely "fresh install"; `INSTALL &&
+  alreadyInstalled` is precisely "update". No new state, no new version-tracking field needed.
+- The resident service learns about pack changes through `installedLanguagesPrefsListener` ->
+  `loadDictionariesAsync()` -> `installStores()`, which until now only *validated* `activeLanguage`
+  (resetting to English when the persisted language is no longer installed) but never adopted an external
+  change. `ActiveLanguageStore`'s only writers were service-internal (the manual G-01 swipe, the
+  sustained-language promotion, and installStores' own removed-language fallback), all keeping the store in
+  sync with the in-memory `activeLanguage` - verified by grepping every write site, so making the service
+  re-read the store cannot clobber anything: outside the fresh-install case the re-read is a no-op by
+  construction.
+
+**What shipped:**
+- `LanguagePacksActivity.importPack()`'s INSTALL branch: when `!alreadyInstalled`, additionally
+  `ActiveLanguageStore.save(this, language)`. The write happens right next to `InstalledLanguagesStore.
+  add()` on the picker callback's background thread; both `apply()` calls land before the prefs listener
+  fires on the main thread, so the service's subsequent reload observes both together.
+- `AdaptKeyService.installStores()` re-reads `ActiveLanguageStore.load()` on every call and adopts it when
+  it differs from the in-memory value, applying `applyActiveLanguageToView()` + `updateSpaceLabel()` for
+  the same visual refresh every other language-switch path runs (toggleLanguage, the sustained-language
+  promotion). The store is now the single source of truth, documented in the function's own KDoc. The
+  removed-language fallback (reset to English, persist, refresh) keeps its existing shape and now rides the
+  same `activeLanguageChanged` flag, so a removed active language still falls back exactly as before.
+- Onboarding's language step opens this same Activity, so an onboarding install also seeds the keyboard
+  with the user's own language from the very first keystroke - the main practical win of this round.
+
+Deliberately no cross-fade and no toast on this path: the switch happens while the keyboard is closed (the
+user is in Settings); the label is simply correct the next time the keyboard opens, and the Activity
+already toasts its own "imported" confirmation. Also deliberately no change to the *removal* path: if the
+removed language was active, the existing fall-back-to-English rule applies unchanged.
+
+No unit tests: both changes are Android glue (an Activity and the service's store-reload path) with no
+extractable pure policy - the fresh-vs-update distinction is `compareVersions`'s already-tested contract
+plus one boolean read. Per this project's Android-glue convention, correctness is pinned by the trace
+above plus device confirmation, not by a test that would only restate the glue.
+
+`:app:assembleRelease` + `:app:testDebugUnitTest` green. Spec G-01 gained the D-502 addendum; the Progress
+backlog entry marks part 1 resolved. `versionCode` 576 -> 577, `versionName` "1.2.80" -> "1.2.81". Not yet
+device-confirmed - needs a real fresh-install cycle (install a pack not previously installed, reopen the
+keyboard, check the space bar label) and an update cycle (re-import a newer archive of an already-installed
+language, check the active language does NOT change).

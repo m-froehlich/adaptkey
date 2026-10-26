@@ -378,6 +378,16 @@ this app has no layout convention for at all) and the user explicitly switches t
 language, the layout follows *that* language's own convention directly rather than defaulting to plain
 QWERTY - an explicit switch is already a deliberate choice, so it may as well land on the right layout.
 
+**D-502 addendum: a freshly installed language pack becomes the active language.** Installing a language
+pack for a language not installed before (a genuine first install - never an update of an existing pack,
+which must not yank the keyboard out from under the language currently being typed) selects that language
+in the keyboard immediately: `LanguagePacksActivity`'s import flow persists the switch via
+`ActiveLanguageStore`, and `AdaptKeyService.installStores()` re-reads that store on every reload (it is the
+single source of truth; every service-side writer keeps it in sync), so the resident service adopts the
+switch without a keyboard restart and the next keyboard opening shows the new language's endonym on the
+space bar. Removing a pack keeps the existing rule: if the removed language was active, the active language
+falls back to English.
+
 ### G-02 - Delete Whole Word
 Swiping left on the backspace key deletes the entire previous word rather than a single character. This is independent of - and takes priority in recognition over - the accelerating repeat-on-hold behaviour of a plain backspace press/hold.
 

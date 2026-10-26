@@ -1005,6 +1005,14 @@ class AdaptKeyService : InputMethodService() {
      * D-280: if [activeLanguage] itself is no longer among [newStores] - its own language pack having been
      * removed since it was last persisted - it is reset to English here too, the single choke point this
      * can happen from (a fresh load and a later reload alike).
+     *
+     * D-502: the persisted active language is re-read on every call and adopted when it differs - the store
+     * is the single source of truth, and this is what makes a pack freshly installed from
+     * `LanguagePacksActivity` while this service stays resident become active immediately (no keyboard
+     * restart). Every writer on the service side ([toggleLanguage], the sustained-language promotion, the
+     * removed-language fallback below) keeps the store in sync with [activeLanguage], so outside the fresh-
+     * install case this re-read is a no-op. The switched language gets its view/label refresh here, the same
+     * pair of calls every other language-switch path already runs.
      */
     private fun installStores(newStores: Map<Language, DictionaryStore>) {
         stores = newStores
@@ -1017,10 +1025,20 @@ class AdaptKeyService : InputMethodService() {
             )
         }
         engines = newStores.mapValues { (language, store) -> CapitalisationEngine(store, CasingRulesRegistry.rulesFor(language)) }
+        var activeLanguageChanged = false
+        val persisted = ActiveLanguageStore.load(this)
+        if (persisted != activeLanguage) {
+            activeLanguage = persisted
+            activeLanguageChanged = true
+        }
         if (activeLanguage !in newStores) {
             activeLanguage = Language.ENGLISH
             ActiveLanguageStore.save(this, activeLanguage)
+            activeLanguageChanged = true
+        }
+        if (activeLanguageChanged) {
             applyActiveLanguageToView()
+            updateSpaceLabel()
         }
         val english = newStores.getValue(Language.ENGLISH)
         dictionaryStore = english
