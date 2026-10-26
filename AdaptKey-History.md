@@ -22987,10 +22987,10 @@ plus one boolean read. Per this project's Android-glue convention, correctness i
 above plus device confirmation, not by a test that would only restate the glue.
 
 `:app:assembleRelease` + `:app:testDebugUnitTest` green. Spec G-01 gained the D-502 addendum; the Progress
-backlog entry marks part 1 resolved. `versionCode` 576 -> 577, `versionName` "1.2.80" -> "1.2.81". Not yet
-device-confirmed - needs a real fresh-install cycle (install a pack not previously installed, reopen the
-keyboard, check the space bar label) and an update cycle (re-import a newer archive of an already-installed
-language, check the active language does NOT change).
+backlog entry marks part 1 resolved. `versionCode` 576 -> 577, `versionName` "1.2.80" -> "1.2.81".
+**Device-confirmed 2026-10-26** - a real fresh-install cycle puts the newly installed language on the
+space bar the next time the keyboard opens, and re-importing an archive of an already-installed language
+leaves the active language untouched.
 
 ## §522 - D-502 (part 2): the space bar advertises the G-01 language swipe with «/» chevrons (v1.2.82)
 
@@ -23036,6 +23036,6 @@ the chevrons either - same reasoning as §520's switches (curated overview, no p
 10 new unit tests (SpaceSwipeHintsTest 7, LanguageCycleTest +1 alternativeExists, plus the round's own
 re-run of the existing suite). `:app:assembleRelease` + `:app:testDebugUnitTest` green. Spec G-01's D-502
 addendum extended with the part-2 passage. `versionCode` 577 -> 578, `versionName` "1.2.81" -> "1.2.82".
-Not yet device-confirmed - needs a real look at the chevrons' size/position/contrast on the device (the
-14dp/12dp-inset/key_hint combination is a first pass), plus the with-pack swipe, the URL/email-mode space
-(no chevrons) and the one-language swipe (silent) checks.
+**Device-confirmed 2026-10-26** - chevrons and their size/contrast accepted as-is on the device (no
+retuning requested), the with-pack swipe, the URL/email-mode space (no chevrons) and the one-language
+silent-swallow checks all behave as specified.
