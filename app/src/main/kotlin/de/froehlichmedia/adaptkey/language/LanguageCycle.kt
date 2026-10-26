@@ -50,4 +50,19 @@ object LanguageCycle {
         }
         return cycle[(index - 1 + cycle.size) % cycle.size]
     }
+    
+    /**
+     * D-502: whether the G-01 language swipe can actually switch to a different language at all - English
+     * is always in the cycle, so "at least one alternative exists" is exactly "at least one language pack
+     * beyond English is installed". Drives both halves of the swipe's discoverability work: the space
+     * bar's swipe chevrons are only shown when this is true, and a swipe fired anyway (with no alternative)
+     * is swallowed silently instead of fading the label and toasting the very language that was already
+     * active.
+     *
+     * @param installed the currently installed languages beyond English
+     * @return true when the cycle holds more than its guaranteed English entry
+     */
+    fun alternativeExists(installed: Set<Language>): Boolean {
+        return installed.isNotEmpty()
+    }
 }

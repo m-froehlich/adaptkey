@@ -417,13 +417,15 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
-- **D-502 - PART 1 RESOLVED (§521, v1.2.81): a genuinely fresh language-pack install (never an update)
-  selects that language in the keyboard immediately** - `LanguagePacksActivity.importPack()` persists the
-  switch via `ActiveLanguageStore`, and the resident `AdaptKeyService` adopts it in `installStores()` (the
-  store re-read on every reload; no keyboard restart). Device confirmation (fresh-install + update cycle)
-  still outstanding. **Part 2 still open: the letters surface's space key is to show subtle left/right
-  swipe chevrons (G-01 signalling) whenever at least one other language is installed** - never on the
-  symbol/URL/email-mode space keys, whose swipes are not language swipes.
+- **D-502 - RESOLVED (§521+§522, v1.2.81/v1.2.82): the G-01 language switch is now discoverable.** Part 1
+  (§521, v1.2.81): a genuinely fresh language-pack install (never an update) selects that language in the
+  keyboard immediately - `LanguagePacksActivity.importPack()` persists the switch via
+  `ActiveLanguageStore`, and the resident `AdaptKeyService` adopts it in `installStores()` (the store
+  re-read on every reload; no keyboard restart). Part 2 (§522, v1.2.82): the letters surface's space key
+  shows subtle «/» swipe chevrons beside the language label whenever at least one other language is
+  installed (pure, unit-tested `SpaceSwipeHints` policy - never on the symbol/URL/email-mode space keys),
+  and a space swipe with a one-language cycle is swallowed silently instead of toasting the already-active
+  language. Both parts device confirmation still outstanding (chevron size/contrast is a first pass).
 
 - **D-501 - OPEN, requested 2026-10-26, needs its own plan before any code: a Dark Mode with a three-way switch (System Default / Light / Dark).** User ask: "Bitte erstelle einen Plan dafür und lass uns die Details beschreiben. Letztendlich sollten die Farbkombinationen aber recht klar sein, da sich Darkmodes recht gut etabliert haben." - the plan comes first, the colour pairs themselves are expected uncontroversial. Verified anchors, not guessed: the settings Activities already run on `Theme.AdaptKey` = `Material3.DayNight.NoActionBar` (they follow the system's night mode today); the self-drawn keyboard surfaces (`AdaptKeyboardView`, suggestion bar, extra row, popups) read their colours from `R.color.*` resources (`key_background`, `key_background_special`, `key_background_pressed`, `key_text`, `key_hint`, `keyboard_background`, `caps_lock_border`, `suggestion_divider`, `link_text`, ...) - only the touch-model debug visualisation hardcodes two colour literals - so a dark palette lands as `values-night/` overrides. The real design questions are IME-side, for the plan: how the service's view context resolves the mode under a three-way switch (not plain "follow system"), whether a mid-session system flip must live-restyle the keyboard without a service restart, and the full token inventory (D-488's red blacklist-confirm chip, hint/popup colours, suggestion highlight states, InlineSuggestionsBarView/ExtraRowView). Plan file per the `AdaptKey-Plan-*.md` convention when picked up.
 

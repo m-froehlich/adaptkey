@@ -4073,10 +4073,18 @@ class AdaptKeyService : InputMethodService() {
      * @param forward true for a right swipe (advances through the cycle), false for a left swipe (goes back)
      */
     private fun toggleLanguage(ic: InputConnection, forward: Boolean) {
+        val installed = InstalledLanguagesStore.load(this)
+        // D-502: with no language pack beyond the always-bundled English the cycle cannot reach a different
+        // language at all - swallow the swipe silently (this function returning normally still counts the
+        // gesture as consumed, so it never falls back to inserting a space) instead of fading the label and
+        // toasting the very language that was already active. The space bar's swipe chevrons are hidden in
+        // exactly this state, so the keyboard never advertises a gesture that does nothing.
+        if (!LanguageCycle.alternativeExists(installed)) {
+            return
+        }
         finalizeAndCommit(ic, "")
         // D-130: acknowledge the switch on the space bar - captures the outgoing label before it changes.
         keyboardView?.beginLanguageChangeFade()
-        val installed = InstalledLanguagesStore.load(this)
         activeLanguage = if (forward) LanguageCycle.next(activeLanguage, installed) else LanguageCycle.previous(activeLanguage, installed)
         // Persist the switch so the chosen alphabet survives a service restart.
         ActiveLanguageStore.save(this, activeLanguage)
@@ -4089,10 +4097,14 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * D-03: pushes the current input language's display label onto the space bar.
+     * D-03: pushes the current input language's display label onto the space bar. D-502: this is the space
+     * bar's one language-affordance choke point, so it also pushes the swipe-chevron availability (at least
+     * one other language installed) - the two must never disagree, since the chevrons advertise exactly the
+     * gesture the label's language participates in.
      */
     private fun updateSpaceLabel() {
         keyboardView?.spaceLabel = languageLabel(activeLanguage)
+        keyboardView?.languageSwipeAvailable = LanguageCycle.alternativeExists(InstalledLanguagesStore.load(this))
     }
     
     /**

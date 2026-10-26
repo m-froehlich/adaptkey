@@ -22991,3 +22991,51 @@ backlog entry marks part 1 resolved. `versionCode` 576 -> 577, `versionName` "1.
 device-confirmed - needs a real fresh-install cycle (install a pack not previously installed, reopen the
 keyboard, check the space bar label) and an update cycle (re-import a newer archive of an already-installed
 language, check the active language does NOT change).
+
+## §522 - D-502 (part 2): the space bar advertises the G-01 language swipe with «/» chevrons (v1.2.82)
+
+Second half of the D-502 discoverability round (§521 was part 1). The two design questions were settled
+with the user before coding: (a) the glyphs are « and » - the user's own pick over the proposed single-angle
+‹ › ("Wie wäre es mit dem Doppel << und >> als Ligatur? Das ist etwas schmaler. So verschwenden wir weniger
+Platz."); (b) with only one language installed, a space swipe is swallowed silently rather than fading the
+label and toasting the already-active language (the recommended option, consistent with the chevrons being
+hidden in exactly that state).
+
+**Shape, following the codebase's own seams:**
+- The visibility policy is pure and unit-tested (`keyboard/SpaceSwipeHints.kt`, 7 tests), mirroring the
+  KeyGesture precedent of extracting gesture policy from the self-drawn view. It encodes exactly "where the
+  gesture exists": letters surface only (the symbol pages' space keys and the URL/email-mode space keys
+  have no language of their own - their horizontal swipes are the page switch), only while the language
+  label itself is shown, and only while at least one pack beyond English is installed. The view-side
+  wrapper adds only the one thing the policy cannot know - that this is the space key being drawn.
+- The alternative-existence half lives in `LanguageCycle.alternativeExists(installed)` (English is always
+  in the cycle, so "an alternative exists" is exactly "at least one pack installed") - one pure definition
+  shared by the chevron availability and the swipe guard, plus its own test.
+- The view receives `languageSwipeAvailable` pushed from the service, the same state-push pattern as every
+  other space-key affordance (`spaceLabel`, D-416's `pendingSpaceIndicator`); the view still never reads
+  prefs. `updateSpaceLabel()` is the push point - already the space bar's one language-affordance choke
+  point (onStartInputView, toggleLanguage, the sustained-language promotion, and §521's installStores
+  change all route through it), so every path that can change the installed set or the active language
+  re-derives the chevron state for free.
+- Drawing: one dedicated paint (`spaceSwipeHintPaint`, key_hint colour at 14dp - between the 11dp corner
+  hints and the 20dp key labels, deliberately quiet like the D-416 dot's own "same colour as the corner
+  hints" reasoning), glyphs centred vertically on the key, 12dp in from the key's own edges so they never
+  crowd the label on the narrowest space-bar proportion. Both constants are flagged as considered starting
+  points, retunable on device feedback - the same precedent as every other visual constant in the view.
+- `toggleLanguage()` returns early (consuming the gesture - `handleSwipe`'s LANGUAGE_PREV/NEXT branches
+  return true regardless) when `alternativeExists` is false: no `finalizeAndCommit`, no fade, no toast,
+  no store write. Before this round a swipe on a one-language install faded the label to the same text and
+  toasted "English", which the now-hidden chevrons would have contradicted.
+
+Deliberately not touched: the automatic sustained-language promotion cannot fire into a one-language cycle
+(its own `tokenLanguage == activeLanguage` guard returns early, and with only English installed there is no
+other store to route to), so it needs no guard of its own. No new user-facing strings, so no values-xx
+work and no UiLocaleConsistencyTest impact. The D-89 feature-overview catalog deliberately does not list
+the chevrons either - same reasoning as §520's switches (curated overview, no per-detail coverage required).
+
+10 new unit tests (SpaceSwipeHintsTest 7, LanguageCycleTest +1 alternativeExists, plus the round's own
+re-run of the existing suite). `:app:assembleRelease` + `:app:testDebugUnitTest` green. Spec G-01's D-502
+addendum extended with the part-2 passage. `versionCode` 577 -> 578, `versionName` "1.2.81" -> "1.2.82".
+Not yet device-confirmed - needs a real look at the chevrons' size/position/contrast on the device (the
+14dp/12dp-inset/key_hint combination is a first pass), plus the with-pack swipe, the URL/email-mode space
+(no chevrons) and the one-language swipe (silent) checks.

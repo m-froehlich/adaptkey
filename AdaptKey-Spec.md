@@ -388,6 +388,18 @@ switch without a keyboard restart and the next keyboard opening shows the new la
 space bar. Removing a pack keeps the existing rule: if the removed language was active, the active language
 falls back to English.
 
+**D-502 addendum (part 2): the space bar advertises the swipe.** The letters surface's own space key shows
+a subtle but visible swipe glyph on each side of the language label - « on the left, » on the right (the
+`<<`/`>>` ligature glyphs, chosen over single-angle chevrons for their narrower footprint), drawn in the
+same quiet hint colour as the other discovery affordances (D-416's dot, the corner hints). They signal
+G-01: swiping left/right on the space bar cycles the language. The chevrons appear exactly where the
+gesture exists and nowhere else (pure, unit-tested policy): only on the letters surface's own space key
+(never the symbol pages' space keys, nor URL/email mode, whose horizontal swipes are not language swipes),
+only while the language label itself is shown, and only while at least one language pack beyond the
+always-bundled English is installed - a one-entry cycle can never reach a different language, so in that
+state the chevrons stay hidden and a swipe fired anyway is swallowed silently (consumed, no fade, no toast
+re-announcing the already-active language) rather than advertised.
+
 ### G-02 - Delete Whole Word
 Swiping left on the backspace key deletes the entire previous word rather than a single character. This is independent of - and takes priority in recognition over - the accelerating repeat-on-hold behaviour of a plain backspace press/hold.
 

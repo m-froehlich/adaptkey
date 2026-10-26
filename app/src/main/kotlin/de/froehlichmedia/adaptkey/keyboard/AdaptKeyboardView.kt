@@ -264,6 +264,34 @@ class AdaptKeyboardView @JvmOverloads constructor(
         textPaint.alpha = 255
     }
     
+    /**
+     * D-502: whether [key] is the space key the G-01 language-swipe chevrons belong on right now. The
+     * policy itself is pure ([SpaceSwipeHints], unit-tested); this wrapper adds the one thing the policy
+     * cannot know - that this is the space key being drawn.
+     */
+    private fun showsLanguageSwipeHints(key: Key): Boolean {
+        return key.code == KeyCode.SPACE && SpaceSwipeHints.visible(
+            surface,
+            urlMode,
+            emailMode,
+            languageLabelShown = spaceLabel.isNotEmpty(),
+            alternativeLanguageExists = languageSwipeAvailable
+        )
+    }
+    
+    /**
+     * D-502: draws the subtle left/right swipe chevrons flanking the space key's language label - « and »,
+     * the << and >> ligature glyphs the user chose over single-angle chevrons for their narrower footprint.
+     * Vertically centred on the key like the label, inset a little from the key's own edges so they never
+     * crowd the label even on the narrowest space-bar proportion.
+     */
+    private fun drawSpaceSwipeHints(canvas: Canvas, rect: RectF) {
+        val baseline = rect.centerY() - (spaceSwipeHintPaint.descent() + spaceSwipeHintPaint.ascent()) / 2f
+        val inset = dp(12f)
+        canvas.drawText(LANGUAGE_SWIPE_LEFT_GLYPH, rect.left + inset, baseline, spaceSwipeHintPaint)
+        canvas.drawText(LANGUAGE_SWIPE_RIGHT_GLYPH, rect.right - inset, baseline, spaceSwipeHintPaint)
+    }
+    
     /** Personal offset model (T-03); when null the view resolves taps purely geometrically. */
     var offsetModel: OffsetModel? = null
     
@@ -280,6 +308,19 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * live from [de.froehlichmedia.adaptkey.AdaptKeyService.armShiftForNextWord].
      */
     var pendingSpaceIndicator: Boolean = false
+        set(value) {
+            field = value
+            invalidate()
+        }
+    
+    /**
+     * D-502: whether the space key should show the G-01 language-swipe chevrons (see [SpaceSwipeHints] for
+     * the full visibility policy) - pushed from the service alongside [spaceLabel], since both describe the
+     * same language affordance. The service derives it from the installed language packs; with no pack
+     * beyond the always-bundled English the chevrons stay off, because a swipe could not reach a different
+     * language at all.
+     */
+    var languageSwipeAvailable: Boolean = false
         set(value) {
             field = value
             invalidate()
@@ -752,6 +793,17 @@ class AdaptKeyboardView @JvmOverloads constructor(
         style = Paint.Style.FILL
     }
     
+    // D-502: the space key's language-swipe chevrons - same deliberately quiet key_hint colour as the
+    // pendingSpaceIndicator dot above (a discovery affordance, not an accent), between the corner hint
+    // size (11dp) and the key label size (20dp) so they read at a glance without competing with the label.
+    // Sized and positioned as considered starting points, easy to retune on device feedback - same
+    // precedent as every other visual constant in this file.
+    private val spaceSwipeHintPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = ContextCompat.getColor(context, R.color.key_hint)
+        textAlign = Paint.Align.CENTER
+        textSize = dp(14f)
+    }
+    
     // D-401: the cursor-control gesture's own crosshair - Stage 1 (moving the caret) reuses the app's
     // established accent blue (link_text/caps_lock_border's own colour); Stage 2 (selecting) switches to
     // the already-established "confirmed/active" green (suggestion_learned_text's own colour) rather than
@@ -1034,6 +1086,12 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 drawFadingSpaceLabel(canvas, cx, baseline)
             } else {
                 canvas.drawText(label, cx, baseline, textPaint)
+            }
+            
+            // D-502: the G-01 language-swipe chevrons flanking the language label, shown only where the
+            // gesture itself exists (SpaceSwipeHints' tested policy).
+            if (showsLanguageSwipeHints(key)) {
+                drawSpaceSwipeHints(canvas, rect)
             }
             
             val hint = key.hint
@@ -2589,6 +2647,12 @@ class AdaptKeyboardView @JvmOverloads constructor(
         
         // D-130: the space-bar language-change fade - out then back in, so both halves stay quick.
         private const val LANGUAGE_FADE_DURATION_MS = 260L
+        
+        // D-502: the space key's language-swipe chevrons (G-01 discovery) - « and », the << and >>
+        // ligature glyphs the user chose over single-angle ‹ › for their narrower footprint. Drawn at the
+        // spaceSwipeHintPaint size/colour; the 12dp edge inset lives in drawSpaceSwipeHints().
+        private const val LANGUAGE_SWIPE_LEFT_GLYPH = "«"
+        private const val LANGUAGE_SWIPE_RIGHT_GLYPH = "»"
         
         // D-97: the plain space-bar glyph (U+2423 OPEN BOX) shown on the symbol pages' space keys, which
         // have no language of their own to display.

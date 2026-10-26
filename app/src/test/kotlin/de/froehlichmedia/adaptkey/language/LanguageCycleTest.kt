@@ -4,6 +4,8 @@
 package de.froehlichmedia.adaptkey.language
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /** Unit tests for the D-106 stage 1 / D-280 keyboard-language cycle. */
@@ -63,5 +65,12 @@ class LanguageCycleTest {
     fun `an active language no longer in the cycle falls back to the first entry`() {
         assertEquals(Language.ENGLISH, LanguageCycle.next(Language.GERMAN, emptySet()))
         assertEquals(Language.ENGLISH, LanguageCycle.previous(Language.GERMAN, emptySet()))
+    }
+    
+    @Test
+    fun `alternativeExists is false only for the English-only cycle`() {
+        assertFalse(LanguageCycle.alternativeExists(emptySet()))
+        assertTrue(LanguageCycle.alternativeExists(setOf(Language.GERMAN)))
+        assertTrue(LanguageCycle.alternativeExists(setOf(Language.GERMAN, Language.GREEK)))
     }
 }
