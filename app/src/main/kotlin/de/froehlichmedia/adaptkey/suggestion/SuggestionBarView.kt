@@ -23,25 +23,26 @@ import de.froehlichmedia.adaptkey.R
 import de.froehlichmedia.adaptkey.gesture.DragToTrash
 import de.froehlichmedia.adaptkey.gesture.SwipeDirection
 import de.froehlichmedia.adaptkey.gesture.SwipeGesture
+import de.froehlichmedia.adaptkey.gesture.TouchSequenceTracker
 
 /**
  * Horizontally scrollable suggestion strip (S-01).
- *
+ * 
  * Renders the entries produced by {@link SuggestionController}; the most probable suggestion is at
  * the far left and the strip scrolls horizontally when entries overflow. The verbatim "keep as
  * typed" chip (S-06) is rendered in a distinct style. Tapping an entry notifies [onItemClick].
- *
+ * 
  * G-04: dragging an ordinary suggestion upward past a threshold arms a trash drop zone that is drawn
  * over the bar; releasing while armed notifies [onBlacklist] so the word is permanently blacklisted
  * (A-04). The gesture is intentionally a deliberate upward drag (not a swipe) and never fires on the
  * verbatim chip, so it cannot be triggered accidentally while scrolling or tapping.
- *
+ * 
  * D-247: a [SuggestionController.Kind.LEARNED] chip ("Gelernt: X") gets its own, deliberately different
  * two-zone variant of the same upward drag instead of G-04's single-zone one: a shallow "Vergessen" zone
  * (green, [onForgetLearned] - unlearns only) and, past a second, deeper threshold, a "Verbieten" zone
  * (reuses G-04's own red styling, [onForbidLearned] - permanent blacklist). Scoped to this one chip kind
  * only - an ordinary suggestion keeps exactly G-04's original single-zone behaviour.
- *
+ * 
  * D-144: a downward swipe anywhere on the bar (any chip, the verbatim chip, or an empty gap) notifies
  * [onSwipeDown] - mirroring [de.froehlichmedia.adaptkey.keyboard.AdaptKeyboardView]'s own G-03
  * swipe-down-to-dismiss, which previously only reacted on the keyboard's own key field, not this row.
@@ -134,6 +135,11 @@ class SuggestionBarView @JvmOverloads constructor(
     private var rejectWord: String? = null
     private var rejectIntercepting = false
     private var rejectArmed = false
+    // D-495: single-pointer-per-gesture tracking - the same tap-composition guard the keyboard body and
+    // the extra row got. Without it, a second finger landing while the first is down leaves dragDownX/Y
+    // pointing at the first finger while a later event's coordinates belong to the second, so a claimed
+    // drag/reject/swipe-down could fire (or a claim could arm) from two different fingers' taps.
+    private val touchTracker = TouchSequenceTracker()
     // D-247: also G-04's own single-zone arm distance, reused as-is for a LEARNED chip's shallow "Vergessen"
     // zone entry point per the user's own request ("das hat immer gut gepasst").
     private val dragThresholdPx = dp(48).toFloat()
@@ -196,7 +202,7 @@ class SuggestionBarView @JvmOverloads constructor(
     
     /**
      * Replaces the displayed entries.
-     *
+     * 
      * @param items the ordered entries from the controller (left to right)
      */
     fun setItems(items: List<SuggestionController.DisplayItem>) {
@@ -300,6 +306,7 @@ class SuggestionBarView @JvmOverloads constructor(
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
         when (ev.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
+                touchTracker.onDown(ev.getPointerId(ev.actionIndex))
                 dragDownX = ev.x
                 dragDownY = ev.y
                 // Only an ordinary or LEARNED suggestion can be dragged (never the verbatim chip).
@@ -319,12 +326,19 @@ class SuggestionBarView @JvmOverloads constructor(
             }
             
             MotionEvent.ACTION_MOVE -> {
+                // D-495: claims arm only for a live, still-single-pointer sequence, measured against the
+                // tracked pointer's own coordinates - never another finger's position against this
+                // finger's origin. An unclaimed dead stream falls through to super as before.
+                val pointerIndex = ev.findPointerIndex(touchTracker.trackedPointerId)
+                if (!touchTracker.hasSequence || pointerIndex < 0) {
+                    return super.onInterceptTouchEvent(ev)
+                }
                 // D-64: claim the gesture at the small interceptThresholdPx, not the larger dragThresholdPx -
                 // otherwise HorizontalScrollView's own scroll interception (system touch slop) wins the race
                 // first and the drag can never take over. Once claimed, whether it is actually armed (drop
                 // zone shown / release commits) is still gated by zoneFor()'s own, larger thresholds.
-                val dx = ev.x - dragDownX
-                val dy = ev.y - dragDownY
+                val dx = ev.getX(pointerIndex) - dragDownX
+                val dy = ev.getY(pointerIndex) - dragDownY
                 if (dragWord != null && DragToTrash.isArmed(dx, dy, interceptThresholdPx)) {
                     dragIntercepting = true
                     setDragZone(zoneFor(dx, dy))
@@ -344,6 +358,15 @@ class SuggestionBarView @JvmOverloads constructor(
                     swipeDownIntercepting = true
                     return true
                 }
+            }
+            
+            // D-495: a second pointer lands - the touch stream's sequence dies, and every claimed gesture
+            // drops with it (a claimed drag/reject/swipe-down was never this surviving finger's own
+            // continuous motion, so it must not fire from mixed-finger coordinates at release).
+            MotionEvent.ACTION_POINTER_DOWN -> {
+                touchTracker.onExtraPointerDown()
+                cancelDrag()
+                return true
             }
         }
         return super.onInterceptTouchEvent(ev)
@@ -375,8 +398,13 @@ class SuggestionBarView @JvmOverloads constructor(
         if (rejectIntercepting) {
             when (ev.actionMasked) {
                 MotionEvent.ACTION_MOVE -> {
-                    val dy = ev.y - dragDownY
-                    val armed = dy >= dragThresholdPx && dy >= kotlin.math.abs(ev.x - dragDownX)
+                    // D-495: only the tracked pointer's own motion extends the reject drag.
+                    val pointerIndex = ev.findPointerIndex(touchTracker.trackedPointerId)
+                    if (pointerIndex < 0) {
+                        return true
+                    }
+                    val dy = ev.getY(pointerIndex) - dragDownY
+                    val armed = dy >= dragThresholdPx && dy >= kotlin.math.abs(ev.getX(pointerIndex) - dragDownX)
                     if (armed != rejectArmed) {
                         rejectArmed = armed
                         invalidate()
@@ -384,10 +412,19 @@ class SuggestionBarView @JvmOverloads constructor(
                     return true
                 }
                 
+                MotionEvent.ACTION_POINTER_DOWN -> {
+                    // D-495: a second finger lands - the claimed reject drops (see the intercept handler).
+                    cancelDrag()
+                    touchTracker.onExtraPointerDown()
+                    return true
+                }
+                
                 MotionEvent.ACTION_UP -> {
                     val word = rejectWord
-                    val armed = rejectArmed
+                    val armed = rejectArmed && touchTracker.ownsRelease(ev.getPointerId(ev.actionIndex)) &&
+                        ev.findPointerIndex(touchTracker.trackedPointerId) >= 0
                     cancelDrag()
+                    touchTracker.end()
                     if (word != null && armed) {
                         onBlacklistConfirmRejected?.onBlacklistConfirmRejected(word)
                     }
@@ -396,6 +433,7 @@ class SuggestionBarView @JvmOverloads constructor(
                 
                 MotionEvent.ACTION_CANCEL -> {
                     cancelDrag()
+                    touchTracker.end()
                     return true
                 }
             }
@@ -404,15 +442,33 @@ class SuggestionBarView @JvmOverloads constructor(
         if (dragIntercepting) {
             when (ev.actionMasked) {
                 MotionEvent.ACTION_MOVE -> {
-                    setDragZone(zoneFor(ev.x - dragDownX, ev.y - dragDownY))
+                    // D-495: only the tracked pointer's own motion moves the drop zone.
+                    val pointerIndex = ev.findPointerIndex(touchTracker.trackedPointerId)
+                    if (pointerIndex < 0) {
+                        return true
+                    }
+                    setDragZone(zoneFor(ev.getX(pointerIndex) - dragDownX, ev.getY(pointerIndex) - dragDownY))
+                    return true
+                }
+                
+                MotionEvent.ACTION_POINTER_DOWN -> {
+                    // D-495: a second finger lands - the claimed drag drops (see the intercept handler).
+                    cancelDrag()
+                    touchTracker.onExtraPointerDown()
                     return true
                 }
                 
                 MotionEvent.ACTION_UP -> {
+                    val pointerIndex = ev.findPointerIndex(touchTracker.trackedPointerId)
                     val word = dragWord
                     val kind = dragKind
-                    val zone = dragZone
+                    val zone = if (touchTracker.ownsRelease(ev.getPointerId(ev.actionIndex)) && pointerIndex >= 0) {
+                        zoneFor(ev.getX(pointerIndex) - dragDownX, ev.getY(pointerIndex) - dragDownY)
+                    } else {
+                        DragZone.NONE
+                    }
                     cancelDrag()
+                    touchTracker.end()
                     // D-247: a LEARNED chip's two zones route to two different listeners; an ordinary
                     // suggestion only ever reaches BLACKLIST (zoneFor() never arms FORGET for it) and keeps
                     // G-04's original onBlacklist callback exactly as before.
@@ -430,6 +486,7 @@ class SuggestionBarView @JvmOverloads constructor(
                 
                 MotionEvent.ACTION_CANCEL -> {
                     cancelDrag()
+                    touchTracker.end()
                     return true
                 }
             }
@@ -439,9 +496,26 @@ class SuggestionBarView @JvmOverloads constructor(
         // still hold at release, exactly mirroring AdaptKeyboardView's own resolveSwipe() two-stage pattern.
         if (swipeDownIntercepting) {
             when (ev.actionMasked) {
-                MotionEvent.ACTION_UP -> {
-                    val direction = SwipeGesture.classify(ev.x - dragDownX, ev.y - dragDownY, swipeDownThresholdPx)
+                MotionEvent.ACTION_POINTER_DOWN -> {
+                    // D-495: a second finger lands - the claimed swipe-down drops (see the intercept handler).
                     swipeDownIntercepting = false
+                    touchTracker.onExtraPointerDown()
+                    return true
+                }
+                
+                MotionEvent.ACTION_UP -> {
+                    val pointerIndex = ev.findPointerIndex(touchTracker.trackedPointerId)
+                    val direction = if (touchTracker.ownsRelease(ev.getPointerId(ev.actionIndex)) && pointerIndex >= 0) {
+                        SwipeGesture.classify(
+                            ev.getX(pointerIndex) - dragDownX,
+                            ev.getY(pointerIndex) - dragDownY,
+                            swipeDownThresholdPx
+                        )
+                    } else {
+                        SwipeDirection.NONE
+                    }
+                    swipeDownIntercepting = false
+                    touchTracker.end()
                     if (direction == SwipeDirection.DOWN) {
                         onSwipeDown?.onSwipeDown()
                     }
@@ -450,6 +524,7 @@ class SuggestionBarView @JvmOverloads constructor(
                 
                 MotionEvent.ACTION_CANCEL -> {
                     swipeDownIntercepting = false
+                    touchTracker.end()
                     return true
                 }
             }
@@ -485,11 +560,29 @@ class SuggestionBarView @JvmOverloads constructor(
             
             MotionEvent.ACTION_MOVE -> {
                 val scrolled = super.onTouchEvent(ev)
-                if (SwipeGesture.classify(ev.x - dragDownX, ev.y - dragDownY, interceptThresholdPx) == SwipeDirection.DOWN) {
+                // D-495: the fallback swipe-down claim arms only for a live, still-single-pointer
+                // sequence, measured against the tracked pointer's own coordinates.
+                val pointerIndex = ev.findPointerIndex(touchTracker.trackedPointerId)
+                if (!touchTracker.hasSequence || pointerIndex < 0) {
+                    return scrolled
+                }
+                if (SwipeGesture.classify(
+                        ev.getX(pointerIndex) - dragDownX,
+                        ev.getY(pointerIndex) - dragDownY,
+                        interceptThresholdPx
+                    ) == SwipeDirection.DOWN
+                ) {
                     swipeDownIntercepting = true
                     return true
                 }
                 return scrolled
+            }
+            
+            // D-495: a second pointer lands mid-stream - the sequence dies, so neither this fallback nor
+            // a later claim can classify across two fingers.
+            MotionEvent.ACTION_POINTER_DOWN -> {
+                touchTracker.onExtraPointerDown()
+                return true
             }
             
             MotionEvent.ACTION_CANCEL -> return true
@@ -590,7 +683,7 @@ class SuggestionBarView @JvmOverloads constructor(
     /**
      * Maps a touch x (in this view's coordinates) to whichever entry is displayed there (D-488's reject
      * drag needs the confirm chip; [draggableItemAt] narrows to its own draggable kinds).
-     *
+     * 
      * @param viewX the touch x in view coordinates
      * @return the entry at that position, or null for a gap or an empty bar
      */
@@ -607,7 +700,7 @@ class SuggestionBarView @JvmOverloads constructor(
     
     /**
      * Maps a touch x (in this view's coordinates) to the draggable suggestion under it (G-04 / D-247).
-     *
+     * 
      * @param viewX the touch x in view coordinates
      * @return the ordinary or LEARNED entry at that position, or null for the verbatim chip, a
      *         CLIPBOARD/CREDENTIAL chip, a gap, or an empty bar

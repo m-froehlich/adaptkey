@@ -34,6 +34,7 @@ import de.froehlichmedia.adaptkey.R
 import de.froehlichmedia.adaptkey.diagnostics.DiagnosticLog
 import de.froehlichmedia.adaptkey.gesture.SwipeDirection
 import de.froehlichmedia.adaptkey.gesture.SwipeGesture
+import de.froehlichmedia.adaptkey.gesture.TouchSequenceTracker
 import de.froehlichmedia.adaptkey.touch.AmbiguityBands
 import de.froehlichmedia.adaptkey.touch.AmbiguityResult
 import de.froehlichmedia.adaptkey.touch.KeyBox
@@ -597,6 +598,12 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private var downX = 0f
     private var downY = 0f
     private val touchSlopPx = ViewConfiguration.get(context).scaledTouchSlop
+    
+    // D-495: single-pointer-per-gesture tracking for the touch stream - see TouchSequenceTracker's own
+    // KDoc for the tap-composition bug it closes. Shared between the ordinary key-press path below and
+    // the D-401 cursor-control path: the two never both own a stream at once, because
+    // handleCursorControlTouch() claims every event while the mode is armed.
+    private val touchTracker = TouchSequenceTracker()
     
     /**
      * D-32: delay before a long-press fires (the alt char / popup). Set from the settings; defaults to
@@ -1221,6 +1228,9 @@ class AdaptKeyboardView @JvmOverloads constructor(
         when (event.actionMasked) {
             // T-01: the initial contact point is the authoritative tap coordinate.
             MotionEvent.ACTION_DOWN -> {
+                // D-495: the stream is tracked before anything else, so even an unclaimed DOWN (no key
+                // resolved below) can never leave the previous stream's identity behind.
+                touchTracker.onDown(event.getPointerId(event.actionIndex))
                 val resolved = resolveKey(event.x, event.y) ?: return true
                 val (key, rect) = resolved
                 // D-184: this exact key is still showing its previous tap's flash - force one off-frame
@@ -1305,6 +1315,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
                     }
                     return true
                 }
+                // D-495: the continuity gate's raw input - one MOVE beyond the slop marks this sequence
+                // as genuinely moving, which alone lets a later release classify as a swipe at all.
+                // Popup sequences return above (they commit on release, never swipe), so they need no
+                // note here.
+                if (movedBeyondSlop(event.x, event.y)) {
+                    touchTracker.onMoveBeyondSlop()
+                }
                 // Movement does not change the resolved key (T-01). D-108: a small smear that has not
                 // actually left the pressed key's own bounds must not cancel a pending long-press - only
                 // leaving the key does. D-380: leaving the key is not enough by itself either - only a
@@ -1329,11 +1346,39 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 return true
             }
             
+            // D-495: a second pointer landing while the key-touch is live (overlapping taps - routine in
+            // fast rolling/two-thumb typing) kills the sequence outright. Previously this action fell
+            // through unnoticed and the stream's remembered state survived until the LAST pointer's
+            // ACTION_UP, whose coordinates belonged to the *other* finger - so release-minus-down became
+            // the distance between two separate taps and classified as a swipe (the reported "a then
+            // quick SPACE flips to the numbers page", and the vertical twin "fast top-row/bottom-row
+            // typing dismisses the keyboard"). Nothing about a dead sequence may commit: neither tap,
+            // swipe, nor an open popup's selection.
+            MotionEvent.ACTION_POINTER_DOWN -> {
+                if (touchTracker.hasSequence) {
+                    cancelActiveTouchSequence()
+                }
+                return true
+            }
+            
+            // D-495: multi-touch streams only - a single-pointer stream never delivers this action. The
+            // sequence is already dead (cancelled at ACTION_POINTER_DOWN); this case exists so mid-stream
+            // events stop falling through to super unhandled.
+            MotionEvent.ACTION_POINTER_UP -> return true
+            
             MotionEvent.ACTION_UP -> {
                 cancelPendingLongPress()
                 cancelBackspaceRepeat()
+                // D-495: only the tracked pointer's own release, from a sequence that never went
+                // multi-touch, may act on the stream's state at all. Both flags are read before the
+                // stream ends - end() clears them. (A multi-touch stream had its sequence cancelled at
+                // ACTION_POINTER_DOWN already; this guard additionally keeps any foreign pointer from
+                // acting on whatever pressed state it might still find.)
+                val ownsRelease = touchTracker.ownsRelease(event.getPointerId(event.actionIndex))
+                val continuousMotion = touchTracker.motionWasObserved
+                touchTracker.end()
                 // D-01: releasing over the alternatives popup commits the highlighted alternative.
-                if (popupKey != null) {
+                if (popupKey != null && ownsRelease) {
                     commitPopupSelection()
                     pressedKey = null
                     invalidate()
@@ -1344,11 +1389,19 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 pressedKeyRect = null
                 invalidate()
                 // D-07: once a backspace hold has repeated, the release must not also fire a tap delete.
-                if (key != null && !longPressFired && !backspaceRepeated) {
+                // D-495: a dead or foreign release acts on nothing (`ownsRelease`); and even an owned
+                // release only classifies as a swipe when its own sequence was observed moving beyond
+                // the slop (the continuity gate) - a stationary release is a tap, exactly the outcome
+                // resolveSwipe's below-threshold case always had.
+                if (key != null && ownsRelease && !longPressFired && !backspaceRepeated) {
                     // §4 / D-20: a swipe is offered to the listener only once it clears the per-gesture
                     // threshold (small for the space-bar language swipe, large for the field gestures); if
                     // consumed it suppresses the tap, otherwise the resolved key is emitted as usual (T-01).
-                    val consumed = resolveSwipe(key, event.x - downX, event.y - downY)
+                    val consumed = if (continuousMotion) {
+                        resolveSwipe(key, event.x - downX, event.y - downY)
+                    } else {
+                        false
+                    }
                     if (!consumed) {
                         // D-04: briefly flash the key so even a fast tap is visibly acknowledged.
                         flash(key)
@@ -1371,16 +1424,27 @@ class AdaptKeyboardView @JvmOverloads constructor(
             }
             
             MotionEvent.ACTION_CANCEL -> {
-                cancelPendingLongPress()
-                cancelBackspaceRepeat()
-                dismissPopup()
-                pressedKey = null
-                pressedKeyRect = null
-                invalidate()
+                cancelActiveTouchSequence()
                 return true
             }
         }
         return super.onTouchEvent(event)
+    }
+    
+    /**
+     * D-495: every way an in-flight key-touch sequence ends without its own release - a system
+     * ACTION_CANCEL, or a second pointer landing on the keyboard (D-495's ACTION_POINTER_DOWN branch).
+     * The exact body the ACTION_CANCEL branch always ran, extracted so both ends share it; also resets
+     * [touchTracker], so no later event of the stream can act on the dead sequence.
+     */
+    private fun cancelActiveTouchSequence() {
+        cancelPendingLongPress()
+        cancelBackspaceRepeat()
+        dismissPopup()
+        touchTracker.end()
+        pressedKey = null
+        pressedKeyRect = null
+        invalidate()
     }
     
     private fun scheduleLongPress(key: Key) {
@@ -1470,6 +1534,9 @@ class AdaptKeyboardView @JvmOverloads constructor(
                     longPressHandler.removeCallbacks(cursorControlGraceRunnable)
                     cursorControlGraceActive = false
                     cursorControlCrosshairAnimator?.cancel()
+                    // D-495: the re-touch is a new stream - it is tracked before its coordinates become
+                    // the new origin, so the fresh origin can never be a second finger's position.
+                    touchTracker.onDown(event.getPointerId(event.actionIndex))
                     downX = event.x
                     downY = event.y
                     cursorControlCrosshairX = event.x
@@ -1482,9 +1549,25 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 return true
             }
             
+            // D-495: a second finger landing while the mode is armed is not a supported steering gesture -
+            // ending the mode outright is the predictable outcome (a second finger's coordinates must
+            // never be measured against the first finger's origin, which this mode's DOWN branch would
+            // previously even have adopted as its own new origin).
+            MotionEvent.ACTION_POINTER_DOWN -> {
+                endCursorControl()
+                return true
+            }
+            
             MotionEvent.ACTION_MOVE -> {
-                val dx = event.x - downX
-                val dy = event.y - downY
+                // D-495: only the tracked pointer steers. With no live sequence (or a pointer id the
+                // stream no longer carries) the event is ignored outright - belt and braces; the mode
+                // ends at ACTION_POINTER_DOWN before a multi-pointer stream can persist here.
+                val pointerIndex = event.findPointerIndex(touchTracker.trackedPointerId)
+                if (pointerIndex < 0) {
+                    return true
+                }
+                val dx = event.getX(pointerIndex) - downX
+                val dy = event.getY(pointerIndex) - downY
                 if (dx * dx + dy * dy <= touchSlopPx * touchSlopPx) {
                     return true
                 }
@@ -1500,14 +1583,16 @@ class AdaptKeyboardView @JvmOverloads constructor(
                     longPressHandler.removeCallbacks(cursorControlStillnessRunnable)
                     longPressHandler.postDelayed(cursorControlStillnessRunnable, CursorControlGesture.HOLD_STILL_TO_SELECT_MS)
                 }
-                cursorControlCrosshairX = event.x
-                cursorControlCrosshairY = event.y
+                cursorControlCrosshairX = event.getX(pointerIndex)
+                cursorControlCrosshairY = event.getY(pointerIndex)
                 invalidate()
                 return true
             }
             
             MotionEvent.ACTION_UP -> {
                 longPressHandler.removeCallbacks(cursorControlStillnessRunnable)
+                // D-495: the stream ends with this release, whichever stage path follows.
+                touchTracker.end()
                 // D-401-followup: any release while Stage 2 is active ends the mode outright and collapses
                 // the selection - device-reported: the original "zero movement since touch-down" reading of
                 // "a tap ends the mode" was almost never reachable in practice (reaching Stage 2 at all
@@ -1580,6 +1665,9 @@ class AdaptKeyboardView @JvmOverloads constructor(
         cursorControlCrosshairAnimator = null
         cursorControlActive = false
         cursorControlGraceActive = false
+        // D-495: every mode end also ends the tracked stream, so a still-down finger's remaining events
+        // can never act on a sequence this mode no longer owns.
+        touchTracker.end()
         onCursorControlListener?.onCursorControlEnded()
         invalidate()
     }

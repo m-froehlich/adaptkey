@@ -313,6 +313,18 @@ style.
 
 ## 4. Gestures
 
+**D-495 addendum - a swipe is one continuous single-pointer motion.** Every gesture in this section is
+classified from the displacement between one finger's own contact point and that same finger's release.
+A second finger landing while a key-touch is live (overlapping taps - routine in fast rolling/two-thumb
+typing) cancels that touch sequence outright: it can commit neither a tap, a swipe, nor a popup
+selection, and neither finger's later release may act on the first finger's remembered contact point.
+This is what closed the reported "tap `a`, then very quickly SPACE → the page flips to numbers/symbols"
+and its vertical twin "fast top-row/bottom-row typing dismisses the keyboard" - two separate taps could
+compose into one field-swipe displacement. Additionally, a release from a sequence that never moved
+beyond the touch slop can only ever be a tap, never a swipe (the continuity gate; real swipes always
+deliver move events, including the short G-01). The first tap of an overlapped pair stays uncommitted -
+conservative by decision, rescuing it is a separate future question.
+
 ### G-01 - Language Switch
 Swiping left or right on the space bar cycles the active input language through English (always first, the
 one language always available) plus every currently installed language pack (§9), in a fixed declaration
@@ -393,6 +405,16 @@ genuinely touches the caret, the double-tap first reclaims it (D-62) before togg
 addendum below; this works independent of claim state, including where the reactive reclaim-on-caret-move is
 suppressed (D-351). Only when nothing at all touches the caret does the double-tap fall back to simply
 disarming the first tap's ordinary Shift arm — a no-op beyond cancelling the one-shot uppercase.
+
+**D-489:** the double-tap is genuinely a *pair of consecutive Shift presses*: any keystroke on a key other
+than Shift between the two taps — a letter, space, delimiter, backspace, a layer switch, a long-press on any
+key, or a long-press popup selection — breaks the pair, and the second Shift tap acts as the ordinary
+single-tap toggle instead. Without this rule, fast letter-Shift-letter-Shift typing of a capital-heavy word
+met the window condition literally and flipped the case of the word being typed (case-locking it into a
+verbatim commit along the way). A further Shift tap directly after a real toggle still toggles the same word
+again, since no other key intervened; the three Shift intents (single tap, double-tap toggle, long-press
+Caps Lock) remain independent. Caret taps into the text and suggestion-bar taps are not keystrokes and do not
+break the pair.
 
 The double-tap delay is configurable via a slider in the Key Behaviour settings category, placed directly
 below the long-press delay slider. Default: 400 ms. Range: 200-800 ms, in 10 ms steps. Shared with the D-348
@@ -492,6 +514,17 @@ landing on an existing word), with no awareness of the opener at all - silently 
 moment after the commit correctly left it alone. A new one-shot flag, consumed exactly like the existing
 `shiftArmedByDelete`/D-373-followup's own `tokenShiftLiveArmed` guards right next to it, carries the "this was
 just an opener" decision forward to that one call site.
+
+**D-491:** a manual Shift press is never retroactively undone by AdaptKey. The caret re-derivation that the
+previous word's commit echo schedules (~100 ms later, while nothing is composing yet) used to overwrite a
+fresh press made inside that window back to the position-derived answer - mid-sentence almost always
+lowercase - so a Shift tapped right after a Space silently did nothing ("was ich angetippt habe, darf nicht
+durch Verschmieren wieder aufgelöst werden"). A manual press in either direction (arm or deliberate disarm)
+now guards itself against exactly the one re-derivation already scheduled for the same position - the same
+one-shot-guard pattern as D-335/D-373/D-378. D-496 (review §515): the guard is consumed by whichever branch
+of that re-derivation runs, so it protects exactly one derivation even when D-406's delete-derived guard
+wins the same window. Any later, genuinely new caret position still re-derives fresh
+(D-313), and a Backspace's delete-derived Shift (D-406) keeps its own rules.
 
 ### Addendum to G-05 - A Backspace That Absorbs an Adjacent Word Re-Derives Composing First
 D-357: reported repro - place the caret mid-word in an existing word, delete past the token's own start (so
@@ -1950,6 +1983,21 @@ anything meant to be learned.
 D-388: a word's frequency, once promoted, starts at however many times it was actually seen while pending
 (2 or 4, per the threshold above) rather than always resetting to 1 - a small fidelity fix with no effect on
 promotion timing itself, only on the starting count a freshly-promoted word carries forward.
+
+D-494: promotion never happens for a word that is a known word in some OTHER language's bundled dictionary
+(the D-106 cross-language shield, English always consulted, case-insensitive) - the shield previously existed
+on the correction side only (autocorrect, the D-477 fusion veto), so English terms typed in German texts
+walked every guard and flooded the German Learned Words editor after their second uncorrected occurrence.
+As with a bundled word (D-327), such a word's n-gram context is still learned so next-word prediction keeps
+improving; an entry that slipped in through the old unguarded path is no longer reinforced and can be
+forgotten once via the editor. Both learn entry points gate on the same shield - the ordinary W-02 path and
+the learn-outright path used by the undo-relearn/fusion-fragment callers and the tier-3 reinforcement.
+D-494 follow-up (review D-496, §515): the shield is waived for a word the ACTIVE language's own bundled dictionary
+knows in some casing - the flood was words the active language does not have, and gating the active-language
+homographs (hose, Gift, bald, Rat, Hut, Boot, ...) would have silently disabled D-439/D-264's deliberately-
+different-casing override learning for that whole class. A verdict is computed once per token and shared
+between the ordinary commit's `learnWord`/`reinforceFromTier3` pair, and `learnWordStrong`'s callers can
+tell whether it actually learned (the undo-relearn path must only pop its D-331 record when it did).
 
 ### W-03 - "Gelernt: X" Promotion Confirmation *(D-247)*
 The moment a word is genuinely promoted to the learned dictionary (W-02's threshold crossed this exact

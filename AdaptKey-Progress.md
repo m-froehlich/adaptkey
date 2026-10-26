@@ -416,6 +416,123 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
+- **D-494 - RESOLVED, device-confirmed (§513, v1.2.73; confirmed 2026-10-26): foreign-dictionary words (English**
+  **above all) no longer enter the active language's learned store - `learnWord()`/`learnWordStrong()`/**
+  **`reinforceFromTier3()` now gate on the existing `knownInOtherLanguage()` shield (previously correction-side**
+  **only); the unigram is skipped, the n-gram context still learned (D-327 split). Existing polluted entries:**
+  **forget once via the editor, they are no longer reinforced. See §513 and spec W-02's D-494 addendum.**
+- **D-493 - OPEN, reported 2026-10-23, root-caused to missing dictionary data (not yet fixed): the correctly-typed**
+  **"schmeißen" is auto-split at Medium into "sch Meißen" - and the answer to "which rule?" is: the word is absent.**
+  Checked directly, not guessed: `dictionaries/de/dict.tsv` carries the whole `schmeißen` family nowhere (no
+  `schmeißen`/`schmeißt`/`schmiss`/`geschmissen` at all), while both halves exist independently - `sch` (84,
+  `OTHER`) and `Meißen` (352, `NOUN,PROPER_NOUN`, which is also why the right half comes back capitalised). So
+  the unknown token takes A-05's split path: the "not both halves nouns" gate passes (the left half is `OTHER`),
+  and the §490 `CorrectionConfidence.forSplit` gate evidently clears at Medium with these two low frequencies.
+  This is D-469's exact shape ("Lebensmüde" split because the word was absent) - the user's own framing "wir
+  haben doch so viel unternommen, dass sinnlose Wörter nicht abgetrennt werden" is true, but every one of those
+  mechanisms presupposes the word being in the dictionary at all. `schmeißen` IS in `wiktionary_verben.tsv` with
+  its full paradigm (line 9929), but it is one of the ~12,123 verbs the corpus never attested - D-462's
+  deliberately-left-out B2 scope, not one of the 2,250 completed ones. Direction: add the family - either as its
+  own D-469-style data round or as the first concrete everyday case motivating the still-pending D-462
+  review-list round (user's call). Also worth deciding then: whether the split path wants an additional guard
+  for a proper-noun right half (D-114/D-227-style suspicion), since "Meißen" is exactly the register where
+  corpus-driven proper nouns collide with everyday words.
+- **D-492 - OPEN, reported 2026-10-23, root-caused by code reading (2026-10-23, refined same day with the**
+  **user's observation that it "meistens" fires on system credential-manager fills) - two defect classes; the**
+  **primary one is a stale-composing hole in onUpdateSelection's own-edit detection.**
+  All `AdaptKeyService.kt` line numbers below are as of v1.2.71 (versionCode 567) - re-locate before trusting.
+  User report: inserting username/password from the system duplicates parts of the text - sometimes the
+  password (silently, so the login fails), sometimes an email whose TLD ends up repeated. Flow per the user:
+  type into the username field, the SYSTEM's credential manager pops its saved-credentials picker (not
+  AdaptKey), one is picked, the fill lands - and the duplication happens right there.
+  **PRIMARY (the credential-manager flow): the own-edit gate is caret-position-only.** `onUpdateSelection`'s
+  external-write detection (AdaptKeyService.kt:1850-1912) returns "own edit, do nothing" purely on
+  `SelectionTruth.isAtExpectedCaret(composingAnchor + composingCursor, ...)` at line 1878 - it never checks the
+  document CONTENT under the believed composing span. The credential manager's fill is an app-side write
+  (`View.autofill` -> `setText`) that (a) destroys the editor-side composing span and (b) moves the caret to the
+  end of the filled value; AdaptKey only ever sees the asynchronous `onUpdateSelection` echo. Two openings:
+  (i) when the fill leaves the caret where the model expects it (cleanest case: the manager filled the same
+  value the user had just typed - the everyday case, since the user was typing exactly that credential), the
+  positions match and the early return keeps a stale live composing model over a span the editor no longer has;
+  (ii) even with mismatching positions, the user's immediate next action (the login form's "Weiter"/Enter, or a
+  keystroke) can be processed before the echo arrives - the same race the spec §1 guardrail already documents
+  for lagging echoes. Either way, the next AdaptKey write re-materialises the stale fragment:
+  `handleEnter` -> `finalizeAndCommit("")` -> the login short-circuit -> `commitVerbatimFieldFragment`
+  (line 5306) does `ic.setComposingText(beforeText, 1)` (line 5326) - creating a FRESH composing span with the
+  model's stale text at the current caret, i.e. at the end of the filled value. Result: typing the full
+  "peter.m@gmail.com" (last fragment "com" composing), picking the credential, tapping Weiter ->
+  "peter.m@gmail.comcom" - exactly the reported duplicated TLD ("mehrfach" on a retry/resubmit cycle); in a
+  password field the user had typed into first, the whole typed password duplicates (invisible behind the
+  mask -> login fails). A keystroke instead of Enter duplicates through `insertComposingChar`/`updateComposing`
+  -> `setComposingText` the same way.
+  **SECONDARY (standalone, no credential manager involved):** (a) the three clipboard-chip write paths mutate
+  the document without touching AdaptKey's composing bookkeeping - `Kind.CLIPBOARD` (native
+  `performContextMenuAction(paste)`, line 7629) and `commitClipboardExtraction` (FIRST_LINE/FIRST_CODE,
+  line 2641) never call `finishComposingText()`/`clearComposing()` (the `Kind.CREDENTIAL` chip at line 7661
+  does). In a password field the ENTIRE typed value sits composing (login fields commit per-fragment only at
+  `.`/`@`/`-`/`_`/`/`), and the paste chip IS offered there (`onStartInputView`'s initial-chip else-branch,
+  line 2168-2171, PASSWORD included) - typing the password, then pasting it "to be sure" from the password
+  manager's clipboard entry yields `typed+clipboard`, invisible in the masked field. (b) `Kind.CREDENTIAL`'s
+  replace step silently degrades to "append" when `getTextBeforeCursor` returns null (line 7663-7667):
+  nothing is deleted, `commitText(item.word)` appends the full value after the typed prefix - restricted
+  editors that refuse text reads are exactly the login-shaped ones.
+  **AMPLIFICATION (both classes): one corruption event is learned and re-offered forever.**
+  `CredentialStore.learn()` validates nothing beyond `isBlank()` (CredentialStore.kt:57), learning is
+  immediate with no threshold (D-142's own "precise by construction" premise - false exactly when a write path
+  glitched), and `emailDomainsFor` derives offered domains from raw stored values
+  (`substringAfterLast('@')`, CredentialRanking.kt:54) - a stored "user@web.dede" becomes a permanently
+  offered "web.dede" domain chip; identity is exact-match, so clean and corrupted entries coexist. This is the
+  recurring "TLD mehrfach" observation.
+  **Recovery available now:** Settings -> Credentials (D-180 per-entry forget, or clear-all) removes the
+  corrupted entries.
+  **Fix direction (needs the user's go, per convention; device log first - the existing `AdaptKeyJitter` diag
+  already logs composing/anchor/candidates per callback, so one captured repro of the credential flow shows
+  whether the positions-match hole (no EXTERNAL line) or the race fired):**
+  1. Content-verify the composing span when the editor reports no span: when `composing.isNotEmpty()` AND the
+     remote `candidatesStart/candidatesEnd` are `-1,-1`, that mismatch must not decide by itself (spec §1
+     invariant 2 - remote candidate reports are not trusted) but SHOULD trigger the already-existing
+     synchronous `getExtractedText` check; if the document no longer holds `composing` at `composingAnchor`
+     (or the caret differs), run the existing EXTERNAL branch (finishComposingText + clearComposing). The
+     read-free common case (our own writes echo with a live candidates range) stays read-free; a stale-candidate
+     false trigger only costs one extra read, and the read decides.
+  2. A commit-side backstop at the destructive write itself (closes the race): `commitVerbatimFieldFragment`
+     verifies right before its `setComposingText` that the document at `composingAnchor` still holds
+     `composing` (one atomic extracted-text read, the established §1 pattern); if not, clearComposing and
+     commit only the delimiter.
+  3. The clipboard-chip paths get the same `finishComposingText()` + `clearComposing()` prepare step the
+     CREDENTIAL chip already has.
+  4. A narrow `learn()` guard: refuse/rename when the field's actual tail was not the prefix of what was
+     committed, and/or a minimal email-shape check for EMAIL entries (no duplicated-label domains).
+   5. D-150's password guard applies to every diagnostic line added here.
+   **Work order once a repro exists (the checklist to work through):**
+   (1) Capture the repro's `AdaptKeyJitter` diagnostic log (adb logcat, type the username, pick the credential,
+   tap Weiter). Read it against the two openings: a callback with matching positions and NO `EXTERNAL` line
+   while the fill happened = the positions-match hole; an `EXTERNAL` line arriving only after the user's next
+   action = the race. Either confirms the primary mechanism; a log matching NEITHER shape sends this analysis
+   back for re-derivation instead of a fix. (2) Implement fix 1 + fix 2 together in one round (they share the
+   same extracted-text reading); weigh the `onUpdateSelection` wiring against spec §1's four invariants before
+   shipping. (3) Fix 3 and fix 4 can ride along or follow as their own round; the pure parts (span-verification
+   predicate, `CredentialStore` guard) get unit tests per the project's pure-policy convention. (4)
+   Device-confirm against the exact repro, release per the RELEASE RECIPE, and remember the pack/push lesson:
+   code fixes ride with the app update, nothing pack-related here. (5) **On closure, TRIM THIS ENTRY** to the
+   standard one-line RESOLVED stub pointing at the round's §-entry - the full analysis moves to
+   `AdaptKey-History.md` with that round per the usual pruning convention, so this section does not flood.
+- **D-491 - RESOLVED (§513, v1.2.73), device-confirmed 2026-10-26: a manual Shift press (arm or deliberate**
+  **disarm) is no longer wiped by the debounced caret re-derivation scheduled by the previous commit's echo -**
+  **a Shift tapped inside the ~100 ms post-commit window now capitalises the next letter.** See §513 and spec
+  G-05's D-491 addendum.
+- **D-490 - OPEN, requested 2026-10-23, not started: double-tap-Backspace revert (D-348) should become the**
+  **default.** User request: "Double Tab Revert sollte der Standard sein." D-348's setting ships off today (the
+  D-360 discussion treated it as opt-in). Direction: flip the default to on - an untouched install gets the
+  revert behaviour, and an explicitly stored value keeps working either way (check where the default resolves in
+  `SettingsStore`/`SettingsMapper` so no migration is needed). Then re-check the behaviours that were tuned
+  against the opt-in state for an every-user default: the "first Backspace at the armed tail is a no-op" design
+  (D-360's uniformity decision - no special cases then, none now) and its interplay with D-248's
+  backspace-unlearn path.
+- **D-489 - RESOLVED (§512, v1.2.72): an intervening keystroke on another key (letter/space/delimiter/backspace/**
+  **layer switch, a long-press, a popup selection) now breaks G-05's double-tap pair - fast letter-Shift-letter-Shift**
+  **typing no longer toggles the word's case; the second Shift acts as the ordinary toggle instead.** See §512 and
+  spec G-05's D-489 addendum.
 - **D-487 - WITHDRAWN and closed (2026-09-28, §510; user confirmed the c06 look as final): the inline `DropDownPreference` prototype was rejected on the**
   **device; the existing `ListPreference` look (c06) stays the standard, so no other setting is converted.**
   Original entry, kept for the record: convert other pick-one settings to inline dropdowns - the user was still to
@@ -1670,6 +1787,107 @@ non-trivial changes).
   volume) is completely unaffected by this and ran exactly as planned. 446,015 lemma-column rows changed
   across the 31 packs; every pack passes `lemma_check.py` and `quality_gate.py`.
 
+- **§515 (rides v1.2.74 / versionCode 570 together with §514): D-496 - review follow-ups to §513: five corrections to the D-489/D-491/D-494 code, found by a six-track review of the uncommitted tree.** Round separation per explicit user decision: these correct §513's code, not §514's D-495 touch fix, so they are documented in their own round. **Timing caveat: §513 was device-confirmed on 2026-10-26 in the shape it had THEN - these corrections postdate that confirmation, so the affected behaviours need a fresh device spot-check alongside §514's own scenarios** (double-tap-Shift breaker, Shift-arm persistence, German/English homograph casing overrides, A-05 split-undo on a foreign word). The five, in the review's order: (1) **D-491's one-shot guard could leak past its own derivation**: `shiftSetByManualPress` was consumed only in its own `else if` branch of `rearmShiftForCaretMove` - when D-406's delete-derived arm (`shiftArmedByDelete`) won the same ~100 ms window (backspace undoes an uppercase, then a manual Shift press lands before the echo), the manual-press guard survived and silently skipped the NEXT genuine, different-position re-derivation, keeping a stale manual Shift arm alive (the exact D-491 bug class, one step later). The guard is now consumed by whichever branch of the derivation runs; spec G-05's D-491 addendum gained the precision. (2) **The D-494 early return in `learnWordStrong()` entangled itself with its caller's record pop**: it returned before the trailing `rememberForBackspaceUnlearn(...)`, yet the undo-relearn caller unconditionally ran `recentLearnRecords.removeLastOrNull()` (D-331 documents it removes exactly the record learnWordStrong just added) - so a gated bail-out deleted an UNRELATED older record and corrupted D-248's `maybeUnlearnOnBackspaceReturn` bookkeeping. `learnWordStrong` now returns whether it actually learned (false on every bail-out, which also exact-ifies the pre-existing bundled-casing gates' same entanglement) and the caller conditions the pop on it. (3) **D-494's shield silently disabled D-439/D-264's casing-override learning for the whole German/English homograph class**: the shield branch sat before `learnedCasingOf`/promotion and matched case-insensitively, so bundled German words whose lowercase form is an English word (hose, Gift, bald, Rat, Hut, Boot, war, hat, ...) could never form - or keep reinforced - a deliberately differently-cased learned override, even though the reported flood was words the active language does NOT have. The shield is now waived for a word the active language's own bundled dictionary knows in some casing (`bundledCasing == null` gate); spec W-02's D-494 addendum states the waiver. (4) **`reinforceFromTier3` re-ran the cross-language scan `learnWord` had just completed** for the same word in the same synchronous commit (~2-3 main-thread SQLite point queries per installed language, doubled exactly in the D-494 scenario - this project's own established cost class, D-194/D-220). `knownInOtherLanguage` now caches its verdict per token and the reinforcement reuses it. (5) **A provably always-true guard in the D-494 branch** (`!isBlacklisted(word)` - `knownInOtherLanguage` already returns false for blacklisted tokens, verified against its implementation) was removed, saving one wasted main-thread blacklist query per gated commit. All five are code-level corrections riding the same build as §514 (1728 tests, 0 failures, rebuilt green); the review's D-495-side finding stayed with §514, and the code comments cite "(review D-496, §515)".
+
+- **§514 (v1.2.74): D-495 - individual taps can never compose into a swipe any more; a swipe is now, by construction, one continuous single-pointer motion.** Community-confirmed bug report, plus the user's own two long-standing observations ("tippe erst a und dann sehr schnell SPACE → die Tastatur swipet auf die Nummern-Page", "die Tastatur verschwindet plötzlich beim sehr schnellen Tippen"). Root cause verified in code before touching anything: every touch handler branches on `actionMasked` only and NOTHING in the codebase handled multi-touch (no `pointerCount` check, no `ACTION_POINTER_DOWN`/`ACTION_POINTER_UP` case anywhere - searched, not assumed). With overlapping taps (the second finger lands before the first lifts - routine in fast rolling/two-thumb typing) the stream's `pressedKey`/`downX`/`downY` recorded at the first finger's ACTION_DOWN survived until the LAST pointer's ACTION_UP, whose coordinates belong to the *other* finger - so `event.x - downX` became the distance between two separate taps (`a` bottom-left vs. SPACE bottom-centre = several hundred pixels), cleared `swipeDirectionIfFarEnough`'s field threshold and classified as a D-19 page swipe; vertically (top-row → bottom-row overlap) it classified UP/DOWN → §48 settings row / L-03 symbol layer or G-03 dismiss. With strictly sequential taps the bug cannot occur, which is why it only ever fired "beim schnellen Tippen". Fix (planned in `AdaptKey-Plan-MultiTouch-Swipe.md`, conservative per user decision - the first tap of an overlapped pair stays uncommitted, exactly as before): new pure `gesture/TouchSequenceTracker` (one pointer per stream; a second pointer kills the sequence; a release may only act when it belongs to the live sequence's own pointer; a live sequence's move-beyond-slop is recorded as the continuity gate) wired into `AdaptKeyboardView.onTouchEvent` (DOWN tracks the pointer first; new ACTION_POINTER_DOWN case cancels the sequence via the extracted `cancelActiveTouchSequence()` - the old ACTION_CANCEL body - which also closes the popup-commit hole; ACTION_UP guards tap/swipe/popup dispatch on ownership and runs `resolveSwipe` only when the sequence was observed moving; stationary releases are taps exactly like the old below-threshold outcome), `handleCursorControlTouch` (a grace re-touch re-tracks the pointer; a second pointer ends the mode outright - previously the DOWN branch would even have adopted the second finger's position as its new origin; MOVE/UP resolve the tracked pointer's coordinates via `findPointerIndex`), `ExtraRowView` (its swipe-down claims arm/fire only for a live single-pointer sequence at the tracked pointer's coordinates) and `SuggestionBarView` (G-04 drag, D-488 reject drag and D-144 swipe-down claims drop when a second pointer lands, and releases act only on ownership). Thresholds, directions and the whole `KeyGesture` policy layer untouched - the fix is purely about *which events* may reach that policy. Spec §4 gained the D-495 addendum stating the invariant.
+  New `TouchSequenceTrackerTest` (+9, including the reported repro as a scenario: `a`-down → second-finger-down → neither pointer may act, motion never observed). 1728 tests total (1719 + 9), 0 failures; `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 569 -> 570, `versionName` `"1.2.73"` -> `"1.2.74"`. NOT device-confirmed: the overlap scenario needs real two-finger/rolling typing on the device - the repro is "a + sehr schnelles SPACE", plus fast vertical typing for the dismiss variant; cursor-control-with-second-finger is worth one deliberate try as well.
+  **Review (same session, six-track over the uncommitted tree):** the D-495 core held - the security and performance tracks came back clean and the logic review found exactly one D-495 gap, fixed in the same pass: `ExtraRowView`'s D-144 fallback `when` lacked the `ACTION_POINTER_DOWN` kill its intercept path (and SuggestionBarView's fallback) already had, so a gap-started swipe-down could still arm/fire across a second finger's overlap. The review's other five findings concerned §513's code and are deliberately NOT part of this round - they are recorded as §515 (D-496) below.
+
+- **§513 (v1.2.73): D-494 - foreign-dictionary words no longer enter the active language's learned store; the**
+  **cross-language shield now covers the learning side too.** Reported 2026-10-25 ("viele englische Begriffe im
+  deutschen Gelernte Wörter", vermutet seit dem letzten Update). Root cause verified in code before touching
+  anything: the remembered rule EXISTS but only on the correction side - `knownInOtherLanguage()` (D-106 stage
+  2: "a known word in some bundled dictionary other than the one currently active", English always consulted,
+  case-insensitive via `entryOf`, active-language-blacklist waiver per D-157) is wired into the autocorrect
+  veto and the D-477 fusion veto only; `learnWord()`/`learnWordStrong()` consulted only the active language's
+  own bundled/learned/blacklist state, so an English bundled word typed twice in a German text passed every
+  guard and was promoted through the ordinary W-02 threshold straight into the German learned store. Not a
+  regression: nothing in v1.2.70/§510 or v1.2.71/§511 touched the plain learn path's guards - the gap is as
+  old as the shield being correction-only. Fix reuses the existing shield, no new state: (1) `learnWord()`
+  gained an `else if (knownInOtherLanguage(word))` branch placed deliberately BETWEEN the bundled-casing
+  branch and the learned-casing branch - before the latter so an entry learned through the old unguarded
+  path is no longer reinforced (forget once via the editor and it stays forgotten), and before
+  `promoteOrCountPending()` so no pending count silently accumulates for a shielded word; the outcome follows
+  the D-327 split (unigram SKIPPED, n-gram context still learned via `learnContext()` unless the word is
+  blacklisted in the active language, mirroring the branch above) so next-word prediction keeps improving
+  without flooding the editor. (2) `learnWordStrong()` (the learn-outright path behind the undo-relearn and
+  fusion-fragment callers) refuses a shielded word outright - it has no threshold to protect, and the
+  commit-time `learnWord()` has already recorded the context. (3) `reinforceFromTier3()` gates its extra
+  reinforcement on the same shield (inert without a tier-3 model installed, but the one path that bypasses
+  `learnWord()` entirely). `dispatchFamilyLearning()` needed no change - it fires only on LEARNED/PROMOTED
+  outcomes, which the gate turns into SKIPPED. Symmetric by construction (German words with English active
+  are shielded the same way). The shield's blacklist-waiver semantics were checked and are already right for
+  learning: a word blacklisted in the ACTIVE language fails the gate and falls through to the blacklist
+  branch, which skips it anyway. Existing polluted entries: manual forget via the Learned Words editor
+  (D-180) - no automatic TABLE_LEARNED sweep (D-404 tier-3 constraint); entries already there stop being
+  reinforced from this build on. The glue (learnWord/learnWordStrong/reinforceFromTier3) stays the accepted
+  untested Android layer; the gate reuses an existing, already-exercised predicate, no new pure decision to
+  extract. No strings, no pack. 1719 unit tests unchanged, 0 failures; `:app:assembleRelease`/
+  `:app:testDebugUnitTest` green. `versionCode` 568 -> 569, `versionName` `"1.2.72"` -> `"1.2.73"`.
+  **Device-confirmed by the user (2026-10-26)**: English terms typed in German texts no longer produce a
+  "Gelernt: X" chip or a Learned Words entry.
+- **§513 (v1.2.73): D-491 - a manual Shift press is no longer wiped by the debounced caret re-derivation;**
+  **the reported "smear onto Shift arms it, the arm is gone moments later" is fixed.** Reported 2026-10-23;
+  root-caused from the user's own captured diagnostic log, not from code reading alone. The failing sequence,
+  read straight off the log: word committed with Space at t=242564217 -> composing empty -> its echo at
+  t=242564352 scheduled the debounced re-derivation at t+100 ms -> the Shift tap (a genuine smear-shaped tap
+  at the key's right edge, x=57.5 against centre 84.3) was processed at t=242564451, arming the one-shot ->
+  the scheduled rearmShiftForCaretMove() fired ~1 ms later, found none of the three existing guard flags set
+  (`shiftArmedByDelete`/`tokenShiftLiveArmed`/`shiftPreservedAfterOpener` - a manual press sets none), and
+  armShiftForNextWord() overwrote view.shifted with the position-derived answer (mid-sentence = lowercase) ->
+  the next letter composed lowercase despite the Shift 400 ms earlier. Two control cases in the same log
+  confirm the window: the same press 260 ms and 378 ms after its commit echo survived and capitalised ("S",
+  "P") - the failure is exactly and only inside the ~100 ms post-commit window, which is also why it reads as
+  intermittent and as smear-caused. The user's own swipe-threshold hypothesis was tested against the same log
+  and ruled out: no gesture event anywhere near the repro, and swipe recognition at ACTION_UP precedes the
+  tap dispatch, so a consumed swipe can never revoke an arm that fired (the field swipe threshold is already
+  max(110 dp, ~3 key widths), D-46 - a "two key-widths" minimum would be a loosening, not a tightening).
+  Fix, the established one-shot-guard pattern (D-335/D-373/D-378's own class): new `shiftSetByManualPress`,
+  set in handleShift()'s ordinary toggle branch in BOTH directions (arm and deliberate disarm - a registered
+  input must never be retroactively undone), consumed by rearmShiftForCaretMove(), which then skips
+  armShiftForNextWord() exactly once; the derivation for any later genuine caret move still runs (D-313
+  preserved), and Shift is a one-shot consumed by the next letter anyway, so the one skipped derivation can
+  never strand a stale arm. Both scheduling paths are covered (reclaimWordAtCaret's and D-455's
+  rearmShiftForCaretMoveWhenReclaimSuppressed share the same rearmShiftForCaretMove core). Safety nets: the
+  flag is cleared at the top of handleKey() next to shiftArmedByDelete's own, and in onStartInput() so a
+  fresh field's initial derivation can never be skipped by a stale flag. Deliberately unchanged:
+  applyShiftAfterDelete's delete-derived Shift rules (D-406, deliberate design), C-07's grace guard, the
+  swipe thresholds. Two cheap permanent diag lines (handleShift's guarded toggle, rearmShiftForCaretMove's
+  skip) for the closure device log; D-150's password guard applies. Spec G-05 gained the D-491 addendum.
+  Service glue per this project's accepted untested Android layer (no pure decision worth extracting); no
+  strings, no pack. versionCode 568 -> 569, versionName "1.2.72" -> "1.2.73". **Device-confirmed by the
+  user on 2026-10-26** (the repro parcours above).
+- **§512 (v1.2.72): D-489 - an intervening keystroke now breaks G-05's double-tap pair; fast letter-Shift-letter-Shift**
+  **typing no longer toggles the word's case.** Reported 2026-10-23, fixed in the same round after a pure code
+  investigation (no device log needed - the mechanism is fully derivable from the source). Root cause verified before
+  touching anything: `handleShift()`'s double-tap window is purely time-based - `lastShiftTime` is written only inside
+  `handleShift()` itself (exactly three occurrences in the whole file: declaration, read, write) - so "two presses
+  within `doubleTapDelayMs`" was met literally even when real keys were tapped between the two Shift presses
+  (letter, Shift, letter, Shift: the second Shift lands within the default 400 ms of the first regardless of the
+  letter between them). The false toggle is worse than a visible flip: `toggleWordStartImmediate()` also case-locks
+  the token, so it commits verbatim, past autocorrect and §6 capitalisation - exactly the reported "flipping the case
+  of the word being typed". Fix per the backlog's stated direction, without new state: `lastShiftTime = 0L` at the
+  top of `handleKey()` for every key code other than SHIFT (a Shift press routes to `handleShift()` below, which
+  re-stamps the timestamp itself), plus the same reset at the top of `handleLongPress()` (a long-press is its own
+  intent - Caps Lock on Shift, a sign flip or symbol commit on a CHAR key, a layer switch on SYMBOL - and must break
+  the pair the same way) and at the top of `handleLongPressAlternative()` (committing a popup alternative is a
+  keystroke on another key). A second Shift after a broken pair falls through the double-tap branch into the
+  ordinary toggle (arm/disarm) - what a typist means by it. Deliberately unchanged: the next Shift directly after a
+  real toggle still toggles again (upper -> lower -> upper ..., G-05's own spec; no key intervenes there); caret
+  taps into the text and suggestion-bar taps do NOT break the pair (not keystrokes on keys; after a chip commit
+  composing is empty and the toggle is a harmless disarm) - minimal scope per the user's own wording, extendable
+  later; D-348's own double-tap window needed no change (its `undoTyped` state is already cleared by every
+  intervening key except the deliberate D-265 Space/Enter carve-out, checked in code - relevant context for D-490's
+  default flip); D-361's sticky window is view-side and untouched; C-07's grace guard sits after the double-tap
+  branch and is unaffected; the three Shift intents stay independent (a Caps Lock release consumes its tap before
+  the double-tap branch is ever reached). Spec G-05 gained the D-489 addendum. The service glue
+  (handleKey/handleShift/handleLongPress) is this project's accepted untested Android layer; the new logic is a
+  one-line reset per site with no pure decision worth extracting (a `ShiftGrace`-style object for
+  `now - last <= window` would be over-engineering). No strings, no pack. 1719 unit tests unchanged, 0 failures;
+  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 567 -> 568, `versionName` `"1.2.71"` ->
+  `"1.2.72"`. Not yet device-confirmed (repro: type a capital-heavy word fast, BuchStabe-style
+  letter-Shift-letter-Shift - the word must stay untouched; control: a genuine double-tap still toggles, a third
+  quick tap toggles again, Caps Lock long-press flows unchanged).
 - **§511 (v1.2.71): D-488 - blacklist confirmation chip + per-entry provenance + the no-mark rule for bundled-casing words; the reported "normal word ends up on the blacklist" class closed at the root.** Planned in `AdaptKey-Plan-Blacklist-Bestaetigung.md` (three discussion rounds, 2026-10-21/22; the plan file's §9 records the implementation snapshot). Root cause verified in code first, not guessed: the D-177 recurrence escalation (`learnWord()`/`learnHyphenCompound()`) wrote a PERMANENT USER blacklist entry with no UI whatsoever when a provisionally-forgotten word was retyped inside the window - reachable not only via G-04's drag but via the Learned Words editor's own "Vergessen" button, which sets the same mark (`LearnedWordsActivity` unconditionally, built on the wrong premise "learnedWords() never returns a bundled one": `isBundledWord()`/`bundledCasingOf()` resolve case-insensitively, so learned casing VARIANTS of bundled words are in that list, and for them the escalation blacklisted the word the user types every day). The A-07/D-348/D-248 revert paths were verified blacklist-free (`unlearnWord` only unlearns/decrements) - the user's autocorrect-revert suspicion did not hold.
   **R1 - no-mark rule:** the editor's forget now marks pending ONLY when `bundledCasingOf(word) == null` (no bundled entry in ANY casing); a bundled word (or casing variant) is plain-forgotten with the plain toast, a genuinely self-taught one gets the new honest toast (`learned_words_removed_pending`, "if you type it again AdaptKey will ask") - and the wrong D-177 comment is rewritten in place. Existing stale marks expire within the window on their own; no migration.
   **R2 - provenance:** new `BlacklistOrigin` (GESTURE_G04/ESCALATION/W03_FORBID/EDITOR_MANUAL/BACKUP_IMPORT/BUNDLED_SEED/UNKNOWN) + `BlacklistEntry`; `blacklist()` carries origin+`added_at` (guarded ALTER migration, no backfill - pre-D-488 rows read UNKNOWN/0), and an existing row KEEPS its provenance on re-write (only the category updates - the per-start D-278 seed and repeat writes can never reset an entry's age). Backup format v2 (blacklist entries as {word, origin, addedAtMillis} objects; v1 string arrays still decode -> importer stamps BACKUP_IMPORT + now; `CURRENT_FORMAT_VERSION` 1 -> 2, so an old build rejects a v2 file cleanly). Blacklist editor: every write site records its origin, the entry dialog gains a second square "ⓘ" button beside the copy button (the §496 button bar untouched) opening a provenance popup (origin + when, Copy = word+origin+when as text, Close). `diag("AdaptKeyBlacklist", ...)` at arm/write/reject (D-150's password guard applies).

@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat
 import de.froehlichmedia.adaptkey.R
 import de.froehlichmedia.adaptkey.gesture.SwipeDirection
 import de.froehlichmedia.adaptkey.gesture.SwipeGesture
+import de.froehlichmedia.adaptkey.gesture.TouchSequenceTracker
 
 /**
  * §48 / §51: the swipe-up extra row - the emoji button (left edge) and a settings gear (right edge),
@@ -210,6 +211,13 @@ class ExtraRowView @JvmOverloads constructor(
     private val interceptThresholdPx = ViewConfiguration.get(context).scaledTouchSlop.toFloat()
     private val swipeDownThresholdPx = dp(110).toFloat()
     
+    // D-495: single-pointer-per-gesture tracking - the same tap-composition guard AdaptKeyboardView's
+    // own touch path got. Without it, a second finger landing while the first is down (overlapping
+    // fast taps) leaves touchDownX/Y pointing at the first finger while a later event's coordinates
+    // belong to the second - composing two taps into one displacement, i.e. a phantom swipe-down
+    // (row close / keyboard dismiss) measured across two different fingers.
+    private val touchTracker = TouchSequenceTracker()
+    
     init {
         content.setBackgroundColor(ContextCompat.getColor(context, R.color.keyboard_background))
         // D-142: the credential-mode button sits at the row's very left edge, ahead of the emoji button.
@@ -257,17 +265,37 @@ class ExtraRowView @JvmOverloads constructor(
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
         when (ev.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
+                touchTracker.onDown(ev.getPointerId(ev.actionIndex))
                 touchDownX = ev.x
                 touchDownY = ev.y
                 swipeDownIntercepting = false
             }
             
             MotionEvent.ACTION_MOVE -> {
-                val direction = SwipeGesture.classify(ev.x - touchDownX, ev.y - touchDownY, interceptThresholdPx)
+                // D-495: classify only a live, still-single-pointer sequence, and only against the
+                // tracked pointer's own coordinates - never another finger's position measured against
+                // this finger's origin.
+                val pointerIndex = ev.findPointerIndex(touchTracker.trackedPointerId)
+                if (!touchTracker.hasSequence || pointerIndex < 0) {
+                    return super.onInterceptTouchEvent(ev)
+                }
+                val direction = SwipeGesture.classify(
+                    ev.getX(pointerIndex) - touchDownX,
+                    ev.getY(pointerIndex) - touchDownY,
+                    interceptThresholdPx
+                )
                 if (direction == SwipeDirection.DOWN) {
                     swipeDownIntercepting = true
                     return true
                 }
+            }
+            
+            // D-495: a second pointer lands - the sequence dies, and an already-claimed swipe-down
+            // drops with it (it can no longer be this finger's own continuous motion).
+            MotionEvent.ACTION_POINTER_DOWN -> {
+                touchTracker.onExtraPointerDown()
+                swipeDownIntercepting = false
+                return true
             }
         }
         return super.onInterceptTouchEvent(ev)
@@ -276,8 +304,27 @@ class ExtraRowView @JvmOverloads constructor(
     override fun onTouchEvent(ev: MotionEvent): Boolean {
         if (swipeDownIntercepting) {
             when (ev.actionMasked) {
+                MotionEvent.ACTION_POINTER_DOWN -> {
+                    // D-495: a second finger lands - the claimed gesture was never this finger's own
+                    // continuous motion, so it is dropped outright instead of being classified from
+                    // mixed-finger coordinates at release.
+                    swipeDownIntercepting = false
+                    touchTracker.onExtraPointerDown()
+                    return true
+                }
+                
                 MotionEvent.ACTION_UP -> {
-                    val direction = SwipeGesture.classify(ev.x - touchDownX, ev.y - touchDownY, swipeDownThresholdPx)
+                    val pointerIndex = ev.findPointerIndex(touchTracker.trackedPointerId)
+                    val direction = if (touchTracker.ownsRelease(ev.getPointerId(ev.actionIndex)) && pointerIndex >= 0) {
+                        SwipeGesture.classify(
+                            ev.getX(pointerIndex) - touchDownX,
+                            ev.getY(pointerIndex) - touchDownY,
+                            swipeDownThresholdPx
+                        )
+                    } else {
+                        SwipeDirection.NONE
+                    }
+                    touchTracker.end()
                     swipeDownIntercepting = false
                     if (direction == SwipeDirection.DOWN) {
                         onSwipeDown?.onSwipeDown()
@@ -287,6 +334,7 @@ class ExtraRowView @JvmOverloads constructor(
                 
                 MotionEvent.ACTION_CANCEL -> {
                     swipeDownIntercepting = false
+                    touchTracker.end()
                     return true
                 }
             }
@@ -310,8 +358,29 @@ class ExtraRowView @JvmOverloads constructor(
         when (ev.actionMasked) {
             MotionEvent.ACTION_DOWN -> return true
             
+            // D-495 follow-up (review §514): the fallback path must kill the sequence on a second finger
+            // exactly like onInterceptTouchEvent's own (and SuggestionBarView's fallback does) - a
+            // gap-started stream otherwise survives the overlap and can still arm/fire a swipe-down from
+            // an overlapped stream, while the same gesture starting over a button is dropped.
+            MotionEvent.ACTION_POINTER_DOWN -> {
+                swipeDownIntercepting = false
+                touchTracker.onExtraPointerDown()
+                return true
+            }
+            
             MotionEvent.ACTION_MOVE -> {
-                if (SwipeGesture.classify(ev.x - touchDownX, ev.y - touchDownY, interceptThresholdPx) == SwipeDirection.DOWN) {
+                // D-495: the same live-sequence and tracked-pointer guard as onInterceptTouchEvent's own
+                // MOVE - the fallback path must not arm a swipe-down from a second finger's coordinates.
+                val pointerIndex = ev.findPointerIndex(touchTracker.trackedPointerId)
+                if (!touchTracker.hasSequence || pointerIndex < 0) {
+                    return true
+                }
+                if (SwipeGesture.classify(
+                        ev.getX(pointerIndex) - touchDownX,
+                        ev.getY(pointerIndex) - touchDownY,
+                        interceptThresholdPx
+                    ) == SwipeDirection.DOWN
+                ) {
                     swipeDownIntercepting = true
                 }
                 return true

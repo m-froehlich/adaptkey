@@ -561,6 +561,23 @@ class AdaptKeyService : InputMethodService() {
     // and also cleared at the top of handleKey as a safety net for the case no reclaim fires.
     private var shiftArmedByDelete = false
     
+    // D-491: set by handleShift()'s ordinary toggle branch on every manual Shift press, in BOTH directions
+    // (the arm and the deliberate disarm alike - a registered input must never be retroactively undone).
+    // The commit echo of the word typed just before the press schedules the debounced caret re-derivation
+    // (reclaimWordAtCaret's / rearmShiftForCaretMoveWhenReclaimSuppressed's rearmShiftForCaretMove, fired
+    // ~RECLAIM_DEBOUNCE_MS later while composing is still empty), and that derivation overwrote the fresh
+    // manual state with the position-derived answer - mid-sentence almost always lowercase. A Shift press
+    // landing inside that ~100 ms window was therefore silently wiped ("was ich angetippt habe, darf nicht
+    // durch Verschmieren wieder aufgelöst werden"); the confirming device log (§513): SHIFT processed 99 ms
+    // after the commit echo -> derivation fired 1 ms later -> next letter lowercase, while the same press
+    // 260 ms / 378 ms after its echo survived and capitalised. Consumed once by rearmShiftForCaretMove(),
+    // which then skips armShiftForNextWord() exactly once; the derivation for any LATER genuine caret move
+    // still runs (D-313 preserved), and Shift is a one-shot consumed by the next letter anyway, so the one
+    // skipped derivation can never strand a stale arm. Safety nets: cleared at the top of handleKey (next
+    // to shiftArmedByDelete's own) and in onStartInput, so an unconsumed flag at most suppresses one
+    // derivation and can never outlive the field.
+    private var shiftSetByManualPress = false
+    
     // D-07: characters removed during the current accelerating backspace hold; drives the switch from
     // character-wise to word-wise deletion once roughly three words have gone.
     private var backspaceHeldChars = 0
@@ -1563,7 +1580,7 @@ class AdaptKeyService : InputMethodService() {
      * changes nothing at all. Deliberately still routed through the chip despite the gesture already
      * being two-step (promotion chip + deep zone): the standing D-488 invariant is "no permanent entry
      * without an explicit chip tap", with no exception carved out for this path.
-     *
+     * 
      * @param word the just-promoted word to blacklist
      */
     private fun onForbidLearnedWord(word: String) {
@@ -1748,6 +1765,10 @@ class AdaptKeyService : InputMethodService() {
         clearUndo()
         revertSuppressedWord = null
         keyboardView?.shifted = false
+        // D-491: a fresh field must not inherit the previous field's manual-press guard - the new field's
+        // own initial position derivation (onStartInputView's armShiftForNextWord, then its debounced
+        // caret reclaim) must never be skipped because of a press made somewhere else.
+        shiftSetByManualPress = false
         // D-15: a new field starts without Caps Lock.
         keyboardView?.capsLock = false
         // D-143 / D-158: recognised fresh per field, mirroring surface below - pushed to the view before
@@ -2031,6 +2052,21 @@ class AdaptKeyService : InputMethodService() {
         // re-derives Shift normally (D-313's own purpose).
         if (shiftArmedByDelete) {
             shiftArmedByDelete = false
+            // D-491 follow-up (review D-496, §515): this branch can win the very derivation the manual-press
+            // guard was armed for - backspace undoes an uppercase, then a manual Shift press lands inside
+            // the same ~100 ms reclaim window (both flags set). The guard must be consumed here too:
+            // left set, it would survive past the one derivation it belonged to and silently skip the
+            // NEXT genuine, different-position re-derivation - the exact bug class D-491 fixed, one step
+            // later.
+            shiftSetByManualPress = false
+        } else if (shiftSetByManualPress) {
+            // D-491: a manual Shift press made after this re-derivation was scheduled - the press itself is
+            // the strictly newer evidence about this same position, so skip the derivation exactly once
+            // rather than overwrite the pressed state (arm or deliberate disarm alike). Consumed here, so a
+            // later genuine caret move re-derives normally; see the flag's own KDoc for the full mechanism
+            // and the confirming device log.
+            shiftSetByManualPress = false
+            diag("AdaptKeyJitter", "rearmShiftForCaretMove: skipped - manual Shift press guard (D-491)")
         } else if (!tokenShiftLiveArmed && !preserveShiftAfterOpener) {
             // D-373-followup (v2) / D-378-followup (v2): captureTokenContext() just above may have
             // already live-armed Shift for the D-373 hyphen-propagation case (tokenShiftLiveArmed), or
@@ -2982,6 +3018,22 @@ class AdaptKeyService : InputMethodService() {
         // CallbackBurstGuard tripped, or composing stayed non-empty), the flag must not persist past this
         // keystroke and suppress a later genuine tap-into-word Shift derivation.
         shiftArmedByDelete = false
+        // D-491: the same safety net for the manual-press guard - if no rearmShiftForCaretMove() ever fires,
+        // the flag must not persist past this keystroke and suppress a later genuine re-derivation. The
+        // Shift key itself is unaffected: its press is dispatched to handleShift() below, which re-sets the
+        // flag after this clear.
+        shiftSetByManualPress = false
+        // D-489: a keystroke on any key other than Shift itself breaks G-05's double-tap pair. The window
+        // in handleShift() is purely time-based (lastShiftTime is only ever written inside handleShift), so
+        // fast letter-Shift-letter-Shift typing met "two presses within doubleTapDelayMs" literally and fired
+        // the word-case toggle - with its case-locked verbatim commit - even though a real key was tapped
+        // between the two Shift presses. Zeroing the timestamp here makes that second Shift fall through the
+        // double-tap branch into the ordinary toggle (arm/disarm). Shift itself must not reset it - its press
+        // is dispatched to handleShift() below, which re-stamps lastShiftTime - so a genuine tap-tap-toggle
+        // pair (and G-05's own toggle-again continuation) stays intact, since no other key intervenes there.
+        if (key.code != KeyCode.SHIFT) {
+            lastShiftTime = 0L
+        }
         // D-217 (temporary diagnostic): the actual per-key processing cost the user asked to see alongside
         // AdaptKeyJitter's own per-call timestamps - everything below runs synchronously on the main thread
         // between the tap being resolved and this function returning, so `finally` (covering every branch's
@@ -3257,6 +3309,11 @@ class AdaptKeyService : InputMethodService() {
      * or G-06: holding the Shift key engages Caps Lock).
      */
     private fun handleLongPress(key: Key) {
+        // D-489: a long-press is its own intent (Caps Lock on Shift, a sign flip or symbol commit on a CHAR
+        // key, a layer switch on SYMBOL) and breaks G-05's double-tap pair exactly like any other keystroke
+        // on a non-Shift key - a Shift tap followed by a long-press followed by another quick tap must not
+        // toggle the word's case.
+        lastShiftTime = 0L
         when (key.code) {
             KeyCode.CHAR -> {
                 if (key.char == SymbolLayout.MINUS_SIGN) {
@@ -3737,6 +3794,9 @@ class AdaptKeyService : InputMethodService() {
      */
     private fun handleLongPressAlternative(key: Key, alternative: String) {
         val ic = currentInputConnection ?: return
+        // D-489: committing a popup alternative is a keystroke on another key - it breaks G-05's double-tap
+        // pair the same way an ordinary handleKey() press does.
+        lastShiftTime = 0L
         clearUndo()
         commitLongPressSymbol(ic, alternative, key.code)
     }
@@ -5727,15 +5787,20 @@ class AdaptKeyService : InputMethodService() {
         previousWord = typed
         if (wasSplit) {
             // D-13: undoing a wrong A-05 split trains the rejoined word at once, so it is never split again.
-            learnWordStrong(typed)
-            // D-331: the just-reverted word was explicitly chosen by the user over the autocorrection/split,
-            // not merely committed and then accidentally backspaced into - remove the record
-            // rememberForBackspaceUnlearn added inside learnWordStrong so a subsequent plain
-            // backspace (the user getting back to the word) does not fire maybeUnlearnOnBackspaceReturn
-            // (D-248) and immediately unlearn what the revert just learned. Without this, every revert's
-            // pending count is zeroed on the very next backspace, so a cost-2 word like "GLM" (compound
-            // threshold 4) never accumulates past 1 and is autocorrected to "vom" every single time.
-            recentLearnRecords.removeLastOrNull()
+            // D-494 follow-up (review D-496, §515): the pop below assumes the record learnWordStrong just added
+            // actually exists - condition it on the learn having happened. A gated bail-out (cross-language
+            // shield, bundled casing, blacklisted word) adds no record, and popping anyway would delete an
+            // unrelated older record and corrupt D-248's maybeUnlearnOnBackspaceReturn bookkeeping.
+            if (learnWordStrong(typed)) {
+                // D-331: the just-reverted word was explicitly chosen by the user over the autocorrection/split,
+                // not merely committed and then accidentally backspaced into - remove the record
+                // rememberForBackspaceUnlearn added inside learnWordStrong so a subsequent plain
+                // backspace (the user getting back to the word) does not fire maybeUnlearnOnBackspaceReturn
+                // (D-248) and immediately unlearn what the revert just learned. Without this, every revert's
+                // pending count is zeroed on the very next backspace, so a cost-2 word like "GLM" (compound
+                // threshold 4) never accumulates past 1 and is autocorrected to "vom" every single time.
+                recentLearnRecords.removeLastOrNull()
+            }
         } else {
             // D-403/D-359: the revert itself deliberately learns nothing at all any more - it previously
             // called learnWord(typed) here, which combined with the ordinary learnWord() call the very next
@@ -7157,6 +7222,30 @@ class AdaptKeyService : InputMethodService() {
                 dictionaryStore.learnContext(word, context, contextContext)
             }
             LearnOutcome.SKIPPED
+        } else if (bundledCasing == null && knownInOtherLanguage(word)) {
+            // D-494: a word that is a known word in some OTHER language's bundled dictionary - English above
+            // all, which is always consulted here - must never enter this language's learned store. The D-106
+            // stage-2 shield existed on the correction side only (the autocorrect veto, the D-477 fusion
+            // veto's knownElsewhere), so an English term typed twice in a German text walked every guard below
+            // and was promoted through the ordinary W-02 threshold straight into the German Learned Words
+            // list, flooding it. The gate reuses that same shield rather than a parallel check; placement
+            // BEFORE the learnedCasingOf branch means an entry learned through the old unguarded path is no
+            // longer reinforced either (forget it once via the editor and it stays forgotten), and placement
+            // before promoteOrCountPending() means no pending count silently accumulates for a shielded word
+            // either.
+            // D-494 follow-up (review D-496, §515): the shield is waived for a word the ACTIVE language's own
+            // bundled dictionary knows in some casing (bundledCasing != null) - the reported flood was
+            // words the active language does NOT have, and gating those would have silently disabled the
+            // documented D-439/D-264 deliberately-different-casing override learning for the whole
+            // German/English homograph class (hose, Gift, bald, Rat, Hut, Boot, ...): such a word typed in
+            // a non-bundled casing falls through to the ordinary learnedCasingOf/promotion branches below
+            // and keeps forming its own, case-sensitive learned entry.
+            // The shield's active-language blacklist waiver is already the right semantics here: a
+            // word blacklisted in THIS language falls through to the blacklist branch below and is skipped
+            // there. The outcome follows the D-327 split: the unigram is skipped, but the n-gram context is
+            // still recorded, so next-word prediction keeps improving without flooding the editor.
+            dictionaryStore.learnContext(word, context, contextContext)
+            LearnOutcome.SKIPPED
         } else if (dictionaryStore.learnedCasingOf(word) != null) {
             // Already has a learned entry - either a genuinely previously-learned word (not bundled at
             // all), or an already-established differently-cased override of a bundled one - reinforce it
@@ -7431,18 +7520,28 @@ class AdaptKeyService : InputMethodService() {
      * its KDoc, including D-439's own fix for the mid-sentence homograph gap.
      * 
      * @param word the word to promote
+     * @return whether the word was actually learned - false on every bail-out gate. D-494 follow-up
+     *         (review D-496, §515): the undo-relearn caller must condition its D-331 record pop on this, since
+     *         the pop assumes the record `rememberForBackspaceUnlearn` just added actually exists.
      */
-    private fun learnWordStrong(word: String?) {
+    private fun learnWordStrong(word: String?): Boolean {
         if (word.isNullOrEmpty() || word.length < MIN_LEARN_LENGTH || !word.all { it.isLetter() } ||
             dictionaryStore.isBlacklisted(word)
         ) {
-            return
+            return false
         }
         val bundledCasing = dictionaryStore.bundledCasingOf(word)
         if (bundledCasing == word ||
             (bundledCasing != null && tokenSentenceStart && differsOnlyInFirstChar(word, bundledCasing))
         ) {
-            return
+            return false
+        }
+        // D-494: the same cross-language gate learnWord() applies - this path learns outright, past the W-02
+        // threshold, so a foreign-dictionary word must be refused here all the more (its callers are the
+        // undo-relearn and fusion-fragment paths; the ordinary commit-time learnWord() has already recorded
+        // the n-gram context for this word).
+        if (knownInOtherLanguage(word)) {
+            return false
         }
         val context = previousWord
         val contextContext = previousPreviousWord
@@ -7454,6 +7553,7 @@ class AdaptKeyService : InputMethodService() {
         previousPreviousWord = previousWord
         previousWord = word
         rememberForBackspaceUnlearn(LearnRecord(word, context, contextContext, LearnOutcome.LEARNED))
+        return true
     }
     
     /**
@@ -7474,6 +7574,18 @@ class AdaptKeyService : InputMethodService() {
         tier1KnewWord: Boolean
     ) {
         val signal = AdaptiveLearning.learningSignal(committedWord, tier3Result, tier1KnewWord) ?: return
+        // D-494: the cross-language shield applies to this extra reinforcement too - an English term the
+        // mini-LLM suggested confidently must not bypass into the active language's learned store through
+        // the one path that never ran the ordinary learnWord() guards.
+        // D-494 follow-up (review D-496, §515): the ordinary commit path runs learnWord(finalWord) immediately
+        // before this call for the same word, so reuse that verdict instead of re-running the full scan
+        // (see the cache fields' own comment).
+        val knownElsewhere = if (knownElsewhereVerdictToken == signal) {
+            knownElsewhereVerdict
+        } else {
+            knownInOtherLanguage(signal)
+        }
+        if (knownElsewhere) return
         dictionaryStore.learn(signal, contextWord)
     }
     
@@ -7910,11 +8022,24 @@ class AdaptKeyService : InputMethodService() {
      * @param activeLang the language to treat as "active" for this check
      * @return true when any non-active language's dictionary already knows this exact word
      */
+    // D-494 follow-up (review D-496, §515): per-token cache of the cross-language verdict. finalizeAndCommit()
+    // runs learnWord() and reinforceFromTier3() back-to-back in the same synchronous commit for the SAME
+    // word - AdaptiveLearning.learningSignal returns the committed word itself - so the reinforcement's
+    // re-ask would repeat the full scan (blacklist query + isKnownWord per installed language, all
+    // main-thread SQLite) milliseconds after the identical one. Any call for a different token naturally
+    // invalidates the cache via the token check at the reader.
+    private var knownElsewhereVerdictToken: String? = null
+    private var knownElsewhereVerdict = false
+    
     private fun knownInOtherLanguage(token: String, activeLang: Language = activeLanguage): Boolean {
-        if (dictionaryStore.isBlacklisted(token)) {
-            return false
+        val known = if (dictionaryStore.isBlacklisted(token)) {
+            false
+        } else {
+            providers.any { (language, otherProvider) -> language != activeLang && otherProvider.isKnownWord(token) }
         }
-        return providers.any { (language, otherProvider) -> language != activeLang && otherProvider.isKnownWord(token) }
+        knownElsewhereVerdictToken = token
+        knownElsewhereVerdict = known
+        return known
     }
     
     private fun contextFor(typed: String): CapitalisationContext {
@@ -8118,6 +8243,12 @@ class AdaptKeyService : InputMethodService() {
         }
         val wasUpper = view.shifted
         view.shifted = !view.shifted
+        // D-491: guard the outcome of this press (arm or deliberate disarm) against the debounced caret
+        // re-derivation the previous commit's echo has already scheduled - without this, a Shift press
+        // landing inside the ~100 ms reclaim window was silently wiped moments later. See the flag's own
+        // KDoc; rearmShiftForCaretMove() consumes it and skips exactly one derivation.
+        shiftSetByManualPress = true
+        diag("AdaptKeyJitter", "handleShift: manual toggle -> shifted=${view.shifted}, caret re-derivation guarded")
         if (shiftGuardedArm && wasUpper && !view.shifted) {
             fieldMandateOverridden = true
         }
