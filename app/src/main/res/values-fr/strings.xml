@@ -114,6 +114,8 @@
     <string name="d401_cursor_control_summary">Un appui long sur la barre d\'espace déplace le curseur par glissement ; restez immobile pour passer à la sélection de texte.</string>
     <string name="d19_surface_swipe_title">Balayer pour changer de page du clavier</string>
     <string name="d19_surface_swipe_summary">Balayez vers la gauche ou la droite sur le clavier pour passer des lettres aux pages de chiffres/symboles. Si désactivé, seule la touche ?123 / ABC permet de changer.</string>
+    <string name="g03_swipe_down_dismiss_title">Balayer vers le bas pour fermer le clavier</string>
+    <string name="g03_swipe_down_dismiss_summary">Un balayage vers le bas sur le clavier le ferme. Désactivé, il ferme seulement la rangée supplémentaire et le clavier reste ouvert.</string>
     <string name="d401_hint_stage1">Faites glisser pour déplacer le curseur. Restez immobile pour sélectionner.</string>
     <string name="d401_hint_stage2">Faites glisser pour sélectionner le texte. Touchez pour terminer.</string>
     <string name="c01_shift_title">Largeur supplémentaire de Maj</string>

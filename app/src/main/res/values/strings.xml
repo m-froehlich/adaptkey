@@ -130,6 +130,8 @@
     <string name="d401_cursor_control_summary">Long-press the space bar to move the cursor by dragging; hold still to switch to text selection.</string>
     <string name="d19_surface_swipe_title">Swipe to switch keyboard pages</string>
     <string name="d19_surface_swipe_summary">Swipe left or right across the keyboard to switch between letters and the number/symbol pages. When off, only the ?123 / ABC key switches.</string>
+    <string name="g03_swipe_down_dismiss_title">Swipe down to close the keyboard</string>
+    <string name="g03_swipe_down_dismiss_summary">A downward swipe on the keyboard closes it. When off, it only closes the extra row and the keyboard stays open.</string>
     <string name="d401_hint_stage1">Drag to move the cursor. Hold still to select text.</string>
     <string name="d401_hint_stage2">Drag to select text. Tap to finish.</string>
     <string name="c01_shift_title">Extra shift width</string>

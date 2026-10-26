@@ -4052,7 +4052,10 @@ class AdaptKeyService : InputMethodService() {
             // downward swipe closes the row first; only a second one (row already closed) reaches here
             // again to actually dismiss. KeyGesture.resolve() is a pure function with no row-open state of
             // its own, so this re-routing happens here rather than as a distinct GestureAction.
+            // With swipe-down dismissal turned off in settings, a swipe that would hide the keyboard is not
+            // consumed and falls back to a tap; closing an open extra row still works.
             GestureAction.DISMISS_KEYBOARD -> {
+                if (!settings.swipeDownDismissEnabled && extraRow?.isOpen != true) return false
                 dismissKeyboardOrCloseExtraRow()
                 true
             }
@@ -4144,11 +4147,12 @@ class AdaptKeyService : InputMethodService() {
      * the keyboard body ([AdaptKeyboardView.OnSwipeListener] via [handleSwipe]), the suggestion bar
      * ([de.froehlichmedia.adaptkey.suggestion.SuggestionBarView.OnSwipeDownListener]) and the extra row
      * itself ([ExtraRowView.OnSwipeDownListener]) - previously only the keyboard body reacted at all.
+     * The keyboard itself is only hidden while [AdaptSettings.swipeDownDismissEnabled] is on.
      */
     private fun dismissKeyboardOrCloseExtraRow() {
         if (extraRow?.isOpen == true) {
             closeExtraRow()
-        } else {
+        } else if (settings.swipeDownDismissEnabled) {
             requestHideSelf(0)
         }
     }

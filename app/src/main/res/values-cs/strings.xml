@@ -114,6 +114,8 @@
     <string name="d401_cursor_control_summary">Dlouze stiskněte mezerník a táhnutím posouvejte kurzor; zůstaňte v klidu a přepnete na výběr textu.</string>
     <string name="d19_surface_swipe_title">Přepínání stránek klávesnice přejetím</string>
     <string name="d19_surface_swipe_summary">Přejetím doleva nebo doprava přes klávesnici přepnete mezi písmeny a stránkami s čísly/symboly. Když je vypnuto, přepíná pouze klávesa ?123 / ABC.</string>
+    <string name="g03_swipe_down_dismiss_title">Přejetím dolů zavřít klávesnici</string>
+    <string name="g03_swipe_down_dismiss_summary">Přejetí prstem dolů po klávesnici ji zavře. Když je vypnuto, zavře se jen doplňkový řádek a klávesnice zůstane otevřená.</string>
     <string name="d401_hint_stage1">Táhněte pro posun kurzoru. Zůstaňte v klidu pro výběr.</string>
     <string name="d401_hint_stage2">Táhněte pro výběr textu. Klepnutím dokončíte.</string>
     <string name="c01_shift_title">Extra šířka Shiftu</string>

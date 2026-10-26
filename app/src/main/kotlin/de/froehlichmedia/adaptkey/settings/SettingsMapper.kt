@@ -60,6 +60,7 @@ data class RawSettings(
     val learnedWordExpiryWindowKey: String? = null,
     val cursorControlEnabled: Boolean = true,
     val surfaceSwipeEnabled: Boolean = true,
+    val swipeDownDismissEnabled: Boolean = true,
     val bottomInsetModeKey: String? = null
 )
 
@@ -314,6 +315,7 @@ object SettingsMapper {
             learnedWordExpiryWindow = toLearnedWordExpiryWindow(raw),
             cursorControlEnabled = raw.cursorControlEnabled,
             surfaceSwipeEnabled = raw.surfaceSwipeEnabled,
+            swipeDownDismissEnabled = raw.swipeDownDismissEnabled,
             bottomInsetMode = BottomInsetMode.fromKey(raw.bottomInsetModeKey)
         )
     }

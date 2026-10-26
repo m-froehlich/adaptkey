@@ -114,6 +114,8 @@
     <string name="d401_cursor_control_summary">Apasă lung bara de spațiu ca să muți cursorul prin tragere; stai nemișcat ca să treci la selectarea textului.</string>
     <string name="d19_surface_swipe_title">Glisare pentru schimbarea paginii tastaturii</string>
     <string name="d19_surface_swipe_summary">Glisați la stânga sau la dreapta pe tastatură pentru a comuta între litere și paginile de cifre/simboluri. Când este dezactivat, comută doar tasta ?123 / ABC.</string>
+    <string name="g03_swipe_down_dismiss_title">Glisați în jos pentru a închide tastatura</string>
+    <string name="g03_swipe_down_dismiss_summary">O glisare în jos pe tastatură o închide. Când este dezactivat, închide doar rândul suplimentar, iar tastatura rămâne deschisă.</string>
     <string name="d401_hint_stage1">Trage ca să muți cursorul. Stai nemișcat ca să selectezi.</string>
     <string name="d401_hint_stage2">Trage ca să selectezi textul. Atinge ca să termini.</string>
     <string name="c01_shift_title">Lățime suplimentară pentru Shift</string>

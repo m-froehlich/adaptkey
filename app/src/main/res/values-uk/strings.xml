@@ -114,6 +114,8 @@
     <string name="d401_cursor_control_summary">Утримуйте пробіл, щоб переміщати курсор перетягуванням; завмріть, щоб перейти до виділення тексту.</string>
     <string name="d19_surface_swipe_title">Зміна сторінок клавіатури свайпом</string>
     <string name="d19_surface_swipe_summary">Проведіть ліворуч або праворуч по клавіатурі, щоб перемикатися між літерами та сторінками цифр/символів. Якщо вимкнено, перемикає лише клавіша ?123 / ABC.</string>
+    <string name="g03_swipe_down_dismiss_title">Свайп вниз закриває клавіатуру</string>
+    <string name="g03_swipe_down_dismiss_summary">Свайп вниз по клавіатурі закриває її. Якщо вимкнено, закривається лише додатковий ряд, а клавіатура залишається відкритою.</string>
     <string name="d401_hint_stage1">Перетягуйте, щоб рухати курсор. Завмріть, щоб виділяти.</string>
     <string name="d401_hint_stage2">Перетягуйте, щоб виділяти текст. Торкніться, щоб завершити.</string>
     <string name="c01_shift_title">Додаткова ширина Shift</string>
