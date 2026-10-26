@@ -420,6 +420,18 @@ non-trivial changes).
 
 - **D-500 - OPEN, requested 2026-10-26, not started: a new "Suppress Auto-Caps" switch, inserted directly above C-10.** Position fixed by the user: directly above `c10_comma_line_not_sentence_start` ("Nach Komma-Zeile kein Satzanfang", `settings_preferences.xml`, same category). Function still to be pinned down in its own round: presumably suppresses ALL automatic capitalisation (sentence-start auto-arming, §6 rules) while manual Shift/Caps Lock and D-406's delete-derived Shift stay untouched, making C-10 a sub-case of the broader off - needs a definition pass against the `armShiftForNextWord` guard family (D-313/D-335/D-373/D-378/D-491) before any code. Strings: title + summary in English and every `values-xx` per the standing rule (the user explicitly wants descriptions for all languages); `UiLocaleConsistencyTest` enforces.
 
+- **D-19/G-03 gesture toggles (external PR #11) - RESOLVED (§520, v1.2.79/v1.2.80, adopted 2026-10-26).**
+  BISCLab's PR imported (cherry-picked, authorship preserved, each commit bumped per convention):
+  "Wischen zum Seitenwechsel" (`d19_surface_swipe`) turns the horizontal full-field page swipe off
+  (?123/ABC remains the only switch), "Nach unten wischen schließt die Tastatur"
+  (`g03_swipe_down_dismiss`) turns the dismiss off (an open extra row still closes; the system back button
+  remains). Both default on, both in the gesture category after the D-401 row, backup export/import
+  included, English + all 31 UI locales translated (`UiLocaleConsistencyTest` green). Gating sits at the
+  `GestureAction` dispatch (tap fallback) + `dismissKeyboardOrCloseExtraRow()`; G-01/G-02 and the D-488
+  chip reject-drag are unaffected. Spec addenda in G-01 (D-19 passage) and G-03; mapper/Robolectric tests
+  added; the D-89 feature catalog deliberately lists neither switch (see §520). Off-states not yet
+  device-confirmed (on-state is behaviour-identical by construction).
+
 - **D-499 - RESOLVED (§516, v1.2.75).** `/` re-added leftmost into the comma key's popup
   (`/ - , : ; _`, comma still pre-selected by value); `URL_SLASH_ALTERNATIVES` deliberately stays
   aliasing the comma list (user decision 2026-10-26 - the D-144 no-duplicate rule is consciously dropped,

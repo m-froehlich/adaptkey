@@ -22869,3 +22869,66 @@ rest on, `CapitalisationEngine.isAmbiguousCasing`, gained its own cases in §478
 unchanged, `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 534 -> 535, `versionName`
 `"1.2.38"` -> `"1.2.39"`. **D-463 device-confirmed (2026-09-09)**; D-464 is a tooling/data-only change
 with no device-observable behaviour, nothing to confirm there.
+
+## §520 - External pull request #11 adopted: settings switches for the D-19 surface swipe and the G-03 dismiss (v1.2.79/v1.2.80).
+
+External contributor BISCLab opened PR #11 ("Add settings to disable the surface swipe and
+swipe-down-to-close gestures", two commits, Claude-assisted per the commit trailers), motivated by the same
+complaint family D-20 originally recorded - both gestures "trigger too easily while typing" - and it closes
+the arc that D-20 (larger thresholds) and D-495 (single-pointer invariant) could only mitigate, never fully
+eliminate: a genuine single-finger smear is still a real swipe, so an opt-out is the user-facing answer.
+The contributor's own testing addendum - the dismiss gesture, not only the horizontal one, was behind their
+keyboard closing while typing fast - is consistent with D-495's analysis, which killed only the
+two-finger-composition case. Both switches default **on**, so nothing changes for anyone who does not
+touch them.
+
+**What shipped (each switch its own commit, per the standing one-commit-per-change convention):**
+
+- **D-19 horizontal surface swipe** ("Wischen zum Seitenwechsel", key `d19_surface_swipe`, v1.2.79): when
+  off, the letters <-> numbers/symbols page cycle no longer fires; the `?123`/`ABC` key remains the only
+  way to switch, and a horizontal swipe on an ordinary key - the URL/email-mode space key's fall-through to
+  the page swipe included - falls back to a plain tap of that key.
+- **G-03 dismiss** ("Nach unten wischen schließt die Tastatur", key `g03_swipe_down_dismiss`, v1.2.80):
+  when off, a downward swipe still closes an open extra row (the layered row-first behaviour unchanged) but
+  never hides the keyboard; on an ordinary key it too falls back to a plain tap, and the system back button
+  closes the keyboard.
+
+**Implementation shape, confirmed on review before adopting.** Both switches gate at the single
+`GestureAction` dispatch in `AdaptKeyService.handleSwipe()` - `return false`, which the function's own
+contract documents as the tap fallback - plus one guard in `dismissKeyboardOrCloseExtraRow()`, which covers
+the two swipe-down sources that bypass `handleSwipe()` (the suggestion bar's and the extra row's own
+listeners). The space-bar language swipe (G-01), the backspace word delete (G-02) and the D-488 chip's
+reject-drag are distinct gesture actions untouched by either switch. Settings plumbing complete end to end:
+`AdaptSettings`/`RawSettings`/`SettingsMapper`, `SettingsStore` keys + defaults, and both keys added to
+`EXPORT_SETTINGS_KEY_ORDER` in the settings screen's own row order (after the D-401 cursor-control row), so
+backup export/import carries them - the import path is generic and needs no change of its own. Title and
+summary translated into English plus every shipped UI locale, exactly the set `UiLocaleConsistencyTest`
+enforces.
+
+**Review findings worth recording.** The PR branched from v1.2.71, seven versions behind, yet merges
+cleanly: D-489/D-491/D-494/D-496 all worked in `AdaptKeyService.kt` but never in the regions this PR
+touches - checked against the base..main diff, not assumed from the clean merge alone. Its oddest-looking
+hunk (`resetWordEndShift()` replaced by itself) is byte-exactly a line-ending normalisation, that one line
+LF -> CRLF - the same normalisation main itself already received in v1.2.74, which is precisely why the
+merge is clean rather than conflicted. No new tests came with the PR. Adopted onto main by cherry-picking
+both commits verbatim (authorship preserved), each amended with its own version bump per the standing
+convention; the PR is closed by the push itself rather than a GitHub merge, so its commits live on main
+under their own hashes.
+
+**Follow-ups landed in the same round:** three new settings tests pinning the toggles
+(`SettingsMapperTest` pass-through/default, `SettingsStoreRoboTest` stored-key round trip); the spec
+addenda (G-01's D-19 passage, G-03's own section); this entry; the Progress backlog entry. The D-89
+feature-overview catalog deliberately does not list the two switches - the catalog is a curated overview
+whose test requires no per-setting coverage, and adding them would mean 64 new translated strings for
+marginal discoverability; revisit only if a user asks where a switch lives. Two pieces of pre-existing docs
+debt surfaced while writing the spec addenda, deliberately not fixed in passing: the spec's D-19 pointer
+still reads "(G-06... §4 note below)" although G-06 is the Caps Lock gesture and no D-19 note exists below,
+and History.md itself has no §480-§519 sections even though Progress cites them - both older gaps, noted
+here so a future docs round can settle them knowingly.
+
+1739 unit tests green (1736 before this round's test commit; the PR itself added none); `:app:assembleDebug`
+plus the full `:app:testDebugUnitTest` were run on the imported branch before adopting, and the full
+`:app:testDebugUnitTest` re-run after the follow-up commits. `versionCode` 574 -> 575 -> 576, `versionName`
+`"1.2.78"` -> `"1.2.79"` -> `"1.2.80"`. Not yet device-confirmed - with both switches on, behaviour is
+bit-identical to the previous unconditional code by construction (the new guards only ever add an
+off-branch), so device confirmation matters only for the off states.

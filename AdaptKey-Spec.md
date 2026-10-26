@@ -349,7 +349,15 @@ result of this cycle; installing or removing a language pack now changes what th
 The gesture only fires on the letters surface's own space key; the
 symbol/calculator pages and the dedicated URL-mode/email-mode space keys have no language of their own, so a
 swipe there falls through to the ordinary page-switch gesture (G-06... see D-19-style full-field swipe,
-§4 note below) instead. In addition to this manual switch, the active language switches automatically after
+§4 note below) instead.
+
+**D-19 addendum (v1.2.79, §520): the full-field page swipe itself is switchable.** A separate
+gesture-settings switch ("Wischen zum Seitenwechsel", key `d19_surface_swipe`, default **on**) turns the
+horizontal full-field page swipe between the letters and the numeric/symbol pages off; the `?123`/`ABC` key
+is then the only way to switch surfaces, and a horizontal swipe on an ordinary key - the URL/email-mode
+space key's fall-through to the page swipe included - falls back to a plain tap of that key. The space-bar
+language swipe above and the backspace word-delete swipe (G-02) are distinct gesture actions and are
+unaffected by the switch. In addition to this manual switch, the active language switches automatically after
 a configurable number of consecutive words committed in a different language than the one currently active
 (C-23, D-398: a slider from 0 to 8, default 5 - a stored `0` disables the automatic switch entirely, leaving
 only the manual swipe); every switch - manual or automatic - cross-fades the space-bar's language label
@@ -379,6 +387,15 @@ swipe-up extra row (§14) alike. When the extra row is open, a downward swipe cl
 second downward swipe (with the row already closed) dismisses the keyboard. D-488: a downward drag that
 *starts on the D-488 blacklist confirmation chip* is that chip's reject gesture, never a G-03 dismiss -
 the collision contract is a stated rule, not an implementation accident.
+
+**Settings toggle (v1.2.80, §520).** The dismissal half of the gesture is governed by a switch in the
+gesture settings category ("Nach unten wischen schließt die Tastatur", key `g03_swipe_down_dismiss`,
+default **on**). When off, a downward swipe still closes an open extra row (the layered row-first behaviour
+above is unchanged) but never hides the keyboard: on an ordinary key the swipe falls back to a plain tap of
+that key instead, and the keyboard is closed via the system back button. The D-488 chip's reject-drag
+contract is unaffected either way, and the two downward-swipe sources that bypass the keyboard body (the
+suggestion bar and the extra row's own listeners) are gated by the same switch, since all three share one
+action.
 
 ### G-04 - Remove/Un-learn a Suggestion (Drag-to-Trash)
 A suggestion in the suggestion bar can be dragged upward into a trash area that appears during the drag; a
