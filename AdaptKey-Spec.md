@@ -120,7 +120,9 @@ The space bar is narrower than the Gboard default; the comma and full-stop keys 
 Two additional spacing sliders control the gap below the number row and the gap above the space-bar row
 (default 7 dp each, range 0-25 dp), specifically to reduce mis-taps in that zone. The full-stop key's
 long-press popup and the comma key's long-press popup are separate lists: full stop offers `! . ?`, comma
-offers `- , : ; / _`. All proportions and spacings are user-configurable (C-01).
+offers `/ - , : ; _` (D-499: the slash was re-added leftmost, deliberately re-introducing the redundancy
+§39 removed when the slash moved to the `7` key's hint - the comma stays pre-selected by value, so a
+straight-up release still types `,`). All proportions and spacings are user-configurable (C-01).
 
 ### L-03 - Symbol/Numeric-Layer Key
 A single key in the bottom row switches to the numeric/symbol layer (`?123`) - a tap opens it, a further

@@ -315,11 +315,22 @@ class KeyboardLayoutTest {
     }
     
     @Test
-    fun `D-144 the slash key's popup is exactly comma's original list, no redundant slash entry`() {
+    fun `D-499 the slash key's popup still aliases the comma list, slash cell included by explicit decision`() {
         val bottomRow = KeyboardLayout.rows(urlMode = true).last()
         
+        // D-499: URL_SLASH_ALTERNATIVES deliberately keeps aliasing COMMA_ALTERNATIVES (user decision,
+        // 2026-10-26), so it now carries the `/` cell D-144 originally refused. The duplicate is harmless
+        // because D-44 pre-selects the key's own character by value - a straight-up release still types /.
         assertEquals(KeyboardLayout.COMMA_ALTERNATIVES, bottomRow.byChar('/').alternatives)
-        assertFalse(bottomRow.byChar('/').alternatives.contains("/"))
+        assertTrue(bottomRow.byChar('/').alternatives.contains("/"))
+    }
+    
+    @Test
+    fun `D-499 the comma key's popup carries the slash leftmost, comma pre-selected by value`() {
+        val bottomRow = KeyboardLayout.rows().last()
+        
+        assertEquals(listOf("/", "-", ",", ":", ";", "_"), bottomRow.byChar(',').alternatives)
+        assertTrue(bottomRow.byChar(',').alternatives.contains(","))
     }
     
     @Test
@@ -373,11 +384,17 @@ class KeyboardLayoutTest {
     }
     
     @Test
-    fun `D-158 the at key's popup is exactly comma's original list, no redundant at entry`() {
+    fun `D-499 the at key's popup is its own address-shaped list, decoupled from the comma popup`() {
         val bottomRow = KeyboardLayout.rows(emailMode = true).last()
         
-        assertEquals(KeyboardLayout.COMMA_ALTERNATIVES, bottomRow.byChar('@').alternatives)
+        assertEquals(KeyboardLayout.EMAIL_AT_ALTERNATIVES, bottomRow.byChar('@').alternatives)
+        assertEquals(listOf("-", "_", "+"), bottomRow.byChar('@').alternatives)
+        // D-499: the key's own @ never appears (D-44 falls back to pre-selecting "-"), and neither do the
+        // comma-popup characters that are outright nonsense inside an email address.
         assertFalse(bottomRow.byChar('@').alternatives.contains("@"))
+        assertFalse(bottomRow.byChar('@').alternatives.contains(","))
+        assertFalse(bottomRow.byChar('@').alternatives.contains(":"))
+        assertFalse(bottomRow.byChar('@').alternatives.contains(";"))
     }
     
     @Test

@@ -51,18 +51,27 @@ object KeyboardLayout {
     val PERIOD_ALTERNATIVES = listOf("!", ".", "?")
     
     /**
-     * D-22 / D-44: the comma key's long-press set - the remaining clause punctuation, laid out left to
-     * right in the D-44 horizontal popup (`- , : ;  _`). The popup pre-selects the key's own character
-     * (the comma), so a straight-up release still types `,`. §39: `/` dropped - now reachable directly on
-     * the `7` key's long-press hint (D-96), redundant here.
+     * D-22 / D-44: the comma key's long-press set - the clause punctuation plus `/`, laid out left to
+     * right in the D-44 horizontal popup (`/ - , : ;  _`). The popup pre-selects the key's own character
+     * (the comma) by value, so a straight-up release still types `,`.
+     * 
+     * D-499: `/` is back, leftmost - re-introducing the redundancy §39 deliberately removed when the
+     * slash moved to the `7` key's hint (D-96), per the user's explicit request. Deliberate shared state:
+     * [URL_SLASH_ALTERNATIVES] keeps aliasing this list (see its own KDoc for why the `/` cell it gains
+     * is harmless there); [EMAIL_AT_ALTERNATIVES] was decoupled in the same round.
      */
-    val COMMA_ALTERNATIVES = listOf("-", ",", ":", ";", "_")
+    val COMMA_ALTERNATIVES = listOf("/", "-", ",", ":", ";", "_")
     
     /**
      * D-144 (was D-143's own first pass, corrected per direct feedback): the URL-mode `/` key's long-press
-     * set - exactly [COMMA_ALTERNATIVES] unchanged, with **no** `/` entry - a plain tap already commits `/`,
-     * so repeating it in its own popup would be a redundant entry offering nothing new. The comma still
-     * swaps places with `/` (primary ↔ alternative), just without also duplicating the key's own character.
+     * set - deliberately still exactly [COMMA_ALTERNATIVES], unchanged by D-499's `/` re-addition.
+     * 
+     * D-144's original "no `/` entry" rule is consciously dropped (user decision, 2026-10-26): the URL
+     * popup keeps aliasing the comma popup, so it now shows `/` as its first cell. The redundancy that
+     * rule guarded against is harmless here because of D-44's own value-based pre-selection - the key's
+     * own character `/` is in the list, so a straight-up release still types `/` (the pre-selected cell
+     * IS `/`), and the duplicate cell merely shifts the real alternatives one position right. The comma
+     * still swaps places with the key's own primary the same way it always did.
      */
     val URL_SLASH_ALTERNATIVES = COMMA_ALTERNATIVES
     
@@ -84,11 +93,16 @@ object KeyboardLayout {
     private const val URL_WWW_KEY_WEIGHT = 1.8f
     
     /**
-     * D-158: the email-mode `@` key's long-press set - exactly [COMMA_ALTERNATIVES] unchanged (comma
-     * itself is already in there), mirroring how [URL_SLASH_ALTERNATIVES] demotes comma the same way for
-     * `/` without duplicating the key's own new primary character.
+     * D-158: the email-mode `@` key's long-press set - decoupled from [COMMA_ALTERNATIVES] by D-499.
+     * 
+     * User rationale (2026-10-26): `,` `:` `;` are not merely uncommon in an email address, they are
+     * outright nonsense there, so sharing the comma popup's punctuation set was wrong on its own merits.
+     * What remains is the set that genuinely occurs in real addresses: `-` and `_` in the local part, plus
+     * `+` for plus-addressing (`user+tag@provider.com`). As with the D-144 aliasing above, the key's own
+     * `@` never appears in the list, so D-44's fallback pre-selects index 0 (`-`) - a straight long-press
+     * release commits `-`, exactly as before this round.
      */
-    val EMAIL_AT_ALTERNATIVES = COMMA_ALTERNATIVES
+    val EMAIL_AT_ALTERNATIVES = listOf("-", "_", "+")
     
     // D-158: the new dash key is funded from the space key's own width, unlike D-143's protocol/www keys
     // (which grew the row overall) - the row's total weight matches the ordinary bottom row's exactly
@@ -202,7 +216,7 @@ object KeyboardLayout {
                     // swipe-up switches to ?123.
                     add(Key(label = SYMBOL_KEY_LABEL, code = KeyCode.SYMBOL, hint = SYMBOL_KEY_HINT, weight = proportions.symbolWeight))
                     // L-02: comma & full stop widened, space narrowed.
-                    // D-22: the comma key carries the clause punctuation (; : - _ /) as its long-press popup.
+                    // D-22/D-44/D-499: the comma key carries `/ - , : ; _` as its long-press popup.
                     add(charKey(',', alternatives = COMMA_ALTERNATIVES, weight = proportions.commaWeight))
                     add(Key(label = "space", code = KeyCode.SPACE, char = ' ', weight = proportions.spaceWeight))
                     // D-02 / D-22: the full-stop key carries the sentence terminators (. ! ?).
@@ -346,12 +360,12 @@ object KeyboardLayout {
      * D-105: builds a number-row key with its existing shifted symbol (index 0, pre-selected - unchanged
      * from before) and its own superscript form (index 1) as a real D-01 two-cell popup, instead of the
      * shifted symbol applying immediately on long-press.
-     *
+     * 
      * D-382: `2` additionally gets an apostrophe and its own subscript `₂` (a second, unrelated ask bundled
      * onto the same key by the user) - every other digit is unaffected, still exactly the shifted-symbol +
      * superscript pair above. D-417: the apostrophe was moved ahead of the superscript in the popup order
      * (`"` / `'` / `²` / `₂`), per the user's own preference.
-     *
+     * 
      * D-282: `0` sits at the row's right edge, the same problem §34 originally hand-fixed for `p` above -
      * now handled the same dynamic way, by [AdaptKeyboardView.openPopup] itself, not by reversing the list
      * here.
