@@ -112,6 +112,8 @@
     <string name="d361_backspace_sticky_summary">Un nuevo toque rápido justo después de Retroceso sigue siendo Retroceso, aunque caiga en una tecla vecina (p. ej. Intro). Usa el retardo de doble toque de arriba como ventana.</string>
     <string name="d401_cursor_control_title">Gesto de control del cursor</string>
     <string name="d401_cursor_control_summary">Mantén pulsada la barra espaciadora para mover el cursor arrastrando; quédate quieto para pasar a la selección de texto.</string>
+    <string name="d19_surface_swipe_title">Deslizar para cambiar de página del teclado</string>
+    <string name="d19_surface_swipe_summary">Desliza a la izquierda o a la derecha sobre el teclado para cambiar entre letras y las páginas de números/símbolos. Si está desactivado, solo cambia la tecla ?123 / ABC.</string>
     <string name="d401_hint_stage1">Arrastra para mover el cursor. Quédate quieto para seleccionar.</string>
     <string name="d401_hint_stage2">Arrastra para seleccionar texto. Toca para terminar.</string>
     <string name="c01_shift_title">Ancho extra de Mayús</string>

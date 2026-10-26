@@ -112,6 +112,8 @@
     <string name="d361_backspace_sticky_summary">Un nuovo tocco rapido subito dopo Backspace resta Backspace, anche se cade su un tasto vicino (ad es. Invio). Usa il ritardo di doppio tocco qui sopra come finestra.</string>
     <string name="d401_cursor_control_title">Gesto di controllo del cursore</string>
     <string name="d401_cursor_control_summary">Tieni premuta la barra spaziatrice per spostare il cursore trascinando; resta fermo per passare alla selezione del testo.</string>
+    <string name="d19_surface_swipe_title">Scorri per cambiare pagina della tastiera</string>
+    <string name="d19_surface_swipe_summary">Scorri a sinistra o a destra sulla tastiera per passare tra lettere e pagine di numeri/simboli. Se disattivato, cambia solo il tasto ?123 / ABC.</string>
     <string name="d401_hint_stage1">Trascina per spostare il cursore. Resta fermo per selezionare.</string>
     <string name="d401_hint_stage2">Trascina per selezionare il testo. Tocca per finire.</string>
     <string name="c01_shift_title">Larghezza extra di Maiusc</string>

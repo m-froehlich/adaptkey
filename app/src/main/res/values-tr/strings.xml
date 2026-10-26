@@ -112,6 +112,8 @@
     <string name="d361_backspace_sticky_summary">Geri Sil\'den hemen sonraki hızlı yeni bir dokunuş, komşu bir tuşa (ör. Enter) denk gelse bile Geri Sil olarak kalır. Pencere olarak yukarıdaki çift dokunma gecikmesini kullanır.</string>
     <string name="d401_cursor_control_title">İmleç kontrol hareketi</string>
     <string name="d401_cursor_control_summary">İmleci sürükleyerek taşımak için boşluk çubuğuna uzun bas; metin seçimine geçmek için sabit dur.</string>
+    <string name="d19_surface_swipe_title">Klavye sayfasını kaydırarak değiştir</string>
+    <string name="d19_surface_swipe_summary">Harfler ile rakam/sembol sayfaları arasında geçiş yapmak için klavyede sola veya sağa kaydırın. Kapalıyken yalnızca ?123 / ABC tuşu geçiş yapar.</string>
     <string name="d401_hint_stage1">İmleci taşımak için sürükle. Seçmek için sabit dur.</string>
     <string name="d401_hint_stage2">Metni seçmek için sürükle. Bitirmek için dokun.</string>
     <string name="c01_shift_title">Ek Shift genişliği</string>

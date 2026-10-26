@@ -112,6 +112,8 @@
     <string name="d361_backspace_sticky_summary">Een snelle nieuwe tik direct na Backspace blijft Backspace, ook als hij op een naburige toets belandt (bijv. Enter). Gebruikt de dubbeltikvertraging hierboven als tijdvenster.</string>
     <string name="d401_cursor_control_title">Gebaar voor cursorbesturing</string>
     <string name="d401_cursor_control_summary">Druk lang op de spatiebalk om de cursor door te slepen te verplaatsen; houd stil om over te schakelen naar tekstselectie.</string>
+    <string name="d19_surface_swipe_title">Vegen om van toetsenbordpagina te wisselen</string>
+    <string name="d19_surface_swipe_summary">Veeg naar links of rechts over het toetsenbord om te wisselen tussen letters en de cijfer-/symboolpagina\'s. Indien uit, wisselt alleen de ?123 / ABC-toets.</string>
     <string name="d401_hint_stage1">Sleep om de cursor te verplaatsen. Houd stil om te selecteren.</string>
     <string name="d401_hint_stage2">Sleep om tekst te selecteren. Tik om te voltooien.</string>
     <string name="c01_shift_title">Extra breedte van Shift</string>

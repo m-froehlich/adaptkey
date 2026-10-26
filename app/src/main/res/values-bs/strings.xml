@@ -112,6 +112,8 @@
     <string name="d361_backspace_sticky_summary">Brzi novi dodir odmah nakon Backspacea ostaje Backspace, čak i ako padne na susjednu tipku (npr. Enter). Kao vremenski prozor koristi gornje kašnjenje dvostrukog dodira.</string>
     <string name="d401_cursor_control_title">Gesta upravljanja pokazivačem</string>
     <string name="d401_cursor_control_summary">Dugo pritisnite razmaknicu da biste pomjerali pokazivač povlačenjem; ostanite mirni da biste prešli na odabir teksta.</string>
+    <string name="d19_surface_swipe_title">Prevlačenje za promjenu stranica tastature</string>
+    <string name="d19_surface_swipe_summary">Prevucite lijevo ili desno preko tastature za prelazak između slova i stranica s brojevima/simbolima. Kada je isključeno, prebacuje samo tipka ?123 / ABC.</string>
     <string name="d401_hint_stage1">Povucite za pomjeranje pokazivača. Ostanite mirni za odabir.</string>
     <string name="d401_hint_stage2">Povucite za odabir teksta. Dodirnite za završetak.</string>
     <string name="c01_shift_title">Dodatna širina tipke Shift</string>

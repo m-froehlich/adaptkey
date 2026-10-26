@@ -59,6 +59,7 @@ data class RawSettings(
     val sustainedLanguageSwitchThreshold: Int = AdaptSettings.DEFAULT_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD,
     val learnedWordExpiryWindowKey: String? = null,
     val cursorControlEnabled: Boolean = true,
+    val surfaceSwipeEnabled: Boolean = true,
     val bottomInsetModeKey: String? = null
 )
 
@@ -312,6 +313,7 @@ object SettingsMapper {
             ),
             learnedWordExpiryWindow = toLearnedWordExpiryWindow(raw),
             cursorControlEnabled = raw.cursorControlEnabled,
+            surfaceSwipeEnabled = raw.surfaceSwipeEnabled,
             bottomInsetMode = BottomInsetMode.fromKey(raw.bottomInsetModeKey)
         )
     }

@@ -112,6 +112,8 @@
     <string name="d361_backspace_sticky_summary">Брзи нови додир одмах након Backspace-а остаје Backspace, чак и ако падне на суседни тастер (нпр. Enter). Као временски прозор користи горње кашњење двоструког додира.</string>
     <string name="d401_cursor_control_title">Гест управљања показивачем</string>
     <string name="d401_cursor_control_summary">Дуго притисните размакницу да бисте померали показивач повлачењем; останите мирни да бисте прешли на одабир текста.</string>
+    <string name="d19_surface_swipe_title">Превлачење за промену страница тастатуре</string>
+    <string name="d19_surface_swipe_summary">Превуците лево или десно преко тастатуре за прелазак између слова и страница са бројевима/симболима. Када је искључено, пребацује само тастер ?123 / ABC.</string>
     <string name="d401_hint_stage1">Повуците за померање показивача. Останите мирни за одабир.</string>
     <string name="d401_hint_stage2">Повуците за одабир текста. Додирните за завршетак.</string>
     <string name="c01_shift_title">Додатна ширина тастера Shift</string>
