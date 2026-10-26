@@ -109,11 +109,16 @@ its own location, not by its filenames:
   design your own from what would actually help someone typing your language day to day. Without this file,
   your language falls back to `KeyboardLayout.DEFAULT_LETTER_HINTS` (German's own set) - functional, but not
   tailored to your language, so it is worth providing even though it is the one truly optional file here.
-  Note what this file covers and what it does not: one *single* secondary symbol per key (L-05). A key
-  offering *several* alternatives in one popup (e.g. `p`'s Greek-letter popup, a digit's shifted-symbol-plus-
-  superscript pair) is still built in compiled Kotlin (`KeyboardLayout.kt`/`GreekLayout.kt`), not yet part of
-  this data format - not something you need to worry about for an ordinary new language, only relevant if you
-  are adding this kind of multi-alternative popup yourself. Whichever key ends up with one, you do **not**
+  D-497: a value may also carry comma-separated **variants** - `e=ę,ė` builds that key a real popup with
+  both variants (first variant = corner hint = the popup's pre-selected cell; a plain tap still types the
+  base letter itself, which is deliberately not among the variants). A single-variant value keeps the
+  plain direct-commit long-press behaviour, so nothing about an existing file changes. The comma is
+  therefore a reserved character inside a value.
+  Note what this file still does not cover: the handful of hand-tuned popups compiled into Kotlin
+  (`p`'s Greek-letter popup, `a`'s æ/å/à, `o`'s Ø, `e`'s é/è/ê/ë for the German/English defaults, a digit's
+  shifted-symbol-plus-superscript pair, the `7` key's D-498 backslash) stay built in `KeyboardLayout.kt`/
+  `GreekLayout.kt` - your pack data overlays the letters those defaults would claim, and a variant list on
+  `e` (say) simply wins over the compiled-in one by not matching its exact default hint. Whichever key ends up with one, you do **not**
   need to hand-tune its popup's left/right direction: D-282 made that automatic, based on the real popup
   width and the key's actual screen position, not on which key it happens to be - it works the same whether
   the alternatives came from this file or from hand-written Kotlin.
@@ -540,14 +545,16 @@ rather than silently treating it as equivalent to a language that does have its 
    that base letter (`ğ`/`ş` belong to `g`/`s`, `ł` to `l`, exactly the same relationship `ä`/`ö`/`ü` already
    have to `a`/`o`/`u` in German's own set). An LLM can draft this base-letter -> variants list directly and
    reliably, since which base letter a diacritic belongs to is never in question - the same list answers both
-   files at once: `diacritics.tsv` wants the *complete* variant set per base letter (D-436's own
-   `DataDiacriticFolding` handles several variants on one base letter natively, e.g. French's `e`), while
-   `hints.tsv` wants only *one* representative symbol per key (a single AltGr popup hint, §3's own format
-   limit) - pick the single most-used variant for that file, keep the full list for this one. Symbol/
-   punctuation choices for the rest of `hints.tsv` (currency signs, quotation marks, math symbols) are more of
-   a genuine UX judgement call about what that language's users actually reach for day to day - still worth an
-   LLM first draft, but flag it explicitly for a human/native check rather than trusting it the way the
-   diacritic mapping can be trusted.
+    files at once: `diacritics.tsv` wants the *complete* variant set per base letter (D-436's own
+    `DataDiacriticFolding` handles several variants on one base letter natively, e.g. French's `e`), while
+    `hints.tsv` carries the variants your language's users actually need on the keyboard: since D-497 a
+    value may be a comma-separated variant list (`e=ę,ė` - a real popup, first variant pre-selected), so a
+    diacritic-rich language is no longer forced to pick a single representative symbol per key. Keep the
+    list short - two variants is the natural shape (the third and rarer ones belong in `diacritics.tsv`
+    alone, which drives correction matching, not keying) - and keep the rest of `hints.tsv`'s symbol/
+    punctuation choices (currency signs, quotation marks, math symbols) flagged for a human/native check,
+    since those are a genuine UX judgement call about what that language's users actually reach for day to
+    day, unlike the diacritic mapping, which can be trusted.
 
 6. **Abbreviation list (`abbreviations.tsv`, D-434, §3).** Have the model draft a first list of the
    sentence-final-period abbreviations actually used in the target language (the German list itself,

@@ -33,4 +33,13 @@ class LanguageLetterHintsDataTest {
         val parsed = LetterHints.parse(read("../dictionaries/de/hints.tsv", "dictionaries/de/hints.tsv"))
         assertEquals(KeyboardLayout.DEFAULT_LETTER_HINTS, parsed)
     }
+    
+    @Test
+    fun `D-497 hints_lt carries the reported e and u variants as multi-variant values`() {
+        val parsed = LetterHints.parse(read("../dictionaries/lt/hints.tsv", "dictionaries/lt/hints.tsv"))
+        // the community request: e pops up e/ę/ė and u pops up u/ų/ū - the base letter is the plain tap,
+        // so the data carries both variants; everything else stays single-variant
+        assertEquals("ę,ė", parsed['e'])
+        assertEquals("ų,ū", parsed['u'])
+    }
 }

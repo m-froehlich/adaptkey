@@ -2628,7 +2628,14 @@ object LanguagePackCatalog {
             //
             // `dictionaries/lt/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
-            version = 2
+            //
+            // D-497 (§518, v1.2.77): community report - `ė` was unreachable and `ū` missing (this
+            // comment's original "e=ę/ė, u=ų/ū" overstated the actual v2 data, which carried only
+            // `e=ę`/`u=ų`; the one-hint-per-letter ceiling was structural, not a data slip). Fixed by the
+            // D-497 multi-variant hints mechanism: `e=ę,ė`, `u=ų,ū` - first variant stays the corner
+            // hint/pre-selected popup cell, the second variant is the popup's new cell.
+            // `dictionaries/lt/version.txt` 2 -> 3, pack rebuilt, this Entry 2 -> 3.
+            version = 3
         ),
         Entry(
             Language.MALAY,

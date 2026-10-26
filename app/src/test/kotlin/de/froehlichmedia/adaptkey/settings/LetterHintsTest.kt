@@ -40,6 +40,25 @@ class LetterHintsTest {
     }
     
     @Test
+    fun `D-497 a comma-separated variant list validates per variant`() {
+        assertTrue(LetterHints.isValidEntry('e', "ę,ė"))
+        assertTrue(LetterHints.isValidEntry('u', "ų,ū"))
+        // every variant individually subject to the same rules the old whole-value symbol had
+        assertTrue(LetterHints.isValidEntry('e', "ę")) // single variant = pre-D-497 behaviour
+        assertFalse(LetterHints.isValidEntry('e', "ę,")) // empty trailing variant
+        assertFalse(LetterHints.isValidEntry('e', ",ė")) // empty leading variant
+        assertFalse(LetterHints.isValidEntry('e', "ę,,ė")) // empty middle variant
+        assertFalse(LetterHints.isValidEntry('e', "ę,abc")) // second variant too long
+        assertFalse(LetterHints.isValidEntry('e', "ę,a;b")) // second variant carries the entry separator
+        assertFalse(LetterHints.isValidEntry('e', "ę,a=b")) // second variant carries the key/value separator
+    }
+    
+    @Test
+    fun `D-497 parse keeps a multi-variant value verbatim - the popup split happens at key build time`() {
+        assertEquals(mapOf('e' to "ę,ė", 'u' to "ų,ū"), LetterHints.parse("e=ę,ė;u=ų,ū"))
+    }
+    
+    @Test
     fun `parse discards malformed segments but keeps the valid ones`() {
         val parsed = LetterHints.parse("q=@;garbage;=x;e=€;h")
         assertEquals(mapOf('q' to "@", 'e' to "€"), parsed)

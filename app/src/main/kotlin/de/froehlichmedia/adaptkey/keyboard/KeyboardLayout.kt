@@ -143,6 +143,14 @@ object KeyboardLayout {
     private val N_ALTERNATIVES = listOf(N_HINT, "ñ")
     
     /**
+     * D-497: separates one letter's long-press variants inside a pack hints value (`e=ę,ė` builds the
+     * `e` key a two-cell popup). Kept in sync with LetterHints.VARIANT_SEPARATOR, the data layer's
+     * normative definition - a local constant because the dependency must not run keyboard -> settings
+     * (it runs the other way: the settings layer already builds on this package).
+     */
+    const val HINT_VARIANT_SEPARATOR = ','
+    
+    /**
      * L-05 / C-08: default AltGr-style secondary symbols on selected letters. Exposed so the settings
      * layer can offer it as the reset baseline for the configurable per-key map.
      */
@@ -315,6 +323,13 @@ object KeyboardLayout {
      * carries its own default hint, so a user who has reassigned the key via the C-08 editor keeps their own
      * single-symbol long-press instead of an unrelated popup.
      * 
+     * D-497: any OTHER value carrying [HINT_VARIANT_SEPARATOR]-separated variants (`e=ę,ė` from a
+     * language pack's own `hints.tsv`) becomes a multi-cell popup the same way the five hardcoded cases
+     * above work: first variant = corner hint = the popup's first cell (which D-44's fallback then
+     * pre-selects, since the key's own base letter is deliberately not among the variants - a plain tap
+     * types the base letter, the popup exists for the variants). A single-variant value keeps the
+     * pre-D-497 direct-commit hint behaviour unchanged.
+     * 
      * D-282: `p` sits at the row's right edge, where a wide popup like [PI_ALTERNATIVES] can run out of
      * room to grow rightward and gets clamped leftward instead by [AdaptKeyboardView] - handled dynamically
      * there now ([HorizontalLongPressPopup.wouldClampRight]), not by reversing the list here as §34/D-99
@@ -335,9 +350,12 @@ object KeyboardLayout {
             c == 'a' && hint == A_HINT -> A_ALTERNATIVES
             c == 'e' && hint == E_HINT -> E_ALTERNATIVES
             c == 'n' && hint == N_HINT -> N_ALTERNATIVES
-            else -> emptyList()
+            else -> hint
+                ?.split(HINT_VARIANT_SEPARATOR)
+                ?.takeIf { it.size >= 2 }
+                ?: emptyList()
         }
-        return charKey(c, hint, alternatives = alternatives, weight = weight)
+        return charKey(c, hint?.substringBefore(HINT_VARIANT_SEPARATOR), alternatives = alternatives, weight = weight)
     }
     
     /**

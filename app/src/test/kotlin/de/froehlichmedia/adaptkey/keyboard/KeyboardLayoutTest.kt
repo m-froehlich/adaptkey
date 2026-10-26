@@ -82,6 +82,27 @@ class KeyboardLayoutTest {
     }
     
     @Test
+    fun `D-497 a pack hints value with comma-separated variants builds a popup, hint first`() {
+        val packHints = KeyboardLayout.DEFAULT_LETTER_HINTS + mapOf('e' to "ę,ė", 'u' to "ų,ū")
+        val rows = KeyboardLayout.rows(letterHints = packHints)
+        
+        // the e key (top row): first variant = corner hint = first popup cell; the base letter itself is
+        // deliberately NOT among the variants - a plain tap types it, the popup exists for the variants
+        val eKey = rows[1].byChar('e')
+        assertEquals("ę", eKey.hint)
+        assertEquals(listOf("ę", "ė"), eKey.alternatives)
+        // the u key (also top row under QWERTZ)
+        val uKey = rows[1].byChar('u')
+        assertEquals("ų", uKey.hint)
+        assertEquals(listOf("ų", "ū"), uKey.alternatives)
+        assertTrue(KeyboardLayout.hasLongPressAction(eKey))
+        // single-variant values keep the pre-D-497 direct-commit hint behaviour untouched
+        val qKey = rows[1].byChar('q')
+        assertEquals("@", qKey.hint)
+        assertTrue(qKey.alternatives.isEmpty())
+    }
+    
+    @Test
     fun `letters carry the AltGr long-press hints`() {
         val rows = KeyboardLayout.rows()
         
