@@ -112,6 +112,8 @@
     <string name="d361_backspace_sticky_summary">A Backspace után közvetlenül érkező gyors újabb érintés Backspace marad, akkor is, ha szomszédos billentyűre esik (pl. Enter). A fenti dupla érintés késleltetését használja időablakként.</string>
     <string name="d401_cursor_control_title">Kurzorvezérlő kézmozdulat</string>
     <string name="d401_cursor_control_summary">Nyomd hosszan a szóközt, hogy húzással mozgasd a kurzort; maradj mozdulatlan, hogy szövegkijelölésre válts.</string>
+    <string name="d19_surface_swipe_title">Billentyűzetoldal váltása csúsztatással</string>
+    <string name="d19_surface_swipe_summary">Csúsztasson balra vagy jobbra a billentyűzeten a betűk és a szám-/szimbólumoldalak közötti váltáshoz. Kikapcsolva csak a ?123 / ABC gomb vált.</string>
     <string name="d401_hint_stage1">Húzd a kurzor mozgatásához. Maradj mozdulatlan a kijelöléshez.</string>
     <string name="d401_hint_stage2">Húzd a szöveg kijelöléséhez. Érintsd meg a befejezéshez.</string>
     <string name="c01_shift_title">A Shift extra szélessége</string>

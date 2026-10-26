@@ -112,6 +112,8 @@
     <string name="d361_backspace_sticky_summary">Швидке повторне натискання одразу після Backspace залишається Backspace, навіть якщо потрапляє на сусідню клавішу (наприклад, Enter). Як вікно використовується затримка подвійного натискання вище.</string>
     <string name="d401_cursor_control_title">Жест керування курсором</string>
     <string name="d401_cursor_control_summary">Утримуйте пробіл, щоб переміщати курсор перетягуванням; завмріть, щоб перейти до виділення тексту.</string>
+    <string name="d19_surface_swipe_title">Зміна сторінок клавіатури свайпом</string>
+    <string name="d19_surface_swipe_summary">Проведіть ліворуч або праворуч по клавіатурі, щоб перемикатися між літерами та сторінками цифр/символів. Якщо вимкнено, перемикає лише клавіша ?123 / ABC.</string>
     <string name="d401_hint_stage1">Перетягуйте, щоб рухати курсор. Завмріть, щоб виділяти.</string>
     <string name="d401_hint_stage2">Перетягуйте, щоб виділяти текст. Торкніться, щоб завершити.</string>
     <string name="c01_shift_title">Додаткова ширина Shift</string>

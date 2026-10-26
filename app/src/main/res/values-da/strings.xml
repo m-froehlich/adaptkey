@@ -112,6 +112,8 @@
     <string name="d361_backspace_sticky_summary">Et hurtigt nyt tryk lige efter Tilbage forbliver Tilbage, selv hvis det rammer en nabotast (fx Enter). Bruger dobbelttryksforsinkelsen ovenfor som tidsvindue.</string>
     <string name="d401_cursor_control_title">Bevægelse til markørstyring</string>
     <string name="d401_cursor_control_summary">Tryk længe på mellemrumstasten for at flytte markøren ved at trække; hold dig i ro for at skifte til tekstmarkering.</string>
+    <string name="d19_surface_swipe_title">Stryg for at skifte tastaturside</string>
+    <string name="d19_surface_swipe_summary">Stryg til venstre eller højre hen over tastaturet for at skifte mellem bogstaver og tal-/symbolsiderne. Når slået fra, skifter kun ?123 / ABC-tasten.</string>
     <string name="d401_hint_stage1">Træk for at flytte markøren. Hold dig i ro for at markere.</string>
     <string name="d401_hint_stage2">Træk for at markere tekst. Tryk for at afslutte.</string>
     <string name="c01_shift_title">Ekstra bredde til Skift</string>

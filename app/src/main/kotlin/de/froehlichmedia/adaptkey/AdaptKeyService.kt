@@ -4086,12 +4086,15 @@ class AdaptKeyService : InputMethodService() {
             // mapping - but the slide *animation* must follow the finger's actual physical direction
             // (D-76), which D-91 decoupled from the action: a right swipe always slides "forward"
             // (RIGHT swipes NEXT), regardless of whether that swipe means NEXT or PREV.
+            // With the surface swipe turned off in settings, the swipe is not consumed and falls back to a tap.
             GestureAction.SWITCH_SURFACE_NEXT -> {
+                if (!settings.surfaceSwipeEnabled) return false
                 applySwipePage(PanelNavigation.swipePage(surface, symbolPage, forward = true), forward = direction == SwipeDirection.RIGHT)
                 true
             }
             
             GestureAction.SWITCH_SURFACE_PREV -> {
+                if (!settings.surfaceSwipeEnabled) return false
                 applySwipePage(PanelNavigation.swipePage(surface, symbolPage, forward = false), forward = direction == SwipeDirection.RIGHT)
                 true
             }

@@ -112,6 +112,8 @@
     <string name="d361_backspace_sticky_summary">Szybkie ponowne dotknięcie tuż po Backspace pozostaje Backspace, nawet jeśli trafi w sąsiedni klawisz (np. Enter). Jako okna używa opóźnienia podwójnego dotknięcia z góry.</string>
     <string name="d401_cursor_control_title">Gest sterowania kursorem</string>
     <string name="d401_cursor_control_summary">Przytrzymaj spację, aby przesuwać kursor przeciąganiem; zatrzymaj się, aby przejść do zaznaczania tekstu.</string>
+    <string name="d19_surface_swipe_title">Przesuwanie, aby zmienić stronę klawiatury</string>
+    <string name="d19_surface_swipe_summary">Przesuń w lewo lub w prawo po klawiaturze, aby przełączać między literami a stronami cyfr/symboli. Po wyłączeniu przełącza tylko klawisz ?123 / ABC.</string>
     <string name="d401_hint_stage1">Przeciągnij, aby przesunąć kursor. Zatrzymaj się, aby zaznaczać.</string>
     <string name="d401_hint_stage2">Przeciągnij, aby zaznaczyć tekst. Dotknij, aby zakończyć.</string>
     <string name="c01_shift_title">Dodatkowa szerokość Shift</string>

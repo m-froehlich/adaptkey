@@ -112,6 +112,8 @@
     <string name="d361_backspace_sticky_summary">Un nouvel appui rapide juste après Retour arrière reste un Retour arrière, même s\'il tombe sur une touche voisine (p. ex. Entrée). Utilise le délai de double appui ci-dessus comme fenêtre.</string>
     <string name="d401_cursor_control_title">Geste de contrôle du curseur</string>
     <string name="d401_cursor_control_summary">Un appui long sur la barre d\'espace déplace le curseur par glissement ; restez immobile pour passer à la sélection de texte.</string>
+    <string name="d19_surface_swipe_title">Balayer pour changer de page du clavier</string>
+    <string name="d19_surface_swipe_summary">Balayez vers la gauche ou la droite sur le clavier pour passer des lettres aux pages de chiffres/symboles. Si désactivé, seule la touche ?123 / ABC permet de changer.</string>
     <string name="d401_hint_stage1">Faites glisser pour déplacer le curseur. Restez immobile pour sélectionner.</string>
     <string name="d401_hint_stage2">Faites glisser pour sélectionner le texte. Touchez pour terminer.</string>
     <string name="c01_shift_title">Largeur supplémentaire de Maj</string>

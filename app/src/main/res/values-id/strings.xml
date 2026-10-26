@@ -112,6 +112,8 @@
     <string name="d361_backspace_sticky_summary">Ketukan cepat lagi tepat setelah Backspace tetap Backspace, meskipun jatuh pada tombol tetangga (mis. Enter). Memakai jeda ketuk ganda di atas sebagai jendelanya.</string>
     <string name="d401_cursor_control_title">Gestur kontrol kursor</string>
     <string name="d401_cursor_control_summary">Tekan lama bilah spasi untuk memindahkan kursor dengan menyeret; diam sejenak untuk beralih ke pemilihan teks.</string>
+    <string name="d19_surface_swipe_title">Geser untuk berganti halaman keyboard</string>
+    <string name="d19_surface_swipe_summary">Geser ke kiri atau kanan di keyboard untuk beralih antara huruf dan halaman angka/simbol. Jika nonaktif, hanya tombol ?123 / ABC yang beralih.</string>
     <string name="d401_hint_stage1">Seret untuk memindahkan kursor. Diam untuk memilih.</string>
     <string name="d401_hint_stage2">Seret untuk memilih teks. Ketuk untuk selesai.</string>
     <string name="c01_shift_title">Lebar ekstra Shift</string>

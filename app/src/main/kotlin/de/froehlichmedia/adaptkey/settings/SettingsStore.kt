@@ -71,6 +71,7 @@ object SettingsStore {
     const val KEY_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD = "d398_sustained_language_switch_threshold"
     const val KEY_LEARNED_WORD_EXPIRY_WINDOW = "d389_learned_word_expiry_window"
     const val KEY_CURSOR_CONTROL_ENABLED = "d401_cursor_control"
+    const val KEY_SURFACE_SWIPE_ENABLED = "d19_surface_swipe"
     const val KEY_BOTTOM_INSET_MODE = "d486_bottom_inset_mode"
     
     /**
@@ -141,6 +142,9 @@ object SettingsStore {
     /** Default stored boolean for the D-401 cursor-control gesture toggle (on - see AdaptSettings' own KDoc). */
     const val DEF_CURSOR_CONTROL_ENABLED = true
     
+    /** Default stored boolean for the D-19 horizontal surface-swipe toggle (on). */
+    const val DEF_SURFACE_SWIPE_ENABLED = true
+    
     /** Default stored integer for the D-177 pending-blacklist expiry slider (7 days). */
     const val DEF_PENDING_BLACKLIST_EXPIRY_DAYS = AdaptSettings.DEFAULT_PENDING_BLACKLIST_EXPIRY_DAYS
     
@@ -203,6 +207,7 @@ object SettingsStore {
             ),
             learnedWordExpiryWindowKey = p.getString(KEY_LEARNED_WORD_EXPIRY_WINDOW, null),
             cursorControlEnabled = p.getBoolean(KEY_CURSOR_CONTROL_ENABLED, DEF_CURSOR_CONTROL_ENABLED),
+            surfaceSwipeEnabled = p.getBoolean(KEY_SURFACE_SWIPE_ENABLED, DEF_SURFACE_SWIPE_ENABLED),
             bottomInsetModeKey = p.getString(KEY_BOTTOM_INSET_MODE, null)
         )
         return SettingsMapper.toAdaptSettings(raw)
@@ -332,6 +337,7 @@ object SettingsStore {
         KEY_BACKSPACE_STICKY_ENABLED,
         KEY_TOUCH_LEARNING_ENABLED,
         KEY_CURSOR_CONTROL_ENABLED,
+        KEY_SURFACE_SWIPE_ENABLED,
         KEY_NUMBER_ROW,
         KEY_SYMBOL_KEY,
         KEY_SPACE_BELOW_NUMBER_ROW,

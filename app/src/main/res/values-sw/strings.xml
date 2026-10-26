@@ -112,6 +112,8 @@
     <string name="d361_backspace_sticky_summary">Mguso wa haraka mwingine mara tu baada ya Backspace hubaki Backspace, hata ukiangukia kitufe jirani (mf. Enter). Hutumia ucheleweshaji wa mguso maradufu hapo juu kama dirisha.</string>
     <string name="d401_cursor_control_title">Ishara ya kudhibiti kielekezi</string>
     <string name="d401_cursor_control_summary">Bonyeza kwa muda mrefu upau wa nafasi ili kusogeza kielekezi kwa kuburuta; tulia ili kubadilisha kwenda uteuzi wa maandishi.</string>
+    <string name="d19_surface_swipe_title">Telezesha ili kubadilisha kurasa za kibodi</string>
+    <string name="d19_surface_swipe_summary">Telezesha kushoto au kulia kwenye kibodi ili kubadilisha kati ya herufi na kurasa za nambari/alama. Ikizimwa, kitufe cha ?123 / ABC pekee ndicho hubadilisha.</string>
     <string name="d401_hint_stage1">Buruta kusogeza kielekezi. Tulia kuteua.</string>
     <string name="d401_hint_stage2">Buruta kuteua maandishi. Gusa kumaliza.</string>
     <string name="c01_shift_title">Upana wa ziada wa Shift</string>

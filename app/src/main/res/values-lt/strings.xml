@@ -112,6 +112,8 @@
     <string name="d361_backspace_sticky_summary">Greitas naujas palietimas iškart po Backspace lieka Backspace, net jei pataiko į gretimą klavišą (pvz., Enter). Kaip langą naudoja aukščiau nurodytą dvigubo palietimo delsą.</string>
     <string name="d401_cursor_control_title">Žymeklio valdymo gestas</string>
     <string name="d401_cursor_control_summary">Ilgai paspauskite tarpo klavišą, kad tempdami perkeltumėte žymeklį; nejudėkite, kad pereitumėte prie teksto žymėjimo.</string>
+    <string name="d19_surface_swipe_title">Klaviatūros puslapių perjungimas braukiant</string>
+    <string name="d19_surface_swipe_summary">Braukite kairėn arba dešinėn per klaviatūrą, kad perjungtumėte raides ir skaičių / simbolių puslapius. Išjungus perjungia tik klavišas ?123 / ABC.</string>
     <string name="d401_hint_stage1">Tempkite žymekliui perkelti. Nejudėkite žymėti.</string>
     <string name="d401_hint_stage2">Tempkite tekstui žymėti. Palieskite baigti.</string>
     <string name="c01_shift_title">Papildomas Shift plotis</string>

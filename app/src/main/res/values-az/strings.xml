@@ -112,6 +112,8 @@
     <string name="d361_backspace_sticky_summary">Backspace-dən dərhal sonrakı sürətli təkrar toxunuş, qonşu düyməyə (məs. Enter) düşsə belə, Backspace olaraq qalır. Pəncərə olaraq yuxarıdakı ikiqat toxunuş gecikməsi istifadə olunur.</string>
     <string name="d401_cursor_control_title">Kursor idarəetmə jesti</string>
     <string name="d401_cursor_control_summary">Kursoru sürükləməklə hərəkət etdirmək üçün boşluq düyməsini uzun basın; mətn seçiminə keçmək üçün hərəkətsiz durun.</string>
+    <string name="d19_surface_swipe_title">Klaviatura səhifələrini sürüşdürərək dəyiş</string>
+    <string name="d19_surface_swipe_summary">Hərflər və rəqəm/simvol səhifələri arasında keçmək üçün klaviatura üzərində sola və ya sağa sürüşdürün. Söndürüldükdə yalnız ?123 / ABC düyməsi keçid edir.</string>
     <string name="d401_hint_stage1">Kursoru hərəkət etdirmək üçün sürükləyin. Seçmək üçün hərəkətsiz durun.</string>
     <string name="d401_hint_stage2">Mətni seçmək üçün sürükləyin. Bitirmək üçün toxunun.</string>
     <string name="c01_shift_title">Shift-in əlavə eni</string>

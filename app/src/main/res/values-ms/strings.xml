@@ -112,6 +112,8 @@
     <string name="d361_backspace_sticky_summary">Ketikan pantas sekali lagi sebaik sahaja selepas Backspace kekal sebagai Backspace, walaupun ia jatuh pada kekunci jiran (cth. Enter). Menggunakan kelewatan ketik dua kali di atas sebagai tetingkap.</string>
     <string name="d401_cursor_control_title">Gerak isyarat kawalan kursor</string>
     <string name="d401_cursor_control_summary">Tekan lama bar ruang untuk menggerakkan kursor dengan menyeret; diam sebentar untuk beralih kepada pemilihan teks.</string>
+    <string name="d19_surface_swipe_title">Leret untuk menukar halaman papan kekunci</string>
+    <string name="d19_surface_swipe_summary">Leret ke kiri atau kanan pada papan kekunci untuk bertukar antara huruf dan halaman nombor/simbol. Apabila dimatikan, hanya kekunci ?123 / ABC yang menukar.</string>
     <string name="d401_hint_stage1">Seret untuk menggerakkan kursor. Diam untuk memilih.</string>
     <string name="d401_hint_stage2">Seret untuk memilih teks. Ketik untuk selesai.</string>
     <string name="c01_shift_title">Lebar tambahan Shift</string>

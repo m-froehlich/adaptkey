@@ -112,6 +112,8 @@
     <string name="d361_backspace_sticky_summary">Rýchle opätovné klepnutie hneď po Backspace zostane Backspace, aj keď padne na susednú klávesu (napr. Enter). Ako okno používa oneskorenie dvojitého klepnutia vyššie.</string>
     <string name="d401_cursor_control_title">Gesto ovládania kurzora</string>
     <string name="d401_cursor_control_summary">Dlho stlačte medzerník a ťahaním posúvajte kurzor; zostaňte v pokoji a prepnete na výber textu.</string>
+    <string name="d19_surface_swipe_title">Prepínanie stránok klávesnice potiahnutím</string>
+    <string name="d19_surface_swipe_summary">Potiahnutím doľava alebo doprava cez klávesnicu prepnete medzi písmenami a stránkami s číslami/symbolmi. Keď je vypnuté, prepína iba kláves ?123 / ABC.</string>
     <string name="d401_hint_stage1">Ťahajte na posun kurzora. Zostaňte v pokoji na výber.</string>
     <string name="d401_hint_stage2">Ťahajte na výber textu. Klepnutím dokončíte.</string>
     <string name="c01_shift_title">Extra šírka Shiftu</string>

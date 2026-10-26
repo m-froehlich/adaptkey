@@ -112,6 +112,8 @@
     <string name="d361_backspace_sticky_summary">Backspace’dan so‘ng darhol tez takroriy bosish, qo‘shni tugmaga (masalan, Enter) tushsa ham, Backspace bo‘lib qoladi. Oyna sifatida yuqoridagi ikkilangan bosish kechikishi ishlatiladi.</string>
     <string name="d401_cursor_control_title">Kursorni boshqarish ishorasi</string>
     <string name="d401_cursor_control_summary">Kursorni sudrab siljitish uchun probel tugmasini uzoq bosing; matn tanlashga o‘tish uchun qimirlamay turing.</string>
+    <string name="d19_surface_swipe_title">Klaviatura sahifalarini surib almashtirish</string>
+    <string name="d19_surface_swipe_summary">Harflar va raqam/belgi sahifalari orasida o‘tish uchun klaviatura bo‘ylab chapga yoki o‘ngga suring. O‘chirilganda faqat ?123 / ABC tugmasi almashtiradi.</string>
     <string name="d401_hint_stage1">Kursorni siljitish uchun sudrang. Tanlash uchun qimirlamay turing.</string>
     <string name="d401_hint_stage2">Matnni tanlash uchun sudrang. Tugatish uchun bosing.</string>
     <string name="c01_shift_title">Shift qo‘shimcha kengligi</string>
