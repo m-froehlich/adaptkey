@@ -199,8 +199,11 @@ real swipe's own required distance still cancels the hold in favour of that swip
 `hints.tsv` value may carry comma-separated **variants** (`e=ę,ė`) - such a key becomes a real popup like
 the compiled-in cases above, with the first variant as its corner hint and pre-selected popup cell (the
 base letter itself is deliberately not among the variants: a plain tap types it, the popup exists for the
-variants; Lithuanian is the first language using this, `e`→`ę ė` and `u`→`ų ū`, closing the reported
-"ė unreachable / ū missing" gap). The mapping is always the
+variants). Lithuanian closed the reported "ė unreachable / ū missing" gap first, and the D-497-followup
+round rolled the same shape out to every diacritic-rich pack - Czech ě/ů, Slovak ä/ô/ĺ, Croatian/Bosnian
+ć, Polish ź, Estonian ö, Hungarian ö/ő and ü/ű (the one 3-variant case), Romanian â, Danish/Norwegian æ,
+Swedish/Finnish å, Portuguese, Italian, French - so a language's full native alphabet is reachable from
+the base keys without holding for anything. The mapping is always the
 active language's own default; it is not user-configurable (D-301: a former per-key override editor combined
 incorrectly with the per-language default above, silently reintroducing cross-language hint bleed the moment
 any single symbol was customised, so the override layer was removed entirely rather than fixed). Together

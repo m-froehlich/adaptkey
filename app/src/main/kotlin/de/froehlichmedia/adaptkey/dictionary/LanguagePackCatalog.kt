@@ -742,7 +742,8 @@ object LanguagePackCatalog {
             //
             // `dictionaries/fr/version.txt` 2 -> 3, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 2 -> 3. Data-only; no Kotlin touched.
-            version = 3
+            // D-497-followup (§519, v1.2.78): a â / e é,è,ê,ë / i î,ï / u ù,û variants (the old one-hint workaround hints on t/w/y/z/k stay - deliberate duplication) - dictionaries/fr/version.txt 3 -> 4, this Entry 3 -> 4.
+            version = 4
         ),
         Entry(
             Language.SPANISH,
@@ -998,7 +999,8 @@ object LanguagePackCatalog {
             //
             // `dictionaries/pt/version.txt` 2 -> 3, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 2 -> 3. Data-only; no Kotlin touched.
-            version = 3
+            // D-497-followup (§519, v1.2.78): a á,ã,â,à / e é,ê / o ó,õ,ô variants (corner glyphs of a/o now lead with á/ó) - dictionaries/pt/version.txt 3 -> 4, this Entry 3 -> 4.
+            version = 4
         ),
         Entry(
             Language.ITALIAN,
@@ -1079,7 +1081,8 @@ object LanguagePackCatalog {
             //
             // `dictionaries/it/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
-            version = 2
+            // D-497-followup (§519, v1.2.78): e è,é / o ò,ó / u ù,ú variants - dictionaries/it/version.txt 2 -> 3, this Entry 2 -> 3.
+            version = 3
         ),
         Entry(
             Language.DUTCH,
@@ -1275,7 +1278,8 @@ object LanguagePackCatalog {
             //
             // `dictionaries/pl/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
-            version = 2
+            // D-497-followup (§519, v1.2.78): z ż,ź variant - dictionaries/pl/version.txt 2 -> 3, this Entry 2 -> 3.
+            version = 3
         ),
         Entry(
             Language.TURKISH,
@@ -1514,7 +1518,8 @@ object LanguagePackCatalog {
             //
             // `dictionaries/sv/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
-            version = 2
+            // D-497-followup (§519, v1.2.78): a ä,å variant - dictionaries/sv/version.txt 2 -> 3, this Entry 2 -> 3.
+            version = 3
         ),
         Entry(
             Language.NORWEGIAN,
@@ -1601,7 +1606,8 @@ object LanguagePackCatalog {
             //
             // `dictionaries/nb/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
-            version = 2
+            // D-497-followup (§519, v1.2.78): a å,æ variant - dictionaries/nb/version.txt 2 -> 3, this Entry 2 -> 3.
+            version = 3
         ),
         Entry(
             Language.DANISH,
@@ -1680,7 +1686,8 @@ object LanguagePackCatalog {
             //
             // `dictionaries/da/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
-            version = 2
+            // D-497-followup (§519, v1.2.78): a å,æ variant - dictionaries/da/version.txt 2 -> 3, this Entry 2 -> 3.
+            version = 3
         ),
         Entry(
             Language.FINNISH,
@@ -1794,7 +1801,8 @@ object LanguagePackCatalog {
             //
             // `dictionaries/fi/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
-            version = 2
+            // D-497-followup (§519, v1.2.78): a ä,å variant (the confirmed optional one) - dictionaries/fi/version.txt 2 -> 3, this Entry 2 -> 3.
+            version = 3
         ),
         Entry(
             Language.CZECH,
@@ -1885,7 +1893,8 @@ object LanguagePackCatalog {
             //
             // `dictionaries/cs/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
-            version = 2
+            // D-497-followup (§519, v1.2.78): e é,ě / u ú,ů variants - dictionaries/cs/version.txt 2 -> 3, this Entry 2 -> 3.
+            version = 3
         ),
         Entry(
             Language.SLOVAK,
@@ -1990,7 +1999,8 @@ object LanguagePackCatalog {
             //
             // `dictionaries/sk/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
-            version = 2
+            // D-497-followup (§519, v1.2.78): a á,ä / o ó,ô / l ľ,ĺ variants (ĺ the confirmed optional one) - dictionaries/sk/version.txt 2 -> 3, this Entry 2 -> 3.
+            version = 3
         ),
         Entry(
             Language.HUNGARIAN,
@@ -2109,7 +2119,8 @@ object LanguagePackCatalog {
             //
             // `dictionaries/hu/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
-            version = 2
+            // D-497-followup (§519, v1.2.78): o ó,ö,ő / u ú,ü,ű variants (the one genuine 3-variant case) - dictionaries/hu/version.txt 2 -> 3, this Entry 2 -> 3.
+            version = 3
         ),
         Entry(
             Language.ROMANIAN,
@@ -2199,7 +2210,8 @@ object LanguagePackCatalog {
             //
             // `dictionaries/ro/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
-            version = 2
+            // D-497-followup (§519, v1.2.78): a ă,â variant - dictionaries/ro/version.txt 2 -> 3, this Entry 2 -> 3.
+            version = 3
         ),
         Entry(
             Language.CROATIAN,
@@ -2316,7 +2328,8 @@ object LanguagePackCatalog {
             //
             // `dictionaries/hr/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
-            version = 2
+            // D-497-followup (§519, v1.2.78): c č,ć variant - dictionaries/hr/version.txt 2 -> 3, this Entry 2 -> 3.
+            version = 3
         ),
         Entry(
             Language.BOSNIAN,
@@ -2402,7 +2415,8 @@ object LanguagePackCatalog {
             //
             // `dictionaries/bs/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
-            version = 2
+            // D-497-followup (§519, v1.2.78): c č,ć variant - dictionaries/bs/version.txt 2 -> 3, this Entry 2 -> 3.
+            version = 3
         ),
         Entry(
             Language.ESTONIAN,
@@ -2476,7 +2490,8 @@ object LanguagePackCatalog {
             //
             // `dictionaries/et/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
-            version = 2
+            // D-497-followup (§519, v1.2.78): o õ,ö variant - dictionaries/et/version.txt 2 -> 3, this Entry 2 -> 3.
+            version = 3
         ),
         Entry(
             Language.LATVIAN,

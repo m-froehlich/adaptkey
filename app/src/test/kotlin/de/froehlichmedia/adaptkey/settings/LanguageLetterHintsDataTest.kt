@@ -42,4 +42,48 @@ class LanguageLetterHintsDataTest {
         assertEquals("ę,ė", parsed['e'])
         assertEquals("ų,ū", parsed['u'])
     }
+    
+    @Test
+    fun `D-497-followup every shipped pack hints file parses and carries its confirmed variant pairs`() {
+        // the D-497-followup round touched 16 packs at once (lt + the 15 confirmed in the review table) -
+        // one walk over ALL shipped hints.tsv catches a transcription/encoding mistake in any of them at
+        // build time, not on a real device; the variant pairs below pin the round's actual content.
+        val dictDir = File("../dictionaries").takeIf { it.isDirectory }
+            ?: File("dictionaries").also { check(it.isDirectory) { "dictionaries dir not found" } }
+        val files = dictDir.listFiles { f -> f.isDirectory && File(f, "hints.tsv").exists() }!!.sortedBy { it.name }
+        check(files.isNotEmpty()) { "no hints.tsv found anywhere under ${dictDir.absolutePath}" }
+        for (dir in files) {
+            val parsed = LetterHints.parse(dir.resolve("hints.tsv").readText(Charsets.UTF_8).trim())
+            check(parsed.isNotEmpty()) { "${dir.name}/hints.tsv parsed empty" }
+            for ((key, value) in parsed) {
+                check(LetterHints.isValidEntry(key, value)) { "${dir.name}: invalid entry $key=$value" }
+            }
+        }
+        val expected = mapOf(
+            "lt" to mapOf('e' to "ę,ė", 'u' to "ų,ū"),
+            "cs" to mapOf('e' to "é,ě", 'u' to "ú,ů"),
+            "sk" to mapOf('a' to "á,ä", 'o' to "ó,ô", 'l' to "ľ,ĺ"),
+            "hr" to mapOf('c' to "č,ć"),
+            "bs" to mapOf('c' to "č,ć"),
+            "pl" to mapOf('z' to "ż,ź"),
+            "et" to mapOf('o' to "õ,ö"),
+            "hu" to mapOf('o' to "ó,ö,ő", 'u' to "ú,ü,ű"),
+            "ro" to mapOf('a' to "ă,â"),
+            "da" to mapOf('a' to "å,æ"),
+            "nb" to mapOf('a' to "å,æ"),
+            "sv" to mapOf('a' to "ä,å"),
+            "fi" to mapOf('a' to "ä,å"),
+            "pt" to mapOf('a' to "á,ã,â,à", 'e' to "é,ê", 'o' to "ó,õ,ô"),
+            "it" to mapOf('e' to "è,é", 'o' to "ò,ó", 'u' to "ù,ú"),
+            "fr" to mapOf('a' to "à,â", 'e' to "é,è,ê,ë", 'i' to "î,ï", 'u' to "ù,û")
+        )
+        for ((code, pairs) in expected) {
+            val dir = files.firstOrNull { it.name == code }
+                ?: error("expected pack '$code' missing from dictionaries/")
+            val parsed = LetterHints.parse(dir.resolve("hints.tsv").readText(Charsets.UTF_8).trim())
+            for ((key, value) in pairs) {
+                assertEquals(value, parsed[key], "$code: variant pair for '$key'")
+            }
+        }
+    }
 }
