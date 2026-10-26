@@ -73,4 +73,21 @@ class SettingsStoreRoboTest {
         assertTrue(settings.suggestionConfig.highlightEnabled)
         assertEquals(0xFF2962FF.toInt(), settings.suggestionConfig.highlightColor)
     }
+    
+    @Test
+    fun d19AndG03GestureTogglesDefaultOnAndRoundTripThroughTheirStoredKeys() {
+        val context = RuntimeEnvironment.getApplication()
+        val defaults = SettingsStore.load(context)
+        assertTrue(defaults.surfaceSwipeEnabled)
+        assertTrue(defaults.swipeDownDismissEnabled)
+        
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+            .putBoolean(SettingsStore.KEY_SURFACE_SWIPE_ENABLED, false)
+            .putBoolean(SettingsStore.KEY_SWIPE_DOWN_DISMISS_ENABLED, false)
+            .commit()
+        
+        val settings = SettingsStore.load(context)
+        assertFalse(settings.surfaceSwipeEnabled)
+        assertFalse(settings.swipeDownDismissEnabled)
+    }
 }

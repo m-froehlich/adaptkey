@@ -162,6 +162,18 @@ class SettingsMapperTest {
     }
     
     @Test
+    fun `D-19 surfaceSwipeEnabled flag passes through unchanged, defaulting to on`() {
+        assertTrue(SettingsMapper.toAdaptSettings(RawSettings()).surfaceSwipeEnabled)
+        assertFalse(SettingsMapper.toAdaptSettings(RawSettings(surfaceSwipeEnabled = false)).surfaceSwipeEnabled)
+    }
+    
+    @Test
+    fun `G-03 swipeDownDismissEnabled flag passes through unchanged, defaulting to on`() {
+        assertTrue(SettingsMapper.toAdaptSettings(RawSettings()).swipeDownDismissEnabled)
+        assertFalse(SettingsMapper.toAdaptSettings(RawSettings(swipeDownDismissEnabled = false)).swipeDownDismissEnabled)
+    }
+    
+    @Test
     fun `D-352 autoSplitMode resolves from the stored key, defaulting to AUTOMATIC`() {
         assertEquals(AutoSplitMode.AUTOMATIC, SettingsMapper.toAdaptSettings(RawSettings()).autoSplitMode)
         assertEquals(
