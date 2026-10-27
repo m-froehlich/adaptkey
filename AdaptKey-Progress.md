@@ -418,30 +418,27 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
-- **D-503 - OPEN, requested 2026-10-27, root-caused by code reading the same day: an n-gram continuation**
-  **(bigram/trigram partner) that survives into continued typing loses its chip entirely instead of keeping**
-  **the first slots.** Report: after a committed "Liebe " the blank-slate prediction correctly offers "Gäste",
-  but typing on ("G") makes the bigram vanish - only ordinary frequency-ranked prefix suggestions appear.
-  The earlier implementation the user remembers is real: D-366 (§340, v1.0.92) wired the bigram/trigram
-  signal into `DictionarySuggestionProvider.score()` so it "stays alive while typing" - but that only
-  *re-weights candidates already in the pool*. The mid-word candidate pool comes from
-  `store.unigramsByPrefix(token, maxCandidates * SCAN_FACTOR)` (24 frequency-ordered entries) plus the
-  fuzzy paths, capped at 12; a partner like "Gäste" is not among the ~24 most frequent "g…" entries of a
-  200k+-row dictionary, so it never enters the pool and its bigram bonus can never act. Blank-slate works
-  because `nextWordSuggestions()` queries the bigram/trigram tables directly. Requirement (user): the
-  previous word's n-gram continuations that case-insensitively start with the typed prefix occupy the
-  FIRST chip slots (in their n-gram order, trigram-first Stupid Backoff as in `nextWordSuggestions()`);
-  ordinary ranked suggestions fill the remaining slots. Direction (to be confirmed with the user before
-  code): provider-level - `suggestionsFor()` injects the prefix-matched continuations (shared
-  continuation-order helper with `nextWordSuggestions()`, A-04 blacklist + S-02 exact-input excluded) as
-  pinned candidates ahead of the ordinary ranking; `Suggestion` gains a `pinned` flag and
-  `SuggestionController.update()`/`resort()` keep pinned entries in the leading slots, exempt from S-03
-  position stabilisation (strict pinning - relying on S-03 continuity alone would only preserve partners
-  already visible as predictions, not newly-matching ones). Casing is already handled mid-word by the
-  composing-non-empty `capitalise()` path (D-440's gate). Open decisions: umlaut-folded prefix matching
-  ("gaste" -> "Gäste") per the umlaut principle vs. strict case-insensitive-only; whether S-12's
-  "km/h"/"Uhr" maximal-score chips may be displaced by pinned partners (practically never co-occurs).
-  Pure unit tests per convention.
+- **D-503 - RESOLVED (§523, v1.2.83; not yet device-confirmed): an n-gram continuation (bigram/trigram
+  partner) that survives into continued typing keeps the first chip slots.** Root cause: D-366's bonus
+  re-weights only candidates already in the pool, and the mid-word pool is a frequency-truncated prefix
+  scan a mid-frequency partner never survives. Now pinned (strictly, case- and umlaut-folded prefix
+  matching, all matching partners) ahead of the ordinary ranking via `orderedContinuations()`/
+  `pinnedContinuations()` in `DictionarySuggestionProvider`, a `pinned` flag held through
+  `SuggestionController.update()/resort()` and `SuggestionMerger.merge()`. See §523 and spec S-07's
+  D-503 addendum.
+
+- **D-503 follow-up - OPEN, decided 2026-10-27, deliberately not built yet: a curated stopword list for
+  the pinned group only.** Background: the bundled corpus carries thousands of article/function-word
+  bigrams ("der": 5,109 rows, "die": 4,448, "und": 2,619), so after an article the pinned leading slots
+  are filled by corpus-generic continuations ("Stadt", "Zeit", "Begriff" ...). Bounded by design
+  (`nextWords()` is LIMIT-12, the bar shows max 8, and the blank slate already shows exactly those
+  continuations today), so the user decided to build D-503 without a filter and judge on the device.
+  If it feels too aggressive: exempt a curated per-language function-word list (articles, prepositions,
+  conjunctions, pronouns - de ~40 words) from ONLY the pinned group via the `LanguageRules` seam
+  (POS tags are useless for this - articles are tagged bare `OTHER` in `dict.tsv`, verified); the words
+  still surface via the ordinary list (their unigram frequency is huge) and in the blank slate. Removing
+  them from the bigram tables themselves was explicitly rejected (would empty the bar after every
+  article).
 
 - **D-502 - RESOLVED, device-confirmed (§521+§522, v1.2.81/v1.2.82; confirmed 2026-10-26): the G-01
   language switch is now discoverable.** Part 1 (§521, v1.2.81): a genuinely fresh language-pack install

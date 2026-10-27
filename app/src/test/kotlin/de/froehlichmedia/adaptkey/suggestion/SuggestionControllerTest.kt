@@ -133,4 +133,39 @@ class SuggestionControllerTest {
         
         assertEquals(listOf("LLM"), words(controller))
     }
+    
+    @Test
+    fun `D-503 pinned continuations take the leading slots immediately, ahead of stabilised entries`() {
+        val controller = controller()
+        controller.update("l", listOf(Suggestion("liebe", 5.0), Suggestion("lebendig", 3.0)), null)
+        assertEquals(listOf("liebe", "lebendig"), words(controller))
+        
+        // Typing on: the pinned n-gram partner takes slot 1 right away (exempt from S-03 stabilisation,
+        // which would otherwise append it behind the still-visible entries); the ordinary candidate that
+        // stays a candidate keeps its stabilised position behind the pinned group.
+        controller.update(
+            "g",
+            listOf(Suggestion("gäste", 2.0, pinned = true), Suggestion("liebe", 5.0)),
+            null
+        )
+        assertEquals(listOf("gäste", "liebe"), words(controller))
+    }
+    
+    @Test
+    fun `D-503 resort keeps pinned entries in the leading slots`() {
+        val controller = controller()
+        controller.update("g", listOf(Suggestion("gäste", 2.0, pinned = true), Suggestion("grund", 50.0)), null)
+        
+        controller.resort()
+        assertEquals(listOf("gäste", "grund"), words(controller))
+    }
+    
+    @Test
+    fun `D-503 a pinned continuation is dropped once it no longer matches the typed prefix`() {
+        val controller = controller()
+        controller.update("g", listOf(Suggestion("gäste", 2.0, pinned = true), Suggestion("gut", 5.0)), null)
+        controller.update("z", listOf(Suggestion("zeit", 5.0)), null)
+        
+        assertEquals(listOf("zeit"), words(controller))
+    }
 }

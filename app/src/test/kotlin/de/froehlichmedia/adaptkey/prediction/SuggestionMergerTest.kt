@@ -57,4 +57,26 @@ class SuggestionMergerTest {
         val merged = SuggestionMerger.merge(tier1, tier3, limit = 5)
         assertEquals(listOf("y", "x"), merged.map { it.word })
     }
+    
+    @Test
+    fun `D-503 pinned continuations keep their flag and their leading slots through the merge`() {
+        // "guests" is pinned (score 40 of max 80 -> normalised 0.5); "lovely" scores higher raw but is
+        // not pinned; the tier-3 boost on the pinned word must not dissolve the pinning, and the
+        // tier-3-only "beautiful" must not overtake it either.
+        val tier1 = listOf(
+            Suggestion("guests", 40.0, pinned = true),
+            Suggestion("lovely", 80.0)
+        )
+        val tier3 = listOf(
+            Tier3Suggestion("guests", 0.9),
+            Tier3Suggestion("beautiful", 0.8)
+        )
+        val merged = SuggestionMerger.merge(tier1, tier3, limit = 5)
+        
+        assertEquals(listOf("guests", "lovely", "beautiful"), merged.map { it.word })
+        val guests = merged.first { it.word == "guests" }
+        assertTrue(guests.pinned)
+        // The tier-3 agreement still accumulates onto the pinned word's score (0.5 + 0.9).
+        assertEquals(0.5 + 0.9, guests.score, 1e-9)
+    }
 }

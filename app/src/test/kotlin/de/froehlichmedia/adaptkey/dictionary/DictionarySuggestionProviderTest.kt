@@ -1168,4 +1168,110 @@ class DictionarySuggestionProviderTest {
         val suggestion = boostProvider.nextWordSuggestions("mein", "Hallo").first { it.word == "Schatz" }
         assertTrue(suggestion.score > 5.0, "expected a boosted score above the raw count, was ${suggestion.score}")
     }
+    
+    // ---------- D-503: pinned n-gram continuations ----------
+    
+    @Test
+    fun `D-503 a bigram continuation matching the typed prefix is pinned first even when the frequency-truncated prefix pool cannot hold it`() {
+        // The reported repro: "Liebe " blank-slate offers "Gäste", but typing on ("G") made the bigram
+        // vanish entirely. Root cause: the mid-word candidate pool is the top-24-by-frequency prefix
+        // scan - a rare partner never survives it next to more frequent "g" words, so score()'s bigram
+        // bonus (D-366) never even had a candidate to re-weight.
+        store.putWord(WordEntry("Gäste", 30L))
+        store.putBigram("liebe", "Gäste", 93L)
+        // 30 more frequent "g" words crowd "Gäste" out of the 24-entry prefix pool entirely.
+        repeat(30) { i -> store.putWord(WordEntry("gut$i", (40000L - i))) }
+        
+        val result = provider.suggestionsFor("g", "liebe")
+        assertEquals("Gäste", result.first().word)
+        assertTrue(result.first().pinned)
+    }
+    
+    @Test
+    fun `D-503 the pinned order equals the blank-slate prediction order filtered to prefix matches`() {
+        store.putWord(WordEntry("Schatz", 10L))
+        store.putWord(WordEntry("Schuh", 10L))
+        store.putBigram("mein", "Schuh", 150L)
+        repeat(3) { store.learnContext("Schatz", "mein", "Hallo") }
+        
+        val typed = provider.suggestionsFor("s", "mein", "Hallo")
+        val blankFiltered = provider.nextWordSuggestions("mein", "Hallo")
+            .filter { it.word.lowercase().startsWith("s") }
+        assertEquals(blankFiltered.map { it.word }, typed.map { it.word })
+        assertTrue(typed.all { it.pinned })
+    }
+    
+    @Test
+    fun `D-503 a continuation is pinned case-insensitively and across folded umlauts`() {
+        store.putWord(WordEntry("Gäste", 30L))
+        store.putBigram("liebe", "Gäste", 93L)
+        store.putWord(WordEntry("Grüße", 30L))
+        store.putBigram("liebe", "Grüße", 80L)
+        
+        // "gast" folds to "gast", "Gäste" folds to "gaste" - only the fold makes this a prefix match.
+        assertEquals("Gäste", provider.suggestionsFor("gast", "liebe").first().word)
+        // "gruss" folds to "gruss", "Grüße" folds to "grusse" (ß -> ss) - likewise only via the fold.
+        assertEquals("Grüße", provider.suggestionsFor("gruss", "liebe").first().word)
+        // Pure case difference: typed "G" matches a lower-cased-in-the-table continuation too.
+        store.putWord(WordEntry("Herz", 30L))
+        store.putBigram("mein", "Herz", 50L)
+        assertEquals("Herz", provider.suggestionsFor("h", "mein").first().word)
+    }
+    
+    @Test
+    fun `D-503 a continuation typed out in full is no longer pinned (S-02, case-insensitively)`() {
+        store.putWord(WordEntry("Gäste", 30L))
+        store.putBigram("liebe", "Gäste", 93L)
+        
+        val result = provider.suggestionsFor("gäste", "liebe")
+        // The complete word is never pinned back into the leading slots - but it may still appear as an
+        // ordinary case-override chip (D-457's own deliberately case-sensitive S-02 in the controller).
+        assertFalse(result.any { it.pinned })
+        assertTrue(result.any { it.word == "Gäste" })
+    }
+    
+    @Test
+    fun `D-503 a blacklisted continuation is never pinned (A-04)`() {
+        store.putWord(WordEntry("Gäste", 30L))
+        store.putWord(WordEntry("gut", 20000L))
+        store.putBigram("liebe", "Gäste", 93L)
+        store.blacklist("Gäste", BlacklistCategory.USER)
+        
+        val result = provider.suggestionsFor("g", "liebe")
+        assertFalse(result.any { it.word == "Gäste" })
+        assertTrue(result.none { it.pinned })
+    }
+    
+    @Test
+    fun `D-503 a continuation known only as a learned bigram target still surfaces pinned`() {
+        // D-494's foreign-word shape: the n-gram context is learned while the unigram is deliberately
+        // not - the ordinary prefix pool can never find such a word, the continuation list can.
+        store.putWord(WordEntry("Welt", 5000L))
+        repeat(3) { store.learnContext("okay", "liebe") }
+        
+        val result = provider.suggestionsFor("o", "liebe")
+        assertEquals("okay", result.first().word)
+        assertTrue(result.first().pinned)
+    }
+    
+    @Test
+    fun `D-503 without a previous word nothing is pinned`() {
+        store.putWord(WordEntry("Hund", 10L))
+        store.putWord(WordEntry("Haus", 100L))
+        
+        val result = provider.suggestionsFor("h", null)
+        assertTrue(result.none { it.pinned })
+        assertEquals(listOf("Haus", "Hund"), result.map { it.word })
+    }
+    
+    @Test
+    fun `D-503 a prefix no continuation matches leaves the ordinary ranking untouched`() {
+        store.putWord(WordEntry("Gäste", 30L))
+        store.putWord(WordEntry("Hund", 500L))
+        store.putBigram("liebe", "Gäste", 93L)
+        
+        val result = provider.suggestionsFor("h", "liebe")
+        assertTrue(result.none { it.pinned })
+        assertEquals(listOf("Hund"), result.map { it.word })
+    }
 }

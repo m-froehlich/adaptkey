@@ -950,6 +950,24 @@ meaningless-`explicitFirstUpper` fallthrough as before, silently re-lowercasing 
 `commitText()`. Fixed the same way: `composing.isNotEmpty()` decides whether to re-derive or to trust
 `item.word` as already resolved.
 
+D-503: a previous word's n-gram continuations hold the suggestion bar's **first slots while the next word
+is being typed**, not only at the blank slate. The continuations that case-insensitively - and
+umlaut-insensitively, via the same diacritic fold the rest of the suggestion pipeline uses (a typed
+"gast" matches a continuation "Gäste", a typed "gruss" matches "Grüße") - start with the currently typed
+prefix are **pinned** ahead of the ordinary score-ranked suggestions, in their own n-gram order (the same
+trigram-first Stupid Backoff blend `nextWordSuggestions()` uses), so the bar while typing is exactly the
+blank-slate prediction list filtered down to prefix matches. The pinning is strict: exempt from S-03
+position stabilisation and from S-04's score-only re-sort, so a partner takes its leading slot on the very
+first keystroke, and a partner typed past (no longer matching the prefix) drops out again. A-04 (blacklist)
+and S-02 (a continuation typed out in full is never pinned back; it may still surface as an ordinary
+case-override chip per D-457's deliberately case-sensitive controller rule) apply unchanged. Casing follows
+the ordinary mid-word `capitalise()` derivation (D-440's gate), so typed "g" shows "Gäste". The one
+ordering consequence: pinned partners take the leading slots ahead of the D-122/D-238 repair-extras chips,
+whose "position 1" property yields whenever a partner matches the typed prefix; the S-06
+verbatim-plus-replacement pair still precedes everything. This closes the gap D-366 left: its bonus only
+re-weights candidates already in the pool, and the mid-word pool is a frequency-truncated prefix scan a
+mid-frequency partner never survives.
+
 ### S-08 - Time-Pattern "Uhr" Suggestion
 A typed time in `HH:MM ` form (trailing space required) always suggests the German word "Uhr" as a
 completion, independent of the ordinary dictionary/n-gram ranking - only while German is the active language

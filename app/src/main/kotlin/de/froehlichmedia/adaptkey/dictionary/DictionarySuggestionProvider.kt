@@ -90,8 +90,14 @@ class DictionarySuggestionProvider(
                 candidates[word] = Suggestion(word, scoreWithCost(word, store.frequencyOf(word), previousWord, previousPreviousWord, cost))
             }
         }
-        return candidates.values
-            .sortedByDescending { it.score }
+        // D-503: the previous word's own n-gram continuations that still match what is being typed
+        // (case- and umlaut-insensitively) are pinned ahead of the ordinary ranking - the bigram bonus
+        // inside score()/scoreWithPrefixDistance() can only ever re-weight candidates that are already
+        // in the pool, and the pool comes from a frequency-truncated prefix scan a mid-frequency partner
+        // never survives. See pinnedContinuations()'s own KDoc.
+        val pinned = pinnedContinuations(token, previousWord, previousPreviousWord)
+        val pinnedWords = pinned.mapTo(HashSet()) { it.word }
+        return (pinned + candidates.values.filter { it.word !in pinnedWords }.sortedByDescending { it.score })
             .take(maxCandidates)
     }
     
@@ -101,7 +107,7 @@ class DictionarySuggestionProvider(
      * prefix completion (including a D-144 umlaut-unfolded, D-328 neighbour-substituted, or D-453
      * consonant-doubled prefix variant),
      * a close ([MAX_CORRECTION_COST]) fuzzy match (D-12), or a recognised unhyphenated compound (D-116).
-     *
+     * 
      * Used by [de.froehlichmedia.adaptkey.AdaptKeyService]'s own A-13 gate
      * ([de.froehlichmedia.adaptkey.suggestion.MissedBackspaceRecovery], D-377): "every other repair
      * mechanism has already had its own chance and failed" was never meant to require the *whole*
@@ -110,7 +116,7 @@ class DictionarySuggestionProvider(
      * [wideFuzzyNeighbours] separately, coincidentally, also found some unrelated real word (see D-431's
      * own history entry for the concrete case this was reported against: `"welxmche"` for `"welche"`
      * wrongly suppressed by a cheaper, but wrong, wide-fuzzy match on `"welsche"`).
-     *
+     * 
      * @param input the current composing token
      * @param previousWord the most recently committed word for n-gram context, or null at a fresh start
      * @param previousPreviousWord D-366: the word committed two positions before, or null when unknown
@@ -339,7 +345,7 @@ class DictionarySuggestionProvider(
      * up its frequency/noun-tag/prefix-shift signals from [store]. Shared between [fuzzyNeighbours]' own
      * chip-offer filter and [bestCorrection]'s auto-apply decision so both are always answering the exact
      * same question about the exact same candidate, just against different thresholds.
-     *
+     * 
      * @param token the lower-cased typed token
      * @param candidate the candidate in its canonical (dictionary) case
      * @param candidateLower [candidate], already lower-cased by the caller (avoids a repeat lowercase() call)
@@ -410,7 +416,7 @@ class DictionarySuggestionProvider(
      * [diacriticFolding]'s own known diacritic variants of that first character (for German, `a`/`o`/`u` ->
      * `ä`/`ö`/`ü`, so `Uberblick` -> `Überblick`) - a language with no diacritic handling of its own
      * ([NoOpDiacriticFolding]) simply contributes none here.
-     *
+     * 
      * @param token the lower-cased token
      * @return the set of initial letters to search
      */
@@ -458,7 +464,7 @@ class DictionarySuggestionProvider(
      * [DOUBLING_ELIGIBLE_CONSONANTS] are tried, and never at a position already doubled (that position is
      * already a length-2 run - doubling it again is never the fix). Used only as an escalation when the
      * literal prefix found nothing, so a correctly-typed word never pays for it.
-     *
+     * 
      * @param token the lower-cased composing token (already length-checked by the caller)
      * @return the distinct single-consonant-doubled variants, never including [token] itself
      */
@@ -517,16 +523,16 @@ class DictionarySuggestionProvider(
      * `"gedruckt"` pairing costs `SUB_COST + 2 * ADJACENT_SUB_COST` here - well above the folded search's own
      * ceiling - so this must never be banded to that same budget or it would collapse to an uninformative
      * "exceeds" sentinel instead of a real, comparable magnitude).
-     *
+     * 
      * Deliberately whole-string, not a per-character positional check - `ß` folds to a two-character `"ss"`
      * ([suggestion.Umlaut.fold]), so a fixed 1:1 character comparison could never handle it cleanly; a
      * genuine edit distance already resolves an `ß`-vs-`"ss"` difference via its own insert/delete step,
      * with no special case needed here at all.
-     *
+     * 
      * Used only as [CandidateCost.literalCost], itself only ever a tie-break between candidates that
      * already share the same [correctionCost] - never a gate, and never capable of out-ranking a candidate
      * with a genuinely lower folded cost.
-     *
+     * 
      * @param token the literally typed token, lower-cased, *not* diacritic-folded
      * @param candidateLower the candidate's own real spelling, lower-cased, *not* diacritic-folded
      * @return the exact weighted edit distance between the two literal spellings
@@ -593,7 +599,7 @@ class DictionarySuggestionProvider(
      * barely-seen trigram one. A word already scored via its trigram match is never re-added via the
      * bigram pass (the more specific signal always wins for that word, never blended with its own
      * less-specific estimate).
-     *
+     * 
      * @param previousWord the most recently committed word
      * @param previousPreviousWord the word committed two positions before, or null when unknown - falls
      *        back to the plain bigram ranking, exactly as before D-246
@@ -603,6 +609,58 @@ class DictionarySuggestionProvider(
         if (previousWord.isBlank()) {
             return emptyList()
         }
+        return orderedContinuations(previousWord, previousPreviousWord)
+    }
+    
+    /**
+     * D-503: the previous word's own n-gram continuations that case-insensitively (and
+     * umlaut-insensitively, per the umlaut principle - a typed "gaste" matches a continuation "Gäste")
+     * start with the currently typed [token], as pinned suggestions for [suggestionsFor]'s leading
+     * slots. The pinned order is exactly [orderedContinuations]'s own order (trigram-first Stupid
+     * Backoff, then bigram count), so the bar while typing is precisely the blank-slate prediction
+     * list filtered down to prefix matches - "Gäste" offered after "Liebe " keeps the first chip when
+     * the user types on ("G"), instead of vanishing behind the frequency-truncated prefix pool that
+     * [score]'s bigram bonus alone can never rescue (it only re-weights candidates already in the
+     * pool). A-04 is already applied by [orderedContinuations]; S-02 is applied here
+     * case-insensitively (a continuation typed out in full is complete, never offered as a chip).
+     * 
+     * Deliberately unconditional on [suggestionsFor]'s includeExpensiveFallbacks: the two indexed,
+     * row-limited store queries behind [orderedContinuations] are the same ones the blank-slate
+     * prediction already runs per commit, and the pinning must hold from the very first keystroke,
+     * not only once the deferred pass has run.
+     * 
+     * @param token the lower-cased composing token
+     * @param previousWord the most recently committed word, or null at a fresh start (no continuations)
+     * @param previousPreviousWord the word committed two positions before, or null when unknown
+     * @return the pinned continuations in n-gram order, most likely first
+     */
+    private fun pinnedContinuations(token: String, previousWord: String?, previousPreviousWord: String?): List<Suggestion> {
+        if (previousWord.isNullOrBlank() || token.isEmpty()) {
+            return emptyList()
+        }
+        val foldedToken = diacriticFolding.fold(token)
+        return orderedContinuations(previousWord, previousPreviousWord)
+            .filter { continuation ->
+                val lower = continuation.word.lowercase()
+                lower != token && // S-02, case-insensitively
+                    diacriticFolding.fold(lower).startsWith(foldedToken)
+            }
+            .map { it.copy(pinned = true) }
+    }
+    
+    /**
+     * D-503: [nextWordSuggestions]'s continuation computation, factored out so [pinnedContinuations]
+     * reuses the identical ordering (and the two can never drift apart): a candidate with a real
+     * personal trigram match scores by its own (rescaled, recency-boosted) trigram count, every other
+     * candidate by its rescaled bigram signal - discounted by [TRIGRAM_BACKOFF_WEIGHT] when two-word
+     * context was available but did not itself match - exactly D-246's Stupid Backoff blend, with
+     * D-365/D-429's LearnedBigramBoost rescaling. A-04 (blacklist) is filtered for both passes.
+     * 
+     * @param previousWord the most recently committed word (non-blank)
+     * @param previousPreviousWord the word committed two positions before, or null when unknown
+     * @return the predicted next words, most likely first, capped to [maxCandidates]
+     */
+    private fun orderedContinuations(previousWord: String, previousPreviousWord: String?): List<Suggestion> {
         val hasTrigramContext = !previousPreviousWord.isNullOrBlank()
         val scores = LinkedHashMap<String, Double>()
         if (hasTrigramContext) {
@@ -684,7 +742,7 @@ class DictionarySuggestionProvider(
      * D-207: returns the winning candidate's own edit cost alongside it (not just the word) - lets
      * [bestCorrectionFor] answer the high-confidence question from this one search's own result, instead
      * of running a second, narrower search over the same candidates purely to re-derive it.
-     *
+     * 
      * D-356: candidates tied on [correctionCost] (folded on both sides, so an umlaut/ß difference costs
      * nothing there) are now additionally ranked by [literalDistance] - the *unfolded* distance to what was
      * actually typed - before frequency ever gets a vote. Real reported case: typing `"gedrücjz"` (a genuine
@@ -695,7 +753,7 @@ class DictionarySuggestionProvider(
      * *reorders ties* - it can never change which candidates qualify or beat a candidate with a genuinely
      * lower folded cost, so it cannot reopen any of [CorrectionConfidence]'s own calibrated regression cases
      * (see [AutocorrectAggressiveness]), which never tie in the first place.
-     *
+     * 
      * @param input the current composing token
      * @param previousWord the most recently committed word for n-gram context, or null at a fresh start
      * @param maxCost the inclusive edit-cost ceiling a candidate must stay within
@@ -800,7 +858,7 @@ class DictionarySuggestionProvider(
      * loanword, frequency 24 in the bundled corpus) blocked any correction to "die" (frequency ~890000)
      * outright, simply for existing in the dictionary at all - regardless of how implausible it is that
      * "due" was actually intended over "die".
-     *
+     * 
      * D-244 / D-353: originally a flat 100x bar, replaced by [CorrectionConfidence]'s log-scaled ratio
      * curve after a real regression - "Ohren" (ears, frequency 170, an entirely ordinary, unambiguous
      * German word) was silently overridden to "Ihren" (frequency 11,907 - `o`/`i` are QWERTZ-adjacent)
@@ -809,7 +867,7 @@ class DictionarySuggestionProvider(
      * blacklisted-confusable cases (`due`/`die`, `ddr`/`der`, ~228x) actually sit at. D-353 additionally
      * guarantees this floor holds at *every* [AutocorrectAggressiveness] level, not only the default one -
      * see that enum's own KDoc for the exact calibration.
-     *
+     * 
      * D-403: never overrides a word the user has personally taught the keyboard - checked via
      * [DictionaryStore.learnedCasingOf], true for both a fully self-taught word and a deliberately
      * different-cased override of an otherwise-bundled entry (D-264) alike, before the ratio is even
@@ -820,7 +878,7 @@ class DictionarySuggestionProvider(
      * "kWp"/"AVD", an abbreviation, anything) stayed permanently defenceless against this override for any
      * ordinary, moderately common cost-1-adjacent word, no matter how many times it had already been
      * deliberately taught.
-     *
+     * 
      * D-404 Tier 2: never overrides a word with a candidate from the *same* D-412 word family (checked via
      * [sameWordFamily], before the ratio is computed) - e.g. a typed "Kugel" must never be silently swapped
      * for the far more frequent plural sibling "Kugeln". The ratio rule exists for coincidental dictionary
@@ -856,7 +914,7 @@ class DictionarySuggestionProvider(
      * learned-word lemma links, D-323/D-324, count too). Family-key resolution mirrors
      * [LearnedWordExpirySweep]'s own `entry.lemma ?: entry.word` grouping, lower-cased on both sides since
      * [WordEntry.lemma] is stored in the base entry's own canonical case, not [wordLower]'s lower-case key.
-     *
+     * 
      * @param wordLower the known typed word, already lower-cased
      * @param candidateLower the correction candidate, already lower-cased
      * @return true when both resolve to the same family key; false when either is unknown or unlinked
@@ -881,7 +939,7 @@ class DictionarySuggestionProvider(
      * replaced by [LearnedFrequencyBoost]'s scaled, ranking-only equivalent - see [rankingFrequency]'s own
      * KDoc for why this is safe to apply here, at the single shared root every ranking score passes through,
      * without ever touching a correctness-affecting decision.
-     *
+     * 
      * D-365/D-366: the bigram/trigram bonus below is the same shared root's other half - [previousWord]'s
      * own contribution rescaled via [rankingBigramFrequency], and, when [previousPreviousWord] is also known,
      * elevated further by a genuine personal trigram match, exactly like [nextWordSuggestions]'s own D-246
@@ -917,7 +975,7 @@ class DictionarySuggestionProvider(
      * recency-aware (D-429) equivalent - the bundled contribution passes through untouched. Ranking-only,
      * mirroring [rankingFrequency]'s own D-411 precedent exactly: [TokenRepair]'s `>= MIN_BIGRAM` merge
      * gate (A-06) keeps reading [DictionaryStore.bigramFrequency] directly, never through this.
-     *
+     * 
      * @param previousWord the preceding word
      * @param word the candidate word
      * @return the bundled bigram count plus the learned count's scaled, ranking-only equivalent
@@ -940,7 +998,7 @@ class DictionarySuggestionProvider(
      * [DictionaryStore.entryOf]/[DictionaryStore.frequencyOf] directly instead, never through [score], so
      * this boost can never change what gets silently auto-applied - only how candidates already cleared for
      * display are ordered.
-     *
+     * 
      * @param word the candidate word
      * @param mergedFrequency the already-merged bundled+learned frequency the caller looked up
      * @return [mergedFrequency] as a [Double], with its learned share replaced by the boosted equivalent

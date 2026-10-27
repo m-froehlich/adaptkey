@@ -23039,3 +23039,78 @@ addendum extended with the part-2 passage. `versionCode` 577 -> 578, `versionNam
 **Device-confirmed 2026-10-26** - chevrons and their size/contrast accepted as-is on the device (no
 retuning requested), the with-pack swipe, the URL/email-mode space (no chevrons) and the one-language
 silent-swallow checks all behave as specified.
+
+## §523 - D-503: an n-gram continuation that survives into continued typing keeps the first chip slots (v1.2.83)
+
+The user reported a chip-prominence gap in the exact flow S-07 exists for: after a committed "Liebe " the
+blank-slate prediction correctly offers "Gäste", but typing on ("G") made the bigram vanish entirely - only
+ordinary frequency-ranked prefix suggestions appeared. The user suspected (correctly, as it turned out) that
+something like this had been requested and implemented before: D-366 (§340, v1.0.92) wired the bigram/trigram
+signal into `score()` so it "stays alive while typing". The root cause this round found is one level earlier:
+D-366's bonus only re-weights candidates **already in the pool**, and the mid-word pool comes from
+`store.unigramsByPrefix(token, maxCandidates * SCAN_FACTOR)` - a **frequency-truncated** prefix scan
+(top 24) plus the fuzzy paths, capped at 12. A mid-frequency partner like "Gäste" is not among the ~24 most
+frequent "g…" entries of a 200k+-row dictionary, so it never entered the pool and the bonus could never act.
+The blank-slate path works because `nextWordSuggestions()` queries the bigram/trigram tables directly -
+exactly the observed split behaviour. Reproduced in a unit test with 30 more-frequent "g" words crowding
+"Gäste" out of the 24-entry pool (the test fails on the pre-D-503 code by construction).
+
+**Design, settled with the user before any code (three explicit decisions, plus a stopword discussion):**
+
+- **Strictly pinned (recommended option taken).** The previous word's n-gram continuations that
+  case-insensitively start with the typed prefix occupy the bar's FIRST slots, immediately and at every
+  keystroke - not merely added to the pool and left to S-03 position stabilisation (which would have kept
+  only partners already visible as predictions in place and appended newly-matching ones at the right until
+  the S-04 pause).
+- **Umlaut-folded prefix matching (recommended option taken).** The prefix test runs on
+  `diacriticFolding.fold()` of both sides - per the umlaut principle, a typed "gast" matches a continuation
+  "Gäste", a typed "gruss" matches "Grüße" (ß -> "ss" handled by the fold's own insert/delete shape).
+  Case-insensitivity is the user's original requirement; folding is the principle's extension of it.
+- **All matching partners (recommended option taken).** No cap below the bar's own capacity: every matching
+  continuation fills a leading slot (in n-gram order), ordinary suggestions fill the rest.
+- **Articles/function words stay in the bigram tables; no stopword filter in this round.** The user raised
+  the "flood after an article" concern with real justification (the bundled corpus carries 5,109 "der"-rows,
+  4,448 "die", 2,619 "und"; articles are tagged bare `OTHER` in `dict.tsv` - verified, so a POS-based filter
+  is not available and a curated per-language list would be needed). Settled by numbers: `nextWords()` is
+  LIMIT-12 so only the top continuations by count ever reach the chips, the bar shows max 8 (C-03), and the
+  blank slate after "der " already shows exactly those continuations today (accepted behaviour). The
+  refinement - a curated stopword list exempting function words from *only the pinned group* (they would
+  still surface via the ordinary list, their unigram frequency being huge) - is tracked as the D-503
+  follow-up in Progress.md, to be decided on device experience, not built speculatively.
+
+**Implementation, on the codebase's own seams:**
+
+- `DictionarySuggestionProvider`: `nextWordSuggestions()`'s continuation computation (D-246 Stupid Backoff
+  blend + D-365/D-429 rescaling) factored out into `orderedContinuations()` so the pinning can reuse the
+  identical ordering and the two can never drift; new `pinnedContinuations()` filters that list to
+  folded-prefix matches (A-04 already applied inside, S-02 applied case-insensitively - a continuation typed
+  out in full is complete and is not pinned back, while still being offered as an ordinary case-override
+  chip per D-457's deliberately case-sensitive controller rule). `suggestionsFor()` returns
+  pinned + ordinary (pinned words deduplicated out of the ordinary list). Deliberately unconditional on
+  `includeExpensiveFallbacks`: the two indexed, row-limited store queries are the same ones the blank-slate
+  prediction already runs per commit, and the pinning must hold from the first keystroke. The pinned
+  Suggestion carries its n-gram score, so the pinned order IS the blank-slate prediction order filtered to
+  prefix matches - "die Chips beim Weitertippen sind genau die Leer-Leiste-Chips, die noch zum Präfix passen".
+- `Suggestion` gained a `pinned: Boolean = false` field (default false, so every pre-existing constructor
+  call site and test is untouched).
+- `SuggestionController.update()`: pinned words lead `stableOrder` in their given order, exempt from S-03;
+  ordinary entries keep the existing kept-then-appended stabilisation behind them. `resort()` partitions the
+  same way so S-04 cannot dissolve the pinning. `displayed()` unchanged - the order carries the pinning, and
+  mid-word casing still goes through the composing-non-empty `capitalise()` path (D-440's gate), so typed
+  "g" shows "Gäste".
+- `SuggestionMerger.merge()`: pinned flags and the pinned group's tier-1 order survive the tier-3 refinement
+  (a pinned word may accumulate a tier-3 score contribution but never loses its leading slot; tier-3-only
+  words are never pinned). With no pinned candidates the merge is byte-for-byte the previous behaviour.
+- Consequence accepted (flagged in the spec addendum): pinned partners take the leading slots ahead of the
+  D-122/D-238 repair-extras chips (split/merge/missed-backspace), whose "position 1" property now yields
+  whenever a partner matches the typed prefix. The S-06 verbatim+replacement pair still precedes everything
+  (built in `displayed()` before the stabilised list). S-12's maximal-score "km/h"/"Uhr" chips are likewise
+  displaced only when a continuation matches the typed prefix - practically never co-occurs.
+
+12 new unit tests (8 `DictionarySuggestionProviderTest` D-503 cases, 3 `SuggestionControllerTest`, 1
+`SuggestionMergerTest`, plus the round's own re-verification that all six pre-existing `suggestionsFor`
+call sites asserting a first candidate under a previous word still hold unchanged - re-derived by hand
+against `LearnedBigramBoost`'s curve, not assumed). 1747 -> 1759 unit tests, all green.
+`:app:assembleRelease` + `:app:testDebugUnitTest` green. Spec S-07 gained the D-503 addendum. Progress.md's
+D-503 entry replaced by the standard RESOLVED stub plus the open D-503 follow-up bullet. `versionCode`
+578 -> 579, `versionName` "1.2.82" -> "1.2.83". Not yet device-confirmed.

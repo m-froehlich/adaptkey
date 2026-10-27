@@ -6,7 +6,7 @@ package de.froehlichmedia.adaptkey.suggestion
 /**
  * Applies the suggestion-bar policy from the specification, free of any Android dependency so it
  * can be unit-tested on the JVM:
- *
+ * 
  * - S-01: at most [SuggestionConfig.maxSuggestions] entries, sorted by descending score; the most
  *   probable appears at the far left.
  * - S-02: the word exactly as typed is never offered (the only exception is the S-06 verbatim chip).
@@ -120,7 +120,7 @@ class SuggestionController(private val config: SuggestionConfig) {
     
     /**
      * A renderable bar entry.
-     *
+     * 
      * @property text the label to display
      * @property kind whether this is an ordinary suggestion or the verbatim chip (S-06)
      * @property word the word committed when the entry is tapped (the literal typed word for [Kind.VERBATIM])
@@ -139,7 +139,7 @@ class SuggestionController(private val config: SuggestionConfig) {
     /**
      * Feeds a fresh keystroke result, preserving the positions of already-visible entries (S-03)
      * and dropping the verbatim duplicate of the input (S-02).
-     *
+     * 
      * @param input the current composing token
      * @param candidates the raw ranked candidates for [input]
      * @param pendingAutocorrect the replacement an autocorrect would apply on the next delimiter (S-06), or null
@@ -152,24 +152,33 @@ class SuggestionController(private val config: SuggestionConfig) {
         val filtered = candidates.filter { it.word != input }
         candidatesByWord = filtered.associateBy { it.word }
         
+        // D-503: pinned n-gram continuations always occupy the leading slots, in their given order,
+        // exempt from S-03 position stabilisation (they are the bar's most prominent content by
+        // definition - newly-matching partners must take the front immediately, not be appended until
+        // the S-04 pause). The ordinary candidates keep the existing kept-then-appended stabilisation
+        // below, minus the pinned words.
+        val pinnedWords = filtered.filter { it.pinned }.map { it.word }
+        val pinnedSet = pinnedWords.toHashSet()
+        
         // S-03: keep visible entries in place, append newly appearing ones (sorted) at the right.
-        val kept = stableOrder.filter { candidatesByWord.containsKey(it) }
+        val kept = stableOrder.filter { candidatesByWord.containsKey(it) && it !in pinnedSet }
         val keptSet = kept.toHashSet()
         val appended = filtered
-            .filter { it.word !in keptSet }
+            .filter { it.word !in keptSet && it.word !in pinnedSet }
             .sortedByDescending { it.score }
             .map { it.word }
-        stableOrder = (kept + appended).take(config.maxSuggestions)
+        stableOrder = (pinnedWords + kept + appended).take(config.maxSuggestions)
     }
     
     /**
      * Re-sorts the stabilised entries strictly by descending score (S-01 / S-04). Called by the host
-     * after the configured input pause.
+     * after the configured input pause. D-503: pinned continuations stay in the leading slots, in their
+     * own score order - the S-04 re-sort must not dissolve the pinning that [update] established.
      */
     fun resort() {
-        stableOrder = candidatesByWord.values
-            .sortedByDescending { it.score }
-            .map { it.word }
+        val (pinned, ordinary) = candidatesByWord.values.partition { it.pinned }
+        stableOrder = (pinned.sortedByDescending { it.score }.map { it.word } +
+            ordinary.sortedByDescending { it.score }.map { it.word })
             .take(config.maxSuggestions)
     }
     
