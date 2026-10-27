@@ -23114,3 +23114,84 @@ against `LearnedBigramBoost`'s curve, not assumed). 1747 -> 1759 unit tests, all
 `:app:assembleRelease` + `:app:testDebugUnitTest` green. Spec S-07 gained the D-503 addendum. Progress.md's
 D-503 entry replaced by the standard RESOLVED stub plus the open D-503 follow-up bullet. `versionCode`
 578 -> 579, `versionName` "1.2.82" -> "1.2.83". Not yet device-confirmed.
+
+## §524 - D-503-followup: after a function word there is no pinning at all - Variant B, the left-side gate (v1.2.84)
+
+The D-503 round had deliberately deferred the "flood after an article" question (its stopword paragraph in
+§523) to device experience. The user closed that deferral with a stronger, structural argument before any
+device session happened: it is not only the bundled corpus bigrams that flood the pinned slots - after
+some ordinary use of the app, the *learned* n-gram tables accumulate countless article/function-word
+bigrams of the user's own, and they never decay (D-389's C-24 expiry sweep covers only
+`TABLE_LEARNED` unigrams; the bigram/trigram tables have no window and no recency pruning), so the
+learned share of the pinned pool grows monotonically with use and progressively colonises the leading
+slots. An a-priori argument this strong does not need device evidence to act on; the device look that
+remains is only whether the gated behaviour feels right.
+
+**Design space, settled with the user before any code.** The originally sketched refinement (§523's
+"curated stopword list exempting function words from ONLY the pinned group") is a *right-side* filter -
+it asks whether the CONTINUATION is a function word. Discussed and dropped: (1) it does not touch the
+most visible nuisance at all - "Stadt"/"Zeit"/"Gebiet" are content words and would stay pinned after
+"der"; (2) it forces per-source reasoning, because the user's accumulation argument lives on the
+*learned* side - my own first sketch ("learned pairs exempt from the exemption") was exactly backwards.
+The chosen **Variant B is left-side**: when the PREVIOUS word is a function word of the active language,
+`pinnedContinuations()` returns nothing at all - the bar behaves exactly as before D-503. One check on
+the previous word covers the bundled tables, the learned bigram/trigram tables and the Stupid Backoff
+blend alike, regardless of how the blend's composition shifts over years of use; no per-source case, no
+curve analysis. Grounded in the real bundled `bigram.tsv` during the discussion: the top-8 after "und"
+are *all* function words ("die", "der", "in", "das", "den", "dem", "im", "eine"), the top-8 after
+"der"/"die" are Wikipedia-register nouns ("Stadt" 13,868, "Zeit", "Gebiet"), while "ich"'s continuations
+("bin" 306, "habe", "mich") are an order of magnitude below the articles' counts and genuinely
+informative.
+
+**Why suppressing the pins after function words costs almost nothing:** the continuation distribution
+after an article or a preposition is near-flat over a huge vocabulary - the bigram carries almost no
+information about the continuation's identity, which is why its top-12 reads as noise. The one real
+signal there, German gender agreement, is marginal for typing. Personal pairs keep their visibility:
+D-366's bigram bonus inside the ordinary ranking still applies ("bigram context can outrank a more
+frequent unigram", the pre-D-503 provider test, passes through the gate unchanged), and the blank-slate
+prediction is deliberately untouched (accepted behaviour, the same continuations it showed before
+D-503). What the gate removes is only the *position guarantee* - precisely the part that was noise.
+
+**Scope decisions, both the user's own call during the discussion:** pronouns are not stopwords ("ich" ->
+"bin/habe" is a genuine, informative signal, and no flood shape exists at count 306); the possessive
+determiners ("mein"/"dein"/...) stay pinnable too ("mein Schatz" is exactly the personal signal D-503
+exists for, and their continuation counts are far too low to flood). Both are extend-as-real-cases-turn-up
+decisions like `COMPOUND_FORMING_PARTICLES`' own precedent.
+
+**Implementation, on the codebase's own seams:**
+
+- `LanguageRules` gained `pinnedContinuationStopwords(): Set<String>` as a Kotlin *default* method
+  returning `emptySet()` - the one case where a default was chosen over the interface's explicit-
+  `NoOpLanguageRules` style, deliberately: thirty-one `LanguageRules` implementations exist and a
+  curation is a per-language act, so the default keeps every non-German language byte-for-byte on the
+  pre-followup behaviour (pinned by a new provider test) and no other implementation file needed
+  touching. The KDoc encodes the mechanism contract: left-side, fold-matched, continuations themselves
+  untouched.
+- `GermanRules` overrides it with `PINNING_STOPWORDS` (~60 lower-cased entries: definite/indefinite/
+  negative articles with their inflections, the demonstrative determiner family, the common prepositions
+  including the fused contractions "im"/"am"/"zum"/"zur"/"ins"/"ans"/"vom"/"beim", and the coordinating/
+  subordinating conjunctions; "wie" deliberately left out - its interrogative reading dominates and its
+  continuations are informative verbs).
+- `DictionarySuggestionProvider`: the entries are pre-folded once per provider instance through the
+  same `diacriticFolding` the typed token goes through (`foldedPinningStopwords`, a lazy val -
+  `languageRules`/`diacriticFolding` are constructor-fixed, so it can never go stale), and
+  `pinnedContinuations()` returns `emptyList()` when the folded previous word is in the set - checked
+  before any store query runs, so a gated context costs nothing beyond the set lookup. Case-insensitive
+  by construction ("Der" at a sentence start gates like "der"), umlaut-folded ("für" matches its folded
+  "fur" entry). `score()`, `orderedContinuations()` and `nextWordSuggestions()` untouched.
+
+Tests (+7, `DictionarySuggestionProviderTest`, new D-503-followup block): the flood shape ("der " ->
+"Stadt" never pinned, ordinary ranking decides, pre-D-503 order asserted with real weight arithmetic -
+"Stadt" 13,868 vs "Sohn" 30 + 93x10); the conjunction shape ("und " -> no pinning, [die, dies]); the
+gate matches case-insensitively and umlaut-folded ("Der", "für"); a learned-only continuation pins after
+"liebe" but never after "der" (the accumulation argument, pinned as a test); possessives stay pinnable
+("mein" -> "Schatz" pinned); a `NoOpLanguageRules` provider keeps the unconditional pinning; the
+blank-slate prediction is unaffected. The one pre-existing test touching a stopword previous word
+("bigram context can outrank...", previous word "der") was re-derived rather than assumed: it asserts
+only the ordinary bonus' first place (Hund 10 + 50x10 = 510 > Haus 100), which the gate leaves intact -
+now exercised through the gate path. 1766 unit tests total (1759 + 7), 0 failures;
+`:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 579 -> 580, `versionName`
+"1.2.83" -> "1.2.84". NOT device-confirmed: the feel of the gated bar after articles/conjunctions (the
+ordinary ranking returns, including the corpus-generic "Stadt"-type chips at their ordinary rank) is the
+one thing only the device can answer; the D-503 round's own device confirmation is equally still
+outstanding, so one device session can confirm both together.

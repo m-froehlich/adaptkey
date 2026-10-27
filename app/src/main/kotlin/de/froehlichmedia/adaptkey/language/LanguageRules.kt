@@ -13,7 +13,7 @@ import de.froehlichmedia.adaptkey.dictionary.CompoundSplit
  * D-320's decimal-comma digit gluing). Before D-410 each of these lived as an unconditional global `object`
  * singleton, applied identically regardless of which language was actually active - see AdaptKey-History.md
  * D-410 for the full design discussion (including what was deliberately left out of this pass and why).
- *
+ * 
  * [LanguageRulesRegistry.rulesFor] resolves the instance for a given [Language], mirroring
  * [de.froehlichmedia.adaptkey.keyboard.LayoutRegistry]'s existing `Map<Language, X>` pattern. A language
  * without its own real implementation gets [NoOpLanguageRules] - every check below defaults to "does not
@@ -24,7 +24,7 @@ interface LanguageRules {
     /**
      * A-05 / D-249: whether [candidate] must be rejected outright as the left half of a word split - a
      * known inseparable verb prefix (or similar) that is not, itself, a genuinely common standalone word.
-     *
+     * 
      * @param candidate the lower-cased left half being considered
      * @param frequency [candidate]'s own standalone dictionary frequency, for the exemption check
      */
@@ -34,7 +34,7 @@ interface LanguageRules {
      * A-05 / D-261: whether [rightHalf] must be rejected as the right half of a word split because
      * [leftHalf] is a plausible agent-noun stem whose genuine feminine form is [rightHalf] glued on, not a
      * real two-word split.
-     *
+     * 
      * @param rightHalf the lower-cased right half being considered
      * @param leftHalf the lower-cased left half being considered
      * @param leftIsNoun whether [leftHalf] itself resolves to a noun in the active dictionary
@@ -48,7 +48,7 @@ interface LanguageRules {
      * word on its own, so it must not be blocked unconditionally - only when immediately glued to a noun,
      * the shape a genuine German compound takes ("schon gut" - "schon" followed by something that is not
      * a noun - must still split normally).
-     *
+     * 
      * @param candidate the lower-cased left half being considered
      * @param rightIsNoun whether the right half resolves to a noun in the active dictionary
      */
@@ -57,7 +57,7 @@ interface LanguageRules {
     /**
      * D-115 / D-125: whether [token] is a plausible regular verb inflection of a known infinitive, so it
      * must never be silently corrected or split.
-     *
+     * 
      * @param isKnownWord looks up whether a candidate reconstructed infinitive is a known dictionary word
      */
     fun isPlausibleVerbInflection(token: String, isKnownWord: (String) -> Boolean): Boolean
@@ -65,14 +65,14 @@ interface LanguageRules {
     /**
      * D-252: whether [token] is a plausible regular adjective comparative/superlative of a known positive,
      * so it must never be silently corrected or split.
-     *
+     * 
      * @param isPlausiblePositive whether a candidate reconstructed stem is a plausible positive adjective
      */
     fun isPlausibleAdjectiveComparative(token: String, isPlausiblePositive: (String) -> Boolean): Boolean
     
     /**
      * D-116: attempts to recognise [token] as a compound-word split (suggestion only, A-08).
-     *
+     * 
      * @param isKnownNoun looks up whether a candidate first part is a known dictionary noun
      * @param resolveRest looks up whether a candidate remainder is itself acceptable
      */
@@ -80,7 +80,7 @@ interface LanguageRules {
     
     /**
      * S-08 / D-137: the word to suggest after a typed time (`HH:MM `).
-     *
+     * 
      * @return the suggestion word, or null when this language has no such convention
      */
     fun timeSuggestionWord(): String?
@@ -88,7 +88,7 @@ interface LanguageRules {
     /**
      * A-04 / D-176: the bundled cross-language-confusables/pre-reform-spelling blacklist seeded into this
      * language's own store on install.
-     *
+     * 
      * @return the words to seed, or empty when this language curates no such list (see
      *         AdaptKey-Progress.md's own open TODO: only German has one today)
      */
@@ -100,6 +100,29 @@ interface LanguageRules {
      * true only for a language whose own decimal convention uses a comma.
      */
     fun decimalCommaGluesDigits(): Boolean
+    
+    /**
+     * D-503-followup: this language's own function words (articles, determiners, prepositions,
+     * conjunctions) after which D-503's n-gram pinning is switched off entirely. An n-gram continuation
+     * of such a word carries almost no information about the continuation's *identity* - the
+     * distribution after an article or a preposition is near-flat over a huge vocabulary - so the
+     * pinned leading slots there are corpus/usage noise ("der" -> "Stadt"), not the personal signal
+     * D-503 exists for ("Liebe" -> "Gäste"). The gate is deliberately *left-side* (it asks about the
+     * PREVIOUS word, never about the continuation) so it covers the bundled tables, the learned
+     * bigram/trigram tables and the Stupid Backoff blend alike: learned article continuations
+     * accumulate without bound during ordinary use (no decay exists for n-grams), which is exactly the
+     * flood this list prevents. The continuations themselves are untouched - they keep surfacing
+     * through the ordinary frequency ranking (and the blank-slate prediction), and [score]'s D-366
+     * bigram bonus keeps applying; only the *pinning* is suppressed.
+     * 
+     * Matched case-insensitively and umlaut-folded by the caller (the same diacritic fold the typed
+     * token goes through), so "Der" at a sentence start gates the same as "der". Pronouns are
+     * deliberately not part of this concept ("ich" -> "bin/habe" is a genuine, informative signal).
+     * 
+     * @return the function words, lower-cased; empty when this language curates no list, in which case
+     *         D-503's pinning applies unconditionally (the pre-followup behaviour)
+     */
+    fun pinnedContinuationStopwords(): Set<String> = emptySet()
 }
 
 /** D-410: the default - no language-specific grammar/orthography rule applies. */

@@ -54,6 +54,53 @@ object GermanRules : LanguageRules {
     override fun decimalCommaGluesDigits(): Boolean = true
     
     /**
+     * D-503-followup: German's function words after which D-503's n-gram pinning is switched off
+     * entirely - see [LanguageRules.pinnedContinuationStopwords] for the mechanism and the rationale.
+     * 
+     * Scope, fixed in the round's discussion with the user (Variant B, the *left-side* gate):
+     * definite/indefinite/negative articles and their inflections, the demonstrative determiner family,
+     * the common prepositions (including the fused contractions "im"/"am"/"zum"/"zur"/"ins"/"ans"/
+     * "vom"/"beim") and the coordinating/subordinating conjunctions. Grounded in the real bundled
+     * `bigram.tsv`, not guessed: the top continuations after "der"/"die"/"das" are corpus-generic
+     * Wikipedia-register nouns ("Stadt", "Zeit", "Gebiet"), and after "und" the entire top-8 are
+     * function words themselves ("die", "der", "in", "das", "den", "dem", "im", "eine") - exactly the
+     * flood the gate removes from the pinned slots.
+     * 
+     * Deliberately NOT on the list, both the user's own call: personal pronouns ("ich" -> "bin/habe"
+     * is a genuine, informative signal - measured top counts after "ich" are an order of magnitude
+     * below the articles', 306 vs. 13,868, so no flood shape exists there) and the possessive
+     * determiners ("mein"/"dein"/... - "mein Schatz" is personal signal D-503 is meant to surface,
+     * and their continuation counts are far too low to flood). Both are extend-as-real-cases-turn-up
+     * decisions, like [COMPOUND_FORMING_PARTICLES]'s own precedent. The corpus/learned n-gram tables
+     * themselves are untouched - only the pinning is gated.
+     */
+    override fun pinnedContinuationStopwords(): Set<String> = PINNING_STOPWORDS
+    
+    /**
+     * D-503-followup: see [pinnedContinuationStopwords]. Stored lower-cased; the caller matches
+     * umlaut-folded, so the "ü" in "für"/"über" is folded away the same way the typed text is.
+     */
+    private val PINNING_STOPWORDS = setOf(
+        // Definite articles.
+        "der", "die", "das",
+        // Indefinite articles, all inflected forms.
+        "ein", "eine", "einen", "einem", "einer", "eines",
+        // Negative article, all inflected forms.
+        "kein", "keine", "keinen", "keinem", "keiner", "keines",
+        // Demonstrative determiner family.
+        "dieser", "diese", "dieses", "diesem", "diesen",
+        // Prepositions.
+        "in", "an", "auf", "mit", "von", "zu", "bei", "nach", "aus", "vor",
+        "über", "unter", "durch", "für", "um", "ohne", "gegen", "zwischen", "seit", "bis", "ab",
+        // Fused preposition-article contractions.
+        "im", "am", "zum", "zur", "ins", "ans", "vom", "beim",
+        // Coordinating and subordinating conjunctions ("als" comparative included, "wie" deliberately
+        // not - its interrogative reading dominates and its continuations are informative verbs).
+        "und", "oder", "aber", "sondern", "denn", "sowie",
+        "dass", "weil", "ob", "wenn", "bevor", "nachdem", "obwohl", "als"
+    )
+    
+    /**
      * D-249: the German inseparable verb prefixes and productive negation/intensifying prefixes that
      * must never be accepted as the left half of a split - splitting either off is "so gut wie immer
      * falsch" (user's own assessment), e.g. "unglücklich" -> "un glücklich", "widersagen" -> "wider

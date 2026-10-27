@@ -427,18 +427,17 @@ non-trivial changes).
   `SuggestionController.update()/resort()` and `SuggestionMerger.merge()`. See §523 and spec S-07's
   D-503 addendum.
 
-- **D-503 follow-up - OPEN, decided 2026-10-27, deliberately not built yet: a curated stopword list for
-  the pinned group only.** Background: the bundled corpus carries thousands of article/function-word
-  bigrams ("der": 5,109 rows, "die": 4,448, "und": 2,619), so after an article the pinned leading slots
-  are filled by corpus-generic continuations ("Stadt", "Zeit", "Begriff" ...). Bounded by design
-  (`nextWords()` is LIMIT-12, the bar shows max 8, and the blank slate already shows exactly those
-  continuations today), so the user decided to build D-503 without a filter and judge on the device.
-  If it feels too aggressive: exempt a curated per-language function-word list (articles, prepositions,
-  conjunctions, pronouns - de ~40 words) from ONLY the pinned group via the `LanguageRules` seam
-  (POS tags are useless for this - articles are tagged bare `OTHER` in `dict.tsv`, verified); the words
-  still surface via the ordinary list (their unigram frequency is huge) and in the blank slate. Removing
-  them from the bigram tables themselves was explicitly rejected (would empty the bar after every
-  article).
+- **D-503 follow-up - RESOLVED (§524, v1.2.84; not yet device-confirmed): after a function word there is no**
+  **pinning at all (Variant B, the left-side gate).** The user's own escalation of the original concern: not
+  only the bundled corpus bigrams flood the pinned slots - the *learned* tables accumulate article/function-
+  word bigrams without bound during ordinary use (n-grams never decay), so the flood grows with use. The
+  gate therefore asks only about the PREVIOUS word (`GermanRules.PINNING_STOPWORDS`: articles, demonstrative
+  determiners, prepositions incl. the fused contractions, conjunctions; pronouns and possessives deliberately
+  pinnable) via `LanguageRules.pinnedContinuationStopwords()` (default empty - other languages keep the
+  unconditional pinning). Bundled/learned continuation data untouched; ordinary ranking + D-366 bonus and
+  the blank slate unchanged. The originally sketched right-side-only filter (Variant A) was dropped - it
+  would have left the corpus-generic content words ("Stadt", "Zeit") pinned after articles and needed
+  per-source reasoning for the learned share. See §524 and spec S-07's D-503-followup addendum.
 
 - **D-502 - RESOLVED, device-confirmed (§521+§522, v1.2.81/v1.2.82; confirmed 2026-10-26): the G-01
   language switch is now discoverable.** Part 1 (§521, v1.2.81): a genuinely fresh language-pack install

@@ -968,6 +968,26 @@ verbatim-plus-replacement pair still precedes everything. This closes the gap D-
 re-weights candidates already in the pool, and the mid-word pool is a frequency-truncated prefix scan a
 mid-frequency partner never survives.
 
+**D-503-followup: after a function word there is no pinning at all (Variant B, the left-side gate).** The
+pinning above is switched off entirely whenever the *previous* word is one of the active language's own
+function words - articles, determiners, prepositions, conjunctions - resolved via the `LanguageRules` seam
+(`pinnedContinuationStopwords()`; a language without its own list keeps the unconditional pinning, so the
+gate is a deliberate per-language curation, not a global rule). The rationale is informational, not
+aesthetic: the continuation distribution after an article or a preposition is near-flat over a huge
+vocabulary, so its top continuations are corpus/usage noise, not the personal signal D-503 exists for -
+and the problem compounds on the learned side, because personal n-grams never decay, so article
+continuations accumulate without bound during ordinary use and would progressively colonise the pinned
+slots. The gate deliberately asks about the previous word only (never about the continuation itself), so
+it covers the bundled tables, the learned bigram/trigram tables and the Stupid Backoff blend alike
+without any per-source reasoning. The continuation data itself is untouched: the words keep surfacing
+through the ordinary frequency ranking (D-366's bigram bonus still applies) and the blank-slate
+prediction keeps showing them - only the *pinning* is suppressed, so the bar after "der " behaves exactly
+as it did before D-503. German's own list (curated in `GermanRules`, matched case-insensitively and
+umlaut-folded) covers the article families, the demonstrative determiners, the common prepositions
+including the fused contractions ("im"/"am"/"zum"/...) and the conjunctions; personal pronouns ("ich" ->
+"bin/habe" is a genuine signal) and the possessive determiners ("mein Schatz" is personal signal, and
+their continuation counts are far too low to flood) are deliberately not on it.
+
 ### S-08 - Time-Pattern "Uhr" Suggestion
 A typed time in `HH:MM ` form (trailing space required) always suggests the German word "Uhr" as a
 completion, independent of the ordinary dictionary/n-gram ranking - only while German is the active language

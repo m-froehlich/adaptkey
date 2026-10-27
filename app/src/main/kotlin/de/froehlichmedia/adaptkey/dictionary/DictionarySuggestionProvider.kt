@@ -624,6 +624,17 @@ class DictionarySuggestionProvider(
      * pool). A-04 is already applied by [orderedContinuations]; S-02 is applied here
      * case-insensitively (a continuation typed out in full is complete, never offered as a chip).
      * 
+     * D-503-followup (Variant B, the left-side gate): after a function word of the active language
+     * ([LanguageRules.pinnedContinuationStopwords]) there is no pinning at all - an article's or a
+     * preposition's continuation distribution is near-flat over the vocabulary, so its top continuations
+     * are corpus/usage noise, not the personal signal D-503 exists for, and the learned article
+     * continuations accumulate without bound during ordinary use (n-grams never decay). The gate is
+     * deliberately about the PREVIOUS word only, so it covers the bundled tables, the learned tables
+     * and the Stupid Backoff blend alike without any per-source reasoning. The continuations themselves
+     * are untouched: they keep surfacing through the ordinary ranking ([score]'s D-366 bigram bonus
+     * still applies) and the blank-slate prediction, only the *pinning* is suppressed - the bar after
+     * "der " behaves exactly as it did before D-503.
+     * 
      * Deliberately unconditional on [suggestionsFor]'s includeExpensiveFallbacks: the two indexed,
      * row-limited store queries behind [orderedContinuations] are the same ones the blank-slate
      * prediction already runs per commit, and the pinning must hold from the very first keystroke,
@@ -638,6 +649,13 @@ class DictionarySuggestionProvider(
         if (previousWord.isNullOrBlank() || token.isEmpty()) {
             return emptyList()
         }
+        // D-503-followup: the left-side gate - checked before any store query runs, so a gated context
+        // costs nothing beyond the set lookup. The previous word goes through the same lowercase+fold
+        // the stopword entries were pre-folded with, so "Der" at a sentence start gates like "der" and
+        // "für" matches its folded "fur" entry.
+        if (diacriticFolding.fold(previousWord.lowercase()) in foldedPinningStopwords) {
+            return emptyList()
+        }
         val foldedToken = diacriticFolding.fold(token)
         return orderedContinuations(previousWord, previousPreviousWord)
             .filter { continuation ->
@@ -646,6 +664,18 @@ class DictionarySuggestionProvider(
                     diacriticFolding.fold(lower).startsWith(foldedToken)
             }
             .map { it.copy(pinned = true) }
+    }
+    
+    /**
+     * D-503-followup: [LanguageRules.pinnedContinuationStopwords]'s entries pre-folded through this
+     * provider's own [diacriticFolding] - the identical fold the typed token and the previous word go
+     * through - so the gate in [pinnedContinuations] is one set membership check on the folded previous
+     * word. Computed lazily once: [languageRules] and [diacriticFolding] are constructor-fixed per
+     * provider instance, so the set can never go stale. Empty for every language that curates no list,
+     * in which case the gate can never fire - exactly the pre-followup behaviour.
+     */
+    private val foldedPinningStopwords: Set<String> by lazy {
+        languageRules.pinnedContinuationStopwords().mapTo(HashSet()) { diacriticFolding.fold(it.lowercase()) }
     }
     
     /**

@@ -1274,4 +1274,104 @@ class DictionarySuggestionProviderTest {
         assertTrue(result.none { it.pinned })
         assertEquals(listOf("Hund"), result.map { it.word })
     }
+    
+    // ---------- D-503-followup: no pinning after function words (Variant B, the left-side gate) ----------
+    
+    @Test
+    fun `D-503-followup no continuation is pinned after an article even when one matches the prefix`() {
+        // The flood shape from the real bundled bigram.tsv: after "der " the corpus-generic top
+        // continuations ("Stadt" 13,868) would pin themselves into the leading slots for any matching
+        // prefix, and the learned article continuations accumulate without bound during ordinary use.
+        // Variant B: after a function word there is no pinning at all - the bar shows exactly the
+        // ordinary ranking (D-366 bonus included), the same order the blank slate shows after "der ",
+        // i.e. the pre-D-503 behaviour. "Sohn"'s bundled bigram (93 x 10 weight = 960) does not
+        // outrank "Stadt"'s raw 13,868 - the ranking, not a pin, decides.
+        store.putWord(WordEntry("Stadt", 13868L))
+        store.putBigram("der", "Stadt", 13868L)
+        store.putWord(WordEntry("Sohn", 30L))
+        store.putBigram("der", "Sohn", 93L)
+        
+        val result = provider.suggestionsFor("s", "der")
+        assertTrue(result.none { it.pinned }, "no chip may be pinned after 'der', was ${result.filter { it.pinned }}")
+        assertEquals(listOf("Stadt", "Sohn"), result.map { it.word })
+    }
+    
+    @Test
+    fun `D-503-followup after a conjunction the bar is the ordinary ranking again`() {
+        // The real data's worst shape: after "und " the entire top-8 continuations are function words
+        // themselves ("die", "der", "in", "das", ...) - the pinned group would be nothing but articles.
+        store.putWord(WordEntry("die", 5000L))
+        store.putWord(WordEntry("dies", 200L))
+        store.putBigram("und", "die", 34578L)
+        
+        val result = provider.suggestionsFor("d", "und")
+        assertTrue(result.none { it.pinned })
+        assertEquals(listOf("die", "dies"), result.map { it.word })
+    }
+    
+    @Test
+    fun `D-503-followup the gate matches the previous word case-insensitively and umlaut-folded`() {
+        store.putWord(WordEntry("Stadt", 500L))
+        store.putBigram("der", "Stadt", 500L)
+        
+        // "Der" at a sentence start is the same function word as "der".
+        val capitalised = provider.suggestionsFor("s", "Der")
+        assertTrue(capitalised.none { it.pinned })
+        
+        // "für" carries an umlaut in the list; both sides go through the same fold ("für" -> "fur").
+        store.putWord(WordEntry("Fach", 500L))
+        store.putBigram("für", "Fach", 500L)
+        val folded = provider.suggestionsFor("f", "für")
+        assertTrue(folded.none { it.pinned })
+    }
+    
+    @Test
+    fun `D-503-followup the gate also covers a learned-only continuation after a stopword`() {
+        // The user's accumulation argument: after some use, countless personal bigrams exist for
+        // articles. A learned-only continuation (D-494 shape, invisible to the ordinary prefix pool)
+        // must surface via pinning after "liebe" but never after "der".
+        store.putWord(WordEntry("Welt", 5000L))
+        repeat(3) { store.learnContext("okay", "liebe") }
+        repeat(3) { store.learnContext("okay", "der") }
+        
+        assertTrue(provider.suggestionsFor("o", "liebe").first().pinned)
+        val gated = provider.suggestionsFor("o", "der")
+        assertTrue(gated.none { it.pinned })
+        assertTrue(gated.none { it.word == "okay" }, "a learned-only word is unreachable without pinning")
+    }
+    
+    @Test
+    fun `D-503-followup possessive determiners are deliberately not stopwords - personal pairs still pin`() {
+        // Variant B's scope decision: pronouns and possessives stay pinnable - "mein Schatz" is the
+        // personal signal D-503 exists for, and their continuation counts are far too low to flood.
+        store.putWord(WordEntry("Schatz", 10L))
+        store.putBigram("mein", "Schatz", 5L)
+        
+        val result = provider.suggestionsFor("s", "mein")
+        assertEquals("Schatz", result.first().word)
+        assertTrue(result.first().pinned)
+    }
+    
+    @Test
+    fun `D-503-followup a language without its own stopword list keeps the unconditional pinning`() {
+        // Every non-German language defaults to emptySet - D-503's pre-followup behaviour is pinned
+        // here so a future stopword curation for another language stays a deliberate per-language act.
+        store.putWord(WordEntry("Stadt", 500L))
+        store.putBigram("der", "Stadt", 500L)
+        val noopProvider = DictionarySuggestionProvider(store, diacriticFolding = Umlaut, languageRules = NoOpLanguageRules)
+        
+        val result = noopProvider.suggestionsFor("s", "der")
+        assertEquals("Stadt", result.first().word)
+        assertTrue(result.first().pinned)
+    }
+    
+    @Test
+    fun `D-503-followup the blank-slate prediction is unaffected by the gate`() {
+        store.putWord(WordEntry("Stadt", 500L))
+        store.putBigram("der", "Stadt", 500L)
+        
+        // The gate suppresses pinning while typing only; the accepted blank-slate behaviour after
+        // "der " is untouched.
+        assertEquals(listOf("Stadt"), provider.nextWordSuggestions("der", null).map { it.word })
+    }
 }
