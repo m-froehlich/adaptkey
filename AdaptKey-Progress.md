@@ -418,6 +418,31 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
+- **D-503 - OPEN, requested 2026-10-27, root-caused by code reading the same day: an n-gram continuation**
+  **(bigram/trigram partner) that survives into continued typing loses its chip entirely instead of keeping**
+  **the first slots.** Report: after a committed "Liebe " the blank-slate prediction correctly offers "Gäste",
+  but typing on ("G") makes the bigram vanish - only ordinary frequency-ranked prefix suggestions appear.
+  The earlier implementation the user remembers is real: D-366 (§340, v1.0.92) wired the bigram/trigram
+  signal into `DictionarySuggestionProvider.score()` so it "stays alive while typing" - but that only
+  *re-weights candidates already in the pool*. The mid-word candidate pool comes from
+  `store.unigramsByPrefix(token, maxCandidates * SCAN_FACTOR)` (24 frequency-ordered entries) plus the
+  fuzzy paths, capped at 12; a partner like "Gäste" is not among the ~24 most frequent "g…" entries of a
+  200k+-row dictionary, so it never enters the pool and its bigram bonus can never act. Blank-slate works
+  because `nextWordSuggestions()` queries the bigram/trigram tables directly. Requirement (user): the
+  previous word's n-gram continuations that case-insensitively start with the typed prefix occupy the
+  FIRST chip slots (in their n-gram order, trigram-first Stupid Backoff as in `nextWordSuggestions()`);
+  ordinary ranked suggestions fill the remaining slots. Direction (to be confirmed with the user before
+  code): provider-level - `suggestionsFor()` injects the prefix-matched continuations (shared
+  continuation-order helper with `nextWordSuggestions()`, A-04 blacklist + S-02 exact-input excluded) as
+  pinned candidates ahead of the ordinary ranking; `Suggestion` gains a `pinned` flag and
+  `SuggestionController.update()`/`resort()` keep pinned entries in the leading slots, exempt from S-03
+  position stabilisation (strict pinning - relying on S-03 continuity alone would only preserve partners
+  already visible as predictions, not newly-matching ones). Casing is already handled mid-word by the
+  composing-non-empty `capitalise()` path (D-440's gate). Open decisions: umlaut-folded prefix matching
+  ("gaste" -> "Gäste") per the umlaut principle vs. strict case-insensitive-only; whether S-12's
+  "km/h"/"Uhr" maximal-score chips may be displaced by pinned partners (practically never co-occurs).
+  Pure unit tests per convention.
+
 - **D-502 - RESOLVED, device-confirmed (§521+§522, v1.2.81/v1.2.82; confirmed 2026-10-26): the G-01
   language switch is now discoverable.** Part 1 (§521, v1.2.81): a genuinely fresh language-pack install
   (never an update) selects that language in the keyboard immediately - `LanguagePacksActivity.importPack()`
