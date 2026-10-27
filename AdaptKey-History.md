@@ -23113,7 +23113,8 @@ call sites asserting a first candidate under a previous word still hold unchange
 against `LearnedBigramBoost`'s curve, not assumed). 1747 -> 1759 unit tests, all green.
 `:app:assembleRelease` + `:app:testDebugUnitTest` green. Spec S-07 gained the D-503 addendum. Progress.md's
 D-503 entry replaced by the standard RESOLVED stub plus the open D-503 follow-up bullet. `versionCode`
-578 -> 579, `versionName` "1.2.82" -> "1.2.83". Not yet device-confirmed.
+578 -> 579, `versionName` "1.2.82" -> "1.2.83". **Device-confirmed by the user on 2026-10-27**, together
+with the §524 gate in one device session ("Das hat scheinbar sehr gut gegriffen").
 
 ## §524 - D-503-followup: after a function word there is no pinning at all - Variant B, the left-side gate (v1.2.84)
 
@@ -23191,7 +23192,7 @@ blank-slate prediction is unaffected. The one pre-existing test touching a stopw
 only the ordinary bonus' first place (Hund 10 + 50x10 = 510 > Haus 100), which the gate leaves intact -
 now exercised through the gate path. 1766 unit tests total (1759 + 7), 0 failures;
 `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 579 -> 580, `versionName`
-"1.2.83" -> "1.2.84". NOT device-confirmed: the feel of the gated bar after articles/conjunctions (the
-ordinary ranking returns, including the corpus-generic "Stadt"-type chips at their ordinary rank) is the
-one thing only the device can answer; the D-503 round's own device confirmation is equally still
-outstanding, so one device session can confirm both together.
+"1.2.83" -> "1.2.84". **Device-confirmed by the user on 2026-10-27** ("Das hat scheinbar sehr gut
+gegriffen"), confirmed together with D-503 itself in the same device session - the gated bar after
+articles/conjunctions feels right on the device, closing this round's and §523's outstanding
+device-confirmation caveats both at once.

@@ -418,7 +418,7 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
-- **D-503 - RESOLVED (§523, v1.2.83; not yet device-confirmed): an n-gram continuation (bigram/trigram
+- **D-503 - RESOLVED, device-confirmed (§523, v1.2.83; confirmed 2026-10-27): an n-gram continuation (bigram/trigram
   partner) that survives into continued typing keeps the first chip slots.** Root cause: D-366's bonus
   re-weights only candidates already in the pool, and the mid-word pool is a frequency-truncated prefix
   scan a mid-frequency partner never survives. Now pinned (strictly, case- and umlaut-folded prefix
@@ -427,7 +427,7 @@ non-trivial changes).
   `SuggestionController.update()/resort()` and `SuggestionMerger.merge()`. See §523 and spec S-07's
   D-503 addendum.
 
-- **D-503 follow-up - RESOLVED (§524, v1.2.84; not yet device-confirmed): after a function word there is no**
+- **D-503 follow-up - RESOLVED, device-confirmed (§524, v1.2.84; confirmed 2026-10-27): after a function word there is no**
   **pinning at all (Variant B, the left-side gate).** The user's own escalation of the original concern: not
   only the bundled corpus bigrams flood the pinned slots - the *learned* tables accumulate article/function-
   word bigrams without bound during ordinary use (n-grams never decay), so the flood grows with use. The
