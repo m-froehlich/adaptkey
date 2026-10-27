@@ -6364,11 +6364,6 @@ class AdaptKeyService : InputMethodService() {
         }
         val candidatesMs = SystemClock.uptimeMillis() - candidatesStartedAt
         diag("AdaptKeySuggest", "refreshSuggestions: candidates=${candidates.size} tookMs=$candidatesMs for input=\"$input\" duringRepeat=$duringRepeat includeExpensiveFallbacks=$includeExpensiveFallbacks")
-        // D-503 (temporary diagnostic): whether the pinned n-gram continuations reached the candidate list,
-        // and against which context they were computed - a missing partner here means the provider saw no
-        // usable previousWord/n-gram row at typing time; a present-but-unshown partner would mean the bar
-        // assembly dropped it. Remove once D-503 is device-confirmed.
-        diag("AdaptKeySuggest", "refreshSuggestions: pinned=${candidates.filter { it.pinned }.map { it.word }} previousWord=$previousWord previousPreviousWord=$previousPreviousWord for input=\"$input\"")
         // D-404-followup: computed from this call's own candidates above (no separate dictionary query) -
         // see ambiguousCasingChips()'s own KDoc. showSuggestions() reads the stored result; the matching
         // word(s) are excluded from the ordinary candidate list at every controller.update() call site below
