@@ -4,6 +4,7 @@
 package de.froehlichmedia.adaptkey.suggestion
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
@@ -167,5 +168,18 @@ class SuggestionControllerTest {
         controller.update("z", listOf(Suggestion("zeit", 5.0)), null)
         
         assertEquals(listOf("zeit"), words(controller))
+    }
+    
+    @Test
+    fun `D-503 the pinned flag rides through to the DisplayItem`() {
+        val controller = controller()
+        controller.update("gr", listOf(Suggestion("Grüße", 5.0, pinned = true), Suggestion("grund", 3.0)), null)
+        
+        val items = controller.displayed()
+        assertTrue(items.first { it.word == "Grüße" }.pinned)
+        assertFalse(items.first { it.word == "grund" }.pinned)
+        // The pinned entry's text is its raw canonical word - the host's mid-word casing re-derivation is
+        // what must skip it, so what is shown here is exactly what a tap commits.
+        assertEquals("Grüße", items.first { it.word == "Grüße" }.text)
     }
 }

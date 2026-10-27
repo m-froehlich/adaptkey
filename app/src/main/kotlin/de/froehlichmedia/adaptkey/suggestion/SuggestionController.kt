@@ -124,11 +124,18 @@ class SuggestionController(private val config: SuggestionConfig) {
      * @property text the label to display
      * @property kind whether this is an ordinary suggestion or the verbatim chip (S-06)
      * @property word the word committed when the entry is tapped (the literal typed word for [Kind.VERBATIM])
+     * @property pinned D-503: true when this entry came from a pinned n-gram continuation. The host uses
+     *           this to exempt the entry from the mid-word casing re-derivation (display and commit both):
+     *           [DisplayItem.word] already carries the continuation's canonical casing from
+     *           `canonicalWordFor()`, and the typed prefix only *selected* the partner - it says nothing
+     *           about its casing (exactly D-440's own "explicitFirstUpper is meaningless for a prediction"
+     *           reasoning, extended from the empty-composing case to the pinned one).
      */
     data class DisplayItem(
         val text: String,
         val kind: Kind,
-        val word: String
+        val word: String,
+        val pinned: Boolean = false
     )
     
     private var input: String = ""
@@ -219,7 +226,16 @@ class SuggestionController(private val config: SuggestionConfig) {
         val alreadyShown = items.mapTo(HashSet()) { it.word.lowercase() }
         for (word in stableOrder) {
             if (word.lowercase() !in alreadyShown) {
-                items.add(DisplayItem(text = word, kind = Kind.NORMAL, word = word))
+                items.add(
+                    DisplayItem(
+                        text = word,
+                        kind = Kind.NORMAL,
+                        word = word,
+                        // D-503: the pinned flag rides through to the renderable entry so the host can
+                        // exempt it from the mid-word casing re-derivation (canonical casing wins).
+                        pinned = candidatesByWord[word]?.pinned == true
+                    )
+                )
             }
         }
         return items

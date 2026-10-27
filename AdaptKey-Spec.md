@@ -974,6 +974,12 @@ its pinned leading slot with its single canonical casing instead of being stripp
 dropped) at the back of the bar. The dual-casing affordance applies unchanged once the word is typed out
 in full: no longer pinned then, it goes through the ordinary exact-match branch like any other candidate.
 
+D-503-followup (v1.2.86): a pinned partner's casing is the canonical casing of the bigram/learned entry
+itself (`canonicalWordFor()`), never re-derived from the typed prefix - both at display and at commit
+(the two mid-word `capitalise()` re-derivations skip pinned entries). The typed prefix only selects the
+partner; it says nothing about its casing (D-440's prediction principle, extended from the empty-
+composing case), so "Liebe gr" offers and commits "Grüße".
+
 **D-503-followup: after a function word there is no pinning at all (Variant B, the left-side gate).** The
 pinning above is switched off entirely whenever the *previous* word is one of the active language's own
 function words - articles, determiners, prepositions, conjunctions - resolved via the `LanguageRules` seam

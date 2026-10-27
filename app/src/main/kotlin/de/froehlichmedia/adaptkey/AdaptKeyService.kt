@@ -6760,7 +6760,14 @@ class AdaptKeyService : InputMethodService() {
         // itself was already returning the correct casing before this step overwrote it.
         val context = contextFor(composing.toString())
         val items = controller.displayed().map { item ->
-            if (item.kind == SuggestionController.Kind.NORMAL && composing.isNotEmpty()) {
+            // D-503 (v1.2.86): a PINNED continuation is exempt from the mid-word re-derivation - the typed
+            // prefix only selected the partner, it says nothing about its casing (D-440's own
+            // "explicitFirstUpper is meaningless for a prediction" reasoning, extended to the pinned case).
+            // item.word already carries the continuation's canonical casing from canonicalWordFor(), and
+            // that is exactly what must show (and commit, see onSuggestionClicked's matching exemption):
+            // "Liebe gr" must offer "Grüße", not the ambiguous-noun lower-case default the re-derivation
+            // falls through to.
+            if (item.kind == SuggestionController.Kind.NORMAL && !item.pinned && composing.isNotEmpty()) {
                 item.copy(text = capitalisation.capitalise(item.word, context))
             } else {
                 item
@@ -7704,7 +7711,12 @@ class AdaptKeyService : InputMethodService() {
                 // before committing it - confirmed from a real device report (tapping the correctly-cased
                 // "Fröhlich"/"Grüße" chip still inserted "fröhlich"/"grüße"). Only an ordinary typing-time
                 // candidate (composing non-empty) still needs fresh derivation here.
-                val word = if (composing.isNotEmpty()) {
+                // D-503 (v1.2.86): a PINNED continuation is exempt too, and now also mid-word - the typed
+                // prefix only selected the partner and says nothing about its casing, so item.word's
+                // canonical casing is what commits ("Liebe gr" + tap = "Grüße", never the ambiguous-noun
+                // lower-case default). What is shown and what commits stay identical (D-196), since
+                // showSuggestions()'s own matching exemption above renders the same canonical text.
+                val word = if (composing.isNotEmpty() && !item.pinned) {
                     capitalisation.capitalise(item.word, contextFor(composing.toString()))
                 } else {
                     item.word

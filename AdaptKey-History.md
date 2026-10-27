@@ -23241,3 +23241,37 @@ failures. `versionCode` 580 -> 581, `versionName` "1.2.84" -> "1.2.85". Not yet 
 **§524's blanket "D-503 device-confirmed" statement is narrowed by this entry: the gate and the
 non-ambiguous partners ("Liebe Gäste") are confirmed; ambiguous-casing partners ("Viele Grüße") were
 not, and are this round's open device check.**
+
+## §526 - D-503 device re-report #2: a pinned continuation's casing must come from the bigram, not the typed prefix (v1.2.86)
+
+Fast follow-up on §525's fix, from the same device session: "Liebe gr" now keeps the chip but shows
+"grüße" - lower-case. Root cause: the casing path never belonged to the pinning. A `Kind.NORMAL` chip's
+display text and its commit word are both re-derived mid-word through `CapitalisationEngine.capitalise()`
+(`showSuggestions()`'s D-196/D-440 render step and `onSuggestionClicked`'s D-440-followup commit step,
+both gated on `composing.isNotEmpty()`). The re-derivation keys on the typed prefix's case
+(`explicitFirstUpper` = false for "gr") and falls through to the linguistic default - for a genuinely
+ambiguous noun (`isAmbiguousNoun` false, the "Grüße" shape) that default is unconditionally lower-case,
+discarding the canonical "Grüße" that `canonicalWordFor()` had put on the chip. D-440/D-440-followup
+already established the principle for the empty-composing case - a prediction's casing cannot be derived
+from what was typed, because nothing was typed. A pinned continuation is a prediction too: the typed
+prefix only *selected* the partner, it says nothing about its casing, so the same principle extends to
+it.
+
+**Fix:** `DisplayItem` gained a `pinned` flag (set in `displayed()` from the candidate's own flag,
+default false for every other constructor call site), and both re-derivation gates now skip pinned
+entries: `showSuggestions()` renders the canonical word unchanged, `onSuggestionClicked` commits
+`item.word` verbatim. "Liebe gr" shows "Grüße" and a tap commits "Grüße" (D-196's shown == committed
+contract holds because both sites share the exemption). Deliberately a flag on the existing `Kind`,
+not a new `Kind`: a pinned chip is an ordinary suggestion in every other respect (G-04 drag-to-trash,
+D-364 dedup, bar rendering), and a kind split would have had to re-plumb all of them for no gain.
+
+Scope note: this makes the canonical casing the single source of truth for pinned partners - a partner
+learned in lower-case ("schatz") would now show and commit lower-case where the noun rule would have
+capitalised it. That is exactly the user's stated rule ("Hier muss der Case aus dem Bigramm genutzt
+werden") and matches the COMPOUND/AMBIGUOUS_CASE precedent (committed "exactly as learned"); the
+everyday cases are proper-noun-style canonical casings ("Grüße", names) where the rule is the wanted one.
+
+1 new unit test (`SuggestionControllerTest`): the pinned flag rides through to the `DisplayItem` (and
+ordinary candidates stay unpinned). `:app:assembleRelease`/`:app:testDebugUnitTest` green, 1767 unit
+tests, 0 failures. `versionCode` 581 -> 582, `versionName` "1.2.85" -> "1.2.86". Not yet
+device-confirmed - re-test "Liebe gr" -> "Grüße" together with §525's pending ambiguous-case check.
