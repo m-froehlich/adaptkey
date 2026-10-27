@@ -1005,7 +1005,7 @@ class AdaptKeyService : InputMethodService() {
      * D-280: if [activeLanguage] itself is no longer among [newStores] - its own language pack having been
      * removed since it was last persisted - it is reset to English here too, the single choke point this
      * can happen from (a fresh load and a later reload alike).
-     *
+     * 
      * D-502: the persisted active language is re-read on every call and adopted when it differs - the store
      * is the single source of truth, and this is what makes a pack freshly installed from
      * `LanguagePacksActivity` while this service stays resident become active immediately (no keyboard
@@ -6364,6 +6364,11 @@ class AdaptKeyService : InputMethodService() {
         }
         val candidatesMs = SystemClock.uptimeMillis() - candidatesStartedAt
         diag("AdaptKeySuggest", "refreshSuggestions: candidates=${candidates.size} tookMs=$candidatesMs for input=\"$input\" duringRepeat=$duringRepeat includeExpensiveFallbacks=$includeExpensiveFallbacks")
+        // D-503 (temporary diagnostic): whether the pinned n-gram continuations reached the candidate list,
+        // and against which context they were computed - a missing partner here means the provider saw no
+        // usable previousWord/n-gram row at typing time; a present-but-unshown partner would mean the bar
+        // assembly dropped it. Remove once D-503 is device-confirmed.
+        diag("AdaptKeySuggest", "refreshSuggestions: pinned=${candidates.filter { it.pinned }.map { it.word }} previousWord=$previousWord previousPreviousWord=$previousPreviousWord for input=\"$input\"")
         // D-404-followup: computed from this call's own candidates above (no separate dictionary query) -
         // see ambiguousCasingChips()'s own KDoc. showSuggestions() reads the stored result; the matching
         // word(s) are excluded from the ordinary candidate list at every controller.update() call site below
@@ -6881,6 +6886,19 @@ class AdaptKeyService : InputMethodService() {
         val chips = mutableListOf<SuggestionController.DisplayItem>()
         val seen = HashSet<String>()
         for (candidate in candidates) {
+            // D-503-followup (v1.2.85): a PINNED continuation is exempt from the pull-out. Reported real
+            // case: after "Viele " the blank-slate prediction "Grüße" (NOUN,VERB -> ambiguous casing) is
+            // a pinned D-503 partner, but the machinery below stripped it from the candidate list and
+            // re-appended both casings at the BACK of the bar (D-404-followup's appended shape), where the
+            // 8-slot cut dropped them entirely - "beim G ist der Grüße-Chip weg". The pinned partner IS
+            // the prediction D-503 exists for and keeps its leading slot with its single canonical casing
+            // (the mid-word capitalise() derivation at render time; the noun reading capitalises anyway).
+            // The full dual-casing affordance returns the moment the word is typed out in full: it is no
+            // longer pinned then (S-02, case-insensitively), survives only as the ordinary exact-match
+            // candidate, and the unchanged exact-match branch below offers the alternate casing as before.
+            if (candidate.pinned) {
+                continue
+            }
             val word = candidate.word
             val key = word.lowercase()
             if (!seen.add(key) || !CapitalisationEngine.isAmbiguousCasing(dictionaryStore.partsOfSpeech(word))) {

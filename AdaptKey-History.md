@@ -23196,3 +23196,48 @@ now exercised through the gate path. 1766 unit tests total (1759 + 7), 0 failure
 gegriffen"), confirmed together with D-503 itself in the same device session - the gated bar after
 articles/conjunctions feels right on the device, closing this round's and §523's outstanding
 device-confirmation caveats both at once.
+
+## §525 - D-503 device re-report: a pinned ambiguous-casing continuation was stripped by the D-404-followup pull-out (v1.2.85)
+
+Right after §524's device confirmation the user re-reported D-503 as "greift leider gar nicht" for their
+most-used phrase: after "Viele " the blank-slate prediction "Grüße" shows, but typing "G" (or "Gr") made
+the chip vanish entirely. Root-caused by code reading the same evening, and it is NOT the pinning: the
+pinning works - D-404-followup's ambiguous-casing machinery removed the pinned candidate one step later.
+
+**The interaction, traced link by link:** "Grüße" is tagged `NOUN,VERB` in `dict.tsv`, so
+`CapitalisationEngine.isAmbiguousCasing` is true (a nominal tag alongside a non-nominal one - D-461's
+shape). While typing a prefix, `ambiguousCasingChips()` therefore found "Grüße" among the candidates,
+created both-casing chips, and the caller's `excludeAmbiguousCasingWords()` pulled the word out of the
+candidate list - **the pinned entry included** - re-appending both casings at the BACK of the bar
+(D-404-followup's deliberate appended shape, "may be crowded out by more important ordinary
+suggestions"). With the ordinary "g"-candidates filling all 8 visible slots (C-03), `remainingSlots`
+was 0 and both Grüße chips were dropped outright. The blank slate is unaffected because D-463 routes
+predictions through `expandAmbiguousCasingInPlace` (rank kept) - exactly the observed split: chip
+visible before typing, gone from the very first letter. "Liebe Gäste" never hit this ("Gäste" is plain
+`NOUN`, `isNounOnly`, not ambiguous) - which is why §524's device session passed while this phrase
+failed. The D-503-followup stopword gate is not involved ("viele" is deliberately not on
+`PINNING_STOPWORDS` - verified before anything else, since it was the obvious first suspect).
+
+**Fix:** `ambiguousCasingChips()` skips pinned candidates - a pinned continuation is exempt from the
+pull-out and keeps its leading slot with its single canonical casing (the mid-word `capitalise()`
+derivation at render time; the noun reading capitalises anyway, so "G"/"g" both show "Grüße"). The
+full dual-casing affordance is deliberately not reconstructed at the pinned slot: while only a prefix
+is typed the canonical form is the right single best guess, and the moment the word is typed out in
+full it is no longer pinned (S-02, case-insensitively), survives only as the ordinary exact-match
+candidate, and the unchanged exact-match branch offers the alternate casing exactly as before D-503.
+`excludeAmbiguousCasingWords()` needed no change of its own - it only removes words present in the
+chip list, and a skipped pinned word is no longer among them.
+
+**Diagnostics:** one temporary `AdaptKeySuggest` line added to `refreshSuggestions()` logging the
+pinned words plus `previousWord`/`previousPreviousWord` at typing time (same shape and lifetime as
+D-452's own temporary timings) - the instrument to confirm on the device that the pinned partner
+reaches the candidate list and survives to the bar. Remove once this round is device-confirmed.
+
+No new unit tests: the fix sits in `AdaptKeyService`'s Android glue (no service test harness exists -
+this project's Android-glue convention), and the pure pieces on both sides (provider pinning,
+controller pinning, merger) are already test-covered; the one-line guard's behaviour is part of the
+device confirmation. `:app:assembleRelease`/`:app:testDebugUnitTest` green, 1766 unit tests, 0
+failures. `versionCode` 580 -> 581, `versionName` "1.2.84" -> "1.2.85". Not yet device-confirmed -
+**§524's blanket "D-503 device-confirmed" statement is narrowed by this entry: the gate and the
+non-ambiguous partners ("Liebe Gäste") are confirmed; ambiguous-casing partners ("Viele Grüße") were
+not, and are this round's open device check.**

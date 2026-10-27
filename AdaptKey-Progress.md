@@ -418,14 +418,19 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
-- **D-503 - RESOLVED, device-confirmed (§523, v1.2.83; confirmed 2026-10-27): an n-gram continuation (bigram/trigram
+- **D-503 - RESOLVED, device-confirmed with one re-found interaction fixed and re-check pending (§523+§525,
+  v1.2.83/v1.2.85; ambiguous-case fix not yet device-confirmed): an n-gram continuation (bigram/trigram
   partner) that survives into continued typing keeps the first chip slots.** Root cause: D-366's bonus
   re-weights only candidates already in the pool, and the mid-word pool is a frequency-truncated prefix
   scan a mid-frequency partner never survives. Now pinned (strictly, case- and umlaut-folded prefix
   matching, all matching partners) ahead of the ordinary ranking via `orderedContinuations()`/
   `pinnedContinuations()` in `DictionarySuggestionProvider`, a `pinned` flag held through
-  `SuggestionController.update()/resort()` and `SuggestionMerger.merge()`. See §523 and spec S-07's
-  D-503 addendum.
+  `SuggestionController.update()/resort()` and `SuggestionMerger.merge()`. Device re-report 2026-10-27
+  ("Viele Grüße": chip gone from the first letter): NOT the pinning - `ambiguousCasingChips()` treated the
+  pinned "Grüße" (`NOUN,VERB`, casing-ambiguous) like any ordinary candidate, `excludeAmbiguousCasingWords()`
+  stripped it and the dual-casing chips fell past the 8-slot cut at the back of the bar. Fixed in §525
+  (v1.2.85): pinned candidates are exempt from the pull-out, keep slot 1 with their canonical casing; the
+  dual-casing affordance returns at exact match as before. See §525 and spec S-07's D-503 addendum.
 
 - **D-503 follow-up - RESOLVED, device-confirmed (§524, v1.2.84; confirmed 2026-10-27): after a function word there is no**
   **pinning at all (Variant B, the left-side gate).** The user's own escalation of the original concern: not

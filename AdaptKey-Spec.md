@@ -968,6 +968,12 @@ verbatim-plus-replacement pair still precedes everything. This closes the gap D-
 re-weights candidates already in the pool, and the mid-word pool is a frequency-truncated prefix scan a
 mid-frequency partner never survives.
 
+D-503-followup (v1.2.85): a pinned partner that happens to be a §6-rule-5-ambiguous noun ("Grüße",
+`NOUN,VERB`) is exempt from the typing-time ambiguous-casing pull-out (D-404-followup/D-463) - it keeps
+its pinned leading slot with its single canonical casing instead of being stripped and re-appended (and
+dropped) at the back of the bar. The dual-casing affordance applies unchanged once the word is typed out
+in full: no longer pinned then, it goes through the ordinary exact-match branch like any other candidate.
+
 **D-503-followup: after a function word there is no pinning at all (Variant B, the left-side gate).** The
 pinning above is switched off entirely whenever the *previous* word is one of the active language's own
 function words - articles, determiners, prepositions, conjunctions - resolved via the `LanguageRules` seam
