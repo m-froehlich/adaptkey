@@ -23237,10 +23237,10 @@ No new unit tests: the fix sits in `AdaptKeyService`'s Android glue (no service 
 this project's Android-glue convention), and the pure pieces on both sides (provider pinning,
 controller pinning, merger) are already test-covered; the one-line guard's behaviour is part of the
 device confirmation. `:app:assembleRelease`/`:app:testDebugUnitTest` green, 1766 unit tests, 0
-failures. `versionCode` 580 -> 581, `versionName` "1.2.84" -> "1.2.85". Not yet device-confirmed -
-**§524's blanket "D-503 device-confirmed" statement is narrowed by this entry: the gate and the
-non-ambiguous partners ("Liebe Gäste") are confirmed; ambiguous-casing partners ("Viele Grüße") were
-not, and are this round's open device check.**
+failures. `versionCode` 580 -> 581, `versionName` "1.2.84" -> "1.2.85". **Device-confirmed by the user
+on 2026-10-27** (same evening, together with §526's fix in one look) - the ambiguous-case partner
+("Viele Grüße") keeps its chip at the first typed letter; §524's blanket "D-503 device-confirmed"
+statement is thereby complete again, now covering every partner shape.
 
 ## §526 - D-503 device re-report #2: a pinned continuation's casing must come from the bigram, not the typed prefix (v1.2.86)
 
@@ -23273,5 +23273,7 @@ everyday cases are proper-noun-style canonical casings ("Grüße", names) where 
 
 1 new unit test (`SuggestionControllerTest`): the pinned flag rides through to the `DisplayItem` (and
 ordinary candidates stay unpinned). `:app:assembleRelease`/`:app:testDebugUnitTest` green, 1767 unit
-tests, 0 failures. `versionCode` 581 -> 582, `versionName` "1.2.85" -> "1.2.86". Not yet
-device-confirmed - re-test "Liebe gr" -> "Grüße" together with §525's pending ambiguous-case check.
+tests, 0 failures. `versionCode` 581 -> 582, `versionName` "1.2.85" -> "1.2.86". **Device-confirmed by
+the user on 2026-10-27** ("Perfekt! So lassen wir das") - "Liebe gr" offers and commits "Grüße",
+§525's ambiguous-case chip stays pinned; D-503 is closed end to end, and §525's temporary
+`AdaptKeySuggest` pinned/previousWord diagnostic line was removed in the same round (v1.2.87).

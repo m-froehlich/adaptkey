@@ -418,24 +418,22 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
-- **D-503 - RESOLVED, device-confirmed with two re-found interactions fixed, re-check pending (§523+§525+§526,
-  v1.2.83/v1.2.85/v1.2.86; §525+§526 fixes not yet device-confirmed): an n-gram continuation (bigram/trigram
-  partner) that survives into continued typing keeps the first chip slots.** Root cause: D-366's bonus
-  re-weights only candidates already in the pool, and the mid-word pool is a frequency-truncated prefix
-  scan a mid-frequency partner never survives. Now pinned (strictly, case- and umlaut-folded prefix
-  matching, all matching partners) ahead of the ordinary ranking via `orderedContinuations()`/
-  `pinnedContinuations()` in `DictionarySuggestionProvider`, a `pinned` flag held through
-  `SuggestionController.update()/resort()` and `SuggestionMerger.merge()`. Device re-report 1 (2026-10-27,
-  "Viele Grüße": chip gone from the first letter): NOT the pinning - `ambiguousCasingChips()` treated the
-  pinned "Grüße" (`NOUN,VERB`, casing-ambiguous) like any ordinary candidate, `excludeAmbiguousCasingWords()`
-  stripped it and the dual-casing chips fell past the 8-slot cut at the back of the bar. Fixed in §525
-  (v1.2.85): pinned candidates are exempt from the pull-out, keep slot 1. Device re-report 2 (same day,
-  "Liebe gr": chip shows lower-case "grüße"): the mid-word casing re-derivation (`capitalise()`,
-  D-440's `composing.isNotEmpty()` gate) keys on the typed prefix and falls to the ambiguous-noun
-  lower-case default, discarding the canonical casing. Fixed in §526 (v1.2.86): `DisplayItem.pinned`
-  rides through, and both re-derivation gates (`showSuggestions()` render, `onSuggestionClicked` commit)
-  skip pinned entries - the canonical casing from the bigram/learned entry is what shows and commits.
-  See §525/§526 and spec S-07's D-503 addendum.
+- **D-503 - RESOLVED, device-confirmed (§523-§526, v1.2.83-v1.2.86; fully confirmed 2026-10-27): an n-gram
+  continuation (bigram/trigram partner) that survives into continued typing keeps the first chip slots.**
+  Root cause: D-366's bonus re-weights only candidates already in the pool, and the mid-word pool is a
+  frequency-truncated prefix scan a mid-frequency partner never survives. Now pinned (strictly, case- and
+  umlaut-folded prefix matching, all matching partners) ahead of the ordinary ranking via
+  `orderedContinuations()`/`pinnedContinuations()` in `DictionarySuggestionProvider`, a `pinned` flag held
+  through `SuggestionController.update()/resort()` and `SuggestionMerger.merge()`. Two device re-reports
+  from the same evening, both fixed: (1, §525, v1.2.85) "Viele Grüße" - `ambiguousCasingChips()` treated
+  the pinned "Grüße" (`NOUN,VERB`, casing-ambiguous) like any ordinary candidate,
+  `excludeAmbiguousCasingWords()` stripped it and the dual-casing chips fell past the 8-slot cut; pinned
+  candidates are now exempt from the pull-out. (2, §526, v1.2.86) "Liebe gr" showed lower-case "grüße" -
+  the mid-word `capitalise()` re-derivation keyed on the typed prefix; `DisplayItem.pinned` now rides
+  through and both re-derivation gates (render + commit) skip pinned entries, so the canonical casing
+  from the bigram/learned entry is what shows and commits. Both device-confirmed 2026-10-27 ("Perfekt! So
+  lassen wir das"); the temporary AdaptKeySuggest diagnostic removed in v1.2.87. See §523-§526 and spec
+  S-07's D-503 addenda.
 
 - **D-503 follow-up - RESOLVED, device-confirmed (§524, v1.2.84; confirmed 2026-10-27): after a function word there is no**
   **pinning at all (Variant B, the left-side gate).** The user's own escalation of the original concern: not
