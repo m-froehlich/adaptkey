@@ -23918,3 +23918,80 @@ not by omission. The feature is closed as implemented: the palette is declarativ
 only logic change is D-136's single uiMode-derived flag, and build + all 1767 unit tests are
 green. The first real-world look happens implicitly the next time the user's system sits in dark
 mode.
+
+## §528 - D-505: the Russian pack's import OOM - the whole import/seeding pipeline streams (v1.2.91)
+
+Community report (2026-10-28): importing the Russian language pack shows "Import failed", while
+the Serbian pack imports without any issues; the follow-up logcat pinned it precisely - importing
+the ru pack throws `OutOfMemoryError`, heap growth limit 268435456 bytes (256 MiB),
+`LanguagePackInstaller.parse()` retains the unpacked 73 MB `dict.tsv` and 141 MB `bigram.tsv` as
+`ByteArray`s, and ART fails a 134217740-byte allocation ("Forcing collection of SoftReferences for
+128MB allocation ... growth limit 268435456").
+
+Verified against the real artifacts before any code, not assumed from the report: the ru archive's
+entries measure 72922991 + 141243947 = 214166938 bytes unpacked - held simultaneously by `parse()`'s
+per-entry `zip.readBytes()` inside a 256 MiB heap, with Kotlin's `readBytes()` doubling its
+intermediate buffer (64 MB -> 128 MB) exactly producing the failed 134217740-byte allocation from
+the log. The sr pack totals 44.7 MB, which fits - hence the report's "Serbian works". A third
+aggravator found while tracing: the ru zip stores `version.txt` *behind* the two large entries, so
+even the D-308 version check (the only reason `parse()` exists as a separate no-write step) cannot
+run without inflating all 214 MB first - a mere "already up to date" re-check paid full extraction
+into memory just to read five bytes.
+
+**The second OOM site - discovered during this round, not in the report.** `DictionaryLoader.seed()`
+read both TSVs as whole `String`s (`LanguagePackStorage.readWords`/`readBigrams`; UTF-16 roughly
+doubles the bytes -> ~430 MB for ru) and then built complete `List<WordEntry>`/`List<TrigramEntry>`s
+before the single `bulkImport` transaction. Even with a fixed `parse()`, importing ru would have
+crashed on the next dictionary load (D-502 makes the service reload right after a fresh install).
+Measured every hosted pack for exposure: ru 214 MB, fi 119 MB (98 MB of it the dict alone), uk 106,
+it 88, pl 79, nl/pt/hu ~62 - the next community reports were waiting in line.
+
+**Fix 1 - the import path streams (`LanguagePackInstaller` reworked, `LanguagePacksActivity`
+stages):** `importPack()` first copies the picked SAF stream into a fixed-name cache file
+(`pack-import.zip` - a leftover from an interrupted attempt is overwritten, never accumulated;
+deleted on every outcome), then three narrow steps replace the read-everything `parse()`:
+`readVersion(archive, language)` opens the archive with `java.util.zip.ZipFile` (random access) and
+reads only the tiny `version.txt` entry - version fallback and the D-386-followup language-mismatch
+check unchanged, but now running *before* any large work, so the ALREADY_CURRENT/OLDER_THAN_INSTALLED
+paths extract nothing at all; `extract(archive, language, packDir)` validates the words entry from
+the central directory (the old missing-`dict.tsv` rejection still happens before anything is
+written), creates the language subfolder, and streams every wanted entry into it as a `.part` file
+via a sequential `ZipInputStream` copy loop; `write(packDir, pack)` is the same per-file atomic
+rename as before. ParsedPack now holds the staged `.part` Files instead of `ByteArray`s. Two
+properties were kept deliberately and one was found empirically: (a) the per-entry CRC verification
+of the original ZipInputStream implementation is *not* lost - the first extract draft used ZipFile's
+own entry streams, and the new corrupt-entry unit test passed a bit-flipped payload silently,
+demonstrating that ZipFile does not check CRC on read, so the copy loop deliberately stayed on
+ZipInputStream (a half-downloaded archive must fail the import, not import garbage); (b) the
+`.part`-rename atomicity survives verbatim, extended by cleanup: a mid-stream failure (truncated
+archive, CRC error) deletes the half-extracted `.part` files and the freshly created empty
+subfolder, while an update's subfolder keeps the previously installed files until `write` renames.
+Declined along the way: `android:largeHeap="true"` - a band-aid affecting the whole IME process, and
+214 MB already sits close enough to a 512 MiB ceiling that the next bigger pack tips it over again;
+shrinking the ru bigram table itself (the pack is by far the outlier) stays a separate content
+decision, independent of this robustness fix.
+
+**Fix 2 - seeding streams chunked (`DictionaryAssetParser`, `DictionaryLoader`,
+`LanguagePackStorage`):** the parser gained `forEachWordChunk`/`forEachBigramChunk(Reader,
+chunkSize, action)` built on the *same* private per-line functions the whole-`String` variants use -
+one parser, not two divergent ones. `DictionaryLoader.seed()` now opens both sources as buffered
+readers (new `LanguagePackStorage.wordsReader`/`bigramsReader`, asset counterparts for bundled
+English) and feeds `SqliteDictionaryStore.bulkImport` in 20000-entry chunk transactions - bulk speed
+kept (hundreds of transactions for ru, still far above row-by-row autocommit), heap cost constant.
+The old all-or-nothing guard is preserved (bigrams only imported when at least one word was seeded),
+and a partially seeded database stays self-healing: the store's installed-pack version is only
+recorded after a fully successful seed, so the existing D-334 reseed path redoes it on the next load.
+
+Tests: `LanguagePackInstallerTest` rewritten for the File-based API (zip helper writes a real staged
+archive; every D-280/D-308/D-310/D-386 contract kept, `parse` tests became `readVersion` tests; new:
+readVersion extracts nothing, extract stages without applying + write renames, corrupt-midway
+cleanup, missing-words cleanup, old pack stays intact between extract and write),
+`LanguagePackStorageTest` adapted to the staged-archive helper, `DictionaryAssetParserTest` +3
+streaming tests (chunked equality with the full-text parse, trailing partial chunk). 1774 unit
+tests, 0 failures, `:app:assembleRelease` green. End-to-end proof with the real failing artifact:
+the actual `adaptkey-lang-ru.zip` was extracted on the JVM through the new `install()` under
+`-Xmx64m` - complete in 1.7 s with byte-exact file sizes (141243947 / 72922991) and version 2 read
+correctly; the old code needed the full 214 MB heap. Spec's §9 gained the D-505 paragraph.
+`versionCode` 586 -> 587, `versionName` "1.2.90" -> "1.2.91". **Not yet device-confirmed** - one
+real import of the ru pack on a phone (and the keyboard surviving the immediately following D-502
+reload) closes the round.

@@ -1958,6 +1958,25 @@ fixed, un-suffixed name - a downloaded pack is extracted into its own per-langua
 rather than a shared flat directory, and the same fixed names are used for the bundled-English assets too
 (one naming convention regardless of whether a language ships inside the APK or is downloaded separately).
 
+D-505: the whole import/seeding pipeline streams - no pack's content is ever fully materialised in memory.
+The original flow read every zip entry into a `ByteArray` first and then seeded the dictionary database from
+whole-`String` files plus fully-built entry lists, which put the largest packs' *unpacked* content straight
+into `OutOfMemoryError` territory (the Russian pack: 73 MB `dict.tsv` + 141 MB `bigram.tsv` = 214 MB
+simultaneously against the ~256 MiB app heap; a community report confirmed the "Import failed" crash exactly
+there, while the much smaller Serbian pack imported fine). Import now works in three narrow steps -
+`readVersion` (a `ZipFile` random-access read of the tiny `version.txt` entry, so the version/language check
+runs *before* any large work and an "already current" re-check extracts nothing at all), `extract`
+(a `ZipInputStream` copy loop streaming each entry into the target language's subfolder as `.part` files,
+keeping both the per-entry CRC verification of the original implementation and the `.part`-rename
+atomicity, with the staged files cleaned up on any mid-stream failure), and `write` (the atomic renames).
+The staged archive itself is a fixed-name copy in the app's own cache directory, deleted again on every
+outcome. Dictionary seeding (`DictionaryLoader`) equally streams both TSV sources line by line and feeds
+`SqliteDictionaryStore.bulkImport` in fixed-size chunk transactions (~20k entries each - bulk speed kept,
+constant heap), still guarded by the old all-or-nothing rule that bigrams are only imported when at least
+one word was seeded; a partially seeded database self-heals, since the store's installed-pack version is
+only recorded after a fully successful seed (the D-334 reseed path). Verified against the real Russian
+archive: a full install extract completes in a 64 MB heap - the old code needed the full 214 MB.
+
 D-454: the settings screen itself no longer describes English in its intro paragraph - it gets its own row,
 identical in shape to every other language's (a flag glyph + bold endonym heading) but with a single,
 permanently disabled button reading "Built-in" in place of the usual status text and install/remove/download

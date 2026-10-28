@@ -30,12 +30,13 @@ import de.froehlichmedia.adaptkey.download.DownloadFileSupport
 import de.froehlichmedia.adaptkey.language.ActiveLanguageStore
 import de.froehlichmedia.adaptkey.language.InstalledLanguagesStore
 import de.froehlichmedia.adaptkey.language.Language
+import java.io.File
 import java.text.Collator
 
 /**
  * D-280: install/remove screen for the languages beyond English (always bundled) - reachable from Settings
  * at any time, and also opened directly from the onboarding language-selection step.
- *
+ * 
  * Mirrors [Tier3ModelActivity]'s own browser-download + SAF-import flow exactly (the app has no internet
  * permission, so the network step is delegated to the browser: "download" opens the pack's URL, "import"
  * then locates the downloaded file and unzips it via [LanguagePackInstaller]), just for a list of languages
@@ -43,7 +44,7 @@ import java.text.Collator
  * [InstalledLanguagesStore], whose own listener in `AdaptKeyService` reloads the dictionary stores
  * immediately - no manual keyboard restart needed. Android-view glue, covered by instrumented rather than
  * unit tests, like every other settings screen here.
- *
+ * 
  * D-413: "import" opens a plain `ACTION_OPEN_DOCUMENT` single-file picker again - reverting D-386's
  * folder-grant automation, which turned out to be unusable on a real device (Samsung One UI, a recent
  * Android version refuses to grant the Downloads folder itself via `ACTION_OPEN_DOCUMENT_TREE` at all:
@@ -173,7 +174,7 @@ class LanguagePacksActivity : SettingsScreenActivity() {
      * the archive itself, not in this app's compiled-in catalog, so a manual re-check must always be
      * possible even when the hint says "current" (e.g. a community contributor revised the hosted pack
      * without a matching app release).
-     *
+     * 
      * D-334: the hint is additionally suppressed when [InstalledLanguagesStore.suppressedCatalogVersion]
      * matches or exceeds the catalog's own version - the user already attempted an import that turned out
      * to be already current (the hosted archive was stale), and the hint must not reappear until a future
@@ -243,7 +244,7 @@ class LanguagePacksActivity : SettingsScreenActivity() {
     /**
      * D-413: begins the import - launches a plain `ACTION_OPEN_DOCUMENT` single-file picker every time (no
      * more persisted folder grant to check first).
-     *
+     * 
      * @param entry the row whose Import button was tapped
      */
     private fun startImport(entry: LanguagePackCatalog.Entry) {
@@ -272,7 +273,7 @@ class LanguagePacksActivity : SettingsScreenActivity() {
      * it is already current, so a re-check never silently downgrades or redundantly reseeds the dictionary
      * database. A language not yet installed at all always applies unconditionally - there is nothing to
      * compare against yet.
-     *
+     * 
      * D-334: the old [android.content.Context.deleteDatabase] call that preceded the install is gone - it
      * wiped the entire SQLite database including every learned word, blacklist entry, and pending-blacklist
      * mark on every real pack update. The reseed itself now lives in [DictionaryLoader.loadStores], which
@@ -281,16 +282,25 @@ class LanguagePacksActivity : SettingsScreenActivity() {
      * be newer (the stale-hosted-archive case), [InstalledLanguagesStore.suppressCatalogVersion] records the
      * dismissed catalog version so the "update available" hint does not reappear until the catalog itself
      * moves past it in a future app release.
-     *
+     * 
      * D-386/D-413: now called already on the picker callback's own background thread (never spawns its own),
      * and deletes the picked archive afterward when it is recent enough ([DownloadFileSupport.
      * deleteIfRecentlyCreated]) - on every outcome except a hard read/parse failure, so a stale archive that
      * genuinely failed to import is left behind for inspection rather than silently destroyed.
-     *
+     * 
      * D-502: a genuine fresh install (the language was not installed at all) additionally selects the newly
      * installed language as the active keyboard language via [ActiveLanguageStore]; an update never does -
      * see the INSTALL branch below.
-     *
+     * 
+     * D-505: the picked archive is first staged into this activity's own cache directory
+     * ([STAGED_ARCHIVE_FILE_NAME], streamed copy - the SAF stream is not seekable, but the installer's
+     * random-access version check and per-entry streaming extraction need a real file). The version/
+     * language check then runs against that staged file *before* anything is extracted, so the
+     * "already current" / "older than installed" paths never touch the (potentially very large) dictionary
+     * entries at all, and no entry of the archive is ever fully materialised in memory - the original
+     * read-everything-into-`ByteArray`-first flow threw `OutOfMemoryError` on the largest packs (Russian:
+     * 214 MB unpacked against a ~256 MiB app heap). The staged file is deleted again on every outcome.
+     * 
      * @param uri the resolved archive to import
      * @param entry the row whose Import button was tapped - only [LanguagePackCatalog.Entry.language] is
      *        actually used for the install itself; [LanguagePackCatalog.Entry.version] is not consulted for
@@ -299,39 +309,45 @@ class LanguagePacksActivity : SettingsScreenActivity() {
     private fun importPack(uri: Uri, entry: LanguagePackCatalog.Entry) {
         val language = entry.language
         val alreadyInstalled = language in InstalledLanguagesStore.load(this)
+        val staged = File(cacheDir, STAGED_ARCHIVE_FILE_NAME)
         val result = runCatching {
+            // D-505: stage the picked archive into the cache first (fixed name, so a leftover from an
+            // interrupted earlier attempt is simply overwritten rather than accumulated).
             contentResolver.openInputStream(uri).use { input ->
                 requireNotNull(input) { "cannot open $uri" }
-                val pack = LanguagePackInstaller.parse(input, language)
-                val installedVersion = if (alreadyInstalled) InstalledLanguagesStore.installedVersion(this, language) else null
-                val check = LanguagePackInstaller.compareVersions(pack.version, installedVersion)
-                when (check) {
-                    LanguagePackInstaller.VersionCheck.INSTALL -> {
-                        LanguagePackInstaller.write(LanguagePackStorage.packDir(this), pack)
-                        InstalledLanguagesStore.add(this, language, pack.version)
-                        // D-502: a genuinely fresh install - the language had no pack before this archive
-                        // was imported - selects the new language in the keyboard right away, so it is
-                        // actually visible the next time the keyboard opens (the reason a user installs a
-                        // pack in the first place). An update of an existing pack deliberately does NOT
-                        // touch the active language: re-importing a newer dictionary must never yank the
-                        // keyboard out from under whichever language the user is currently typing in.
-                        // The resident AdaptKeyService picks the persisted switch up via installStores()'s
-                        // own re-read of ActiveLanguageStore (no keyboard restart needed).
-                        if (!alreadyInstalled) {
-                            ActiveLanguageStore.save(this, language)
-                        }
-                    }
-                    LanguagePackInstaller.VersionCheck.ALREADY_CURRENT, LanguagePackInstaller.VersionCheck.OLDER_THAN_INSTALLED -> {
-                        // D-334: the hosted archive is stale relative to the catalog's claimed version (or,
-                        // D-386-followup, older than what's installed) - suppress the "update available"
-                        // hint for this exact catalog version so it does not reappear on every rebuild()
-                        // until a future app release raises the catalog further.
-                        InstalledLanguagesStore.suppressCatalogVersion(this, language, entry.version)
+                staged.outputStream().use { output -> input.copyTo(output) }
+            }
+            val version = LanguagePackInstaller.readVersion(staged, language)
+            val installedVersion = if (alreadyInstalled) InstalledLanguagesStore.installedVersion(this, language) else null
+            val check = LanguagePackInstaller.compareVersions(version, installedVersion)
+            when (check) {
+                LanguagePackInstaller.VersionCheck.INSTALL -> {
+                    LanguagePackInstaller.install(staged, LanguagePackStorage.packDir(this), language)
+                    InstalledLanguagesStore.add(this, language, version)
+                    // D-502: a genuinely fresh install - the language had no pack before this archive
+                    // was imported - selects the new language in the keyboard right away, so it is
+                    // actually visible the next time the keyboard opens (the reason a user installs a
+                    // pack in the first place). An update of an existing pack deliberately does NOT
+                    // touch the active language: re-importing a newer dictionary must never yank the
+                    // keyboard out from under whichever language the user is currently typing in.
+                    // The resident AdaptKeyService picks the persisted switch up via installStores()'s
+                    // own re-read of ActiveLanguageStore (no keyboard restart needed).
+                    if (!alreadyInstalled) {
+                        ActiveLanguageStore.save(this, language)
                     }
                 }
-                check
+                LanguagePackInstaller.VersionCheck.ALREADY_CURRENT, LanguagePackInstaller.VersionCheck.OLDER_THAN_INSTALLED -> {
+                    // D-334: the hosted archive is stale relative to the catalog's claimed version (or,
+                    // D-386-followup, older than what's installed) - suppress the "update available"
+                    // hint for this exact catalog version so it does not reappear on every rebuild()
+                    // until a future app release raises the catalog further.
+                    InstalledLanguagesStore.suppressCatalogVersion(this, language, entry.version)
+                }
             }
+            check
         }
+        // D-505: the staged cache copy has served its purpose on every outcome - success, skip, or failure.
+        staged.delete()
         if (!result.isFailure) {
             DownloadFileSupport.deleteIfRecentlyCreated(this, uri, DownloadFileSupport.DELETE_MAX_AGE_MILLIS)
         }
@@ -385,6 +401,14 @@ class LanguagePacksActivity : SettingsScreenActivity() {
          * [highlightLanguage].
          */
         const val EXTRA_HIGHLIGHT_LANGUAGE_CODE = "highlight_language_code"
+        
+        /**
+         * D-505: the fixed cache-file name the picked archive is staged into before [importPack]'s
+         * version check and [LanguagePackInstaller] extraction run over it. Deliberately fixed rather than
+         * unique-per-import: a leftover from an interrupted earlier attempt is simply overwritten by the
+         * next import instead of accumulating, and [importPack] deletes it again on every outcome.
+         */
+        private const val STAGED_ARCHIVE_FILE_NAME = "pack-import.zip"
         
         /**
          * D-454: one editorially-chosen flag per language (two for [Language.ENGLISH], the user's own

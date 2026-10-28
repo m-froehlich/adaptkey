@@ -6,6 +6,7 @@ package de.froehlichmedia.adaptkey.dictionary
 import android.content.Context
 import de.froehlichmedia.adaptkey.language.Language
 import java.io.File
+import java.io.Reader
 
 /**
  * D-280: resolves the app-private directory that holds a user-installed language pack (an unigram + a
@@ -13,13 +14,13 @@ import java.io.File
  * [de.froehlichmedia.adaptkey.settings.LanguagePacksActivity]), mirroring
  * [de.froehlichmedia.adaptkey.prediction.onnx.Tier3ModelStorage]'s own "single source of truth shared by
  * the import screen and the reader" reasoning.
- *
+ * 
  * D-310: each language gets its own subfolder (`<packDir>/<code>/`) holding fixed-name files (`dict.tsv`,
  * `bigram.tsv`, `hints.tsv`) - before this, all languages' files sat flat in one shared [packDir], each
  * disambiguated only by a `_<code>` filename suffix. The suffix is gone now that the folder itself already
  * scopes every file to one language, and the same fixed names are used for [DictionaryLoader]'s bundled-
  * English assets too (`assets/<code>/`), so there is exactly one naming convention across both sources.
- *
+ * 
  * Lives under the app's internal `filesDir`, so it needs no storage permission and is removed on uninstall.
  * [DictionaryLoader] reads from here for every language outside its own [DictionaryLoader.BUNDLED_LANGUAGES].
  */
@@ -83,6 +84,22 @@ object LanguagePackStorage {
         return runCatching { bigramsFile(context, language).readText(Charsets.UTF_8) }.getOrNull()
     }
     
+    /**
+     * D-505: streaming counterpart of [readWords] - a buffered reader over the installed unigram file,
+     * for [DictionaryLoader]'s chunked seeding (the largest packs' files, Russian's 73 MB `dict.tsv`
+     * alone, must never be materialised as a whole-`String` any more). The caller closes the reader.
+     * 
+     * @return the reader, or null when not installed / unreadable
+     */
+    fun wordsReader(context: Context, language: Language): Reader? {
+        return runCatching { wordsFile(context, language).bufferedReader(Charsets.UTF_8) }.getOrNull()
+    }
+    
+    /** D-505: the bigram counterpart of [wordsReader]. The caller closes the reader. */
+    fun bigramsReader(context: Context, language: Language): Reader? {
+        return runCatching { bigramsFile(context, language).bufferedReader(Charsets.UTF_8) }.getOrNull()
+    }
+    
     /** @return the installed letter-hint file's content, or null when not installed / unreadable */
     fun readHints(context: Context, language: Language): String? {
         return runCatching { hintsFile(context, language).readText(Charsets.UTF_8) }.getOrNull()
@@ -101,7 +118,7 @@ object LanguagePackStorage {
     /**
      * Removes [language]'s installed pack files (not the dictionary database itself - the caller is
      * responsible for also deleting that, see [DictionaryLoader.databaseName]).
-     *
+     * 
      * @param context any valid context
      * @param language the language to remove
      */

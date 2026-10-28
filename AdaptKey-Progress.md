@@ -418,6 +418,20 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
+- **D-505 - RESOLVED, end-to-end verified (§528, v1.2.91; implemented 2026-10-28, NOT yet device-confirmed):
+  the whole language-pack import/seeding pipeline streams.** Community report: importing the Russian pack
+  threw `OutOfMemoryError` in `LanguagePackInstaller.parse()` (214 MB unpacked entries held as `ByteArray`s
+  against the 256 MiB heap; Serbian's 44.7 MB fit, hence "Serbian works"). Import now stages the picked
+  archive into a cache file and runs `readVersion` (ZipFile random access, no large entry inflated, skip
+  paths extract nothing) -> `extract` (ZipInputStream copy loop into `.part` files, per-entry CRC kept,
+  half-extracted files cleaned up on failure) -> `write` (the old atomic renames). The second, unreported
+  OOM site found in the same round - `DictionaryLoader.seed()` materialising UTF-16 strings + full entry
+  lists (ru: ~430 MB; also fi/uk/it/pl were next in line) - now streams line by line into 20000-entry
+  chunked `bulkImport` transactions via `DictionaryAssetParser.forEachWordChunk/forEachBigramChunk`. Proven
+  against the real ru archive: full extract under a 64 MB JVM heap in 1.7 s, byte-exact. `largeHeap` was
+  explicitly declined; shrinking the ru bigram table itself remains a separate content decision. Device
+  confirmation (one real ru import + the D-502 reload surviving) closes the round.
+
 - **D-504 - OPEN, requested 2026-10-28, not started: auto-correction fine-tuning - the automatic A-05 word**
   **split fires far too often; the split probability must drop drastically.** User request: "Am meisten stört
   das automatische Splitten. Die Split-Wahrscheinlichkeit muss drastisch sinken. Das passiert einfach zu
@@ -450,14 +464,21 @@ non-trivial changes).
      `di`, `al`, `to`, `at`, `and`, `of`, `for`, `van`, ... - file extensions, units, English strays. A
      mechanical short-row scan (D-368's method) enumerates candidates for the standing per-candidate
      confirmation.
-  4. **REJECTED by user decision (2026-10-28): the proper-noun right-half veto** flagged in D-493's entry as
-     "worth deciding" - "nur eine Mini-Symptom-Bekämpfung"; with 1-3 in place the case it targets cannot arise.
-     D-493's open flag is answered by this entry.
-  5. Still open (user's call): flipping the **C-21 default to "Chip only"** (D-490 is the precedent for
+  4. **AGREED (user decision 2026-10-28): `Meißen` leaves the dictionary** - verified row `Meißen 352
+     NOUN,PROPER_NOUN`. The user's framing: "IST zwar jetzt nur ein zufälliger Treffer, von denen es sicher
+     noch viele gibt. Aber 'Meißen' ist ein sehr ungebräuchlicher, weltener Eigenname, der im Wörterbuch
+     nichts verloren hat." The class is measured, not assumed: 6,047 PROPER_NOUN rows in `dict.tsv` (the
+     Wikipedia-corpus extraction), so this round must define the policy for the class, not treat Meißen as a
+     one-off - where a proper noun's own frequency floor sits (which stay, e.g. "Berlin"/"Müller"; which go)
+     without a full proper-noun review becoming a D-368-sized project of its own.
+  5. **REJECTED by user decision (2026-10-28): the proper-noun right-half veto** flagged in D-493's entry as
+     "worth deciding" - "nur eine Mini-Symptom-Bekämpfung"; with 1-4 in place the case it targets cannot
+     arise. D-493's open flag is answered by this entry.
+  6. Still open (user's call): flipping the **C-21 default to "Chip only"** (D-490 is the precedent for
      flipping a default) - the radical version, no silent split at all, at the cost of a tap per genuine
      split; default Automatic stays for now.
   Parallel track unchanged: missing REAL words are the other half of D-493 (the ~12,123 never-attested verbs,
-  D-462's B2 scope) - after 1-3 an absent word stays whole as typed instead of being split, which is the
+  D-462's B2 scope) - after 1-4 an absent word stays whole as typed instead of being split, which is the
   correct interim behaviour, but adding the family remains the real fix.
   Any threshold change must be validated in BOTH directions: fewer silent splits (the goal) without losing the
   genuine missed-space recoveries - recall measured usage-weighted like §499's fusion evaluation, ideally on a
@@ -554,9 +575,11 @@ non-trivial changes).
   its full paradigm (line 9929), but it is one of the ~12,123 verbs the corpus never attested - D-462's
   deliberately-left-out B2 scope, not one of the 2,250 completed ones. Direction: add the family - either as its
   own D-469-style data round or as the first concrete everyday case motivating the still-pending D-462
-  review-list round (user's call). Also worth deciding then: whether the split path wants an additional guard
-  for a proper-noun right half (D-114/D-227-style suspicion), since "Meißen" is exactly the register where
-  corpus-driven proper nouns collide with everyday words.
+   review-list round (user's call). Also worth deciding then: whether the split path wants an additional guard
+   for a proper-noun right half (D-114/D-227-style suspicion), since "Meißen" is exactly the register where
+   corpus-driven proper nouns collide with everyday words. (Answered 2026-10-28 by D-504: the guard itself is
+   REJECTED - "nur eine Mini-Symptom-Bekämpfung"; the fix there is split thresholds + data cleanup, and
+   `Meißen` itself is agreed to leave the dictionary.)
 - **D-492 - OPEN, reported 2026-10-23, root-caused by code reading (2026-10-23, refined same day with the**
   **user's observation that it "meistens" fires on system credential-manager fills) - two defect classes; the**
   **primary one is a stale-composing hole in onUpdateSelection's own-edit detection.**

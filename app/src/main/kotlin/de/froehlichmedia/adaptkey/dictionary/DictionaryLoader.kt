@@ -6,6 +6,7 @@ package de.froehlichmedia.adaptkey.dictionary
 import android.content.Context
 import de.froehlichmedia.adaptkey.language.InstalledLanguagesStore
 import de.froehlichmedia.adaptkey.language.Language
+import java.io.Reader
 
 /**
  * Builds the per-language dictionary stores: [BUNDLED_LANGUAGES] are seeded on first run from their asset
@@ -63,6 +64,14 @@ object DictionaryLoader {
      * existing install has run it once (the recorded meta row then simply stays behind, harmless).
      */
     private const val BIGRAM_CLEANUP_VERSION = 1
+    
+    /**
+     * D-505: how many parsed entries one [SqliteDictionaryStore.bulkImport] transaction carries during
+     * [seed]'s streaming import. Large enough to keep the bulk-insert speed (the whole point of
+     * bulkImport), small enough that a chunk of entries is a rounding error next to a phone heap even for
+     * the largest packs (Russian: a few million rows over ~200 transactions).
+     */
+    private const val SEED_CHUNK_SIZE = 20_000
     
     /**
      * The SQLite database file backing [language]'s dictionary. Public so the C-05 blacklist editor can
@@ -135,26 +144,58 @@ object DictionaryLoader {
         }
     }
     
+    /**
+     * D-505: seeds by streaming both sources line by line in fixed-size chunks
+     * ([SEED_CHUNK_SIZE] entries per [SqliteDictionaryStore.bulkImport] transaction) instead of
+     * materialising the whole text and the whole entry list first. The old shape held the two files as
+     * UTF-16 strings (roughly twice their byte size) plus complete [List]s of every parsed entry
+     * simultaneously - for the Russian pack that is several hundred megabytes against a ~256 MiB app
+     * heap, a guaranteed `OutOfMemoryError` on the first load after a successful import. Chunked
+     * transactions keep the bulk-insert speed (far above row-by-row autocommit) while the heap cost
+     * becomes constant; the seed stays self-healing, since [SqliteDictionaryStore]'s installed-pack
+     * version is only recorded after a fully successful seed (see [loadStores]'s D-334 reseed path).
+     * The old all-or-nothing guard is kept: bigrams are only imported when at least one word was seen.
+     */
     private fun seed(context: Context, language: Language, store: SqliteDictionaryStore) {
-        val wordsText: String?
-        val bigramsText: String?
-        if (language in BUNDLED_LANGUAGES) {
-            wordsText = readAsset(context, wordsAsset(language))
-            bigramsText = readAsset(context, bigramsAsset(language))
-        } else {
-            wordsText = LanguagePackStorage.readWords(context, language)
-            bigramsText = LanguagePackStorage.readBigrams(context, language)
+        var seededWords = false
+        wordsReader(context, language)?.use { reader ->
+            DictionaryAssetParser.forEachWordChunk(reader, SEED_CHUNK_SIZE) { chunk ->
+                store.bulkImport(chunk, emptyList())
+                seededWords = true
+            }
         }
-        val words = wordsText?.let { DictionaryAssetParser.parseWords(it) } ?: emptyList()
-        val bigrams = bigramsText?.let { DictionaryAssetParser.parseBigrams(it) } ?: emptyList()
-        if (words.isNotEmpty()) {
-            store.bulkImport(words, bigrams)
+        if (!seededWords) {
+            return
+        }
+        bigramsReader(context, language)?.use { reader ->
+            DictionaryAssetParser.forEachBigramChunk(reader, SEED_CHUNK_SIZE) { chunk ->
+                store.bulkImport(emptyList(), chunk)
+            }
         }
     }
     
-    private fun readAsset(context: Context, name: String): String? {
+    /** D-505: streaming source for [seed] - bundled languages read from their APK asset, packs from disk. */
+    private fun wordsReader(context: Context, language: Language): Reader? {
+        return if (language in BUNDLED_LANGUAGES) {
+            assetReader(context, wordsAsset(language))
+        } else {
+            LanguagePackStorage.wordsReader(context, language)
+        }
+    }
+    
+    /** D-505: streaming source for [seed], bigram counterpart of [wordsReader] (optional file). */
+    private fun bigramsReader(context: Context, language: Language): Reader? {
+        return if (language in BUNDLED_LANGUAGES) {
+            assetReader(context, bigramsAsset(language))
+        } else {
+            LanguagePackStorage.bigramsReader(context, language)
+        }
+    }
+    
+    /** D-505: streaming counterpart of the old whole-asset readAsset - a buffered UTF-8 asset reader. */
+    private fun assetReader(context: Context, name: String): Reader? {
         return runCatching {
-            context.assets.open(name).bufferedReader(Charsets.UTF_8).use { it.readText() }
+            context.assets.open(name).bufferedReader(Charsets.UTF_8)
         }.getOrNull()
     }
 }

@@ -3,6 +3,7 @@
 
 package de.froehlichmedia.adaptkey.dictionary
 
+import android.content.Context
 import de.froehlichmedia.adaptkey.language.Language
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -12,8 +13,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
@@ -23,16 +22,17 @@ import java.util.zip.ZipOutputStream
 @Config(sdk = [34])
 class LanguagePackStorageTest {
     
-    private fun zipOf(vararg entries: Pair<String, String>): ByteArrayInputStream {
-        val bytes = ByteArrayOutputStream()
-        ZipOutputStream(bytes).use { zip ->
+    /** D-505: the installer's API takes a real [File], so the entries are zipped into a cache file. */
+    private fun stagedArchive(context: Context, vararg entries: Pair<String, String>): File {
+        val archive = File(context.cacheDir, "pack.zip")
+        ZipOutputStream(archive.outputStream()).use { zip ->
             for ((name, content) in entries) {
                 zip.putNextEntry(ZipEntry(name))
                 zip.write(content.toByteArray(Charsets.UTF_8))
                 zip.closeEntry()
             }
         }
-        return ByteArrayInputStream(bytes.toByteArray())
+        return archive
     }
     
     @Test
@@ -49,7 +49,7 @@ class LanguagePackStorageTest {
     fun `isInstalled and read functions work off the newly written subfolder layout`() {
         val context = RuntimeEnvironment.getApplication()
         LanguagePackInstaller.install(
-            zipOf("dict.tsv" to "der\t100\n", "bigram.tsv" to "a\tb\t1\n", "hints.tsv" to "a=ä"),
+            stagedArchive(context, "dict.tsv" to "der\t100\n", "bigram.tsv" to "a\tb\t1\n", "hints.tsv" to "a=ä"),
             LanguagePackStorage.packDir(context),
             Language.GERMAN
         )
@@ -63,7 +63,11 @@ class LanguagePackStorageTest {
     @Test
     fun `remove deletes the language's own subfolder too, not just the files inside it`() {
         val context = RuntimeEnvironment.getApplication()
-        LanguagePackInstaller.install(zipOf("dict.tsv" to "der\t100\n"), LanguagePackStorage.packDir(context), Language.GERMAN)
+        LanguagePackInstaller.install(
+            stagedArchive(context, "dict.tsv" to "der\t100\n"),
+            LanguagePackStorage.packDir(context),
+            Language.GERMAN
+        )
         
         LanguagePackStorage.remove(context, Language.GERMAN)
         

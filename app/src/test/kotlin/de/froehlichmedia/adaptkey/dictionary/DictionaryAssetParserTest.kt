@@ -93,4 +93,47 @@ class DictionaryAssetParserTest {
         assertTrue(DictionaryAssetParser.parseWords("").isEmpty())
         assertTrue(DictionaryAssetParser.parseBigrams("").isEmpty())
     }
+    
+    @Test
+    fun `D-505 chunked word streaming yields exactly the full-text parse`() {
+        val raw = (
+            "Haus\t400\tNOUN\n" +
+                "\n" +
+                "gut\tNOTANUMBER\tADJECTIVE\n" +
+                "gehen\t200\tVERB\tgehen\n" +
+                "das\t970\tOTHER\n" +
+                "wort\t12\n"
+            )
+        
+        val streamed = ArrayList<WordEntry>()
+        raw.byteInputStream(Charsets.UTF_8).bufferedReader(Charsets.UTF_8).use { reader ->
+            DictionaryAssetParser.forEachWordChunk(reader, 2) { chunk -> streamed.addAll(chunk) }
+        }
+        
+        assertEquals(DictionaryAssetParser.parseWords(raw), streamed)
+    }
+    
+    @Test
+    fun `D-505 word streaming delivers a trailing partial chunk`() {
+        val raw = "a\t1\nb\t2\nc\t3\nd\t4\ne\t5\n"
+        
+        val chunkSizes = ArrayList<Int>()
+        raw.byteInputStream(Charsets.UTF_8).bufferedReader(Charsets.UTF_8).use { reader ->
+            DictionaryAssetParser.forEachWordChunk(reader, 2) { chunk -> chunkSizes.add(chunk.size) }
+        }
+        
+        assertEquals(listOf(2, 2, 1), chunkSizes)
+    }
+    
+    @Test
+    fun `D-505 chunked bigram streaming yields exactly the full-text parse`() {
+        val raw = "der\tHund\t50\nonlyone\ndie\tKatze\tNAN\nab\tcd\t7\r\n"
+        
+        val streamed = ArrayList<DictionaryAssetParser.Bigram>()
+        raw.byteInputStream(Charsets.UTF_8).bufferedReader(Charsets.UTF_8).use { reader ->
+            DictionaryAssetParser.forEachBigramChunk(reader, 1) { chunk -> streamed.addAll(chunk) }
+        }
+        
+        assertEquals(DictionaryAssetParser.parseBigrams(raw), streamed)
+    }
 }
