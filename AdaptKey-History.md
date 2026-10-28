@@ -23866,3 +23866,47 @@ tests, 0 failures. `versionCode` 581 -> 582, `versionName` "1.2.85" -> "1.2.86".
 the user on 2026-10-27** ("Perfekt! So lassen wir das") - "Liebe gr" offers and commits "Grüße",
 §525's ambiguous-case chip stays pinned; D-503 is closed end to end, and §525's temporary
 `AdaptKeySuggest` pinned/previousWord diagnostic line was removed in the same round (v1.2.87).
+
+## §527 - D-501 Implemented: the Dark Theme Simply Follows the System - No Switch (v1.2.90)
+
+D-501 had sat in the backlog since 2026-10-26 as "a Dark Mode with a three-way switch (System
+Default / Light / Dark), plan first". Before any code the user simplified the requirement
+(2026-10-28): no switch at all - "nobody wants dark keys on a light system or vice versa" - the
+keyboard is dark exactly when the system is dark. That deletes the three-way switch's entire hard
+part (how the service's view context would resolve a mode that may disagree with the system): the
+plain `values-night/` resource qualifier carries the mode natively, no preference key, no strings,
+no backup mapping. Plan: `AdaptKey-Plan-Dark-Theme.md` (palette table + device-confirmation
+checklist).
+
+Ground re-verified in code before implementing (not carried over from the backlog entry): the
+settings Activities already run on `Theme.Material3.DayNight` (dark-capable since their first
+day); every self-drawn keyboard surface resolves its colours from `R.color.*` at view construction;
+the only hardcoded view colours anywhere were the D-24 touch-model overlay's three paint literals.
+
+Three section commits, then the round's single version bump (revised strategy from this round on:
+one bump per finished feature, never per section commit):
+
+- **D-24 refactor (no behaviour change):** the three overlay paint literals became
+  `touch_model_fill`/`touch_model_stroke`/`touch_model_dot` resources with byte-identical values,
+  so the dark palette can adapt the visualisation like every other colour the view draws.
+- **The palette:** `values-night/colors.xml` overrides the tokens whose dark value differs
+  (keyboard/key/bar backgrounds, texts, hints, divider, the verbatim/link/caps-lock blues
+  lightened, the learned/search-query/loading/blacklist chips adjusted for dark contrast, the
+  language-pack row tint, the three overlay colours). Tokens deliberately identical in both modes
+  stay absent (the pale-blue press flash, the white-on-red trash pair, D-247's fixed-green forget
+  pair, the launcher brand colour). D-337's border-vs-flash distinction is preserved at night
+  (#4285F4 against #A6C8FF).
+- **D-136 reworked:** `isAppearanceLightNavigationBars` now derives from the creating
+  configuration's uiMode (dark-on-light in day mode, light-on-dark at night) instead of the former
+  unconditional `true`, whose comment's always-light premise the palette retired. The mid-session
+  live flip is expected to work through the framework's own input-view recreation on the
+  configuration change (`AdaptKeyService.onConfigurationChanged` already calls `super`) - no
+  preemptive machinery was added; a fallback would only follow a device that actually shows stale
+  colours.
+
+No new unit tests - resources plus one window-flag line are this project's established test gap
+(the C-04/S-05 highlight colour and the `Color.parseColor` sites stay theme-independent user data
+per D-247, untouched). `:app:assembleRelease`/`:app:testDebugUnitTest` green, 1767 unit tests,
+0 failures. `versionCode` 585 -> 586, `versionName` "1.2.89" -> "1.2.90" (the feature's single
+bump). **Not device-confirmed** - both modes and the live flip need the plan file's §6 checklist
+on a real device; that confirmation closes the round.

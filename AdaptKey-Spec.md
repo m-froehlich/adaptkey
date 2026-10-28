@@ -3577,6 +3577,39 @@ be understood from a shared log.
 
 ---
 
+## 51. Dark Theme Follows the System (D-501)
+
+The keyboard's colours follow the system's dark mode: when the system renders dark, every keyboard
+surface renders dark, and there is deliberately no setting of any kind to override that (the
+original three-way System/Light/Dark switch request was simplified away before any code - nobody
+wants dark keys on a light system or vice versa, so the system's own choice is the only mode that
+needs to exist). The settings screens already followed the system through their
+`Theme.Material3.DayNight` base; this section closes the same behaviour for the self-drawn surfaces
+(`AdaptKeyboardView`, the suggestion bar and its chips, the extra row, the emoji panel, the
+long-press popups, the D-24 touch-model overlay), which resolve every colour from `R.color.*`
+resources at view-construction time.
+
+**Mechanics.** The palette is carried entirely by the `values-night/` resource qualifier:
+`values-night/colors.xml` overrides the existing colour names (never new names), so no call site
+changed for the palette itself. Tokens whose value is deliberately identical in both modes stay
+absent from the night file so there is no second place to keep in sync: the pale-blue press flash
+(`key_background_pressed`), the white-on-red trash pair, D-247's fixed-green forget pair, and the
+launcher icon's brand background. D-337's Caps-Lock border remains visibly distinct from the press
+flash in dark mode as well (#4285F4 against #A6C8FF). The D-24 overlay's colours are resources
+(`touch_model_fill`/`touch_model_stroke`/`touch_model_dot`, formerly the view's only three
+hardcoded literals) and adapt like everything else. The user-configurable C-04/S-05 highlight
+colour stays theme-independent user data (D-247's rule, deliberately not night-aware), and emoji
+glyphs are coloured images regardless of mode.
+
+**Gesture-area contrast (D-136 reworked).** The navigation-bar appearance flag that D-136
+introduced unconditionally (dark controls on the then always-light keyboard) now derives from the
+configuration the input view is being created with: dark-on-light in day mode, light-on-dark at
+night. A mid-session system flip needs no extra machinery - the framework `InputMethodService`
+recreates the input view on the configuration change, which re-resolves every colour and this flag
+through the recreated views.
+
+---
+
 ## Prerequisite
 
 Android Studio with a configured Android SDK.

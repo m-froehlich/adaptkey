@@ -1,8 +1,9 @@
 # AdaptKey — Plan: Dark Theme Follows the System (D-501, simplified)
 
-**Status:** IMPLEMENTED in this round (v1.2.90-v1.2.92; see §7). Build + all unit tests green.
-**Not device-confirmed** — the dark surfaces and the live day/night flip need a real device look
-(§6's checklist); the on-device confirmation closes the round.
+**Status:** IMPLEMENTED (v1.2.90, versionCode 586 - one bump for the whole feature; see §7). Build
++ all unit tests green (1767, 0 failures). **Not device-confirmed** — the dark surfaces and the
+live day/night flip need a real device look (§6's checklist); the on-device confirmation closes
+the round.
 
 ## 1. Motivation — the request, and the simplification
 
@@ -101,7 +102,13 @@ the keyboard is open.
 
 ## 7. Implementation state
 
-- v1.2.90 (586): D-24 literals → `touch_model_*` resources (refactor, no behaviour change).
-- v1.2.91 (587): `values-night/colors.xml` with the palette above - the feature itself.
-- v1.2.92 (588): D-136's conditional `isAppearanceLightNavigationBars`.
-- Docs: spec §51, History §527, Progress D-501 → implemented (device confirmation open).
+Section commits carry no bumps of their own; the finished feature gets exactly one (revised bump
+strategy from this round on):
+
+1. D-24 literals → `touch_model_*` resources (refactor, no behaviour change).
+2. `values-night/colors.xml` with the palette above - the feature itself.
+3. D-136's conditional `isAppearanceLightNavigationBars`.
+4. The single version bump 1.2.89 → 1.2.90 (versionCode 585 → 586).
+5. Docs: spec §51, History §527, Progress D-501 → RESOLVED (device confirmation open).
+
+`:app:assembleRelease`/`:app:testDebugUnitTest` green - 1767 unit tests, 0 failures.
