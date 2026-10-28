@@ -519,6 +519,24 @@ non-trivial changes).
   password (silently, so the login fails), sometimes an email whose TLD ends up repeated. Flow per the user:
   type into the username field, the SYSTEM's credential manager pops its saved-credentials picker (not
   AdaptKey), one is picked, the fill lands - and the duplication happens right there.
+  **RE-REPORTED 2026-10-28 (still unresolved - the round below shipped the root-cause ANALYSIS only, no
+  code fix has landed yet; what reads as "gefixt" was commit aedc95d, docs-only): new shape - the system**
+  **password manager's fill doubles the WHOLE password in a field the user never typed into.** Tap the
+  EMPTY password field, pick an account from the system's suggestion, and the field reads the password
+  twice. New code finding for this empty-field shape: the automatic debounced caret reclaim
+  (`reclaimWordAtCaret`, `RECLAIM_DEBOUNCE_MS = 100`) has NO login-field guard - roughly 100-200 ms after
+  the fill's own caret echo it reclaims the freshly autofilled value's trailing LETTER run into an
+  AdaptKey-owned composing token (`setComposingRegion` + model state; an all-letter password is reclaimed
+  whole, a username's trailing fragment likewise). `reclaimPossible()` (the manual chip) already excludes
+  login fields explicitly (AdaptKeyService.kt:8251) - the automatic reclaim never got that same exclusion.
+  From that state the primary hole below applies unchanged: the next app-side write that kills the
+  editor-side span (a second autofill pass, a form re-render, a WebView re-layout - plausibly the
+  "bestimmte Dienste") leaves the stale model alive, and the user's next keystroke or the keyboard's
+  Enter ("Weiter") re-materialises the model's whole stale token at the caret via
+  `commitVerbatimFieldFragment`'s `setComposingText` - the doubled value. Diagnosis note: D-150's
+  password-field guard deliberately silences ALL diagnostics in a PASSWORD field, so this exact shape can
+  never appear in a captured log by design - the USERNAME field (same mechanism, trailing fragment) is
+  the realistic log path.
   **PRIMARY (the credential-manager flow): the own-edit gate is caret-position-only.** `onUpdateSelection`'s
   external-write detection (AdaptKeyService.kt:1850-1912) returns "own edit, do nothing" purely on
   `SelectionTruth.isAtExpectedCaret(composingAnchor + composingCursor, ...)` at line 1878 - it never checks the
@@ -562,6 +580,11 @@ non-trivial changes).
   **Fix direction (needs the user's go, per convention; device log first - the existing `AdaptKeyJitter` diag
   already logs composing/anchor/candidates per callback, so one captured repro of the credential flow shows
   whether the positions-match hole (no EXTERNAL line) or the race fired):**
+  0. (new, from the 2026-10-28 re-report) Exclude login-relevant fields (`loginFieldKind != NONE ||
+     urlMode || noSuggestionsField`) from the AUTOMATIC debounced caret reclaim, mirroring
+     `reclaimPossible`'s own existing exclusion - AdaptKey must never take composing ownership of text it
+     did not write, most of all not of a credential the system password manager just filled. The Shift
+     re-derivation half (D-455's rearm path) stays.
   1. Content-verify the composing span when the editor reports no span: when `composing.isNotEmpty()` AND the
      remote `candidatesStart/candidatesEnd` are `-1,-1`, that mismatch must not decide by itself (spec §1
      invariant 2 - remote candidate reports are not trusted) but SHOULD trigger the already-existing
@@ -578,6 +601,14 @@ non-trivial changes).
   4. A narrow `learn()` guard: refuse/rename when the field's actual tail was not the prefix of what was
      committed, and/or a minimal email-shape check for EMAIL entries (no duplicated-label domains).
    5. D-150's password guard applies to every diagnostic line added here.
+   **2026-10-28 refinement of fix 2 (from re-deriving the empty-field shape): a content check alone cannot**
+   **discriminate the killed-span case (the refilled value reads identical at the anchor), so the**
+   **commit-side backstop should simply stop re-writing in the common caret-at-fragment-end case:**
+   `finishComposingText()` commits the live span in place, is a no-op once the span is dead, and the
+   delimiter is the only thing this path ever needs to add. `setComposingText(beforeText)` stays only for
+   the genuine mid-fragment split (`composingCursor < length`), where the real span must shrink. Never
+   rewriting model text at fragment end makes the duplication impossible on this path regardless of which
+   opening produced the stale model.
    **Work order once a repro exists (the checklist to work through):**
    (1) Capture the repro's `AdaptKeyJitter` diagnostic log (adb logcat, type the username, pick the credential,
    tap Weiter). Read it against the two openings: a callback with matching positions and NO `EXTERNAL` line
