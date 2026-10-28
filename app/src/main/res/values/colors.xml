@@ -44,4 +44,11 @@
          caps_lock_border's #1565C0), distinct enough to draw the eye toward the one row worth noticing
          without needing its own new accent colour. -->
     <color name="language_pack_suggested_background">#E3F2FD</color>
+    <!-- D-24: the touch-model overlay drawn over the keys while the visualisation is on - a translucent
+         spread ellipse (fill + stroke) and the solid dot at the expected strike point. Formerly three
+         paint literals in AdaptKeyboardView; resources since D-501, so values-night can adapt them
+         to the dark palette like every other colour the view draws. -->
+    <color name="touch_model_fill">#3300796B</color>
+    <color name="touch_model_stroke">#8800796B</color>
+    <color name="touch_model_dot">#E0D32F2F</color>
 </resources>

@@ -869,19 +869,21 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     // D-24: touch-model overlay - a translucent spread ellipse plus a solid dot at the expected strike point.
+    // D-501: the colours are resources (values-night adapts them to the dark palette) rather than the
+    // former literals, like every other colour this view draws.
     private val touchModelFillPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0x3300796B.toInt()
+        color = ContextCompat.getColor(context, R.color.touch_model_fill)
         style = Paint.Style.FILL
     }
     
     private val touchModelStrokePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0x8800796B.toInt()
+        color = ContextCompat.getColor(context, R.color.touch_model_stroke)
         style = Paint.Style.STROKE
         strokeWidth = dp(1f)
     }
     
     private val touchModelDotPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = 0xE0D32F2F.toInt()
+        color = ContextCompat.getColor(context, R.color.touch_model_dot)
         style = Paint.Style.FILL
     }
     
