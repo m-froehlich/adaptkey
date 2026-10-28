@@ -418,6 +418,52 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
+- **D-504 - OPEN, requested 2026-10-28, not started: auto-correction fine-tuning - the automatic A-05 word**
+  **split fires far too often; the split probability must drop drastically.** User request: "Am meisten stört
+  das automatische Splitten. Die Split-Wahrscheinlichkeit muss drastisch sinken. Das passiert einfach zu
+  häufig." No concrete recent device examples collected yet - the first step of its own round is gathering
+  the user's actual false-split cases (they exist; cf. the still-open D-493 "schmeißen" -> "sch Meißen" and
+  the D-469 "Lebensmüde" shape) so the tuning is measured against real positives AND negatives, not done in
+  the abstract.
+  Current silent-split gates, for orientation (spec A-05): token unknown and not a plausible verb/adjective
+  inflection; split at/near a T-05 space-ambiguous tap or a fully missed space; both halves clear a frequency
+  floor; "not both nouns" gate; German-only veto lists (inseparable verb prefixes, adverb/particle + noun,
+  feminine `-in`); umlaut/ß-unfolding for half resolution; vetoed by ANY confidence-cleared single-word
+  correction AND by a T-02 raw-coordinate correction result (D-404-followup ordering); and, since D-473, the
+  split's own `CorrectionConfidence.forSplit` score (product of both halves' noun-aware frequency curves) must
+  clear the active `AutocorrectAggressiveness` level's auto-apply threshold. C-21 (`d352_auto_split_mode`)
+  governs the mode: Automatic (default) / Chip only / Off.
+  Discussion outcome (2026-10-28, same day as the request):
+  1. **AGREED (the primary lever): decouple `forSplit` from the autocorrect aggressiveness level and give**
+     **the split its own, drastically stricter bar.** User confirmed the analysis directly: a split is a bigger
+     intervention than a respelling (it rewrites two words) and must not ride `d353_autocorrect_aggressiveness`.
+  2. **AGREED: "sinnbefreit" must actually bind - absolute, drastically raised frequency floors for the split**
+     **halves.** The D-493 case is NOT a rules violation but the floors letting dictionary noise through:
+     verified in `dictionaries/de/dict.tsv` line 20609, `sch 84 OTHER` is a real row, so the left half formally
+     passed every gate (OTHER -> the "not both nouns" gate passes; both halves cleared the floors, which
+     evidently sit below 84). The floors must sit far above such junk regardless of whether the junk itself is
+     removed. (The fusion side got exactly this in §499's class model; the split side has only the relative
+     noun-aware curve.)
+  3. **Dictionary junk-fragment cleanup round** - the user's own framing: "wenn es das tut, ist das zu
+     entfernender Müll". A D-306/§301 ("Mülltrennung") successor pass over short corpus artefacts; a quick
+     probe showed the junk is a class, not one row: `jpg`, `svg`, `png`, `shy`, `vec`, `de`, `ca`, `et`, `ha`,
+     `di`, `al`, `to`, `at`, `and`, `of`, `for`, `van`, ... - file extensions, units, English strays. A
+     mechanical short-row scan (D-368's method) enumerates candidates for the standing per-candidate
+     confirmation.
+  4. **REJECTED by user decision (2026-10-28): the proper-noun right-half veto** flagged in D-493's entry as
+     "worth deciding" - "nur eine Mini-Symptom-Bekämpfung"; with 1-3 in place the case it targets cannot arise.
+     D-493's open flag is answered by this entry.
+  5. Still open (user's call): flipping the **C-21 default to "Chip only"** (D-490 is the precedent for
+     flipping a default) - the radical version, no silent split at all, at the cost of a tap per genuine
+     split; default Automatic stays for now.
+  Parallel track unchanged: missing REAL words are the other half of D-493 (the ~12,123 never-attested verbs,
+  D-462's B2 scope) - after 1-3 an absent word stays whole as typed instead of being split, which is the
+  correct interim behaviour, but adding the family remains the real fix.
+  Any threshold change must be validated in BOTH directions: fewer silent splits (the goal) without losing the
+  genuine missed-space recoveries - recall measured usage-weighted like §499's fusion evaluation, ideally on a
+  D-353-style real regression corpus extended with split cases. Needs the user's go per convention before any
+  code.
+
 - **D-503 - RESOLVED, device-confirmed (§523-§526, v1.2.83-v1.2.86; fully confirmed 2026-10-27): an n-gram
   continuation (bigram/trigram partner) that survives into continued typing keeps the first chip slots.**
   Root cause: D-366's bonus re-weights only candidates already in the pool, and the mid-word pool is a
@@ -457,7 +503,7 @@ non-trivial changes).
   symbol/URL/email-mode space keys), and a space swipe with a one-language cycle is swallowed silently
   instead of toasting the already-active language.
 
-- **D-501 - RESOLVED as simplified (§527, v1.2.90; implemented 2026-10-28, NOT yet device-confirmed): a Dark Theme that simply follows the system - no switch at all.** Originally requested 2026-10-26 as a three-way switch (System Default / Light / Dark); the user simplified before any code - nobody wants dark keys on a light system or vice versa, so the keyboard is dark exactly when the system is dark and there is deliberately no setting. The mode carrier is the plain `values-night/` resource qualifier (no preference key, no strings, no backup mapping): `values-night/colors.xml` overrides the differing tokens, identical-in-both-modes tokens stay absent (the pale-blue press flash, the trash pair, D-247's forget pair, the launcher brand colour). The D-24 overlay's three literals became resources first (`touch_model_fill`/`stroke`/`dot`); D-136's `isAppearanceLightNavigationBars` now derives from the creating configuration's uiMode instead of unconditional `true`; the live flip rides on the framework's input-view recreation on the configuration change, no preemptive machinery. Settings screens were already dark-capable via `Theme.Material3.DayNight`. Plan + palette table + device checklist: `AdaptKey-Plan-Dark-Theme.md`. One version bump for the whole feature (1.2.89 → 1.2.90/versionCode 586); device confirmation (both modes + live flip) closes the round.
+- **D-501 - RESOLVED as simplified (§527, v1.2.90; closed 2026-10-28 - on-device confirmation deliberately waived by the user): a Dark Theme that simply follows the system - no switch at all.** Originally requested 2026-10-26 as a three-way switch (System Default / Light / Dark); the user simplified before any code - nobody wants dark keys on a light system or vice versa, so the keyboard is dark exactly when the system is dark and there is deliberately no setting. The mode carrier is the plain `values-night/` resource qualifier (no preference key, no strings, no backup mapping): `values-night/colors.xml` overrides the differing tokens, identical-in-both-modes tokens stay absent (the pale-blue press flash, the trash pair, D-247's forget pair, the launcher brand colour). The D-24 overlay's three literals became resources first (`touch_model_fill`/`stroke`/`dot`); D-136's `isAppearanceLightNavigationBars` now derives from the creating configuration's uiMode instead of unconditional `true`; the live flip rides on the framework's input-view recreation on the configuration change, no preemptive machinery. Settings screens were already dark-capable via `Theme.Material3.DayNight`. Plan + palette table + device checklist: `AdaptKey-Plan-Dark-Theme.md`. One version bump for the whole feature (1.2.89 → 1.2.90/versionCode 586). The user waived the on-device check the same day (he did not want to put his system through the day/night flip exercise); the palette is declarative resource data and the only logic change is D-136's one flag line, so the feature is closed as implemented.
 
 - **D-500 - OPEN, requested 2026-10-26, not started: a new "Suppress Auto-Caps" switch, inserted directly above C-10.** Position fixed by the user: directly above `c10_comma_line_not_sentence_start` ("Nach Komma-Zeile kein Satzanfang", `settings_preferences.xml`, same category). Function still to be pinned down in its own round: presumably suppresses ALL automatic capitalisation (sentence-start auto-arming, §6 rules) while manual Shift/Caps Lock and D-406's delete-derived Shift stay untouched, making C-10 a sub-case of the broader off - needs a definition pass against the `armShiftForNextWord` guard family (D-313/D-335/D-373/D-378/D-491) before any code. Strings: title + summary in English and every `values-xx` per the standing rule (the user explicitly wants descriptions for all languages); `UiLocaleConsistencyTest` enforces.
 

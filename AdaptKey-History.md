@@ -23910,3 +23910,11 @@ per D-247, untouched). `:app:assembleRelease`/`:app:testDebugUnitTest` green, 17
 0 failures. `versionCode` 585 -> 586, `versionName` "1.2.89" -> "1.2.90" (the feature's single
 bump). **Not device-confirmed** - both modes and the live flip need the plan file's §6 checklist
 on a real device; that confirmation closes the round.
+
+**Closed the same day (2026-10-28): the user waived on-device confirmation** - he chose not to put
+his system through the day/night flip exercise, so the §6 checklist stays unexecuted by decision,
+not by omission. The feature is closed as implemented: the palette is declarative resource data
+(a worst case of a shade that reads poorly, revisable in one file, never a logic regression), the
+only logic change is D-136's single uiMode-derived flag, and build + all 1767 unit tests are
+green. The first real-world look happens implicitly the next time the user's system sits in dark
+mode.

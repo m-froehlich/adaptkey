@@ -1,9 +1,9 @@
 # AdaptKey — Plan: Dark Theme Follows the System (D-501, simplified)
 
-**Status:** IMPLEMENTED (v1.2.90, versionCode 586 - one bump for the whole feature; see §7). Build
-+ all unit tests green (1767, 0 failures). **Not device-confirmed** — the dark surfaces and the
-live day/night flip need a real device look (§6's checklist); the on-device confirmation closes
-the round.
+**Status:** IMPLEMENTED and CLOSED (v1.2.90, versionCode 586 - one bump for the whole feature; see
+§7). Build + all unit tests green (1767, 0 failures). **On-device confirmation waived by the user**
+(2026-10-28, he chose not to put his system through the day/night flip exercise) - the §6
+checklist stays deliberately unexecuted; the round is closed.
 
 ## 1. Motivation — the request, and the simplification
 
@@ -109,6 +109,7 @@ strategy from this round on):
 2. `values-night/colors.xml` with the palette above - the feature itself.
 3. D-136's conditional `isAppearanceLightNavigationBars`.
 4. The single version bump 1.2.89 → 1.2.90 (versionCode 585 → 586).
-5. Docs: spec §51, History §527, Progress D-501 → RESOLVED (device confirmation open).
+5. Docs: spec §51, History §527, Progress D-501 → RESOLVED (on-device confirmation waived by the
+   user, 2026-10-28 - round closed).
 
 `:app:assembleRelease`/`:app:testDebugUnitTest` green - 1767 unit tests, 0 failures.
