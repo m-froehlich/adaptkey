@@ -376,7 +376,7 @@ class AdaptKeyService : InputMethodService() {
     // (Gemini): there, nothing is ever "pending" since the automatic reclaim never runs at all, so the chip
     // must stay immediately available.
     private var reclaimPending = false
-
+    
     // D-492 (2026-10-28): whether the AUTOMATIC composing-region reclaim must stay off for the focused
     // field because AdaptKey must never take composing ownership of text it did not write. Login-relevant
     // fields (USERNAME/EMAIL/PASSWORD), urlMode and noSuggestionsField are exactly the surfaces where an
@@ -1327,10 +1327,15 @@ class AdaptKeyService : InputMethodService() {
         // D-136: without this, the system's own gesture-area controls (the pill / back indicator) render
         // with whatever appearance the window would otherwise inherit, independent of what background
         // colour AdaptKey itself paints beneath them - poor contrast was reported on at least one device.
-        // AdaptKey's keyboard background is always light (R.color.keyboard_background, no dark-theme
-        // variant exists), so the controls must always render dark-on-light to stay visible against it.
+        // Since D-501 the keyboard follows the system's night mode (R.color.keyboard_background has a
+        // values-night variant), so the controls render dark-on-light in day mode and light-on-dark at
+        // night, derived from the configuration this input view is being created with; the framework
+        // recreates the view on a mid-session configuration change, so a live day/night flip re-derives
+        // this for free.
         window?.window?.let { win ->
-            WindowInsetsControllerCompat(win, root).isAppearanceLightNavigationBars = true
+            val isNightMode = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
+                Configuration.UI_MODE_NIGHT_YES
+            WindowInsetsControllerCompat(win, root).isAppearanceLightNavigationBars = !isNightMode
         }
         applySettings()
         // D-03: show the input language on the space bar from the first frame.
@@ -2024,7 +2029,7 @@ class AdaptKeyService : InputMethodService() {
      * see its own field KDoc. D-455: a suppressed field still gets its own debounced
      * [rearmShiftForCaretMoveRunnable] instead - Shift/Caps must still be re-derived fresh for the new caret
      * position even though the composing-region reclaim itself stays suppressed there.
-     *
+     * 
      * D-492 (2026-10-28): login-relevant fields (`reclaimSuppressedForFieldKind`) route into that same
      * Shift-only branch - the composing-region reclaim must never take ownership of externally written text
      * there (the system credential manager's autofill fill above all; see the field's own KDoc), while the
