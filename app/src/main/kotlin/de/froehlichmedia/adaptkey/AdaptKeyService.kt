@@ -5448,8 +5448,22 @@ class AdaptKeyService : InputMethodService() {
         }
         ic.beginBatchEdit()
         try {
-            ic.setComposingText(beforeText, 1)
-            ic.finishComposingText()
+            // D-492 (2026-10-28): at the fragment's end (the common case - the in-flight login fragment
+            // fully composing, caret at its end) this path must NOT rewrite the model's text.
+            // setComposingText() only ever replaces a LIVE editor-side span; once an external write (the
+            // system credential manager's autofill fill above all) has killed the span, it INSERTS at the
+            // caret instead - re-materialising the model's stale token at the end of the freshly filled
+            // value, i.e. the reported doubled password. finishComposingText() commits the live span in
+            // place and is a harmless no-op once the span is dead, and the document already holds exactly
+            // [beforeText] in both cases - the delimiter is the only thing this path ever needs to add.
+            // The genuine mid-fragment split (afterText non-empty) keeps the shrink-write below, since the
+            // real span must actually be cut down to the before-half for the split to be visible at all.
+            if (afterText.isEmpty()) {
+                ic.finishComposingText()
+            } else {
+                ic.setComposingText(beforeText, 1)
+                ic.finishComposingText()
+            }
         clearComposing()
         // D-488: a field change resolves a pending blacklist confirmation as an ignore - never writes,
         // clears the escalation's pending mark, and must never carry the chip over into the next field
