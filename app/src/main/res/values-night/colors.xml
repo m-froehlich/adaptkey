@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- D-501: the dark palette - the keyboard (and the settings screens' own accent tokens) simply
+     follow the system's night mode through this qualifier. Only the tokens whose dark value
+     actually differs from values/colors.xml appear here; the ones deliberately identical in both
+     modes stay absent so there is no second place to keep in sync: key_background_pressed (the
+     bright pale-blue press flash reads as well on dark keys as on light ones), suggestion_trash_
+     background/text and suggestion_forget_background/text (white-on-red / white-on-green are
+     mode-independent), and ic_launcher_background (fixed brand colour). Role-for-role the palette
+     mirrors the light one - the full table and the reasoning live in AdaptKey-Plan-Dark-Theme.md. -->
+<resources>
+    <!-- The keyboard body and its keys: Gboard-dark family. Special keys sit darker than the letter
+         keys, exactly the light palette's hierarchy inverted for dark. -->
+    <color name="keyboard_background">#202124</color>
+    <color name="key_background">#3C4043</color>
+    <color name="key_background_special">#2F3235</color>
+    <color name="key_text">#E8EAED</color>
+    <color name="key_hint">#9AA0A6</color>
+
+    <!-- The suggestion bar: slightly lighter than the keyboard body, like the light pair. -->
+    <color name="suggestion_bar_background">#292A2D</color>
+    <color name="suggestion_text">#E8EAED</color>
+    <color name="suggestion_divider">#3C4043</color>
+    <color name="suggestion_search_query_text">#9AA0A6</color>
+
+    <!-- Accent blue lightened for dark surfaces: the verbatim chip, links and the swipe chevrons. -->
+    <color name="suggestion_verbatim_text">#8AB4F8</color>
+    <color name="link_text">#8AB4F8</color>
+
+    <!-- D-337: the Caps-Lock border must stay visibly distinct from key_background_pressed's
+         pale-blue flash in dark mode too - a mid saturation blue against the light flash, the same
+         separation the light palette draws between #1565C0 and #A6C8FF. -->
+    <color name="caps_lock_border">#4285F4</color>
+
+    <!-- Semantic chip colours lightened for contrast on the dark bar. The learned chip's TEXT
+         lightens, while D-247's fixed green forget-chip fill stays untouched (it keeps its white
+         text in both modes) - the deliberate text-vs-fill split, not a D-247 exception. -->
+    <color name="suggestion_learned_text">#81C995</color>
+    <color name="suggestion_loading_text">#FFB74D</color>
+    <color name="suggestion_blacklist_confirm_text">#F28B82</color>
+
+    <!-- D-385-followup: the suggested-language row tint - the dark-surface equivalent of the light
+         #E3F2FD wash, a quiet blue tint that still reads as a highlight on the dark list. -->
+    <color name="language_pack_suggested_background">#1E3A5F</color>
+
+    <!-- D-24: the touch-model overlay - the translucent teal ellipse and the red strike dot are
+         brightened for the dark keyboard body, same alphas as the light values. -->
+    <color name="touch_model_fill">#334DB6A2</color>
+    <color name="touch_model_stroke">#884DB6A2</color>
+    <color name="touch_model_dot">#E0EF5350</color>
+</resources>
