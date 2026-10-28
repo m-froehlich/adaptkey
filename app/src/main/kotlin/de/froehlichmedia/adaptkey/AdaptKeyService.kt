@@ -376,6 +376,21 @@ class AdaptKeyService : InputMethodService() {
     // (Gemini): there, nothing is ever "pending" since the automatic reclaim never runs at all, so the chip
     // must stay immediately available.
     private var reclaimPending = false
+
+    // D-492 (2026-10-28): whether the AUTOMATIC composing-region reclaim must stay off for the focused
+    // field because AdaptKey must never take composing ownership of text it did not write. Login-relevant
+    // fields (USERNAME/EMAIL/PASSWORD), urlMode and noSuggestionsField are exactly the surfaces where an
+    // external writer legitimately puts the value into the field: the system credential manager's autofill
+    // fill lands, its caret echo arms the debounced reclaim, and ~100 ms later reclaimSurroundingWord()
+    // marked the freshly filled value's trailing letter run (an all-letter password: the whole value) as
+    // AdaptKey's own composing token - from which the next editor-side write that kills the span (a second
+    // autofill pass, a form re-render) leaves a stale model the commit path later re-materialises at the
+    // caret: the reported doubled password. Identical condition to reclaimPossible()'s own existing
+    // exclusion (the manual chip never offered a reclaim here either) - the automatic path simply never
+    // got the same rule. Typing-triggered reclaim (handleKey's CHAR branch) is unaffected: a token the
+    // keyboard itself started stays owned by the keyboard.
+    private val reclaimSuppressedForFieldKind: Boolean
+        get() = loginFieldKind != LoginFieldKind.NONE || urlMode || noSuggestionsField
     
     // D-158: whether the currently-focused field is a recognised email-address field - unlike urlMode,
     // this is *derived* from loginFieldKind (already reliably detected via InputType for D-142's own
@@ -2009,6 +2024,11 @@ class AdaptKeyService : InputMethodService() {
      * see its own field KDoc. D-455: a suppressed field still gets its own debounced
      * [rearmShiftForCaretMoveRunnable] instead - Shift/Caps must still be re-derived fresh for the new caret
      * position even though the composing-region reclaim itself stays suppressed there.
+     *
+     * D-492 (2026-10-28): login-relevant fields (`reclaimSuppressedForFieldKind`) route into that same
+     * Shift-only branch - the composing-region reclaim must never take ownership of externally written text
+     * there (the system credential manager's autofill fill above all; see the field's own KDoc), while the
+     * Shift re-derivation keeps happening exactly as D-455 requires.
      * 
      * D-36-followup: a no-op while [reclaimChipRefreshSuppressedUntil] is still in the future -
      * [openClipboardPeek] arms a short window there right before its own `finalizeAndCommit()` call, whose
@@ -2037,7 +2057,7 @@ class AdaptKeyService : InputMethodService() {
         if (cursorControlSessionActive || SystemClock.uptimeMillis() < reclaimChipRefreshSuppressedUntil) {
             return
         }
-        if (!reclaimOnCaretMoveSuppressed) {
+        if (!reclaimOnCaretMoveSuppressed && !reclaimSuppressedForFieldKind) {
             reclaimPending = true
             handler.removeCallbacks(reclaimWordAtCaretRunnable)
             handler.postDelayed(reclaimWordAtCaretRunnable, RECLAIM_DEBOUNCE_MS)
@@ -2135,6 +2155,14 @@ class AdaptKeyService : InputMethodService() {
         // wrongly protecting some later, unrelated re-derivation this function would otherwise correctly do.
         val preserveShiftAfterOpener = shiftPreservedAfterOpener
         shiftPreservedAfterOpener = false
+        // D-492 (2026-10-28): defensive second gate at the mutation site itself, not only at the scheduling
+        // point - a login-relevant field's composing-region reclaim must never run, no matter how this call
+        // was reached (scheduleReclaimAndChipRefresh() already routes such fields into the Shift-only rearm
+        // branch). AdaptKey must not take composing ownership of a credential the system password manager
+        // just filled - see reclaimSuppressedForFieldKind's own KDoc for the full mechanism.
+        if (reclaimSuppressedForFieldKind) {
+            return
+        }
         // D-347/D-350: this call is now debounced (see reclaimWordAtCaretRunnable) - by the time it actually
         // fires, a keystroke may already have started a real composing token in the meantime, which this
         // function must not append reclaimed text onto.
