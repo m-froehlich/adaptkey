@@ -537,6 +537,18 @@ non-trivial changes).
   password-field guard deliberately silences ALL diagnostics in a PASSWORD field, so this exact shape can
   never appear in a captured log by design - the USERNAME field (same mechanism, trailing fragment) is
   the realistic log path.
+  **ROUND A IMPLEMENTED (2026-10-28, v1.2.88/v1.2.89 - fixes 0 and 2-refinement from the list below):**
+  the automatic debounced caret reclaim no longer runs in login-relevant fields
+  (`reclaimSuppressedForFieldKind`, mirroring `reclaimPossible`'s own exclusion; the Shift-only rearm
+  branch per D-455 stays, plus a defensive second gate inside `reclaimWordAtCaret` itself), and
+  `commitVerbatimFieldFragment` no longer rewrites the model's text at the fragment's end
+  (`finishComposingText()` alone - a no-op once the span is dead; the shrink-write remains only for the
+  genuine mid-fragment split). Together: AdaptKey no longer takes composing ownership of a filled
+  credential, and the commit path can no longer re-materialise a stale token at the caret. 1767 unit
+  tests green; `:app:assembleRelease` green. NOT yet device-confirmed - needs the reported flow (empty
+  password field, pick from the system password manager) repeated on the device. **Still open: fix 1
+  (the onUpdateSelection content/span verification) and fix 4 (the `CredentialStore.learn()` guard) -
+  Runde B, per the work order below, once a captured Username-flow log picks the opening.**
   **PRIMARY (the credential-manager flow): the own-edit gate is caret-position-only.** `onUpdateSelection`'s
   external-write detection (AdaptKeyService.kt:1850-1912) returns "own edit, do nothing" purely on
   `SelectionTruth.isAtExpectedCaret(composingAnchor + composingCursor, ...)` at line 1878 - it never checks the
