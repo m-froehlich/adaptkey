@@ -432,6 +432,21 @@ non-trivial changes).
   explicitly declined; shrinking the ru bigram table itself remains a separate content decision. Device
   confirmation (one real ru import + the D-502 reload surviving) closes the round.
 
+- **D-506 - IMPLEMENTED (2026-10-29, same session as D-504's data half; rides the same 1.2.92/588
+  release; a static text, so "device confirmation" is a glance): a "packs are a base" notice on the
+  language-packs screen, and the cleanup method moved into the contribution guide.** User request:
+  users must understand that missing words, unwanted corrections and glitches usually come from the
+  uncurated pack data, not from the app - true for every language today except German, bundled
+  English explicitly included - plus a call to improve one's own pack when able. Implementation is
+  deliberately tiny: one localized notice TextView under `d280_intro` in `activity_language_packs.xml`
+  (string `d506_pack_base_notice` - static text naming German as the only curated pack; if a second
+  language ever becomes curated, the string changes with it, no catalog plumbing for a one-bit fact),
+  present in all 32 string files (base English + 31 locales, AI drafts per the D-478 precedent), and
+  a new "Dictionary cleanup for pack maintainers (D-504)" section in
+  `AdaptKey-Language-Contribution-Guide.md` §3 documenting `dictionaries/clean_dict.py`'s workflow
+  for native speakers (noun-lemma shield, homograph-checked strays, hand-reviewed band,
+  report -> apply -> pack rebuild). No Kotlin code; locale consistency enforced by the existing test.
+  History §530.
 - **D-504 - OPEN (code + German data half IMPLEMENTED 2026-10-28/29, rides 1.2.92/588; device
   checklist pending): auto-correction fine-tuning - the automatic A-05 word split fires far too
   often; the split probability must drop drastically.** User request: "Am meisten stört

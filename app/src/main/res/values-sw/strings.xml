@@ -146,8 +146,6 @@
     <string name="d32_summary">Muda wa kushikilia kitufe kabla chaguo zake hazijatokea, kwa ms (D-32).</string>
     <string name="double_tap_delay_title">Ucheleweshaji wa mguso maradufu</string>
     <string name="double_tap_delay_summary">Muda wa juu kati ya miguso miwili ili ihesabiwe kama mguso maradufu, kwa ms - kubadilisha ukubwa wa herufi kwa Shift, kugusa Backspace mara mbili kutengua, na Backspace inayogandana zote hushiriki dirisha hili.</string>
-    <string name="d59_title">Kitufe cha ?123/ABC</string>
-    <string name="d59_summary">Onyesha kitufe kilichounganishwa cha ?123. Kikizimwa, kitufe hupotea na nafasi yake hubaki tupu (D-59).</string>
     <string name="d55_below_title">Nafasi chini ya safu ya nambari</string>
     <string name="d55_below_summary">Pengo la ziada chini ya tarakimu, kwa dp, kupunguza miguso iliyokosa kwenye safu ya juu ya herufi (D-55).</string>
     <string name="d55_above_title">Nafasi juu ya upau wa nafasi</string>
@@ -367,4 +365,7 @@
     <string name="blacklist_origin_backup_import">Imerejeshwa kutoka kwenye nakala rudufu</string>
     <string name="blacklist_origin_bundled_seed">Inakuja na programu</string>
     <string name="blacklist_origin_unknown">Haijulikani (kutoka toleo la awali)</string>
+    <string name="d59_title">Kitufe cha ?123/ABC</string>
+    <string name="d59_summary">Onyesha kitufe kilichounganishwa cha ?123. Kikizimwa, kitufe hupotea na nafasi yake hubaki tupu (D-59).</string>
+    <string name="d506_pack_base_notice">Taarifa: Kwa sasa ni kifurushi cha Kijerumani pekee kimethibitishwa kwa mkono. Lugha zote nyingine – ikijumuisha Kiingereza iliyojumlishwa – ni msingi uliotengenezwa kiotomatiki: maneno yaliyokosekana, marekebisho yasiyo sahihi au yasiyotakiwa na makosa kama hayo kwa kawaida hutokana na data ya kifurushi, si kutoka kwa programu yenyewe. Ukiwa unaujua lugha vyema, unaweza kusaidia kuboresha kifurushi chake (angalia mwongozo wa michango kwenye hazina ya mradi).</string>
 </resources>

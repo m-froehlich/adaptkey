@@ -177,6 +177,38 @@ Put your working files under a new `dictionaries/<code>/` folder at the repo roo
 control even though they never enter the APK; the same `<code>` folder is what makes fixed filenames
 unambiguous both here and inside your `.zip` below.
 
+### Dictionary cleanup for pack maintainers (D-504): `dictionaries/clean_dict.py`
+
+Every corpus-extracted dictionary carries two systematic defects, and both directly feed false A-05
+word splits and wrong suggestions: sentence-case extraction artefacts (common words carrying a
+proper-noun tag) and uncommon proper nouns nobody types (the German reference case: "Meißen" made
+"schmeißen" split into "sch Meißen" - see spec A-05's D-504 addendum). `dictionaries/clean_dict.py`
+is the mechanical cleanup built for the German pack, and it is deliberately language-independent in
+form - a native-speaker maintainer can run it for their own language with three per-language inputs:
+
+1. A noun-lemma shield (the decisive one): the language's curated common-noun list (German's is
+   `dictionaries/de/wiktionary_nomen.tsv` - header row, then `wort\tgenus\t...`). It is what decides
+   word-vs-name: German surnames ARE common nouns ("Fuchs", "Reiter"), so frequency alone can never
+   make that call. Without this file the script's proper-noun rule never deletes anything - it only
+   lists candidates.
+2. A homograph check of the stray-word set: the built-in set is German-curated and only runs with
+   `--strays` for that reason ("me" is a real Italian pronoun, "la" a real French article). For your
+   language, curate your own few rows or leave the rule off.
+3. A hand review of the deferred band (rows between `--hard-floor` 300 and `--floor` 500) plus a
+   sample check of the autonomous drops: the shield's coverage, not the rule, decides quality.
+
+Workflow: run WITHOUT `--apply` first - report mode prints per-rule counts and samples and writes
+every decision to `--report <file>`; review, then rerun with `--apply` (dict.tsv is rewritten in
+place, UTF-8/LF, row order preserved; everything is in git history). Then bump
+`dictionaries/<code>/version.txt`, rebuild the `.zip` and bump your `LanguagePackCatalog` version -
+exactly the packaging and versioning steps of the next two sections. The rules, briefly: R1 strips
+the PROPER_NOUN artefact tag from lowercase rows; R2 drops unshielded proper nouns below the
+frequency floor (retagging shielded ones instead); R3 drops explicitly named rows (`--drop`); R4
+drops vowel-less short rows that are prefixes of longer words - true fragments like "sch", never
+abbreviations like "bzw"/"km", which sit on a protected list; R5 (only with `--strays`) drops
+zero-doubt foreign function words. The reference run plus a per-language scale report over all
+current packs: `scratchpad/d504-crosslang-report.txt`.
+
 ## 4. Packaging and hosting the language pack
 
 `de.froehlichmedia.adaptkey.dictionary.LanguagePackInstaller` expects a plain zip archive with your files at

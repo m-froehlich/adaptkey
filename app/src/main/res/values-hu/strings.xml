@@ -146,8 +146,6 @@
     <string name="d32_summary">Meddig kell nyomva tartani egy billentyűt, mielőtt az alternatívái megjelennek, ms-ban (D-32).</string>
     <string name="double_tap_delay_title">Dupla érintés késleltetése</string>
     <string name="double_tap_delay_summary">A két érintés közötti legnagyobb idő, hogy dupla érintésnek számítson, ms-ban - a Shift kis-/nagybetű-váltása, a visszavonó dupla Backspace-érintés és a ragadós Backspace mind ezt az ablakot használja.</string>
-    <string name="d59_title">\?123/ABC billentyű</string>
-    <string name="d59_summary">Az összevont ?123 billentyű megjelenítése. Kikapcsolva a billentyű eltűnik, a helye pedig üres marad (D-59).</string>
     <string name="d55_below_title">Hely a számsor alatt</string>
     <string name="d55_below_summary">Extra hely a számjegyek alatt, dp-ben, hogy csökkenjenek a mellényúlások a felső betűsorba (D-55).</string>
     <string name="d55_above_title">Hely a szóköz fölött</string>
@@ -367,4 +365,7 @@
     <string name="blacklist_origin_backup_import">Biztonsági mentésből visszaállítva</string>
     <string name="blacklist_origin_bundled_seed">Az alkalmazással érkezik</string>
     <string name="blacklist_origin_unknown">Ismeretlen (korábbi verzióból)</string>
+    <string name="d59_title">\?123/ABC billentyű</string>
+    <string name="d59_summary">Az összevont ?123 billentyű megjelenítése. Kikapcsolva a billentyű eltűnik, a helye pedig üres marad (D-59).</string>
+    <string name="d506_pack_base_notice">Megjegyzés: Jelenleg csak a német csomag kézzel szerkesztett. Minden más nyelv – a beépített angolt is beleértve – automatikusan összeállított alap: a hiányzó szavak, a hibás vagy nem kívánt javítások és hasonló hibák általában a csomag adataiból származnak, nem magából az alkalmazásból. Ha jól ismer egy nyelvet, segíthet javítani a csomagját (lásd a projekttárolóban található hozzájárulási útmutatót).</string>
 </resources>

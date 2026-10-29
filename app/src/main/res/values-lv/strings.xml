@@ -146,8 +146,6 @@
     <string name="d32_summary">Cik ilgi turēt taustiņu, līdz parādās tā alternatīvas, ms (D-32).</string>
     <string name="double_tap_delay_title">Dubultpieskāriena aizkave</string>
     <string name="double_tap_delay_summary">Maksimālais laiks starp diviem pieskārieniem, lai tie skaitītos par dubultpieskārienu, ms - Shift reģistra pārslēgšana, dubultpieskāriens Atpakaļdzēsei atsaukšanai un lipīgā Atpakaļdzēse visi koplieto šo logu.</string>
-    <string name="d59_title">Taustiņš ?123/ABC</string>
-    <string name="d59_summary">Rādīt apvienoto ?123 taustiņu. Ja izslēgts, taustiņš pazūd un tā vieta paliek tukša (D-59).</string>
     <string name="d55_below_title">Vieta zem ciparu rindas</string>
     <string name="d55_below_summary">Papildu atstarpe zem cipariem, dp, lai samazinātu garām trāpījumus augšējā burtu rindā (D-55).</string>
     <string name="d55_above_title">Vieta virs atstarpes taustiņa</string>
@@ -367,4 +365,7 @@
     <string name="blacklist_origin_backup_import">Atjaunots no dublējuma</string>
     <string name="blacklist_origin_bundled_seed">Iekļauts lietotnē</string>
     <string name="blacklist_origin_unknown">Nezināms (no iepriekšējās versijas)</string>
+    <string name="d59_title">Taustiņš ?123/ABC</string>
+    <string name="d59_summary">Rādīt apvienoto ?123 taustiņu. Ja izslēgts, taustiņš pazūd un tā vieta paliek tukša (D-59).</string>
+    <string name="d506_pack_base_notice">Piezīme: Šobrīd manuāli ir apkopota tikai vācu pakotne. Visas pārējās valodas – to skaitā iebūvētā angļu valoda – ir automātiski izveidots pamats: trūkstošie vārdi, kļūdainie vai nevēlamie labojumi un līdzīgas kļūdas parasti nāk no pakotnes datiem, ne no pašas lietotnes. Ja labi pārvaldāt kādu valodu, varat palīdzēt uzlabot tās pakotni (skat. projekta krātuves līdzautoru ceļvedi).</string>
 </resources>

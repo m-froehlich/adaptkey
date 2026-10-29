@@ -146,8 +146,6 @@
     <string name="d32_summary">Ako dlho držať klávesu, kým sa objavia jej alternatívy, v ms (D-32).</string>
     <string name="double_tap_delay_title">Oneskorenie dvojitého klepnutia</string>
     <string name="double_tap_delay_summary">Najdlhší čas medzi dvoma klepnutiami, aby sa počítali ako dvojité, v ms - prepínanie veľkosti písmen Shiftom, dvojité klepnutie na Backspace na vrátenie a lepkavý Backspace zdieľajú toto okno.</string>
-    <string name="d59_title">Klávesa ?123/ABC</string>
-    <string name="d59_summary">Zobraziť kombinovanú klávesu ?123. Pri vypnutí klávesa zmizne a jej miesto zostane prázdne (D-59).</string>
     <string name="d55_below_title">Medzera pod radom číslic</string>
     <string name="d55_below_summary">Extra medzera pod číslicami, v dp, na zníženie chybných dotykov do horného radu písmen (D-55).</string>
     <string name="d55_above_title">Medzera nad medzerníkom</string>
@@ -367,4 +365,7 @@
     <string name="blacklist_origin_backup_import">Obnovené zo zálohy</string>
     <string name="blacklist_origin_bundled_seed">Súčasť aplikácie</string>
     <string name="blacklist_origin_unknown">Neznámy (zo staršej verzie)</string>
+    <string name="d59_title">Klávesa ?123/ABC</string>
+    <string name="d59_summary">Zobraziť kombinovanú klávesu ?123. Pri vypnutí klávesa zmizne a jej miesto zostane prázdne (D-59).</string>
+    <string name="d506_pack_base_notice">Poznámka: Ručne upravený je dnes iba nemecký balík. Všetky ostatné jazyky – vrátane priloženej angličtiny – sú automaticky vytvorený základ: chýbajúce slová, nesprávne alebo nechcené opravy a podobné chyby zvyčajne pochádzajú z dát balíka, nie zo samotnej aplikácie. Ak jazyk dobre ovládate, môžete pomôcť jeho balík vylepšiť (viac v príručke pre prispievateľov v repozitári projektu).</string>
 </resources>

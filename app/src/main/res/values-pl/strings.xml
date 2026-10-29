@@ -146,8 +146,6 @@
     <string name="d32_summary">Jak długo trzymać klawisz, zanim pojawią się jego alternatywy, w ms (D-32).</string>
     <string name="double_tap_delay_title">Opóźnienie podwójnego dotknięcia</string>
     <string name="double_tap_delay_summary">Maksymalny czas między dwoma dotknięciami, by liczyć się jako podwójne, w ms - przełączanie wielkości liter Shiftem, podwójne dotknięcie Backspace cofające i lepki Backspace dzielą to okno.</string>
-    <string name="d59_title">Klawisz ?123/ABC</string>
-    <string name="d59_summary">Pokaż połączony klawisz ?123. Po wyłączeniu klawisz znika, a jego miejsce zostaje puste (D-59).</string>
     <string name="d55_below_title">Odstęp pod rzędem cyfr</string>
     <string name="d55_below_summary">Dodatkowy odstęp pod cyframi, w dp, by zmniejszyć chybione dotknięcia w górnym rzędzie liter (D-55).</string>
     <string name="d55_above_title">Odstęp nad spacją</string>
@@ -367,4 +365,7 @@
     <string name="blacklist_origin_backup_import">Przywrócono z kopii zapasowej</string>
     <string name="blacklist_origin_bundled_seed">Dołączone do aplikacji</string>
     <string name="blacklist_origin_unknown">Nieznane (z wcześniejszej wersji)</string>
+    <string name="d59_title">Klawisz ?123/ABC</string>
+    <string name="d59_summary">Pokaż połączony klawisz ?123. Po wyłączeniu klawisz znika, a jego miejsce zostaje puste (D-59).</string>
+    <string name="d506_pack_base_notice">Uwaga: Obecnie ręcznie opracowany jest tylko pakiet niemiecki. Wszystkie pozostałe języki – w tym wbudowany angielski – to automatycznie zbudowana baza: brakujące słowa, błędne lub niechciane poprawki i podobne błędy wynikają zwykle z danych pakietu, a nie z samej aplikacji. Jeśli dobrze znasz jakiś język, możesz pomóc ulepszyć jego pakiet (zobacz przewodnik dla współtwórców w repozytorium projektu).</string>
 </resources>

@@ -146,8 +146,6 @@
     <string name="d32_summary">Koliko dugo držati tipku dok se ne pojave njezine alternative, u ms (D-32).</string>
     <string name="double_tap_delay_title">Kašnjenje dvostrukog dodira</string>
     <string name="double_tap_delay_summary">Najdulje vrijeme između dvaju dodira da se računaju kao dvostruki dodir, u ms - promjena veličine slova Shiftom, dvostruki dodir na Backspace za poništavanje i ljepljivi Backspace dijele ovaj prozor.</string>
-    <string name="d59_title">Tipka ?123/ABC</string>
-    <string name="d59_summary">Prikaži kombiniranu tipku ?123. Kad je isključena, tipka nestaje, a njezino mjesto ostaje prazno (D-59).</string>
     <string name="d55_below_title">Razmak ispod retka brojeva</string>
     <string name="d55_below_summary">Dodatni razmak ispod znamenki, u dp, radi smanjenja promašaja u gornji redak slova (D-55).</string>
     <string name="d55_above_title">Razmak iznad razmaknice</string>
@@ -367,4 +365,7 @@
     <string name="blacklist_origin_backup_import">Vraćeno iz sigurnosne kopije</string>
     <string name="blacklist_origin_bundled_seed">Isporučuje se s aplikacijom</string>
     <string name="blacklist_origin_unknown">Nepoznato (iz starije verzije)</string>
+    <string name="d59_title">Tipka ?123/ABC</string>
+    <string name="d59_summary">Prikaži kombiniranu tipku ?123. Kad je isključena, tipka nestaje, a njezino mjesto ostaje prazno (D-59).</string>
+    <string name="d506_pack_base_notice">Napomena: Danas je samo njemački paket ručno uređivan. Svi ostali jezici – uključivo s uključenim engleskim – automatski su izrađena osnova: nedostajuće riječi, pogrešne ili nepotrebne ispravke i slične pogreške obično dolaze iz podataka paketa, a ne iz same aplikacije. Ako dobro znate jezik, možete pomoći poboljšati njegov paket (vidi vodič za doprinos u repozitoriju projekta).</string>
 </resources>

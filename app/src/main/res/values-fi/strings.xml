@@ -146,8 +146,6 @@
     <string name="d32_summary">Kuinka kauan näppäintä pidetään painettuna ennen kuin sen vaihtoehdot avautuvat, ms (D-32).</string>
     <string name="double_tap_delay_title">Kaksoisnapautuksen viive</string>
     <string name="double_tap_delay_summary">Suurin aika kahden napautuksen välillä, jotta ne lasketaan kaksoisnapautukseksi, ms - Shiftin kirjainkoon vaihto, Askelpalauttimen kaksoisnapautus kumoamiseen ja tahmea Askelpalautin jakavat kaikki tämän ikkunan.</string>
-    <string name="d59_title">\?123/ABC-näppäin</string>
-    <string name="d59_summary">Näytä yhdistetty ?123-näppäin. Kun pois päältä, näppäin katoaa ja sen paikka jää tyhjäksi (D-59).</string>
     <string name="d55_below_title">Tila numerorivin alla</string>
     <string name="d55_below_summary">Lisätila numeroiden alla, dp, vähentämään ohi menneitä napautuksia ylimpään kirjainriviin (D-55).</string>
     <string name="d55_above_title">Tila välilyöntinäppäimen yläpuolella</string>
@@ -367,4 +365,7 @@
     <string name="blacklist_origin_backup_import">Palautettu varmuuskopiosta</string>
     <string name="blacklist_origin_bundled_seed">Sisältyy sovellukseen</string>
     <string name="blacklist_origin_unknown">Tuntematon (aiemmasta versiosta)</string>
+    <string name="d59_title">\?123/ABC-näppäin</string>
+    <string name="d59_summary">Näytä yhdistetty ?123-näppäin. Kun pois päältä, näppäin katoaa ja sen paikka jää tyhjäksi (D-59).</string>
+    <string name="d506_pack_base_notice">Huomautus: Tällä hetkellä vain saksan paketti on käsin kuratoitu. Kaikki muut kielet – mukaan lukien mukana toimitettu englanti – ovat automaattisesti rakennettu perusta: puuttuvat sanat, väärät tai ei-toivotut korjaukset ja vastaavat ongelmat johtuvat yleensä paketin tiedoista, eivät sovelluksesta itsestään. Jos osaat jonkin kielen hyvin, voit auttaa parantamaan sen pakettia (katso projektin varastossa oleva avustusopas).</string>
 </resources>

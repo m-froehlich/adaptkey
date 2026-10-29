@@ -164,8 +164,6 @@
     <string name="d32_summary">How long to hold a key before its alternatives pop up, in ms (D-32).</string>
     <string name="double_tap_delay_title">Double-tap delay</string>
     <string name="double_tap_delay_summary">Maximum time between two taps to count as a double-tap, in ms - Shift case-toggle, double-tap Backspace to revert, and sticky Backspace all share this window.</string>
-    <string name="d59_title">\?123/ABC key</string>
-    <string name="d59_summary">Show the combined ?123 key. With this off, the key disappears and its slot stays empty (D-59).</string>
     <string name="d55_below_title">Space below number row</string>
     <string name="d55_below_summary">Extra gap under the digits, in dp, to reduce mis-taps into the top letter row (D-55).</string>
     <string name="d55_above_title">Space above space bar</string>
@@ -447,4 +445,7 @@
     <string name="d486_mode_none">None</string>
     <string name="d486_mode_nav_bar">Navigation bar</string>
     <string name="d486_mode_auto">Automatic</string>
+    <string name="d59_title">\?123/ABC key</string>
+    <string name="d59_summary">Show the combined ?123 key. With this off, the key disappears and its slot stays empty (D-59).</string>
+    <string name="d506_pack_base_notice">Note: today only the German pack is hand-curated. Every other language - including the bundled English - is an automatically built base: missing words, wrong or unwanted corrections and similar glitches usually come from the pack data, not from the app itself. If you know a language well, you can help improve its pack (see the contribution guide in the project repository).</string>
 </resources>

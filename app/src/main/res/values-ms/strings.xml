@@ -146,8 +146,6 @@
     <string name="d32_summary">Berapa lama menahan kekunci sebelum alternatifnya muncul, dalam ms (D-32).</string>
     <string name="double_tap_delay_title">Kelewatan ketik dua kali</string>
     <string name="double_tap_delay_summary">Masa maksimum antara dua ketikan untuk dikira sebagai ketik dua kali, dalam ms - togol huruf besar/kecil Shift, ketik dua kali Backspace untuk membuat asal, dan Backspace melekit semuanya berkongsi tetingkap ini.</string>
-    <string name="d59_title">Kekunci ?123/ABC</string>
-    <string name="d59_summary">Tunjukkan kekunci gabungan ?123. Apabila dimatikan, kekunci hilang dan tempatnya kekal kosong (D-59).</string>
     <string name="d55_below_title">Ruang di bawah baris nombor</string>
     <string name="d55_below_summary">Jurang tambahan di bawah digit, dalam dp, untuk mengurangkan ketikan tersasar ke baris huruf atas (D-55).</string>
     <string name="d55_above_title">Ruang di atas bar ruang</string>
@@ -367,4 +365,7 @@
     <string name="blacklist_origin_backup_import">Dipulihkan daripada sandaran</string>
     <string name="blacklist_origin_bundled_seed">Disertakan bersama apl</string>
     <string name="blacklist_origin_unknown">Tidak diketahui (daripada versi terdahulu)</string>
+    <string name="d59_title">Kekunci ?123/ABC</string>
+    <string name="d59_summary">Tunjukkan kekunci gabungan ?123. Apabila dimatikan, kekunci hilang dan tempatnya kekal kosong (D-59).</string>
+    <string name="d506_pack_base_notice">Nota: Buat masa ini hanya paket Jerman yang disemak secara manual. Semua bahasa lain – termasuk bahasa Inggeris terbina dalam – adalah asas yang dibina secara automatik: perkataan yang tiada, pembetulan yang salah atau tidak diingini dan gangguan serupa biasanya datang daripada data paket, bukan daripada aplikasi itu sendiri. Jika anda menguasai sesuatu bahasa, anda boleh membantu menambah baik paketnya (lihat panduan sumbangan dalam repositori projek).</string>
 </resources>

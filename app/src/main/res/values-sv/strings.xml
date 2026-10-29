@@ -146,8 +146,6 @@
     <string name="d32_summary">Hur länge en tangent hålls ned innan dess alternativ visas, i ms (D-32).</string>
     <string name="double_tap_delay_title">Dubbeltrycksfördröjning</string>
     <string name="double_tap_delay_summary">Största tid mellan två tryck för att räknas som dubbeltryck, i ms - skiftlägesbyte med Skift, dubbeltryck på Backsteg för att ångra och klistrigt Backsteg delar alla detta fönster.</string>
-    <string name="d59_title">Tangenten ?123/ABC</string>
-    <string name="d59_summary">Visa den kombinerade ?123-tangenten. När den är av försvinner tangenten och dess plats förblir tom (D-59).</string>
     <string name="d55_below_title">Utrymme under sifferraden</string>
     <string name="d55_below_summary">Extra mellanrum under siffrorna, i dp, för att minska felträffar i den övre bokstavsraden (D-55).</string>
     <string name="d55_above_title">Utrymme ovanför mellanslagstangenten</string>
@@ -367,4 +365,7 @@
     <string name="blacklist_origin_backup_import">Återställd från en säkerhetskopia</string>
     <string name="blacklist_origin_bundled_seed">Ingår i appen</string>
     <string name="blacklist_origin_unknown">Okänt (från en tidigare version)</string>
+    <string name="d59_title">Tangenten ?123/ABC</string>
+    <string name="d59_summary">Visa den kombinerade ?123-tangenten. När den är av försvinner tangenten och dess plats förblir tom (D-59).</string>
+    <string name="d506_pack_base_notice">Obs: Idag är det bara det tyska paketet som är handkuraterat. Alla andra språk – inklusive den inbyggda engelskan – är en automatiskt byggd bas: saknade ord, felaktiga eller oönskade rättelser och liknande fel kommer vanligtvis från paketets data, inte från appen själv. Om du kan ett språk väl kan du hjälpa till att förbedra dess paket (se bidragsguiden i projektets arkiv).</string>
 </resources>

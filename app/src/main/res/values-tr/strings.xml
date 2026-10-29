@@ -146,8 +146,6 @@
     <string name="d32_summary">Bir tuşun seçenekleri açılmadan önce ne kadar basılı tutulacağı, ms cinsinden (D-32).</string>
     <string name="double_tap_delay_title">Çift dokunma gecikmesi</string>
     <string name="double_tap_delay_summary">İki dokunuşun çift dokunma sayılması için aralarındaki en uzun süre, ms cinsinden - Shift ile büyük/küçük harf çevirme, geri almak için Geri Sil\'e çift dokunma ve yapışkan Geri Sil bu pencereyi paylaşır.</string>
-    <string name="d59_title">\?123/ABC tuşu</string>
-    <string name="d59_summary">Birleşik ?123 tuşunu göster. Kapalıyken tuş kaybolur ve yeri boş kalır (D-59).</string>
     <string name="d55_below_title">Rakam satırının altındaki boşluk</string>
     <string name="d55_below_summary">Üst harf satırına yanlış dokunuşları azaltmak için rakamların altında ek boşluk, dp cinsinden (D-55).</string>
     <string name="d55_above_title">Boşluk çubuğunun üstündeki boşluk</string>
@@ -367,4 +365,7 @@
     <string name="blacklist_origin_backup_import">Bir yedekten geri yüklendi</string>
     <string name="blacklist_origin_bundled_seed">Uygulamayla birlikte gelir</string>
     <string name="blacklist_origin_unknown">Bilinmiyor (önceki sürümden)</string>
+    <string name="d59_title">\?123/ABC tuşu</string>
+    <string name="d59_summary">Birleşik ?123 tuşunu göster. Kapalıyken tuş kaybolur ve yeri boş kalır (D-59).</string>
+    <string name="d506_pack_base_notice">Not: Şu anda yalnızca Almanca paket elle derlenmiştir. Diğer tüm diller – yerleşik İngilizce dahil – otomatik olarak oluşturulmuş bir temeldir: eksik kelimeler, yanlış veya istenmeyen düzeltmeler ve benzeri sorunlar genellikle paket verilerinden, uygulamanın kendisinden değil gelir. Bir dili iyi biliyorsanız, paketini geliştirmeye yardımcı olabilirsiniz (proje deposundaki katkı kılavuzuna bakın).</string>
 </resources>

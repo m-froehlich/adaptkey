@@ -146,8 +146,6 @@
     <string name="d32_summary">Hvor lenge en tast holdes inne før alternativene dukker opp, i ms (D-32).</string>
     <string name="double_tap_delay_title">Dobbelttrykkforsinkelse</string>
     <string name="double_tap_delay_summary">Lengste tid mellom to trykk for å telle som dobbelttrykk, i ms - bytte av store/små bokstaver med Skift, dobbelttrykk på Tilbake for å angre og klissete Tilbake deler alle dette vinduet.</string>
-    <string name="d59_title">Tasten ?123/ABC</string>
-    <string name="d59_summary">Vis den kombinerte ?123-tasten. Når den er av, forsvinner tasten og plassen blir stående tom (D-59).</string>
     <string name="d55_below_title">Rom under tallraden</string>
     <string name="d55_below_summary">Ekstra mellomrom under sifrene, i dp, for å redusere bom i den øverste bokstavraden (D-55).</string>
     <string name="d55_above_title">Rom over mellomromstasten</string>
@@ -367,4 +365,7 @@
     <string name="blacklist_origin_backup_import">Gjenopprettet fra en sikkerhetskopi</string>
     <string name="blacklist_origin_bundled_seed">Leveres med appen</string>
     <string name="blacklist_origin_unknown">Ukjent (fra en tidligere versjon)</string>
+    <string name="d59_title">Tasten ?123/ABC</string>
+    <string name="d59_summary">Vis den kombinerte ?123-tasten. Når den er av, forsvinner tasten og plassen blir stående tom (D-59).</string>
+    <string name="d506_pack_base_notice">Merk: I dag er det bare den tyske pakken som er håndkuratert. Alle andre språk – inkludert den innebygde engelsken – er en automatisk bygget base: manglende ord, feil eller uønskede rettelser og lignende feil kommer vanligvis fra pakkens data, ikke fra selve appen. Hvis du kan et språk godt, kan du hjelpe til med å forbedre pakken (se bidragsguiden i prosjektets kodebibliotek).</string>
 </resources>

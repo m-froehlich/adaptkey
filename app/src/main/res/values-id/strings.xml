@@ -146,8 +146,6 @@
     <string name="d32_summary">Berapa lama menahan tombol sebelum alternatifnya muncul, dalam md (D-32).</string>
     <string name="double_tap_delay_title">Jeda ketuk ganda</string>
     <string name="double_tap_delay_summary">Waktu maksimum antara dua ketukan agar dihitung sebagai ketuk ganda, dalam md - pengalih huruf besar/kecil Shift, ketuk ganda Backspace untuk membatalkan, dan Backspace lengket semuanya berbagi jendela ini.</string>
-    <string name="d59_title">Tombol ?123/ABC</string>
-    <string name="d59_summary">Tampilkan tombol gabungan ?123. Bila dimatikan, tombol menghilang dan tempatnya tetap kosong (D-59).</string>
     <string name="d55_below_title">Ruang di bawah baris angka</string>
     <string name="d55_below_summary">Celah ekstra di bawah angka, dalam dp, untuk mengurangi ketukan meleset ke baris huruf atas (D-55).</string>
     <string name="d55_above_title">Ruang di atas bilah spasi</string>
@@ -367,4 +365,7 @@
     <string name="blacklist_origin_backup_import">Dipulihkan dari cadangan</string>
     <string name="blacklist_origin_bundled_seed">Termasuk dalam aplikasi</string>
     <string name="blacklist_origin_unknown">Tidak diketahui (dari versi sebelumnya)</string>
+    <string name="d59_title">Tombol ?123/ABC</string>
+    <string name="d59_summary">Tampilkan tombol gabungan ?123. Bila dimatikan, tombol menghilang dan tempatnya tetap kosong (D-59).</string>
+    <string name="d506_pack_base_notice">Catatan: Saat ini hanya paket Jerman yang dikurasi secara manual. Semua bahasa lain – termasuk bahasa Inggris bawaan – adalah dasar yang dibuat otomatis: kata yang hilang, koreksi yang salah atau tidak diinginkan, dan gangguan serupa biasanya berasal dari data paket, bukan dari aplikasi itu sendiri. Jika Anda menguasai suatu bahasa, Anda dapat membantu memperbaiki paketnya (lihat panduan kontribusi di repositori proyek).</string>
 </resources>
