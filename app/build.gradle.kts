@@ -40,8 +40,11 @@ android {
         // D-450-followup: explicit user request bumped 1.1.78 -> 1.2.0 - a minor-version milestone marker,
         // not a further third-digit step, requested on the same commit that adds the first Cyrillic-script
         // language pack (Serbian) and the non-Latin-layout generalisation it required.
-        versionCode = 588
-        versionName = "1.2.92"
+        // D-507: the combined key's slot function becomes one three-value setting (?123 / emoji / off),
+        // with the emoji slot as the deliberate, redundant second emoji-panel entry point beside the
+        // §48 extra-row button; D-59's boolean migrates on load.
+        versionCode = 589
+        versionName = "1.2.93"
         
         // The ONNX Runtime native libs (tier-3 mini-LLM) ship per ABI; keep only the ones real phones
         // use (arm64 + 32-bit arm), dropping the emulator-only x86/x86_64 libs (~43 MB). Device testing
