@@ -24128,3 +24128,9 @@ and every pure policy around it (mode routing, clamps, migration) was tested and
 `:app:assembleRelease` + 1,793 unit tests green. Rides versionCode 589 / 1.2.93 (the round is still
 unreleased, so no extra bump). NOT yet device-confirmed: the emoji slot's glyph and tap (the very
 thing this fixes), the auto-opened extra row + guarded close around the panel.
+
+**Device-confirmed by the user 2026-10-29**: the setting renders correctly and all three modes
+behave - "off" hides the key, "?123" toggles the layer, "emoji" shows the glyph and opens the
+panel (verified against this section's own isHiddenKey fix). The user closed the round on that
+basis; the D-59-boolean migration path and the panel return-path details were neither reported
+broken nor separately re-verified. Round closed as versionCode 589 / 1.2.93.
