@@ -22,10 +22,12 @@ import de.froehlichmedia.adaptkey.suggestion.NoOpDiacriticFolding
  *           to a real dictionary word (`resolveWord`'s own umlaut-aware lookup) - e.g. "gehort" -> "gehört".
  *           Defaults to [left] itself when no unfolding was needed (the common case).
  * @property resolvedRight the equivalent of [resolvedLeft] for [right]
- * @property confidence D-473: [CorrectionConfidence.forSplit]'s own `[0, 1]` score for this split - the
- *           caller compares it against [AutocorrectAggressiveness] before applying the split silently;
- *           [TokenRepair] itself never filters on it, so a low-confidence split still surfaces as a chip/
- *           live preview exactly as before, only silent auto-apply is newly gated. Defaults to `1.0` so
+     * @property confidence D-473: [CorrectionConfidence.forSplit]'s own `[0, 1]` score for this split - the
+     *           caller compares it against [CorrectionConfidence.SPLIT_AUTO_APPLY_CONFIDENCE] before
+     *           applying the split silently (D-504: the split's own bar, decoupled from
+     *           [AutocorrectAggressiveness]);
+     *           [TokenRepair] itself never filters on it, so a low-confidence split still surfaces as a chip/
+     *           live preview exactly as before, only silent auto-apply is newly gated. Defaults to `1.0` so
  *           every caller that constructs a [SplitResult] directly (D-263's own case-locked commit path,
  *           existing tests) keeps its previous, unfiltered behaviour unless it explicitly says otherwise.
  */

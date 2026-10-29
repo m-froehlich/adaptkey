@@ -115,11 +115,38 @@ object CorrectionConfidence {
      * @param leftIsNounLike whether the left half is tagged [PartOfSpeech.NOUN] / [PartOfSpeech.PROPER_NOUN]
      * @param rightFrequency the right half's own resolved dictionary frequency
      * @param rightIsNounLike whether the right half is tagged [PartOfSpeech.NOUN] / [PartOfSpeech.PROPER_NOUN]
-     * @return the confidence in `[0, 1]`
+     * @return the confidence in `[0, 1]`, or exactly 0.0 when either half fails [SPLIT_SILENT_HALF_FREQUENCY]
      */
     fun forSplit(leftFrequency: Long, leftIsNounLike: Boolean, rightFrequency: Long, rightIsNounLike: Boolean): Double {
+        if (leftFrequency < SPLIT_SILENT_HALF_FREQUENCY || rightFrequency < SPLIT_SILENT_HALF_FREQUENCY) {
+            return 0.0
+        }
         return frequencyFactor(leftFrequency, leftIsNounLike) * frequencyFactor(rightFrequency, rightIsNounLike)
     }
+    
+    /**
+     * D-504: the minimum standalone frequency EITHER half of an A-05 split must individually clear for the
+     * split to be eligible for silent application at all - below it [forSplit] returns exactly 0.0, so the
+     * split can never win the caller's silent-apply comparison, while the chip/live-preview path (which
+     * never filters on confidence, D-473) keeps surfacing it exactly as before. The floor exists because
+     * the multiplicative structure alone protects nothing: [frequencyFactor] saturates for a non-noun half
+     * at [REFERENCE_FREQUENCY] (25), so practically every ordinary dictionary word scores 1.0 and a single
+     * reasonably frequent noun half carried any partner silently at MEDIUM (the measured D-493 case:
+     * "sch" 84 x "Meißen" 352 -> 0.77 >= 0.75). 300 is this app's own established "trustworthy" bar
+     * (D-114's MIN_AUTOCORRECT_CANDIDATE_FREQUENCY, already reused by TokenRepair's
+     * MIN_SPLIT_ACRONYM_FREQUENCY), not a freely chosen number.
+     */
+    const val SPLIT_SILENT_HALF_FREQUENCY = 300L
+    
+    /**
+     * D-504: the split's own silent-auto-apply bar, deliberately decoupled from
+     * [AutocorrectAggressiveness.autoApplyThreshold] - a split is a bigger intervention than a respelling
+     * (it rewrites two words instead of one), so it does not scale with C-22's aggressiveness slider;
+     * C-21 (Automatic / Chip only / Off) remains the mode switch governing whether the split may act at
+     * all. 0.90 reproduces CAUTIOUS's own auto threshold - the most conservative bar the app already
+     * applies to silent single-word corrections.
+     */
+    const val SPLIT_AUTO_APPLY_CONFIDENCE = 0.90
     
     /**
      * D-473: confidence for a D-39 raw-coordinate-correction candidate (T-02) - previously missing entirely

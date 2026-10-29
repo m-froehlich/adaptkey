@@ -1,0 +1,38 @@
+﻿Cross-language D-504 report-only scan (2026-10-29, clean_dict.py, --floor 500 --hard-floor 300).
+No nomen shield outside de => R2 never drops there, everything unshielded is review-only. de = applied state (fixed point: only the 38 kept review rows remain).
+de => 38 decisions {'r4_review': 38} (applied; fixed point)
+az => 1649 decisions {'r1_retag': 17, 'r1_dropped': 649, 'r4_drop': 470, 'r4_review': 513}
+bs => 2766 decisions {'r1_retag': 97, 'r1_dropped': 1842, 'r4_drop': 252, 'r4_review': 575}
+cs => 3134 decisions {'r1_retag': 1, 'r1_dropped': 2, 'r4_drop': 1317, 'r4_review': 1814}
+da => 3165 decisions {'r1_retag': 51, 'r1_dropped': 1503, 'r4_drop': 704, 'r4_review': 907}
+el => 29828 decisions {'r2_retag': 797, 'r2_review': 28912, 'r4_drop': 32, 'r4_review': 87}
+es => 8904 decisions {'r1_retag': 1206, 'r1_dropped': 6694, 'r4_drop': 291, 'r4_review': 713}
+et => 2329 decisions {'r1_retag': 95, 'r1_dropped': 1302, 'r4_drop': 299, 'r4_review': 633}
+fi => 9160 decisions {'r1_retag': 138, 'r1_dropped': 7131, 'r4_drop': 609, 'r4_review': 1282}
+fr => 27838 decisions {'r1_retag': 2277, 'r1_dropped': 24155, 'r4_drop': 427, 'r4_review': 979}
+hr => 2838 decisions {'r1_retag': 96, 'r1_dropped': 1925, 'r4_drop': 307, 'r4_review': 510}
+hu => 4687 decisions {'r1_retag': 12, 'r1_dropped': 2426, 'r4_drop': 805, 'r4_review': 1444}
+id => 2842 decisions {'r1_dropped': 2, 'r4_drop': 1072, 'r4_review': 1768}
+it => 7922 decisions {'r1_retag': 220, 'r1_dropped': 3630, 'r4_drop': 1667, 'r4_review': 2405}
+lt => 2474 decisions {'r1_retag': 19, 'r1_dropped': 1596, 'r4_drop': 273, 'r4_review': 586}
+lv => 1963 decisions {'r1_retag': 34, 'r1_dropped': 1123, 'r4_drop': 315, 'r4_review': 491}
+ms => 1746 decisions {'r1_dropped': 233, 'r4_drop': 460, 'r4_review': 1053}
+nb => 3231 decisions {'r1_retag': 34, 'r1_dropped': 1106, 'r4_drop': 887, 'r4_review': 1204}
+nl => 9596 decisions {'r1_retag': 175, 'r1_dropped': 5945, 'r4_drop': 1229, 'r4_review': 2247}
+pl => 10253 decisions {'r1_retag': 247, 'r1_dropped': 5979, 'r4_drop': 1685, 'r4_review': 2342}
+pt => 3445 decisions {'r1_dropped': 7, 'r4_drop': 1433, 'r4_review': 2005}
+ro => 15817 decisions {'r1_retag': 1087, 'r1_dropped': 13122, 'r4_drop': 571, 'r4_review': 1037}
+ru => 17186 decisions {'r1_retag': 2128, 'r1_dropped': 12564, 'r4_drop': 1180, 'r4_review': 1314}
+sk => 4393 decisions {'r1_retag': 57, 'r1_dropped': 2987, 'r4_drop': 479, 'r4_review': 870}
+sr => 2053 decisions {'r1_retag': 41, 'r1_dropped': 979, 'r4_drop': 326, 'r4_review': 707}
+sv => 4764 decisions {'r1_retag': 52, 'r1_dropped': 2265, 'r4_drop': 887, 'r4_review': 1560}
+sw => 668 decisions {'r1_retag': 11, 'r1_dropped': 395, 'r4_drop': 85, 'r4_review': 177}
+tl => 3400 decisions {'r1_retag': 14, 'r1_dropped': 3024, 'r4_drop': 97, 'r4_review': 265}
+tr => 23874 decisions {'r1_retag': 960, 'r1_dropped': 20715, 'r4_drop': 812, 'r4_review': 1387}
+uk => 4229 decisions {'r1_retag': 92, 'r1_dropped': 2270, 'r4_drop': 753, 'r4_review': 1114}
+uz => 1179 decisions {'r1_dropped': 326, 'r4_drop': 294, 'r4_review': 559}
+
+NOTE: r1_dropped (lowercase rows tagged ONLY PROPER_NOUN) varies by an order of magnitude across
+languages (cs 2 vs fr 24155) - the sentence-case-artefact hypothesis needs per-language sample
+validation before any apply; el's R2-review 28912 reflects a PROPER_NOUN-heavy tagging with no
+noun-lemma shield yet. Nothing outside de has been modified.

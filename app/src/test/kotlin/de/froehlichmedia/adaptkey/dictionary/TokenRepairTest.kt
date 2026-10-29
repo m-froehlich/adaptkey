@@ -24,6 +24,11 @@ import org.junit.jupiter.api.Test
  * output of that pure function for the test's own fixture frequencies, not guessed. The shared `setUp()`
  * fixture words ("und"/"das"/"aber"/"bald"/"ist"/"ich") all share frequency 10L and no noun tag, which is
  * why several otherwise-unrelated splits below land on the identical confidence value.
+ * 
+ * D-504: [CorrectionConfidence.forSplit] returns exactly 0.0 once either half sits below its
+ * SPLIT_SILENT_HALF_FREQUENCY (300) - the fixture's 10L words are structurally valid split halves
+ * (>= MIN_SPLIT_HALF_FREQUENCY) but deliberately silent-ineligible, which is why the pins below are
+ * 0.0; the silent policy's non-degenerate values are pinned in CorrectionConfidenceTest instead.
  */
 class TokenRepairTest {
     
@@ -43,20 +48,20 @@ class TokenRepairTest {
     fun `a flagged space-ambiguous character is split into two words`() {
         // "undxdas" with the 'x' at index 3 flagged -> drop it and split.
         val result = repair.trySplit("undxdas", setOf(3))
-        assertEquals(SplitResult("und", "das", confidence = 0.5117088534551829), result)
+        assertEquals(SplitResult("und", "das", confidence = 0.0), result)
     }
     
     @Test
     fun `an over-space letter splits even without a T-05 ambiguity flag`() {
         // 'x' physically sits over the space bar, so it is a drop candidate even without a T-05 flag.
         val result = repair.trySplit("undxdas", emptySet())
-        assertEquals(SplitResult("und", "das", confidence = 0.5117088534551829), result)
+        assertEquals(SplitResult("und", "das", confidence = 0.0), result)
     }
     
     @Test
     fun `a fully missed space is split by inserting a space`() {
         val result = repair.trySplit("aberdas", emptySet())
-        assertEquals(SplitResult("aber", "das", confidence = 0.5117088534551829), result)
+        assertEquals(SplitResult("aber", "das", confidence = 0.0), result)
     }
     
     @Test
@@ -70,7 +75,7 @@ class TokenRepairTest {
         // recorded, and none is needed any more (D-203): a first-time-typed compound typo has, by
         // definition, never co-occurred as two separate words before, so requiring it rejected exactly the
         // cases this mechanism exists to catch.
-        assertEquals(SplitResult("und", "bald", confidence = 0.5117088534551829), repair.trySplit("undbald", emptySet()))
+        assertEquals(SplitResult("und", "bald", confidence = 0.0), repair.trySplit("undbald", emptySet()))
     }
     
     @Test
@@ -83,13 +88,13 @@ class TokenRepairTest {
     
     @Test
     fun `D-216 an isCancelled that never returns true leaves the result unchanged`() {
-        assertEquals(SplitResult("und", "bald", confidence = 0.5117088534551829), repair.trySplit("undbald", emptySet()) { false })
+        assertEquals(SplitResult("und", "bald", confidence = 0.0), repair.trySplit("undbald", emptySet()) { false })
     }
     
     @Test
     fun `an over-space letter is dropped as a likely space mis-tap even without a flag`() {
         // 'c' sits over the space bar on QWERTZ, so "undcdas" is treated as "und" + "das".
-        assertEquals(SplitResult("und", "das", confidence = 0.5117088534551829), repair.trySplit("undcdas", emptySet()))
+        assertEquals(SplitResult("und", "das", confidence = 0.0), repair.trySplit("undcdas", emptySet()))
     }
     
     @Test
@@ -162,7 +167,9 @@ class TokenRepairTest {
         store.putWord(WordEntry("der", frequency = 1_004_234L))
         store.putWord(WordEntry("kinderarzt", frequency = 14L, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
         
-        assertEquals(SplitResult("der", "kinderarzt", confidence = 0.347203156949109), repair.trySplit("derkinderarzt", emptySet()))
+        // D-504: the 14-frequency noun half now fails SPLIT_SILENT_HALF_FREQUENCY outright - the score
+        // is exactly 0.0 rather than merely low (still < every auto threshold, as D-473 required).
+        assertEquals(SplitResult("der", "kinderarzt", confidence = 0.0), repair.trySplit("derkinderarzt", emptySet()))
     }
     
     @Test
@@ -202,7 +209,9 @@ class TokenRepairTest {
         store.putWord(WordEntry("Dock", frequency = TokenRepair.MIN_SPLIT_HALF_FREQUENCY, partsOfSpeech = setOf(PartOfSpeech.NOUN)))
         store.putWord(WordEntry("er", frequency = 120_975L))
         
-        assertEquals(SplitResult("dock", "er", confidence = 0.30293575075462364), repair.trySplit("docker", emptySet()))
+        // D-504: the split stays structurally valid; its confidence is 0.0 (frequency 10 < the silent
+        // half floor), so it can only ever surface as a chip/preview, never silently.
+        assertEquals(SplitResult("dock", "er", confidence = 0.0), repair.trySplit("docker", emptySet()))
     }
     
     @Test
@@ -215,7 +224,9 @@ class TokenRepairTest {
         // The identical pair clears the floor once "mini" is frequent enough - confirming the frequency
         // check, not some other gate, was what rejected it above.
         store.putWord(WordEntry("mini", frequency = TokenRepair.MIN_SPLIT_HALF_FREQUENCY))
-        assertEquals(SplitResult("mini", "wort", confidence = 0.7153382790366967), repair.trySplit("miniwort", emptySet()))
+        // D-504: structurally valid at the structural floor, but 10 < the silent half floor, so the
+        // split's confidence is exactly 0.0 - eligible for a chip, never for silent application.
+        assertEquals(SplitResult("mini", "wort", confidence = 0.0), repair.trySplit("miniwort", emptySet()))
     }
     
     @Test
@@ -272,7 +283,7 @@ class TokenRepairTest {
         val noOpRepair = TokenRepair(store, NoOpLanguageRules)
         store.putWord(WordEntry("un", frequency = 100L))
         store.putWord(WordEntry("glücklich", frequency = 150L))
-        assertEquals(SplitResult("un", "glücklich"), noOpRepair.trySplit("unglücklich", emptySet()))
+        assertEquals(SplitResult("un", "glücklich", confidence = 0.0), noOpRepair.trySplit("unglücklich", emptySet()))
     }
     
     @Test
@@ -489,7 +500,9 @@ class TokenRepairTest {
         store.putWord(WordEntry("undcdas", frequency = 15L)) // an unlikely but present "word" for this test
         store.putWord(WordEntry("ist", frequency = 500L))
         
-        assertEquals(SplitResult("undcdas", "ist", confidence = 0.8413030972429927), repair.splitAtUnresolvedConnector("undcdasnist"))
+        // D-504: the 15-frequency fake "word" sits below the silent half floor, so the confidence pins
+        // as 0.0; the D-122 chip itself never filters on confidence, so the structural point is unchanged.
+        assertEquals(SplitResult("undcdas", "ist", confidence = 0.0), repair.splitAtUnresolvedConnector("undcdasnist"))
     }
     
     @Test

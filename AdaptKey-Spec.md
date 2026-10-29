@@ -1539,6 +1539,26 @@ addressing each half of that gap:
   -> `"schwimmt"` + `"Asche"`, the other reported case) - confidence 0.73 there, clearing only the most
   permissive level, down from firing at every level unconditionally before this fix.
 
+D-504: the split's silent application is decoupled from the aggressiveness level and gets its own,
+much stricter bar. Two halves, one code one data: (1) `CorrectionConfidence.forSplit` returns exactly
+0.0 when either half's own resolved dictionary frequency is below 300 (the established "trustworthy"
+bar), and the two silent call sites compare the winning split against the split-specific
+`SPLIT_AUTO_APPLY_CONFIDENCE = 0.90` instead of the active `AutocorrectAggressiveness` level's
+auto-apply threshold - a split rewrites two words, so it no longer scales with C-22's slider (C-21
+still governs Automatic/Chip only/Off). Chips and the live preview are untouched: `TokenRepair`
+never filters on confidence, so a sub-floor split is still offered, just never applied silently. The
+product structure alone protects nothing - the non-noun frequency curve saturates at 25, so one
+reasonably frequent noun half carried any partner silently (the measured D-493 case: "sch" 84 ×
+"Meißen" 352 = 0.77 ≥ 0.75). (2) The dictionary data itself: `dictionaries/clean_dict.py` (see the
+contribution guide's cleanup section) removes the corpus noise those gates had been working on -
+vowel-less split-half fragments ("sch" itself), zero-doubt foreign strays, and the uncommon-proper-
+noun population below frequency 500, decided word-vs-name by the curated Wiktionary noun-lemma
+shield (German surnames ARE common nouns - frequency alone cannot make that call) with a
+hand-reviewed band; 193,814 → 189,781 German rows, pack version 49. Validated in both directions on
+the real dictionary: usage-weighted silent recall over 37,851 joined attested bigrams 84.7%
+(wrong-position silent share 2.7%); on the broad random population 139 of 35,280 structural splits
+would still apply silently.
+
 ### A-06 - Retroactive Word Merge on Spurious Space
 The inverse of A-05. When a space was registered from a letter-ambiguous tap (T-05) and the following token is not a valid word, the system tests whether removing that space and prepending the letter inferred from the tap's x-coordinate yields a valid or high-probability word. If so, the spurious space is removed and the reconstructed word is committed (e.g. `aber  ald` -> `aber bald`, where the intended `b` landed on the space bar). As with A-05, a valid linguistic result is mandatory; the spatial signal only nominates the candidate.
 

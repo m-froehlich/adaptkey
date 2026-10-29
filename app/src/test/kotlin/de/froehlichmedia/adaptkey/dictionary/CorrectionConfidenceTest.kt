@@ -172,18 +172,46 @@ class CorrectionConfidenceTest {
     }
     
     @Test
-    fun `forSplit D-473 Schwimmtasche - schwimmt plus Asche - clears AGGRESSIVE but not MEDIUM or CAUTIOUS`() {
+    fun `forSplit D-504 Schwimmtasche - schwimmt plus Asche - can no longer apply silently`() {
         // "Schwimmtasche" -> "schwimmt" (51, OTHER) + "Asche" (264, NOUN) - the reported false-positive
-        // split (nothing else in the dictionary is close enough to compete against it). Neither half is
-        // rare enough to fall below every level the way the Kinderarzt case does - reduced from firing at
-        // every level (the pre-D-473 behaviour) to only the most permissive one, not eliminated outright.
+        // split (nothing else in the dictionary is close enough to compete against it). D-473 first
+        // reduced it from firing at every level to only AGGRESSIVE; D-504 ends it outright: either half
+        // below SPLIT_SILENT_HALF_FREQUENCY (300 - both here) zeroes the score, so no aggressiveness
+        // level and no setting can apply it silently any more. The split itself is still found and still
+        // surfaces as a chip/live preview (TokenRepair never filters on confidence).
         val score = CorrectionConfidence.forSplit(51L, false, 264L, true)
+        assertEquals(0.0, score)
+    }
+    
+    @Test
+    fun `forSplit D-504 sch plus Meissen - the reported junk-half split - scores 0_0`() {
+        // Real bundled frequencies (dict.tsv line 20609): "sch" (84, OTHER) x "Meißen" (352, NOUN) -
+        // the D-493 false positive. Pre-D-504 this scored 0.77 and applied silently at MEDIUM; the 84
+        // half now fails SPLIT_SILENT_HALF_FREQUENCY outright (and the junk row itself is scheduled for
+        // removal by the round's data part).
+        assertEquals(0.0, CorrectionConfidence.forSplit(84L, false, 352L, true))
+    }
+    
+    @Test
+    fun `forSplit D-504 the silent half floor is a hard boundary at 300`() {
+        assertEquals(0.0, CorrectionConfidence.forSplit(299L, false, 100_000L, false))
+        assertEquals(0.0, CorrectionConfidence.forSplit(100_000L, false, 299L, true))
+        val atFloor = CorrectionConfidence.forSplit(300L, false, 100_000L, false)
         assertTrue(
-            score >= AutocorrectAggressiveness.AGGRESSIVE.autoApplyThreshold,
-            "expected >= AGGRESSIVE (${AutocorrectAggressiveness.AGGRESSIVE.autoApplyThreshold}), was $score"
+            atFloor >= CorrectionConfidence.SPLIT_AUTO_APPLY_CONFIDENCE,
+            "expected a both-halves-at-floor split to clear the split's own bar, was $atFloor"
         )
-        assertTrue(score < AutocorrectAggressiveness.MEDIUM.autoApplyThreshold, "expected < MEDIUM, was $score")
-        assertTrue(score < AutocorrectAggressiveness.CAUTIOUS.autoApplyThreshold, "expected < CAUTIOUS, was $score")
+    }
+    
+    @Test
+    fun `forSplit D-504 a common two-word glue still applies silently`() {
+        // The "gehört es" / "eh nicht" / "zum Beispiel" shapes: both halves ordinary, well-attested
+        // words - the genuine missed-space recoveries the mechanism exists for must keep working.
+        val score = CorrectionConfidence.forSplit(500L, false, 100_000L, false)
+        assertTrue(
+            score >= CorrectionConfidence.SPLIT_AUTO_APPLY_CONFIDENCE,
+            "expected >= ${CorrectionConfidence.SPLIT_AUTO_APPLY_CONFIDENCE}, was $score"
+        )
     }
     
     @Test

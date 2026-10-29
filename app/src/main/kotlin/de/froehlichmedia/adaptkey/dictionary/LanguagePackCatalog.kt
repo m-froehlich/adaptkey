@@ -495,7 +495,29 @@ object LanguagePackCatalog {
             // 14,400 (ratio ~69.7x, the confirmed-bad "Ohren"/"Ihren" floor no level may cross); no other
             // adjacent-key rival is anywhere near (`Weg` 3,768). `dictionaries/de/version.txt` 47 -> 48, pack
             // rebuilt and verified byte-identical after unzip, `LanguagePackCatalog` version 47 -> 48.
-            version = 48
+            //
+            // D-504 (data half of the A-05 auto-split tuning round; code half see spec A-05): mechanical
+            // cleanup via the new `dictionaries/clean_dict.py` (every decision logged in
+            // `scratchpad/d504-de-cleanup-*`). 5,709 decisions over 195,490 rows: 3,802 uncommon proper
+            // nouns dropped (PROPER_NOUN-tagged, frequency < 500, NOT shielded as a real common noun);
+            // 190 explicit drops via 188 named rows - "Meißen" (352, the user's named case) plus the
+            // 187 rows of the 300-499 band hand-reviewed one by one (genuine names; two of the names
+            // each also matched a duplicate row; the 6 mis-tagged common nouns in that band -
+            // "Häusern"/"Fische"/"Siegen"/"Mauern"/"Stade"/"Hanse" - were retagged, not dropped); 1,625 rows retagged PROPER_NOUN away - lowercase sentence-case
+            // artefacts ("waren", "meister") plus the real-common-noun shield (Wiktionary noun lemma
+            // list: "Achsel"/"Gala"/"Ebbe"/"Gast"/"Fuchs"/... - German surnames ARE common nouns, so
+            // name-vs-word is decided by the curated ground truth, never by frequency alone) plus the
+            // compound shield (Marktplatz = markt+platz). 28 vowel-less short fragments dropped
+            // ("sch" 84 - the D-493 split half itself - "shy", "xy", ...); units/abbreviations
+            // (bzw/vgl/ggf/km/cm/mm/...) explicitly protected, 38 short rows deferred to a later human
+            // pass; 13 zero-doubt English strays dropped. Common words above the floor untouched
+            // ("Berlin"/"Deutschland"/"Zeit" verified present after apply). Every rule is mechanical
+            // and language-independent in form; other packs reuse the same script report-only until
+            // they have their own noun-lemma shield. `dict.tsv` 193,814 -> 189,781 rows (4,033 row
+            // drops; the 1,638 retags and the 38 kept review rows change tags only).
+            // `dictionaries/de/version.txt` 48 -> 49, pack rebuilt and verified byte-identical after
+            // unzip, `LanguagePackCatalog` version 48 -> 49. Not yet device-confirmed.
+            version = 49
         ),
         Entry(
             Language.GREEK,

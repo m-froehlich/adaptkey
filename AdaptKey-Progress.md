@@ -432,8 +432,9 @@ non-trivial changes).
   explicitly declined; shrinking the ru bigram table itself remains a separate content decision. Device
   confirmation (one real ru import + the D-502 reload surviving) closes the round.
 
-- **D-504 - OPEN, requested 2026-10-28, not started: auto-correction fine-tuning - the automatic A-05 word**
-  **split fires far too often; the split probability must drop drastically.** User request: "Am meisten stört
+- **D-504 - OPEN (code + German data half IMPLEMENTED 2026-10-28/29, rides 1.2.92/588; device
+  checklist pending): auto-correction fine-tuning - the automatic A-05 word split fires far too
+  often; the split probability must drop drastically.** User request: "Am meisten stört
   das automatische Splitten. Die Split-Wahrscheinlichkeit muss drastisch sinken. Das passiert einfach zu
   häufig." No concrete recent device examples collected yet - the first step of its own round is gathering
   the user's actual false-split cases (they exist; cf. the still-open D-493 "schmeißen" -> "sch Meißen" and
@@ -477,9 +478,56 @@ non-trivial changes).
   6. Still open (user's call): flipping the **C-21 default to "Chip only"** (D-490 is the precedent for
      flipping a default) - the radical version, no silent split at all, at the cost of a tap per genuine
      split; default Automatic stays for now.
-  Parallel track unchanged: missing REAL words are the other half of D-493 (the ~12,123 never-attested verbs,
-  D-462's B2 scope) - after 1-4 an absent word stays whole as typed instead of being split, which is the
-  correct interim behaviour, but adding the family remains the real fix.
+   Parallel track unchanged: missing REAL words are the other half of D-493 (the ~12,123 never-attested verbs,
+   D-462's B2 scope) - after 1-4 an absent word stays whole as typed instead of being split, which is the
+   correct interim behaviour, but adding the family remains the real fix.
+   **CODE ROUND IMPLEMENTED (2026-10-28; unbumped, not yet device-confirmed):** plan in
+   `AdaptKey-Plan-Auto-Split-Tuning.md`. `CorrectionConfidence.forSplit` now returns exactly 0.0 when either
+   half's frequency is below the new `SPLIT_SILENT_HALF_FREQUENCY = 300` (the D-114 "trustworthy" bar,
+   already TokenRepair's acronym floor - a precedent, not a free number), and both silent call sites
+   (`finalizeAndCommit`'s split backstop + the case-locked commit path) compare against the new
+   split-specific `SPLIT_AUTO_APPLY_CONFIDENCE = 0.90` (CAUTIOUS's own auto threshold) instead of
+   `settings.autocorrectAggressiveness.autoApplyThreshold` - the split no longer scales with C-22's
+   aggressiveness slider; C-21 still governs the mode. Chips/live previews are untouched (TokenRepair never
+   filters on confidence); the structural floor `MIN_SPLIT_HALF_FREQUENCY = 10` is deliberately unchanged.
+   New `SplitEvaluationTest` (real `dict.tsv` + `bigram.tsv`, `FusionEvaluationTest`'s shape):
+   usage-weighted silent recall over 38,388 joined attested bigrams (8.18M weight) = **84.2%** (wrong-
+   position silent share 2.7%); on a 60,000-pair broad random population 35,892 joins split structurally
+   but only **156 (0.4% of them)** would still apply silently - the floor's bite, measured. The D-493
+   "sch"+"Meißen" shape pins at confidence exactly 0.0. Spot check: "müde" (28) and "lebensmüde" (15 - now
+   IN the dictionary, so D-469's word is known and never split) both sit below the floor.
+   `:app:assembleRelease` + `:app:testDebugUnitTest` green (1,780 tests).
+   **DATA HALF IMPLEMENTED (2026-10-29):** new `dictionaries/clean_dict.py` (mechanical rules R1-R5,
+   report/apply modes, every decision logged to `scratchpad/d504-de-cleanup-*`; per-candidate
+   confirmation implemented as ground-truth shields + one hand-reviewed band instead of 5.7k chat
+   rows). German applied: 5,709 decisions over 193,814 rows - 3,802 uncommon proper nouns dropped
+   (PROPER_NOUN, frequency < 500, unshielded), 190 explicit drops ("Meißen" 352 + the 187
+   hand-reviewed 300-499-band rows; that band's 6 mis-tagged common nouns - "Häusern"/"Fische"/
+   "Siegen"/"Mauern"/"Stade"/"Hanse" - retagged instead), 1,638 retags (lowercase sentence-case
+   artefacts like "waren"/"meister", the real-common-noun shield against the Wiktionary noun lemma
+   list - German surnames ARE common nouns: "Fuchs"/"Reiter"/"Gast" stay - and the compound shield:
+   Marktplatz = markt+platz), 28 vowel-less short fragments dropped ("sch" 84 itself, "shy", "xy",
+   ...), 13 zero-doubt English strays dropped; units/abbreviations (bzw/vgl/ggf/km/cm/mm/...)
+   explicitly protected, 38 of them held in a later-human-pass list. Spot checks after apply:
+   "sch"/"Meißen" absent, "Marktplatz"/"Achsel"/"Gala"/"Ebbe" kept as NOUN, "Berlin"/"Deutschland"/
+   "bzw" untouched. dict.tsv 193,814 -> 189,781 rows. `dictionaries/de/version.txt` 48 -> 49, pack
+   rebuilt via the new `dictionaries/de/build_zip.py` and verified byte-identical after re-unzip,
+   `LanguagePackCatalog` German version 48 -> 49 with the round's changelog comment.
+   `:app:assembleRelease` + full suite green (1,780 tests); SplitEvaluationTest re-measured on the
+   cleaned dictionary: usage-weighted silent recall 84.7% (was 84.2% - the cleanup slightly improved
+   it), broad random population 139 of 35,280 structural splits still silent, D-493 shape pinned at
+   0.0. Cross-language: report-only scan of all 30 other packs
+   (`scratchpad/d504-crosslang-report.txt`) - R2 drops NOTHING anywhere without a noun-lemma shield
+   (safe default by construction), R1's lowercase-artefact scale varies by an order of magnitude
+   across languages (cs 2 vs fr 24,155 rows) and needs per-language sample validation before any
+   apply, and the first scan's Cyrillic/Greek R4 miscounts led to the vowel set covering Cyrillic
+   and Greek now (ru 7,492 -> 1,180 etc., report-only, nothing harmed). The method is
+   autonomous-ready per language: its own noun-lemma shield + R1 sample validation + own R5 list +
+   pack rebuild.
+   **Round state:** spec A-05's D-504 addendum written; History §529 records the round. The
+   concluding bump landed as 1.2.92 / 588 (1.2.91/587 had already been consumed in between by the
+   parallel-session D-505 streaming-import round), riding together with D-506's pack-base notice.
+   Still open: the §7 device checklist of `AdaptKey-Plan-Auto-Split-Tuning.md`.
   Any threshold change must be validated in BOTH directions: fewer silent splits (the goal) without losing the
   genuine missed-space recoveries - recall measured usage-weighted like §499's fusion evaluation, ideally on a
   D-353-style real regression corpus extended with split cases. Needs the user's go per convention before any
