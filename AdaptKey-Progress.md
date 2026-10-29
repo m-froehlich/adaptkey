@@ -432,6 +432,40 @@ non-trivial changes).
   explicitly declined; shrinking the ru bigram table itself remains a separate content decision. Device
   confirmation (one real ru import + the D-502 reload surviving) closes the round.
 
+- **D-507 - IMPLEMENTED (2026-10-29, rides 1.2.93/589; device checklist pending): the bottom-row
+  combined key's slot becomes one three-value setting - `?123` / Emoji / Off - with the emoji slot as
+  the deliberate, redundant second emoji-panel entry point beside the extra-row button.** User request:
+  the emoji panel should be reachable redundantly from the slot where the `?123` key normally sits,
+  usable only when that key is hidden (no room otherwise). Setting design decided with the user: one
+  three-value enum (`CombinedKeyMode`, default `symbol`) over two coupled booleans - the slot carries
+  exactly one function at a time, so the impossible "both at once" state is structurally
+  unrepresentable, no cross-setting dependency wiring or coupling text needed; plain ListPreference
+  (c06/D-486 look), "off" first, current choice in the row per D-419. Replaces D-59's boolean
+  `d59_symbol_key`: the legacy stored value migrates exactly once in `SettingsStore.loadCombinedKeyMode`
+  (derive, write, scrub the old key so no stray boolean rides in backup exports);
+  `SettingsMapper.toCombinedKeyMode` re-derives the same answer from the un-migrated snapshot, so the
+  migration is persistence cleanup, never a correctness dependency. Behaviour: emoji mode shows the
+  same glyph as the extra row's button (shared `ExtraRowView.EMOJI_ICON`) and taps through the ordinary
+  `setSurface(EMOJI)` choke point; long-press and up-swipe of the symbol function are gated to the
+  symbol mode; the symbol pages' `ABC` keys hide with the key in both non-symbol modes (the D-19 swipe
+  stays the one remaining way onto those pages, unchanged). Return-path gap closed alongside: the panel
+  can now be opened while the extra row is closed, where D-472's return button would be unreachable
+  (the keyboard view is GONE while the panel shows, so the row's swipe-up can never re-open it; the
+  same stranded state was even reachable before, opening from the row then swiping it closed) - every
+  `setSurface(EMOJI)` auto-opens the extra row and `dismissKeyboardOrCloseExtraRow` skips its
+  row-close step while the panel shows. Strings `d59_title`/`d59_summary` become
+  `d507_combined_key_title`/`d507_combined_key_summary` plus three mode labels via
+  `d507_combined_key_labels`/`_values` arrays in all 32 files (a leading "?" needs the `\?` escape -
+  the resource-linking failure caught the five locales whose label starts with `?123`); the new key
+  takes the old one's place in `EXPORT_SETTINGS_KEY_ORDER`, old backups importing `d59_symbol_key`
+  still land through the migration. Tests: `PanelNavigationTest` (tap routing per mode, `fromKey`
+  clamp matrix), `SettingsMapperTest` (stored-key resolution, stored-wins-over-legacy, legacy
+  mapping), `SettingsStoreRoboTest` (fresh install, both migration directions + scrub, idempotence,
+  stored-wins), new `CombinedKeyPreferenceRoboTest` (plain ListPreference, "off" first, default
+  `symbol`, D-419 row line). 1,793 tests, 0 failures; `:app:assembleRelease` green. History §531.
+  **Device checklist:** emoji slot's glyph/tap on the letters surface; panel open from the closed-row
+  state brings the row back and a swipe-down dismisses straight through; migration on a device with
+  D-59's boolean stored; the setting's row/D-419 line and its dialog in de + en.
 - **D-506 - IMPLEMENTED (2026-10-29, same session as D-504's data half; rides the same 1.2.92/588
   release; a static text, so "device confirmation" is a glance): a "packs are a base" notice on the
   language-packs screen, and the cleanup method moved into the contribution guide.** User request:

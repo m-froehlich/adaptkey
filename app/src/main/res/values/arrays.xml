@@ -97,6 +97,20 @@
         <item>auto</item>
     </string-array>
 
+    <!-- D-507 what the bottom-row combined key's slot carries (label / stored value), "off" first per the
+         standing rule; the values are CombinedKeyMode's own names. -->
+    <string-array name="d507_combined_key_labels">
+        <item>@string/d507_mode_off</item>
+        <item>@string/d507_mode_symbols</item>
+        <item>@string/d507_mode_emoji</item>
+    </string-array>
+
+    <string-array name="d507_combined_key_values">
+        <item>off</item>
+        <item>symbol</item>
+        <item>emoji</item>
+    </string-array>
+
     <string-array name="d353_autocorrect_aggressiveness_values">
         <item>off</item>
         <item>cautious</item>

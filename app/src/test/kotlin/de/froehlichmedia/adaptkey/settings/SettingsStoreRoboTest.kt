@@ -4,6 +4,7 @@
 package de.froehlichmedia.adaptkey.settings
 
 import androidx.preference.PreferenceManager
+import de.froehlichmedia.adaptkey.keyboard.CombinedKeyMode
 import de.froehlichmedia.adaptkey.prediction.LlmActivationThreshold
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -89,5 +90,51 @@ class SettingsStoreRoboTest {
         val settings = SettingsStore.load(context)
         assertFalse(settings.surfaceSwipeEnabled)
         assertFalse(settings.swipeDownDismissEnabled)
+    }
+    
+    @Test
+    fun d507FreshInstallDefaultsToTheSymbolModeWithNoKeysWritten() {
+        val context = RuntimeEnvironment.getApplication()
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        
+        assertEquals(CombinedKeyMode.SYMBOL, SettingsStore.load(context).combinedKeyMode)
+        assertFalse(prefs.contains(SettingsStore.KEY_COMBINED_KEY_MODE))
+        assertFalse(prefs.contains(SettingsStore.KEY_SYMBOL_KEY))
+    }
+    
+    @Test
+    fun d507TheLegacyTrueBooleanMigratesToTheSymbolModeAndScrubsTheOldKey() {
+        val context = RuntimeEnvironment.getApplication()
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        prefs.edit().putBoolean(SettingsStore.KEY_SYMBOL_KEY, true).commit()
+        
+        assertEquals(CombinedKeyMode.SYMBOL, SettingsStore.load(context).combinedKeyMode)
+        assertTrue(prefs.contains(SettingsStore.KEY_COMBINED_KEY_MODE))
+        assertEquals("symbol", prefs.getString(SettingsStore.KEY_COMBINED_KEY_MODE, null))
+        assertFalse(prefs.contains(SettingsStore.KEY_SYMBOL_KEY))
+        // Idempotent: every later load is a plain read of the migrated value.
+        assertEquals(CombinedKeyMode.SYMBOL, SettingsStore.load(context).combinedKeyMode)
+    }
+    
+    @Test
+    fun d507TheLegacyFalseBooleanMigratesToTheOffModeAndScrubsTheOldKey() {
+        val context = RuntimeEnvironment.getApplication()
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        prefs.edit().putBoolean(SettingsStore.KEY_SYMBOL_KEY, false).commit()
+        
+        assertEquals(CombinedKeyMode.OFF, SettingsStore.load(context).combinedKeyMode)
+        assertEquals("off", prefs.getString(SettingsStore.KEY_COMBINED_KEY_MODE, null))
+        assertFalse(prefs.contains(SettingsStore.KEY_SYMBOL_KEY))
+    }
+    
+    @Test
+    fun d507AStoredModeWinsOverALegacyBooleanAndIsReadUnchanged() {
+        val context = RuntimeEnvironment.getApplication()
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+            .putString(SettingsStore.KEY_COMBINED_KEY_MODE, "emoji")
+            .putBoolean(SettingsStore.KEY_SYMBOL_KEY, false)
+            .commit()
+        
+        assertEquals(CombinedKeyMode.EMOJI, SettingsStore.load(context).combinedKeyMode)
     }
 }

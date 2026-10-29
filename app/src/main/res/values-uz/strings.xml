@@ -146,6 +146,11 @@
     <string name="d32_summary">Variantlari paydo bo‘lishidan oldin tugmani qancha ushlab turish, ms da (D-32).</string>
     <string name="double_tap_delay_title">Ikkilangan bosish kechikishi</string>
     <string name="double_tap_delay_summary">Ikki bosish ikkilangan bosish hisoblanishi uchun ular orasidagi maksimal vaqt, ms da - Shift bilan registr almashtirish, bekor qilish uchun Backspace’ni ikki marta bosish va yopishqoq Backspace shu oynani baham ko‘radi.</string>
+    <string name="d507_combined_key_title">Birlashtirilgan tugma (?123/Emoji)</string>
+    <string name="d507_combined_key_summary">Pastki qatordagi birlashtirilgan tugma nima qiladi: raqam/belgilar qatlamiga o‘tish (?123), emoji panelini ochish yoki hech narsa - tugma yo‘qoladi va o‘rni bo‘sh qoladi (D-507).</string>
+    <string name="d507_mode_off">O‘chirilgan</string>
+    <string name="d507_mode_symbols">Faqat ?123</string>
+    <string name="d507_mode_emoji">Faqat emoji</string>
     <string name="d55_below_title">Raqamlar qatori ostidagi bo‘shliq</string>
     <string name="d55_below_summary">Yuqori harflar qatorida adashgan bosishlarni kamaytirish uchun raqamlar ostidagi qo‘shimcha oraliq, dp da (D-55).</string>
     <string name="d55_above_title">Probel tugmasi ustidagi bo‘shliq</string>
@@ -365,7 +370,5 @@
     <string name="blacklist_origin_backup_import">Zaxira nusxadan tiklandi</string>
     <string name="blacklist_origin_bundled_seed">Ilova bilan birga keladi</string>
     <string name="blacklist_origin_unknown">Nomaʼlum (avvalgi versiyadan)</string>
-    <string name="d59_title">\?123/ABC tugmasi</string>
-    <string name="d59_summary">Birlashtirilgan ?123 tugmasini ko‘rsatish. O‘chirilganda tugma yo‘qoladi va o‘rni bo‘sh qoladi (D-59).</string>
     <string name="d506_pack_base_notice">Eslatma: Hozircha faqat nemcha paket qo‘lda tahrirlangan. Boshqa barcha tillar – ichki o‘rnatilgan ingliz tili ham – avtomatik yaratilgan asos: yetishmayotgan so‘zlar, noto‘g‘ri yoki keraksiz tuzatishlar va shunga o‘xshash xatolar odatda paket ma’lumotlaridan keladi, ilovaning o‘zidan emas. Bir tilni yaxshi biladigan bo‘lsangiz, uning paketini yaxshilashga yordam bera olasiz (loyiha omboridagi hissa qo‘shuvchilar qo‘llanmasiga qarang).</string>
 </resources>

@@ -146,6 +146,11 @@
     <string name="d32_summary">Hvor længe en tast holdes nede, før dens alternativer dukker op, i ms (D-32).</string>
     <string name="double_tap_delay_title">Dobbelttryksforsinkelse</string>
     <string name="double_tap_delay_summary">Maksimal tid mellem to tryk for at tælle som dobbelttryk, i ms - skift af store/små bogstaver med Skift, dobbelttryk på Tilbage for at fortryde og klæbende Tilbage deler alle dette vindue.</string>
+    <string name="d507_combined_key_title">Kombineret tast (?123/Emoji)</string>
+    <string name="d507_combined_key_summary">Hvad den kombinerede tast i nederste række gør: skifte til tal-/symbollaget (?123), åbne emoji-panelet eller intet - tasten forsvinder, og pladsen forbliver tom (D-507).</string>
+    <string name="d507_mode_off">Fra</string>
+    <string name="d507_mode_symbols">Kun ?123</string>
+    <string name="d507_mode_emoji">Kun emoji</string>
     <string name="d55_below_title">Plads under talrækken</string>
     <string name="d55_below_summary">Ekstra mellemrum under cifrene, i dp, for at reducere fejltryk i den øverste bogstavrække (D-55).</string>
     <string name="d55_above_title">Plads over mellemrumstasten</string>
@@ -365,7 +370,5 @@
     <string name="blacklist_origin_backup_import">Gendannet fra en sikkerhedskopi</string>
     <string name="blacklist_origin_bundled_seed">Leveres med appen</string>
     <string name="blacklist_origin_unknown">Ukendt (fra en tidligere version)</string>
-    <string name="d59_title">Tasten ?123/ABC</string>
-    <string name="d59_summary">Vis den kombinerede ?123-tast. Når den er slået fra, forsvinder tasten, og dens plads forbliver tom (D-59).</string>
     <string name="d506_pack_base_notice">Bemærk: Kun den tyske pakke er håndkureret i dag. Alle andre sprog – inklusive det medfølgende engelsk – er en automatisk opbygget base: manglende ord, forkerte eller uønskede rettelser og lignende fejl kommer normalt fra pakkens data, ikke fra selve appen. Hvis du kan et sprog godt, kan du hjælpe med at forbedre dets pakke (se bidragsguiden i projektets repository).</string>
 </resources>

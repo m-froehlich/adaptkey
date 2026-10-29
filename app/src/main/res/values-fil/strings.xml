@@ -146,6 +146,11 @@
     <string name="d32_summary">Gaano katagal hawakan ang isang key bago lumitaw ang mga alternatibo nito, sa ms (D-32).</string>
     <string name="double_tap_delay_title">Delay ng double-tap</string>
     <string name="double_tap_delay_summary">Pinakamahabang oras sa pagitan ng dalawang tap para mabilang bilang double-tap, sa ms - ang pagpapalit ng laki ng letra gamit ang Shift, double-tap sa Backspace para i-undo, at malagkit na Backspace ay lahat gumagamit ng window na ito.</string>
+    <string name="d507_combined_key_title">Pinagsamang pindutan (?123/Emoji)</string>
+    <string name="d507_combined_key_summary">Ano ang ginagawa ng pinagsamang pindutan sa pinakailalim na hanay: paglipat sa layer ng mga numero/simbolo (?123), pagbukas ng emoji panel, o wala - mawawala ang pindutan at mananatiling bakante ang puwang nito (D-507).</string>
+    <string name="d507_mode_off">Naka-off</string>
+    <string name="d507_mode_symbols">\?123 lang</string>
+    <string name="d507_mode_emoji">Emoji lang</string>
     <string name="d55_below_title">Espasyo sa ilalim ng hanay ng numero</string>
     <string name="d55_below_summary">Dagdag na puwang sa ilalim ng mga digit, sa dp, para mabawasan ang mga sablay na tap sa itaas na hanay ng letra (D-55).</string>
     <string name="d55_above_title">Espasyo sa itaas ng space bar</string>
@@ -365,7 +370,5 @@
     <string name="blacklist_origin_backup_import">Naibalik mula sa backup</string>
     <string name="blacklist_origin_bundled_seed">Kasama ng app</string>
     <string name="blacklist_origin_unknown">Hindi kilala (mula sa mas lumang bersyon)</string>
-    <string name="d59_title">\?123/ABC key</string>
-    <string name="d59_summary">Ipakita ang pinagsamang ?123 key. Kapag naka-off, nawawala ang key at nananatiling walang laman ang puwesto nito (D-59).</string>
     <string name="d506_pack_base_notice">Paalala: Sa kasalukuyan, tanging ang Aleman na pakete ang manu-manong na-curate. Ang lahat ng iba pang wika – kabilang ang nakapaloob na Ingles – ay awtomatikong binuong basehan: mga kulang na salita, maling o ayaw na pagwawasto at katulad na mga glitch ay karaniwang nagmumula sa data ng pakete, hindi mula sa app mismo. Kung bihasa kayo sa isang wika, maaari kayong tumulong pagbutihin ang pakete nito (tingnan ang gabay sa pag-aambag sa repositoryo ng proyekto).</string>
 </resources>

@@ -146,6 +146,11 @@
     <string name="d32_summary">Kui kaua klahvi all hoida, enne kui selle alternatiivid ilmuvad, ms (D-32).</string>
     <string name="double_tap_delay_title">Topeltpuudutuse viivitus</string>
     <string name="double_tap_delay_summary">Maksimaalne aeg kahe puudutuse vahel, et need loetaks topeltpuudutuseks, ms - Shifti suur-/väiketähe vahetus, tühistav Tagasilüke topeltpuudutus ja kleepuv Tagasilüke jagavad kõik seda akent.</string>
+    <string name="d507_combined_key_title">Kombineeritud klahv (?123/Emoji)</string>
+    <string name="d507_combined_key_summary">Mida teeb alumisel real olev kombineeritud klahv: lülitumine numbrite/sümbolite kihile (?123), emoji-paneeli avamine või mitte midagi - klahv kaob ja selle koht jääb tühjaks (D-507).</string>
+    <string name="d507_mode_off">Väljas</string>
+    <string name="d507_mode_symbols">Ainult ?123</string>
+    <string name="d507_mode_emoji">Ainult emoji</string>
     <string name="d55_below_title">Ruum numberrea all</string>
     <string name="d55_below_summary">Lisaruum numbrite all, dp-des, et vähendada möödalööke ülemisse tähereasse (D-55).</string>
     <string name="d55_above_title">Ruum tühikuklahvi kohal</string>
@@ -365,7 +370,5 @@
     <string name="blacklist_origin_backup_import">Taastatud varukopiost</string>
     <string name="blacklist_origin_bundled_seed">Kaasas rakendusega</string>
     <string name="blacklist_origin_unknown">Teadmata (varasemast versioonist)</string>
-    <string name="d59_title">Klahv ?123/ABC</string>
-    <string name="d59_summary">Näita ühendatud ?123 klahvi. Väljalülitatuna klahv kaob ja selle koht jääb tühjaks (D-59).</string>
     <string name="d506_pack_base_notice">Märkus: Praegu on käsitsi koostatud ainult saksa pakett. Kõik teised keeled – sealhulgas kaasas olev inglise keel – on automaatselt loodud alus: puuduvad sõnad, valed või soovimatud parandused ja sarnased vead tulevad tavaliselt paketi andmetest, mitte rakendusest endast. Kui valdate keelt hästi, saate aidata selle paketti parandada (vaadake projekti hoidla kaastöö juhendit).</string>
 </resources>

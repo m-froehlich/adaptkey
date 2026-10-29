@@ -146,6 +146,11 @@
     <string name="d32_summary">Kiek laiko laikyti klavišą, kol pasirodys jo alternatyvos, ms (D-32).</string>
     <string name="double_tap_delay_title">Dvigubo palietimo delsa</string>
     <string name="double_tap_delay_summary">Didžiausias laikas tarp dviejų palietimų, kad jie būtų laikomi dvigubu palietimu, ms - Shift registro perjungimas, dvigubas palietimas Backspace atšaukimui ir lipnus Backspace visi dalijasi šiuo langu.</string>
+    <string name="d507_combined_key_title">Kombinuotas klavišas (?123/Emoji)</string>
+    <string name="d507_combined_key_summary">Ką kombinuotas klavišas apatinėje eilėje daro: perjungimas į skaitmenų/simbolių sluoksnį (?123), emoji skydelio atvėrimas arba nieko - klavišas išnyksta, o jo vieta lieka tuščia (D-507).</string>
+    <string name="d507_mode_off">Išjungta</string>
+    <string name="d507_mode_symbols">Tik ?123</string>
+    <string name="d507_mode_emoji">Tik emoji</string>
     <string name="d55_below_title">Vieta po skaičių eilute</string>
     <string name="d55_below_summary">Papildomas tarpas po skaitmenimis, dp, siekiant sumažinti prasilenkimus su viršutine raidžių eilute (D-55).</string>
     <string name="d55_above_title">Vieta virš tarpo klavišo</string>
@@ -365,7 +370,5 @@
     <string name="blacklist_origin_backup_import">Atkurta iš atsarginės kopijos</string>
     <string name="blacklist_origin_bundled_seed">Pateikiama su programa</string>
     <string name="blacklist_origin_unknown">Nežinoma (iš ankstesnės versijos)</string>
-    <string name="d59_title">Klavišas ?123/ABC</string>
-    <string name="d59_summary">Rodyti kombinuotą ?123 klavišą. Kai išjungta, klavišas dingsta, o jo vieta lieka tuščia (D-59).</string>
     <string name="d506_pack_base_notice">Pastaba: Šiuo metu rankiniu būdu parengtas tik vokiečių paketas. Visos kitos kalbos – įskaitant įdiegtą anglų kalbą – yra automatiškai sudarytas pagrindas: trūkstami žodžiai, netinkami ar nepageaujami pataisymai ir panašios klaidos paprastai kyla iš paketo duomenų, o ne iš pačios programos. Jei gerai mokate kalbą, galite padėti tobulinti jos paketą (žr. projekto saugyklos talkininko vadovą).</string>
 </resources>

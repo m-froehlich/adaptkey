@@ -9,6 +9,7 @@ import de.froehlichmedia.adaptkey.dictionary.AutoSplitMode
 import de.froehlichmedia.adaptkey.dictionary.AutocorrectAggressiveness
 import de.froehlichmedia.adaptkey.dictionary.LearnedWordExpiryWindow
 import de.froehlichmedia.adaptkey.keyboard.BottomInsetMode
+import de.froehlichmedia.adaptkey.keyboard.CombinedKeyMode
 import de.froehlichmedia.adaptkey.keyboard.KeyProportions
 import de.froehlichmedia.adaptkey.keyboard.KeyboardLayout
 import de.froehlichmedia.adaptkey.prediction.LlmActivationThreshold
@@ -45,6 +46,18 @@ data class RawSettings(
     val capsLockHapticsEnabled: Boolean = true,
     val extraSpaceBelowNumberRowDp: Int = AdaptSettings.DEFAULT_EXTRA_SPACING_DP,
     val extraSpaceAboveSpaceRowDp: Int = AdaptSettings.DEFAULT_EXTRA_SPACING_DP,
+    
+    /**
+     * D-507: the combined-key mode's stored string, or null while the preference has never been written.
+     * When non-null it wins over [symbolKeyEnabled] below (that legacy boolean is only read for the
+     * one-time migration - see [SettingsMapper.toCombinedKeyMode]).
+     */
+    val combinedKeyModeKey: String? = null,
+    
+    /**
+     * D-59's pre-D-507 stored boolean, kept as the migration source (and for old backups that still
+     * import it): true = `?123` toggle, false = hidden. Never consulted once [combinedKeyModeKey] exists.
+     */
     val symbolKeyEnabled: Boolean = true,
     val diagnosticLogEnabled: Boolean = false,
     val pendingBlacklistExpiryDays: Int = AdaptSettings.DEFAULT_PENDING_BLACKLIST_EXPIRY_DAYS,
@@ -194,6 +207,24 @@ object SettingsMapper {
     }
     
     /**
+     * Resolves the D-507 combined-key mode. A stored D-507 value always wins (clamped via
+     * [CombinedKeyMode.fromKey]); only while it has never been written does D-59's legacy boolean decide,
+     * whose two states map losslessly onto the new enum (true = `?123` toggle, false = hidden). A fresh
+     * install with neither value stored gets the default, which the legacy `true` branch reproduces
+     * anyway - so all three shapes converge on the same default.
+     * 
+     * @param raw the raw stored values
+     * @return the resolved [CombinedKeyMode]
+     */
+    fun toCombinedKeyMode(raw: RawSettings): CombinedKeyMode {
+        return if (raw.combinedKeyModeKey == null) {
+            if (raw.symbolKeyEnabled) CombinedKeyMode.DEFAULT else CombinedKeyMode.OFF
+        } else {
+            CombinedKeyMode.fromKey(raw.combinedKeyModeKey)
+        }
+    }
+    
+    /**
      * Resolves the D-352 auto-split mode, falling back to the spec default for an unknown, blank or
      * missing stored value (the validation point for this enum-valued setting).
      * 
@@ -296,7 +327,7 @@ object SettingsMapper {
             capsLockHapticsEnabled = raw.capsLockHapticsEnabled,
             extraSpaceBelowNumberRowDp = raw.extraSpaceBelowNumberRowDp.coerceIn(MIN_EXTRA_SPACING_DP, MAX_EXTRA_SPACING_DP),
             extraSpaceAboveSpaceRowDp = raw.extraSpaceAboveSpaceRowDp.coerceIn(MIN_EXTRA_SPACING_DP, MAX_EXTRA_SPACING_DP),
-            symbolKeyEnabled = raw.symbolKeyEnabled,
+            combinedKeyMode = toCombinedKeyMode(raw),
             diagnosticLogEnabled = raw.diagnosticLogEnabled,
             pendingBlacklistExpiryDays = raw.pendingBlacklistExpiryDays.coerceIn(MIN_PENDING_BLACKLIST_EXPIRY_DAYS, MAX_PENDING_BLACKLIST_EXPIRY_DAYS),
             saveCredentials = raw.saveCredentials,

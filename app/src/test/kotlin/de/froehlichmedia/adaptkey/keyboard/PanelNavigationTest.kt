@@ -30,6 +30,28 @@ class PanelNavigationTest {
     }
     
     @Test
+    fun `D-507 with the emoji mode the combined key's tap opens the emoji panel`() {
+        assertEquals(InputSurface.EMOJI, PanelNavigation.onCombinedKeyTap(InputSurface.LETTERS, CombinedKeyMode.EMOJI))
+    }
+    
+    @Test
+    fun `D-507 the symbol mode keeps the ordinary toggle, and the off mode falls through to it defensively`() {
+        // "off" never dispatches (the key is hidden then); the function stays total regardless.
+        assertEquals(InputSurface.SYMBOLS, PanelNavigation.onCombinedKeyTap(InputSurface.LETTERS, CombinedKeyMode.SYMBOL))
+        assertEquals(InputSurface.SYMBOLS, PanelNavigation.onCombinedKeyTap(InputSurface.LETTERS, CombinedKeyMode.OFF))
+    }
+    
+    @Test
+    fun `D-507 CombinedKeyMode fromKey clamps unknown, blank and missing values to the default`() {
+        assertEquals(CombinedKeyMode.SYMBOL, CombinedKeyMode.fromKey(null))
+        assertEquals(CombinedKeyMode.SYMBOL, CombinedKeyMode.fromKey(""))
+        assertEquals(CombinedKeyMode.SYMBOL, CombinedKeyMode.fromKey("garbage"))
+        assertEquals(CombinedKeyMode.OFF, CombinedKeyMode.fromKey("off"))
+        assertEquals(CombinedKeyMode.SYMBOL, CombinedKeyMode.fromKey(" SYMBOL "))
+        assertEquals(CombinedKeyMode.EMOJI, CombinedKeyMode.fromKey("emoji"))
+    }
+    
+    @Test
     fun `D-19 a forward swipe cycles letters to symbol page 1 to page 2 and wraps`() {
         assertEquals(PanelNavigation.Page(InputSurface.SYMBOLS, 1), PanelNavigation.swipePage(InputSurface.LETTERS, 1, forward = true))
         assertEquals(PanelNavigation.Page(InputSurface.SYMBOLS, 2), PanelNavigation.swipePage(InputSurface.SYMBOLS, 1, forward = true))

@@ -24059,3 +24059,52 @@ the two systematic corpus defects, the three per-language inputs, the report-fir
 rules in brief, pointing at `scratchpad/d504-crosslang-report.txt` for the measured per-language
 scale. No Kotlin code, no new tests beyond the existing locale-consistency enforcement. Rides
 versionCode 588 / 1.2.92 together with D-504 (§529).
+
+
+## §531 - D-507: the combined key's slot becomes one three-value setting - ?123, emoji, or off (v1.2.93)
+
+User request: the emoji panel should be reachable redundantly from the bottom-row key's slot where the
+`?123` key normally sits - usable only when that key is hidden, since otherwise there is no room for it.
+The setting design was discussed directly and decided for one three-value enum over two coupled booleans
+(the user's own call): the slot genuinely carries exactly one function at a time, so `CombinedKeyMode`
+(`off` / `symbol` / `emoji`, default `symbol`) makes the impossible "both at once" state structurally
+unrepresentable, needs no cross-setting dependency wiring or explanatory coupling text, and revives the
+key's pre-§49 combined identity as a data model rather than a gate. Widget: the plain `ListPreference`
+look the user approved on-device (c06/D-486; the inline dropdown prototype stayed rejected), "off" first
+per the standing rule, current choice shown in the row per D-419. Replaces D-59's boolean
+`d59_symbol_key` - the legacy stored value migrates exactly once in `SettingsStore.loadCombinedKeyMode`
+(derive the new string, write it, remove the old key so no stray boolean rides along in backup exports);
+`SettingsMapper.toCombinedKeyMode` re-derives the same answer from the un-migrated snapshot, so the
+migration is a persistence cleanup, never a correctness dependency.
+
+Behaviour: in the emoji mode the combined key shows the same glyph as the extra row's button (shared
+`ExtraRowView.EMOJI_ICON`, so the two entry points read as one function) and its tap goes through the
+ordinary `setSurface(EMOJI)` choke point; the long-press and the up-swipe of the symbol-layer function
+are gated to the symbol mode (the emoji key has no hidden second gesture; the "off" key never dispatches
+at all). The symbol pages' `ABC` keys hide with the key in both non-symbol modes - unreachable either
+way; the D-19 horizontal swipe stays the one remaining way onto those pages, unchanged. The extra-row
+emoji button deliberately stays alongside - the redundant second entry point was the request.
+
+One return-path gap closed alongside: opening the panel while the extra row is closed (the new
+bottom-row entry point's normal state) would strand the user on it - the keyboard view is GONE while the
+panel shows, so the row's own swipe-up can never re-open it and D-472's return button was unreachable;
+the same stranded state was even reachable before this round (open the panel from the row, then swipe
+the row closed). Every `setSurface(EMOJI)` now auto-opens the extra row, and
+`dismissKeyboardOrCloseExtraRow` skips its row-close step while the panel shows - a downward swipe goes
+straight to the dismissal step instead - so the return button is reachable for exactly as long as the
+panel is showing, from either entry point.
+
+Strings: `d59_title`/`d59_summary` replaced by `d507_combined_key_title`/`d507_combined_key_summary`
+plus the three mode labels (`d507_mode_off`/`_symbols`/`_emoji`, via the
+`d507_combined_key_labels`/`_values` arrays) in all 32 string files (AI drafts per the D-478 precedent;
+a leading "?" needs the `\?` escape - the resource-linking failure caught the five locales whose label
+starts with `?123` before anything shipped). Backup: the new key takes the old one's place in
+`EXPORT_SETTINGS_KEY_ORDER`; an old backup importing `d59_symbol_key` still lands correctly through the
+migration path. Tests: the pure `CombinedKeyMode`/`PanelNavigation` cases (tap routing per mode,
+`fromKey` clamp matrix) in `PanelNavigationTest`; `SettingsMapperTest` (stored-key resolution,
+stored-value-wins-over-legacy, legacy mapping); `SettingsStoreRoboTest` (fresh install, both migration
+directions + scrub, idempotence, stored-wins); and the new `CombinedKeyPreferenceRoboTest` (plain
+ListPreference, "off" first, default `symbol`, D-419 row line). 1,793 tests, 0 failures;
+`:app:assembleRelease` green. `versionCode` 588 -> 589, `versionName` "1.2.92" -> "1.2.93". NOT
+device-confirmed: the emoji slot's look and tap, the auto-opened row + guarded close around the panel,
+and the migration on a device that has D-59's boolean stored.

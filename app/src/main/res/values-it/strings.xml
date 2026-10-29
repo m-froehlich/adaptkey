@@ -146,6 +146,11 @@
     <string name="d32_summary">Quanto tenere premuto un tasto prima che compaiano le sue alternative, in ms (D-32).</string>
     <string name="double_tap_delay_title">Ritardo del doppio tocco</string>
     <string name="double_tap_delay_summary">Tempo massimo tra due tocchi per contare come doppio tocco, in ms - il cambio di maiuscola con Maiusc, il doppio tocco su Backspace per annullare e il Backspace adesivo condividono tutti questa finestra.</string>
+    <string name="d507_combined_key_title">Tasto combinato (?123/Emoji)</string>
+    <string name="d507_combined_key_summary">Cosa fa il tasto combinato nella riga inferiore: passare al livello numeri/simboli (?123), aprire il pannello delle emoji o niente - il tasto scompare e il suo spazio resta vuoto (D-507).</string>
+    <string name="d507_mode_off">Disattivato</string>
+    <string name="d507_mode_symbols">Solo ?123</string>
+    <string name="d507_mode_emoji">Solo emoji</string>
     <string name="d55_below_title">Spazio sotto la riga dei numeri</string>
     <string name="d55_below_summary">Spazio extra sotto le cifre, in dp, per ridurre i tocchi sbagliati nella riga superiore delle lettere (D-55).</string>
     <string name="d55_above_title">Spazio sopra la barra spaziatrice</string>
@@ -365,7 +370,5 @@
     <string name="blacklist_origin_backup_import">Ripristinata da un backup</string>
     <string name="blacklist_origin_bundled_seed">Inclusa con l\'app</string>
     <string name="blacklist_origin_unknown">Sconosciuto (da una versione precedente)</string>
-    <string name="d59_title">Tasto ?123/ABC</string>
-    <string name="d59_summary">Mostra il tasto combinato ?123. Se disattivato, il tasto scompare e il suo posto resta vuoto (D-59).</string>
     <string name="d506_pack_base_notice">Nota: oggi solo il pacchetto tedesco è curato a mano. Tutte le altre lingue – compreso l’inglese integrato – sono una base creata automaticamente: parole mancanti, correzioni errate o indesiderate e simili difetti di solito derivano dai dati del pacchetto, non dall’app stessa. Se conosci bene una lingua, puoi contribuire a migliorarne il pacchetto (vedi la guida per i contributi nel repository del progetto).</string>
 </resources>

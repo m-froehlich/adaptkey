@@ -9,6 +9,7 @@ import de.froehlichmedia.adaptkey.dictionary.AutoSplitMode
 import de.froehlichmedia.adaptkey.dictionary.AutocorrectAggressiveness
 import de.froehlichmedia.adaptkey.dictionary.LearnedWordExpiryWindow
 import de.froehlichmedia.adaptkey.keyboard.BottomInsetMode
+import de.froehlichmedia.adaptkey.keyboard.CombinedKeyMode
 import de.froehlichmedia.adaptkey.keyboard.KeyProportions
 import de.froehlichmedia.adaptkey.keyboard.KeyboardLayout
 import de.froehlichmedia.adaptkey.prediction.LlmActivationThreshold
@@ -45,9 +46,11 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  *           0-25, default 7), to cut mis-taps between the digits and the top letter row
  * @property extraSpaceAboveSpaceRowDp extra vertical spacing (dp) inserted above the space/enter row
  *           (D-55, 0-25, default 7), to cut accidental Enter presses
- * @property symbolKeyEnabled whether the combined ?123 key offers its numeric/symbol function (D-59,
- *           default on); with this off the combined key disappears (slot reserved). §51: no longer also
- *           governs the §48 settings row's emoji button - that button is unconditionally visible.
+ * @property combinedKeyMode D-507: what the bottom-row combined key's slot carries (default
+ *           [CombinedKeyMode.DEFAULT], the `?123` toggle) - the numeric/symbol layer, the emoji panel, or
+ *           nothing (key drawn blank, slot kept). Replaces D-59's boolean; the legacy stored value is
+ *           migrated on load. The §48 settings row's emoji button is unaffected either way (unconditionally
+ *           visible, deliberately redundant alongside the emoji slot).
  * @property diagnosticLogEnabled D-139/D-110: whether the in-memory diagnostic log records while typing
  *           (default off - it captures raw composing/committed text). A rolling 5-minute window
  *           ([de.froehlichmedia.adaptkey.diagnostics.DiagnosticLog]), never written to disk, viewable and
@@ -158,7 +161,7 @@ data class AdaptSettings(
     val capsLockHapticsEnabled: Boolean = true,
     val extraSpaceBelowNumberRowDp: Int = DEFAULT_EXTRA_SPACING_DP,
     val extraSpaceAboveSpaceRowDp: Int = DEFAULT_EXTRA_SPACING_DP,
-    val symbolKeyEnabled: Boolean = true,
+    val combinedKeyMode: CombinedKeyMode = CombinedKeyMode.DEFAULT,
     val diagnosticLogEnabled: Boolean = false,
     val pendingBlacklistExpiryDays: Int = DEFAULT_PENDING_BLACKLIST_EXPIRY_DAYS,
     val saveCredentials: Boolean = true,

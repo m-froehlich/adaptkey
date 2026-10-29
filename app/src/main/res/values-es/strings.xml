@@ -146,6 +146,11 @@
     <string name="d32_summary">Cuánto hay que mantener una tecla antes de que aparezcan sus alternativas, en ms (D-32).</string>
     <string name="double_tap_delay_title">Retardo de doble toque</string>
     <string name="double_tap_delay_summary">Tiempo máximo entre dos toques para contar como doble toque, en ms - el cambio de mayúscula con Mayús, el doble toque en Retroceso para revertir y el Retroceso pegajoso comparten esta ventana.</string>
+    <string name="d507_combined_key_title">Tecla combinada (?123/Emoji)</string>
+    <string name="d507_combined_key_summary">Qué hace la tecla combinada de la fila inferior: cambiar a la capa de números/símbolos (?123), abrir el panel de emojis o nada - la tecla desaparece y su hueco queda vacío (D-507).</string>
+    <string name="d507_mode_off">Desactivado</string>
+    <string name="d507_mode_symbols">Solo ?123</string>
+    <string name="d507_mode_emoji">Solo emojis</string>
     <string name="d55_below_title">Espacio bajo la fila de números</string>
     <string name="d55_below_summary">Espacio extra bajo los dígitos, en dp, para reducir toques fallidos en la fila superior de letras (D-55).</string>
     <string name="d55_above_title">Espacio sobre la barra espaciadora</string>
@@ -365,7 +370,5 @@
     <string name="blacklist_origin_backup_import">Restaurada desde una copia de seguridad</string>
     <string name="blacklist_origin_bundled_seed">Incluida con la aplicación</string>
     <string name="blacklist_origin_unknown">Desconocido (de una versión anterior)</string>
-    <string name="d59_title">Tecla ?123/ABC</string>
-    <string name="d59_summary">Mostrar la tecla combinada ?123. Si se desactiva, la tecla desaparece y su hueco queda vacío (D-59).</string>
     <string name="d506_pack_base_notice">Nota: hoy solo el paquete alemán está curado a mano. Todos los demás idiomas – incluido el inglés – son una base creada automáticamente: palabras que faltan, correcciones erróneas o no deseadas y otros fallos suelen venir de los datos del paquete, no de la propia aplicación. Si conoces bien un idioma, puedes ayudar a mejorar su paquete (ver la guía de contribución en el repositorio del proyecto).</string>
 </resources>

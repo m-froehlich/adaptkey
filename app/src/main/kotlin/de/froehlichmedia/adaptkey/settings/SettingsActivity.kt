@@ -211,6 +211,8 @@ class SettingsActivity : SettingsScreenActivity() {
             setupListPreferenceCurrentValueSummary(SettingsStore.KEY_LEARNED_WORD_EXPIRY_WINDOW, R.string.d389_summary)
             // D-486: same treatment as the other plain ListPreferences.
             setupListPreferenceCurrentValueSummary(SettingsStore.KEY_BOTTOM_INSET_MODE, R.string.d486_summary)
+            // D-507: same treatment as the other plain ListPreferences.
+            setupListPreferenceCurrentValueSummary(SettingsStore.KEY_COMBINED_KEY_MODE, R.string.d507_combined_key_summary)
             
             // D-191: the runtime permission dialog only appears the moment the user actually opts in here,
             // never proactively - turning the toggle on with the permission not yet granted blocks the

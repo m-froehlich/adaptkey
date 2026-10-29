@@ -290,11 +290,18 @@
             android:summary="@string/c09_summary"
             android:defaultValue="true" />
 
-        <SwitchPreferenceCompat
-            android:key="d59_symbol_key"
-            android:title="@string/d59_title"
-            android:summary="@string/d59_summary"
-            android:defaultValue="true" />
+        <!-- D-507: the combined key's slot function, one three-value setting (the user's own decision -
+             a single enum instead of two coupled booleans, so "both at once" cannot exist and no
+             cross-setting dependency wiring is needed). A plain ListPreference like c06/d486 - the
+             current choice shows in the row (D-419); "off" first per the standing rule. Replaces D-59's
+             boolean switch; the legacy stored value is migrated on load. -->
+        <ListPreference
+            android:key="d507_combined_key_mode"
+            android:title="@string/d507_combined_key_title"
+            android:summary="@string/d507_combined_key_summary"
+            android:entries="@array/d507_combined_key_labels"
+            android:entryValues="@array/d507_combined_key_values"
+            android:defaultValue="symbol" />
 
         <SeekBarPreference
             android:key="d55_space_below_number_row"

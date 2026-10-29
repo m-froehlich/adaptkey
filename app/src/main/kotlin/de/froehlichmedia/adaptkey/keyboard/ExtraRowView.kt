@@ -534,8 +534,9 @@ class ExtraRowView @JvmOverloads constructor(
         private const val BUTTON_SIZE_DP = 36
         private const val BUTTON_MARGIN_DP = 8
         // D-472: matches EmojiPanelView's own former back-button glyph, so the relocated button reads as
-        // "the same button, moved" rather than a new, different action.
-        private const val EMOJI_ICON = "😊"
+        // "the same button, moved" rather than a new, different action. Shared with AdaptKeyboardView's
+        // D-507 bottom-row emoji slot, so the two entry points can never drift apart glyph-wise.
+        internal const val EMOJI_ICON = "😊"
         private const val BACK_TO_KEYBOARD_ICON = "⌨"
         // D-142: three reverse-repeats of a 220ms fade reads as a clear, brief pulse without lingering.
         private const val FLASH_DURATION_MS = 220L

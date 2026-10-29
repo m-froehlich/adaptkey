@@ -486,12 +486,14 @@ class AdaptKeyboardView @JvmOverloads constructor(
         }
     
     /**
-     * D-59 / §49 (implementing §48): whether the combined ?123 key offers its numeric/symbol function.
-     * The combined key no longer has a separate emoji-enabled state (D-47/D-18 retired - see
-     * [PanelNavigation.onCombinedKeyTap]); it always reads "?123" and, when this is off, disappears
-     * (drawn blank, taps ignored) but keeps its slot.
+     * D-507 (replacing D-59's `symbolKeyEnabled` boolean): what the bottom-row combined key's slot
+     * carries - the `?123` numeric/symbol toggle (the default), the emoji panel, or nothing. In the
+     * non-SYMBOL modes the key is drawn blank with taps ignored but its slot kept (D-59's original
+     * hidden treatment), and the symbol pages' `ABC` keys hide with it - they are unreachable without
+     * the `?123` key either way (the D-19 horizontal swipe, when enabled, is the one remaining way
+     * onto those pages, exactly as before this change).
      */
-    var symbolKeyEnabled: Boolean = true
+    var combinedKeyMode: CombinedKeyMode = CombinedKeyMode.DEFAULT
         set(value) {
             field = value
             invalidate()
@@ -2515,17 +2517,18 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     /**
-     * D-59 / D-100 (correction): whether [key] occupies a slot that is currently disabled but must stay
-     * reserved rather than collapse - the combined `?123` key (symbol off - §49: no longer also needs
-     * emoji off, now that the combined key has no separate emoji-enabled state), or either symbol page's
-     * `ABC` key (symbol off). Page 1's `ABC` must keep its slot so the D-100 column/grid layout's per-row
-     * cell count stays consistent; page 2's `ABC` keeps its slot too (a later correction) purely so its
-     * neighbouring `space` key doesn't grow to fill the gap and end up looking oversized - both now use
-     * this same reserved-but-inert treatment instead of D-93's original omit-and-grow.
+     * D-59 / D-100 (correction), D-507: whether [key] occupies a slot that is currently disabled but must
+     * stay reserved rather than collapse - the combined key (its slot carries the `?123` function only in
+     * [CombinedKeyMode.SYMBOL]; "emoji" and "off" hide it exactly like the old boolean's off state), or
+     * either symbol page's `ABC` key (same condition). Page 1's `ABC` must keep its slot so the D-100
+     * column/grid layout's per-row cell count stays consistent; page 2's `ABC` keeps its slot too (a later
+     * correction) purely so its neighbouring `space` key doesn't grow to fill the gap and end up looking
+     * oversized - both now use this same reserved-but-inert treatment instead of D-93's original
+     * omit-and-grow.
      */
     private fun isHiddenKey(key: Key): Boolean {
-        return (key.code == KeyCode.SYMBOL && !symbolKeyEnabled) ||
-            (key.code == KeyCode.LETTERS && surface == InputSurface.SYMBOLS && !symbolKeyEnabled)
+        return (key.code == KeyCode.SYMBOL && combinedKeyMode != CombinedKeyMode.SYMBOL) ||
+            (key.code == KeyCode.LETTERS && surface == InputSurface.SYMBOLS && combinedKeyMode != CombinedKeyMode.SYMBOL)
     }
     
     private fun labelFor(key: Key): String {
@@ -2540,8 +2543,11 @@ class AdaptKeyboardView @JvmOverloads constructor(
             key.code == KeyCode.SPACE && (surface != InputSurface.LETTERS || urlMode || emailMode) -> SPACE_GLYPH
             // D-15: the Shift key shows a lock glyph while Caps Lock is engaged.
             key.code == KeyCode.SHIFT && capsLock -> "⇪"
-            // D-47 / §49: the combined key is always a plain ?123 key, not the emoji (retired D-18).
-            key.code == KeyCode.SYMBOL -> "?123"
+            // D-47 / §49 / D-507: the combined key reads "?123" in its symbol-layer mode and the emoji
+            // glyph in its emoji mode (the same glyph the §48 extra-row button shows, so the two entry
+            // points read as one function); the "off" mode never draws (the key is hidden then).
+            key.code == KeyCode.SYMBOL ->
+                if (combinedKeyMode == CombinedKeyMode.EMOJI) ExtraRowView.EMOJI_ICON else "?123"
             // A char key only has case on the letters surface - a symbol/calculator-page character that
             // happens to be a Unicode letter with a case mapping (e.g. π) must not be shown uppercased.
             key.code == KeyCode.CHAR && surface == InputSurface.LETTERS && (shifted || capsLock) && ch != null && ch.isLetter() ->

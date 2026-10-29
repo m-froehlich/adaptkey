@@ -146,6 +146,11 @@
     <string name="d32_summary">Cât timp să ții apăsată o tastă până apar alternativele ei, în ms (D-32).</string>
     <string name="double_tap_delay_title">Întârziere la dublă atingere</string>
     <string name="double_tap_delay_summary">Timpul maxim dintre două atingeri ca să conteze drept dublă atingere, în ms - comutarea majusculei cu Shift, dubla atingere pe Backspace pentru anulare și Backspace lipicios folosesc toate această fereastră.</string>
+    <string name="d507_combined_key_title">Tastă combinată (?123/Emoji)</string>
+    <string name="d507_combined_key_summary">Ce face tasta combinată din rândul de jos: comutarea la stratul de cifre/simboluri (?123), deschiderea panoului de emoji sau nimic - tasta dispare, iar locul ei rămâne gol (D-507).</string>
+    <string name="d507_mode_off">Dezactivat</string>
+    <string name="d507_mode_symbols">Doar ?123</string>
+    <string name="d507_mode_emoji">Doar emoji</string>
     <string name="d55_below_title">Spațiu sub rândul de cifre</string>
     <string name="d55_below_summary">Spațiu suplimentar sub cifre, în dp, pentru a reduce atingerile ratate în rândul de sus al literelor (D-55).</string>
     <string name="d55_above_title">Spațiu deasupra barei de spațiu</string>
@@ -365,7 +370,5 @@
     <string name="blacklist_origin_backup_import">Restaurat dintr-o copie de siguranță</string>
     <string name="blacklist_origin_bundled_seed">Inclus în aplicație</string>
     <string name="blacklist_origin_unknown">Necunoscut (dintr-o versiune anterioară)</string>
-    <string name="d59_title">Tasta ?123/ABC</string>
-    <string name="d59_summary">Afișează tasta combinată ?123. Când este dezactivată, tasta dispare, iar locul ei rămâne gol (D-59).</string>
     <string name="d506_pack_base_notice">Notă: În prezent, doar pachetul german este curat manual. Toate celelalte limbi – inclusiv engleza integrată – sunt o bază construită automat: cuvinte lipsă, corecturi greșite sau nedorite și alte defecțiuni provin de obicei din datele pachetului, nu din aplicația în sine. Dacă cunoașteți bine o limbă, puteți ajuta la îmbunătățirea pachetului acesteia (vezi ghidul de contribuție din depozitul proiectului).</string>
 </resources>

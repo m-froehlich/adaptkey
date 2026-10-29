@@ -97,6 +97,7 @@ import de.froehlichmedia.adaptkey.keyboard.AdaptKeyboardView
 import de.froehlichmedia.adaptkey.keyboard.AlternativeScript
 import de.froehlichmedia.adaptkey.keyboard.BackspaceRepeat
 import de.froehlichmedia.adaptkey.keyboard.BottomInsetPolicy
+import de.froehlichmedia.adaptkey.keyboard.CombinedKeyMode
 import de.froehlichmedia.adaptkey.keyboard.CursorControlGesture
 import de.froehlichmedia.adaptkey.keyboard.CursorLineBounds
 import de.froehlichmedia.adaptkey.keyboard.InlineSuggestionsBarView
@@ -1502,8 +1503,8 @@ class AdaptKeyService : InputMethodService() {
             // D-401: gated off outright while emoji search owns the keyboard (enterEmojiSearch()'s own
             // note) - a settings reload mid-search would otherwise silently re-enable it there too.
             view.cursorControlEnabled = s.cursorControlEnabled && !emojiSearchActive
-            // D-59: the combined ?123 key can be disabled, in which case it disappears entirely.
-            view.symbolKeyEnabled = s.symbolKeyEnabled
+            // D-507: the combined key's slot function - the ?123 toggle, the emoji panel, or hidden.
+            view.combinedKeyMode = s.combinedKeyMode
             // D-92: the calculator page's currency/decimal-separator keys follow the device's system
             // locale (not the active keyboard alphabet - German and Greek never disagree on either point).
             view.systemLocale = resources.configuration.locales.get(0)
@@ -3287,9 +3288,12 @@ class AdaptKeyService : InputMethodService() {
                 
                 KeyCode.SHIFT -> handleShift()
                 
-                // L-03 / §49: a tap toggles the ?123 layer (D-18's emoji-panel dual purpose retired - the
-                // emoji button now lives in the §48 extra row instead).
-                KeyCode.SYMBOL -> setSurface(PanelNavigation.onCombinedKeyTap(surface))
+                // L-03 / D-507: the combined key's slot carries the ?123 toggle, or - when the combined-key
+                // setting says so - opens the emoji panel (the same [InputSurface.EMOJI] switch the §48
+                // extra-row button drives, so every entry point shares one choke point). In the "off" mode
+                // the key is hidden and never dispatches; [PanelNavigation.onCombinedKeyTap]'s default
+                // keeps the ordinary toggle for that unreachable case.
+                KeyCode.SYMBOL -> setSurface(PanelNavigation.onCombinedKeyTap(surface, settings.combinedKeyMode))
                 
                 // L-03: the "ABC" key on the numeric/symbol layer returns to letters.
                 KeyCode.LETTERS -> setSurface(InputSurface.LETTERS)
@@ -3385,7 +3389,15 @@ class AdaptKeyService : InputMethodService() {
                 view.shifted = false
             }
             
-            KeyCode.SYMBOL -> setSurface(PanelNavigation.onSwitchToSymbols())
+            // D-507: a long-press must never leak the symbol-layer function into a key whose slot carries
+            // something else now - only the genuine `?123` mode switches; emoji/off are a deliberate no-op
+            // (unreachable in practice: "off" hides the key, and the emoji glyph has no long-press action
+            // of its own, but [KeyboardLayout.hasLongPressAction] is still true for KeyCode.SYMBOL).
+            KeyCode.SYMBOL -> {
+                if (settings.combinedKeyMode == CombinedKeyMode.SYMBOL) {
+                    setSurface(PanelNavigation.onSwitchToSymbols())
+                }
+            }
             
             else -> Unit
         }
@@ -4088,6 +4100,15 @@ class AdaptKeyService : InputMethodService() {
         emojiPanel?.visibility = if (next == InputSurface.EMOJI) View.VISIBLE else View.GONE
         if (next == InputSurface.EMOJI) {
             emojiPanel?.setRecentEmojis(recentEmojis)
+            // D-507: the panel can now be opened while the extra row is closed (the combined key's emoji
+            // slot). While it shows, the keyboard view is GONE, so the row's own swipe-up can never bring
+            // it back - and with the row closed, D-472's return button would be unreachable, stranding the
+            // user on the panel. Every open therefore brings the row with it (a no-op when it is already
+            // open, i.e. the ordinary extra-row path), and [dismissKeyboardOrCloseExtraRow] keeps the row
+            // from being closed again for exactly as long as the panel shows. This also heals the
+            // pre-existing edge where closing the row manually while the panel was open produced the same
+            // stranded state.
+            openExtraRow()
         }
         // D-472: the extra row's own emoji button doubles as the panel's "return to keyboard" button while
         // it is showing - the single choke point every surface change already goes through, so every path
@@ -4195,9 +4216,15 @@ class AdaptKeyService : InputMethodService() {
                 true
             }
             
-            // L-03: upward swipe on the combined key switches to the numeric/symbol layer.
+            // L-03: upward swipe on the combined key switches to the numeric/symbol layer. D-507: only
+            // while the key's slot actually carries that function - in the emoji mode the swipe is
+            // deliberately swallowed without acting (the key has no second, hidden gesture; its tap is its
+            // whole function), exactly like the "off" mode's hidden key. The KEY_GESTURE exclusion that
+            // keeps the combined key from opening the extra row on an up-swipe stays as it is.
             GestureAction.OPEN_SYMBOL_LAYER -> {
-                setSurface(PanelNavigation.onSwitchToSymbols())
+                if (settings.combinedKeyMode == CombinedKeyMode.SYMBOL) {
+                    setSurface(PanelNavigation.onSwitchToSymbols())
+                }
                 true
             }
             
@@ -4271,9 +4298,14 @@ class AdaptKeyService : InputMethodService() {
      * ([de.froehlichmedia.adaptkey.suggestion.SuggestionBarView.OnSwipeDownListener]) and the extra row
      * itself ([ExtraRowView.OnSwipeDownListener]) - previously only the keyboard body reacted at all.
      * The keyboard itself is only hidden while [AdaptSettings.swipeDownDismissEnabled] is on.
+     * 
+     * D-507: while the emoji panel shows, the row-close step is deliberately skipped - the row carries
+     * D-472's return button, which must stay reachable for exactly as long as the panel shows (the
+     * keyboard view is GONE then, so a closed row could never be re-opened). A downward swipe in that
+     * state goes straight to the dismissal step instead.
      */
     private fun dismissKeyboardOrCloseExtraRow() {
-        if (extraRow?.isOpen == true) {
+        if (extraRow?.isOpen == true && surface != InputSurface.EMOJI) {
             closeExtraRow()
         } else if (settings.swipeDownDismissEnabled) {
             requestHideSelf(0)
@@ -4917,12 +4949,13 @@ class AdaptKeyService : InputMethodService() {
             // exactly like the ordinary (non-case-locked) path further down.
             // D-473: no competing whole-word correction is ever computed on this path (a case-locked token
             // bypasses autocorrect entirely, by design) - so CorrectionConfidence.forSplit is the only gate
-            // available here, same backstop role it plays below.
+            // available here, same backstop role it plays below (D-504: against the split's own
+            // SPLIT_AUTO_APPLY_CONFIDENCE bar, no longer the aggressiveness level's).
             val split = if ('_' in typed || settings.autoSplitMode != AutoSplitMode.AUTOMATIC) {
                 null
             } else {
                 tokenRepair.trySplit(typed, spaceAmbiguousIndices(), previousWord)
-                    ?.takeIf { it.confidence >= settings.autocorrectAggressiveness.autoApplyThreshold }
+                    ?.takeIf { it.confidence >= CorrectionConfidence.SPLIT_AUTO_APPLY_CONFIDENCE }
             }
             if (split != null) {
                 val committedLength = applySplit(ic, split, delimiter, typed)
@@ -5120,10 +5153,13 @@ class AdaptKeyService : InputMethodService() {
             // "Schwimmtasche" -> "schwimmt"+"Asche", where nothing else in this chain found anything) -
             // TokenRepair.trySplit()'s own structural gates (frequency floor, not-both-nouns, ...) never had
             // an aggregate confidence check of their own; this compares the winning split's own
-            // CorrectionConfidence.forSplit score against the same threshold every other silent correction
-            // in this function already needs, rather than applying unconditionally once structurally valid.
+            // CorrectionConfidence.forSplit score rather than applying unconditionally once structurally
+            // valid. D-504: the split now answers to its own bar instead of riding this function's
+            // aggressiveness level - SPLIT_AUTO_APPLY_CONFIDENCE (0.90; a split rewrites two words, not
+            // one) on top of forSplit's own SPLIT_SILENT_HALF_FREQUENCY floor (300; both halves of this
+            // very example sit below it, so it can no longer apply silently at all).
             tokenRepair.trySplit(typed, spaceAmbiguousIndices(), previousWord)
-                ?.takeIf { it.confidence >= settings.autocorrectAggressiveness.autoApplyThreshold }
+                ?.takeIf { it.confidence >= CorrectionConfidence.SPLIT_AUTO_APPLY_CONFIDENCE }
         }
         val splitMs = SystemClock.uptimeMillis() - splitStartedAt
         if (split != null) {

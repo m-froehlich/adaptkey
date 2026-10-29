@@ -146,6 +146,11 @@
     <string name="d32_summary">Variantları görünməzdən əvvəl düymənin nə qədər saxlanacağı, ms ilə (D-32).</string>
     <string name="double_tap_delay_title">İkiqat toxunuş gecikməsi</string>
     <string name="double_tap_delay_summary">İki toxunuşun ikiqat toxunuş sayılması üçün aralarındakı maksimum vaxt, ms ilə - Shift ilə böyüklük dəyişmə, geri qaytarmaq üçün Backspace-ə ikiqat toxunuş və yapışqan Backspace bu pəncərəni paylaşır.</string>
+    <string name="d507_combined_key_title">Birləşdirilmiş düymə (?123/Emoji)</string>
+    <string name="d507_combined_key_summary">Aşağı sıradakı birləşdirilmiş düymə nə edir: rəqəm/simvol qatına keçid (?123), emoji panelını açmaq və ya heç nə - düymə yox olur və yeri boş qalır (D-507).</string>
+    <string name="d507_mode_off">Bağlı</string>
+    <string name="d507_mode_symbols">Yalnız ?123</string>
+    <string name="d507_mode_emoji">Yalnız emoji</string>
     <string name="d55_below_title">Rəqəm cərgəsinin altında boşluq</string>
     <string name="d55_below_summary">Yuxarı hərf cərgəsində səhv toxunuşları azaltmaq üçün rəqəmlərin altında əlavə aralıq, dp ilə (D-55).</string>
     <string name="d55_above_title">Boşluq düyməsinin üstündə boşluq</string>
@@ -365,7 +370,5 @@
     <string name="blacklist_origin_backup_import">Ehtiyat nüsxədən bərpa edildi</string>
     <string name="blacklist_origin_bundled_seed">Tətbiqlə birlikdə gəlir</string>
     <string name="blacklist_origin_unknown">Naməlum (əvvəlki versiyadan)</string>
-    <string name="d59_title">\?123/ABC düyməsi</string>
-    <string name="d59_summary">Birləşdirilmiş ?123 düyməsini göstər. Söndürüldükdə düymə yox olur və yeri boş qalır (D-59).</string>
     <string name="d506_pack_base_notice">Qeyd: Hazırda yalnız alman paketi əl ilə tərtib edilib. Digər bütün dillər – daxil edilmiş ingilis dili daxil olmaqla – avtomatik yaradılmış əsasdır: çatışmayan sözlər, yanlış və ya lazımsız düzəlişlər və bənzər xətalar adətən paket məlumatlarından, tətbiqin özündən deyil gəlir. Bir dili yaxşı bilirsinizsə, onun paketini təkmilləşdirməyə kömək edə bilərsiniz (layihə deposundakı töhfə bələdçisinə baxın).</string>
 </resources>

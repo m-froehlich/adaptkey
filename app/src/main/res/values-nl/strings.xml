@@ -146,6 +146,11 @@
     <string name="d32_summary">Hoe lang je een toets ingedrukt houdt voordat de alternatieven verschijnen, in ms (D-32).</string>
     <string name="double_tap_delay_title">Dubbeltikvertraging</string>
     <string name="double_tap_delay_summary">Maximale tijd tussen twee tikken om als dubbeltik te tellen, in ms - het wisselen van hoofdletter met Shift, dubbeltik op Backspace om terug te draaien en klevende Backspace delen allemaal dit venster.</string>
+    <string name="d507_combined_key_title">Gecombineerde toets (?123/Emoji)</string>
+    <string name="d507_combined_key_summary">Wat de gecombineerde toets in de onderste rij doet: schakelen naar de cijfer-/symboollaag (?123), het emoji-paneel openen of niets - de toets verdwijnt en zijn plek blijft leeg (D-507).</string>
+    <string name="d507_mode_off">Uit</string>
+    <string name="d507_mode_symbols">Alleen ?123</string>
+    <string name="d507_mode_emoji">Alleen emoji</string>
     <string name="d55_below_title">Ruimte onder de cijferrij</string>
     <string name="d55_below_summary">Extra ruimte onder de cijfers, in dp, om misgrepen in de bovenste letterrij te verminderen (D-55).</string>
     <string name="d55_above_title">Ruimte boven de spatiebalk</string>
@@ -365,7 +370,5 @@
     <string name="blacklist_origin_backup_import">Terugezet vanuit een back-up</string>
     <string name="blacklist_origin_bundled_seed">Ingebouwd in de app</string>
     <string name="blacklist_origin_unknown">Onbekend (uit een eerdere versie)</string>
-    <string name="d59_title">Toets ?123/ABC</string>
-    <string name="d59_summary">De gecombineerde ?123-toets tonen. Uitgeschakeld verdwijnt de toets en blijft zijn plek leeg (D-59).</string>
     <string name="d506_pack_base_notice">Let op: momenteel is alleen het Duitse pakket handmatig gecureerd. Alle andere talen – inclusief de ingebouwde Engelse – zijn een automatisch opgebouwde basis: ontbrekende woorden, verkeerde of ongewenste correcties en vergelijkbare fouten komen meestal uit de pakketgegevens, niet uit de app zelf. Als u een taal goed beheerst, kunt u helpen het bijbehorende paket te verbeteren (zie de bijdragegids in de projectrepository).</string>
 </resources>

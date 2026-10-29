@@ -146,6 +146,11 @@
     <string name="d32_summary">Durée de maintien d\'une touche avant l\'apparition de ses alternatives, en ms (D-32).</string>
     <string name="double_tap_delay_title">Délai de double appui</string>
     <string name="double_tap_delay_summary">Durée maximale entre deux appuis pour compter comme un double appui, en ms - la bascule de casse avec Maj, le double appui sur Retour arrière pour annuler et le Retour arrière collant partagent tous cette fenêtre.</string>
+    <string name="d507_combined_key_title">Touche combinée (?123/Emoji)</string>
+    <string name="d507_combined_key_summary">Ce que fait la touche combinée de la rangée du bas : passer à la couche chiffres/symboles (?123), ouvrir le panneau d\'émojis, ou rien - la touche disparaît et son emplacement reste vide (D-507).</string>
+    <string name="d507_mode_off">Désactivé</string>
+    <string name="d507_mode_symbols">\?123 uniquement</string>
+    <string name="d507_mode_emoji">Emoji uniquement</string>
     <string name="d55_below_title">Espace sous la rangée de chiffres</string>
     <string name="d55_below_summary">Espace supplémentaire sous les chiffres, en dp, pour réduire les appuis manqués dans la rangée de lettres du haut (D-55).</string>
     <string name="d55_above_title">Espace au-dessus de la barre d\'espace</string>
@@ -365,7 +370,5 @@
     <string name="blacklist_origin_backup_import">Restauré depuis une sauvegarde</string>
     <string name="blacklist_origin_bundled_seed">Fourni avec l\'application</string>
     <string name="blacklist_origin_unknown">Inconnu (d\'une version antérieure)</string>
-    <string name="d59_title">Touche ?123/ABC</string>
-    <string name="d59_summary">Afficher la touche combinée ?123. Désactivée, la touche disparaît et son emplacement reste vide (D-59).</string>
     <string name="d506_pack_base_notice">Remarque : aujourd’hui, seul le paquet allemand est structuré à la main. Toutes les autres langues – y compris l’anglais intégré – constituent une base créée automatiquement : mots manquants, corrections erronées ou indésirables et autres anomalies proviennent généralement des données du paquet, et non de l’application elle-même. Si vous maîtrisez bien une langue, vous pouvez aider à améliorer son paquet (voir le guide de contribution dans le dépôt du projet).</string>
 </resources>

@@ -146,6 +146,11 @@
     <string name="d32_summary">Колико дуго држати тастер док се не појаве његове алтернативе, у ms (D-32).</string>
     <string name="double_tap_delay_title">Кашњење двоструког додира</string>
     <string name="double_tap_delay_summary">Најдуже време између два додира да се рачунају као двоструки додир, у ms - промена величине слова Shift-ом, двоструки додир на Backspace за поништавање и лепљиви Backspace деле овај прозор.</string>
+    <string name="d507_combined_key_title">Комбиновани тастер (?123/Емоџи)</string>
+    <string name="d507_combined_key_summary">Шта комбиновани тастер у доњем реду ради: пребацивање на слој цифара/симбола (?123), отварање панела емоџија или ништа - тастер нестане, а његово место остане празно (D-507).</string>
+    <string name="d507_mode_off">Искључено</string>
+    <string name="d507_mode_symbols">Само ?123</string>
+    <string name="d507_mode_emoji">Само емоџи</string>
     <string name="d55_below_title">Размак испод реда бројева</string>
     <string name="d55_below_summary">Додатни размак испод цифара, у dp, ради смањења промашаја у горњи ред слова (D-55).</string>
     <string name="d55_above_title">Размак изнад размакнице</string>
@@ -365,7 +370,5 @@
     <string name="blacklist_origin_backup_import">Обновљено из резервне копије</string>
     <string name="blacklist_origin_bundled_seed">Испоручује се са апликацијом</string>
     <string name="blacklist_origin_unknown">Непознато (из старије верзије)</string>
-    <string name="d59_title">Тастер ?123/ABC</string>
-    <string name="d59_summary">Прикажи комбиновани тастер ?123. Кад је искључен, тастер нестаје, а његово место остаје празно (D-59).</string>
     <string name="d506_pack_base_notice">Напомена: Данас је само немачки пакет ручно уређиван. Сви остали језици – укључујући укључени енглески – аутоматски су израђена основа: недостајуће речи, погрешне или непотребне исправке и сличне грешке обично долазе из података пакета, а не из саме апликације. Ако добро знате језик, можете помоћи да се његов пакет побољша (види водич за сараднике у репозиторијуму пројекта).</string>
 </resources>

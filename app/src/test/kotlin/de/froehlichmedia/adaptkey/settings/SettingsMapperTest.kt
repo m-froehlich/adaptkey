@@ -9,6 +9,7 @@ import de.froehlichmedia.adaptkey.dictionary.AutoSplitMode
 import de.froehlichmedia.adaptkey.dictionary.AutocorrectAggressiveness
 import de.froehlichmedia.adaptkey.dictionary.LearnedWordExpiryWindow
 import de.froehlichmedia.adaptkey.keyboard.BottomInsetMode
+import de.froehlichmedia.adaptkey.keyboard.CombinedKeyMode
 import de.froehlichmedia.adaptkey.keyboard.KeyProportions
 import de.froehlichmedia.adaptkey.keyboard.KeyboardLayout
 import de.froehlichmedia.adaptkey.prediction.LlmActivationThreshold
@@ -88,9 +89,47 @@ class SettingsMapperTest {
     }
     
     @Test
-    fun `D-59 symbol-key flag passes through unchanged`() {
-        assertFalse(SettingsMapper.toAdaptSettings(RawSettings(symbolKeyEnabled = false)).symbolKeyEnabled)
-        assertTrue(SettingsMapper.toAdaptSettings(RawSettings(symbolKeyEnabled = true)).symbolKeyEnabled)
+    fun `D-507 combinedKeyMode resolves the stored key, defaulting to the symbol toggle`() {
+        assertEquals(CombinedKeyMode.SYMBOL, SettingsMapper.toAdaptSettings(RawSettings()).combinedKeyMode)
+        assertEquals(
+            CombinedKeyMode.OFF,
+            SettingsMapper.toAdaptSettings(RawSettings(combinedKeyModeKey = "off")).combinedKeyMode
+        )
+        assertEquals(
+            CombinedKeyMode.EMOJI,
+            SettingsMapper.toAdaptSettings(RawSettings(combinedKeyModeKey = "emoji")).combinedKeyMode
+        )
+        assertEquals(
+            CombinedKeyMode.SYMBOL,
+            SettingsMapper.toAdaptSettings(RawSettings(combinedKeyModeKey = "  SYMBOL ")).combinedKeyMode
+        )
+        assertEquals(
+            CombinedKeyMode.SYMBOL,
+            SettingsMapper.toAdaptSettings(RawSettings(combinedKeyModeKey = "garbage")).combinedKeyMode
+        )
+    }
+    
+    @Test
+    fun `D-507 the stored combined-key value wins over D-59's legacy boolean`() {
+        // A stored D-507 value is authoritative; the legacy boolean is only consulted while the new
+        // preference has never been written (the one-time migration).
+        assertEquals(
+            CombinedKeyMode.EMOJI,
+            SettingsMapper.toAdaptSettings(RawSettings(combinedKeyModeKey = "emoji", symbolKeyEnabled = true)).combinedKeyMode
+        )
+    }
+    
+    @Test
+    fun `D-507 the legacy D-59 boolean maps losslessly while the new key is unset`() {
+        // true = the ?123 toggle (also a fresh install's default), false = hidden.
+        assertEquals(
+            CombinedKeyMode.SYMBOL,
+            SettingsMapper.toAdaptSettings(RawSettings(symbolKeyEnabled = true)).combinedKeyMode
+        )
+        assertEquals(
+            CombinedKeyMode.OFF,
+            SettingsMapper.toAdaptSettings(RawSettings(symbolKeyEnabled = false)).combinedKeyMode
+        )
     }
     
     @Test

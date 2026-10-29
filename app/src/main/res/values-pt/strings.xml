@@ -146,6 +146,11 @@
     <string name="d32_summary">Quanto tempo segurar uma tecla até as alternativas aparecerem, em ms (D-32).</string>
     <string name="double_tap_delay_title">Atraso do toque duplo</string>
     <string name="double_tap_delay_summary">Tempo máximo entre dois toques para contar como toque duplo, em ms - a alternância de caixa com Shift, o toque duplo no Backspace para reverter e o Backspace aderente compartilham essa janela.</string>
+    <string name="d507_combined_key_title">Tecla combinada (?123/Emoji)</string>
+    <string name="d507_combined_key_summary">O que a tecla combinada da fileira inferior faz: mudar para a camada de números/símbolos (?123), abrir o painel de emojis ou nada - a tecla desaparece e o seu espaço fica vazio (D-507).</string>
+    <string name="d507_mode_off">Desativado</string>
+    <string name="d507_mode_symbols">Apenas ?123</string>
+    <string name="d507_mode_emoji">Apenas emojis</string>
     <string name="d55_below_title">Espaço sob a fileira de números</string>
     <string name="d55_below_summary">Espaço extra sob os dígitos, em dp, para reduzir toques errados na fileira superior de letras (D-55).</string>
     <string name="d55_above_title">Espaço acima da barra de espaço</string>
@@ -365,7 +370,5 @@
     <string name="blacklist_origin_backup_import">Restaurada de um backup</string>
     <string name="blacklist_origin_bundled_seed">Incluída com a aplicação</string>
     <string name="blacklist_origin_unknown">Desconhecido (de uma versão anterior)</string>
-    <string name="d59_title">Tecla ?123/ABC</string>
-    <string name="d59_summary">Mostrar a tecla combinada ?123. Desativada, a tecla some e o seu lugar fica vazio (D-59).</string>
     <string name="d506_pack_base_notice">Nota: atualmente apenas o pacote alemão é curado à mão. Todos os outros idiomas – incluindo o inglês integrado – são uma base criada automaticamente: palavras em falta, correções erradas ou indesejadas e falhas semelhantes geralmente vêm dos dados do pacote, não da própria aplicação. Se conhece bem um idioma, pode ajudar a melhorar o seu pacote (veja o guia de contribuição no repositório do projeto).</string>
 </resources>

@@ -126,11 +126,18 @@ straight-up release still types `,`). All proportions and spacings are user-conf
 
 ### L-03 - Symbol/Numeric-Layer Key
 A single key in the bottom row switches to the numeric/symbol layer (`?123`) - a tap opens it, a further
-tap on its "ABC" key returns to letters. The key's slot is governed solely by a setting (`symbolKeyEnabled`,
-default on); when disabled, the slot stays reserved but inert rather than collapsing the row. The emoji
-function does **not** live on this key - it is reached exclusively via the always-visible emoji button in
-the swipe-up extra row (§14, R-01), which needs no setting of its own since it costs no keyboard-row space
-while closed.
+tap on its "ABC" key returns to letters. What the key's slot carries is one three-valued setting
+(D-507's `CombinedKeyMode` - `?123` / Emoji / Off, default `?123`; a plain ListPreference per C-27, with
+D-59's former boolean migrated on load). In the non-`?123` modes the key is drawn blank and inert while
+its slot stays reserved rather than collapsing the row (D-59/D-100), and the symbol pages' "ABC" keys
+hide with it - they are unreachable without the `?123` key either way (the D-19 horizontal swipe, when
+enabled, remains the one way onto those pages). The emoji mode re-introduces the combined key's pre-§49
+emoji function as a dedicated mode of its own - deliberately as a **redundant second** entry point
+beside the always-visible emoji button in the swipe-up extra row (§14, R-01), which keeps needing no
+setting of its own since it costs no keyboard-row space while closed. Because the panel can now be
+opened while the extra row is closed - and a closed row cannot be re-opened while the keyboard view is
+hidden - opening the panel always brings the extra row with it, and the row cannot be closed while the
+panel shows, so D-472's return button stays reachable for exactly as long as the panel is showing.
 
 **Emoji search (D-317):** a dedicated magnifying-glass tab in the emoji panel's own tab bar (alongside the
 category tabs and the recent-emoji tab) starts a live text search over every bundled emoji's own search
@@ -2387,6 +2394,8 @@ Unconditionally excludes any content typed into a password field, regardless of 
 | C-24 | Learned-word expiry window (W-05, D-389) | 1 month / 4 months / 1 year / Never | Never |
 | C-25 | Cross-word merge across space (A-06, D-391, §44) | Off / Cautious / Medium / Aggressive | Off |
 | C-26 | Keep learning touch zones (T-03, D-474, §48) | On / Off | On |
+
+| C-27 | Combined bottom-row key's slot (L-03, D-507) | ?123 / Emoji / Off | ?123 |
 
 Individual feature sections above also document domain-specific, non-configurable defaults (e.g. the
 calculator layout's fixed key weights) that intentionally are not exposed here.

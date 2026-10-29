@@ -8,6 +8,7 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import androidx.preference.PreferenceManager
 import de.froehlichmedia.adaptkey.capitalisation.Abbreviations
+import de.froehlichmedia.adaptkey.keyboard.CombinedKeyMode
 import de.froehlichmedia.adaptkey.keyboard.KeyboardLayout
 import de.froehlichmedia.adaptkey.language.ActiveLanguageStore
 import de.froehlichmedia.adaptkey.language.DiacriticFoldingRegistry
@@ -52,6 +53,15 @@ object SettingsStore {
     const val KEY_CAPS_LOCK_HAPTICS = "caps_lock_haptics_enabled"
     const val KEY_SPACE_BELOW_NUMBER_ROW = "d55_space_below_number_row"
     const val KEY_SPACE_ABOVE_SPACE_ROW = "d55_space_above_space_row"
+    // D-507: the combined key's slot function (off / symbol / emoji), replacing the D-59 boolean below.
+    const val KEY_COMBINED_KEY_MODE = "d507_combined_key_mode"
+    
+    /**
+     * D-59's pre-D-507 boolean, kept only as the one-time migration source (and for old backups that
+     * still import it): [loadCombinedKeyMode] derives the D-507 string from it once, then removes it, so
+     * no stale boolean lingers in the prefs (it would otherwise ride along in every backup export as an
+     * unknown stray key). Never read once [KEY_COMBINED_KEY_MODE] exists.
+     */
     const val KEY_SYMBOL_KEY = "d59_symbol_key"
     const val KEY_DIAGNOSTIC_LOG_ENABLED = "d_diag_enabled"
     const val KEY_PENDING_BLACKLIST_EXPIRY_DAYS = "d177_pending_blacklist_expiry_days"
@@ -172,6 +182,9 @@ object SettingsStore {
     fun load(context: Context): AdaptSettings {
         val p = prefs(context)
         val highlightColorRaw = p.getString(KEY_HIGHLIGHT_COLOR, null)
+        // D-507: captured before [loadCombinedKeyMode]'s one-time migration removes the legacy key, so
+        // the RawSettings below always describes the same pre-migration snapshot.
+        val legacySymbolKeyEnabled = p.getBoolean(KEY_SYMBOL_KEY, true)
         val raw = RawSettings(
             spaceWeight = p.getInt(KEY_SPACE_WEIGHT, DEF_SPACE_WEIGHT) / WEIGHT_SCALE,
             commaWeight = p.getInt(KEY_COMMA_WEIGHT, DEF_COMMA_WEIGHT) / WEIGHT_SCALE,
@@ -195,7 +208,8 @@ object SettingsStore {
             capsLockHapticsEnabled = p.getBoolean(KEY_CAPS_LOCK_HAPTICS, DEF_CAPS_LOCK_HAPTICS),
             extraSpaceBelowNumberRowDp = p.getInt(KEY_SPACE_BELOW_NUMBER_ROW, DEF_EXTRA_SPACING),
             extraSpaceAboveSpaceRowDp = p.getInt(KEY_SPACE_ABOVE_SPACE_ROW, DEF_EXTRA_SPACING),
-            symbolKeyEnabled = p.getBoolean(KEY_SYMBOL_KEY, true),
+            combinedKeyModeKey = loadCombinedKeyMode(p),
+            symbolKeyEnabled = legacySymbolKeyEnabled,
             diagnosticLogEnabled = p.getBoolean(KEY_DIAGNOSTIC_LOG_ENABLED, false),
             pendingBlacklistExpiryDays = p.getInt(KEY_PENDING_BLACKLIST_EXPIRY_DAYS, DEF_PENDING_BLACKLIST_EXPIRY_DAYS),
             saveCredentials = p.getBoolean(KEY_SAVE_CREDENTIALS, true),
@@ -216,6 +230,37 @@ object SettingsStore {
             bottomInsetModeKey = p.getString(KEY_BOTTOM_INSET_MODE, null)
         )
         return SettingsMapper.toAdaptSettings(raw)
+    }
+    
+    /**
+     * D-507: reads the combined-key mode's stored string, migrating D-59's legacy boolean exactly once:
+     * while the new key has never been written, the old boolean's meaning is persisted under the new key
+     * (true = the `?123` toggle, false = hidden) and the old key is removed, so no stale boolean lingers
+     * in the prefs - it would otherwise ride along in every backup export as an unknown stray key. Every
+     * later load, and every load on a device whose D-507 preference already exists, is a plain read.
+     * The idempotent write lives here (the storage layer) rather than in the pure mapper, mirroring how
+     * this file already owns the slider decoding: [SettingsMapper.toCombinedKeyMode] re-derives the same
+     * answer from the un-migrated [RawSettings] anyway, so the migration is a persistence cleanup, never
+     * a correctness dependency.
+     * 
+     * @param p the shared default preferences
+     * @return the stored D-507 value, or null while the preference has never been written
+     */
+    private fun loadCombinedKeyMode(p: SharedPreferences): String? {
+        val stored = p.getString(KEY_COMBINED_KEY_MODE, null)
+        if (stored != null) {
+            return stored
+        }
+        if (!p.contains(KEY_SYMBOL_KEY)) {
+            return null
+        }
+        val migrated = if (p.getBoolean(KEY_SYMBOL_KEY, true)) {
+            CombinedKeyMode.DEFAULT.name.lowercase()
+        } else {
+            CombinedKeyMode.OFF.name.lowercase()
+        }
+        p.edit().putString(KEY_COMBINED_KEY_MODE, migrated).remove(KEY_SYMBOL_KEY).apply()
+        return migrated
     }
     
     /**
@@ -345,7 +390,7 @@ object SettingsStore {
         KEY_SURFACE_SWIPE_ENABLED,
         KEY_SWIPE_DOWN_DISMISS_ENABLED,
         KEY_NUMBER_ROW,
-        KEY_SYMBOL_KEY,
+        KEY_COMBINED_KEY_MODE,
         KEY_SPACE_BELOW_NUMBER_ROW,
         KEY_SPACE_ABOVE_SPACE_ROW,
         KEY_SPACE_WEIGHT,
