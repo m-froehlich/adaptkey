@@ -1,11 +1,10 @@
 # AdaptKey-Plan-Auto-Split-Tuning.md
 
-**Status:** §3 (code) IMPLEMENTED + evaluated 2026-10-28; §4 (German data half) IMPLEMENTED
-2026-10-29 via `dictionaries/clean_dict.py` - 5,709 decisions, dict.tsv 193,814 -> 189,781 rows,
-version.txt 48 -> 49, pack rebuilt + byte-verified, `LanguagePackCatalog` 48 -> 49; cross-language
-report-only scan of all 30 other packs done (`scratchpad/d504-crosslang-report.txt`; nothing
-modified outside de). Full suite green (1,780 tests). Open: §6 spec addendum, §5 version bump
-(1.2.90 -> 1.2.91 / 587), §7 device checklist.
+**Status:** CLOSED, device-confirmed 2026-10-29. §3 (code) + §4 (German data half) implemented and
+evaluated; §6 spec addendum written; §5 bump landed as 1.2.92 / 588 (1.2.91/587 had been consumed by
+D-505's streaming round in between); §7 device check done by the user - "schmeißen" (learned entry
+forgotten first) retyped and stays whole; the remaining checklist items were waived by the user on
+that basis. Cross-language report-only scan: `scratchpad/d504-crosslang-report.txt`.
 **Backlog item:** D-504 (AdaptKey-Progress.md, "Open TODOs"). Request: the automatic A-05 word split
 fires far too often; the split probability must drop drastically.
 

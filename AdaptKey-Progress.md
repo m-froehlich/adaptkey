@@ -446,8 +446,8 @@ non-trivial changes).
   `SettingsMapper.toCombinedKeyMode` re-derives the same answer from the un-migrated snapshot, so the
   migration is persistence cleanup, never a correctness dependency. Behaviour: emoji mode shows the
   same glyph as the extra row's button (shared `ExtraRowView.EMOJI_ICON`) and taps through the ordinary
-  `setSurface(EMOJI)` choke point; long-press and up-swipe of the symbol function are gated to the
-  symbol mode; the symbol pages' `ABC` keys hide with the key in both non-symbol modes (the D-19 swipe
+  `setSurface(EMOJI)` choke point;   long-press and up-swipe of the symbol function are gated to the
+  symbol mode; the symbol pages' `ABC` keys hide in both non-symbol modes (the D-19 swipe
   stays the one remaining way onto those pages, unchanged). Return-path gap closed alongside: the panel
   can now be opened while the extra row is closed, where D-472's return button would be unreachable
   (the keyboard view is GONE while the panel shows, so the row's swipe-up can never re-open it; the
@@ -481,107 +481,13 @@ non-trivial changes).
   for native speakers (noun-lemma shield, homograph-checked strays, hand-reviewed band,
   report -> apply -> pack rebuild). No Kotlin code; locale consistency enforced by the existing test.
   History §530.
-- **D-504 - OPEN (code + German data half IMPLEMENTED 2026-10-28/29, rides 1.2.92/588; device
-  checklist pending): auto-correction fine-tuning - the automatic A-05 word split fires far too
-  often; the split probability must drop drastically.** User request: "Am meisten stört
-  das automatische Splitten. Die Split-Wahrscheinlichkeit muss drastisch sinken. Das passiert einfach zu
-  häufig." No concrete recent device examples collected yet - the first step of its own round is gathering
-  the user's actual false-split cases (they exist; cf. the still-open D-493 "schmeißen" -> "sch Meißen" and
-  the D-469 "Lebensmüde" shape) so the tuning is measured against real positives AND negatives, not done in
-  the abstract.
-  Current silent-split gates, for orientation (spec A-05): token unknown and not a plausible verb/adjective
-  inflection; split at/near a T-05 space-ambiguous tap or a fully missed space; both halves clear a frequency
-  floor; "not both nouns" gate; German-only veto lists (inseparable verb prefixes, adverb/particle + noun,
-  feminine `-in`); umlaut/ß-unfolding for half resolution; vetoed by ANY confidence-cleared single-word
-  correction AND by a T-02 raw-coordinate correction result (D-404-followup ordering); and, since D-473, the
-  split's own `CorrectionConfidence.forSplit` score (product of both halves' noun-aware frequency curves) must
-  clear the active `AutocorrectAggressiveness` level's auto-apply threshold. C-21 (`d352_auto_split_mode`)
-  governs the mode: Automatic (default) / Chip only / Off.
-  Discussion outcome (2026-10-28, same day as the request):
-  1. **AGREED (the primary lever): decouple `forSplit` from the autocorrect aggressiveness level and give**
-     **the split its own, drastically stricter bar.** User confirmed the analysis directly: a split is a bigger
-     intervention than a respelling (it rewrites two words) and must not ride `d353_autocorrect_aggressiveness`.
-  2. **AGREED: "sinnbefreit" must actually bind - absolute, drastically raised frequency floors for the split**
-     **halves.** The D-493 case is NOT a rules violation but the floors letting dictionary noise through:
-     verified in `dictionaries/de/dict.tsv` line 20609, `sch 84 OTHER` is a real row, so the left half formally
-     passed every gate (OTHER -> the "not both nouns" gate passes; both halves cleared the floors, which
-     evidently sit below 84). The floors must sit far above such junk regardless of whether the junk itself is
-     removed. (The fusion side got exactly this in §499's class model; the split side has only the relative
-     noun-aware curve.)
-  3. **Dictionary junk-fragment cleanup round** - the user's own framing: "wenn es das tut, ist das zu
-     entfernender Müll". A D-306/§301 ("Mülltrennung") successor pass over short corpus artefacts; a quick
-     probe showed the junk is a class, not one row: `jpg`, `svg`, `png`, `shy`, `vec`, `de`, `ca`, `et`, `ha`,
-     `di`, `al`, `to`, `at`, `and`, `of`, `for`, `van`, ... - file extensions, units, English strays. A
-     mechanical short-row scan (D-368's method) enumerates candidates for the standing per-candidate
-     confirmation.
-  4. **AGREED (user decision 2026-10-28): `Meißen` leaves the dictionary** - verified row `Meißen 352
-     NOUN,PROPER_NOUN`. The user's framing: "IST zwar jetzt nur ein zufälliger Treffer, von denen es sicher
-     noch viele gibt. Aber 'Meißen' ist ein sehr ungebräuchlicher, weltener Eigenname, der im Wörterbuch
-     nichts verloren hat." The class is measured, not assumed: 6,047 PROPER_NOUN rows in `dict.tsv` (the
-     Wikipedia-corpus extraction), so this round must define the policy for the class, not treat Meißen as a
-     one-off - where a proper noun's own frequency floor sits (which stay, e.g. "Berlin"/"Müller"; which go)
-     without a full proper-noun review becoming a D-368-sized project of its own.
-  5. **REJECTED by user decision (2026-10-28): the proper-noun right-half veto** flagged in D-493's entry as
-     "worth deciding" - "nur eine Mini-Symptom-Bekämpfung"; with 1-4 in place the case it targets cannot
-     arise. D-493's open flag is answered by this entry.
-  6. Still open (user's call): flipping the **C-21 default to "Chip only"** (D-490 is the precedent for
-     flipping a default) - the radical version, no silent split at all, at the cost of a tap per genuine
-     split; default Automatic stays for now.
-   Parallel track unchanged: missing REAL words are the other half of D-493 (the ~12,123 never-attested verbs,
-   D-462's B2 scope) - after 1-4 an absent word stays whole as typed instead of being split, which is the
-   correct interim behaviour, but adding the family remains the real fix.
-   **CODE ROUND IMPLEMENTED (2026-10-28; unbumped, not yet device-confirmed):** plan in
-   `AdaptKey-Plan-Auto-Split-Tuning.md`. `CorrectionConfidence.forSplit` now returns exactly 0.0 when either
-   half's frequency is below the new `SPLIT_SILENT_HALF_FREQUENCY = 300` (the D-114 "trustworthy" bar,
-   already TokenRepair's acronym floor - a precedent, not a free number), and both silent call sites
-   (`finalizeAndCommit`'s split backstop + the case-locked commit path) compare against the new
-   split-specific `SPLIT_AUTO_APPLY_CONFIDENCE = 0.90` (CAUTIOUS's own auto threshold) instead of
-   `settings.autocorrectAggressiveness.autoApplyThreshold` - the split no longer scales with C-22's
-   aggressiveness slider; C-21 still governs the mode. Chips/live previews are untouched (TokenRepair never
-   filters on confidence); the structural floor `MIN_SPLIT_HALF_FREQUENCY = 10` is deliberately unchanged.
-   New `SplitEvaluationTest` (real `dict.tsv` + `bigram.tsv`, `FusionEvaluationTest`'s shape):
-   usage-weighted silent recall over 38,388 joined attested bigrams (8.18M weight) = **84.2%** (wrong-
-   position silent share 2.7%); on a 60,000-pair broad random population 35,892 joins split structurally
-   but only **156 (0.4% of them)** would still apply silently - the floor's bite, measured. The D-493
-   "sch"+"Meißen" shape pins at confidence exactly 0.0. Spot check: "müde" (28) and "lebensmüde" (15 - now
-   IN the dictionary, so D-469's word is known and never split) both sit below the floor.
-   `:app:assembleRelease` + `:app:testDebugUnitTest` green (1,780 tests).
-   **DATA HALF IMPLEMENTED (2026-10-29):** new `dictionaries/clean_dict.py` (mechanical rules R1-R5,
-   report/apply modes, every decision logged to `scratchpad/d504-de-cleanup-*`; per-candidate
-   confirmation implemented as ground-truth shields + one hand-reviewed band instead of 5.7k chat
-   rows). German applied: 5,709 decisions over 193,814 rows - 3,802 uncommon proper nouns dropped
-   (PROPER_NOUN, frequency < 500, unshielded), 190 explicit drops ("Meißen" 352 + the 187
-   hand-reviewed 300-499-band rows; that band's 6 mis-tagged common nouns - "Häusern"/"Fische"/
-   "Siegen"/"Mauern"/"Stade"/"Hanse" - retagged instead), 1,638 retags (lowercase sentence-case
-   artefacts like "waren"/"meister", the real-common-noun shield against the Wiktionary noun lemma
-   list - German surnames ARE common nouns: "Fuchs"/"Reiter"/"Gast" stay - and the compound shield:
-   Marktplatz = markt+platz), 28 vowel-less short fragments dropped ("sch" 84 itself, "shy", "xy",
-   ...), 13 zero-doubt English strays dropped; units/abbreviations (bzw/vgl/ggf/km/cm/mm/...)
-   explicitly protected, 38 of them held in a later-human-pass list. Spot checks after apply:
-   "sch"/"Meißen" absent, "Marktplatz"/"Achsel"/"Gala"/"Ebbe" kept as NOUN, "Berlin"/"Deutschland"/
-   "bzw" untouched. dict.tsv 193,814 -> 189,781 rows. `dictionaries/de/version.txt` 48 -> 49, pack
-   rebuilt via the new `dictionaries/de/build_zip.py` and verified byte-identical after re-unzip,
-   `LanguagePackCatalog` German version 48 -> 49 with the round's changelog comment.
-   `:app:assembleRelease` + full suite green (1,780 tests); SplitEvaluationTest re-measured on the
-   cleaned dictionary: usage-weighted silent recall 84.7% (was 84.2% - the cleanup slightly improved
-   it), broad random population 139 of 35,280 structural splits still silent, D-493 shape pinned at
-   0.0. Cross-language: report-only scan of all 30 other packs
-   (`scratchpad/d504-crosslang-report.txt`) - R2 drops NOTHING anywhere without a noun-lemma shield
-   (safe default by construction), R1's lowercase-artefact scale varies by an order of magnitude
-   across languages (cs 2 vs fr 24,155 rows) and needs per-language sample validation before any
-   apply, and the first scan's Cyrillic/Greek R4 miscounts led to the vowel set covering Cyrillic
-   and Greek now (ru 7,492 -> 1,180 etc., report-only, nothing harmed). The method is
-   autonomous-ready per language: its own noun-lemma shield + R1 sample validation + own R5 list +
-   pack rebuild.
-   **Round state:** spec A-05's D-504 addendum written; History §529 records the round. The
-   concluding bump landed as 1.2.92 / 588 (1.2.91/587 had already been consumed in between by the
-   parallel-session D-505 streaming-import round), riding together with D-506's pack-base notice.
-   Still open: the §7 device checklist of `AdaptKey-Plan-Auto-Split-Tuning.md`.
-  Any threshold change must be validated in BOTH directions: fewer silent splits (the goal) without losing the
-  genuine missed-space recoveries - recall measured usage-weighted like §499's fusion evaluation, ideally on a
-  D-353-style real regression corpus extended with split cases. Needs the user's go per convention before any
-  code.
-
+- **D-504 - RESOLVED (§529, v1.2.92), device-confirmed 2026-10-29: auto-split tuning - the A-05 split no
+  longer scales with the autocorrect aggressiveness (own 0.90 bar + a 300 half floor make silent
+  junk-half splits impossible) and the German dictionary lost its junk (4,033 rows dropped: uncommon
+  proper nouns via the Wiktionary-noun + compound shields, fragments like "sch" itself, English
+  strays; pack version 49). User device check: removed the learned "schmeißen", retyped it - stays
+  whole, no split; the user closed the round on that basis, waiving the remaining §7 checklist items.**
+  See §529, spec A-05's D-504 addendum and `AdaptKey-Plan-Auto-Split-Tuning.md`.
 - **D-503 - RESOLVED, device-confirmed (§523-§526, v1.2.83-v1.2.86; fully confirmed 2026-10-27): an n-gram
   continuation (bigram/trigram partner) that survives into continued typing keeps the first chip slots.**
   Root cause: D-366's bonus re-weights only candidates already in the pool, and the mid-word pool is a

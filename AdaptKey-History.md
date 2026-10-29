@@ -24037,8 +24037,11 @@ cleanup workflow moved into the contribution guide for native-speaker pack maint
 `scratchpad/d504-crosslang-report.txt` (R2 drops nothing without a per-language noun shield; the
 first scan's Cyrillic/Greek R4 miscounts led to the vowel set covering Cyrillic and Greek). Rides
 versionCode 588 / 1.2.92 together with D-506 (1.2.91/587 had been consumed by D-505's streaming
-round in between). **Not yet device-confirmed** - the §7 checklist of
-`AdaptKey-Plan-Auto-Split-Tuning.md` closes the round.
+round in between). **Device-confirmed by the user 2026-10-29**: they removed the learned "schmeißen"
+(a D-493-era learned entry would have shielded the word from the split path - lesson for testing:
+forget the word first), retyped it and it stayed whole, no split; the user closed the round on that
+basis, waiving §7's remaining checklist items (the genuine-split recall is covered by the evaluation
+numbers, the slider decoupling by the code paths).
 
 
 ## §530 - D-506: "packs are a base" notice on the language-packs screen, and the cleanup method in the contribution guide (v1.2.92)
@@ -24108,3 +24111,20 @@ ListPreference, "off" first, default `symbol`, D-419 row line). 1,793 tests, 0 f
 `:app:assembleRelease` green. `versionCode` 588 -> 589, `versionName` "1.2.92" -> "1.2.93". NOT
 device-confirmed: the emoji slot's look and tap, the auto-opened row + guarded close around the panel,
 and the migration on a device that has D-59's boolean stored.
+
+## §532 - D-507 followup: the emoji slot actually shows the emoji key - isHiddenKey hid it in the emoji mode too (v1.2.93)
+
+Device report after the 531 round: the new combined-key setting worked for "off" and "?123", but the
+"emoji" mode left the slot blank and dead. Root cause was one comparison, not the plumbing:
+`isHiddenKey` tested `combinedKeyMode != SYMBOL` for the combined key itself, so the emoji mode hid it
+exactly like the "off" mode - drawn blank, taps ignored (resolveTap and the key dispatch skip hidden
+keys), which also starved `labelFor`'s emoji glyph and `PanelNavigation.onCombinedKeyTap`'s EMOJI
+branch of any chance to run. The condition now hides the combined key only in OFF (`== OFF`), while
+the symbol pages' `ABC` keys keep hiding in both non-symbol modes (their layers are unreachable either
+way). The matching over-general wording in the combinedKeyMode property's KDoc, Spec L-03 and the
+Progress entry is corrected alongside (History 531's own text was already right). The bug slipped
+through because `isHiddenKey` is view-internal glue - the project's accepted-untested Android layer -
+and every pure policy around it (mode routing, clamps, migration) was tested and correct.
+`:app:assembleRelease` + 1,793 unit tests green. Rides versionCode 589 / 1.2.93 (the round is still
+unreleased, so no extra bump). NOT yet device-confirmed: the emoji slot's glyph and tap (the very
+thing this fixes), the auto-opened extra row + guarded close around the panel.
