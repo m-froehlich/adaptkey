@@ -487,11 +487,12 @@ class AdaptKeyboardView @JvmOverloads constructor(
     
     /**
      * D-507 (replacing D-59's `symbolKeyEnabled` boolean): what the bottom-row combined key's slot
-     * carries - the `?123` numeric/symbol toggle (the default), the emoji panel, or nothing. In the
-     * non-SYMBOL modes the key is drawn blank with taps ignored but its slot kept (D-59's original
-     * hidden treatment), and the symbol pages' `ABC` keys hide with it - they are unreachable without
+     * carries - the `?123` numeric/symbol toggle (the default), the emoji panel, or nothing. Only the
+     * "off" mode hides the key (drawn blank with taps ignored, slot kept - D-59's original hidden
+     * treatment); the emoji mode shows it with the emoji glyph and makes its tap open the panel. In
+     * both non-symbol modes the symbol pages' `ABC` keys hide - those pages are unreachable without
      * the `?123` key either way (the D-19 horizontal swipe, when enabled, is the one remaining way
-     * onto those pages, exactly as before this change).
+     * onto them, exactly as before this change).
      */
     var combinedKeyMode: CombinedKeyMode = CombinedKeyMode.DEFAULT
         set(value) {
@@ -2518,16 +2519,17 @@ class AdaptKeyboardView @JvmOverloads constructor(
     
     /**
      * D-59 / D-100 (correction), D-507: whether [key] occupies a slot that is currently disabled but must
-     * stay reserved rather than collapse - the combined key (its slot carries the `?123` function only in
-     * [CombinedKeyMode.SYMBOL]; "emoji" and "off" hide it exactly like the old boolean's off state), or
-     * either symbol page's `ABC` key (same condition). Page 1's `ABC` must keep its slot so the D-100
-     * column/grid layout's per-row cell count stays consistent; page 2's `ABC` keeps its slot too (a later
-     * correction) purely so its neighbouring `space` key doesn't grow to fill the gap and end up looking
-     * oversized - both now use this same reserved-but-inert treatment instead of D-93's original
-     * omit-and-grow.
+     * stay reserved rather than collapse - the combined key (only the "off" mode hides it; the emoji mode
+     * SHOWS it, drawn with the emoji glyph - it is the panel's second entry point, not a disabled slot),
+     * or either symbol page's `ABC` key (hidden in both non-symbol modes, since without the `?123` key
+     * the symbol layers are unreachable and their return keys have nothing to return to). Page 1's `ABC`
+     * must keep its slot so the D-100 column/grid layout's per-row cell count stays consistent; page 2's
+     * `ABC` keeps its slot too (a later correction) purely so its neighbouring `space` key doesn't grow
+     * to fill the gap and end up looking oversized - both now use this same reserved-but-inert treatment
+     * instead of D-93's original omit-and-grow.
      */
     private fun isHiddenKey(key: Key): Boolean {
-        return (key.code == KeyCode.SYMBOL && combinedKeyMode != CombinedKeyMode.SYMBOL) ||
+        return (key.code == KeyCode.SYMBOL && combinedKeyMode == CombinedKeyMode.OFF) ||
             (key.code == KeyCode.LETTERS && surface == InputSurface.SYMBOLS && combinedKeyMode != CombinedKeyMode.SYMBOL)
     }
     

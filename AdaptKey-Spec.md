@@ -128,9 +128,10 @@ straight-up release still types `,`). All proportions and spacings are user-conf
 A single key in the bottom row switches to the numeric/symbol layer (`?123`) - a tap opens it, a further
 tap on its "ABC" key returns to letters. What the key's slot carries is one three-valued setting
 (D-507's `CombinedKeyMode` - `?123` / Emoji / Off, default `?123`; a plain ListPreference per C-27, with
-D-59's former boolean migrated on load). In the non-`?123` modes the key is drawn blank and inert while
-its slot stays reserved rather than collapsing the row (D-59/D-100), and the symbol pages' "ABC" keys
-hide with it - they are unreachable without the `?123` key either way (the D-19 horizontal swipe, when
+D-59's former boolean migrated on load). In the Off mode the key is drawn blank and inert while its slot
+stays reserved rather than collapsing the row (D-59/D-100); the Emoji mode shows it with the emoji glyph
+as the panel's own second entry point. In both non-`?123` modes the symbol pages' "ABC" keys
+hide - they are unreachable without the `?123` key either way (the D-19 horizontal swipe, when
 enabled, remains the one way onto those pages). The emoji mode re-introduces the combined key's pre-§49
 emoji function as a dedicated mode of its own - deliberately as a **redundant second** entry point
 beside the always-visible emoji button in the swipe-up extra row (§14, R-01), which keeps needing no
