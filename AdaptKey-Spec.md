@@ -96,6 +96,20 @@ If a change would make any of these four no longer hold, stop and re-derive agai
 logs (see `AdaptKey-History.md`) rather than guessing - this class of bug reproduces silently and took real
 device logs, not code review alone, to find each time.
 
+**D-492 (paste shape) addendum:** the editor's own composing-span report (the callback's
+`candidatesStart`/`candidatesEnd`) is additionally recorded per echo (`lastEchoComposingSpanPresent`,
+unconditionally, default true) and consumed only additively, never destructively: a span the editor
+silently killed (captured repro: paste into an ordinary Chrome field, the debounced D-62 caret-move
+reclaim takes the pasted word's trailing fragment, the editor reports `candidates=[-1,-1]` at an
+unchanged, still-matching caret, and the next deferred `setComposingText` - the purely cosmetic
+`composingPreviewRunnable` rewrite - *inserts* at the caret, duplicating the word) is re-marked in place
+via `setComposingRegion` over a synchronously caret- and content-verified range
+(`ComposingSpanReMark.decide` - the same non-inserting idiom the reclaim itself uses), and an optional
+cosmetic rewrite is skipped when the situation is unverifiable (a false skip loses only a colour update;
+a false pass duplicates text). The mechanism restores ownership only where ground truth confirms the
+model's own token still sits verbatim at the believed anchor; it never tears a token down from the remote
+span report, keeping invariant 2 intact.
+
 ---
 
 ## 2. Layout & Key Assignment

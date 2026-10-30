@@ -24243,3 +24243,75 @@ locales). Rides versionCode 590 / 1.2.94. NOT yet device-confirmed - the §7 che
 `AdaptKey-Plan-Gesture-Calibration.md` covers it: slow language swipe, swallowed-space rescue, deliberate
 gesture entry, scaled field gestures at both profile extremes, profile apply + manual override surviving
 backup, fresh-install onboarding vs. untouched existing install.
+
+## §535 - D-492, paste shape: the editor can kill the composing span at a matching caret - span-liveness tracking, in-place re-mark, and a gate on the cosmetic rewrite (v1.2.95)
+
+The user captured a full `AdaptKeyJitter` diagnostic log of the reported "Dopplung nach Paste" (2026-10-30)
+in an ordinary Chrome text field - no login field involved, so D-492 Runde A's fix 0 gate never applied.
+The log shows the whole duplication live, one step per line:
+
+1. The paste lands externally: `onUpdateSelection old=[0,0] new=[15,15] candidates=[-1,-1] composing=""` -
+   composing is empty, so the debounced D-62 caret-move reclaim (`scheduleReclaimAndChipRefresh`) arms.
+2. ~100 ms later `reclaimSurroundingWord: before="Besuch"` - the reclaim takes the pasted text's trailing
+   word (anchor 9) via `setComposingRegion(9,15)` + `setComposingText`, and `updateComposing()` - as it
+   always does - schedules the purely cosmetic `composingPreviewRunnable` at +200 ms
+   (`EXPENSIVE_SUGGESTION_DELAY_MS`) to apply the S-05 highlight colour. Suggestions render [Besucht, ...].
+3. The own-edit echo confirms the span: `candidates=[9,15]`, caret [15,15] = expected → early return.
+4. **~170 ms after the reclaim, Chrome kills the editor-side composing span**: echo
+   `candidates=[-1,-1] composing="Besuch"` **at an unchanged, still-matching caret** [15,15]. The caret
+   check - the only decision `onUpdateSelection` makes on a matching callback - keeps the now-stale model.
+   Worse for the original fix-1 sketch: the *text* is still intact at the anchor, so even a synchronous
+   content verification would have passed here. The one signal that distinguishes the shape is the span
+   report itself.
+5. The preview runnable fires, all its guards pass (same token, live `InputConnection`, unchanged
+   `expensiveSuggestionSeq`), and its application callback calls `updateComposing()` →
+   `setComposingText("Besuch")`. **The editor, having no live span, inserts the text at the caret instead
+   of replacing anything**: "Besuch**Besuch**", span [15,21], caret jumps to [21,21].
+6. The next echo trips the EXTERNAL branch, whose `finishComposingText()` commits the inserted copy
+   outright. The reclaim chip then claims the doubled "BesuchBesuch", the bar offers "Besuchbesuch", and
+   the user deleted six characters by hand (the six DELETE taps trailing the log).
+
+**The fix (three additive mechanisms, no existing decision changed):**
+
+- **Span-liveness tracking.** The echo's `candidatesStart/candidatesEnd` pair is recorded per callback
+  into `lastEchoComposingSpanPresent`, unconditionally alongside `selectionCollapsed`/`liveSelectionEnd`
+  (the D-149 pattern). It defaults to true, so neither consumer below can fire from absence of evidence;
+  and it is never allowed to decide anything *destructive* (spec invariant 2 stands - a stale no-span
+  report cannot wipe a live token through this mechanism, because nothing here tears down).
+- **In-place re-mark** (`reMarkComposingSpanIfKilled`, wired into the matching-caret early return of
+  `onUpdateSelection`). When the last echo reported no span while the model still owns a token, one
+  synchronous `getExtractedText` read verifies BOTH the caret (`SelectionTruth`, unchanged predicate) and
+  the content (the token still sitting verbatim at the believed anchor, startOffset-windowed correctly
+  per D-87); on success ownership is re-marked with `setComposingRegion(anchor, anchor + length)` - the
+  same idiom reclaimSurroundingWord (D-182) and the D-383 split branch already use, which never inserts
+  or deletes a character, so it can neither duplicate nor lose text, and it is harmless against a stale
+  no-span report (re-marking the range a live span already covers is a re-assert). The keystroke path is
+  protected transitively: the re-mark runs on the kill echo itself, restoring a live span before any
+  later write. All decision logic is the pure `ComposingSpanReMark.decide` (13 unit tests: the captured
+  repro shape, the conservative defaults, windowed extraction, caret/content/window mismatches, the
+  D-62 mid-word edit point, the range contract).
+- **The cosmetic gate.** The preview runnable's application callback now runs the same helper first: a
+  verified-dead span is restored, and when the situation is unverifiable the rewrite is skipped entirely.
+  The cost asymmetry is the safety argument: a false skip loses only a colour update; a false pass
+  duplicates text.
+
+Invariant accounting against the spec §1 guiding principle: (1) `composingAnchor` is still resolved for
+every composing token by the reclaim - unchanged; (2) no decision is made from the remote candidates
+alone - the re-mark additionally requires the synchronous content/caret verification, and nothing is ever
+torn down from the span report; (3) the EXTERNAL branch and its ground-truth protocol are untouched -
+the re-mark lives entirely on the matching-caret path; (4) `setComposingRegion` is delete/reinsert-free
+(D-383's property), so a host that tears down its `InputConnection` mid-sequence cannot lose the word.
+
+**Deliberately still open (D-492's own work order, unchanged):** the credential-manager fill's
+*content-mismatch* hole (refill with a different value at the matching caret: the content check fails,
+the helper conservatively skips, and the stale model survives a subsequent keystroke - the same stale
+model the log-based analysis already documented) still needs fix 1's destructive-EXTERNAL routing
+decision, which is a genuine tear-down from candidates+verified-content evidence and deserves its own
+weighing; fix 4's `CredentialStore.learn()` guard likewise. Also unchanged: the race where a keystroke is
+processed before the kill echo arrives (inherent to the asynchronous echo design; the same residual the
+§101 mechanism always had). Device confirmation still owed: paste into a Chrome field, wait out the
+~200 ms preview window without typing, confirm no doubling (with and without typing afterwards); plus
+the standing credential-flow repro that Runde B's remaining work is waiting on.
+
+`:app:assembleRelease` + 1,814 unit tests green (new: ComposingSpanReMarkTest's thirteen). Rides
+versionCode 591 / 1.2.95.

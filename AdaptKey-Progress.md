@@ -637,13 +637,21 @@ non-trivial changes).
    user had to delete 6 characters by hand. Two lessons for Runde B: (1) the duplicating write can be the
    purely cosmetic, deferred one (composingPreviewRunnable's application callback) - no keystroke or
    Enter involved at all; (2) span liveness - the candidates echo - is the only signal that distinguishes
-   this shape; content verification cannot. Proposed mechanisms (user's go pending): record the last
-   echo's span state unconditionally (D-149 pattern); skip the cosmetic rewrite when composing is
-   non-empty and the last echo reported no span (asymmetric cost: a false skip loses only a colour
-   update, a false pass duplicates text); and/or, on a no-span echo with a matching caret and a
-   content-verified anchor, re-mark ownership in place via setComposingRegion() (never rewrite/insert,
-   no tear-down decision from remote candidates - invariant-2-safe) so the NEXT write, keystroke
-   included, replaces instead of inserting.
+   this shape; content verification cannot.
+   **PASTE SHAPE IMPLEMENTED (2026-10-30, v1.2.95 - the third opening's mechanism; see §535):** the
+   echo's span state is recorded per callback (`lastEchoComposingSpanPresent`, D-149 pattern, default
+   true, never destructive); a killed span is re-marked in place via `setComposingRegion` after a
+   synchronous caret+content verification (`ComposingSpanReMark.decide`, pure, 13 unit tests;
+   `reMarkComposingSpanIfKilled` wired into the matching-caret early return of `onUpdateSelection`), and
+   the cosmetic `composingPreviewRunnable` rewrite is gated on the same helper (skip when unverifiable -
+   a false skip loses only a colour update, a false pass duplicates text). The keystroke path is
+   protected transitively (the re-mark restores the span on the kill echo itself). Invariant accounting
+   in §535. 1,814 unit tests green; `:app:assembleRelease` green. NOT yet device-confirmed (paste into
+   Chrome, wait out the preview window, confirm no doubling). **Still open from Runde B:** the
+   credential-fill *content-mismatch* hole (refill with a different value at a matching caret - the
+   re-mark's content check fails conservatively and the stale model survives a keystroke) needs fix 1's
+   destructive-EXTERNAL routing decision; fix 4's `learn()` guard likewise; the captured Username-flow
+   log that work order asks for is still the opening condition.
    **ROUND A IMPLEMENTED (2026-10-28, v1.2.88/v1.2.89 - fixes 0 and 2-refinement from the list below):**
   the automatic debounced caret reclaim no longer runs in login-relevant fields
   (`reclaimSuppressedForFieldKind`, mirroring `reclaimPossible`'s own exclusion; the Shift-only rearm
