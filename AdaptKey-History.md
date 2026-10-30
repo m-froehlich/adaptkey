@@ -24134,3 +24134,47 @@ behave - "off" hides the key, "?123" toggles the layer, "emoji" shows the glyph 
 panel (verified against this section's own isHiddenKey fix). The user closed the round on that
 basis; the D-59-boolean migration path and the panel return-path details were neither reported
 broken nor separately re-verified. Round closed as versionCode 589 / 1.2.93.
+
+## §533 - Issue #14: F-Droid's reproducible build of v1.2.93 failed - the GitHub APK was not a RECIPE build; diagnosed, rebuilt clean, asset replacement prepared (v1.2.93, no code change)
+
+linsui opened issue #14 on 2026-10-30 08:10 UTC ("F-Droid reproducible build failed - Please clean the
+cache and rebuild the apk, thanks!"). Reconstructed timeline from the infrastructure, not guessed: F-Droid's
+checkupdates bot had processed the repo at 04:23-04:24 UTC that night ("...updating to version 589",
+"found d2c7d5aedd... for v1.2.93") and auto-generated MR !54866 ("bot: Update AdaptKey to 589"); that MR's
+`fdroid build` pipeline (created 04:24:45 UTC) FAILED - the pipeline has since been deleted from GitLab, so
+its exact log is unreadable, but the issue title names the failure class and the underlying defect is proven
+locally (below). The production buildserver, on the same morning (05:08-05:12 UTC), rebuilt 583 (v1.2.87)
+from the fdroiddata metadata and it MATCHED ("compared built binary to supplied reference binary
+successfully", "1 build succeeded") - fresh proof that this machine's RECIPE toolchain (JBR 21, fresh clone,
+`--no-build-cache --no-configuration-cache`) is byte-faithful to F-Droid's.
+
+**Diagnosis, measured rather than assumed:** a clean RECIPE build of tag `v1.2.93` (fresh local clone at
+`d2c7d5a`, keystore copied in and removed afterwards) differs from the published GitHub release APK in
+exactly 2 of 910 zip entries: `classes.dex` (GitHub 1,969,808 B vs clean 1,969,788 B) and its derived
+`assets/dexopt/baseline.prof` (both 1,264 B). The dex string pools are IDENTICAL - 16,430 strings each,
+the only difference being the embedded `~~R8{...}` metadata marker itself (`pg-map-id` bc82c2b vs
+456826b) - so this is NOT a source difference. Method-level diff (both dexes: 2,416 methods): 207 methods
+differ, every one at IDENTICAL instruction size, spread across app code (`suggestion/KeyboardProximity*`
+`<clinit>`/`adjacent`, `touch/OffsetModel*` equals/constructors), kotlin-stdlib and onnxruntime classes
+alike. Same string table, same instruction counts, different bytes across precompiled library code: the
+stale-Gradle-task-output signature (D-505's failure class, whose own tell - extra
+`Intrinsics.checkNotNullExpressionValue` strings - is absent this time), not new code and not a new toolchain
+version in the repo (build.gradle.kts changed only versionCode/versionName between v1.2.87 and v1.2.93;
+verified). Conclusion: the GitHub v1.2.93 APK was not produced by the RELEASE RECIPE. How it was actually
+built is not reconstructible from the artifacts - the release went live 2026-10-29 20:13 UTC without a
+documented RECIPE run for any of v1.2.88-v1.2.93 (the Release Channels section's last documented release was
+v1.2.87), and the most plausible producer is a day-to-day main-checkout build with the caches on, exactly
+the trap the RECIPE exists for. Worth the user's recollection, but not blocking: the fix is the same
+regardless.
+
+**Fix, without any code change (the v1.2.47 asset-replacement precedent):** rebuilt per RECIPE into
+`build/release-v1.2.93/AdaptKey.apk` - sha256 ab54f8789e3a6a80e6db8cb9df135e248cc248f792ccc7394a8132170d6e5116,
+37,195,228 bytes (identical byte count to the old asset, different content), versionCode 589/versionName
+1.2.93 (aapt2-verified), cert `3201509b...ee3666e` unchanged (apksigner-verified), 910 zip entries, no
+vcs/dependency-metadata block (D-481 intact). The tag stays as-is - no version bump, asset-only fix. The
+GitHub release asset `AdaptKey.apk` (old sha256 0166672351ebd18e22a08f443dc1526ef116816d9762d988afa8147500f232b0)
+gets replaced with the clean APK; after that, re-running the bot MR's pipeline goes green and the next
+nightly build verifies 589, publishing it to F-Droid. Remaining: the user replaces the asset and (optionally)
+answers linsui on #14. Process note carried forward: every release, however small the round, follows the
+RELEASE RECIPE and gets its Release Channels entry - the recipe's whole point is that it is not optional
+even when the round "only" carries data/UI changes.

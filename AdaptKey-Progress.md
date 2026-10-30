@@ -353,6 +353,27 @@ in every prompt.
 - **2026-10-26: v1.2.80 (`versionCode` 576) released by RELEASE RECIPE** - first release since v1.2.70, so F-Droid/GitHub jump 566 -> 576 in one step (v1.2.71-78 were never tagged/released; untagged-intermediate precedent). Tag `v1.2.80` (annotated, "AdaptKey 1.2.80") on `6833cfb`, the round's bump commit. Fresh local clone at the tag, `--no-build-cache --no-configuration-cache`, keystore copied in and removed afterwards; APK sha256 ca65ee5a...b42ee, cert `3201509b...ee3666e` unchanged (apksigner-verified), 910 zip entries, no vcs/dependency-metadata block. GitHub release `v1.2.80` live with the asset exactly `AdaptKey.apk` (37,154,456 bytes); F-Droid's bot is expected to pick the tag up automatically (`AutoUpdateMode: Version`). The release carries the external PR #11 gesture toggles (§520) plus everything from v1.2.71 on.
 - **2026-10-26: v1.2.82 (`versionCode` 578) released by RELEASE RECIPE** - the D-502 discoverability round (§521+§522). v1.2.81 (577) rides along untagged (untagged-intermediate precedent). Tag `v1.2.82` (annotated, "AdaptKey 1.2.82") on `93a463b`, the round's bump commit; pushed together with the device-confirmation docs commit. Fresh local clone at the tag (`build/release-v1.2.82/`, keystore copied in and removed afterwards), `--no-build-cache --no-configuration-cache`; APK sha256 1df4b0ed...dfe98, cert `3201509b...ee3666e` unchanged (apksigner-verified), 910 zip entries, no vcs/dependency-metadata block. GitHub release `v1.2.82` live with the asset exactly `AdaptKey.apk` (37,154,456 bytes, re-downloaded and sha256-verified byte-identical to the local build). F-Droid's bot is expected to pick the tag up automatically (`AutoUpdateMode: Version`).
 - **2026-10-27: v1.2.87 (`versionCode` 583) released by RELEASE RECIPE** - the D-503 round (§523-§526). v1.2.83-86 ride along untagged (untagged-intermediate precedent). Tag `v1.2.87` (annotated, "AdaptKey 1.2.87") on `63c6657`, the round's bump commit; pushed together with the book-keeping docs commit (the 42nd pruning pass, `63684d2`). Fresh origin clone at the tag (`build/release-v1.2.87/`, keystore copied in and removed afterwards), `--no-build-cache --no-configuration-cache`; APK sha256 e7b9d377...787, cert `3201509b...ee3666e` unchanged (apksigner-verified), 910 zip entries, no vcs/dependency-metadata block. GitHub release `v1.2.87` live with the asset exactly `AdaptKey.apk` (37,170,840 bytes, re-downloaded and sha256-verified byte-identical to the local build). F-Droid's bot is expected to pick the tag up automatically (`AutoUpdateMode: Version`).
+- **2026-10-29/30: v1.2.93 (`versionCode` 589) released - but its first GitHub APK was NOT a RELEASE RECIPE**
+  **build; F-Droid's reproducible check failed (issue #14, linsui, 2026-10-30) and the asset was replaced.**
+  The D-505/D-506/D-507 round (§528-§532; v1.2.88-92 ride along untagged, untagged-intermediate precedent).
+  Tag `v1.2.93` (annotated) on `d2c7d5a`, the round's docs commit; the GitHub release went live 2026-10-29
+  20:13 UTC WITHOUT a documented RECIPE run, and the uploaded APK did not match a clean build: of 910 zip
+  entries exactly two differed (`classes.dex` 1,969,808 vs 1,969,788 B, plus its derived
+  `assets/dexopt/baseline.prof`), with identical string pools (16,430 strings; only the embedded `~~R8`
+  `pg-map-id` marker differs) and 207 of 2,416 methods differing at identical instruction sizes, spread
+  across app, kotlin-stdlib AND onnxruntime code - the stale-Gradle-task-output signature (D-505's failure
+  class, minus the Intrinsics marker), not a source difference. F-Droid's side: the checkupdates bot
+  generated MR !54866 ("Update AdaptKey to 589") 2026-10-30 04:24 UTC and its `fdroid build` pipeline failed
+  (the log has since been deleted from GitLab; the underlying mismatch is proven locally); the production
+  buildserver, meanwhile, rebuilt 583 the same morning and it MATCHED - fresh proof that the local RECIPE
+  toolchain is byte-faithful to F-Droid's. Fix without any code change: rebuilt per RECIPE (fresh clone at
+  `d2c7d5a`, `--no-build-cache --no-configuration-cache`, keystore copied in and removed afterwards) to
+  `build/release-v1.2.93/AdaptKey.apk` - sha256 ab54f878...d6e5116, 37,195,228 bytes, versionCode 589
+  (aapt2-verified), cert `3201509b...ee3666e` unchanged (apksigner-verified), 910 zip entries, no
+  vcs/dependency-metadata block. The GitHub release asset `AdaptKey.apk` gets replaced with exactly this APK
+  (old asset sha256 0166672351...32b0); the tag stays as-is, no version bump (asset-only fix, the v1.2.47
+  precedent). After the replacement and a green re-run of the bot MR's pipeline, the next nightly verifies
+  589. See History §533.
 - **Still open:**
   - The next release: tag it and follow the RELEASE RECIPE above - F-Droid picks up new tags automatically
     (`AutoUpdateMode: Version`, `UpdateCheckMode: Tags`), no new MR needed.
