@@ -472,6 +472,21 @@ class AdaptKeyService : InputMethodService() {
     // own note for why it is only actually applied while a session is active, not read here).
     private var liveSelectionEnd = 0
     
+    // D-492 (2026-10-30 paste shape): whether the most recent onUpdateSelection echo reported a live
+    // editor-side composing span (candidatesStart/candidatesEnd both >= 0). Recorded unconditionally like
+    // selectionCollapsed/liveSelectionEnd above, so it always reflects the most recently confirmed
+    // reality regardless of how the callback is handled. This is the ONLY signal that distinguishes
+    // "our span is still live" from "the editor killed our span" when the caret still matches the
+    // expected position (the captured paste shape: candidates=[9,15] -> [-1,-1] at an unchanged caret -
+    // the caret check alone kept a stale model, and the next setComposingText INSERTED at the caret
+    // instead of replacing). Never used to tear anything down (spec invariant 2 - remote candidates are
+    // not trusted to decide destructively); only consumed by reMarkComposingSpanIfKilled(), which
+    // restores ownership additively after a synchronous content/caret verification, and by the cosmetic
+    // rewrite gate in composingPreviewRunnable. Defaults to true: until an echo says otherwise, the
+    // conservative assumption is a live span, so neither the gate nor the re-mark can fire from stale
+    // absence of evidence.
+    private var lastEchoComposingSpanPresent = true
+    
     // composingCaseLocked marks a token whose casing the user fixed explicitly (G-05 double-tap Shift
     // toggle), so it is committed verbatim (bypassing autocorrect and §6).
     private var composingCaseLocked = false
@@ -843,15 +858,29 @@ class AdaptKeyService : InputMethodService() {
             handler.post {
                 val freshIc = currentInputConnection
                 if (seq == expensiveSuggestionSeq.get() && freshIc != null && composing.toString() == expected) {
-                    composingPreviewFor = expected
-                    composingPreview = ComposingPreview(split, highlighted)
-                    updateComposing(freshIc)
-                    // D-238/D-352: the split-suggestion chip is read directly from composingPreview inside
-                    // refreshSuggestions() - without this, it would only appear once the *next* keystroke
-                    // happened to call refreshSuggestions() again, not as soon as this debounced result
-                    // actually lands.
-                    if (needsSplitChipRefresh) {
-                        refreshSuggestions()
+                    // D-492 (2026-10-30 paste shape): this rewrite is purely cosmetic (the same text,
+                    // re-sent only to apply colour styling), but setComposingText over a dead editor-side
+                    // span INSERTS at the caret - the captured duplication. reMarkComposingSpanIfKilled()
+                    // restores a verified-dead span first; when it cannot (unverifiable no-span echo),
+                    // the rewrite is skipped: a false skip loses only a colour update, a false pass
+                    // duplicates text. A live-span or empty-composing state passes through unchanged.
+                    if (reMarkComposingSpanIfKilled(freshIc)) {
+                        composingPreviewFor = expected
+                        composingPreview = ComposingPreview(split, highlighted)
+                        updateComposing(freshIc)
+                        // D-238/D-352: the split-suggestion chip is read directly from composingPreview inside
+                        // refreshSuggestions() - without this, it would only appear once the *next* keystroke
+                        // happened to call refreshSuggestions() again, not as soon as this debounced result
+                        // actually lands.
+                        if (needsSplitChipRefresh) {
+                            refreshSuggestions()
+                        }
+                    } else {
+                        diag(
+                            "AdaptKeyJitter",
+                            "composingPreviewRunnable: styled rewrite skipped - editor span dead and not restorable " +
+                                "(setComposingText would insert), token=\"$expected\""
+                        )
                     }
                 }
             }
@@ -1882,6 +1911,10 @@ class AdaptKeyService : InputMethodService() {
         // reflects the most recently confirmed reality regardless of how this particular call is handled.
         selectionCollapsed = newSelStart == newSelEnd
         liveSelectionEnd = newSelEnd
+        // D-492 (2026-10-30 paste shape): the editor's own composing-span report, recorded the same
+        // unconditional way - see lastEchoComposingSpanPresent's own field KDoc for what consumes it
+        // (and what must never: any destructive decision, per spec invariant 2).
+        lastEchoComposingSpanPresent = candidatesStart >= 0 && candidatesEnd >= 0
         // D-401-followup (bug fix, superseded): every setSelection() this gesture issues - character-based
         // or, since D-401-followup's DPAD removal, line-based too - is applied synchronously and computed
         // entirely by this code itself, so cursorControlPosition is never resynced from this callback at
@@ -1942,6 +1975,13 @@ class AdaptKeyService : InputMethodService() {
         }
         val expected = composingAnchor + composingCursor
         if (SelectionTruth.isAtExpectedCaret(expected, newSelStart, newSelEnd)) {
+            // D-492 (2026-10-30 paste shape): a matching caret no longer proves the span is alive - the
+            // captured paste shape killed the span (echo candidates=[-1,-1]) at an unchanged, matching
+            // caret, and the stale model's next write duplicated text. Restore ownership additively when
+            // the echo says the span is gone; the helper verifies synchronously before touching anything
+            // and never tears down (spec invariant 2). On the overwhelmingly common paths (live span,
+            // empty composing, unknown anchor) this is one boolean check.
+            reMarkComposingSpanIfKilled(currentInputConnection)
             return
         }
         // §101 (D-139): a mismatching callback alone proves nothing - callbacks lag behind the IME's own
@@ -2001,6 +2041,72 @@ class AdaptKeyService : InputMethodService() {
         // while composing is already empty). D-313 never covered this one - Shift was left exactly as it
         // was before the move, the same class of stale-state bug D-313 fixed for the other path.
         armShiftForNextWord(ic)
+    }
+    
+    /**
+     * D-492 (2026-10-30 paste shape): restores composing ownership in place when the editor has silently
+     * killed the span the model still believes it owns. The captured repro: a paste into an ordinary
+     * Chrome field, the debounced D-62 caret-move reclaim took the pasted word's trailing fragment, the
+     * editor then reported `candidates=[-1,-1]` at an *unchanged, matching* caret (the early return above
+     * kept the stale model - the text itself was still intact at the anchor, so a content-only check
+     * would have passed too), and the next `setComposingText` - here the purely cosmetic
+     * [composingPreviewRunnable] rewrite, 200 ms later - *inserted* at the caret instead of replacing:
+     * "BesuchBesuch", committed outright by the EXTERNAL branch's finishComposingText().
+     * 
+     * All decision logic lives in the pure [ComposingSpanReMark.decide]. On its [ComposingSpanReMark.Decision.ReMark]
+     * verdict this re-marks the verified absolute range via `setComposingRegion` - the same established
+     * idiom reclaimSurroundingWord (D-182) and splitComposingAtCaretAndCommit's D-383 branch already use:
+     * it never inserts or deletes a character, so it can neither duplicate nor lose text, and it is safe
+     * even against a stale no-span report (re-marking the range a live span already covers is a no-op
+     * re-assert). A [ComposingSpanReMark.Decision.Unverifiable] verdict changes nothing - the caller
+     * (the cosmetic gate below) must then skip any *optional* composing-text write instead, since
+     * re-sending composing text over a dead span inserts it. Nothing here ever tears the token down:
+     * a mismatching/external change keeps flowing through the unchanged EXTERNAL branch above (spec
+     * invariant 2 - the remote span report is never allowed to decide destructively).
+     * 
+     * @return true when a subsequent replacing `setComposingText` is safe (span live, or restored here);
+     *   false when the situation is unverifiable and optional writes must be skipped.
+     */
+    private fun reMarkComposingSpanIfKilled(ic: InputConnection?): Boolean {
+        if (ic == null) {
+            return false
+        }
+        val extracted = if (composing.isNotEmpty() && composingAnchor >= 0 && !lastEchoComposingSpanPresent) {
+            ic.getExtractedText(ExtractedTextRequest(), 0)
+        } else {
+            null
+        }
+        val decision = ComposingSpanReMark.decide(
+            composing = composing,
+            composingAnchor = composingAnchor,
+            expectedCaret = composingAnchor + composingCursor,
+            lastEchoSpanPresent = lastEchoComposingSpanPresent,
+            extractedStartOffset = extracted?.startOffset ?: 0,
+            extractedText = extracted?.text ?: "",
+            extractedSelStart = extracted?.selectionStart ?: 0,
+            extractedSelEnd = extracted?.selectionEnd ?: 0
+        )
+        return when (decision) {
+            is ComposingSpanReMark.Decision.NothingToDo -> true
+            is ComposingSpanReMark.Decision.Unverifiable -> {
+                diag(
+                    "AdaptKeyJitter",
+                    "reMarkComposingSpanIfKilled: no-span echo not verifiable against ground truth " +
+                        "(composing=\"$composing\" anchor=$composingAnchor) - conservative skip"
+                )
+                false
+            }
+            is ComposingSpanReMark.Decision.ReMark -> {
+                diag(
+                    "AdaptKeyJitter",
+                    "reMarkComposingSpanIfKilled: editor reported no span while \"$composing\" is intact " +
+                        "at anchor=$composingAnchor - re-marking [${decision.start},${decision.end})"
+                )
+                ic.setComposingRegion(decision.start, decision.end)
+                lastEchoComposingSpanPresent = true
+                true
+            }
+        }
     }
     
     /**
