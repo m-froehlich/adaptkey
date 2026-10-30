@@ -66,6 +66,64 @@
             android:layout_marginTop="8dp"
             android:text="@string/t04_pattern_left_index" />
 
+        <!-- D-508: the input-tempo calibration profiles, asked right where onboarding already asks "how
+             do you type". Apply-once: tapping a tempo writes the profiled delay/swipe values into the
+             existing preferences (no persistent profile state); there is deliberately no highlight of a
+             "current" profile, since the honest answer lives in the sliders themselves. -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="24dp"
+            android:background="?android:attr/listDivider" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="16dp"
+            android:textStyle="bold"
+            android:text="@string/d508_profile_title" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:textSize="16sp"
+            android:lineSpacingExtra="2dp"
+            android:text="@string/d508_profile_body" />
+
+        <Button
+            android:id="@+id/d508_profile_standard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/d508_profile_standard" />
+
+        <Button
+            android:id="@+id/d508_profile_deliberate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/d508_profile_deliberate" />
+
+        <Button
+            android:id="@+id/d508_profile_quick"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/d508_profile_quick" />
+
         <!-- D-485: exactly one of these two is visible (see CalibrationActivity.updateExitButtons()): "Skip"
              only while onboarding has not chosen a style yet, otherwise the plain "OK" that just closes. -->
         <Button

@@ -691,6 +691,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
      */
     var fieldSwipeScaleFactor: Float = 1f
     
+    /**
+     * D-508: how long the backspace key must be held before the accelerating repeat delete (D-07) fires
+     * its first tick - deliberately the same default as [BackspaceRepeat.INITIAL_DELAY_MS], which this
+     * setting makes user-configurable (and the D-508 profiles vary). Set from the settings.
+     */
+    var backspaceRepeatInitialDelayMs: Long = BackspaceRepeat.INITIAL_DELAY_MS
+    
     // D-401: the space-bar cursor/selection-control gesture's own running state - see armCursorControl()/
     // handleCursorControlTouch() and CursorControlGesture's own class KDoc for the full mechanism. Reuses
     // downX/downY as its own origin (T-01's already-recorded initial contact point) rather than a second,
@@ -2214,7 +2221,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
             }
         }
         backspaceRepeatRunnable = runnable
-        longPressHandler.postDelayed(runnable, BackspaceRepeat.INITIAL_DELAY_MS)
+        longPressHandler.postDelayed(runnable, backspaceRepeatInitialDelayMs)
     }
     
     private fun cancelBackspaceRepeat() {

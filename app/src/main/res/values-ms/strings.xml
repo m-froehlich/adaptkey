@@ -120,6 +120,15 @@
     <string name="d508_space_swipe_scale_summary">Sejauh mana leret pada bar ruang perlu dilakukan untuk menukar bahasa input (100% = lalai).</string>
     <string name="d508_field_swipe_scale_title">Jarak gerak isyarat</string>
     <string name="d508_field_swipe_scale_summary">Sejauh mana gerak isyarat papan kekunci perlu dilakukan: ke bawah untuk menutup, ke sisi untuk tukar halaman, leret pada backspace untuk padam perkataan (100% = lalai).</string>
+    <string name="d508_profile_title">Profil tempo taip</string>
+    <string name="d508_profile_summary">Menggunakan pratetap untuk yang menaip perlahan atau pantas: tetapan di bawah untuk tekan lama, ketuk dua, jarak leret dan pengulangan backspace.</string>
+    <string name="d508_profile_body">Seberapa pantas anda menaip? Ini menetapkan ambang tahan dan leret sewajarnya - semuanya kekal boleh diubah dalam tetapan.</string>
+    <string name="d508_profile_standard">Standard</string>
+    <string name="d508_profile_deliberate">Teratur / perlahan</string>
+    <string name="d508_profile_quick">Pantas</string>
+    <string name="d508_profile_applied">Profil digunakan</string>
+    <string name="d508_backspace_repeat_initial_delay_title">Jeda pengulangan backspace</string>
+    <string name="d508_backspace_repeat_initial_delay_summary">Berapa lama backspace perlu ditahan sebelum mula berulang, dalam ms.</string>
     <string name="d401_hint_stage1">Seret untuk menggerakkan kursor. Diam untuk memilih.</string>
     <string name="d401_hint_stage2">Seret untuk memilih teks. Ketik untuk selesai.</string>
     <string name="c01_shift_title">Lebar tambahan Shift</string>

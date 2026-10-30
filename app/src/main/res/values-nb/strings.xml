@@ -120,6 +120,15 @@
     <string name="d508_space_swipe_scale_summary">Hvor langt stryket på mellomromstasten må gå for å bytte inndataspråk (100 % = standard).</string>
     <string name="d508_field_swipe_scale_title">Strykeavstand for bevegelser</string>
     <string name="d508_field_swipe_scale_summary">Hvor langt tastaturets bevegelser må gå: nedover for å lukke, til siden for sideskifte, stryk på slettetast for å slette et ord (100 % = standard).</string>
+    <string name="d508_profile_title">Skrivetempo-profil</string>
+    <string name="d508_profile_summary">Bruker en forhåndsinnstilling for langsomme eller raske: innstillingene nedenfor for langt trykk, dobbelttrykk, strykeavstand og slettetast-gjentakelse.</string>
+    <string name="d508_profile_body">Hvor raskt skriver du? Dette setter holde- og stryketersklene deretter - alt forblir justerbart i innstillingene.</string>
+    <string name="d508_profile_standard">Standard</string>
+    <string name="d508_profile_deliberate">Overveid / langsom</string>
+    <string name="d508_profile_quick">Rask</string>
+    <string name="d508_profile_applied">Profil brukt</string>
+    <string name="d508_backspace_repeat_initial_delay_title">Slettetast-gjentakelsesforsinkelse</string>
+    <string name="d508_backspace_repeat_initial_delay_summary">Hvor lenge slettetasten må holdes nede før gjentakelsen begynner, i ms.</string>
     <string name="d401_hint_stage1">Dra for å flytte markøren. Hold deg i ro for å markere.</string>
     <string name="d401_hint_stage2">Dra for å markere tekst. Trykk for å avslutte.</string>
     <string name="c01_shift_title">Ekstra bredde for Skift</string>

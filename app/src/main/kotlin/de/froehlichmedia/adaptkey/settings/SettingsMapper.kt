@@ -76,6 +76,7 @@ data class RawSettings(
     val swipeDownDismissEnabled: Boolean = true,
     val spaceSwipeScalePercent: Int = AdaptSettings.DEFAULT_SPACE_SWIPE_SCALE,
     val fieldSwipeScalePercent: Int = AdaptSettings.DEFAULT_FIELD_SWIPE_SCALE,
+    val backspaceRepeatInitialDelayMs: Long = AdaptSettings.DEFAULT_BACKSPACE_REPEAT_INITIAL_DELAY_MS,
     val bottomInsetModeKey: String? = null
 )
 
@@ -122,6 +123,12 @@ object SettingsMapper {
     
     /** D-508 maximum swipe travel scaling (space and field) in percent. */
     const val MAX_SWIPE_SCALE_PERCENT = 160
+    
+    /** D-508 minimum backspace repeat initial delay in ms. */
+    const val MIN_BACKSPACE_REPEAT_INITIAL_DELAY_MS = 200L
+    
+    /** D-508 maximum backspace repeat initial delay in ms. */
+    const val MAX_BACKSPACE_REPEAT_INITIAL_DELAY_MS = 800L
     
     /** D-55 minimum extra row spacing in dp. */
     const val MIN_EXTRA_SPACING_DP = 0
@@ -357,6 +364,9 @@ object SettingsMapper {
             swipeDownDismissEnabled = raw.swipeDownDismissEnabled,
             spaceSwipeScalePercent = raw.spaceSwipeScalePercent.coerceIn(MIN_SWIPE_SCALE_PERCENT, MAX_SWIPE_SCALE_PERCENT),
             fieldSwipeScalePercent = raw.fieldSwipeScalePercent.coerceIn(MIN_SWIPE_SCALE_PERCENT, MAX_SWIPE_SCALE_PERCENT),
+            backspaceRepeatInitialDelayMs = raw.backspaceRepeatInitialDelayMs.coerceIn(
+                MIN_BACKSPACE_REPEAT_INITIAL_DELAY_MS, MAX_BACKSPACE_REPEAT_INITIAL_DELAY_MS
+            ),
             bottomInsetMode = BottomInsetMode.fromKey(raw.bottomInsetModeKey)
         )
     }

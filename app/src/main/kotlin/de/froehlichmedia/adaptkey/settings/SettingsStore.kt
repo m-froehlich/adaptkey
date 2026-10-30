@@ -85,6 +85,7 @@ object SettingsStore {
     const val KEY_SWIPE_DOWN_DISMISS_ENABLED = "g03_swipe_down_dismiss"
     const val KEY_SPACE_SWIPE_SCALE = "d508_space_swipe_scale"
     const val KEY_FIELD_SWIPE_SCALE = "d508_field_swipe_scale"
+    const val KEY_BACKSPACE_REPEAT_INITIAL_DELAY = "d508_backspace_repeat_initial_delay_ms"
     const val KEY_BOTTOM_INSET_MODE = "d486_bottom_inset_mode"
     
     /**
@@ -167,6 +168,9 @@ object SettingsStore {
     /** Default stored integer for the D-508 field-swipe travel scaling slider (100 %). */
     const val DEF_FIELD_SWIPE_SCALE = AdaptSettings.DEFAULT_FIELD_SWIPE_SCALE
     
+    /** Default stored integer for the D-508 backspace repeat initial delay slider (400 ms). */
+    val DEF_BACKSPACE_REPEAT_INITIAL_DELAY = AdaptSettings.DEFAULT_BACKSPACE_REPEAT_INITIAL_DELAY_MS.toInt()
+    
     /** Default stored integer for the D-177 pending-blacklist expiry slider (7 days). */
     const val DEF_PENDING_BLACKLIST_EXPIRY_DAYS = AdaptSettings.DEFAULT_PENDING_BLACKLIST_EXPIRY_DAYS
     
@@ -237,6 +241,7 @@ object SettingsStore {
             swipeDownDismissEnabled = p.getBoolean(KEY_SWIPE_DOWN_DISMISS_ENABLED, DEF_SWIPE_DOWN_DISMISS_ENABLED),
             spaceSwipeScalePercent = p.getInt(KEY_SPACE_SWIPE_SCALE, DEF_SPACE_SWIPE_SCALE),
             fieldSwipeScalePercent = p.getInt(KEY_FIELD_SWIPE_SCALE, DEF_FIELD_SWIPE_SCALE),
+            backspaceRepeatInitialDelayMs = p.getInt(KEY_BACKSPACE_REPEAT_INITIAL_DELAY, DEF_BACKSPACE_REPEAT_INITIAL_DELAY).toLong(),
             bottomInsetModeKey = p.getString(KEY_BOTTOM_INSET_MODE, null)
         )
         return SettingsMapper.toAdaptSettings(raw)
@@ -401,6 +406,7 @@ object SettingsStore {
         KEY_SWIPE_DOWN_DISMISS_ENABLED,
         KEY_SPACE_SWIPE_SCALE,
         KEY_FIELD_SWIPE_SCALE,
+        KEY_BACKSPACE_REPEAT_INITIAL_DELAY,
         KEY_NUMBER_ROW,
         KEY_COMBINED_KEY_MODE,
         KEY_SPACE_BELOW_NUMBER_ROW,

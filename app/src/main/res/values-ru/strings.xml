@@ -120,6 +120,15 @@
     <string name="d508_space_swipe_scale_summary">Как далеко должен пройти свайп по клавише пробела, чтобы сменить язык ввода (100% = значение по умолчанию).</string>
     <string name="d508_field_swipe_scale_title">Дальность жестов</string>
     <string name="d508_field_swipe_scale_summary">Как далеко должны проходить жесты клавиатуры: вниз для закрытия, вбок для смены страницы, свайп по backspace для удаления слова (100% = значение по умолчанию).</string>
+    <string name="d508_profile_title">Профиль темпа набора</string>
+    <string name="d508_profile_summary">Применяет предустановку для медленных или быстрых: настройки ниже длительного нажатия, двойного нажатия, дальности свайпа и повтора backspace.</string>
+    <string name="d508_profile_body">Как быстро вы печатаете? Это задаёт пороги удержания и свайпа соответственно - всё остаётся настраиваемым в настройках.</string>
+    <string name="d508_profile_standard">Стандартный</string>
+    <string name="d508_profile_deliberate">Обдуманный / медленный</string>
+    <string name="d508_profile_quick">Быстрый</string>
+    <string name="d508_profile_applied">Профиль применён</string>
+    <string name="d508_backspace_repeat_initial_delay_title">Задержка повтора backspace</string>
+    <string name="d508_backspace_repeat_initial_delay_summary">Как долго нужно удерживать backspace, прежде чем начнётся повтор, в мс.</string>
     <string name="d401_hint_stage1">Перетаскивайте, чтобы двигать курсор. Замрите, чтобы выделять.</string>
     <string name="d401_hint_stage2">Перетаскивайте, чтобы выделять текст. Нажмите, чтобы завершить.</string>
     <string name="c01_shift_title">Дополнительная ширина Shift</string>

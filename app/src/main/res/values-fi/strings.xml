@@ -120,6 +120,15 @@
     <string name="d508_space_swipe_scale_summary">Kuinka pitkän pyyhkäisyn välilyöntinäppäimellä vaaditaan syöttökielen vaihtamiseen (100 % = oletus).</string>
     <string name="d508_field_swipe_scale_title">Eleiden pyyhkäisymatka</string>
     <string name="d508_field_swipe_scale_summary">Kuinka pitkälle näppäimistön eleiden on edettävä: alas sulkemiseen, sivulle sivunvaihtoon, pyyhkäisy askelpalauttimella sanan poistamiseen (100 % = oletus).</string>
+    <string name="d508_profile_title">Kirjoitustempon profiili</string>
+    <string name="d508_profile_summary">Ottaa käyttöön esiasetuksen hitaille tai nopeille: alla olevat asetukset pitkälle painallukselle, kaksoisnapautukselle, pyyhkäisymatkalle ja askelpalauttimen toistolle.</string>
+    <string name="d508_profile_body">Kuinka nopeasti kirjoitat? Tämä asettaa pito- ja pyyhkäisyrajalukset sen mukaan - kaikki säilyy säädettävissä asetuksissa.</string>
+    <string name="d508_profile_standard">Vakio</string>
+    <string name="d508_profile_deliberate">Harkittu / hidas</string>
+    <string name="d508_profile_quick">Nopea</string>
+    <string name="d508_profile_applied">Profiili otettu käyttöön</string>
+    <string name="d508_backspace_repeat_initial_delay_title">Askelpalauttimen toiston viive</string>
+    <string name="d508_backspace_repeat_initial_delay_summary">Kuinka kauan askelpalautinta on pidettävä pohjassa ennen toiston alkamista, millisekunteina.</string>
     <string name="d401_hint_stage1">Vedä siirtääksesi kohdistinta. Pysy paikallaan valitaksesi.</string>
     <string name="d401_hint_stage2">Vedä valitaksesi tekstiä. Napauta lopettaaksesi.</string>
     <string name="c01_shift_title">Shiftin lisäleveys</string>

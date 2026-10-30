@@ -136,6 +136,15 @@
     <string name="d508_space_swipe_scale_summary">How far the swipe on the space bar must travel to switch the input language (100% = default).</string>
     <string name="d508_field_swipe_scale_title">Gesture swipe distance</string>
     <string name="d508_field_swipe_scale_summary">How far the keyboard gestures must travel: swipe down to close, sideways to switch pages, swipe on backspace to delete a word (100% = default).</string>
+    <string name="d508_profile_title">Input tempo profile</string>
+    <string name="d508_profile_summary">Applies a preset for slow or quick typists: the long-press, double-tap, swipe-distance and backspace-repeat settings below.</string>
+    <string name="d508_profile_body">How quick do you type? This sets the hold and swipe thresholds to match - everything stays adjustable in the settings.</string>
+    <string name="d508_profile_standard">Standard</string>
+    <string name="d508_profile_deliberate">Deliberate / slow</string>
+    <string name="d508_profile_quick">Quick</string>
+    <string name="d508_profile_applied">Profile applied</string>
+    <string name="d508_backspace_repeat_initial_delay_title">Backspace repeat delay</string>
+    <string name="d508_backspace_repeat_initial_delay_summary">How long backspace must be held before it starts repeating, in ms.</string>
     <string name="d401_hint_stage1">Drag to move the cursor. Hold still to select text.</string>
     <string name="d401_hint_stage2">Drag to select text. Tap to finish.</string>
     <string name="c01_shift_title">Extra shift width</string>

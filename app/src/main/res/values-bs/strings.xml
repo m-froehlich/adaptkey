@@ -120,6 +120,15 @@
     <string name="d508_space_swipe_scale_summary">Koliko dugo mora potez na razmaku za promjenu jezika unosa (100% = zadano).</string>
     <string name="d508_field_swipe_scale_title">Dužina gesta</string>
     <string name="d508_field_swipe_scale_summary">Koliko dugo moraju gesta tastature: dolje za zatvaranje, bočno za promjenu stranice, potez na backspace za brisanje riječi (100% = zadano).</string>
+    <string name="d508_profile_title">Profil tempa kucanja</string>
+    <string name="d508_profile_summary">Primjenjuje predefinisanje za spore ili brze: donje postavke dugog pritiska, dvostrukog dodira, dužine poteza i ponavljanja backspace.</string>
+    <string name="d508_profile_body">Koliko brzo kucate? Ovo postavlja pragove držanja i poteza u skladu s tim - sve ostaje podesivo u postavkama.</string>
+    <string name="d508_profile_standard">Standardni</string>
+    <string name="d508_profile_deliberate">Promišljen / spor</string>
+    <string name="d508_profile_quick">Brz</string>
+    <string name="d508_profile_applied">Profil primijenjen</string>
+    <string name="d508_backspace_repeat_initial_delay_title">Odgoda ponavljanja backspace</string>
+    <string name="d508_backspace_repeat_initial_delay_summary">Koliko dugo treba držati backspace prije nego što počne ponavljati, u ms.</string>
     <string name="d401_hint_stage1">Povucite za pomjeranje pokazivača. Ostanite mirni za odabir.</string>
     <string name="d401_hint_stage2">Povucite za odabir teksta. Dodirnite za završetak.</string>
     <string name="c01_shift_title">Dodatna širina tipke Shift</string>

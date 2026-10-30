@@ -120,6 +120,15 @@
     <string name="d508_space_swipe_scale_summary">Quao longe o deslize na barra de espaco deve ir para mudar o idioma de entrada (100% = padrao).</string>
     <string name="d508_field_swipe_scale_title">Distancia dos gestos</string>
     <string name="d508_field_swipe_scale_summary">Quao longe os gestos do teclado devem ir: para baixo para fechar, lateral para trocar de pagina, deslize no backspace para apagar uma palavra (100% = padrao).</string>
+    <string name="d508_profile_title">Perfil de ritmo de digitação</string>
+    <string name="d508_profile_summary">Aplica uma predefinição para quem digita devagar ou rápido: as configurações abaixo de toque longo, toque duplo, distância de deslize e repetição do backspace.</string>
+    <string name="d508_profile_body">Quão rápido você digita? Isso ajusta os limites de manutenção e deslize - tudo continua ajustável nas configurações.</string>
+    <string name="d508_profile_standard">Padrão</string>
+    <string name="d508_profile_deliberate">Ponderado / devagar</string>
+    <string name="d508_profile_quick">Rápido</string>
+    <string name="d508_profile_applied">Perfil aplicado</string>
+    <string name="d508_backspace_repeat_initial_delay_title">Atraso de repetição do backspace</string>
+    <string name="d508_backspace_repeat_initial_delay_summary">Quanto tempo o backspace deve ser mantido antes de começar a repetir, em ms.</string>
     <string name="d401_hint_stage1">Arraste para mover o cursor. Fique parado para selecionar.</string>
     <string name="d401_hint_stage2">Arraste para selecionar o texto. Toque para terminar.</string>
     <string name="c01_shift_title">Largura extra do Shift</string>

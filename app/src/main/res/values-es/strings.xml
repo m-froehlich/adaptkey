@@ -120,6 +120,15 @@
     <string name="d508_space_swipe_scale_summary">Que lejos debe deslizarse el dedo sobre la barra espaciadora para cambiar el idioma de entrada (100 % = valor predeterminado).</string>
     <string name="d508_field_swipe_scale_title">Distancia de los gestos</string>
     <string name="d508_field_swipe_scale_summary">Que lejos deben deslizarse los gestos del teclado: hacia abajo para cerrar, lateral para cambiar de pagina, deslizamiento en retroceso para borrar una palabra (100 % = valor predeterminado).</string>
+    <string name="d508_profile_title">Perfil de ritmo de escritura</string>
+    <string name="d508_profile_summary">Aplica un ajuste preestablecido para quien escribe lento o rápido: los ajustes de abajo de pulsación larga, doble pulsación, distancia de deslizamiento y repetición de retroceso.</string>
+    <string name="d508_profile_body">¿Qué tan rápido escribes? Esto ajusta los umbrales de mantenimiento y deslizamiento - todo sigue siendo ajustable en los ajustes.</string>
+    <string name="d508_profile_standard">Estándar</string>
+    <string name="d508_profile_deliberate">Pausado / lento</string>
+    <string name="d508_profile_quick">Rápido</string>
+    <string name="d508_profile_applied">Perfil aplicado</string>
+    <string name="d508_backspace_repeat_initial_delay_title">Retardo de repetición de retroceso</string>
+    <string name="d508_backspace_repeat_initial_delay_summary">Cuánto debe mantenerse pulsado el retroceso antes de empezar a repetir, en ms.</string>
     <string name="d401_hint_stage1">Arrastra para mover el cursor. Quédate quieto para seleccionar.</string>
     <string name="d401_hint_stage2">Arrastra para seleccionar texto. Toca para terminar.</string>
     <string name="c01_shift_title">Ancho extra de Mayús</string>

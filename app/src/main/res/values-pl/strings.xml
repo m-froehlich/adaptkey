@@ -120,6 +120,15 @@
     <string name="d508_space_swipe_scale_summary">Jak daleko musi przejść przesunięcie na spacji, aby zmienić język wprowadzania (100% = domyślne).</string>
     <string name="d508_field_swipe_scale_title">Dystans gestów</string>
     <string name="d508_field_swipe_scale_summary">Jak daleko muszą przejść gesty klawiatury: w dół, aby zamknąć, w bok, aby zmienić stronę, przesunięcie na backspace, aby usunąć słowo (100% = domyślne).</string>
+    <string name="d508_profile_title">Profil tempa pisania</string>
+    <string name="d508_profile_summary">Stosuje ustawienie wstępne dla wolnych lub szybkich: poniższe ustawienia przytrzymania, dwukrotnego dotknięcia, dystansu przesunięcia i powtarzania backspace.</string>
+    <string name="d508_profile_body">Jak szybko piszesz? To ustawia progi przytrzymania i przesunięcia odpowiednio - wszystko pozostaje regulowane w ustawieniach.</string>
+    <string name="d508_profile_standard">Standardowy</string>
+    <string name="d508_profile_deliberate">Rozważny / wolny</string>
+    <string name="d508_profile_quick">Szybki</string>
+    <string name="d508_profile_applied">Profil zastosowany</string>
+    <string name="d508_backspace_repeat_initial_delay_title">Opóźnienie powtarzania backspace</string>
+    <string name="d508_backspace_repeat_initial_delay_summary">Jak długo trzeba przytrzymać backspace, zanim zacznie się powtarzać, w ms.</string>
     <string name="d401_hint_stage1">Przeciągnij, aby przesunąć kursor. Zatrzymaj się, aby zaznaczać.</string>
     <string name="d401_hint_stage2">Przeciągnij, aby zaznaczyć tekst. Dotknij, aby zakończyć.</string>
     <string name="c01_shift_title">Dodatkowa szerokość Shift</string>

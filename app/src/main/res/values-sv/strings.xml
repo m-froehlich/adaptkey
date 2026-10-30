@@ -120,6 +120,15 @@
     <string name="d508_space_swipe_scale_summary">Hur långt svepet på mellanslagstangenten måste gå för att byta inmatningsspråk (100 % = standard).</string>
     <string name="d508_field_swipe_scale_title">Svepavstånd för gester</string>
     <string name="d508_field_swipe_scale_summary">Hur långt tangentbordets gester måste gå: nedåt för att stänga, åt sidan för sidbyte, svep på backsteg för att radera ett ord (100 % = standard).</string>
+    <string name="d508_profile_title">Skrivtempo-profil</string>
+    <string name="d508_profile_summary">Tillämpar en förinställning för långsamma eller snabba: inställningarna nedan för långtryckning, dubbeltryckning, svepavstånd och backstegsrepetering.</string>
+    <string name="d508_profile_body">Hur snabbt skriver du? Detta ställer in trösklarna för hållande och svepning därefter - allt förblir justerbart i inställningarna.</string>
+    <string name="d508_profile_standard">Standard</string>
+    <string name="d508_profile_deliberate">Övervägd / långsam</string>
+    <string name="d508_profile_quick">Snabb</string>
+    <string name="d508_profile_applied">Profil tillämpad</string>
+    <string name="d508_backspace_repeat_initial_delay_title">Backstegsrepeteringsfördröjning</string>
+    <string name="d508_backspace_repeat_initial_delay_summary">Hur länge backstegen måste hållas inne innan repeteringen börjar, i ms.</string>
     <string name="d401_hint_stage1">Dra för att flytta markören. Håll still för att markera.</string>
     <string name="d401_hint_stage2">Dra för att markera text. Tryck för att avsluta.</string>
     <string name="c01_shift_title">Extra bredd för Skift</string>

@@ -8,6 +8,7 @@ import de.froehlichmedia.adaptkey.dictionary.AutoMergeAggressiveness
 import de.froehlichmedia.adaptkey.dictionary.AutoSplitMode
 import de.froehlichmedia.adaptkey.dictionary.AutocorrectAggressiveness
 import de.froehlichmedia.adaptkey.dictionary.LearnedWordExpiryWindow
+import de.froehlichmedia.adaptkey.keyboard.BackspaceRepeat
 import de.froehlichmedia.adaptkey.keyboard.BottomInsetMode
 import de.froehlichmedia.adaptkey.keyboard.CombinedKeyMode
 import de.froehlichmedia.adaptkey.keyboard.KeyProportions
@@ -148,6 +149,10 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  * @property fieldSwipeScalePercent D-508: percentage scaling of the field gestures' own travel requirement
  *           (dismiss-down, horizontal page swipe, backspace word-delete; the 110 dp / three-key-width base
  *           with its D-57 page factor), 80-160 % (default 100).
+ * @property backspaceRepeatInitialDelayMs D-508: how long the backspace key must be held before the
+ *           accelerating repeat delete (D-07) fires its first tick (default 400 ms, the former hardcoded
+ *           [de.froehlichmedia.adaptkey.keyboard.BackspaceRepeat.INITIAL_DELAY_MS]) - the third leg of the
+ *           "slow press" complaint family, so a slow single deletion does not accidentally repeat.
  * @property bottomInsetMode D-486: how much room is kept free below the keyboard (default
  *           [BottomInsetMode.DEFAULT], automatic) - a three-position slider, last in the Layout category, for
  *           phones whose reported navigation/gesture insets do not match what is really on screen.
@@ -188,6 +193,7 @@ data class AdaptSettings(
     val swipeDownDismissEnabled: Boolean = true,
     val spaceSwipeScalePercent: Int = DEFAULT_SPACE_SWIPE_SCALE,
     val fieldSwipeScalePercent: Int = DEFAULT_FIELD_SWIPE_SCALE,
+    val backspaceRepeatInitialDelayMs: Long = DEFAULT_BACKSPACE_REPEAT_INITIAL_DELAY_MS,
     val bottomInsetMode: BottomInsetMode = BottomInsetMode.DEFAULT
 ) {
     
@@ -211,6 +217,12 @@ data class AdaptSettings(
         
         /** Default D-508 field-gesture travel scaling, in percent (today's hardcoded distance). */
         const val DEFAULT_FIELD_SWIPE_SCALE = 100
+        
+        /**
+         * Default D-508 backspace repeat initial delay - deliberately the same value as
+         * [BackspaceRepeat.INITIAL_DELAY_MS], which this setting makes user-configurable.
+         */
+        const val DEFAULT_BACKSPACE_REPEAT_INITIAL_DELAY_MS = BackspaceRepeat.INITIAL_DELAY_MS
         
         /** Default extra row spacing in dp (D-55). */
         const val DEFAULT_EXTRA_SPACING_DP = 7

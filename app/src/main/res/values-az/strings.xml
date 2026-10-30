@@ -120,6 +120,15 @@
     <string name="d508_space_swipe_scale_summary">Giriş dilini dəyişmək üçün boşluq düyməsində sürüşmənin nə qədər irəli getməsi lazımdır (100% = standart).</string>
     <string name="d508_field_swipe_scale_title">Jest sürüşmə məsafəsi</string>
     <string name="d508_field_swipe_scale_summary">Klaviatura jestlərinin nə qədər irəli getməsi lazımdır: bağlamaq üçün aşağı, səhifə dəyişmək üçün yana, söz silmək üçün geri düyməsində sürüşmə (100% = standart).</string>
+    <string name="d508_profile_title">Yazma temp profili</string>
+    <string name="d508_profile_summary">Yavaş və ya sürətli yazanlar üçün hazır parametr tətbiq edir: aşağıdakı uzun basma, ikiqat toxunma, sürüşmə məsafəsi və geri düymə təkrarı parametrləri.</string>
+    <string name="d508_profile_body">Nə qədər sürətli yazırsınız? Bu, saxlama və sürüşmə hədlərini ona görə təyin edir - hər şey parametrlərdə tənzimlənə bilir.</string>
+    <string name="d508_profile_standard">Standart</string>
+    <string name="d508_profile_deliberate">Düşünülmüş / yavaş</string>
+    <string name="d508_profile_quick">Sürətli</string>
+    <string name="d508_profile_applied">Profil tətbiq edildi</string>
+    <string name="d508_backspace_repeat_initial_delay_title">Geri düymə təkrarı gecikməsi</string>
+    <string name="d508_backspace_repeat_initial_delay_summary">Geri düymənin təkrarlamağa başlamazdan əvvəl nə qədər basılı tutulmalı olduğu, ms.</string>
     <string name="d401_hint_stage1">Kursoru hərəkət etdirmək üçün sürükləyin. Seçmək üçün hərəkətsiz durun.</string>
     <string name="d401_hint_stage2">Mətni seçmək üçün sürükləyin. Bitirmək üçün toxunun.</string>
     <string name="c01_shift_title">Shift-in əlavə eni</string>

@@ -120,6 +120,15 @@
     <string name="d508_space_swipe_scale_summary">Koliko dugo mora poteg na razmaknici za promjenu jezika unosa (100 % = zadano).</string>
     <string name="d508_field_swipe_scale_title">Duljina gesta</string>
     <string name="d508_field_swipe_scale_summary">Koliko dugo moraju potegi tipkovnice: dolje za zatvaranje, bocno za promjenu stranice, poteg na backspace za brisanje rijeci (100 % = zadano).</string>
+    <string name="d508_profile_title">Profil ritma tipkanja</string>
+    <string name="d508_profile_summary">Primjenjuje predložak za spore ili brze: donje postavke za dugi pritisak, dvostruki dodir, duljinu poteza i ponavljanje backspace.</string>
+    <string name="d508_profile_body">Koliko brzo tipkaš? Ovo postavlja pragove držanja i poteza u skladu s tim - sve ostaje prilagodljivo u postavkama.</string>
+    <string name="d508_profile_standard">Standardni</string>
+    <string name="d508_profile_deliberate">Razmislen / spor</string>
+    <string name="d508_profile_quick">Brz</string>
+    <string name="d508_profile_applied">Profil primijenjen</string>
+    <string name="d508_backspace_repeat_initial_delay_title">Odgoda ponavljanja backspace</string>
+    <string name="d508_backspace_repeat_initial_delay_summary">Koliko dugo treba držati backspace prije nego što počne ponavljati, u ms.</string>
     <string name="d401_hint_stage1">Povucite za pomicanje pokazivača. Ostanite mirni za odabir.</string>
     <string name="d401_hint_stage2">Povucite za odabir teksta. Dodirnite za završetak.</string>
     <string name="c01_shift_title">Dodatna širina tipke Shift</string>

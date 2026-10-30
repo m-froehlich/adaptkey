@@ -120,6 +120,15 @@
     <string name="d508_space_swipe_scale_summary">Kui kaugele peab tühikuklahvilt pühkima sisestuskeele vahetamiseks (100% = vaikeväärtus).</string>
     <string name="d508_field_swipe_scale_title">Liigutuste pühkimiskaugus</string>
     <string name="d508_field_swipe_scale_summary">Kui kaugele peavad klaviatuuri liigutused jõudma: allapoole sulgemiseks, küljele lehevahetuseks, pühkimine tagasivõtmeklahvil sõna kustutamiseks (100% = vaikeväärtus).</string>
+    <string name="d508_profile_title">Kirjutamistempo profiil</string>
+    <string name="d508_profile_summary">Rakendab eelseadistuse aeglasele või kiirele: allpool olevad seaded pikale vajutusele, topeltkoputusele, pühkimiskaugusele ja tagasivõtmeklahvi kordamisele.</string>
+    <string name="d508_profile_body">Kui kiiresti sa kirjutad? See seadib hoidmise ja pühkimise lävendad vastavalt - kõik jääb seadetes reguleeritavaks.</string>
+    <string name="d508_profile_standard">Standard</string>
+    <string name="d508_profile_deliberate">Kaalutletud / aeglane</string>
+    <string name="d508_profile_quick">Kiire</string>
+    <string name="d508_profile_applied">Profiil rakendatud</string>
+    <string name="d508_backspace_repeat_initial_delay_title">Tagasivõtmeklahvi kordamise viivitus</string>
+    <string name="d508_backspace_repeat_initial_delay_summary">Kui kaua tuleb tagasivõtmeklahvi hoida, enne kui kordamine algab, ms.</string>
     <string name="d401_hint_stage1">Lohista kursori liigutamiseks. Püsi paigal valimiseks.</string>
     <string name="d401_hint_stage2">Lohista teksti valimiseks. Puuduta lõpetamiseks.</string>
     <string name="c01_shift_title">Shifti lisalaius</string>

@@ -120,6 +120,15 @@
     <string name="d508_space_swipe_scale_summary">Giriş dilini değiştirmek için boşluk tuşundaki kaydırmanın ne kadar ileri gitmesi gerekir (%100 = varsayılan).</string>
     <string name="d508_field_swipe_scale_title">Jest kaydırma mesafesi</string>
     <string name="d508_field_swipe_scale_summary">Klavye jestlerinin ne kadar ileri gitmesi gerekir: kapatmak için aşağı, sayfa değiştirmek için yana, bir sözcüğü silmek için geri al tuşunda kaydırma (%100 = varsayılan).</string>
+    <string name="d508_profile_title">Yazma temposu profili</string>
+    <string name="d508_profile_summary">Yavaş veya hızlı yazanlar için hazır ayar uygular: aşağıdaki uzun basma, çift dokunma, kaydırma mesafesi ve geri al tekrarı ayarları.</string>
+    <string name="d508_profile_body">Ne kadar hızlı yazıyorsunuz? Bu, tutma ve kaydırma eşiklerini ona göre ayarlar - her şey ayarlarda ayarlanabilir kalır.</string>
+    <string name="d508_profile_standard">Standart</string>
+    <string name="d508_profile_deliberate">Düşünceli / yavaş</string>
+    <string name="d508_profile_quick">Hızlı</string>
+    <string name="d508_profile_applied">Profil uygulandı</string>
+    <string name="d508_backspace_repeat_initial_delay_title">Geri al tekrar gecikmesi</string>
+    <string name="d508_backspace_repeat_initial_delay_summary">Geri al tuşunun tekrarlamaya başlamadan önce ne kadar basılı tutulması gerektiği, ms cinsinden.</string>
     <string name="d401_hint_stage1">İmleci taşımak için sürükle. Seçmek için sabit dur.</string>
     <string name="d401_hint_stage2">Metni seçmek için sürükle. Bitirmek için dokun.</string>
     <string name="c01_shift_title">Ek Shift genişliği</string>

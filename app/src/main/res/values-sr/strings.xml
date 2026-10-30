@@ -120,6 +120,15 @@
     <string name="d508_space_swipe_scale_summary">Колико дуго мора потег на тастеру размака за промену језика уноса (100% = подразумевано).</string>
     <string name="d508_field_swipe_scale_title">Дужина гестова</string>
     <string name="d508_field_swipe_scale_summary">Колико дуго морају гестови тастатуре: доле за затварање, бочно за промену странице, превлачење по backspace за брисање речи (100% = подразумевано).</string>
+    <string name="d508_profile_title">Профил темпа куцања</string>
+    <string name="d508_profile_summary">Примењује предподешавање за споре или брзе: доње поставке дугог притиска, двоструког додира, дужине потега и понављања backspace.</string>
+    <string name="d508_profile_body">Колико брзо куцате? Ово поставља прагове држања и потега у складу с тим - све остаје подесиво у поставкама.</string>
+    <string name="d508_profile_standard">Стандардни</string>
+    <string name="d508_profile_deliberate">Промишљен / спор</string>
+    <string name="d508_profile_quick">Брз</string>
+    <string name="d508_profile_applied">Профил примењен</string>
+    <string name="d508_backspace_repeat_initial_delay_title">Одгода понављања backspace</string>
+    <string name="d508_backspace_repeat_initial_delay_summary">Колико дуго треба држати backspace пре него што почне понављати, у мс.</string>
     <string name="d401_hint_stage1">Повуците за померање показивача. Останите мирни за одабир.</string>
     <string name="d401_hint_stage2">Повуците за одабир текста. Додирните за завршетак.</string>
     <string name="c01_shift_title">Додатна ширина тастера Shift</string>

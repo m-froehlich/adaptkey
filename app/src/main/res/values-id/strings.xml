@@ -120,6 +120,15 @@
     <string name="d508_space_swipe_scale_summary">Seberapa jauh geser pada bilah spasi harus dilakukan untuk mengganti bahasa input (100% = bawaan).</string>
     <string name="d508_field_swipe_scale_title">Jarak gestur</string>
     <string name="d508_field_swipe_scale_summary">Seberapa jauh gestur papan ketik harus dilakukan: ke bawah untuk menutup, ke samping untuk ganti halaman, geser pada backspace untuk menghapus kata (100% = bawaan).</string>
+    <string name="d508_profile_title">Profil tempo mengetik</string>
+    <string name="d508_profile_summary">Menerapkan prasetel untuk yang mengetik lambat atau cepat: pengaturan di bawah untuk tekan lama, ketuk ganda, jarak geser dan pengulangan backspace.</string>
+    <string name="d508_profile_body">Seberapa cepat Anda mengetik? Ini mengatur ambang batas tahan dan geser sesuai itu - semuanya tetap dapat diatur di pengaturan.</string>
+    <string name="d508_profile_standard">Standar</string>
+    <string name="d508_profile_deliberate">Terukur / lambat</string>
+    <string name="d508_profile_quick">Cepat</string>
+    <string name="d508_profile_applied">Profil diterapkan</string>
+    <string name="d508_backspace_repeat_initial_delay_title">Jeda pengulangan backspace</string>
+    <string name="d508_backspace_repeat_initial_delay_summary">Berapa lama backspace harus ditahan sebelum mulai berulang, dalam ms.</string>
     <string name="d401_hint_stage1">Seret untuk memindahkan kursor. Diam untuk memilih.</string>
     <string name="d401_hint_stage2">Seret untuk memilih teks. Ketuk untuk selesai.</string>
     <string name="c01_shift_title">Lebar ekstra Shift</string>

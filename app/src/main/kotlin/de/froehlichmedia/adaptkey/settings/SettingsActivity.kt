@@ -192,6 +192,13 @@ class SettingsActivity : SettingsScreenActivity() {
                 true
             }
             
+            // D-508: the input-tempo profiles - an apply-once dialog over the delay/swipe sliders in this
+            // category (apply-once, no persistent profile state; see [CalibrationProfile]).
+            findPreference<Preference>("d508_calibration_profile")?.setOnPreferenceClickListener {
+                showCalibrationProfileDialog()
+                true
+            }
+            
             updateCalibrationSummary()
             
             // D-302: the C-04 highlight-colour preference shows its own colour as the summary's text
@@ -318,6 +325,33 @@ class SettingsActivity : SettingsScreenActivity() {
                 TypingPattern.TWO_THUMBS -> R.string.t04_pattern_two_thumbs
                 TypingPattern.UNKNOWN -> R.string.t04_pattern_unknown
             }
+        }
+        
+        /**
+         * D-508: the input-tempo profile picker. Applying writes the profiled values into the existing
+         * delay/swipe preferences (apply-once, no persistent profile state - see [CalibrationProfile]);
+         * the resident service picks the change up live through its own preference listener, and a later
+         * manual slider change simply overrides the profiled values.
+         */
+        private fun showCalibrationProfileDialog() {
+            val labels = arrayOf(
+                getString(R.string.d508_profile_standard),
+                getString(R.string.d508_profile_deliberate),
+                getString(R.string.d508_profile_quick)
+            )
+            AlertDialog.Builder(requireContext())
+                .setTitle(R.string.d508_profile_title)
+                .setItems(labels) { _, which ->
+                    val profile = when (which) {
+                        0 -> CalibrationProfile.STANDARD
+                        1 -> CalibrationProfile.DELIBERATE
+                        else -> CalibrationProfile.QUICK
+                    }
+                    CalibrationProfile.apply(requireContext(), profile)
+                    Toast.makeText(requireContext(), R.string.d508_profile_applied, Toast.LENGTH_SHORT).show()
+                }
+                .setNegativeButton(android.R.string.cancel, null)
+                .show()
         }
         
         /**

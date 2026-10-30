@@ -109,6 +109,24 @@ class CalibrationActivity : SettingsScreenActivity() {
         findViewById<Button>(R.id.calibration_done).setOnClickListener { finish() }
         findViewById<Button>(R.id.calibration_reset).setOnClickListener { confirmReset() }
         
+        // D-508: the input-tempo profiles, asked right where this screen already asks "how do you type".
+        // Apply-once: the tap writes the profiled delay/swipe values into the existing preferences (see
+        // [CalibrationProfile]); the resident service adopts them live through its own preference listener,
+        // and any later manual slider change simply overrides the profiled values. No confirmation dialog
+        // (unlike a style switch above) - nothing already-learned is destroyed, only five slider defaults
+        // are set, and every one of them stays individually adjustable in the settings.
+        val profileButtons = mapOf(
+            findViewById<Button>(R.id.d508_profile_standard) to CalibrationProfile.STANDARD,
+            findViewById<Button>(R.id.d508_profile_deliberate) to CalibrationProfile.DELIBERATE,
+            findViewById<Button>(R.id.d508_profile_quick) to CalibrationProfile.QUICK
+        )
+        for ((button, profile) in profileButtons) {
+            button.setOnClickListener {
+                CalibrationProfile.apply(this, profile)
+                Toast.makeText(this, R.string.d508_profile_applied, Toast.LENGTH_SHORT).show()
+            }
+        }
+        
         showActualModel()
     }
     

@@ -236,6 +236,14 @@
 
     <PreferenceCategory android:key="cat_key_behavior_group" android:title="@string/cat_key_behavior">
 
+        <!-- D-508: the input-tempo profiles - an apply-once action that writes concrete values into the
+             delay/swipe sliders below (no persistent profile state; the sliders stay the single source
+             of truth, per the D-301 lesson). The dialog and the write live in SettingsFragment. -->
+        <Preference
+            android:key="d508_calibration_profile"
+            android:title="@string/d508_profile_title"
+            android:summary="@string/d508_profile_summary" />
+
         <SeekBarPreference
             android:key="d32_longpress_delay_ms"
             android:title="@string/d32_title"
@@ -254,6 +262,17 @@
             android:max="800"
             app:min="200"
             app:seekBarIncrement="10"
+            app:showSeekBarValue="true" />
+
+        <!-- D-508: the D-07 repeat's first-tick delay, made user-configurable (and profile-varied). -->
+        <SeekBarPreference
+            android:key="d508_backspace_repeat_initial_delay_ms"
+            android:title="@string/d508_backspace_repeat_initial_delay_title"
+            android:summary="@string/d508_backspace_repeat_initial_delay_summary"
+            android:defaultValue="400"
+            android:max="800"
+            app:min="200"
+            app:seekBarIncrement="50"
             app:showSeekBarValue="true" />
 
         <SwitchPreferenceCompat

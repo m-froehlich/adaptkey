@@ -120,6 +120,15 @@
     <string name="d508_space_swipe_scale_summary">Milyen messire kell húzni a szóközön a beviteli nyelv váltásához (100% = alapértelmezett).</string>
     <string name="d508_field_swipe_scale_title">Gesztusok húzási távolsága</string>
     <string name="d508_field_swipe_scale_summary">Milyen messire kell húzni a billentyűzet gesztusait: lefelé a bezáráshoz, oldalra az oldalváltáshoz, húzás a backspacen a szó törléséhez (100% = alapértelmezett).</string>
+    <string name="d508_profile_title">Írásritmus-profil</string>
+    <string name="d508_profile_summary">Előbeállítást alkalmaz lassú vagy gyors gépelőknek: lentebb a hosszú lenyomás, dupla koppintás, húzási távolság és backspace-ismétlés beállításait.</string>
+    <string name="d508_profile_body">Milyen gyorsan gépelsz? Ez ennek megfelelően állítja be a tartási és húzási küszöböket - minden a beállításokban módosítható marad.</string>
+    <string name="d508_profile_standard">Szokásos</string>
+    <string name="d508_profile_deliberate">Átgondolt / lassú</string>
+    <string name="d508_profile_quick">Gyors</string>
+    <string name="d508_profile_applied">Profil alkalmazva</string>
+    <string name="d508_backspace_repeat_initial_delay_title">Backspace ismétlés késleltetése</string>
+    <string name="d508_backspace_repeat_initial_delay_summary">Milyen sokáig kell nyomva tartani a backspace-t, amíg elkezd ismételni, ms-ben.</string>
     <string name="d401_hint_stage1">Húzd a kurzor mozgatásához. Maradj mozdulatlan a kijelöléshez.</string>
     <string name="d401_hint_stage2">Húzd a szöveg kijelöléséhez. Érintsd meg a befejezéshez.</string>
     <string name="c01_shift_title">A Shift extra szélessége</string>

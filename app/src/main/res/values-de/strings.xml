@@ -130,6 +130,15 @@
     <string name="d508_space_swipe_scale_summary">Wie weit der Wisch auf der Leertaste zurücklegen muss, um die Eingabesprache zu wechseln (100 % = Standard).</string>
     <string name="d508_field_swipe_scale_title">Gesten-Wegdistanz</string>
     <string name="d508_field_swipe_scale_summary">Wie weit die Tastatur-Gesten zurücklegen müssen: nach unten schließen, seitlich Seitenwechsel, Wischen auf Backspace löscht ein Wort (100 % = Standard).</string>
+    <string name="d508_profile_title">Tipp-Tempo-Profil</string>
+    <string name="d508_profile_summary">Wendet eine Voreinstellung für langsame oder schnelle Nutzer an: die Long-Press-, Doppeltipp-, Wischdistanz- und Backspace-Repeat-Einstellungen unten.</string>
+    <string name="d508_profile_body">Wie schnell tippst du? Das setzt die Halte- und Wisch-Schwellen passend - alles bleibt in den Einstellungen anpassbar.</string>
+    <string name="d508_profile_standard">Standard</string>
+    <string name="d508_profile_deliberate">Bedächtig / langsam</string>
+    <string name="d508_profile_quick">Schnell</string>
+    <string name="d508_profile_applied">Profil angewendet</string>
+    <string name="d508_backspace_repeat_initial_delay_title">Backspace-Repeat-Verzögerung</string>
+    <string name="d508_backspace_repeat_initial_delay_summary">Wie lange die Rücktaste gehalten werden muss, bevor das Wiederholen beginnt, in ms.</string>
     <string name="d401_hint_stage1">Ziehen bewegt den Cursor. Stillhalten wechselt zur Auswahl.</string>
     <string name="d401_hint_stage2">Ziehen wählt Text aus. Tippen beendet.</string>
     <string name="c01_shift_title">Zusatzbreite der Shift-Taste</string>

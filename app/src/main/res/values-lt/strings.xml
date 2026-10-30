@@ -120,6 +120,15 @@
     <string name="d508_space_swipe_scale_summary">Kiek toli turi nuslinkti tarpo klavišo brūkšnis, kad pakeistų įvesties kalbą (100 % = numatytasis).</string>
     <string name="d508_field_swipe_scale_title">Gestų brūkšnio atstumas</string>
     <string name="d508_field_swipe_scale_summary">Kiek toli turi nuslinkti klaviatūros gestai: žemyn uždarymui, į šoną puslapio perjungimui, brūkšnis per backspace žodžio ištrynimui (100 % = numatytasis).</string>
+    <string name="d508_profile_title">Rašymo tempo profilis</string>
+    <string name="d508_profile_summary">Taiko išankstinį nustatymą lėtiems arba greitiems: žemiau esančius nustatymus ilgam paspaudimui, dvigubam bakstelėjimui, brūkšnio atstumui ir backspace kartojimui.</string>
+    <string name="d508_profile_body">Kaip greitai rašote? Tai atitinkamai nustato laikymo ir brūkšnio ribas - viskas lieka reguliuojama nustatymuose.</string>
+    <string name="d508_profile_standard">Standartinis</string>
+    <string name="d508_profile_deliberate">Apgalvotas / lėtas</string>
+    <string name="d508_profile_quick">Greitas</string>
+    <string name="d508_profile_applied">Profilis pritaikytas</string>
+    <string name="d508_backspace_repeat_initial_delay_title">Backspace kartojimo vėlavimas</string>
+    <string name="d508_backspace_repeat_initial_delay_summary">Kiek laiko reikia laikyti backspace, kol prasideda kartojimas, ms.</string>
     <string name="d401_hint_stage1">Tempkite žymekliui perkelti. Nejudėkite žymėti.</string>
     <string name="d401_hint_stage2">Tempkite tekstui žymėti. Palieskite baigti.</string>
     <string name="c01_shift_title">Papildomas Shift plotis</string>

@@ -120,6 +120,15 @@
     <string name="d508_space_swipe_scale_summary">Ako ďaleko musí ťah na medzerníku dôjsť, aby sa zmenil jazyk písania (100 % = predvolené).</string>
     <string name="d508_field_swipe_scale_title">Vzdialenosť gestov</string>
     <string name="d508_field_swipe_scale_summary">Ako ďaleko musia gesty klávesnice dôjsť: nadol pre zatvorenie, do strany pre zmenu stránky, ťah po backspace pre zmazanie slova (100 % = predvolené).</string>
+    <string name="d508_profile_title">Profil tempa písania</string>
+    <string name="d508_profile_summary">Aplikuje predvoľbu pre pomalé alebo rýchle: nižšie uvedené nastavenia dlhého stlačenia, dvojkliku, vzdialenosti ťahania a opakovania backspace.</string>
+    <string name="d508_profile_body">Ako rýchlo píšete? Týmto sa nastavia prahy držania a ťahania - všetko zostáva nastaviteľné v nastaveniach.</string>
+    <string name="d508_profile_standard">Štandardný</string>
+    <string name="d508_profile_deliberate">Premyslený / pomalý</string>
+    <string name="d508_profile_quick">Rýchly</string>
+    <string name="d508_profile_applied">Profil použitý</string>
+    <string name="d508_backspace_repeat_initial_delay_title">Oneskorenie opakovania backspace</string>
+    <string name="d508_backspace_repeat_initial_delay_summary">Ako dlho treba držať backspace, kým začne opakovať, v ms.</string>
     <string name="d401_hint_stage1">Ťahajte na posun kurzora. Zostaňte v pokoji na výber.</string>
     <string name="d401_hint_stage2">Ťahajte na výber textu. Klepnutím dokončíte.</string>
     <string name="c01_shift_title">Extra šírka Shiftu</string>

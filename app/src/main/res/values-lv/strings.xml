@@ -120,6 +120,15 @@
     <string name="d508_space_swipe_scale_summary">Cik tālu jāvilka pa atstarpes taustiņu, lai mainītu ievades valodu (100% = noklusējums).</string>
     <string name="d508_field_swipe_scale_title">Žestu vilkšanas attālums</string>
     <string name="d508_field_swipe_scale_summary">Cik tālu jāvilka klaviatūras žestiem: uz leju aizvēršanai, uz sāniem lapas maiņai, vilkšana pa atpakaļatkāpi vārda dzēšanai (100% = noklusējums).</string>
+    <string name="d508_profile_title">Drukāšanas tempa profils</string>
+    <string name="d508_profile_summary">Piemēro iepriekšēju iestatījumu lēnajiem vai ātrajiem: tālāk esošos iestatījumus ilgai nospiešanai, dubultklikšķim, vilkšanas attālumam un atpakaļatkāpes atkārtošanai.</string>
+    <string name="d508_profile_body">Cik ātri tu raksti? Tas attiecīgi iestata noturēšanas un vilkšanas sliekšņus - viss paliek regulējams iestatījumos.</string>
+    <string name="d508_profile_standard">Standarta</string>
+    <string name="d508_profile_deliberate">Pārdomāts / lēns</string>
+    <string name="d508_profile_quick">Ātrs</string>
+    <string name="d508_profile_applied">Profils piemērots</string>
+    <string name="d508_backspace_repeat_initial_delay_title">Atpakaļatkāpes atkārtošanās aizkave</string>
+    <string name="d508_backspace_repeat_initial_delay_summary">Cik ilgi jātur atpakaļatkāpe, pirms sākas atkārtošanās, ms.</string>
     <string name="d401_hint_stage1">Velciet, lai pārvietotu kursoru. Stāviet mierīgi, lai atlasītu.</string>
     <string name="d401_hint_stage2">Velciet, lai atlasītu tekstu. Pieskarieties, lai pabeigtu.</string>
     <string name="c01_shift_title">Shift papildu platums</string>

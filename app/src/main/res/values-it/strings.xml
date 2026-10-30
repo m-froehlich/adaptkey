@@ -120,6 +120,15 @@
     <string name="d508_space_swipe_scale_summary">Quanto deve scorrere il dito sulla barra spaziatrice per cambiare la lingua di input (100% = predefinito).</string>
     <string name="d508_field_swipe_scale_title">Distanza dei gesti</string>
     <string name="d508_field_swipe_scale_summary">Quanto devono scorrere i gesti della tastiera: verso il basso per chiudere, laterale per cambiare pagina, scorrimento su backspace per cancellare una parola (100% = predefinito).</string>
+    <string name="d508_profile_title">Profilo di ritmo di digitazione</string>
+    <string name="d508_profile_summary">Applica una preimpostazione per chi digita lentamente o velocemente: le impostazioni sotto per pressione prolungata, doppio tocco, distanza di scorrimento e ripetizione del backspace.</string>
+    <string name="d508_profile_body">Quanto veloce digiti? Questo regola le soglie di mantenimento e scorrimento di conseguenza - tutto resta regolabile nelle impostazioni.</string>
+    <string name="d508_profile_standard">Standard</string>
+    <string name="d508_profile_deliberate">Ponderato / lento</string>
+    <string name="d508_profile_quick">Veloce</string>
+    <string name="d508_profile_applied">Profilo applicato</string>
+    <string name="d508_backspace_repeat_initial_delay_title">Ritardo di ripetizione del backspace</string>
+    <string name="d508_backspace_repeat_initial_delay_summary">Quanto a lungo bisogna tenere premuto il backspace prima che inizi a ripetere, in ms.</string>
     <string name="d401_hint_stage1">Trascina per spostare il cursore. Resta fermo per selezionare.</string>
     <string name="d401_hint_stage2">Trascina per selezionare il testo. Tocca per finire.</string>
     <string name="c01_shift_title">Larghezza extra di Maiusc</string>

@@ -120,6 +120,15 @@
     <string name="d508_space_swipe_scale_summary">Sogeza kwa umbali gani kwenye ubao wa nafasi kubadilisha lugha ya kuingiza (100% = chaguo-msingi).</string>
     <string name="d508_field_swipe_scale_title">Umbali wa ishara</string>
     <string name="d508_field_swipe_scale_summary">Ishara za kibodi zinahitaji kusogea kwa umbali gani: chini kwa kufunga, pembeni kubadilisha ukurasa, kusogeza kwenye backspace kufuta neno (100% = chaguo-msingi).</string>
+    <string name="d508_profile_title">Wasifu wa kasi ya kuchapa</string>
+    <string name="d508_profile_summary">Hutumia mipangilio awali kwa wachapaji wa polepole au wa haraka: mipangilio ya chini ya kubonyeza kwa muda mrefu, kubonyeza mara mbili, umbali wa kusogeza na kurudia backspace.</string>
+    <string name="d508_profile_body">Unachapa kwa kasi gani? Hii huweka vizingiti vya kushikilia na kusogeza ipasavyo - kila kitu kinabaki kikiwezavyo kurekebishwa kwenye mipangilio.</string>
+    <string name="d508_profile_standard">Wastani</string>
+    <string name="d508_profile_deliberate">Makini / polepole</string>
+    <string name="d508_profile_quick">Haraka</string>
+    <string name="d508_profile_applied">Wasifu umetumika</string>
+    <string name="d508_backspace_repeat_initial_delay_title">Muda wa kurudia backspace</string>
+    <string name="d508_backspace_repeat_initial_delay_summary">Backspace inabidi ibonyezwe kwa muda gani kabla ya kuanza kurudia, kwa ms.</string>
     <string name="d401_hint_stage1">Buruta kusogeza kielekezi. Tulia kuteua.</string>
     <string name="d401_hint_stage2">Buruta kuteua maandishi. Gusa kumaliza.</string>
     <string name="c01_shift_title">Upana wa ziada wa Shift</string>

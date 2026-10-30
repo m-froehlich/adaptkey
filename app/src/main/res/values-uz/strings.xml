@@ -120,6 +120,15 @@
     <string name="d508_space_swipe_scale_summary">Kiritish tilini almashtirish uchun probel tugmasida qancha siljitish kerak (100% = standart).</string>
     <string name="d508_field_swipe_scale_title">Imo-ishoralar siljish masofasi</string>
     <string name="d508_field_swipe_scale_summary">Klaviatura imo-ishoralarini qancha siljitish kerak: yopish uchun pastga, sahifa almashtirish uchun yonga, soz ochirish uchun orqaga tugmasida siljitish (100% = standart).</string>
+    <string name="d508_profile_title">Yozish tezligi profili</string>
+    <string name="d508_profile_summary">Sekin yoki tez yozuvchilar uchun oldindan sozlamani qo\'llaydi: pastdagi uzoq bosish, ikki marta bosish, siltish masofasi va backspace takrorlash sozlamalari.</string>
+    <string name="d508_profile_body">Qanchalik tez yozasiz? Bu ushlab turish va siltish chegaralarini mos ravishda belgilaydi - hammasi sozlamalarda sozlanishi mumkin.</string>
+    <string name="d508_profile_standard">Standart</string>
+    <string name="d508_profile_deliberate">O\'ylangan / sekin</string>
+    <string name="d508_profile_quick">Tez</string>
+    <string name="d508_profile_applied">Profil qo\'llanildi</string>
+    <string name="d508_backspace_repeat_initial_delay_title">Backspace takrorlash kechikishi</string>
+    <string name="d508_backspace_repeat_initial_delay_summary">Backspace takrorlanishni boshlashidan oldin qancha bosib turilishi kerak, ms.</string>
     <string name="d401_hint_stage1">Kursorni siljitish uchun sudrang. Tanlash uchun qimirlamay turing.</string>
     <string name="d401_hint_stage2">Matnni tanlash uchun sudrang. Tugatish uchun bosing.</string>
     <string name="c01_shift_title">Shift qo‘shimcha kengligi</string>

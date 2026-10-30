@@ -373,6 +373,26 @@ class SettingsMapperTest {
     }
     
     @Test
+    fun `D-508 backspaceRepeatInitialDelay is clamped into the 200-800 ms range`() {
+        assertEquals(
+            SettingsMapper.MIN_BACKSPACE_REPEAT_INITIAL_DELAY_MS,
+            SettingsMapper.toAdaptSettings(RawSettings(backspaceRepeatInitialDelayMs = 50L)).backspaceRepeatInitialDelayMs
+        )
+        assertEquals(
+            SettingsMapper.MAX_BACKSPACE_REPEAT_INITIAL_DELAY_MS,
+            SettingsMapper.toAdaptSettings(RawSettings(backspaceRepeatInitialDelayMs = 9_000L)).backspaceRepeatInitialDelayMs
+        )
+        assertEquals(
+            AdaptSettings.DEFAULT_BACKSPACE_REPEAT_INITIAL_DELAY_MS,
+            SettingsMapper.toAdaptSettings(RawSettings()).backspaceRepeatInitialDelayMs
+        )
+        assertEquals(
+            600L,
+            SettingsMapper.toAdaptSettings(RawSettings(backspaceRepeatInitialDelayMs = 600L)).backspaceRepeatInitialDelayMs
+        )
+    }
+    
+    @Test
     fun `G-06 capsLockHapticsEnabled defaults on and passes through`() {
         assertTrue(SettingsMapper.toAdaptSettings(RawSettings()).capsLockHapticsEnabled)
         assertFalse(SettingsMapper.toAdaptSettings(RawSettings(capsLockHapticsEnabled = false)).capsLockHapticsEnabled)

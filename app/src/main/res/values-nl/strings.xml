@@ -120,6 +120,15 @@
     <string name="d508_space_swipe_scale_summary">Hoe ver de swipe op de spatiebalk moet gaan om de invoertaal te wisselen (100% = standaard).</string>
     <string name="d508_field_swipe_scale_title">Swipeafstand gebaren</string>
     <string name="d508_field_swipe_scale_summary">Hoe ver de toetsenbordgebaren moeten gaan: omlaag om te sluiten, zijwaarts voor paginawissel, swipe op backspace om een woord te wissen (100% = standaard).</string>
+    <string name="d508_profile_title">Typsnelheid-profiel</string>
+    <string name="d508_profile_summary">Past een preset toe voor trage of snelle typers: de instellingen hieronder voor lang ingedrukt houden, dubbeltik, swipeafstand en backspace-herhaling.</string>
+    <string name="d508_profile_body">Hoe snel typ je? Dit stelt de houd- en swipe-drempels overeenkomstig in - alles blijft instelbaar in de instellingen.</string>
+    <string name="d508_profile_standard">Standaard</string>
+    <string name="d508_profile_deliberate">Bedachtzaam / traag</string>
+    <string name="d508_profile_quick">Snel</string>
+    <string name="d508_profile_applied">Profiel toegepast</string>
+    <string name="d508_backspace_repeat_initial_delay_title">Backspace-herhaalvertraging</string>
+    <string name="d508_backspace_repeat_initial_delay_summary">Hoe lang de backspace ingedrukt moet blijven voordat het herhalen begint, in ms.</string>
     <string name="d401_hint_stage1">Sleep om de cursor te verplaatsen. Houd stil om te selecteren.</string>
     <string name="d401_hint_stage2">Sleep om tekst te selecteren. Tik om te voltooien.</string>
     <string name="c01_shift_title">Extra breedte van Shift</string>

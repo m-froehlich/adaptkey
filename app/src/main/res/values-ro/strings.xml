@@ -120,6 +120,15 @@
     <string name="d508_space_swipe_scale_summary">Cât de departe trebuie glisat pe bara de spațiu pentru a schimba limba de introducere (100% = implicit).</string>
     <string name="d508_field_swipe_scale_title">Distanța gesturilor</string>
     <string name="d508_field_swipe_scale_summary">Cât de departe trebuie glisate gesturile tastaturii: în jos pentru închidere, lateral pentru schimbarea paginii, glisare pe backspace pentru ștergerea unui cuvânt (100% = implicit).</string>
+    <string name="d508_profile_title">Profil de ritm de tastare</string>
+    <string name="d508_profile_summary">Aplică o presetare pentru cei care tastează lent sau rapid: setările de mai jos pentru apăsare lungă, dublă apăsare, distanța glisării și repetarea backspace.</string>
+    <string name="d508_profile_body">Cât de repede tastezi? Aceasta setează pragurile de menținere și glisare în consecință - totul rămâne reglabil în setări.</string>
+    <string name="d508_profile_standard">Standard</string>
+    <string name="d508_profile_deliberate">Meditat / lent</string>
+    <string name="d508_profile_quick">Rapid</string>
+    <string name="d508_profile_applied">Profil aplicat</string>
+    <string name="d508_backspace_repeat_initial_delay_title">Întârzierea repetării backspace</string>
+    <string name="d508_backspace_repeat_initial_delay_summary">Cât timp trebuie ținut apăsat backspace înainte să înceapă să se repete, în ms.</string>
     <string name="d401_hint_stage1">Trage ca să muți cursorul. Stai nemișcat ca să selectezi.</string>
     <string name="d401_hint_stage2">Trage ca să selectezi textul. Atinge ca să termini.</string>
     <string name="c01_shift_title">Lățime suplimentară pentru Shift</string>

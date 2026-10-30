@@ -120,6 +120,15 @@
     <string name="d508_space_swipe_scale_summary">Kung gaano kalayo dapat ang swipe sa space bar para magpalit ng input language (100% = default).</string>
     <string name="d508_field_swipe_scale_title">Distansya ng mga galaw</string>
     <string name="d508_field_swipe_scale_summary">Kung gaano kalayo dapat ang mga galaw ng keyboard: pababa para isara, pahalang para magpalit ng pahina, swipe sa backspace para burahin ang salita (100% = default).</string>
+    <string name="d508_profile_title">Profile ng bilis ng pag-type</string>
+    <string name="d508_profile_summary">Naglalapat ng preset para sa mabagal o mabilis mag-type: ang mga setting sa ibaba para sa mahabang pagpindot, dobleng pagpindot, distansya ng swipe at pag-uulit ng backspace.</string>
+    <string name="d508_profile_body">Gaano kabilis ka mag-type? Itinatakda nito ang mga antas ng paghawak at swipe nang naaayon - lahat ay nananatiling naitatakda sa mga setting.</string>
+    <string name="d508_profile_standard">Karaniwan</string>
+    <string name="d508_profile_deliberate">Maingat / mabagal</string>
+    <string name="d508_profile_quick">Mabilis</string>
+    <string name="d508_profile_applied">Nailapat ang profile</string>
+    <string name="d508_backspace_repeat_initial_delay_title">Antala ng pag-uulit ng backspace</string>
+    <string name="d508_backspace_repeat_initial_delay_summary">Gaano katagal dapat pindutin ang backspace bago magsimulang umulit, sa ms.</string>
     <string name="d401_hint_stage1">I-drag para ilipat ang cursor. Manatiling tahimik para pumili.</string>
     <string name="d401_hint_stage2">I-drag para pumili ng teksto. I-tap para tapusin.</string>
     <string name="c01_shift_title">Dagdag na lapad ng Shift</string>

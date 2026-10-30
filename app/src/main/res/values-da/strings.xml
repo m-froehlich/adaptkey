@@ -120,6 +120,15 @@
     <string name="d508_space_swipe_scale_summary">Hvor langt stryget på mellemrumstasten skal gå for at skifte inputsprog (100 % = standard).</string>
     <string name="d508_field_swipe_scale_title">Strygeafstand for bevægelser</string>
     <string name="d508_field_swipe_scale_summary">Hvor langt tastaturets bevægelser skal gå: nedad for at lukke, til siden for sideskift, stryg på tilbagetast for at slette et ord (100 % = standard).</string>
+    <string name="d508_profile_title">Skrivetempo-profil</string>
+    <string name="d508_profile_summary">Anvender en forindstilling til langsomme eller hurtige: nedenstående indstillinger for langt tryk, dobbelttryk, strygeafstand og tilbagetast-gentagelse.</string>
+    <string name="d508_profile_body">Hvor hurtigt skriver du? Dette sætter holde- og strygetærsklerne i overensstemmelse hermed - alt forbliver justerbart i indstillingerne.</string>
+    <string name="d508_profile_standard">Standard</string>
+    <string name="d508_profile_deliberate">Overvejet / langsom</string>
+    <string name="d508_profile_quick">Hurtig</string>
+    <string name="d508_profile_applied">Profil anvendt</string>
+    <string name="d508_backspace_repeat_initial_delay_title">Tilbagetast-gentagelsesforsinkelse</string>
+    <string name="d508_backspace_repeat_initial_delay_summary">Hvor længe tilbagetasten skal holdes nede, før gentagelsen begynder, i ms.</string>
     <string name="d401_hint_stage1">Træk for at flytte markøren. Hold dig i ro for at markere.</string>
     <string name="d401_hint_stage2">Træk for at markere tekst. Tryk for at afslutte.</string>
     <string name="c01_shift_title">Ekstra bredde til Skift</string>

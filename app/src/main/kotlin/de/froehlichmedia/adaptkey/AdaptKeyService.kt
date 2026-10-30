@@ -1507,6 +1507,8 @@ class AdaptKeyService : InputMethodService() {
             // to the whole per-gesture requirement inside the view, so D-46/D-57's calibrated shape survives.
             view.spaceSwipeScaleFactor = s.spaceSwipeScalePercent / 100f
             view.fieldSwipeScaleFactor = s.fieldSwipeScalePercent / 100f
+            // D-508: the backspace repeat's first tick waits this long (D-07's former hardcoded value).
+            view.backspaceRepeatInitialDelayMs = s.backspaceRepeatInitialDelayMs
             // D-507: the combined key's slot function - the ?123 toggle, the emoji panel, or hidden.
             view.combinedKeyMode = s.combinedKeyMode
             // D-92: the calculator page's currency/decimal-separator keys follow the device's system
