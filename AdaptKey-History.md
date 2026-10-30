@@ -24160,12 +24160,16 @@ alike. Same string table, same instruction counts, different bytes across precom
 stale-Gradle-task-output signature (D-505's failure class, whose own tell - extra
 `Intrinsics.checkNotNullExpressionValue` strings - is absent this time), not new code and not a new toolchain
 version in the repo (build.gradle.kts changed only versionCode/versionName between v1.2.87 and v1.2.93;
-verified). Conclusion: the GitHub v1.2.93 APK was not produced by the RELEASE RECIPE. How it was actually
-built is not reconstructible from the artifacts - the release went live 2026-10-29 20:13 UTC without a
-documented RECIPE run for any of v1.2.88-v1.2.93 (the Release Channels section's last documented release was
-v1.2.87), and the most plausible producer is a day-to-day main-checkout build with the caches on, exactly
-the trap the RECIPE exists for. Worth the user's recollection, but not blocking: the fix is the same
-regardless.
+verified). Conclusion: the GitHub v1.2.93 APK was not produced by the RELEASE RECIPE. Root cause
+afterwards confirmed by the user: the uploaded APK was his own day-to-day TEST build of the main
+checkout, uploaded in the belief it was current and adequate - the release went live 2026-10-29
+20:13 UTC without a documented RECIPE run for any of v1.2.88-v1.2.93 (the Release Channels section's
+last documented release was v1.2.87). One contributing factor, found reviewing the standing
+instructions afterwards: the version-bump rules file's line "A plain F-Droid build requires no version
+bump - it builds the tagged commit as-is" reads as "a plain build is fine for F-Droid" and never
+mentions the RELEASE RECIPE at all - the line was rewritten (rules/version-bump.md, local-only,
+gitignored) to keep the no-bump statement but point at the RECIPE explicitly and mark the day-to-day
+build as never uploadable. The fix to the release itself is the same regardless.
 
 **Fix, without any code change (the v1.2.47 asset-replacement precedent):** rebuilt per RECIPE into
 `build/release-v1.2.93/AdaptKey.apk` - sha256 ab54f8789e3a6a80e6db8cb9df135e248cc248f792ccc7394a8132170d6e5116,

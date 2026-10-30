@@ -362,7 +362,11 @@ in every prompt.
   `assets/dexopt/baseline.prof`), with identical string pools (16,430 strings; only the embedded `~~R8`
   `pg-map-id` marker differs) and 207 of 2,416 methods differing at identical instruction sizes, spread
   across app, kotlin-stdlib AND onnxruntime code - the stale-Gradle-task-output signature (D-505's failure
-  class, minus the Intrinsics marker), not a source difference. F-Droid's side: the checkupdates bot
+  class, minus the Intrinsics marker), not a source difference. Root cause afterwards confirmed by the user:
+  the uploaded APK was his own day-to-day test build of the main checkout, uploaded believing it current -
+  and the version-bump rules line "A plain F-Droid build requires no version bump - it builds the tagged
+  commit as-is" could be read as blessing exactly that; it was rewritten (local rules file) to point at the
+  RELEASE RECIPE explicitly. F-Droid's side: the checkupdates bot
   generated MR !54866 ("Update AdaptKey to 589") 2026-10-30 04:24 UTC and its `fdroid build` pipeline failed
   (the log has since been deleted from GitLab; the underlying mismatch is proven locally); the production
   buildserver, meanwhile, rebuilt 583 the same morning and it MATCHED - fresh proof that the local RECIPE
