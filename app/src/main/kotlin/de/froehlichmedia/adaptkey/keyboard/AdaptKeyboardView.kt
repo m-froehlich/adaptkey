@@ -685,6 +685,12 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private var cursorControlActive = false
     private var cursorControlStage = CursorControlGesture.Stage.CURSOR
     private var cursorControlGraceActive = false
+    
+    // D-508: true only for the very touch that armed the gesture (the finger was still down when the
+    // long-press fired) and reset by the first ACTION_DOWN afterwards - so a lift-grace re-touch, which
+    // is an explicitly deliberate gesture entry, can never be mistaken for the slow-tap case the
+    // "empty arm" rescue below exists for.
+    private var cursorControlArmingTouchActive = false
     private var cursorControlCrosshairX = 0f
     private var cursorControlCrosshairY = 0f
     private var cursorControlCrosshairAnimator: ValueAnimator? = null
@@ -1398,10 +1404,26 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 // before the first repeat tick has fired (D-340): once the hold is genuinely active,
                 // sliding the finger off the key must not abort the repeat; it continues until the finger
                 // is lifted (ACTION_UP/ACTION_CANCEL).
-                if (pressedKey != null && movedOutsideKey(event.x, event.y) &&
-                    swipeDirectionIfFarEnough(pressedKey!!, event.x - downX, event.y - downY) != null
-                ) {
-                    cancelPendingLongPress()
+                if (pressedKey != null) {
+                    val heldKey = pressedKey!!
+                    // D-508: the D-380 smear protection deliberately does not apply to the space bar -
+                    // its purpose (a smeared hold still opens a letter key's popup) has no meaning on a
+                    // key with no long-press popup, whose width lets a real gesture travel its whole
+                    // qualifying distance inside the key. Space's only pending long-press is the D-401
+                    // cursor-control arm, so there motion alone cancels it: the finger leaving the key
+                    // OR movement beyond the system touch slop - the same rule the backspace repeat
+                    // already uses, making "a moving finger is no hold intent" uniform. A deliberate
+                    // cursor gesture is unaffected: hold still to the haptic, then drag (sub-slop
+                    // wobble during the hold keeps arming).
+                    val cancelLongPress = if (heldKey.code == KeyCode.SPACE) {
+                        movedOutsideKey(event.x, event.y) || movedBeyondSlop(event.x, event.y)
+                    } else {
+                        movedOutsideKey(event.x, event.y) &&
+                            swipeDirectionIfFarEnough(heldKey, event.x - downX, event.y - downY) != null
+                    }
+                    if (cancelLongPress) {
+                        cancelPendingLongPress()
+                    }
                 }
                 if (pressedKey != null && !backspaceRepeated && movedBeyondSlop(event.x, event.y)) {
                     cancelBackspaceRepeat()
@@ -1574,6 +1596,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
         pressedKeyRect = null
         cursorControlActive = true
         cursorControlStage = CursorControlGesture.Stage.CURSOR
+        cursorControlArmingTouchActive = true
         cursorControlCrosshairX = downX
         cursorControlCrosshairY = downY
         longPressHandler.postDelayed(cursorControlStillnessRunnable, CursorControlGesture.HOLD_STILL_TO_SELECT_MS)
@@ -1596,6 +1619,10 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 if (cursorControlGraceActive) {
                     longPressHandler.removeCallbacks(cursorControlGraceRunnable)
                     cursorControlGraceActive = false
+                    // D-508: a re-touch is an explicitly deliberate gesture entry - from here on the
+                    // "empty arm" rescue in the ACTION_UP branch no longer applies, whatever happens
+                    // during this touch.
+                    cursorControlArmingTouchActive = false
                     cursorControlCrosshairAnimator?.cancel()
                     // D-495: the re-touch is a new stream - it is tracked before its coordinates become
                     // the new origin, so the fresh origin can never be a second finger's position.
@@ -1656,6 +1683,30 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 longPressHandler.removeCallbacks(cursorControlStillnessRunnable)
                 // D-495: the stream ends with this release, whichever stage path follows.
                 touchTracker.end()
+                // D-508: the "empty arm" rescue for the slow-space-tap case. The gesture armed from a
+                // still hold that never moved beyond the touch slop and never reached Stage 2, and this
+                // release is still the original arming touch (a lift-grace re-touch is a deliberate
+                // gesture entry and excluded via cursorControlArmingTouchActive). Such a touch was a
+                // slow tap the arm deadline stole from under it - it commits the ordinary Space the
+                // user meant and ends the mode, instead of leaving a stolen, silently swallowed space
+                // behind. pendingAmbiguity/pendingRecordWeight belong to exactly this arming touch's
+                // ACTION_DOWN, so the commit carries the same data an ordinary space tap would.
+                if (cursorControlStage == CursorControlGesture.Stage.CURSOR &&
+                    cursorControlArmingTouchActive &&
+                    !movedBeyondSlop(event.x, event.y)
+                ) {
+                    cursorControlArmingTouchActive = false
+                    endCursorControl()
+                    spaceKeyForCommit()?.let { spaceKey ->
+                        flash(spaceKey)
+                        val tapX = downX
+                        val tapY = downY
+                        val ambiguity = pendingAmbiguity
+                        val weight = pendingRecordWeight
+                        longPressHandler.post { onKeyListener?.onKey(spaceKey, tapX, tapY, ambiguity, weight) }
+                    }
+                    return true
+                }
                 // D-401-followup: any release while Stage 2 is active ends the mode outright and collapses
                 // the selection - device-reported: the original "zero movement since touch-down" reading of
                 // "a tap ends the mode" was almost never reachable in practice (reaching Stage 2 at all
@@ -2243,6 +2294,15 @@ class AdaptKeyboardView @JvmOverloads constructor(
         val match = keyRects.firstOrNull { (key, _) -> key.code == KeyCode.SPACE } ?: return null
         val (key, rect) = match
         return KeyBox(key.id, key.char, rect.left, rect.top, rect.right, rect.bottom)
+    }
+    
+    /**
+     * D-508: the space bar's own [Key], for the cursor-control "empty arm" rescue's space commit.
+     * Null when no space key is showing (its geometry cannot be resolved) - the rescue then simply
+     * ends the mode without committing, exactly the pre-D-508 behaviour.
+     */
+    private fun spaceKeyForCommit(): Key? {
+        return keyRects.firstOrNull { (key, _) -> key.code == KeyCode.SPACE }?.first
     }
     
     /**
