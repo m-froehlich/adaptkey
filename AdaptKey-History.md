@@ -24182,3 +24182,64 @@ nightly build verifies 589, publishing it to F-Droid. Remaining: the user replac
 answers linsui on #14. Process note carried forward: every release, however small the round, follows the
 RELEASE RECIPE and gets its Release Channels entry - the recipe's whole point is that it is not optional
 even when the round "only" carries data/UI changes.
+
+## §534 - D-508: the gesture/long-press calibration for slow users - the community report's whole solution (v1.2.94)
+
+Community report (2026-10-30, condensed): "Sometimes slow swiping on the spacebar activates the mouse
+gesture. An option to activate the mouse gesture later would solve that problem... I think this also carries
+over to long pressing a button. Maybe different profiles could fix both in one setting, so the user does not
+have to configure it. This profile would then be selected after the install." The code reading behind the
+D-508 plan confirmed the mechanism and sharpened it: the D-401 arm used no motion evidence at all (a bare
+320 ms timer, cancelled only by bounds-exit AND full swipe travel - D-380), so any space swipe slower than
+~2.5 cm/s (or whose first 50.6 dp stayed inside the wide key) was claimed by the cursor gesture mid-swipe
+and `longPressFired` then blocked both the tap and the swipe; worse, a completely still space tap over 320 ms
+armed the gesture and swallowed the space outright. D-32 (fast popups) and D-57 (harder swipes) pull in
+opposite directions through the shared constant, which is exactly the window the report fell into.
+
+**The user's two framing decisions before any code:** the whole solution (profiles), not a patch; and the
+D-380 smear protection is deliberately dropped for the space bar ("der Zweck bezieht sich nicht auf diese
+Taste"). Five further open points were all answered as recommended: the empty-arm rescue (yes), the Flink
+profile (included), the value table (approved), the onboarding placement inside the existing calibration
+screen (yes), and the backspace repeat initial delay in profile scope (in).
+
+**Round 1 - the space-bar arm (AdaptKeyboardView).** The MOVE cancel gate now has a Space-specific branch:
+`movedOutsideKey || movedBeyondSlop`, replacing D-380's `bounds-exit AND swipe-distance` for that one key
+(the same rule the D-07 backspace repeat already uses, so "a moving finger is no hold intent" is uniform;
+deliberate gesture entry unaffected - hold still to the haptic, then drag). Plus the "empty arm" rescue: an
+ACTION_UP while still in Stage CURSOR, on the original arming touch (a new `cursorControlArmingTouchActive`
+flag, reset by the first subsequent DOWN so a lift-grace re-touch can never qualify), with no movement
+beyond slop, commits the ordinary space - carrying the arming touch's own ambiguity/weight tap data - and
+ends the mode, instead of entering the lift-grace with a silently swallowed space. `spaceKeyForCommit()`
+resolves the key defensively (null = pre-D-508 behaviour). No new unit tests: view-internal Android glue,
+the established gap.
+
+**Round 2 - the swipe travel becomes settings.** `d508_space_swipe_scale` / `d508_field_swipe_scale`
+(80-160 %, default 100) scale the whole per-gesture requirement inside `swipeDirectionIfFarEnough()`
+(key-width fallback and D-57 factors included, so the calibrated shape survives scaling); two plain
+SeekBarPreferences in the gesture category, mapper clamps + tests, backup key-list entries, strings in all
+32 files. Ops incidents worth remembering: the string-insertion script first wrote CRLF into the LF
+res-XMLs (full-file diffs; restored to LF in a follow-up commit - `core.autocrlf` is false in this repo,
+and the d507 rows turned out to have had mixed CRLF line endings inside the LF files, now uniform), and a
+hashtable-indexing PowerShell failure silently wrote empty string values before the anchor-based rewrite
+recovered them. Lesson: bulk res-XML edits go through function-argument scripts, never hashtable
+lookups, and every insertion is verified by content, not just count.
+
+**Round 3 - the input-tempo profiles.** `CalibrationProfile` (pure, 5 new tests): Standard
+(320/400/100/100/400), Deliberate (500/550/135/130/600), Quick (220/300/85/85/350) over exactly five keys -
+the two new swipe scales, the new `d508_backspace_repeat_initial_delay_ms` slider (200-800 ms; the D-07
+`INITIAL_DELAY_MS` becomes a view property the service pushes, same seam as `longPressDelayMs`), and the
+existing D-32/double-tap sliders. **Apply-once model, deliberately no persistent profile state** (the
+D-301 lesson): a profile writes concrete values into the existing keys; the sliders stay the single source
+of truth, backup/import needs nothing new, existing installs resolve to today's values untouched, and a
+manual slider change simply overrides the profiled value. The dialog lives on a new settings row; the
+calibration screen (K-01) carries the three buttons below the style picker with an immediate apply + toast
+(the report's "selected after the install"; deliberately no highlight of a "current" profile and no
+confirmation dialog - nothing already-learned is replaced). Strings in all 32 files; the resident service
+adopts every change live through its own preference listener.
+
+`:app:assembleRelease` + 1,801 unit tests green (new: CalibrationProfileTest's five, SettingsMapperTest's
+three D-508 clamp tests; UiLocaleConsistencyTest enforces the ~13 new strings per file across all 32
+locales). Rides versionCode 590 / 1.2.94. NOT yet device-confirmed - the §7 checklist of
+`AdaptKey-Plan-Gesture-Calibration.md` covers it: slow language swipe, swallowed-space rescue, deliberate
+gesture entry, scaled field gestures at both profile extremes, profile apply + manual override surviving
+backup, fresh-install onboarding vs. untouched existing install.

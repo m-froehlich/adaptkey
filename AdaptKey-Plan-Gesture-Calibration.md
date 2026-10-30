@@ -1,6 +1,10 @@
 # AdaptKey — Plan: Gesture/Long-Press Calibration for Slow Users (D-508)
 
-**Status:** PROPOSED — analysis done, no code yet. User decision pending on §9's open points.
+**Status:** IMPLEMENTED (§534, v1.2.94/versionCode 590, 2026-10-30) - rounds 1-3 committed, spec addenda +
+progress entry + this closure done, one version bump for the whole feature. Build + all unit tests green
+(1,801, 0 failures), including CalibrationProfileTest, the D-508 mapper clamps and
+UiLocaleConsistencyTest across all 32 locales. **On-device confirmation pending**: the §7 checklist below
+is the plan for that step; NOT executed yet.
 Origin: community report (2026-10-30) + user's two directives: the *whole* solution (profiles), not a
 patch; and the D-380 smear protection is deliberately dropped for the space bar (its rationale never
 applied to that key).

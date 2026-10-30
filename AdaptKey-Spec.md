@@ -331,7 +331,13 @@ repeated at any time from Settings. The touch-zone visualisation screen (§17, T
 view after a (re-)selection. Since D-485 (§49) the screen offers exactly one exit button: "Skip" only during
 onboarding while no style has been chosen yet, otherwise a plain "OK" that just closes the screen (everything
 is already saved). Opened from Settings there is never a "Skip", and "Skip" can never overwrite an existing
-style.
+style. D-508: the screen also carries the input-tempo profiles (Standard / Deliberate / Quick) below
+the style picker - an apply-once action writing concrete values into the delay/swipe settings (see
+G-01's D-508 addendum and G-08's; deliberately no persistent profile state, the sliders stay the
+single source of truth per the D-301 lesson). Tapping a profile takes effect immediately (a toast
+confirms); no confirmation dialog, since nothing already-learned is replaced and every profiled
+slider stays individually adjustable afterwards. The same three profiles are reachable any time as a
+dialog on the settings' own "Input tempo profile" row.
 
 ---
 
@@ -408,8 +414,24 @@ always-bundled English is installed - a one-entry cycle can never reach a differ
 state the chevrons stay hidden and a swipe fired anyway is swallowed silently (consumed, no fade, no toast
 re-announcing the already-active language) rather than advertised.
 
+**D-508 addendum: the swipe travel is user-scalable, and a moving finger no longer arms the space
+long-press.** Two user-facing percentage settings scale the per-gesture travel requirements:
+`d508_space_swipe_scale` scales G-01's own requirement (the 44 dp base × D-57's 1.15 factor),
+`d508_field_swipe_scale` scales the field gestures' shared requirement (G-03's dismiss-down, D-19's
+horizontal page swipe, G-02's word-delete; the 110 dp / three-key-width base with D-57's 0.85 page
+factor) - applied to the whole requirement including the key-width fallback, so the calibrated shape
+survives scaling unchanged. Together with the arm rule below (see G-08's D-508 addendum), this is
+the user-adjustable half of the community report's "slow user" calibration. In addition, D-380's
+smear protection deliberately does not apply to the space bar: the pending D-401 long-press arm is
+cancelled by motion alone (the finger leaving the key, or travel beyond the system touch slop - the
+same rule the D-07 backspace repeat already uses, making "a moving finger is no hold intent"
+uniform), so a language swipe at any speed disarms the gesture before the arm deadline instead of
+being claimed by it mid-swipe. The D-401-followup rationale that the two gestures "never actually
+compete" held only for swipes faster than the long-press delay; deliberately slow swipes were
+exactly the case this fixes.
+
 ### G-02 - Delete Whole Word
-Swiping left on the backspace key deletes the entire previous word rather than a single character. This is independent of - and takes priority in recognition over - the accelerating repeat-on-hold behaviour of a plain backspace press/hold.
+Swiping left on the backspace key deletes the entire previous word rather than a single character. This is independent of - and takes priority in recognition over - the accelerating repeat-on-hold behaviour of a plain backspace press/hold. D-508: the word-delete swipe's own travel distance scales with the field-swipe percentage setting (see G-01's D-508 addendum).
 
 ### G-03 - Dismiss Keyboard
 Swiping downward dismisses the keyboard - recognised on the keyboard body, the suggestion bar, and the
@@ -425,7 +447,8 @@ above is unchanged) but never hides the keyboard: on an ordinary key the swipe f
 that key instead, and the keyboard is closed via the system back button. The D-488 chip's reject-drag
 contract is unaffected either way, and the two downward-swipe sources that bypass the keyboard body (the
 suggestion bar and the extra row's own listeners) are gated by the same switch, since all three share one
-action.
+action. D-508: the dismiss-down's own travel distance scales with the field-swipe percentage setting
+(see G-01's D-508 addendum).
 
 ### G-04 - Remove/Un-learn a Suggestion (Drag-to-Trash)
 A suggestion in the suggestion bar can be dragged upward into a trash area that appears during the drag; a
@@ -768,6 +791,22 @@ independently invented - expected to be retuned once tried on a real device, not
 per-line distance was raised from an original 32dp to 200dp during tuning, and D-401-followup's
 dominant-axis gate (above) was added on top of that same constant, not instead of it - both work together to
 keep an ordinary horizontal drag from ever being misread as a line change.
+
+**D-508 addendum: the arm requires stillness, and a never-moved slow tap types its space.** Two changes to
+the arming above, from the community report that slow swiping on the space bar activated this gesture.
+First, the pending arm is cancelled by motion alone - the finger leaving the space bar's bounds OR travel
+beyond the system touch slop (the D-380 smear protection deliberately does not apply to the space bar; see
+G-01's D-508 addendum for the rationale) - so only a genuinely still hold arms the gesture, and a slow
+G-01 language swipe keeps its swipe instead of being claimed mid-drag: after arming, `cursorControlActive`
+owns the stream and `longPressFired` blocks both the tap and the swipe resolution, which was the reported
+loss. The D-401-followup rationale above ("the two never actually compete") was true only for swipes
+faster than the long-press delay and is superseded by this rule. Second, the "empty arm" rescue: when the
+gesture armed from the original still touch and that same touch releases without ever having moved beyond
+the slop, while still in Stage 1 (the 800 ms stillness timer never promoted it to Stage 2), the release
+commits an ordinary space - carrying the arming touch's own T-01/T-05 tap data - instead of entering the
+lift-grace with nothing achieved. This closes the companion finding that a slow tap on space (> the
+long-press delay, no movement) armed the gesture and silently swallowed the space outright. A lift-grace
+re-touch is an explicitly deliberate gesture entry and excluded from the rescue.
 
 ---
 

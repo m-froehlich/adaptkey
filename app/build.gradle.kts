@@ -40,11 +40,14 @@ android {
         // D-450-followup: explicit user request bumped 1.1.78 -> 1.2.0 - a minor-version milestone marker,
         // not a further third-digit step, requested on the same commit that adds the first Cyrillic-script
         // language pack (Serbian) and the non-Latin-layout generalisation it required.
-        // D-507: the combined key's slot function becomes one three-value setting (?123 / emoji / off),
-        // with the emoji slot as the deliberate, redundant second emoji-panel entry point beside the
-        // §48 extra-row button; D-59's boolean migrates on load.
-        versionCode = 589
-        versionName = "1.2.93"
+        // D-508: the gesture/long-press calibration for slow users - the space long-press arm cancels on
+        // motion alone (D-380's smear protection deliberately dropped for the space bar), an armed-but-
+        // never-moved slow tap commits its space, the swipe travel becomes user-scalable (space/field
+        // percent sliders), the D-07 backspace repeat initial delay becomes a setting, and three
+        // input-tempo profiles (apply-once over the delay/swipe sliders) ship in the calibration screen
+        // and the settings.
+        versionCode = 590
+        versionName = "1.2.94"
         
         // The ONNX Runtime native libs (tier-3 mini-LLM) ship per ABI; keep only the ones real phones
         // use (arm64 + 32-bit arm), dropping the emulator-only x86/x86_64 libs (~43 MB). Device testing

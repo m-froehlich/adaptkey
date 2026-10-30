@@ -443,6 +443,19 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
+- **D-508 - IMPLEMENTED (§534, v1.2.94; 2026-10-30, NOT yet device-confirmed): the gesture/long-press
+  calibration for slow users - the community report's whole solution.** The D-401 space long-press now
+  cancels on motion alone (finger leaves the key OR travel beyond touch slop; the D-380 smear protection
+  deliberately dropped for the space bar per the user's call), an armed-but-never-moved slow tap commits
+  its space ("empty arm" rescue), the swipe travel becomes user-scalable (`d508_space_swipe_scale` /
+  `d508_field_swipe_scale`, 80-160 %), the D-07 backspace repeat initial delay becomes a setting
+  (`d508_backspace_repeat_initial_delay_ms`, 200-800 ms), and three input-tempo profiles
+  (Standard/Deliberate/Quick) apply-once-write those sliders plus the long-press/double-tap delays -
+  offered in the calibration screen (the report's "selected after the install") and as a settings dialog.
+  Apply-once, no persistent profile state (the D-301 lesson). 1,801 unit tests green incl. the new
+  CalibrationProfileTest and the mapper clamps. Device checklist: `AdaptKey-Plan-Gesture-Calibration.md`
+  §7. See §534 and spec G-01/G-02/G-03/G-08/K-01's D-508 addenda.
+
 - **D-505 - RESOLVED, end-to-end verified (§528, v1.2.91; implemented 2026-10-28, NOT yet device-confirmed):
   the whole language-pack import/seeding pipeline streams.** Community report: importing the Russian pack
   threw `OutOfMemoryError` in `LanguagePackInstaller.parse()` (214 MB unpacked entries held as `ByteArray`s
