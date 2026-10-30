@@ -619,9 +619,32 @@ non-trivial changes).
   Enter ("Weiter") re-materialises the model's whole stale token at the caret via
   `commitVerbatimFieldFragment`'s `setComposingText` - the doubled value. Diagnosis note: D-150's
   password-field guard deliberately silences ALL diagnostics in a PASSWORD field, so this exact shape can
-  never appear in a captured log by design - the USERNAME field (same mechanism, trailing fragment) is
-  the realistic log path.
-  **ROUND A IMPLEMENTED (2026-10-28, v1.2.88/v1.2.89 - fixes 0 and 2-refinement from the list below):**
+   never appear in a captured log by design - the USERNAME field (same mechanism, trailing fragment) is
+   the realistic log path.
+   **RE-REPORTED 2026-10-30 (third opening - a plain PASTE, full AdaptKeyJitter log captured): the**
+   **deferred cosmetic rewrite duplicates, and fix 1's content check alone cannot catch the shape.**
+   Ordinary Chrome text field (no login field involved - fix 0's gate does not apply). Chain, each step
+   visible in the log: paste echo (caret [0,0]->[15,15], composing empty) arms the debounced D-62
+   caret-move reclaim -> reclaimSurroundingWord takes the pasted text's trailing "Besuch" (anchor 9) via
+   setComposingRegion(9,15) + setComposingText, and updateComposing() schedules composingPreviewRunnable
+   at +200 ms (EXPENSIVE_SUGGESTION_DELAY_MS) -> ~170 ms later Chrome KILLS the editor-side span (echo
+   candidates=[-1,-1] at a MATCHING caret [15,15]: the early return on the caret check keeps the stale
+   model; the text itself is still intact at the anchor, so even the planned fix-1 content verification
+   would pass here) -> the preview runnable fires, all its guards pass (same token, live ic, unchanged
+   expensiveSuggestionSeq), and its application callback calls updateComposing() ->
+   setComposingText("Besuch") with no live span INSERTS a second copy at the caret ("BesuchBesuch", span
+   [15,21]) -> the next echo trips the EXTERNAL branch whose finishComposingText() commits the copy; the
+   user had to delete 6 characters by hand. Two lessons for Runde B: (1) the duplicating write can be the
+   purely cosmetic, deferred one (composingPreviewRunnable's application callback) - no keystroke or
+   Enter involved at all; (2) span liveness - the candidates echo - is the only signal that distinguishes
+   this shape; content verification cannot. Proposed mechanisms (user's go pending): record the last
+   echo's span state unconditionally (D-149 pattern); skip the cosmetic rewrite when composing is
+   non-empty and the last echo reported no span (asymmetric cost: a false skip loses only a colour
+   update, a false pass duplicates text); and/or, on a no-span echo with a matching caret and a
+   content-verified anchor, re-mark ownership in place via setComposingRegion() (never rewrite/insert,
+   no tear-down decision from remote candidates - invariant-2-safe) so the NEXT write, keystroke
+   included, replaces instead of inserting.
+   **ROUND A IMPLEMENTED (2026-10-28, v1.2.88/v1.2.89 - fixes 0 and 2-refinement from the list below):**
   the automatic debounced caret reclaim no longer runs in login-relevant fields
   (`reclaimSuppressedForFieldKind`, mirroring `reclaimPossible`'s own exclusion; the Shift-only rearm
   branch per D-455 stays, plus a defensive second gate inside `reclaimWordAtCaret` itself), and
