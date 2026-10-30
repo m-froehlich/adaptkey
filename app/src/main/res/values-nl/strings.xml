@@ -116,6 +116,10 @@
     <string name="d19_surface_swipe_summary">Veeg naar links of rechts over het toetsenbord om te wisselen tussen letters en de cijfer-/symboolpagina\'s. Indien uit, wisselt alleen de ?123 / ABC-toets.</string>
     <string name="g03_swipe_down_dismiss_title">Omlaag vegen sluit het toetsenbord</string>
     <string name="g03_swipe_down_dismiss_summary">Omlaag vegen over het toetsenbord sluit het. Indien uit, sluit het alleen de extra rij en blijft het toetsenbord open.</string>
+    <string name="d508_space_swipe_scale_title">Swipeafstand taalwissel</string>
+    <string name="d508_space_swipe_scale_summary">Hoe ver de swipe op de spatiebalk moet gaan om de invoertaal te wisselen (100% = standaard).</string>
+    <string name="d508_field_swipe_scale_title">Swipeafstand gebaren</string>
+    <string name="d508_field_swipe_scale_summary">Hoe ver de toetsenbordgebaren moeten gaan: omlaag om te sluiten, zijwaarts voor paginawissel, swipe op backspace om een woord te wissen (100% = standaard).</string>
     <string name="d401_hint_stage1">Sleep om de cursor te verplaatsen. Houd stil om te selecteren.</string>
     <string name="d401_hint_stage2">Sleep om tekst te selecteren. Tik om te voltooien.</string>
     <string name="c01_shift_title">Extra breedte van Shift</string>

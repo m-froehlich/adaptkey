@@ -116,6 +116,10 @@
     <string name="d19_surface_swipe_summary">Проведіть ліворуч або праворуч по клавіатурі, щоб перемикатися між літерами та сторінками цифр/символів. Якщо вимкнено, перемикає лише клавіша ?123 / ABC.</string>
     <string name="g03_swipe_down_dismiss_title">Свайп вниз закриває клавіатуру</string>
     <string name="g03_swipe_down_dismiss_summary">Свайп вниз по клавіатурі закриває її. Якщо вимкнено, закривається лише додатковий ряд, а клавіатура залишається відкритою.</string>
+    <string name="d508_space_swipe_scale_title">Відстань свайпу зміни мови</string>
+    <string name="d508_space_swipe_scale_summary">Як далеко має пройти свайп по клавіші пробілу, щоб змінити мову введення (100% = типовe значення).</string>
+    <string name="d508_field_swipe_scale_title">Відстань жестів</string>
+    <string name="d508_field_swipe_scale_summary">Як далеко мають проходити жести клавіатури: вниз для закриття, вбік для зміни сторінки, свайп по backspace для видалення слова (100% = типовe значення).</string>
     <string name="d401_hint_stage1">Перетягуйте, щоб рухати курсор. Завмріть, щоб виділяти.</string>
     <string name="d401_hint_stage2">Перетягуйте, щоб виділяти текст. Торкніться, щоб завершити.</string>
     <string name="c01_shift_title">Додаткова ширина Shift</string>

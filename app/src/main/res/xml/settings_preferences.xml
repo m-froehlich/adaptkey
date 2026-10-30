@@ -280,6 +280,30 @@
             android:summary="@string/g03_swipe_down_dismiss_summary"
             android:defaultValue="true" />
 
+        <!-- D-508: user-facing swipe travel scaling, percentages over the calibrated base distances
+             (44 dp space language swipe, 110 dp / three key widths field gestures; the D-57 per-gesture
+             factors apply on top). Plain SeekBarPreference like d32 - the value is a percentage, not a
+             raw dp/px, so the calibrated shape survives scaling unchanged. -->
+        <SeekBarPreference
+            android:key="d508_space_swipe_scale"
+            android:title="@string/d508_space_swipe_scale_title"
+            android:summary="@string/d508_space_swipe_scale_summary"
+            android:defaultValue="100"
+            android:max="160"
+            app:min="80"
+            app:seekBarIncrement="5"
+            app:showSeekBarValue="true" />
+
+        <SeekBarPreference
+            android:key="d508_field_swipe_scale"
+            android:title="@string/d508_field_swipe_scale_title"
+            android:summary="@string/d508_field_swipe_scale_summary"
+            android:defaultValue="100"
+            android:max="160"
+            app:min="80"
+            app:seekBarIncrement="5"
+            app:showSeekBarValue="true" />
+
     </PreferenceCategory>
 
     <PreferenceCategory android:key="cat_layout_group" android:title="@string/cat_layout">

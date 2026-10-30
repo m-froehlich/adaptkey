@@ -678,6 +678,19 @@ class AdaptKeyboardView @JvmOverloads constructor(
     /** D-401: whether a long-press on the space bar arms the cursor/selection-control gesture (default off). */
     var cursorControlEnabled: Boolean = false
     
+    /**
+     * D-508: percentage scaling (1.0 = the hardcoded base distance) of the G-01 space-bar language
+     * swipe's own travel requirement. Set from the settings; the D-57 per-gesture factor applies on
+     * top of this, so the calibrated relationship between the gestures survives scaling unchanged.
+     */
+    var spaceSwipeScaleFactor: Float = 1f
+    
+    /**
+     * D-508: percentage scaling (1.0 = the hardcoded base distance) of the field gestures' own travel
+     * requirement (dismiss-down, horizontal page swipe, backspace word-delete). Set from the settings.
+     */
+    var fieldSwipeScaleFactor: Float = 1f
+    
     // D-401: the space-bar cursor/selection-control gesture's own running state - see armCursorControl()/
     // handleCursorControlTouch() and CursorControlGesture's own class KDoc for the full mechanism. Reuses
     // downX/downY as its own origin (T-01's already-recorded initial contact point) rather than a second,
@@ -2263,10 +2276,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
         // D-57: the horizontal page swipe was a touch too wide - shorten it by 15%. The space-bar language
         // swipe, still too easy to trigger by accident, is made 15% harder. Vertical field gestures
         // (swipe-down-to-dismiss, up-to-symbols) keep the plain fieldRequired distance and are untouched.
+        // D-508: both bases are additionally scaled by their user-facing percentage settings, applied to
+        // the whole per-gesture requirement (key-width fallback and D-57 factors included), so the
+        // calibrated shape survives scaling unchanged.
         val required = when {
-            isLanguageSwipe -> spaceSwipeThresholdPx * SPACE_SWIPE_FACTOR
-            horizontal -> fieldRequired * PAGE_SWIPE_FACTOR
-            else -> fieldRequired
+            isLanguageSwipe -> spaceSwipeThresholdPx * SPACE_SWIPE_FACTOR * spaceSwipeScaleFactor
+            horizontal -> fieldRequired * PAGE_SWIPE_FACTOR * fieldSwipeScaleFactor
+            else -> fieldRequired * fieldSwipeScaleFactor
         }
         return if (travel >= required) direction else null
     }

@@ -116,6 +116,10 @@
     <string name="d19_surface_swipe_summary">Pyyhkäise näppäimistön yli vasemmalle tai oikealle vaihtaaksesi kirjainten ja numero-/symbolisivujen välillä. Kun pois päältä, vain ?123 / ABC -näppäin vaihtaa.</string>
     <string name="g03_swipe_down_dismiss_title">Sulje näppäimistö pyyhkäisemällä alas</string>
     <string name="g03_swipe_down_dismiss_summary">Pyyhkäisy alaspäin näppäimistön päällä sulkee sen. Kun pois päältä, se sulkee vain lisärivin ja näppäimistö pysyy auki.</string>
+    <string name="d508_space_swipe_scale_title">Kielen vaihdon pyyhkäisymatka</string>
+    <string name="d508_space_swipe_scale_summary">Kuinka pitkän pyyhkäisyn välilyöntinäppäimellä vaaditaan syöttökielen vaihtamiseen (100 % = oletus).</string>
+    <string name="d508_field_swipe_scale_title">Eleiden pyyhkäisymatka</string>
+    <string name="d508_field_swipe_scale_summary">Kuinka pitkälle näppäimistön eleiden on edettävä: alas sulkemiseen, sivulle sivunvaihtoon, pyyhkäisy askelpalauttimella sanan poistamiseen (100 % = oletus).</string>
     <string name="d401_hint_stage1">Vedä siirtääksesi kohdistinta. Pysy paikallaan valitaksesi.</string>
     <string name="d401_hint_stage2">Vedä valitaksesi tekstiä. Napauta lopettaaksesi.</string>
     <string name="c01_shift_title">Shiftin lisäleveys</string>

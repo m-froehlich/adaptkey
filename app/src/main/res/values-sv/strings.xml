@@ -116,6 +116,10 @@
     <string name="d19_surface_swipe_summary">Svep åt vänster eller höger över tangentbordet för att växla mellan bokstäver och siffer-/symbolsidorna. När av växlar endast tangenten ?123 / ABC.</string>
     <string name="g03_swipe_down_dismiss_title">Svep nedåt för att stänga tangentbordet</string>
     <string name="g03_swipe_down_dismiss_summary">Ett svep nedåt på tangentbordet stänger det. När av stänger det bara den extra raden och tangentbordet förblir öppet.</string>
+    <string name="d508_space_swipe_scale_title">Svepavstånd för språkbyte</string>
+    <string name="d508_space_swipe_scale_summary">Hur långt svepet på mellanslagstangenten måste gå för att byta inmatningsspråk (100 % = standard).</string>
+    <string name="d508_field_swipe_scale_title">Svepavstånd för gester</string>
+    <string name="d508_field_swipe_scale_summary">Hur långt tangentbordets gester måste gå: nedåt för att stänga, åt sidan för sidbyte, svep på backsteg för att radera ett ord (100 % = standard).</string>
     <string name="d401_hint_stage1">Dra för att flytta markören. Håll still för att markera.</string>
     <string name="d401_hint_stage2">Dra för att markera text. Tryck för att avsluta.</string>
     <string name="c01_shift_title">Extra bredd för Skift</string>

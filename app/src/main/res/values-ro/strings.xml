@@ -116,6 +116,10 @@
     <string name="d19_surface_swipe_summary">Glisați la stânga sau la dreapta pe tastatură pentru a comuta între litere și paginile de cifre/simboluri. Când este dezactivat, comută doar tasta ?123 / ABC.</string>
     <string name="g03_swipe_down_dismiss_title">Glisați în jos pentru a închide tastatura</string>
     <string name="g03_swipe_down_dismiss_summary">O glisare în jos pe tastatură o închide. Când este dezactivat, închide doar rândul suplimentar, iar tastatura rămâne deschisă.</string>
+    <string name="d508_space_swipe_scale_title">Distanța glisării pentru limbă</string>
+    <string name="d508_space_swipe_scale_summary">Cât de departe trebuie glisat pe bara de spațiu pentru a schimba limba de introducere (100% = implicit).</string>
+    <string name="d508_field_swipe_scale_title">Distanța gesturilor</string>
+    <string name="d508_field_swipe_scale_summary">Cât de departe trebuie glisate gesturile tastaturii: în jos pentru închidere, lateral pentru schimbarea paginii, glisare pe backspace pentru ștergerea unui cuvânt (100% = implicit).</string>
     <string name="d401_hint_stage1">Trage ca să muți cursorul. Stai nemișcat ca să selectezi.</string>
     <string name="d401_hint_stage2">Trage ca să selectezi textul. Atinge ca să termini.</string>
     <string name="c01_shift_title">Lățime suplimentară pentru Shift</string>

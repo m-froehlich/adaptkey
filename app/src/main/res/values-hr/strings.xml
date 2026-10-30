@@ -116,6 +116,10 @@
     <string name="d19_surface_swipe_summary">Prevucite lijevo ili desno preko tipkovnice za prelazak između slova i stranica s brojevima/simbolima. Kada je isključeno, prebacuje samo tipka ?123 / ABC.</string>
     <string name="g03_swipe_down_dismiss_title">Povuci prema dolje za zatvaranje tipkovnice</string>
     <string name="g03_swipe_down_dismiss_summary">Povlačenje prema dolje po tipkovnici je zatvara. Kada je isključeno, zatvara se samo dodatni red, a tipkovnica ostaje otvorena.</string>
+    <string name="d508_space_swipe_scale_title">Duljina poteza za jezik</string>
+    <string name="d508_space_swipe_scale_summary">Koliko dugo mora poteg na razmaknici za promjenu jezika unosa (100 % = zadano).</string>
+    <string name="d508_field_swipe_scale_title">Duljina gesta</string>
+    <string name="d508_field_swipe_scale_summary">Koliko dugo moraju potegi tipkovnice: dolje za zatvaranje, bocno za promjenu stranice, poteg na backspace za brisanje rijeci (100 % = zadano).</string>
     <string name="d401_hint_stage1">Povucite za pomicanje pokazivača. Ostanite mirni za odabir.</string>
     <string name="d401_hint_stage2">Povucite za odabir teksta. Dodirnite za završetak.</string>
     <string name="c01_shift_title">Dodatna širina tipke Shift</string>

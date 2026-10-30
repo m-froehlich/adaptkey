@@ -116,6 +116,10 @@
     <string name="d19_surface_swipe_summary">Przesuń w lewo lub w prawo po klawiaturze, aby przełączać między literami a stronami cyfr/symboli. Po wyłączeniu przełącza tylko klawisz ?123 / ABC.</string>
     <string name="g03_swipe_down_dismiss_title">Przesuń w dół, aby zamknąć klawiaturę</string>
     <string name="g03_swipe_down_dismiss_summary">Przesunięcie w dół po klawiaturze zamyka ją. Gdy wyłączone, zamyka tylko dodatkowy rząd, a klawiatura pozostaje otwarta.</string>
+    <string name="d508_space_swipe_scale_title">Dystans przesunięcia języka</string>
+    <string name="d508_space_swipe_scale_summary">Jak daleko musi przejść przesunięcie na spacji, aby zmienić język wprowadzania (100% = domyślne).</string>
+    <string name="d508_field_swipe_scale_title">Dystans gestów</string>
+    <string name="d508_field_swipe_scale_summary">Jak daleko muszą przejść gesty klawiatury: w dół, aby zamknąć, w bok, aby zmienić stronę, przesunięcie na backspace, aby usunąć słowo (100% = domyślne).</string>
     <string name="d401_hint_stage1">Przeciągnij, aby przesunąć kursor. Zatrzymaj się, aby zaznaczać.</string>
     <string name="d401_hint_stage2">Przeciągnij, aby zaznaczyć tekst. Dotknij, aby zakończyć.</string>
     <string name="c01_shift_title">Dodatkowa szerokość Shift</string>

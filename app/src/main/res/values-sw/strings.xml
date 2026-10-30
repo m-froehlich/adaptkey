@@ -116,6 +116,10 @@
     <string name="d19_surface_swipe_summary">Telezesha kushoto au kulia kwenye kibodi ili kubadilisha kati ya herufi na kurasa za nambari/alama. Ikizimwa, kitufe cha ?123 / ABC pekee ndicho hubadilisha.</string>
     <string name="g03_swipe_down_dismiss_title">Telezesha chini ili kufunga kibodi</string>
     <string name="g03_swipe_down_dismiss_summary">Kutelezesha chini kwenye kibodi kunaifunga. Ikizimwa, inafunga tu safu ya ziada na kibodi inabaki wazi.</string>
+    <string name="d508_space_swipe_scale_title">Umbali wa kusogeza lugha</string>
+    <string name="d508_space_swipe_scale_summary">Sogeza kwa umbali gani kwenye ubao wa nafasi kubadilisha lugha ya kuingiza (100% = chaguo-msingi).</string>
+    <string name="d508_field_swipe_scale_title">Umbali wa ishara</string>
+    <string name="d508_field_swipe_scale_summary">Ishara za kibodi zinahitaji kusogea kwa umbali gani: chini kwa kufunga, pembeni kubadilisha ukurasa, kusogeza kwenye backspace kufuta neno (100% = chaguo-msingi).</string>
     <string name="d401_hint_stage1">Buruta kusogeza kielekezi. Tulia kuteua.</string>
     <string name="d401_hint_stage2">Buruta kuteua maandishi. Gusa kumaliza.</string>
     <string name="c01_shift_title">Upana wa ziada wa Shift</string>

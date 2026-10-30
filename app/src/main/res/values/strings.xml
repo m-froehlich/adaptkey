@@ -132,6 +132,10 @@
     <string name="d19_surface_swipe_summary">Swipe left or right across the keyboard to switch between letters and the number/symbol pages. When off, only the ?123 / ABC key switches.</string>
     <string name="g03_swipe_down_dismiss_title">Swipe down to close the keyboard</string>
     <string name="g03_swipe_down_dismiss_summary">A downward swipe on the keyboard closes it. When off, it only closes the extra row and the keyboard stays open.</string>
+    <string name="d508_space_swipe_scale_title">Language swipe distance</string>
+    <string name="d508_space_swipe_scale_summary">How far the swipe on the space bar must travel to switch the input language (100% = default).</string>
+    <string name="d508_field_swipe_scale_title">Gesture swipe distance</string>
+    <string name="d508_field_swipe_scale_summary">How far the keyboard gestures must travel: swipe down to close, sideways to switch pages, swipe on backspace to delete a word (100% = default).</string>
     <string name="d401_hint_stage1">Drag to move the cursor. Hold still to select text.</string>
     <string name="d401_hint_stage2">Drag to select text. Tap to finish.</string>
     <string name="c01_shift_title">Extra shift width</string>

@@ -116,6 +116,10 @@
     <string name="d19_surface_swipe_summary">Stryg til venstre eller højre hen over tastaturet for at skifte mellem bogstaver og tal-/symbolsiderne. Når slået fra, skifter kun ?123 / ABC-tasten.</string>
     <string name="g03_swipe_down_dismiss_title">Stryg nedad for at lukke tastaturet</string>
     <string name="g03_swipe_down_dismiss_summary">Et stryg nedad på tastaturet lukker det. Når slået fra, lukker det kun den ekstra række, og tastaturet forbliver åbent.</string>
+    <string name="d508_space_swipe_scale_title">Strygeafstand for sprogskift</string>
+    <string name="d508_space_swipe_scale_summary">Hvor langt stryget på mellemrumstasten skal gå for at skifte inputsprog (100 % = standard).</string>
+    <string name="d508_field_swipe_scale_title">Strygeafstand for bevægelser</string>
+    <string name="d508_field_swipe_scale_summary">Hvor langt tastaturets bevægelser skal gå: nedad for at lukke, til siden for sideskift, stryg på tilbagetast for at slette et ord (100 % = standard).</string>
     <string name="d401_hint_stage1">Træk for at flytte markøren. Hold dig i ro for at markere.</string>
     <string name="d401_hint_stage2">Træk for at markere tekst. Tryk for at afslutte.</string>
     <string name="c01_shift_title">Ekstra bredde til Skift</string>

@@ -116,6 +116,10 @@
     <string name="d19_surface_swipe_summary">Scorri a sinistra o a destra sulla tastiera per passare tra lettere e pagine di numeri/simboli. Se disattivato, cambia solo il tasto ?123 / ABC.</string>
     <string name="g03_swipe_down_dismiss_title">Scorri verso il basso per chiudere la tastiera</string>
     <string name="g03_swipe_down_dismiss_summary">Uno scorrimento verso il basso sulla tastiera la chiude. Se disattivato, chiude solo la riga aggiuntiva e la tastiera resta aperta.</string>
+    <string name="d508_space_swipe_scale_title">Distanza dello scorrimento lingua</string>
+    <string name="d508_space_swipe_scale_summary">Quanto deve scorrere il dito sulla barra spaziatrice per cambiare la lingua di input (100% = predefinito).</string>
+    <string name="d508_field_swipe_scale_title">Distanza dei gesti</string>
+    <string name="d508_field_swipe_scale_summary">Quanto devono scorrere i gesti della tastiera: verso il basso per chiudere, laterale per cambiare pagina, scorrimento su backspace per cancellare una parola (100% = predefinito).</string>
     <string name="d401_hint_stage1">Trascina per spostare il cursore. Resta fermo per selezionare.</string>
     <string name="d401_hint_stage2">Trascina per selezionare il testo. Tocca per finire.</string>
     <string name="c01_shift_title">Larghezza extra di Maiusc</string>

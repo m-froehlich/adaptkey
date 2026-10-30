@@ -116,6 +116,10 @@
     <string name="d19_surface_swipe_summary">Braukite kairėn arba dešinėn per klaviatūrą, kad perjungtumėte raides ir skaičių / simbolių puslapius. Išjungus perjungia tik klavišas ?123 / ABC.</string>
     <string name="g03_swipe_down_dismiss_title">Perbraukite žemyn, kad uždarytumėte klaviatūrą</string>
     <string name="g03_swipe_down_dismiss_summary">Perbraukus žemyn per klaviatūrą, ji užsidaro. Išjungus uždaroma tik papildoma eilutė, o klaviatūra lieka atidaryta.</string>
+    <string name="d508_space_swipe_scale_title">Kalbos perjungimo brūkšnio atstumas</string>
+    <string name="d508_space_swipe_scale_summary">Kiek toli turi nuslinkti tarpo klavišo brūkšnis, kad pakeistų įvesties kalbą (100 % = numatytasis).</string>
+    <string name="d508_field_swipe_scale_title">Gestų brūkšnio atstumas</string>
+    <string name="d508_field_swipe_scale_summary">Kiek toli turi nuslinkti klaviatūros gestai: žemyn uždarymui, į šoną puslapio perjungimui, brūkšnis per backspace žodžio ištrynimui (100 % = numatytasis).</string>
     <string name="d401_hint_stage1">Tempkite žymekliui perkelti. Nejudėkite žymėti.</string>
     <string name="d401_hint_stage2">Tempkite tekstui žymėti. Palieskite baigti.</string>
     <string name="c01_shift_title">Papildomas Shift plotis</string>

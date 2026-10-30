@@ -333,6 +333,46 @@ class SettingsMapperTest {
     }
     
     @Test
+    fun `D-508 spaceSwipeScalePercent is clamped into the 80-160 percent range`() {
+        assertEquals(
+            SettingsMapper.MIN_SWIPE_SCALE_PERCENT,
+            SettingsMapper.toAdaptSettings(RawSettings(spaceSwipeScalePercent = 10)).spaceSwipeScalePercent
+        )
+        assertEquals(
+            SettingsMapper.MAX_SWIPE_SCALE_PERCENT,
+            SettingsMapper.toAdaptSettings(RawSettings(spaceSwipeScalePercent = 500)).spaceSwipeScalePercent
+        )
+        assertEquals(
+            AdaptSettings.DEFAULT_SPACE_SWIPE_SCALE,
+            SettingsMapper.toAdaptSettings(RawSettings()).spaceSwipeScalePercent
+        )
+        assertEquals(
+            120,
+            SettingsMapper.toAdaptSettings(RawSettings(spaceSwipeScalePercent = 120)).spaceSwipeScalePercent
+        )
+    }
+    
+    @Test
+    fun `D-508 fieldSwipeScalePercent is clamped into the 80-160 percent range`() {
+        assertEquals(
+            SettingsMapper.MIN_SWIPE_SCALE_PERCENT,
+            SettingsMapper.toAdaptSettings(RawSettings(fieldSwipeScalePercent = 10)).fieldSwipeScalePercent
+        )
+        assertEquals(
+            SettingsMapper.MAX_SWIPE_SCALE_PERCENT,
+            SettingsMapper.toAdaptSettings(RawSettings(fieldSwipeScalePercent = 500)).fieldSwipeScalePercent
+        )
+        assertEquals(
+            AdaptSettings.DEFAULT_FIELD_SWIPE_SCALE,
+            SettingsMapper.toAdaptSettings(RawSettings()).fieldSwipeScalePercent
+        )
+        assertEquals(
+            90,
+            SettingsMapper.toAdaptSettings(RawSettings(fieldSwipeScalePercent = 90)).fieldSwipeScalePercent
+        )
+    }
+    
+    @Test
     fun `G-06 capsLockHapticsEnabled defaults on and passes through`() {
         assertTrue(SettingsMapper.toAdaptSettings(RawSettings()).capsLockHapticsEnabled)
         assertFalse(SettingsMapper.toAdaptSettings(RawSettings(capsLockHapticsEnabled = false)).capsLockHapticsEnabled)

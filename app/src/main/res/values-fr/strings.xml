@@ -116,6 +116,10 @@
     <string name="d19_surface_swipe_summary">Balayez vers la gauche ou la droite sur le clavier pour passer des lettres aux pages de chiffres/symboles. Si désactivé, seule la touche ?123 / ABC permet de changer.</string>
     <string name="g03_swipe_down_dismiss_title">Balayer vers le bas pour fermer le clavier</string>
     <string name="g03_swipe_down_dismiss_summary">Un balayage vers le bas sur le clavier le ferme. Désactivé, il ferme seulement la rangée supplémentaire et le clavier reste ouvert.</string>
+    <string name="d508_space_swipe_scale_title">Distance du balayage de langue</string>
+    <string name="d508_space_swipe_scale_summary">Distance que le balayage sur la barre d\'espace doit parcourir pour changer la langue de saisie (100 % = valeur par défaut).</string>
+    <string name="d508_field_swipe_scale_title">Distance des gestes</string>
+    <string name="d508_field_swipe_scale_summary">Distance que les gestes du clavier doivent parcourir : balayage vers le bas pour fermer, latéral pour changer de page, balayage sur retour arrière pour supprimer un mot (100 % = valeur par défaut).</string>
     <string name="d401_hint_stage1">Faites glisser pour déplacer le curseur. Restez immobile pour sélectionner.</string>
     <string name="d401_hint_stage2">Faites glisser pour sélectionner le texte. Touchez pour terminer.</string>
     <string name="c01_shift_title">Largeur supplémentaire de Maj</string>

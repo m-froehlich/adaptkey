@@ -126,6 +126,10 @@
     <string name="d19_surface_swipe_summary">Nach links oder rechts über die Tastatur wischen wechselt zwischen Buchstaben und den Zahlen-/Sonderzeichenseiten. Wenn aus, wechselt nur die ?123-/ABC-Taste.</string>
     <string name="g03_swipe_down_dismiss_title">Nach unten wischen schließt die Tastatur</string>
     <string name="g03_swipe_down_dismiss_summary">Nach unten über die Tastatur wischen schließt sie. Wenn aus, schließt die Geste nur die Zusatzzeile und die Tastatur bleibt offen.</string>
+    <string name="d508_space_swipe_scale_title">Sprachwechsel-Wegdistanz</string>
+    <string name="d508_space_swipe_scale_summary">Wie weit der Wisch auf der Leertaste zurücklegen muss, um die Eingabesprache zu wechseln (100 % = Standard).</string>
+    <string name="d508_field_swipe_scale_title">Gesten-Wegdistanz</string>
+    <string name="d508_field_swipe_scale_summary">Wie weit die Tastatur-Gesten zurücklegen müssen: nach unten schließen, seitlich Seitenwechsel, Wischen auf Backspace löscht ein Wort (100 % = Standard).</string>
     <string name="d401_hint_stage1">Ziehen bewegt den Cursor. Stillhalten wechselt zur Auswahl.</string>
     <string name="d401_hint_stage2">Ziehen wählt Text aus. Tippen beendet.</string>
     <string name="c01_shift_title">Zusatzbreite der Shift-Taste</string>

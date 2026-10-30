@@ -116,6 +116,10 @@
     <string name="d19_surface_swipe_summary">Desliza a la izquierda o a la derecha sobre el teclado para cambiar entre letras y las páginas de números/símbolos. Si está desactivado, solo cambia la tecla ?123 / ABC.</string>
     <string name="g03_swipe_down_dismiss_title">Deslizar hacia abajo para cerrar el teclado</string>
     <string name="g03_swipe_down_dismiss_summary">Deslizar hacia abajo sobre el teclado lo cierra. Si está desactivado, solo cierra la fila adicional y el teclado sigue abierto.</string>
+    <string name="d508_space_swipe_scale_title">Distancia del deslizamiento de idioma</string>
+    <string name="d508_space_swipe_scale_summary">Que lejos debe deslizarse el dedo sobre la barra espaciadora para cambiar el idioma de entrada (100 % = valor predeterminado).</string>
+    <string name="d508_field_swipe_scale_title">Distancia de los gestos</string>
+    <string name="d508_field_swipe_scale_summary">Que lejos deben deslizarse los gestos del teclado: hacia abajo para cerrar, lateral para cambiar de pagina, deslizamiento en retroceso para borrar una palabra (100 % = valor predeterminado).</string>
     <string name="d401_hint_stage1">Arrastra para mover el cursor. Quédate quieto para seleccionar.</string>
     <string name="d401_hint_stage2">Arrastra para seleccionar texto. Toca para terminar.</string>
     <string name="c01_shift_title">Ancho extra de Mayús</string>

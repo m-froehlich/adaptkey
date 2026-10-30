@@ -116,6 +116,10 @@
     <string name="d19_surface_swipe_summary">Проведите влево или вправо по клавиатуре, чтобы переключаться между буквами и страницами цифр/символов. Если выключено, переключает только клавиша ?123 / ABC.</string>
     <string name="g03_swipe_down_dismiss_title">Свайп вниз закрывает клавиатуру</string>
     <string name="g03_swipe_down_dismiss_summary">Свайп вниз по клавиатуре закрывает её. Если выключено, закрывается только дополнительный ряд, а клавиатура остаётся открытой.</string>
+    <string name="d508_space_swipe_scale_title">Дальность свайпа смены языка</string>
+    <string name="d508_space_swipe_scale_summary">Как далеко должен пройти свайп по клавише пробела, чтобы сменить язык ввода (100% = значение по умолчанию).</string>
+    <string name="d508_field_swipe_scale_title">Дальность жестов</string>
+    <string name="d508_field_swipe_scale_summary">Как далеко должны проходить жесты клавиатуры: вниз для закрытия, вбок для смены страницы, свайп по backspace для удаления слова (100% = значение по умолчанию).</string>
     <string name="d401_hint_stage1">Перетаскивайте, чтобы двигать курсор. Замрите, чтобы выделять.</string>
     <string name="d401_hint_stage2">Перетаскивайте, чтобы выделять текст. Нажмите, чтобы завершить.</string>
     <string name="c01_shift_title">Дополнительная ширина Shift</string>

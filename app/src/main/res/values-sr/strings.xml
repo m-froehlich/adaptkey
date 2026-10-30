@@ -116,6 +116,10 @@
     <string name="d19_surface_swipe_summary">Превуците лево или десно преко тастатуре за прелазак између слова и страница са бројевима/симболима. Када је искључено, пребацује само тастер ?123 / ABC.</string>
     <string name="g03_swipe_down_dismiss_title">Prevuci nadole za zatvaranje tastature</string>
     <string name="g03_swipe_down_dismiss_summary">Prevlačenje nadole po tastaturi je zatvara. Kada je isključeno, zatvara se samo dodatni red, a tastatura ostaje otvorena.</string>
+    <string name="d508_space_swipe_scale_title">Дужина превлачења за језик</string>
+    <string name="d508_space_swipe_scale_summary">Колико дуго мора потег на тастеру размака за промену језика уноса (100% = подразумевано).</string>
+    <string name="d508_field_swipe_scale_title">Дужина гестова</string>
+    <string name="d508_field_swipe_scale_summary">Колико дуго морају гестови тастатуре: доле за затварање, бочно за промену странице, превлачење по backspace за брисање речи (100% = подразумевано).</string>
     <string name="d401_hint_stage1">Повуците за померање показивача. Останите мирни за одабир.</string>
     <string name="d401_hint_stage2">Повуците за одабир текста. Додирните за завршетак.</string>
     <string name="c01_shift_title">Додатна ширина тастера Shift</string>

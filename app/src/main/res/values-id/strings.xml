@@ -116,6 +116,10 @@
     <string name="d19_surface_swipe_summary">Geser ke kiri atau kanan di keyboard untuk beralih antara huruf dan halaman angka/simbol. Jika nonaktif, hanya tombol ?123 / ABC yang beralih.</string>
     <string name="g03_swipe_down_dismiss_title">Geser ke bawah untuk menutup keyboard</string>
     <string name="g03_swipe_down_dismiss_summary">Geser ke bawah pada keyboard untuk menutupnya. Jika nonaktif, hanya baris tambahan yang ditutup dan keyboard tetap terbuka.</string>
+    <string name="d508_space_swipe_scale_title">Jarak geser bahasa</string>
+    <string name="d508_space_swipe_scale_summary">Seberapa jauh geser pada bilah spasi harus dilakukan untuk mengganti bahasa input (100% = bawaan).</string>
+    <string name="d508_field_swipe_scale_title">Jarak gestur</string>
+    <string name="d508_field_swipe_scale_summary">Seberapa jauh gestur papan ketik harus dilakukan: ke bawah untuk menutup, ke samping untuk ganti halaman, geser pada backspace untuk menghapus kata (100% = bawaan).</string>
     <string name="d401_hint_stage1">Seret untuk memindahkan kursor. Diam untuk memilih.</string>
     <string name="d401_hint_stage2">Seret untuk memilih teks. Ketuk untuk selesai.</string>
     <string name="c01_shift_title">Lebar ekstra Shift</string>

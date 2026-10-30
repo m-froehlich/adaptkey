@@ -141,6 +141,13 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  * @property swipeDownDismissEnabled whether a downward swipe dismisses the keyboard (G-03, default **on**).
  *           When off, a downward swipe still closes an open extra row (§48) but never hides the keyboard,
  *           and on an ordinary key it falls back to a plain tap.
+ * @property spaceSwipeScalePercent D-508: percentage scaling of the G-01 space-bar language swipe's own
+ *           travel requirement (the 44 dp base × its D-57 factor), 80-160 % (default 100). Raising it makes
+ *           the language swipe need more travel - the deliberate-speed direction of the D-57 tuning, now
+ *           user-adjustable.
+ * @property fieldSwipeScalePercent D-508: percentage scaling of the field gestures' own travel requirement
+ *           (dismiss-down, horizontal page swipe, backspace word-delete; the 110 dp / three-key-width base
+ *           with its D-57 page factor), 80-160 % (default 100).
  * @property bottomInsetMode D-486: how much room is kept free below the keyboard (default
  *           [BottomInsetMode.DEFAULT], automatic) - a three-position slider, last in the Layout category, for
  *           phones whose reported navigation/gesture insets do not match what is really on screen.
@@ -179,6 +186,8 @@ data class AdaptSettings(
     val cursorControlEnabled: Boolean = true,
     val surfaceSwipeEnabled: Boolean = true,
     val swipeDownDismissEnabled: Boolean = true,
+    val spaceSwipeScalePercent: Int = DEFAULT_SPACE_SWIPE_SCALE,
+    val fieldSwipeScalePercent: Int = DEFAULT_FIELD_SWIPE_SCALE,
     val bottomInsetMode: BottomInsetMode = BottomInsetMode.DEFAULT
 ) {
     
@@ -196,6 +205,12 @@ data class AdaptSettings(
          * Backspace undo) and D-361 (sticky Backspace), not a Shift-specific value.
          */
         const val DEFAULT_DOUBLE_TAP_DELAY_MS = 400L
+        
+        /** Default D-508 space-bar language-swipe travel scaling, in percent (today's hardcoded distance). */
+        const val DEFAULT_SPACE_SWIPE_SCALE = 100
+        
+        /** Default D-508 field-gesture travel scaling, in percent (today's hardcoded distance). */
+        const val DEFAULT_FIELD_SWIPE_SCALE = 100
         
         /** Default extra row spacing in dp (D-55). */
         const val DEFAULT_EXTRA_SPACING_DP = 7

@@ -1503,6 +1503,10 @@ class AdaptKeyService : InputMethodService() {
             // D-401: gated off outright while emoji search owns the keyboard (enterEmojiSearch()'s own
             // note) - a settings reload mid-search would otherwise silently re-enable it there too.
             view.cursorControlEnabled = s.cursorControlEnabled && !emojiSearchActive
+            // D-508: the user-facing swipe travel scaling (space language swipe, field gestures) - applied
+            // to the whole per-gesture requirement inside the view, so D-46/D-57's calibrated shape survives.
+            view.spaceSwipeScaleFactor = s.spaceSwipeScalePercent / 100f
+            view.fieldSwipeScaleFactor = s.fieldSwipeScalePercent / 100f
             // D-507: the combined key's slot function - the ?123 toggle, the emoji panel, or hidden.
             view.combinedKeyMode = s.combinedKeyMode
             // D-92: the calculator page's currency/decimal-separator keys follow the device's system

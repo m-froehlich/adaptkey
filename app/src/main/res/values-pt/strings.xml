@@ -116,6 +116,10 @@
     <string name="d19_surface_swipe_summary">Deslize para a esquerda ou direita no teclado para alternar entre letras e as páginas de números/símbolos. Quando desativado, apenas a tecla ?123 / ABC alterna.</string>
     <string name="g03_swipe_down_dismiss_title">Deslizar para baixo fecha o teclado</string>
     <string name="g03_swipe_down_dismiss_summary">Deslizar para baixo sobre o teclado fecha-o. Quando desativado, fecha apenas a linha extra e o teclado continua aberto.</string>
+    <string name="d508_space_swipe_scale_title">Distancia do deslize de idioma</string>
+    <string name="d508_space_swipe_scale_summary">Quao longe o deslize na barra de espaco deve ir para mudar o idioma de entrada (100% = padrao).</string>
+    <string name="d508_field_swipe_scale_title">Distancia dos gestos</string>
+    <string name="d508_field_swipe_scale_summary">Quao longe os gestos do teclado devem ir: para baixo para fechar, lateral para trocar de pagina, deslize no backspace para apagar uma palavra (100% = padrao).</string>
     <string name="d401_hint_stage1">Arraste para mover o cursor. Fique parado para selecionar.</string>
     <string name="d401_hint_stage2">Arraste para selecionar o texto. Toque para terminar.</string>
     <string name="c01_shift_title">Largura extra do Shift</string>

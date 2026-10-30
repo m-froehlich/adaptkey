@@ -116,6 +116,10 @@
     <string name="d19_surface_swipe_summary">Harflar va raqam/belgi sahifalari orasida o‘tish uchun klaviatura bo‘ylab chapga yoki o‘ngga suring. O‘chirilganda faqat ?123 / ABC tugmasi almashtiradi.</string>
     <string name="g03_swipe_down_dismiss_title">Klaviaturani yopish uchun pastga suring</string>
     <string name="g03_swipe_down_dismiss_summary">Klaviatura ustida pastga surish uni yopadi. O‘chirilganda faqat qo‘shimcha qator yopiladi va klaviatura ochiq qoladi.</string>
+    <string name="d508_space_swipe_scale_title">Til almashtirish siljish masofasi</string>
+    <string name="d508_space_swipe_scale_summary">Kiritish tilini almashtirish uchun probel tugmasida qancha siljitish kerak (100% = standart).</string>
+    <string name="d508_field_swipe_scale_title">Imo-ishoralar siljish masofasi</string>
+    <string name="d508_field_swipe_scale_summary">Klaviatura imo-ishoralarini qancha siljitish kerak: yopish uchun pastga, sahifa almashtirish uchun yonga, soz ochirish uchun orqaga tugmasida siljitish (100% = standart).</string>
     <string name="d401_hint_stage1">Kursorni siljitish uchun sudrang. Tanlash uchun qimirlamay turing.</string>
     <string name="d401_hint_stage2">Matnni tanlash uchun sudrang. Tugatish uchun bosing.</string>
     <string name="c01_shift_title">Shift qo‘shimcha kengligi</string>

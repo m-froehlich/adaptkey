@@ -116,6 +116,10 @@
     <string name="d19_surface_swipe_summary">Potiahnutím doľava alebo doprava cez klávesnicu prepnete medzi písmenami a stránkami s číslami/symbolmi. Keď je vypnuté, prepína iba kláves ?123 / ABC.</string>
     <string name="g03_swipe_down_dismiss_title">Potiahnutím nadol zavrieť klávesnicu</string>
     <string name="g03_swipe_down_dismiss_summary">Potiahnutie prstom nadol po klávesnici ju zavrie. Keď je vypnuté, zavrie sa len doplnkový riadok a klávesnica zostane otvorená.</string>
+    <string name="d508_space_swipe_scale_title">Vzdialenosť ťahania pre jazyk</string>
+    <string name="d508_space_swipe_scale_summary">Ako ďaleko musí ťah na medzerníku dôjsť, aby sa zmenil jazyk písania (100 % = predvolené).</string>
+    <string name="d508_field_swipe_scale_title">Vzdialenosť gestov</string>
+    <string name="d508_field_swipe_scale_summary">Ako ďaleko musia gesty klávesnice dôjsť: nadol pre zatvorenie, do strany pre zmenu stránky, ťah po backspace pre zmazanie slova (100 % = predvolené).</string>
     <string name="d401_hint_stage1">Ťahajte na posun kurzora. Zostaňte v pokoji na výber.</string>
     <string name="d401_hint_stage2">Ťahajte na výber textu. Klepnutím dokončíte.</string>
     <string name="c01_shift_title">Extra šírka Shiftu</string>

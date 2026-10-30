@@ -116,6 +116,10 @@
     <string name="d19_surface_swipe_summary">Leret ke kiri atau kanan pada papan kekunci untuk bertukar antara huruf dan halaman nombor/simbol. Apabila dimatikan, hanya kekunci ?123 / ABC yang menukar.</string>
     <string name="g03_swipe_down_dismiss_title">Leret ke bawah untuk menutup papan kekunci</string>
     <string name="g03_swipe_down_dismiss_summary">Leretan ke bawah pada papan kekunci menutupnya. Jika dimatikan, ia hanya menutup baris tambahan dan papan kekunci kekal terbuka.</string>
+    <string name="d508_space_swipe_scale_title">Jarak leret bahasa</string>
+    <string name="d508_space_swipe_scale_summary">Sejauh mana leret pada bar ruang perlu dilakukan untuk menukar bahasa input (100% = lalai).</string>
+    <string name="d508_field_swipe_scale_title">Jarak gerak isyarat</string>
+    <string name="d508_field_swipe_scale_summary">Sejauh mana gerak isyarat papan kekunci perlu dilakukan: ke bawah untuk menutup, ke sisi untuk tukar halaman, leret pada backspace untuk padam perkataan (100% = lalai).</string>
     <string name="d401_hint_stage1">Seret untuk menggerakkan kursor. Diam untuk memilih.</string>
     <string name="d401_hint_stage2">Seret untuk memilih teks. Ketik untuk selesai.</string>
     <string name="c01_shift_title">Lebar tambahan Shift</string>

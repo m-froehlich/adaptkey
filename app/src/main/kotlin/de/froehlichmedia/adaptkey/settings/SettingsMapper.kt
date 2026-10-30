@@ -74,6 +74,8 @@ data class RawSettings(
     val cursorControlEnabled: Boolean = true,
     val surfaceSwipeEnabled: Boolean = true,
     val swipeDownDismissEnabled: Boolean = true,
+    val spaceSwipeScalePercent: Int = AdaptSettings.DEFAULT_SPACE_SWIPE_SCALE,
+    val fieldSwipeScalePercent: Int = AdaptSettings.DEFAULT_FIELD_SWIPE_SCALE,
     val bottomInsetModeKey: String? = null
 )
 
@@ -114,6 +116,12 @@ object SettingsMapper {
     
     /** Maximum double-tap delay in ms (the generic window shared by G-05/D-348/D-361, see [AdaptSettings.DEFAULT_DOUBLE_TAP_DELAY_MS]). */
     const val MAX_DOUBLE_TAP_DELAY_MS = 800L
+    
+    /** D-508 minimum swipe travel scaling (space and field) in percent. */
+    const val MIN_SWIPE_SCALE_PERCENT = 80
+    
+    /** D-508 maximum swipe travel scaling (space and field) in percent. */
+    const val MAX_SWIPE_SCALE_PERCENT = 160
     
     /** D-55 minimum extra row spacing in dp. */
     const val MIN_EXTRA_SPACING_DP = 0
@@ -347,6 +355,8 @@ object SettingsMapper {
             cursorControlEnabled = raw.cursorControlEnabled,
             surfaceSwipeEnabled = raw.surfaceSwipeEnabled,
             swipeDownDismissEnabled = raw.swipeDownDismissEnabled,
+            spaceSwipeScalePercent = raw.spaceSwipeScalePercent.coerceIn(MIN_SWIPE_SCALE_PERCENT, MAX_SWIPE_SCALE_PERCENT),
+            fieldSwipeScalePercent = raw.fieldSwipeScalePercent.coerceIn(MIN_SWIPE_SCALE_PERCENT, MAX_SWIPE_SCALE_PERCENT),
             bottomInsetMode = BottomInsetMode.fromKey(raw.bottomInsetModeKey)
         )
     }

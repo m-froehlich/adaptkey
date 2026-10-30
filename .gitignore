@@ -3,6 +3,7 @@
 .kotlin/
 /local.properties
 .idea/
+.opencode
 .DS_Store
 build/
 /captures
