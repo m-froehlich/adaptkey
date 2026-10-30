@@ -46,8 +46,12 @@ android {
         // percent sliders), the D-07 backspace repeat initial delay becomes a setting, and three
         // input-tempo profiles (apply-once over the delay/swipe sliders) ship in the calibration screen
         // and the settings.
-        versionCode = 590
-        versionName = "1.2.94"
+        // D-492 paste shape: the editor's composing-span echo is tracked (lastEchoComposingSpanPresent),
+        // a span killed at a matching caret is re-marked in place after synchronous caret+content
+        // verification (ComposingSpanReMark), and the cosmetic composingPreviewRunnable rewrite is gated
+        // on the same helper - the captured paste-into-Chrome duplication ("BesuchBesuch") is closed.
+        versionCode = 591
+        versionName = "1.2.95"
         
         // The ONNX Runtime native libs (tier-3 mini-LLM) ship per ABI; keep only the ones real phones
         // use (arm64 + 32-bit arm), dropping the emulator-only x86/x86_64 libs (~43 MB). Device testing
