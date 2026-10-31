@@ -52,8 +52,11 @@ android {
         // on the same helper - the captured paste-into-Chrome duplication ("BesuchBesuch") is closed.
         // D-490: the D-348 double-tap-Backspace revert becomes the fresh-install default (on) - a pure
         // default flip at the four default sites; an explicitly stored Off keeps working, no migration.
-        versionCode = 592
-        versionName = "1.2.96"
+        // D-500/C-28: the auto-capitalisation switch (default on) - the off state is a coarse gate on
+        // AdaptKey's proactive caps: no live Shift-arming anywhere, and the ordinary commit skips the
+        // linguistic force-capitalisation rules (noun-only, LLM lift, acronym restore).
+        versionCode = 593
+        versionName = "1.2.97"
         
         // The ONNX Runtime native libs (tier-3 mini-LLM) ship per ABI; keep only the ones real phones
         // use (arm64 + 32-bit arm), dropping the emulator-only x86/x86_64 libs (~43 MB). Device testing
