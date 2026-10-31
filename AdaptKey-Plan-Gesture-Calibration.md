@@ -1,10 +1,10 @@
 # AdaptKey — Plan: Gesture/Long-Press Calibration for Slow Users (D-508)
 
-**Status:** IMPLEMENTED (§534, v1.2.94/versionCode 590, 2026-10-30) - rounds 1-3 committed, spec addenda +
-progress entry + this closure done, one version bump for the whole feature. Build + all unit tests green
-(1,801, 0 failures), including CalibrationProfileTest, the D-508 mapper clamps and
-UiLocaleConsistencyTest across all 32 locales. **On-device confirmation pending**: the §7 checklist below
-is the plan for that step; NOT executed yet.
+**Status:** CLOSED (2026-10-31). Implemented in §534 (v1.2.94/versionCode 590, 2026-10-30) - rounds 1-3
+committed, spec addenda + progress entry done, one version bump for the whole feature. Build + all unit
+tests green (1,801, 0 failures), including CalibrationProfileTest, the D-508 mapper clamps and
+UiLocaleConsistencyTest across all 32 locales. Device-confirmed by the user 2026-10-31 ("sieht gut aus")
+per the §7 checklist below - the round is closed; release per RELEASE RECIPE with the next release round.
 Origin: community report (2026-10-30) + user's two directives: the *whole* solution (profiles), not a
 patch; and the D-380 smear protection is deliberately dropped for the space bar (its rationale never
 applied to that key).
@@ -146,7 +146,7 @@ Implementation pieces:
 - `Onboarding` sequence tests unchanged (variant chosen in §9.4 keeps the step list as-is).
 - `AdaptKeyboardView` touch paths stay in the established Android-glue no-test convention.
 
-## 7. Device checklist (after implementation)
+## 7. Device checklist (after implementation) - PASSED 2026-10-31
 
 1. Language swipe on Space at ~1 cm/s → switches language, no cursor gesture (Part A).
 2. Slow space tap > profile's long-press delay, no movement → Space commits (Part A2) / behaves as

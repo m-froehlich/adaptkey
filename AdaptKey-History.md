@@ -23525,6 +23525,9 @@ plus the full `:app:testDebugUnitTest` were run on the imported branch before ad
 bit-identical to the previous unconditional code by construction (the new guards only ever add an
 off-branch), so device confirmation matters only for the off states.
 
+**Closed 2026-10-31:** the user device-confirmed the off states ("sieht gut aus") and closed the round -
+both switches turn their gestures off cleanly.
+
 ## §521 - D-502 (part 1): a freshly installed language pack selects its language in the keyboard (v1.2.81)
 
 User request (2026-10-26): "Die Benutzer sehen nicht, dass man die Sprache wechseln kann." Agreed as a
@@ -24247,6 +24250,9 @@ locales). Rides versionCode 590 / 1.2.94. NOT yet device-confirmed - the §7 che
 gesture entry, scaled field gestures at both profile extremes, profile apply + manual override surviving
 backup, fresh-install onboarding vs. untouched existing install.
 
+**Closed 2026-10-31:** the user device-confirmed the round per the §7 checklist ("sieht gut aus") and
+closed D-508; `AdaptKey-Plan-Gesture-Calibration.md` is marked CLOSED.
+
 ## §535 - D-492, paste shape: the editor can kill the composing span at a matching caret - span-liveness tracking, in-place re-mark, and a gate on the cosmetic rewrite (v1.2.95)
 
 The user captured a full `AdaptKeyJitter` diagnostic log of the reported "Dopplung nach Paste" (2026-10-30)
@@ -24362,6 +24368,9 @@ Bookkeeping in the same session, docs-only, recorded in the Progress backlog:
 - **D-473's last open item closed**: the reverse-direction report ("abspringen" typed, replaced by
   "anspringen") was re-tested fresh by the user and no longer reproduces (2026-10-31); no code or data
   change had been identified for it. D-473 is closed in full including the reverse direction.
+
+**Closure 2026-10-31:** the user device-confirmed the round ("sieht gut aus") and closed D-490 - the
+default-on double-tap revert behaves as implemented; no checklist items remain open.
 
 
 ## §537 - D-500: the C-28 auto-capitalisation switch - a coarse gate on AdaptKey's proactive caps (v1.2.97)

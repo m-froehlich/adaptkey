@@ -443,18 +443,15 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
-- **D-508 - IMPLEMENTED (§534, v1.2.94; 2026-10-30, NOT yet device-confirmed): the gesture/long-press
-  calibration for slow users - the community report's whole solution.** The D-401 space long-press now
-  cancels on motion alone (finger leaves the key OR travel beyond touch slop; the D-380 smear protection
-  deliberately dropped for the space bar per the user's call), an armed-but-never-moved slow tap commits
-  its space ("empty arm" rescue), the swipe travel becomes user-scalable (`d508_space_swipe_scale` /
-  `d508_field_swipe_scale`, 80-160 %), the D-07 backspace repeat initial delay becomes a setting
-  (`d508_backspace_repeat_initial_delay_ms`, 200-800 ms), and three input-tempo profiles
-  (Standard/Deliberate/Quick) apply-once-write those sliders plus the long-press/double-tap delays -
-  offered in the calibration screen (the report's "selected after the install") and as a settings dialog.
-  Apply-once, no persistent profile state (the D-301 lesson). 1,801 unit tests green incl. the new
-  CalibrationProfileTest and the mapper clamps. Device checklist: `AdaptKey-Plan-Gesture-Calibration.md`
-  §7. See §534 and spec G-01/G-02/G-03/G-08/K-01's D-508 addenda.
+- **D-508 - RESOLVED (§534, v1.2.94), device-confirmed 2026-10-31: the gesture/long-press calibration for
+  slow users - the community report's whole solution.** The D-401 space long-press cancels on motion alone,
+  an armed-but-never-moved slow tap commits its space ("empty arm" rescue), the swipe travel is
+  user-scalable (`d508_space_swipe_scale` / `d508_field_swipe_scale`, 80-160 %), the backspace repeat
+  initial delay is a setting (`d508_backspace_repeat_initial_delay_ms`), and three input-tempo profiles
+  (Standard/Deliberate/Quick) apply-once-write the sliders - no persistent profile state (the D-301
+  lesson). The plan's §7 device checklist passed ("sieht gut aus");
+  `AdaptKey-Plan-Gesture-Calibration.md` is CLOSED. See §534 and spec
+  G-01/G-02/G-03/G-08/K-01's D-508 addenda.
 
 - **D-505 - RESOLVED, end-to-end verified (§528, v1.2.91; implemented 2026-10-28, NOT yet device-confirmed):
   the whole language-pack import/seeding pipeline streams.** Community report: importing the Russian pack
@@ -558,8 +555,8 @@ non-trivial changes).
   included, English + all 31 UI locales translated (`UiLocaleConsistencyTest` green). Gating sits at the
   `GestureAction` dispatch (tap fallback) + `dismissKeyboardOrCloseExtraRow()`; G-01/G-02 and the D-488
   chip reject-drag are unaffected. Spec addenda in G-01 (D-19 passage) and G-03; mapper/Robolectric tests
-  added; the D-89 feature catalog deliberately lists neither switch (see §520). Off-states not yet
-  device-confirmed (on-state is behaviour-identical by construction).
+  added; the D-89 feature catalog deliberately lists neither switch (see §520). Device-confirmed
+  2026-10-31 including the off states (on-state is behaviour-identical by construction).
 
 - **D-499 - RESOLVED (§516, v1.2.75).** `/` re-added leftmost into the comma key's popup
   (`/ - , : ; _`, comma still pre-selected by value); `URL_SLASH_ALTERNATIVES` deliberately stays
@@ -749,15 +746,12 @@ non-trivial changes).
   **disarm) is no longer wiped by the debounced caret re-derivation scheduled by the previous commit's echo -**
   **a Shift tapped inside the ~100 ms post-commit window now capitalises the next letter.** See §513 and spec
   G-05's D-491 addendum.
-- **D-490 - RESOLVED (§536, v1.2.96), implemented 2026-10-31, NOT yet device-confirmed: the D-348
+- **D-490 - RESOLVED (§536, v1.2.96), device-confirmed 2026-10-31 ("sieht gut aus"): the D-348
   double-tap-Backspace revert is the fresh-install default (on).** User request: "Double Tab Revert sollte
   der Standard sein." Pure default flip at the four default sites (`AdaptSettings`/`RawSettings`/
   `SettingsStore` DEF + the preference XML's `android:defaultValue`) - an explicitly stored Off keeps
   working, backups carry only stored values, so a never-toggled install follows the new default with no
-  migration. Behaviour re-checked for the every-user default per this entry's own direction list: the
-  armed tail's first tap is D-348 v4's ordinary single-character delete (uniform, the D-360 "no special
-  cases" decision carries over), D-265's Space/Enter carve-out and D-489's intervening-key reset keep the
-  window semantics, and D-248's backspace-unlearn path is untouched. See §536.
+  migration. See §536.
 - **D-489 - RESOLVED (§512, v1.2.72): an intervening keystroke on another key (letter/space/delimiter/backspace/**
   **layer switch, a long-press, a popup selection) now breaks G-05's double-tap pair - fast letter-Shift-letter-Shift**
   **typing no longer toggles the word's case; the second Shift acts as the ordinary toggle instead.** See §512 and
@@ -774,13 +768,12 @@ non-trivial changes).
   which the user has not asked to change. Standing rules (memory): "none/off/never" always first; a dropdown for
   unordered pick-one, a slider for ordered scales. Nothing to do until the user names the settings.
 
-- **D-486 - RESOLVED (§508 - §510, v1.2.70; reported 2026-09-28; the list look device-confirmed 2026-09-28,**
-  **whether Automatic fixes the Chinese phone itself still unconfirmed): the keyboard sits a**
-  **gesture-bar-height too high on a Chinese phone without gesture navigation.** Details and the (code-reading)
-  root cause are in §508 and spec §50: a three-position "room below the keyboard" slider (None / Navigation bar /
-  Automatic) as the last Layout entry, an automatic three-button detection, and one inset line in the diagnostic
-  log. Open question that only the device can answer: whether Automatic alone already fixes that phone (it does
-  only if the ROM reports `navigation_mode` = 0 and the surplus is the gesture inset, not the navigation bar).
+- **D-486 - RESOLVED and fully closed (§508 - §510, v1.2.70): the keyboard sat a gesture-bar-height too
+  high on a Chinese phone without gesture navigation - a three-position "room below the keyboard" slider
+  (None / Navigation bar / Automatic) as the last Layout entry, an automatic three-button detection, and
+  an inset line in the diagnostic log.** The list look was device-confirmed 2026-09-28; the user closed
+  the round 2026-10-31 ("bisher keine Klagen") - the phone's inset behaviour is fine in practice, closing
+  the only-the-device-can-answer question about Automatic. See §508/§510 and spec §50.
 
 - **D-483 - RESOLVED (§507, v1.2.67; reported 2026-09-28, device-confirmed 2026-09-28): the launcher label "AdaptKey Settings" is truncated and confusable**
   **with the system Settings, reported by the Ukrainian MR tester - check every language, not just Ukrainian.**
