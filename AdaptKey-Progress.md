@@ -378,6 +378,16 @@ in every prompt.
   (old asset sha256 0166672351...32b0); the tag stays as-is, no version bump (asset-only fix, the v1.2.47
   precedent). After the replacement and a green re-run of the bot MR's pipeline, the next nightly verifies
   589. See History §533.
+- **2026-10-31: v1.2.97 (`versionCode` 593) released by RELEASE RECIPE** - the D-508/D-492-paste/D-490/D-500
+  round (§534-§537; v1.2.94-96 ride along untagged, untagged-intermediate precedent). Tag `v1.2.97`
+  (annotated, "AdaptKey 1.2.97") on `251dc3a`, the round's docs commit (the closure round for D-508,
+  D-490, D-19/G-03 and D-486). Fresh origin clone at the tag (`build/release-v1.2.97/`, keystore copied in
+  and removed afterwards), `--no-build-cache --no-configuration-cache`; APK sha256 ffbd0cb2...dbd8,
+  37,250,424 bytes, versionCode 593 (aapt2-verified), cert `3201509b...ee3666e` unchanged
+  (apksigner-verified), 910 zip entries, no vcs/dependency-metadata block, v2-only signing block. GitHub
+  release `v1.2.97` live with the asset exactly `AdaptKey.apk` (re-downloaded and sha256-verified
+  byte-identical to the local build). F-Droid's bot is expected to pick the tag up automatically
+  (`AutoUpdateMode: Version`).
 - **Still open:**
   - The next release: tag it and follow the RELEASE RECIPE above - F-Droid picks up new tags automatically
     (`AutoUpdateMode: Version`, `UpdateCheckMode: Tags`), no new MR needed.
