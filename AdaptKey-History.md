@@ -23363,7 +23363,10 @@ frequency 10L and no noun tag, which is why several otherwise-unrelated splits l
 0.5117088534551829 confidence value. 1659 unit tests (1651 -> 1659, +8). `:app:assembleRelease`/
 `:app:testDebugUnitTest` green. `versionCode` 545 -> 546, `versionName` `"1.2.49"` -> `"1.2.50"`. Spec A-05/
 T-02 updated with the new D-473 addenda. Not yet device-confirmed. **D-473 is now fully closed** except the
-still-open `"abspringen"`/`"anspringen"` direction question named above.
+still-open `"abspringen"`/`"anspringen"` direction question named above. **2026-10-31, later: that remaining
+direction question is closed too** - the user re-tested fresh and no longer reproduces `"abspringen"` being
+replaced by `"anspringen"`; no code or data change had been identified for it, so D-473 is closed in full
+including the reverse direction (recorded here and in the Progress entry rather than in a new block).
 
 
 

@@ -577,24 +577,14 @@ non-trivial changes).
   **`reinforceFromTier3()` now gate on the existing `knownInOtherLanguage()` shield (previously correction-side**
   **only); the unigram is skipped, the n-gram context still learned (D-327 split). Existing polluted entries:**
   **forget once via the editor, they are no longer reinforced. See §513 and spec W-02's D-494 addendum.**
-- **D-493 - OPEN, reported 2026-10-23, root-caused to missing dictionary data (not yet fixed): the correctly-typed**
-  **"schmeißen" is auto-split at Medium into "sch Meißen" - and the answer to "which rule?" is: the word is absent.**
-  Checked directly, not guessed: `dictionaries/de/dict.tsv` carries the whole `schmeißen` family nowhere (no
-  `schmeißen`/`schmeißt`/`schmiss`/`geschmissen` at all), while both halves exist independently - `sch` (84,
-  `OTHER`) and `Meißen` (352, `NOUN,PROPER_NOUN`, which is also why the right half comes back capitalised). So
-  the unknown token takes A-05's split path: the "not both halves nouns" gate passes (the left half is `OTHER`),
-  and the §490 `CorrectionConfidence.forSplit` gate evidently clears at Medium with these two low frequencies.
-  This is D-469's exact shape ("Lebensmüde" split because the word was absent) - the user's own framing "wir
-  haben doch so viel unternommen, dass sinnlose Wörter nicht abgetrennt werden" is true, but every one of those
-  mechanisms presupposes the word being in the dictionary at all. `schmeißen` IS in `wiktionary_verben.tsv` with
-  its full paradigm (line 9929), but it is one of the ~12,123 verbs the corpus never attested - D-462's
-  deliberately-left-out B2 scope, not one of the 2,250 completed ones. Direction: add the family - either as its
-  own D-469-style data round or as the first concrete everyday case motivating the still-pending D-462
-   review-list round (user's call). Also worth deciding then: whether the split path wants an additional guard
-   for a proper-noun right half (D-114/D-227-style suspicion), since "Meißen" is exactly the register where
-   corpus-driven proper nouns collide with everyday words. (Answered 2026-10-28 by D-504: the guard itself is
-   REJECTED - "nur eine Mini-Symptom-Bekämpfung"; the fix there is split thresholds + data cleanup, and
-   `Meißen` itself is agreed to leave the dictionary.)
+- **D-493 - RESOLVED (§529, v1.2.92), closed 2026-10-31 without its own code round: the reported
+  "schmeißen" -> "sch Meißen" split at Medium was D-504's exact measured shape ("sch" 84 x "Meißen" 352
+  = 0.77 >= Medium's old 0.75), now pinned at exactly 0.0 silent confidence by the new split bar (either
+  half below frequency 300 -> no silent split; `SplitEvaluationTest`), and device-confirmed by the user
+  2026-10-29 with this very word (the learned "schmeißen" entry forgotten first, retyped - stays whole,
+  no split). The data half resolved alongside: `Meißen` (and `sch`) left `dict.tsv` in §529's cleanup as
+  agreed; the schmeißen family itself stays absent - the word is an unknown token (escalation cost
+  accepted, no everyday-word data round opened for it). See §529, spec A-05's D-504 addendum.
 - **D-492 - OPEN, reported 2026-10-23, root-caused by code reading (2026-10-23, refined same day with the**
   **user's observation that it "meistens" fires on system credential-manager fills) - two defect classes; the**
   **primary one is a stale-composing hole in onUpdateSelection's own-edit detection.**
@@ -1852,10 +1842,10 @@ non-trivial changes).
      new `Respelling(word, gap)` type. A non-negative gap (the touch model's own top pick already disagreed
      with what was resolved) is trusted outright, past both the prefix cap and A-01's ratio requirement alike;
      an ordinary negative gap keeps the previous protections, now including the missing prefix cap for an
-     unknown typed word. **The reverse-direction report (`"abspringen"` typed, replaced by `"anspringen"`)**
-     **is still open** - `"ab"` is confirmed already present in `PLAUSIBLE_GERMAN_PREFIXES` (checked again
-     against the current source), so this fix does not explain that direction on its own; needs a fresh
-     device log or a re-check of which word was actually typed before any further code change there.
+      unknown typed word. **The reverse-direction report (`"abspringen"` typed, replaced by `"anspringen"`)**
+      **- CONFIRMED CLOSED by the user 2026-10-31**: a fresh test no longer reproduces it; no code or
+      data change had been identified for it (see §490's tail in History). D-473 is closed in full
+      including the reverse direction.
 
 - **D-473-followup - RESOLVED, device-confirmed (2026-09-17). Root cause was never the code or the data -**
   **it was a deployment gap this session's own deliberate caution created.** The real, final answer, found from
