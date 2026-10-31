@@ -170,9 +170,11 @@ class SettingsMapperTest {
     }
     
     @Test
-    fun `D-348 doubleTapBackspaceUndo flag passes through unchanged, defaulting to off`() {
-        assertFalse(SettingsMapper.toAdaptSettings(RawSettings()).doubleTapBackspaceUndo)
+    fun `D-348 doubleTapBackspaceUndo flag passes through unchanged, defaulting to on (D-490)`() {
+        assertTrue(SettingsMapper.toAdaptSettings(RawSettings()).doubleTapBackspaceUndo)
         assertTrue(SettingsMapper.toAdaptSettings(RawSettings(doubleTapBackspaceUndo = true)).doubleTapBackspaceUndo)
+        assertFalse(SettingsMapper.toAdaptSettings(RawSettings(doubleTapBackspaceUndo = false)).doubleTapBackspaceUndo)
+        assertTrue(AdaptSettings().doubleTapBackspaceUndo)
     }
     
     @Test

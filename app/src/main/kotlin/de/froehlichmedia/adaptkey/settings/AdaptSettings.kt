@@ -90,7 +90,8 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  *           with this off, that specific class of typo (a missed/spurious space) commits uncorrected and
  *           unoffered, a known, disclosed gap rather than a silent one.
  * @property doubleTapBackspaceUndo D-348: whether A-07's post-commit undo requires a double-tap of
- *           Backspace instead of a single press (default **off**). When on, the first Backspace at the
+ *           Backspace instead of a single press (default **on**, D-490 - the revert is the fresh-install
+ *           default; an explicitly stored Off keeps working). When on, the first Backspace at the
  *           armed undo tail is a no-op (the key re-flashes as a visual hint); only a second Backspace
  *           within the [doubleTapDelayMs] window fires the revert. Trailing whitespace beyond the armed
  *           tail is still consumed ordinarily by the first press. Reuses the G-05 double-tap delay setting.
@@ -179,7 +180,7 @@ data class AdaptSettings(
     val saveCredentials: Boolean = true,
     val contactsSuggestionsEnabled: Boolean = false,
     val autocorrectEnabled: Boolean = true,
-    val doubleTapBackspaceUndo: Boolean = false,
+    val doubleTapBackspaceUndo: Boolean = true, // D-490: the D-348 revert is the fresh-install default
     val backspaceStickyEnabled: Boolean = true,
     val touchLearningEnabled: Boolean = true,
     val autoSplitMode: AutoSplitMode = AutoSplitMode.DEFAULT,

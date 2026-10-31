@@ -93,6 +93,21 @@ class SettingsStoreRoboTest {
     }
     
     @Test
+    fun d490DoubleTapBackspaceUndoDefaultsOnWithNoKeyWrittenAndAnExplicitStoredValueWins() {
+        val context = RuntimeEnvironment.getApplication()
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        
+        assertTrue(SettingsStore.load(context).doubleTapBackspaceUndo)
+        assertFalse(prefs.contains(SettingsStore.KEY_DOUBLE_TAP_BACKSPACE_UNDO))
+        
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+            .putBoolean(SettingsStore.KEY_DOUBLE_TAP_BACKSPACE_UNDO, false)
+            .commit()
+        
+        assertFalse(SettingsStore.load(context).doubleTapBackspaceUndo)
+    }
+    
+    @Test
     fun d507FreshInstallDefaultsToTheSymbolModeWithNoKeysWritten() {
         val context = RuntimeEnvironment.getApplication()
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)

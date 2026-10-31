@@ -63,7 +63,7 @@ data class RawSettings(
     val pendingBlacklistExpiryDays: Int = AdaptSettings.DEFAULT_PENDING_BLACKLIST_EXPIRY_DAYS,
     val saveCredentials: Boolean = true,
     val contactsSuggestionsEnabled: Boolean = false,
-    val doubleTapBackspaceUndo: Boolean = false,
+    val doubleTapBackspaceUndo: Boolean = true, // D-490: the D-348 revert is the fresh-install default
     val backspaceStickyEnabled: Boolean = true,
     val touchLearningEnabled: Boolean = true,
     val autoSplitModeKey: String? = null,

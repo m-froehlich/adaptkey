@@ -144,8 +144,8 @@ object SettingsStore {
     /** Default stored integer for both D-55 extra-row-spacing sliders (7 dp). */
     const val DEF_EXTRA_SPACING = AdaptSettings.DEFAULT_EXTRA_SPACING_DP
     
-    /** Default stored boolean for the D-348 double-tap Backspace undo toggle (off). */
-    const val DEF_DOUBLE_TAP_BACKSPACE_UNDO = false
+    /** Default stored boolean for the D-348 double-tap Backspace undo toggle (on, D-490). */
+    const val DEF_DOUBLE_TAP_BACKSPACE_UNDO = true
     
     /** Default stored boolean for the D-361 Backspace sticky-zone toggle (on). */
     const val DEF_BACKSPACE_STICKY_ENABLED = true
