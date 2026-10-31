@@ -24413,7 +24413,6 @@ Tests: new `ShiftGraceTest` case (off derives no arm in any caps mode, default b
 `CapitalisationEngineTest` cases (noun-only commits as typed, LLM lift off, explicit input + WORDS mandate
 still win, D-457 restore skipped), `SettingsMapperTest` + `SettingsStoreRoboTest` defaults (on with no key
 written, stored off wins). 1,822 unit tests total (1,815 + 7), 0 failures; `:app:assembleRelease` green.
-`versionCode` 592 -> 593, `versionName` "1.2.96" -> "1.2.97". NOT yet device-confirmed - checklist in
-`AdaptKey-Plan-D500.md` §5 (off: field start/after punctuation/new line lowercase, "tisch"/"llm" commit as
-typed, name field still capitalised, manual Shift/Caps/D-406 intact, chips unchanged; on: everything as
-before).
+`versionCode` 592 -> 593, `versionName` "1.2.96" -> "1.2.97". **Device-confirmed by the user 2026-10-31**
+("Funktioniert wunderbar") against the plan §5 checklist - the off state's behaviour and the switch-back
+sanity both passed on the device. The plan file is marked CLOSED; the round is closed.
