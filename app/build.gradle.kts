@@ -50,8 +50,10 @@ android {
         // a span killed at a matching caret is re-marked in place after synchronous caret+content
         // verification (ComposingSpanReMark), and the cosmetic composingPreviewRunnable rewrite is gated
         // on the same helper - the captured paste-into-Chrome duplication ("BesuchBesuch") is closed.
-        versionCode = 591
-        versionName = "1.2.95"
+        // D-490: the D-348 double-tap-Backspace revert becomes the fresh-install default (on) - a pure
+        // default flip at the four default sites; an explicitly stored Off keeps working, no migration.
+        versionCode = 592
+        versionName = "1.2.96"
         
         // The ONNX Runtime native libs (tier-3 mini-LLM) ship per ABI; keep only the ones real phones
         // use (arm64 + 32-bit arm), dropping the emulator-only x86/x86_64 libs (~43 MB). Device testing
