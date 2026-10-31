@@ -2441,7 +2441,7 @@ Unconditionally excludes any content typed into a password field, regardless of 
 | C-17 | Contact-derived email suggestions | On/Off (permission-gated) | Off |
 | C-18 | Pending-blacklist expiry window (G-04) | Days (1-30) | 7 |
 | C-19 | Installed language packs (§9) | Install/remove per language | English only |
-| C-20 | Double-tap Backspace for autocorrect revert (D-348) | On/Off | Off |
+| C-20 | Double-tap Backspace for autocorrect revert (D-348) | On/Off | On (D-490) |
 | C-21 | Auto-split mode (A-05, D-352) | Automatic / Chip only / Off | Automatic |
 | C-22 | Autocorrect (A-01, §36, D-353/D-407) | Off / Cautious / Medium / Aggressive | Medium |
 | C-23 | Automatic language switch threshold (G-01, D-130/D-398) | Consecutive foreign words (0-8, 0 = off) | 5 |
@@ -2767,13 +2767,14 @@ deciding whether anything further is needed.
 
 ## 34. Optional Double-Tap Backspace for Autocorrect Revert (D-348)
 
-D-348: an optional setting (default off) changes A-07's post-commit undo trigger from a single Backspace
+D-348: an optional setting (default **on** since D-490 - the revert is the fresh-install default; an
+explicitly stored Off keeps working) changes A-07's post-commit undo trigger from a single Backspace
 to a double-tap — two Backspace presses within the existing `doubleTapDelayMs` window (G-05, 200-800 ms,
 default 400 ms). When on, the first Backspace at the armed undo tail is an ordinary single-character delete
 of the delimiter (D-348 v4: not a no-op — matches the plain single-tap behaviour exactly for that one
 character) while the window stays armed; only the second Backspace within the window fires the actual
 revert. Trailing whitespace beyond the armed tail is still consumed ordinarily by the first press (same as
-the single-tap mode's own D-286/D-277 whitespace consumption). When off (the default), the original
+the single-tap mode's own D-286/D-277 whitespace consumption). When off, the original
 single-Backspace revert behaviour is unchanged. The motivation: a single-Backspace revert can conflict
 with the user's intent to simply delete one character, and a deliberate double-tap is a clearer, less
 surprising trigger for an action that replaces an entire word.

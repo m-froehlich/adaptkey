@@ -743,14 +743,15 @@ non-trivial changes).
   **disarm) is no longer wiped by the debounced caret re-derivation scheduled by the previous commit's echo -**
   **a Shift tapped inside the ~100 ms post-commit window now capitalises the next letter.** See §513 and spec
   G-05's D-491 addendum.
-- **D-490 - OPEN, requested 2026-10-23, not started: double-tap-Backspace revert (D-348) should become the**
-  **default.** User request: "Double Tab Revert sollte der Standard sein." D-348's setting ships off today (the
-  D-360 discussion treated it as opt-in). Direction: flip the default to on - an untouched install gets the
-  revert behaviour, and an explicitly stored value keeps working either way (check where the default resolves in
-  `SettingsStore`/`SettingsMapper` so no migration is needed). Then re-check the behaviours that were tuned
-  against the opt-in state for an every-user default: the "first Backspace at the armed tail is a no-op" design
-  (D-360's uniformity decision - no special cases then, none now) and its interplay with D-248's
-  backspace-unlearn path.
+- **D-490 - RESOLVED (§536, v1.2.96), implemented 2026-10-31, NOT yet device-confirmed: the D-348
+  double-tap-Backspace revert is the fresh-install default (on).** User request: "Double Tab Revert sollte
+  der Standard sein." Pure default flip at the four default sites (`AdaptSettings`/`RawSettings`/
+  `SettingsStore` DEF + the preference XML's `android:defaultValue`) - an explicitly stored Off keeps
+  working, backups carry only stored values, so a never-toggled install follows the new default with no
+  migration. Behaviour re-checked for the every-user default per this entry's own direction list: the
+  armed tail's first tap is D-348 v4's ordinary single-character delete (uniform, the D-360 "no special
+  cases" decision carries over), D-265's Space/Enter carve-out and D-489's intervening-key reset keep the
+  window semantics, and D-248's backspace-unlearn path is untouched. See §536.
 - **D-489 - RESOLVED (§512, v1.2.72): an intervening keystroke on another key (letter/space/delimiter/backspace/**
   **layer switch, a long-press, a popup selection) now breaks G-05's double-tap pair - fast letter-Shift-letter-Shift**
   **typing no longer toggles the word's case; the second Shift acts as the ordinary toggle instead.** See §512 and

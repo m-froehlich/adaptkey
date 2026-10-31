@@ -24318,3 +24318,47 @@ the standing credential-flow repro that Runde B's remaining work is waiting on.
 
 `:app:assembleRelease` + 1,814 unit tests green (new: ComposingSpanReMarkTest's thirteen). Rides
 versionCode 591 / 1.2.95.
+
+
+## §536 - D-490: the double-tap-Backspace revert (D-348) becomes the default (v1.2.96)
+
+User request 2026-10-23 ("Double Tab Revert sollte der Standard sein"), implemented 2026-10-31 as a pure
+default flip - the opt-in mechanism itself has been the user's own daily driver since D-348 v4, so only
+who gets it changes, nothing in the code paths does.
+
+The four default sites flipped to on in one change: `AdaptSettings.doubleTapBackspaceUndo`,
+`RawSettings.doubleTapBackspaceUndo` (the mapper's input), `SettingsStore.DEF_DOUBLE_TAP_BACKSPACE_UNDO`
+(the SharedPreferences read), and the `d348_double_tap_backspace_undo` preference row's
+`android:defaultValue`. No migration is needed by construction: `SettingsStore` reads
+`getBoolean(KEY, DEF)`, so an untouched install (no stored key) resolves to the new default and an
+explicitly stored Off keeps working; the backup section exports only currently-stored keys
+(`EXPORT_SETTINGS_KEY_ORDER`), so a never-toggled install follows the new default on restore too.
+
+Behaviour re-checked for the every-user default, per the backlog entry's own direction list:
+- The armed tail's first tap is D-348 v4's ordinary single-character delete (not the older "no-op"
+  wording), uniformly - the D-360 "no special cases" decision carries over unchanged; only the second
+  tap within `doubleTapDelayMs` reverts.
+- D-265's Space/Enter carve-out and D-489's intervening-key reset (every non-Shift key breaks the G-05
+  pair) keep the window semantics identical to the opt-in shape §512 already re-checked for D-490's sake.
+- D-248's backspace-unlearn path is untouched: ordinary deletes still run `handleBackspace` ->
+  `maybeUnlearnOnBackspaceReturn`; the revert path's own learning reversal (A-07) is unchanged.
+
+Tests: the existing `SettingsMapperTest` D-348 pass-through test flipped to the new default and widened
+(explicit true/false pass-through + the `AdaptSettings()` constructor default); new
+`SettingsStoreRoboTest.d490DoubleTapBackspaceUndoDefaultsOnWithNoKeyWrittenAndAnExplicitStoredValueWins`
+(default on with no key written, a stored false wins). 1,815 unit tests total (1,814 + 1), 0 failures;
+`:app:assembleRelease` green. `versionCode` 591 -> 592, `versionName` "1.2.95" -> "1.2.96". NOT yet
+device-confirmed (the revert flow itself is the user's everyday setting; worth one deliberate look at a
+fresh-install-like state - reset the stored toggle, check the switch renders on, and the double-tap
+revert works).
+
+Bookkeeping in the same session, docs-only, recorded in the Progress backlog:
+- **D-493 closed** on §529's basis, verified rather than assumed: the reported "schmeißen" -> "sch
+  Meißen" split at Medium was D-504's exact measured shape, `SplitEvaluationTest` pins it at exactly 0.0
+  silent confidence under the new split bar, and the user's own 2026-10-29 device check used this very
+  word (learned entry forgotten first, retyped, stays whole). The agreed data half also stands: "Meißen"
+  and "sch" are gone from `dict.tsv`; the schmeißen family itself stays absent (unknown-token escalation
+  cost accepted - no everyday-word data round opened for it).
+- **D-473's last open item closed**: the reverse-direction report ("abspringen" typed, replaced by
+  "anspringen") was re-tested fresh by the user and no longer reproduces (2026-10-31); no code or data
+  change had been identified for it. D-473 is closed in full including the reverse direction.
