@@ -541,7 +541,18 @@ non-trivial changes).
 
 - **D-501 - RESOLVED as simplified (§527, v1.2.90; closed 2026-10-28 - on-device confirmation deliberately waived by the user): a Dark Theme that simply follows the system - no switch at all.** Originally requested 2026-10-26 as a three-way switch (System Default / Light / Dark); the user simplified before any code - nobody wants dark keys on a light system or vice versa, so the keyboard is dark exactly when the system is dark and there is deliberately no setting. The mode carrier is the plain `values-night/` resource qualifier (no preference key, no strings, no backup mapping): `values-night/colors.xml` overrides the differing tokens, identical-in-both-modes tokens stay absent (the pale-blue press flash, the trash pair, D-247's forget pair, the launcher brand colour). The D-24 overlay's three literals became resources first (`touch_model_fill`/`stroke`/`dot`); D-136's `isAppearanceLightNavigationBars` now derives from the creating configuration's uiMode instead of unconditional `true`; the live flip rides on the framework's input-view recreation on the configuration change, no preemptive machinery. Settings screens were already dark-capable via `Theme.Material3.DayNight`. Plan + palette table + device checklist: `AdaptKey-Plan-Dark-Theme.md`. One version bump for the whole feature (1.2.89 → 1.2.90/versionCode 586). The user waived the on-device check the same day (he did not want to put his system through the day/night flip exercise); the palette is declarative resource data and the only logic change is D-136's one flag line, so the feature is closed as implemented.
 
-- **D-500 - OPEN, requested 2026-10-26, not started: a new "Suppress Auto-Caps" switch, inserted directly above C-10.** Position fixed by the user: directly above `c10_comma_line_not_sentence_start` ("Nach Komma-Zeile kein Satzanfang", `settings_preferences.xml`, same category). Function still to be pinned down in its own round: presumably suppresses ALL automatic capitalisation (sentence-start auto-arming, §6 rules) while manual Shift/Caps Lock and D-406's delete-derived Shift stay untouched, making C-10 a sub-case of the broader off - needs a definition pass against the `armShiftForNextWord` guard family (D-313/D-335/D-373/D-378/D-491) before any code. Strings: title + summary in English and every `values-xx` per the standing rule (the user explicitly wants descriptions for all languages); `UiLocaleConsistencyTest` enforces.
+- **D-500 - RESOLVED (§537, v1.2.97), implemented 2026-10-31, NOT yet device-confirmed: the C-28
+  "Auto-capitalisation" switch (default on) directly above C-10 - the coarse, dumb gate per the mirrored
+  big-keyboard shape (Gboard/iOS/Samsung), settled in `AdaptKey-Plan-D500.md`.** Off state gates exactly
+  two blunt sites: the live Shift-arming choke point (`armShiftForNextWord` derives no arm in any caps
+  mode - the D-491/D-335/D-373/D-378 guards keep guarding the same writes; D-406's restore half untouched)
+  and the ordinary commit's linguistic caps via one `autoCapsEnabled` parameter at `CapitalisationEngine.
+  capitalise()` passed only from `finalizeAndCommit` (noun-only rule, rule-6 LLM lift, D-457 acronym
+  restore skipped - "tisch" commits as typed). Deliberately untouched: editor mandates at commit (§6
+  rule 2), chip/preview casing, split/merge/fusion, autocorrect (C-22), W-04, verbatim fields (D-288);
+  C-10/C-07 go inert with no code change. Strings in EN + all 31 locales (`scratchpad/
+  d500_translations.json` + `d500_add_strings.ps1`); `UiLocaleConsistencyTest` enforces. See §537 and
+  spec's Auto-Capitalisation Switch section.
 
 - **D-19/G-03 gesture toggles (external PR #11) - RESOLVED (§520, v1.2.79/v1.2.80, adopted 2026-10-26).**
   BISCLab's PR imported (cherry-picked, authorship preserved, each commit bumped per convention):

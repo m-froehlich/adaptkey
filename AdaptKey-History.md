@@ -24362,3 +24362,58 @@ Bookkeeping in the same session, docs-only, recorded in the Progress backlog:
 - **D-473's last open item closed**: the reverse-direction report ("abspringen" typed, replaced by
   "anspringen") was re-tested fresh by the user and no longer reproduces (2026-10-31); no code or data
   change had been identified for it. D-473 is closed in full including the reverse direction.
+
+
+## §537 - D-500: the C-28 auto-capitalisation switch - a coarse gate on AdaptKey's proactive caps (v1.2.97)
+
+Community request (2026-10-26), design settled with the user 2026-10-31: the big keyboards (Gboard, iOS,
+Samsung) all offer a plain "Auto-capitalisation" switch (default on, no sub-options) in the keyboard's own
+settings, and AdaptKey should mirror that shape; the switch must stay deliberately dumb - no per-field,
+per-language or per-rule nuance; nouns may stay lowercase for a user who turns it off. AdaptKey goes one
+step further than Gboard (whose toggle covers only sentence starts - r/gboard users wanting fully-manual
+caps cannot get it there): with the switch off, AdaptKey adds no capital anywhere that the user did not
+type. Plan: `AdaptKey-Plan-D500.md`.
+
+**The two gated sites:**
+
+1. **Live Shift-arming** - `ShiftGrace.autoArmAtWordStart(capsMode, sentenceStart, autoCapsEnabled = true)`
+   gains the switch as a third parameter and returns `false` when it is off, in every caps mode (a coarse
+   gate with no per-field distinction: the field mandates lose only their live pre-arm). The service passes
+   the setting at the one choke point, `armShiftForNextWord()` - so field start, every commit
+   (`armShiftForNextWordUnlessOpener`), the caret re-derivation (`rearmShiftForCaretMove`) and D-406's
+   position half all stop arming. The written state is exactly the same write today's mid-sentence
+   derivation already performs, so the D-491 (`shiftSetByManualPress`), D-335, D-373 and D-378 one-shot
+   guards keep guarding the same writes unchanged; D-406's restore half (a deleted uppercase keeps shift
+   lit) never reaches the gate and is untouched; manual Shift presses and Caps Lock are never touched by
+   the decision.
+2. **Commit-time linguistic caps** - `CapitalisationEngine.capitalise()` gains an
+   `autoCapsEnabled: Boolean = true` parameter. When false, the linguistic force-capitalisation rules are
+   skipped: the noun-only rule (§6 3+4, D-461), the rule-6 LLM lift, and the D-457 acronym canonical
+   restore ("llm" -> "LLM"). Only `finalizeAndCommit`'s commit call passes the switch - chip/preview
+   casings, the split/merge/fusion casings and every chip-commit path keep the default (they reproduce
+   what the user explicitly tapped or what their own setting allows), and display/commit keep matching
+   (D-440's pairing).
+
+**Deliberately untouched (the dumb-switch boundary):** the editor mandates at commit (§6 rule 2 -
+`CHARACTERS`/`WORDS`/B-02: an app-demanded capital is a protection, not proactive capitalisation), rule 1's
+symmetric casing protection, autocorrect (C-22 - its own switch; a dictionary replacement may still carry
+the dictionary's casing), chip casing and commits, the A-05/A-06/fusion casings (C-21/C-25), W-04 learned
+casing, S-11 dual-casing chips, the verbatim fields' own bypass (D-288), and C-10/C-07 (which become inert
+under the off state with no code change - nothing is armed to refine or guard).
+
+Setting: `d500_auto_capitalisation` (`SwitchPreferenceCompat`, default **on** - mirrored polarity,
+`AdaptSettings.autoCapitalisation`), directly above `c10_comma_line_not_sentence_start`; `SettingsStore`
+KEY + `DEF_AUTO_CAPITALISATION` -> `RawSettings` -> mapper -> `AdaptSettings`; backup display order
+inserted directly before C-10's key (only stored keys export - a never-toggled install follows the
+default, no migration, the D-490 pattern). Strings: title + summary in EN + all 31 `values-xx`
+(`scratchpad/d500_translations.json` + ASCII driver `d500_add_strings.ps1`, the D-506 pattern; drafts per
+the standing D-478 rule; `UiLocaleConsistencyTest` enforces).
+
+Tests: new `ShiftGraceTest` case (off derives no arm in any caps mode, default byte-identical), four new
+`CapitalisationEngineTest` cases (noun-only commits as typed, LLM lift off, explicit input + WORDS mandate
+still win, D-457 restore skipped), `SettingsMapperTest` + `SettingsStoreRoboTest` defaults (on with no key
+written, stored off wins). 1,822 unit tests total (1,815 + 7), 0 failures; `:app:assembleRelease` green.
+`versionCode` 592 -> 593, `versionName` "1.2.96" -> "1.2.97". NOT yet device-confirmed - checklist in
+`AdaptKey-Plan-D500.md` §5 (off: field start/after punctuation/new line lowercase, "tisch"/"llm" commit as
+typed, name field still capitalised, manual Shift/Caps/D-406 intact, chips unchanged; on: everything as
+before).

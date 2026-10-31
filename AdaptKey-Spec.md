@@ -1307,6 +1307,9 @@ See §4.
 ### Editor-Mandated Capitalisation
 When the target field declares `TYPE_TEXT_FLAG_CAP_SENTENCES`, `TYPE_TEXT_FLAG_CAP_WORDS`, or `TYPE_TEXT_FLAG_CAP_CHARACTERS` (read from `EditorInfo` and queried per position via `InputConnection.getCursorCapsMode()`), the case the field requires is treated as an authoritative baseline, ranking directly below explicit user input (hierarchy rule 1). The remaining linguistic rules (nouns, proper nouns, ambiguous words) never lowercase a position the field requires to be capitalised. A field reporting no caps flag at all (`CapsMode.NONE`) still gets Shift live-armed at a genuine sentence start, exactly as if the field had requested sentence-case (D-405: this is the same live-arming mechanism rule 2 above now relies on exclusively, not a separate commit-time behaviour) - AdaptKey's own rules apply regardless of what the target field requests, unless overridden by the email/URL/login bypass above.
 
+### Auto-Capitalisation Switch *(configurable, default on)* (D-500, C-28)
+A plain on/off switch directly above C-10, mirroring the big keyboards' own "Auto-capitalisation" toggles (Gboard/iOS/Samsung: default on, no sub-options). The off state is a deliberately coarse gate with no per-field or per-language distinction - AdaptKey adds no capital anywhere that the user did not type themselves: (1) no live Shift-arming happens in any caps mode (sentence starts, field starts, after sentence punctuation, caret re-derivations - `armShiftForNextWord` derives no arm, so the field mandates lose only their live pre-arm); (2) the ordinary commit skips the linguistic force-capitalisation rules (§6 rules 3+4 noun-only, the rule-6 LLM lift, and the D-457 acronym canonical restore), so "tisch" commits as "tisch" and "llm" as "llm". Unaffected either way: manual Shift presses and Caps Lock, D-406's delete-restore half, the editor mandates at commit (rule 2 - an app-demanded capital is never lost; `CAP_WORDS`/`CAP_CHARACTERS` keep working), chip/preview casing (reproducing what the user explicitly tapped), the A-05/A-06/fusion casings (their own settings C-21/C-25), autocorrect (C-22), W-04 learned casing, and the verbatim fields' bypass (D-288). C-10 and the C-07 grace guard become inert under the off state (nothing is armed to refine or guard) with no code change.
+
 ### Delayed Shift Against Surprising Field Capitalisation *(configurable)*
 With `TYPE_TEXT_FLAG_CAP_WORDS` or `TYPE_TEXT_FLAG_CAP_CHARACTERS`, every word start is auto-armed to uppercase - including mid-sentence words, which is surprising relative to normal typing. A user who reflexively presses Shift to capitalise the next word would instead toggle the already-armed uppercase back to lowercase. To prevent this, a Shift press that would switch from a field-mandated uppercase to lowercase is ignored during a short grace window after the word start. Once the window elapses, Shift toggles normally, so a deliberate lowercase override remains possible. The guard applies only to field-mandated capitalisation outside a regular sentence start; ordinary sentence-start capitalisation is unaffected. The window length is configurable via a slider from 0 to 500 ms (C-07); a value of 0 disables the guard entirely.
 
@@ -2450,6 +2453,7 @@ Unconditionally excludes any content typed into a password field, regardless of 
 | C-26 | Keep learning touch zones (T-03, D-474, §48) | On / Off | On |
 
 | C-27 | Combined bottom-row key's slot (L-03, D-507) | ?123 / Emoji / Off | ?123 |
+| C-28 | Auto-capitalisation (§6, D-500) | On / Off | On |
 
 Individual feature sections above also document domain-specific, non-configurable defaults (e.g. the
 calculator layout's fixed key weights) that intentionally are not exposed here.
@@ -3517,6 +3521,11 @@ entirely.
 Implemented as a single `CapitalisationEngine.isNounOnly(pos)` predicate replacing the former separate
 `isProper`/`isPureNoun` branches. An empty tag set (an unknown word) is deliberately false - nothing is
 known about it, so nothing may force a capital.
+
+D-500/C-28: this entire rule sits behind the Auto-Capitalisation Switch - with the switch off, the
+noun-only force-capitalisation (like the rule-6 LLM lift and the D-457 acronym canonical restore) does
+not fire at the ordinary commit, and what the user typed is what commits. See the switch's own section
+above for the exact boundary (editor mandates, chips, split/merge, autocorrect all stay).
 
 **Rule 1 is unaffected and still wins outright:** an explicitly typed capital is never lowercased, so
 `"Weg"` typed with a capital stays capitalised. Editor-mandated capitalisation (`CAP_WORDS`/`CAP_CHARACTERS`)

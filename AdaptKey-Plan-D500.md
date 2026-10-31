@@ -1,6 +1,8 @@
 # AdaptKey-Plan-D500.md
 
-**Status:** OPEN - plan settled in the 2026-10-31 discussion (see §2); implementation not started.
+**Status:** IMPLEMENTED 2026-10-31 (History §537, v1.2.97 / versionCode 593). §4's steps 1-5 landed (code,
+tests, 32 locales); §6's spec/docs written. §5's device checklist still owed by the user - the round is
+not device-confirmed until then.
 **Backlog item:** D-500 (AdaptKey-Progress.md, "Open TODOs"). Request: a "Suppress Auto-Caps" switch,
 directly above C-10 in the same category. User decisions 2026-10-31: mirror the big keyboards' behaviour
 at this point; the switch must stay a coarse, dumb switch that does not reach into the keyboard's fine
