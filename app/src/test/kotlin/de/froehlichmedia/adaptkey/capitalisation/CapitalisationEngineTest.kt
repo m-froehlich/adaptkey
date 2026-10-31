@@ -282,4 +282,34 @@ class CapitalisationEngineTest {
         assertEquals(false, CapitalisationEngine.isAmbiguousCasing(setOf(PartOfSpeech.NOUN, PartOfSpeech.PROPER_NOUN)))
         assertEquals(false, CapitalisationEngine.isAmbiguousCasing(setOf(PartOfSpeech.PROPER_NOUN)))
     }
+
+    @Test
+    fun `D-500 autoCapsEnabled false - noun-only words commit exactly as typed`() {
+        assertEquals("haus", engine.capitalise("haus", ctx(), autoCapsEnabled = false))
+        assertEquals("berlin", engine.capitalise("berlin", ctx(), autoCapsEnabled = false))
+    }
+
+    @Test
+    fun `D-500 autoCapsEnabled false - the LLM rule-6 lift does not fire`() {
+        assertEquals("Morgen", engine.capitalise("morgen", ctx(), llmForcesUpper = true))
+        assertEquals("morgen", engine.capitalise("morgen", ctx(), llmForcesUpper = true, autoCapsEnabled = false))
+    }
+
+    @Test
+    fun `D-500 autoCapsEnabled false - explicit user input and the editor mandate still win`() {
+        // Rule 1 is untouched by the switch, and the WORDS mandate (§6 rule 2) is a protection, not a
+        // linguistic force-capitalisation - a name field keeps capitalising under C-28's off state.
+        assertEquals("Haus", engine.capitalise("Haus", ctx(explicit = true), autoCapsEnabled = false))
+        assertEquals("Haus", engine.capitalise("haus", ctx(caps = CapsMode.WORDS), autoCapsEnabled = false))
+    }
+
+    @Test
+    fun `D-500 autoCapsEnabled false - the D-457 acronym canonical restore is skipped`() {
+        val store = InMemoryDictionaryStore().apply {
+            learn("LLM", null, null, categoryHint = PartOfSpeech.NOUN)
+        }
+        val acronymEngine = CapitalisationEngine(store)
+        assertEquals("LLM", acronymEngine.capitalise("llm", ctx(explicit = false)))
+        assertEquals("llm", acronymEngine.capitalise("llm", ctx(explicit = false), autoCapsEnabled = false))
+    }
 }

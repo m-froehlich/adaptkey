@@ -190,6 +190,8 @@
     <string name="d191_contacts_permission_denied">Permisiunea Contacte nu a fost acordată - sugestiile din contacte rămân dezactivate.</string>
     <string name="c07_title">Fereastră de toleranță pentru Shift</string>
     <string name="c07_summary">Protejează împotriva scrierii cu majuscule surprinzătoare în câmpuri (0–500 ms).</string>
+    <string name="d500_auto_capitalisation_title">Majuscule automate</string>
+    <string name="d500_auto_capitalisation_summary">Scrie automat cu majusculă primul cuvânt al frazelor și cuvintele care există doar ca substantive (de ex. substantivele germane). Dezactivat, nimic nu se scrie cu majusculă dacă nu îl tastați singur cu Shift sau Caps Lock. Corectarea automată și sugestiile funcționează conform setărilor.</string>
     <string name="c10_title">Fără început de propoziție după o linie cu virgulă</string>
     <string name="c10_summary">După o linie care se termină cu virgulă (de ex. o formulă de adresare într-un e-mail), linia următoare nu începe cu majusculă.</string>
     <string name="c06_title">Prag LLM</string>

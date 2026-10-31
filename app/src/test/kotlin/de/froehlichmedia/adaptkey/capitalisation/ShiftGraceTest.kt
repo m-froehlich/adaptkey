@@ -33,6 +33,20 @@ class ShiftGraceTest {
     }
     
     @Test
+    fun `D-500 autoCapsEnabled false derives no arm in any caps mode`() {
+        // The C-28 switch is deliberately coarse: no per-field distinction, the off state arms nothing
+        // anywhere (the editor mandates' commit-time rule-2 handling lives in CapitalisationEngine).
+        for (mode in CapsMode.entries) {
+            assertFalse(ShiftGrace.autoArmAtWordStart(mode, sentenceStart = true, autoCapsEnabled = false))
+            assertFalse(ShiftGrace.autoArmAtWordStart(mode, sentenceStart = false, autoCapsEnabled = false))
+        }
+        // The default keeps every existing behaviour byte-identical.
+        assertTrue(ShiftGrace.autoArmAtWordStart(CapsMode.WORDS, sentenceStart = false, autoCapsEnabled = true))
+        assertTrue(ShiftGrace.autoArmAtWordStart(CapsMode.SENTENCES, sentenceStart = true, autoCapsEnabled = true))
+        assertFalse(ShiftGrace.autoArmAtWordStart(CapsMode.SENTENCES, sentenceStart = false, autoCapsEnabled = true))
+    }
+    
+    @Test
     fun `only a mid-sentence per-word field mandate is guarded`() {
         assertTrue(ShiftGrace.isGuardedArm(CapsMode.WORDS, sentenceStart = false))
         assertTrue(ShiftGrace.isGuardedArm(CapsMode.CHARACTERS, sentenceStart = false))

@@ -190,6 +190,8 @@
     <string name="d191_contacts_permission_denied">Kontaktide luba pole antud - kontaktide soovitused jäävad välja lülitatuks.</string>
     <string name="c07_title">Shifti armuaken</string>
     <string name="c07_summary">Kaitseb väljade üllatava suurtähtede kasutamise eest (0–500 ms).</string>
+    <string name="d500_auto_capitalisation_title">Automaatne suurtäht</string>
+    <string name="d500_auto_capitalisation_summary">Kirjutab automaatselt suurtähega lause esimese sõna ja sõnad, mis eksisteerivad ainult nimisõnadena (nt saksa nimisõnad). Välja lülitatuna ei kirjutata midagi suurtähega, kui sa ei tee seda ise Shifti või Caps Lockiga. Autokorrektuur ja soovitused käituvad vastavalt seadistusele.</string>
     <string name="c10_title">Ei lausealgust pärast komaga rida</string>
     <string name="c10_summary">Pärast komaga lõppevat rida (nt kirja pöördumine) ei alga järgmine rida suurtähega.</string>
     <string name="c06_title">LLM-i lävi</string>

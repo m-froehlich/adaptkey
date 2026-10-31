@@ -190,6 +190,8 @@
     <string name="d191_contacts_permission_denied">Kontaktlar ruxsati berilmagan - kontaktlardan takliflar o‘chiq qoladi.</string>
     <string name="c07_title">Shift bag‘rikenglik oynasi</string>
     <string name="c07_summary">Maydonlarda kutilmagan bosh harf ishlatilishidan himoya qiladi (0–500 ms).</string>
+    <string name="d500_auto_capitalisation_title">Avtomatik katta harf</string>
+    <string name="d500_auto_capitalisation_summary">Gaplarning birinchi so\'zini va faqat ot sifatida mavjud bo\'lgan so\'zlarni (masalan, nemis otlarini) avtomatik katta harf bilan yozadi. O\'chirilganda, o\'zingiz Shift yoki Caps Lock bilan yozmaganingizcha hech narsa katta harf bilan yozilmaydi. Avto-tuzatish va takliflar o\'z sozlamalariga muvofiq ishlaydi.</string>
     <string name="c10_title">Vergulli qatordan keyin gap boshi bo‘lmasin</string>
     <string name="c10_summary">Vergul bilan tugagan qatordan keyin (masalan, e-pochtadagi salomlashuv) keyingi qator bosh harf bilan boshlanmaydi.</string>
     <string name="c06_title">LLM chegarasi</string>

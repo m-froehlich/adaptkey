@@ -89,6 +89,18 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  *           merge have no suggestion-bar alternative of their own yet outside a mid-word re-edit (D-122) -
  *           with this off, that specific class of typo (a missed/spurious space) commits uncorrected and
  *           unoffered, a known, disclosed gap rather than a silent one.
+ * @property autoCapitalisation D-500/C-28: whether AdaptKey automatically capitalises anything the user
+ *           did not type uppercase itself (default **on** - mirrored-polarity plain switch like
+ *           Gboard/iOS/Samsung's own "Auto-capitalisation"). Off, it is a deliberately coarse gate with
+ *           no per-field distinction: no live Shift-arming happens anywhere (sentence starts, field
+ *           starts, after-punctuation, caret re-derivations - [de.froehlichmedia.adaptkey.AdaptKeyService.
+ *           armShiftForNextWord] derives no arm in any caps mode), and the ordinary commit skips the
+ *           linguistic force-capitalisation rules (§6 noun-only, the LLM rule-6 lift, the D-457 acronym
+ *           restore) so what was typed is what commits. Unaffected either way: manual Shift presses and
+ *           Caps Lock, D-406's delete-restore half, the editor mandates at commit (§6 rule 2 - an
+ *           app-demanded capital is never lost), chip/preview casing, the A-05/A-06/fusion casings
+ *           (their own settings), autocorrect (C-22), W-04 learned casing, and the verbatim fields' own
+ *           bypass (D-288).
  * @property doubleTapBackspaceUndo D-348: whether A-07's post-commit undo requires a double-tap of
  *           Backspace instead of a single press (default **on**, D-490 - the revert is the fresh-install
  *           default; an explicitly stored Off keeps working). When on, the first Backspace at the
@@ -180,6 +192,7 @@ data class AdaptSettings(
     val saveCredentials: Boolean = true,
     val contactsSuggestionsEnabled: Boolean = false,
     val autocorrectEnabled: Boolean = true,
+    val autoCapitalisation: Boolean = true, // D-500/C-28: the §6 auto-capitalisation switch (default on)
     val doubleTapBackspaceUndo: Boolean = true, // D-490: the D-348 revert is the fresh-install default
     val backspaceStickyEnabled: Boolean = true,
     val touchLearningEnabled: Boolean = true,

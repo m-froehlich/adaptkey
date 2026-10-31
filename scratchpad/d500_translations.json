@@ -1,0 +1,130 @@
+{
+  "en": {
+    "title": "Auto-capitalisation",
+    "summary": "Automatically capitalises the first word of sentences and words that exist only as nouns (e.g. German nouns). When off, nothing is capitalised that you do not type with Shift or Caps Lock yourself. Autocorrect and suggestion chips behave as configured."
+  },
+  "de": {
+    "title": "Automatische Großschreibung",
+    "summary": "Schreibt das erste Wort eines Satzes und Wörter, die nur als Nomen existieren (z. B. deutsche Nomen), automatisch groß. Aus: Nichts wird groß geschrieben, was du nicht selbst mit Shift oder Feststelltaste tippst. Autokorrektur und Vorschlagschips verhalten sich wie eingestellt."
+  },
+  "az": {
+    "title": "Avtomatik böyük hərf",
+    "summary": "Cümlələrin ilk sözünü və yalnız isim kimi mövcud olan sözləri (məs. alman isimləri) avtomatik böyük hərflə yazır. Söndürüldükdə Shift və ya Caps Lock ilə özünüz yazmadığınız heç nə böyük hərflə yazılmır. Avtodüzəliş və təkliflər quraşdırıldığı kimi işləyir."
+  },
+  "bs": {
+    "title": "Automatsko veliko slovo",
+    "summary": "Automatski piše velikim slovom prvu riječ rečenica i riječi koje postoje samo kao imenice (npr. njemačke imenice). Isključeno, ništa se ne piše velikim slovom osim ako to sami ne ukucate Shiftom ili Caps Lockom. Autokorekcija i prijedlozi rade prema postavkama."
+  },
+  "cs": {
+    "title": "Automatické velké písmeno",
+    "summary": "Automaticky píše velkým písmenem první slovo vět a slova existující jen jako podstatná jména (např. německá podstatná jména). Při vypnutí se nic nepíše velkým písmenem, pokud to sami nenapíšete pomocí Shift nebo Caps Lock. Autokorekce a návrhy se chovají podle nastavení."
+  },
+  "da": {
+    "title": "Automatisk stort bogstav",
+    "summary": "Skriver automatisk med stort bogstav det første ord i sætninger og ord, der kun findes som navneord (f.eks. tyske navneord). Slået fra skrives intet med stort bogstav, medmindre du selv gør det med Shift eller Caps Lock. Autokorrektion og forslag fungerer som indstillet."
+  },
+  "el": {
+    "title": "Αυτόματη χρήση κεφαλαίων",
+    "summary": "Γράφει αυτόματα με κεφαλαίο το πρώτο λέξη των προτάσεων και τις λέξεις που υπάρχουν μόνο ως ουσιαστικά (π.χ. γερμανικά ουσιαστικά). Ανενεργό: τίποτα δεν γράφεται με κεφαλαίο εκτός αν το πληκτρολογήσετε οι ίδιοι με Shift ή Caps Lock. Η αυτόματη διόρθωση και οι προτάσεις συμπεριφέρονται όπως έχουν ρυθμιστεί."
+  },
+  "es": {
+    "title": "Mayúsculas automáticas",
+    "summary": "Escribe automáticamente con mayúscula la primera palabra de las frases y las palabras que solo existen como sustantivos (p. ej., los sustantivos alemanes). Desactivada, nada se escribe con mayúscula salvo que lo escribas tú con Mayús o Bloq Mayús. La corrección automática y las sugerencias funcionan según su configuración."
+  },
+  "et": {
+    "title": "Automaatne suurtäht",
+    "summary": "Kirjutab automaatselt suurtähega lause esimese sõna ja sõnad, mis eksisteerivad ainult nimisõnadena (nt saksa nimisõnad). Välja lülitatuna ei kirjutata midagi suurtähega, kui sa ei tee seda ise Shifti või Caps Lockiga. Autokorrektuur ja soovitused käituvad vastavalt seadistusele."
+  },
+  "fi": {
+    "title": "Automaattinen suuraakkon",
+    "summary": "Kirjoittaa automaattisesti isolla alkukirjaimella lauseiden ensimmäisen sanan ja sanat, jotka ovat vain substantiiveja (esim. saksan substantiivit). Pois käytöstä mikään ei kirjoitu isolla, ellet kirjoita sitä itse Shift- tai Caps Lock -näppäimellä. Autokorjaus ja ehdotukset toimivat asetusten mukaan."
+  },
+  "fil": {
+    "title": "Awtomatikong malaking titik",
+    "summary": "Awtomatikong isinusulat nang malaking titik ang unang salita ng mga pangungusap at mga salitang pangngalan lamang (hal. mga pangngalan sa Aleman). Kapag naka-off, walang awtomatikong malaking titik maliban sa iyong sariling pag-type gamit ang Shift o Caps Lock. Ang autocorrect at mga suhestiyon ay gumagana ayon sa setting."
+  },
+  "fr": {
+    "title": "Majuscules automatiques",
+    "summary": "Met automatiquement en majuscule le premier mot des phrases et les mots qui n'existent que comme noms (p. ex. les noms allemands). Désactivé, rien n'est mis en majuscule si vous ne le tapez vous-même avec Maj ou Verr Maj. La correction automatique et les suggestions fonctionnent selon leur réglage."
+  },
+  "hr": {
+    "title": "Automatsko veliko slovo",
+    "summary": "Automatski piše velikim slovom prvu riječ rečenica i riječi koje postoje samo kao imenice (npr. njemačke imenice). Isključeno, ništa se ne piše velikim slovom osim ako to sami ne ukucate Shiftom ili Caps Lockom. Autokorekcija i prijedlozi rade prema postavkama."
+  },
+  "hu": {
+    "title": "Automatikus nagybetű",
+    "summary": "Automatikusan nagybetűvel írja a mondatok első szavát és a csak főnévként létező szavakat (pl. német főnevek). Kikapcsolva semmit nem ír nagybetűvel, hacsak Ön maga nem írja Shifttel vagy Caps Lockkal. Az automatikus javítás és a javaslatok a beállítások szerint működnek."
+  },
+  "id": {
+    "title": "Kapitalisasi otomatis",
+    "summary": "Mengkapitalisasi kata pertama kalimat dan kata yang hanya ada sebagai nomina (mis. nomina Jerman) secara otomatis. Saat nonaktif, tidak ada yang dikapitalisasi kecuali Anda mengetiknya sendiri dengan Shift atau Caps Lock. Koreksi otomatis dan saran berperilaku sesuai pengaturannya."
+  },
+  "it": {
+    "title": "Maiuscole automatiche",
+    "summary": "Scrive automaticamente con la maiuscola la prima parola delle frasi e le parole che esistono solo come nomi (es. i nomi tedeschi). Disattivata, nulla viene scritto in maiuscolo se non lo scrivi tu con Maiusc o Bloc Maiusc. La correzione automatica e i suggerimenti funzionano secondo le loro impostazioni."
+  },
+  "lt": {
+    "title": "Automatinė didžioji raidė",
+    "summary": "Automatiškai rašo didžiąja raide sakinių pirmąjį žodį ir žodžius, kurie egzistuoja tik kaip daiktavardžiai (pvz., vokiški daiktavardžiai). Išjungus niekas nerašoma didžiąja raide, jei pats to neįrašote Shift arba Caps Lock klavišais. Autopataisa ir siūlymai veikia pagal nustatymus."
+  },
+  "lv": {
+    "title": "Automātiskais lielais burts",
+    "summary": "Automātiski raksta ar lielo burtu teikumu pirmo vārdu un vārdus, kas pastāv tikai kā lietvārdi (piem., vācu lietvārdus). Izslēgts nekas netiek rakstīts ar lielo burtu, ja vien pats to nerakstāt ar Shift vai Caps Lock. Autokorekcija un ieteikumi darbojas pēc iestatījumiem."
+  },
+  "ms": {
+    "title": "Huruf besar automatik",
+    "summary": "Menulis secara automatik dengan huruf besar perkataan pertama ayat dan perkataan yang wujud sebagai kata nama sahaja (cth. kata nama Jerman). Apabila dimatikan, tiada apa-apa ditulis dengan huruf besar melainkan anda menaipnya sendiri dengan Shift atau Caps Lock. Pembetulan automatik dan cadangan berfungsi mengikut tetapan."
+  },
+  "nb": {
+    "title": "Automatisk stor bokstav",
+    "summary": "Skriver automatisk med stor bokstav første ord i setninger og ord som bare finnes som substantiv (f.eks. tyske substantiv). Avslått skrives ingenting med stor bokstav med mindre du selv gjør det med Shift eller Caps Lock. Autokorrektur og forslag oppfører seg som innstilt."
+  },
+  "nl": {
+    "title": "Automatische hoofdletters",
+    "summary": "Schrijft automatisch met een hoofdletter het eerste woord van zinnen en woorden die alleen als zelfstandig naamwoord bestaan (bijv. Duitse zelfstandige naamwoorden). Uitgeschakeld wordt niets met een hoofdletter geschreven tenzij je dat zelf met Shift of Caps Lock typt. Autocorrectie en suggesties werken volgens hun instelling."
+  },
+  "pl": {
+    "title": "Automatyczna wielka litera",
+    "summary": "Automatycznie pisze wielką literą pierwsze słowo zdań oraz słowa istniejące tylko jako rzeczowniki (np. niemieckie rzeczowniki). Gdy wyłączone, nic nie jest pisane wielką literą, chyba że sam napiszesz to klawiszem Shift lub Caps Lock. Autokorekta i podpowiedzi działają według ustawień."
+  },
+  "pt": {
+    "title": "Maiúsculas automáticas",
+    "summary": "Escreve automaticamente com maiúscula a primeira palavra das frases e as palavras que existem apenas como substantivos (p. ex. substantivos alemães). Desligado, nada é escrito com maiúscula a não ser que você o escreva com Shift ou Caps Lock. A correção automática e as sugestões comportam-se conforme configurado."
+  },
+  "ro": {
+    "title": "Majuscule automate",
+    "summary": "Scrie automat cu majusculă primul cuvânt al frazelor și cuvintele care există doar ca substantive (de ex. substantivele germane). Dezactivat, nimic nu se scrie cu majusculă dacă nu îl tastați singur cu Shift sau Caps Lock. Corectarea automată și sugestiile funcționează conform setărilor."
+  },
+  "ru": {
+    "title": "Автоматические заглавные",
+    "summary": "Автоматически пишет с заглавной буквы первое слово предложений и слова, существующие только как существительные (напр. немецкие существительные). Когда выключено, ничего не пишется с заглавной, если вы сами не набрали это Shift или Caps Lock. Автокоррекция и подсказки работают согласно своим настройкам."
+  },
+  "sk": {
+    "title": "Automatické veľké písmeno",
+    "summary": "Automaticky píše veľkým písmenom prvé slovo viet a slová existujúce len ako podstatné mená (napr. nemecké podstatné mená). Pri vypnutí sa nič nepíše veľkým písmenom, pokiaľ to sami nenapíšete pomocou Shift alebo Caps Lock. Autokorektúra a návrhy sa správajú podľa nastavení."
+  },
+  "sr": {
+    "title": "Аутоматско велико слово",
+    "summary": "Аутоматски пише великим словом прву реч реченица и речи које постоје само као именице (нпр. немачке именице). Кад је искључено, ништа се не пише великим словом осим ако то сами не куцајте Shiftом или Caps Lockом. Аутокорекција и предлози раде према подешавањима."
+  },
+  "sv": {
+    "title": "Automatisk stor bokstav",
+    "summary": "Skriver automatiskt med stor bokstav meningen första ord och ord som bara finns som substantiv (t.ex. tyska substantiv). Avstängd skrivs inget med stor bokstav om du inte själv skriver det med Shift eller Caps Lock. Autokorrigering och förslag fungerar enligt inställningarna."
+  },
+  "sw": {
+    "title": "Herufi kubwa za kiotomatiki",
+    "summary": "Huandika kiotomatiki kwa herufi kubwa neno la kwanza la sentensi na maneno yaliyopo kama nomino tu (mf. nomino za Kijerumani). Ikizimwa, hakuna kinachoandikwa kwa herufi kubwa isipokuwa wewe mwenyewe kwa Shift au Caps Lock. Ukorekaji wa kiotomatiki na mapendekezo hufanya kazi kwa mujibu wa mipangilio."
+  },
+  "tr": {
+    "title": "Otomatik büyük harf",
+    "summary": "Cümlelerin ilk kelimesini ve yalnızca isim olarak var olan kelimeleri (örn. Almanca isimler) otomatik olarak büyük harfle yazar. Kapalıyken, kendiniz Shift veya Caps Lock ile yazmadıkça hiçbir şey büyük harfle yazılmaz. Otomatik düzeltme ve öneriler ayarlarına göre çalışır."
+  },
+  "uk": {
+    "title": "Автоматичні великі літери",
+    "summary": "Автоматично пише з великої літери перше слово речень і слова, що існують лише як іменники (напр. німецькі іменники). Коли вимкнено, нічого не пишеться з великої літери, якщо ви самі не набрали це Shift або Caps Lock. Автокорекція та підказки працюють за власними налаштуваннями."
+  },
+  "uz": {
+    "title": "Avtomatik katta harf",
+    "summary": "Gaplarning birinchi so'zini va faqat ot sifatida mavjud bo'lgan so'zlarni (masalan, nemis otlarini) avtomatik katta harf bilan yozadi. O'chirilganda, o'zingiz Shift yoki Caps Lock bilan yozmaganingizcha hech narsa katta harf bilan yozilmaydi. Avto-tuzatish va takliflar o'z sozlamalariga muvofiq ishlaydi."
+  }
+}

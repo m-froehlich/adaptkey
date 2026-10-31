@@ -190,6 +190,8 @@
     <string name="d191_contacts_permission_denied">Kontakter-tilladelse ikke givet - forslag fra kontakter forbliver slået fra.</string>
     <string name="c07_title">Tolerancevindue for Skift</string>
     <string name="c07_summary">Beskytter mod overraskende store bogstaver i felter (0–500 ms).</string>
+    <string name="d500_auto_capitalisation_title">Automatisk stort bogstav</string>
+    <string name="d500_auto_capitalisation_summary">Skriver automatisk med stort bogstav det første ord i sætninger og ord, der kun findes som navneord (f.eks. tyske navneord). Slået fra skrives intet med stort bogstav, medmindre du selv gør det med Shift eller Caps Lock. Autokorrektion og forslag fungerer som indstillet.</string>
     <string name="c10_title">Ingen sætningsstart efter en linje med komma</string>
     <string name="c10_summary">Efter en linje, der ender med komma (fx en hilsen i en mail), begynder næste linje ikke med stort bogstav.</string>
     <string name="c06_title">Tærskel for LLM</string>

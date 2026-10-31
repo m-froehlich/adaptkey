@@ -190,6 +190,8 @@
     <string name="d191_contacts_permission_denied">Kontaktlar icazəsi verilməyib - kontaktlardan təkliflər söndürülü qalır.</string>
     <string name="c07_title">Shift tolerantlıq pəncərəsi</string>
     <string name="c07_summary">Sahələrdə gözlənilməz böyük hərf istifadəsindən qoruyur (0–500 ms).</string>
+    <string name="d500_auto_capitalisation_title">Avtomatik böyük hərf</string>
+    <string name="d500_auto_capitalisation_summary">Cümlələrin ilk sözünü və yalnız isim kimi mövcud olan sözləri (məs. alman isimləri) avtomatik böyük hərflə yazır. Söndürüldükdə Shift və ya Caps Lock ilə özünüz yazmadığınız heç nə böyük hərflə yazılmır. Avtodüzəliş və təkliflər quraşdırıldığı kimi işləyir.</string>
     <string name="c10_title">Vergüllü sətirdən sonra cümlə başlanğıcı olmasın</string>
     <string name="c10_summary">Vergüllə bitən sətirdən sonra (məs. e-poçtda salamlama) növbəti sətir böyük hərflə başlamır.</string>
     <string name="c06_title">LLM həddi</string>

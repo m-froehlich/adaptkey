@@ -190,6 +190,8 @@
     <string name="d191_contacts_permission_denied">Izin Kontak tidak diberikan - saran dari kontak tetap nonaktif.</string>
     <string name="c07_title">Jendela toleransi Shift</string>
     <string name="c07_summary">Melindungi dari kapitalisasi kolom yang mengejutkan (0–500 md).</string>
+    <string name="d500_auto_capitalisation_title">Kapitalisasi otomatis</string>
+    <string name="d500_auto_capitalisation_summary">Mengkapitalisasi kata pertama kalimat dan kata yang hanya ada sebagai nomina (mis. nomina Jerman) secara otomatis. Saat nonaktif, tidak ada yang dikapitalisasi kecuali Anda mengetiknya sendiri dengan Shift atau Caps Lock. Koreksi otomatis dan saran berperilaku sesuai pengaturannya.</string>
     <string name="c10_title">Tanpa awal kalimat setelah baris berkoma</string>
     <string name="c10_summary">Setelah baris yang diakhiri koma (mis. salam pembuka email), baris berikutnya tidak diawali huruf besar.</string>
     <string name="c06_title">Ambang LLM</string>

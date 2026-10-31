@@ -190,6 +190,8 @@
     <string name="d191_contacts_permission_denied">Kontakter-behörigheten har inte beviljats - förslag från kontakter förblir av.</string>
     <string name="c07_title">Skifts toleransfönster</string>
     <string name="c07_summary">Skyddar mot överraskande versalisering i fält (0–500 ms).</string>
+    <string name="d500_auto_capitalisation_title">Automatisk stor bokstav</string>
+    <string name="d500_auto_capitalisation_summary">Skriver automatiskt med stor bokstav meningen första ord och ord som bara finns som substantiv (t.ex. tyska substantiv). Avstängd skrivs inget med stor bokstav om du inte själv skriver det med Shift eller Caps Lock. Autokorrigering och förslag fungerar enligt inställningarna.</string>
     <string name="c10_title">Ingen meningsstart efter en rad med kommatecken</string>
     <string name="c10_summary">Efter en rad som slutar med kommatecken (t.ex. en hälsningsfras i ett mejl) inleds nästa rad inte med versal.</string>
     <string name="c06_title">Tröskel för LLM</string>

@@ -190,6 +190,8 @@
     <string name="d191_contacts_permission_denied">Autorisation d\'accès aux contacts non accordée - les suggestions de contacts restent désactivées.</string>
     <string name="c07_title">Fenêtre de grâce de Maj</string>
     <string name="c07_summary">Protège contre une mise en majuscules surprenante des champs (0–500 ms).</string>
+    <string name="d500_auto_capitalisation_title">Majuscules automatiques</string>
+    <string name="d500_auto_capitalisation_summary">Met automatiquement en majuscule le premier mot des phrases et les mots qui n\'existent que comme noms (p. ex. les noms allemands). Désactivé, rien n\'est mis en majuscule si vous ne le tapez vous-même avec Maj ou Verr Maj. La correction automatique et les suggestions fonctionnent selon leur réglage.</string>
     <string name="c10_title">Pas de début de phrase après une ligne à virgule</string>
     <string name="c10_summary">Après une ligne se terminant par une virgule (p. ex. une formule d\'appel dans un e-mail), la ligne suivante ne prend pas de majuscule.</string>
     <string name="c06_title">Seuil du LLM</string>

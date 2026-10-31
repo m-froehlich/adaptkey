@@ -190,6 +190,8 @@
     <string name="d191_contacts_permission_denied">Povolenie ku Kontaktom nebolo udelené - návrhy z kontaktov zostávajú vypnuté.</string>
     <string name="c07_title">Okno tolerancie Shiftu</string>
     <string name="c07_summary">Chráni pred prekvapivým písaním veľkých písmen v poliach (0–500 ms).</string>
+    <string name="d500_auto_capitalisation_title">Automatické veľké písmeno</string>
+    <string name="d500_auto_capitalisation_summary">Automaticky píše veľkým písmenom prvé slovo viet a slová existujúce len ako podstatné mená (napr. nemecké podstatné mená). Pri vypnutí sa nič nepíše veľkým písmenom, pokiaľ to sami nenapíšete pomocou Shift alebo Caps Lock. Autokorektúra a návrhy sa správajú podľa nastavení.</string>
     <string name="c10_title">Žiadny začiatok vety po riadku s čiarkou</string>
     <string name="c10_summary">Po riadku končiacom čiarkou (napr. oslovenie v e-maile) ďalší riadok nezačína veľkým písmenom.</string>
     <string name="c06_title">Prah LLM</string>

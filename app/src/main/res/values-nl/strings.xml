@@ -190,6 +190,8 @@
     <string name="d191_contacts_permission_denied">Machtiging Contacten niet verleend - suggesties uit contacten blijven uit.</string>
     <string name="c07_title">Respijtvenster voor Shift</string>
     <string name="c07_summary">Beschermt tegen verrassende hoofdlettergeving van velden (0–500 ms).</string>
+    <string name="d500_auto_capitalisation_title">Automatische hoofdletters</string>
+    <string name="d500_auto_capitalisation_summary">Schrijft automatisch met een hoofdletter het eerste woord van zinnen en woorden die alleen als zelfstandig naamwoord bestaan (bijv. Duitse zelfstandige naamwoorden). Uitgeschakeld wordt niets met een hoofdletter geschreven tenzij je dat zelf met Shift of Caps Lock typt. Autocorrectie en suggesties werken volgens hun instelling.</string>
     <string name="c10_title">Geen zinsbegin na een regel met komma</string>
     <string name="c10_summary">Na een regel die op een komma eindigt (bijv. een aanhef in een mail) begint de volgende regel niet met een hoofdletter.</string>
     <string name="c06_title">Drempel voor de LLM</string>

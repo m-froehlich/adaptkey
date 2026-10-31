@@ -55,6 +55,14 @@ class SettingsMapperTest {
     }
     
     @Test
+    fun `D-500 autoCapitalisation defaults to on and an explicit value passes through`() {
+        assertTrue(SettingsMapper.toAdaptSettings(RawSettings()).autoCapitalisation)
+        assertTrue(AdaptSettings().autoCapitalisation)
+        assertFalse(SettingsMapper.toAdaptSettings(RawSettings(autoCapitalisation = false)).autoCapitalisation)
+        assertTrue(SettingsMapper.toAdaptSettings(RawSettings(autoCapitalisation = true)).autoCapitalisation)
+    }
+    
+    @Test
     fun `maxSuggestions is clamped into the recommended range`() {
         assertEquals(SettingsMapper.MIN_MAX_SUGGESTIONS, SettingsMapper.toSuggestionConfig(RawSettings(maxSuggestions = 0)).maxSuggestions)
         assertEquals(SettingsMapper.MAX_MAX_SUGGESTIONS, SettingsMapper.toSuggestionConfig(RawSettings(maxSuggestions = 99)).maxSuggestions)

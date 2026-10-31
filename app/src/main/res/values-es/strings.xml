@@ -190,6 +190,8 @@
     <string name="d191_contacts_permission_denied">Permiso de Contactos no concedido - las sugerencias de contactos siguen desactivadas.</string>
     <string name="c07_title">Ventana de gracia de Mayús</string>
     <string name="c07_summary">Protege frente a mayúsculas sorprendentes en los campos (0–500 ms).</string>
+    <string name="d500_auto_capitalisation_title">Mayúsculas automáticas</string>
+    <string name="d500_auto_capitalisation_summary">Escribe automáticamente con mayúscula la primera palabra de las frases y las palabras que solo existen como sustantivos (p. ej., los sustantivos alemanes). Desactivada, nada se escribe con mayúscula salvo que lo escribas tú con Mayús o Bloq Mayús. La corrección automática y las sugerencias funcionan según su configuración.</string>
     <string name="c10_title">Sin inicio de frase tras una línea con coma</string>
     <string name="c10_summary">Después de una línea que termina en coma (p. ej. un saludo de correo), la línea siguiente no empieza en mayúscula.</string>
     <string name="c06_title">Umbral del LLM</string>

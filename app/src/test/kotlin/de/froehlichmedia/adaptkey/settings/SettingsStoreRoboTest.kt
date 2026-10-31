@@ -108,6 +108,21 @@ class SettingsStoreRoboTest {
     }
     
     @Test
+    fun d500AutoCapitalisationDefaultsOnWithNoKeyWrittenAndAnExplicitStoredValueWins() {
+        val context = RuntimeEnvironment.getApplication()
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        
+        assertTrue(SettingsStore.load(context).autoCapitalisation)
+        assertFalse(prefs.contains(SettingsStore.KEY_AUTO_CAPITALISATION))
+        
+        PreferenceManager.getDefaultSharedPreferences(context).edit()
+            .putBoolean(SettingsStore.KEY_AUTO_CAPITALISATION, false)
+            .commit()
+        
+        assertFalse(SettingsStore.load(context).autoCapitalisation)
+    }
+    
+    @Test
     fun d507FreshInstallDefaultsToTheSymbolModeWithNoKeysWritten() {
         val context = RuntimeEnvironment.getApplication()
         val prefs = PreferenceManager.getDefaultSharedPreferences(context)

@@ -190,6 +190,8 @@
     <string name="d191_contacts_permission_denied">Hindi ibinigay ang pahintulot sa Mga Contact - mananatiling naka-off ang mga mungkahi mula sa mga contact.</string>
     <string name="c07_title">Grace window ng Shift</string>
     <string name="c07_summary">Nagbabantay laban sa nakagugulat na paggamit ng malalaking letra sa mga field (0–500 ms).</string>
+    <string name="d500_auto_capitalisation_title">Awtomatikong malaking titik</string>
+    <string name="d500_auto_capitalisation_summary">Awtomatikong isinusulat nang malaking titik ang unang salita ng mga pangungusap at mga salitang pangngalan lamang (hal. mga pangngalan sa Aleman). Kapag naka-off, walang awtomatikong malaking titik maliban sa iyong sariling pag-type gamit ang Shift o Caps Lock. Ang autocorrect at mga suhestiyon ay gumagana ayon sa setting.</string>
     <string name="c10_title">Walang simula ng pangungusap pagkatapos ng linyang may kuwit</string>
     <string name="c10_summary">Pagkatapos ng linyang nagtatapos sa kuwit (hal. bati sa isang email), ang susunod na linya ay hindi nagsisimula sa malaking letra.</string>
     <string name="c06_title">Threshold ng LLM</string>

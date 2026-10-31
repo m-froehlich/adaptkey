@@ -5331,7 +5331,16 @@ class AdaptKeyService : InputMethodService() {
         // typed verbatim, mirroring how a case-locked word already bypasses "autocorrect, capitalisation
         // (§6) and single-word correction entirely" (G-05) for the identical "the user has hand-finished
         // this" reason.
-        val finalWord = if (revertConfirmed) typed else capitalisation.capitalise(corrected, contextFor(typed), llmForcesUpper)
+        // D-500: the ordinary commit is the ONE capitalise() call that carries the C-28 switch - the
+        // linguistic force-capitalisation rules (noun-only, LLM lift, D-457 acronym restore) are skipped
+        // when it is off, so what the user typed is what commits. Every chip/preview/split/merge call
+        // keeps the default (they reproduce what the user explicitly tapped or what their own setting
+        // allows), and the editor mandates (rule 2) stay honoured either way.
+        val finalWord = if (revertConfirmed) {
+            typed
+        } else {
+            capitalisation.capitalise(corrected, contextFor(typed), llmForcesUpper, autoCapsEnabled = settings.autoCapitalisation)
+        }
         // D-139 (temporary diagnostic): the actual permanent write to the field - typed vs. what got
         // committed, so a scramble that only shows up in the final text (not just while composing) is
         // still caught here.
@@ -8361,7 +8370,13 @@ class AdaptKeyService : InputMethodService() {
             return
         }
         val sentenceStart = sentenceStartBefore(ic)
-        keyboardView?.shifted = ShiftGrace.autoArmAtWordStart(capsMode, sentenceStart)
+        // D-500: the C-28 auto-capitalisation switch - a deliberately coarse gate. With it off, no
+        // automatic arm is derived in ANY caps mode (field mandates included - their commit-time §6
+        // rule-2 handling is unaffected, so an app that demands capitals still gets them). The write is
+        // the same write today's mid-sentence derivation already performs, so the D-491/D-335/D-373/D-378
+        // one-shot guards ahead of this call keep protecting a manual press exactly as before; D-406's
+        // restore half (a deleted uppercase keeps shift lit) never reaches this gate.
+        keyboardView?.shifted = ShiftGrace.autoArmAtWordStart(capsMode, sentenceStart, settings.autoCapitalisation)
         shiftGuardedArm = ShiftGrace.isGuardedArm(capsMode, sentenceStart)
         shiftArmTime = SystemClock.uptimeMillis()
         fieldMandateOverridden = false

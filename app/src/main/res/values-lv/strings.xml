@@ -190,6 +190,8 @@
     <string name="d191_contacts_permission_denied">Kontaktpersonu atļauja nav piešķirta - ieteikumi no kontaktpersonām paliek izslēgti.</string>
     <string name="c07_title">Shift pielaides logs</string>
     <string name="c07_summary">Pasargā no pārsteidzošas lauku rakstīšanas ar lielajiem burtiem (0–500 ms).</string>
+    <string name="d500_auto_capitalisation_title">Automātiskais lielais burts</string>
+    <string name="d500_auto_capitalisation_summary">Automātiski raksta ar lielo burtu teikumu pirmo vārdu un vārdus, kas pastāv tikai kā lietvārdi (piem., vācu lietvārdus). Izslēgts nekas netiek rakstīts ar lielo burtu, ja vien pats to nerakstāt ar Shift vai Caps Lock. Autokorekcija un ieteikumi darbojas pēc iestatījumiem.</string>
     <string name="c10_title">Nav teikuma sākuma pēc rindas ar komatu</string>
     <string name="c10_summary">Pēc rindas, kas beidzas ar komatu (piem., e-pasta uzruna), nākamā rinda nesākas ar lielo burtu.</string>
     <string name="c06_title">LLM slieksnis</string>

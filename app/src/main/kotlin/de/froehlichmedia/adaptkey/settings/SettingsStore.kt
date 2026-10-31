@@ -45,6 +45,9 @@ object SettingsStore {
     const val KEY_NUMBER_ROW = "c09_number_row"
     const val KEY_SHIFT_GRACE = "c07_shift_grace_ms"
     const val KEY_COMMA_LINE_NOT_SENTENCE_START = "c10_comma_line_not_sentence_start"
+
+    /** D-500/C-28: the §6 auto-capitalisation switch (default on; off = nothing auto-capitalised). */
+    const val KEY_AUTO_CAPITALISATION = "d500_auto_capitalisation"
     const val KEY_LLM_THRESHOLD = "c06_llm_threshold"
     const val KEY_KEY_SOUND = "d05_key_sound"
     const val KEY_KEY_HAPTICS = "d06_key_haptics"
@@ -146,6 +149,9 @@ object SettingsStore {
     
     /** Default stored boolean for the D-348 double-tap Backspace undo toggle (on, D-490). */
     const val DEF_DOUBLE_TAP_BACKSPACE_UNDO = true
+
+    /** Default stored boolean for the D-500/C-28 auto-capitalisation switch (on). */
+    const val DEF_AUTO_CAPITALISATION = true
     
     /** Default stored boolean for the D-361 Backspace sticky-zone toggle (on). */
     const val DEF_BACKSPACE_STICKY_ENABLED = true
@@ -212,6 +218,7 @@ object SettingsStore {
             abbreviations = loadAbbreviations(context),
             shiftGraceWindowMs = p.getInt(KEY_SHIFT_GRACE, DEF_SHIFT_GRACE).toLong(),
             commaLineNotSentenceStart = p.getBoolean(KEY_COMMA_LINE_NOT_SENTENCE_START, true),
+        autoCapitalisation = p.getBoolean(KEY_AUTO_CAPITALISATION, DEF_AUTO_CAPITALISATION),
             llmThresholdKey = p.getString(KEY_LLM_THRESHOLD, null),
             keySoundEnabled = p.getBoolean(KEY_KEY_SOUND, false),
             keyHapticsEnabled = p.getBoolean(KEY_KEY_HAPTICS, false),
@@ -394,6 +401,7 @@ object SettingsStore {
         KEY_HIGHLIGHT_COLOR,
         KEY_RESORT_DELAY,
         KEY_MAX_SUGGESTIONS,
+        KEY_AUTO_CAPITALISATION,
         KEY_COMMA_LINE_NOT_SENTENCE_START,
         KEY_SHIFT_GRACE,
         KEY_LLM_THRESHOLD,

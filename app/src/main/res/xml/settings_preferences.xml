@@ -204,6 +204,12 @@
             app:showSeekBarValue="true" />
 
         <SwitchPreferenceCompat
+            android:key="d500_auto_capitalisation"
+            android:title="@string/d500_auto_capitalisation_title"
+            android:summary="@string/d500_auto_capitalisation_summary"
+            android:defaultValue="true" />
+
+        <SwitchPreferenceCompat
             android:key="c10_comma_line_not_sentence_start"
             android:title="@string/c10_title"
             android:summary="@string/c10_summary"

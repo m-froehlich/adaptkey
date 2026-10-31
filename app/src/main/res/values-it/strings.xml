@@ -190,6 +190,8 @@
     <string name="d191_contacts_permission_denied">Autorizzazione ai Contatti non concessa - i suggerimenti dai contatti restano disattivati.</string>
     <string name="c07_title">Finestra di tolleranza di Maiusc</string>
     <string name="c07_summary">Protegge da maiuscole inattese nei campi (0–500 ms).</string>
+    <string name="d500_auto_capitalisation_title">Maiuscole automatiche</string>
+    <string name="d500_auto_capitalisation_summary">Scrive automaticamente con la maiuscola la prima parola delle frasi e le parole che esistono solo come nomi (es. i nomi tedeschi). Disattivata, nulla viene scritto in maiuscolo se non lo scrivi tu con Maiusc o Bloc Maiusc. La correzione automatica e i suggerimenti funzionano secondo le loro impostazioni.</string>
     <string name="c10_title">Niente inizio di frase dopo una riga con virgola</string>
     <string name="c10_summary">Dopo una riga che termina con una virgola (ad es. un saluto in un\'e-mail), la riga successiva non inizia con la maiuscola.</string>
     <string name="c06_title">Soglia del LLM</string>

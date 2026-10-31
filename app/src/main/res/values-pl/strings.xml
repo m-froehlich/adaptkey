@@ -190,6 +190,8 @@
     <string name="d191_contacts_permission_denied">Nie przyznano uprawnienia do Kontaktów - sugestie z kontaktów pozostają wyłączone.</string>
     <string name="c07_title">Okno tolerancji Shift</string>
     <string name="c07_summary">Chroni przed zaskakującym pisaniem wielkimi literami w polach (0–500 ms).</string>
+    <string name="d500_auto_capitalisation_title">Automatyczna wielka litera</string>
+    <string name="d500_auto_capitalisation_summary">Automatycznie pisze wielką literą pierwsze słowo zdań oraz słowa istniejące tylko jako rzeczowniki (np. niemieckie rzeczowniki). Gdy wyłączone, nic nie jest pisane wielką literą, chyba że sam napiszesz to klawiszem Shift lub Caps Lock. Autokorekta i podpowiedzi działają według ustawień.</string>
     <string name="c10_title">Brak początku zdania po wierszu z przecinkiem</string>
     <string name="c10_summary">Po wierszu kończącym się przecinkiem (np. zwrot grzecznościowy w e-mailu) następny wiersz nie zaczyna się wielką literą.</string>
     <string name="c06_title">Próg LLM</string>

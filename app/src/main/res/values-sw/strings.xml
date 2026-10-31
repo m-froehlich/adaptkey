@@ -190,6 +190,8 @@
     <string name="d191_contacts_permission_denied">Ruhusa ya Anwani haijatolewa - mapendekezo kutoka kwa anwani yanabaki yamezimwa.</string>
     <string name="c07_title">Dirisha la uvumilivu la Shift</string>
     <string name="c07_summary">Hulinda dhidi ya matumizi ya kushangaza ya herufi kubwa kwenye sehemu (0–500 ms).</string>
+    <string name="d500_auto_capitalisation_title">Herufi kubwa za kiotomatiki</string>
+    <string name="d500_auto_capitalisation_summary">Huandika kiotomatiki kwa herufi kubwa neno la kwanza la sentensi na maneno yaliyopo kama nomino tu (mf. nomino za Kijerumani). Ikizimwa, hakuna kinachoandikwa kwa herufi kubwa isipokuwa wewe mwenyewe kwa Shift au Caps Lock. Ukorekaji wa kiotomatiki na mapendekezo hufanya kazi kwa mujibu wa mipangilio.</string>
     <string name="c10_title">Hakuna mwanzo wa sentensi baada ya mstari wenye koma</string>
     <string name="c10_summary">Baada ya mstari unaoishia kwa koma (mf. salamu ya barua pepe), mstari unaofuata hauanzi kwa herufi kubwa.</string>
     <string name="c06_title">Kizingiti cha LLM</string>

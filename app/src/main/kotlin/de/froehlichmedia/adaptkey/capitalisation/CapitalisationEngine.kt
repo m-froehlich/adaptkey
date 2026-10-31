@@ -48,9 +48,21 @@ class CapitalisationEngine(private val store: DictionaryStore, private val casin
      * @param context the positional and field context
      * @param llmForcesUpper the §6 rule-6 LLM exception: when true, a high-certainty nominal context
      *        capitalises a word the linguistic rules would otherwise leave lowercase (never the reverse)
+     * @param autoCapsEnabled the C-28 auto-capitalisation switch (D-500, default true - unchanged
+     *        behaviour). When false, the *linguistic* force-capitalisation rules are skipped: the
+     *        noun-only rule (§6 3+4), the LLM lift, and the D-457 acronym canonical restore. Only the
+     *        ordinary commit path passes this - chip/preview/split/merge casings reproduce what the user
+     *        explicitly tapped or what their own setting allows, and stay untouched. The editor mandates
+     *        (rule 2: `CHARACTERS` / `WORDS`, B-02) and rule 1's symmetric casing protection are
+     *        deliberately unaffected - the switch adds no capital anywhere, but removes none either.
      * @return the cased word; an empty input is returned unchanged
      */
-    fun capitalise(word: String, context: CapitalisationContext, llmForcesUpper: Boolean = false): String {
+    fun capitalise(
+        word: String,
+        context: CapitalisationContext,
+        llmForcesUpper: Boolean = false,
+        autoCapsEnabled: Boolean = true
+    ): String {
         if (word.isEmpty()) {
             return word
         }
@@ -69,7 +81,9 @@ class CapitalisationEngine(private val store: DictionaryStore, private val casin
         // when the caller's own first character was an explicit, deliberate choice (rule 1 - context.
         // explicitFirstUpper - still wins outright, unchanged; this is a narrower, later-priority fallback
         // for the reported all-lowercase-typing case specifically, not a new standing exception to rule 1).
-        if (!context.explicitFirstUpper && !Acronym.isAcronym(word)) {
+        // D-500: the acronym canonical restore is one of the linguistic force-capitalisation rules -
+        // with the C-28 switch off it is skipped, so "llm" typed fully lowercase commits as typed.
+        if (autoCapsEnabled && !context.explicitFirstUpper && !Acronym.isAcronym(word)) {
             val canonical = store.entryOf(word)?.word
             if (canonical != null && Acronym.isAcronym(canonical)) {
                 return canonical
@@ -111,8 +125,8 @@ class CapitalisationEngine(private val store: DictionaryStore, private val casin
             // own - B-02's default after a hyphen is lower-case for an ordinary noun too, so widening this
             // to every noun-only word would capitalise the second half of any plain compound ("Haus-tür").
             context.afterHyphen -> (isProper && isNounOnly) || previousSegmentPropagates(context)
-            isNounOnly -> true // §6 rules 3+4 (D-461)
-            llmForcesUpper -> true // §6 rule 6: high-certainty LLM nominal exception
+            autoCapsEnabled && isNounOnly -> true // §6 rules 3+4 (D-461); D-500 gates it behind C-28
+            autoCapsEnabled && llmForcesUpper -> true // §6 rule 6: high-certainty LLM nominal exception
             isAmbiguousNoun -> false
             else -> false
         }

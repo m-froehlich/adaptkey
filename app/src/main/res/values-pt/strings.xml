@@ -190,6 +190,8 @@
     <string name="d191_contacts_permission_denied">Permissão de Contatos não concedida - as sugestões de contatos continuam desativadas.</string>
     <string name="c07_title">Janela de tolerância do Shift</string>
     <string name="c07_summary">Protege contra capitalização inesperada de campos (0–500 ms).</string>
+    <string name="d500_auto_capitalisation_title">Maiúsculas automáticas</string>
+    <string name="d500_auto_capitalisation_summary">Escreve automaticamente com maiúscula a primeira palavra das frases e as palavras que existem apenas como substantivos (p. ex. substantivos alemães). Desligado, nada é escrito com maiúscula a não ser que você o escreva com Shift ou Caps Lock. A correção automática e as sugestões comportam-se conforme configurado.</string>
     <string name="c10_title">Sem início de frase após linha com vírgula</string>
     <string name="c10_summary">Depois de uma linha terminada em vírgula (p. ex. uma saudação de e-mail), a linha seguinte não começa em maiúscula.</string>
     <string name="c06_title">Limite do LLM</string>

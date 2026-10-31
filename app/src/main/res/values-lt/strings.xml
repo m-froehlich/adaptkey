@@ -190,6 +190,8 @@
     <string name="d191_contacts_permission_denied">Kontaktų leidimas nesuteiktas - pasiūlymai iš kontaktų lieka išjungti.</string>
     <string name="c07_title">Shift tolerancijos langas</string>
     <string name="c07_summary">Apsaugo nuo netikėto didžiųjų raidžių rašymo laukuose (0–500 ms).</string>
+    <string name="d500_auto_capitalisation_title">Automatinė didžioji raidė</string>
+    <string name="d500_auto_capitalisation_summary">Automatiškai rašo didžiąja raide sakinių pirmąjį žodį ir žodžius, kurie egzistuoja tik kaip daiktavardžiai (pvz., vokiški daiktavardžiai). Išjungus niekas nerašoma didžiąja raide, jei pats to neįrašote Shift arba Caps Lock klavišais. Autopataisa ir siūlymai veikia pagal nustatymus.</string>
     <string name="c10_title">Jokios sakinio pradžios po eilutės su kableliu</string>
     <string name="c10_summary">Po eilutės, pasibaigiančios kableliu (pvz., kreipinio laiške), kita eilutė nepradedama didžiąja raide.</string>
     <string name="c06_title">LLM slenkstis</string>

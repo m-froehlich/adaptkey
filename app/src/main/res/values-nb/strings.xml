@@ -190,6 +190,8 @@
     <string name="d191_contacts_permission_denied">Kontakter-tillatelsen er ikke gitt - forslag fra kontakter forblir av.</string>
     <string name="c07_title">Toleransevindu for Skift</string>
     <string name="c07_summary">Beskytter mot overraskende stor forbokstav i felt (0–500 ms).</string>
+    <string name="d500_auto_capitalisation_title">Automatisk stor bokstav</string>
+    <string name="d500_auto_capitalisation_summary">Skriver automatisk med stor bokstav første ord i setninger og ord som bare finnes som substantiv (f.eks. tyske substantiv). Avslått skrives ingenting med stor bokstav med mindre du selv gjør det med Shift eller Caps Lock. Autokorrektur og forslag oppfører seg som innstilt.</string>
     <string name="c10_title">Ingen setningsstart etter en linje med komma</string>
     <string name="c10_summary">Etter en linje som ender med komma (f.eks. en hilsen i en e-post) begynner ikke neste linje med stor bokstav.</string>
     <string name="c06_title">Terskel for LLM</string>

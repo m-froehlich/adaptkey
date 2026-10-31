@@ -190,6 +190,8 @@
     <string name="d191_contacts_permission_denied">Dopuštenje za Kontakte nije odobreno - prijedlozi iz kontakata ostaju isključeni.</string>
     <string name="c07_title">Prozor tolerancije za Shift</string>
     <string name="c07_summary">Štiti od iznenađujućeg pisanja velikih slova u poljima (0–500 ms).</string>
+    <string name="d500_auto_capitalisation_title">Automatsko veliko slovo</string>
+    <string name="d500_auto_capitalisation_summary">Automatski piše velikim slovom prvu riječ rečenica i riječi koje postoje samo kao imenice (npr. njemačke imenice). Isključeno, ništa se ne piše velikim slovom osim ako to sami ne ukucate Shiftom ili Caps Lockom. Autokorekcija i prijedlozi rade prema postavkama.</string>
     <string name="c10_title">Bez početka rečenice nakon retka sa zarezom</string>
     <string name="c10_summary">Nakon retka koji završava zarezom (npr. oslovljavanje u e-pošti) sljedeći redak ne počinje velikim slovom.</string>
     <string name="c06_title">Prag LLM-a</string>

@@ -190,6 +190,8 @@
     <string name="d191_contacts_permission_denied">A Névjegyek engedély nincs megadva - a névjegyekből származó javaslatok kikapcsolva maradnak.</string>
     <string name="c07_title">Shift türelmi ablak</string>
     <string name="c07_summary">Véd a mezők meglepő nagybetűzése ellen (0–500 ms).</string>
+    <string name="d500_auto_capitalisation_title">Automatikus nagybetű</string>
+    <string name="d500_auto_capitalisation_summary">Automatikusan nagybetűvel írja a mondatok első szavát és a csak főnévként létező szavakat (pl. német főnevek). Kikapcsolva semmit nem ír nagybetűvel, hacsak Ön maga nem írja Shifttel vagy Caps Lockkal. Az automatikus javítás és a javaslatok a beállítások szerint működnek.</string>
     <string name="c10_title">Nincs mondatkezdés vesszős sor után</string>
     <string name="c10_summary">Egy vesszővel végződő sor után (pl. egy levél megszólítása) a következő sor nem kezdődik nagybetűvel.</string>
     <string name="c06_title">LLM-küszöb</string>

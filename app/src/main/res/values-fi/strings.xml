@@ -190,6 +190,8 @@
     <string name="d191_contacts_permission_denied">Yhteystiedot-lupaa ei annettu - yhteystietojen ehdotukset pysyvät pois päältä.</string>
     <string name="c07_title">Shiftin toleranssi-ikkuna</string>
     <string name="c07_summary">Suojaa yllättävältä kenttien isojen kirjainten käytöltä (0–500 ms).</string>
+    <string name="d500_auto_capitalisation_title">Automaattinen suuraakkon</string>
+    <string name="d500_auto_capitalisation_summary">Kirjoittaa automaattisesti isolla alkukirjaimella lauseiden ensimmäisen sanan ja sanat, jotka ovat vain substantiiveja (esim. saksan substantiivit). Pois käytöstä mikään ei kirjoitu isolla, ellet kirjoita sitä itse Shift- tai Caps Lock -näppäimellä. Autokorjaus ja ehdotukset toimivat asetusten mukaan.</string>
     <string name="c10_title">Ei virkkeen alkua pilkkurivin jälkeen</string>
     <string name="c10_summary">Pilkkuun päättyvän rivin (esim. sähköpostin tervehdyksen) jälkeen seuraava rivi ei ala isolla kirjaimella.</string>
     <string name="c06_title">LLM:n kynnys</string>

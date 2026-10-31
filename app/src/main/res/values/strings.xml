@@ -220,6 +220,8 @@
     <string name="c07_title">Shift grace window</string>
     <string name="c07_summary">Guards against surprising field capitalisation (0–500 ms).</string>
 
+    <string name="d500_auto_capitalisation_title">Auto-capitalisation</string>
+    <string name="d500_auto_capitalisation_summary">Automatically capitalises the first word of sentences and words that exist only as nouns (e.g. German nouns). When off, nothing is capitalised that you do not type with Shift or Caps Lock yourself. Autocorrect and suggestion chips behave as configured.</string>
     <string name="c10_title">No sentence start after a comma line</string>
     <string name="c10_summary">After a line ending with a comma (e.g. a mail salutation), the next line is not capitalised.</string>
 

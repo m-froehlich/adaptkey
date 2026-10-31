@@ -28,11 +28,23 @@ object ShiftGrace {
      * its own (a plain, unadorned message field, as plenty of real apps use - e.g. the reported eBay
      * Kleinanzeigen case) - fixed by treating it the same as [CapsMode.SENTENCES] here.
      *
+     * D-500: [autoCapsEnabled] is the C-28 auto-capitalisation switch. When false, NO automatic arm is
+     * derived in any caps mode - the switch is deliberately a coarse gate with no per-field distinction,
+     * so the field mandates (WORDS/CHARACTERS) lose their live pre-arm too; their commit-time rule
+     * ([de.froehlichmedia.adaptkey.capitalisation.CapitalisationEngine]'s own `CapsMode.WORDS` /
+     * `CHARACTERS` handling, §6 rule 2) is unaffected, so a field that demands capitals still gets them.
+     * Manual Shift presses and Caps Lock are the service's own state and are never touched by this
+     * decision.
+     *
      * @param capsMode the editor-mandated capitalisation
      * @param sentenceStart whether the upcoming word starts a sentence
+     * @param autoCapsEnabled the C-28 auto-capitalisation switch (default true - unchanged behaviour)
      * @return true when the next letter should default to uppercase
      */
-    fun autoArmAtWordStart(capsMode: CapsMode, sentenceStart: Boolean): Boolean {
+    fun autoArmAtWordStart(capsMode: CapsMode, sentenceStart: Boolean, autoCapsEnabled: Boolean = true): Boolean {
+        if (!autoCapsEnabled) {
+            return false
+        }
         return when (capsMode) {
             CapsMode.WORDS, CapsMode.CHARACTERS -> true
             CapsMode.SENTENCES, CapsMode.NONE -> sentenceStart

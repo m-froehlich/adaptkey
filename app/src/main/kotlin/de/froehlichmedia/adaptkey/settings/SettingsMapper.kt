@@ -63,6 +63,7 @@ data class RawSettings(
     val pendingBlacklistExpiryDays: Int = AdaptSettings.DEFAULT_PENDING_BLACKLIST_EXPIRY_DAYS,
     val saveCredentials: Boolean = true,
     val contactsSuggestionsEnabled: Boolean = false,
+    val autoCapitalisation: Boolean = true, // D-500/C-28: the §6 auto-capitalisation switch (default on)
     val doubleTapBackspaceUndo: Boolean = true, // D-490: the D-348 revert is the fresh-install default
     val backspaceStickyEnabled: Boolean = true,
     val touchLearningEnabled: Boolean = true,
@@ -348,6 +349,7 @@ object SettingsMapper {
             saveCredentials = raw.saveCredentials,
             contactsSuggestionsEnabled = raw.contactsSuggestionsEnabled,
             autocorrectEnabled = toAutocorrectEnabled(raw),
+            autoCapitalisation = raw.autoCapitalisation,
             doubleTapBackspaceUndo = raw.doubleTapBackspaceUndo,
             backspaceStickyEnabled = raw.backspaceStickyEnabled,
             touchLearningEnabled = raw.touchLearningEnabled,

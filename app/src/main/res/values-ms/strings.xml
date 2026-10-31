@@ -190,6 +190,8 @@
     <string name="d191_contacts_permission_denied">Kebenaran Kenalan tidak diberikan - cadangan daripada kenalan kekal mati.</string>
     <string name="c07_title">Tetingkap toleransi Shift</string>
     <string name="c07_summary">Melindungi daripada penggunaan huruf besar medan yang mengejutkan (0–500 ms).</string>
+    <string name="d500_auto_capitalisation_title">Huruf besar automatik</string>
+    <string name="d500_auto_capitalisation_summary">Menulis secara automatik dengan huruf besar perkataan pertama ayat dan perkataan yang wujud sebagai kata nama sahaja (cth. kata nama Jerman). Apabila dimatikan, tiada apa-apa ditulis dengan huruf besar melainkan anda menaipnya sendiri dengan Shift atau Caps Lock. Pembetulan automatik dan cadangan berfungsi mengikut tetapan.</string>
     <string name="c10_title">Tiada permulaan ayat selepas baris berkoma</string>
     <string name="c10_summary">Selepas baris yang berakhir dengan koma (cth. salam pembuka e-mel), baris seterusnya tidak bermula dengan huruf besar.</string>
     <string name="c06_title">Ambang LLM</string>

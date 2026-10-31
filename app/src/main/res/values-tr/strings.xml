@@ -190,6 +190,8 @@
     <string name="d191_contacts_permission_denied">Kişiler izni verilmedi - kişilerden öneriler kapalı kalır.</string>
     <string name="c07_title">Shift tolerans penceresi</string>
     <string name="c07_summary">Alanlarda şaşırtıcı büyük harf kullanımına karşı korur (0–500 ms).</string>
+    <string name="d500_auto_capitalisation_title">Otomatik büyük harf</string>
+    <string name="d500_auto_capitalisation_summary">Cümlelerin ilk kelimesini ve yalnızca isim olarak var olan kelimeleri (örn. Almanca isimler) otomatik olarak büyük harfle yazar. Kapalıyken, kendiniz Shift veya Caps Lock ile yazmadıkça hiçbir şey büyük harfle yazılmaz. Otomatik düzeltme ve öneriler ayarlarına göre çalışır.</string>
     <string name="c10_title">Virgüllü satırdan sonra cümle başı yok</string>
     <string name="c10_summary">Virgülle biten bir satırdan sonra (ör. bir e-posta hitabı) sonraki satır büyük harfle başlamaz.</string>
     <string name="c06_title">LLM eşiği</string>
