@@ -3,6 +3,7 @@
 .kotlin/
 /local.properties
 .idea/
+.kilo
 .opencode
 .DS_Store
 build/
@@ -14,7 +15,6 @@ build/
 *.keystore
 !debug.keystore
 /keystore.properties
-rules
 
 # D-450-followup: raw multi-hundred-MB source dumps (Wiktionary/Wikipedia) are working material for the
 # dictionaries/<lang>/ pipeline scripts, never committed - matches the existing convention for Wikipedia XML
