@@ -2,10 +2,13 @@
 
 **Status: IMPLEMENTED (2026-11-05, v1.2.98–v1.2.102) — alle sechs Phasen D-509…D-514 umgesetzt, je eigene
 Runde mit Commit + Bump (D-514 Docs-only, rides v1.2.102); History §538, Progress-Stubs im Progress.md.
-Offen: der §9-Device-Pass (beide Corners lesbar, Popup-Acceptance o/p/u/s/a/Ziffern, Release-Defaults §3b,
-Sprach-Sichtbarkeit DE/EN/Eigene, C-09-Fallback, URL/Email unverändert, AZERTY-' rechts von m) — erst der
-schließt die Runde ab.** Die ursprüngliche Ausführungsnotiz: ausführungsbereit nach fünf
-Abstimmungs-/Beobachtungsrunden; Start auf ausdrückliches Go hin (eigener Chat, Start-Prompt in §11).
+Device-Pass 1 (2026-11-05, v1.2.102): Corner-Reihen-Platzierung korrigiert (zentriert über dem Host-Key,
+Rand-Flips `~ ! ¹` / `⁰ = )`) → v1.2.103. Die Alt-Symbole auf c/v/b/n/m stammen aus dem STALE installierten
+deutschen Pack (origin/main hostet noch v49 — Runde ungepushed); Resolve: pushen + de-Pack re-importieren.
+Offen: Re-Test auf dem Gerät nach Push + Re-Import (übrige §9-Punkte: beide Corners lesbar, Release-Defaults
+§3b, Sprach-Sichtbarkeit DE/EN/Eigene, C-09-Fallback, URL/Email unverändert, AZERTY-' rechts von m).** Die
+ursprüngliche Ausführungsnotiz: ausführungsbereit nach fünf Abstimmungs-/Beobachtungsrunden; Start auf
+ausdrückliches Go hin (eigener Chat, Start-Prompt in §11).
 Diese Datei ist in sich geschlossen: `.kilo/command/start-prompt.md` + dieses Dokument reichen einer
 frischen Session zur Umsetzung.
 **Backlog item:** six Progress stubs D-509…D-514 assigned at implementation start (§7) — this file

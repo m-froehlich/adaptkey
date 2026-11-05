@@ -22,8 +22,8 @@ package de.froehlichmedia.adaptkey.keyboard
  * as long as the pre-selected cell's centre stays within the pressed key's own horizontal bounds
  * ([placementStrategy]'s [PopupRowStrategy.DRIFT_CLAMPED]); only when the drift would push that cell past
  * the key's left edge does D-282's own reversal remain the last resort ([PopupRowStrategy.REVERSED], the
- * shape the `p` key keeps). A key's dual-corner popup ([isDualCornerStraddle]) is corner-aligned instead
- * of centred ([straddleRowLeft]).
+ * shape the `p` key keeps). A key's dual-corner popup ([isDualCornerStraddle]) is centred over the host
+ * key by [cornerRowPlacement], flipping its extras toward the screen interior at an edge overflow.
  */
 object HorizontalLongPressPopup {
     
@@ -154,12 +154,11 @@ object HorizontalLongPressPopup {
     }
     
     /**
-     * D-510 (plan §2.11.1): whether [alternatives] is a dual-corner key's own corner-aligned popup - the
-     * reform's explicit data shape `[leftCorner, extras…, rightCorner]`, recognised by the key carrying
-     * both corners ([Key.leftHint] and [Key.hint]) and the list starting with the one and ending with the
-     * other. Such a row is placed corner-aligned ([straddleRowLeft]) instead of centred, with the
-     * right-corner cell pre-selected; any other list (a centred popup, a pack-defined extra set that does
-     * not follow the corner contract) stays on the ordinary placement.
+     * D-510 (plan §2.11.1): whether [alternatives] is a dual-corner key's own corner popup - the reform's
+     * explicit data shape `[leftCorner, extras…, rightCorner]`, recognised by the key carrying both
+     * corners ([Key.leftHint] and [Key.hint]) and the list starting with the one and ending with the
+     * other. Such a row is placed by [cornerRowPlacement]; any other list (a centred popup, a pack-defined
+     * extra set that does not follow the corner contract) stays on the ordinary placement.
      */
     fun isDualCornerStraddle(key: Key, alternatives: List<String>): Boolean {
         val left = key.leftHint
@@ -171,23 +170,77 @@ object HorizontalLongPressPopup {
     }
     
     /**
-     * D-510 (plan §2.11.1): the corner-aligned row's left edge - aligned with the key's own left edge, so
-     * the left-corner cell (first) sits above that edge and the right-corner cell (last, pre-selected)
-     * above/near the right one; extras flow in between and past the key's right edge when the row is
-     * wider than the key. When even the aligned row would overflow the screen's right edge, the
-     * drift-gated clamp (§2.11.3) shifts it left by exactly the missing pixels: the pre-selected cell is
-     * the row's last one, so a leftward shift carries it toward the key's interior and the guard is met
-     * trivially (§2.11's own edge-case note - a corner-aligned popup never needs D-282's reversal, which
-     * would break the very corner contract the alignment exists for); the defensive leftover case (a
-     * corner row wider than the whole screen span on a right-edge key, no target-data shape today)
-     * clamps to [maxLeft] to keep the row visible.
+     * D-510 follow-up (device-corrected placement): the placed corner row - the (possibly reordered)
+     * alternatives and their matching widths, the pre-selected cell index (always the right-corner
+     * symbol, the release default), and the row's left edge.
+     */
+    data class CornerRow(
+        val rowLeft: Float,
+        val alternatives: List<String>,
+        val cellWidths: List<Float>,
+        val preSelectedIndex: Int
+    )
+    
+    /**
+     * The corner row's cells reordered so the EXTRAS TRAIL BEHIND the right corner: `[left, right, extras…]`.
+     * The display-time flip for a corner row that would overflow the screen's LEFT edge (the `1` key:
+     * `~ ¹ !` becomes `~ ! ¹`, so both corner symbols stay near the host and the superscript hangs right
+     * where there is room); the release default stays the right corner, now the second cell.
+     */
+    fun <T> extrasTrailingRow(row: List<T>): List<T> {
+        require(row.size >= 2) { "a corner row carries both corners" }
+        return listOf(row.first(), row.last()) + row.subList(1, row.lastIndex)
+    }
+    
+    /**
+     * The corner row's cells reordered so the EXTRAS LEAD AHEAD of the left corner: `[extras…, left, right]`.
+     * The display-time flip for a corner row that would overflow the screen's RIGHT edge (the `0` key:
+     * `= ⁰ )` becomes `⁰ = )`, so both corner symbols stay near the host and the superscript hangs left
+     * where there is room); the release default stays the right corner, still the last cell.
+     */
+    fun <T> extrasLeadingRow(row: List<T>): List<T> {
+        require(row.size >= 2) { "a corner row carries both corners" }
+        return row.subList(1, row.lastIndex) + listOf(row.first(), row.last())
+    }
+    
+    /**
+     * D-510 follow-up (device-corrected placement): positions a dual-corner key's popup row. The row is
+     * CENTRED over the host key - the left-corner cell lands over the key's left half, the right-corner
+     * cell (pre-selected, the release default) over its right edge, the extras in between; wider rows
+     * keep that shape, growing symmetrically "wie bisher" while both corner symbols hold their positions
+     * relative to the host. When the centred row would overflow a screen edge the row grows fully AWAY
+     * from that edge and the extras flip to the far side so the corners never leave the host: trailing
+     * behind the right corner at the left edge ([extrasTrailingRow], the `1` key), leading ahead of the
+     * left corner at the right edge ([extrasLeadingRow], the `0` key) - with D-44's own pre-selected
+     * centring placing the flipped row, so the right-corner symbol stays over the key.
      *
-     * @param keyLeft the pressed key's own left edge
+     * @param keyCenterX the host key's own centre
+     * @param alternatives the corner row `[leftCorner, extras…, rightCorner]` (the straddle contract)
+     * @param cellWidths the matching per-cell widths
      * @param minLeft the smallest allowed row-left (usually a small edge gap)
      * @param maxLeft the largest allowed row-left (view width - row width - edge gap)
-     * @return the row's left edge
+     * @throws IllegalArgumentException when [alternatives] has fewer than two cells or the widths do not match
      */
-    fun straddleRowLeft(keyLeft: Float, minLeft: Float, maxLeft: Float): Float {
-        return maxOf(keyLeft, minLeft).coerceAtMost(maxLeft)
+    fun cornerRowPlacement(
+        keyCenterX: Float,
+        alternatives: List<String>,
+        cellWidths: List<Float>,
+        minLeft: Float,
+        maxLeft: Float
+    ): CornerRow {
+        require(alternatives.size >= 2) { "a corner row carries both corners" }
+        require(cellWidths.size == alternatives.size) { "every cell needs its own width" }
+        val ideal = keyCenterX - cellWidths.sum() / 2f
+        return when {
+            ideal >= minLeft && ideal <= maxLeft -> CornerRow(ideal, alternatives, cellWidths, alternatives.lastIndex)
+            ideal < minLeft -> {
+                val widths = extrasTrailingRow(cellWidths)
+                CornerRow(rowLeft(keyCenterX, widths, 1, minLeft, maxLeft), extrasTrailingRow(alternatives), widths, 1)
+            }
+            else -> {
+                val widths = extrasLeadingRow(cellWidths)
+                CornerRow(rowLeft(keyCenterX, widths, widths.lastIndex, minLeft, maxLeft), extrasLeadingRow(alternatives), widths, widths.lastIndex)
+            }
+        }
     }
 }

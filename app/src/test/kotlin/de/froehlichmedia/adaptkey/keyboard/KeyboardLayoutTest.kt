@@ -189,6 +189,21 @@ class KeyboardLayoutTest {
     }
     
     @Test
+    fun `D-513 follow-up a stale pre-reform pack value never duplicates a corner cell`() {
+        // An old installed German pack still carries d=° (n=+, m=-, c=÷, ...); merged with the new base
+        // that reads "°,$" - and the merged hint (the delta's first variant) EQUALS the code-side left
+        // corner. The assembly must collapse the duplicate, never draw the same glyph twice in one row.
+        val dKey = KeyboardLayout.rows(letterHints = mapOf('d' to "°,$"))[2].byChar('d')
+        assertEquals("°", dKey.hint)
+        assertEquals("°", dKey.leftHint)
+        assertEquals(listOf("°", "$"), dKey.alternatives)
+        // The same collapse for the freed keys: a stale m=- under the reformed ( corner pair.
+        val mKey = KeyboardLayout.rows(letterHints = mapOf('m' to "-"))[3].byChar('m')
+        assertEquals("-", mKey.hint)
+        assertEquals(listOf(")", "-"), mKey.alternatives)
+    }
+    
+    @Test
     fun `D-512 c v b are freed entirely - no corners, no popups, no long-press`() {
         val rows = KeyboardLayout.rows()
         

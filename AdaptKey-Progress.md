@@ -483,6 +483,12 @@ non-trivial changes).
   Device pass owed per plan §9: both corners legible (portrait/landscape, light/dark, shifted uppercasing),
   popup acceptance (o/p/u/s/a/digit popups), release defaults (§3b), per-language visibility (DE umlauts,
   EN none, own-letters pages), C-09 fallback + page 2 unchanged, URL/email unchanged, AZERTY ' right of m.
+  **Device pass 1 (2026-11-05, v1.2.102) done - one defect found and fixed (v1.2.103): the corner row had
+  been left-aligned at the key's edge (trailing cells far from the host); now centred over the host per the
+  user's placement spec, flipping its extras toward the screen interior at an edge overflow (1: `~ ! ¹`,
+  0: `⁰ = )`). The math symbols still on c/v/b/n/m are the STALE INSTALLED German pack (origin/main still
+  hosts v49 - unpushed by convention); they resolve by pushing + re-importing the pack (v50), no code
+  defect - see History §538's device-pass tail. Re-test owed after the push + re-import.**
 
 - **D-508 - RESOLVED (§534, v1.2.94), device-confirmed 2026-10-31: the gesture/long-press calibration for
   slow users - the community report's whole solution.** The D-401 space long-press cancels on motion alone,

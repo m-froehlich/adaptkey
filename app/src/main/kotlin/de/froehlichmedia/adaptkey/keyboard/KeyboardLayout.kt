@@ -419,8 +419,14 @@ object KeyboardLayout {
             hint == null || (leftCorner == null && extras == null) -> emptyList()
             leftCorner != null -> buildList {
                 add(leftCorner)
-                extras?.let { addAll(it) }
-                add(hint)
+                // D-513 follow-up: a pre-reform installed pack's stale corner duplicate (delta d=° under
+                // the new $ base, where the merged hint equals the code-side left corner) must not
+                // produce the same glyph twice in one row - extras never repeat a corner, and a hint
+                // equal to the left corner collapses into it.
+                extras?.filter { it != leftCorner }?.let { addAll(it) }
+                if (hint != leftCorner) {
+                    add(hint)
+                }
             }
             else -> buildList {
                 add(hint!!)

@@ -24515,3 +24515,23 @@ the real pack files). 1,860 unit tests total (1,822 + 38), 0 failures; `:app:ass
 every phase boundary. `versionCode` 593 -> 598, `versionName` "1.2.97" -> "1.2.102". NOT device-confirmed:
 the plan §9 device pass is the round's remaining item; the plan file stays the umbrella until the user's
 device look closes it.
+
+**Device pass 1 (2026-11-05, user on-device, v1.2.102) - one placement defect found and fixed (v1.2.103);
+the stale-pack effects explained, no code defect.** (1) The corner row had been LEFT-ALIGNED at the key's
+left edge (the first straddleRowLeft implementation), pushing the trailing cells far from the host - the
+reported "new number-alt symbols appended at the end of the list, far from the host". Corrected per the
+user's own placement spec: the corner row is CENTRED over the host key (two cells: left corner over the
+left half, right corner over the right edge, the row exactly centred; a middle extra stays over the centre;
+wider rows grow symmetrically while both corner symbols hold their positions relative to the host), and at
+a screen-edge overflow the row grows fully away with the extras flipped to the far side so the corners
+never leave the host - the 1 key shows `~ ! ¹` (extras trailing), the 0 key `⁰ = )` (extras leading), the
+release default staying the right corner in every order. `straddleRowLeft` is gone, replaced by the pure
+`cornerRowPlacement` (+ the generic `extrasTrailingRow`/`extrasLeadingRow` flips), seven new tests. (2) The
+math symbols still visible on c/v/b/n/m (and the °/$ double-popup on d) trace to the STALE INSTALLED GERMAN
+PACK: origin/main still hosts v49 (the round is unpushed by convention), the device's installed pack keeps
+the pre-reform entries, and the union merge takes a delta verbatim on keys the base no longer owns -
+resolved by pushing (pack v50) and re-importing the German pack, the established D-473-followup/D-334
+mechanism; a defensive letterKey dedupe now also collapses the stale d=° corner duplicate. 1,867 unit
+tests total (1,860 + 7), 0 failures; `:app:assembleRelease` green. `versionCode` 598 -> 599,
+`versionName` "1.2.102" -> "1.2.103". Still owed from the plan §9 checklist: the re-test on the device
+after the push + pack re-import.

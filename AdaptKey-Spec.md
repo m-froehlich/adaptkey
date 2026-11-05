@@ -197,10 +197,9 @@ rather than a separately tuned duration of its own.
 corner glyphs: a RIGHT corner (the legacy `hint`, the release default) and a LEFT corner (`leftHint`). One
 rule for every layout: the right corner is what a plain long-press release commits; a key with only a left
 corner commits that instead. A dual-corner key's own popup is its corner pair as explicit straddle data
-`[leftCorner, extras…, rightCorner]` - the left corner above the key's left edge, the right corner above the
-right one and pre-selected, extras in between (D-510's corner-aligned placement, never centred, never
-reversed). The "more alternatives" triangle (D-98) is corner-aware: it only fills a corner slot no real
-corner glyph occupies.
+`[leftCorner, extras…, rightCorner]`, with the right-corner cell pre-selected (D-510's placement, below).
+The "more alternatives" triangle (D-98) is corner-aware: it only fills a corner slot no real corner glyph
+occupies.
 
 **D-510 addendum - the drift-gated clamp replaces D-282's unconditional reversal.** The passage below
 described the pre-reform behaviour. Since D-510, a right-edge overflow no longer reverses the popup order
@@ -210,6 +209,17 @@ to the RIGHT of the pre-selected one, away from the left index finger's smear pa
 drift would push the pre-selected cell past the key's left edge does D-282's own reversal remain the last
 resort (the p key keeps its observed shape: π over the key, Greek letters growing left). Single-cell rows
 are never reversed - the plain clamp they always had is the same position the drift produces.
+
+**D-510 follow-up (device-corrected, v1.2.103) - the corner row is centred over the host key.** The first
+implementation had left-aligned the corner row at the key's left edge, which pushed the trailing cells far
+from the host. As placed on the device: the corner row is CENTRED over the key - the left-corner symbol
+lands over the key's left half, the right-corner symbol over its right edge, extras in between (two cells:
+exactly centred; a middle extra stays over the centre; wider rows keep that shape, growing symmetrically
+"wie bisher" while both corner symbols hold their positions relative to the host). When the centred row
+would overflow a screen edge the row grows fully AWAY from that edge and the extras flip to the far side so
+both corner symbols stay near the host: at the left edge they trail behind the right corner (the `1` key's
+`~ ¹ !` shows as `~ ! ¹`), at the right edge they lead ahead of the left corner (the `0` key's `= ⁰ )` shows
+as `⁰ = )`) - the release default stays the right corner in every order.
 
 Frequently used symbols are placed as secondary characters on letter keys, reachable by long-press and shown
 as a small hint glyph in the corner of the key - analogous to the AltGr labels on a hardware QWERTZ
