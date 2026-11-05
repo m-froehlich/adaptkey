@@ -1,9 +1,13 @@
 # AdaptKey — Plan: Alt-Belegungs-Reform (D-509 umbrella, phases D-509…D-514)
 
-**Status: READY — ausführungsbereit** (2026-11-05, nach fünf Abstimmungs-/Beobachtungsrunden).
-Nicht gestartet; der Start erfolgt auf ausdrückliches Go hin (Empfehlung: eigener Chat, Start-Prompt
-unten in §11). Diese Datei ist in sich geschlossen: `.kilo/command/start-prompt.md` + dieses Dokument
-reichen einer frischen Session zur Umsetzung.
+**Status: IMPLEMENTED (2026-11-05, v1.2.98–v1.2.102) — alle sechs Phasen D-509…D-514 umgesetzt, je eigene
+Runde mit Commit + Bump (D-514 Docs-only, rides v1.2.102); History §538, Progress-Stubs im Progress.md.
+Offen: der §9-Device-Pass (beide Corners lesbar, Popup-Acceptance o/p/u/s/a/Ziffern, Release-Defaults §3b,
+Sprach-Sichtbarkeit DE/EN/Eigene, C-09-Fallback, URL/Email unverändert, AZERTY-' rechts von m) — erst der
+schließt die Runde ab.** Die ursprüngliche Ausführungsnotiz: ausführungsbereit nach fünf
+Abstimmungs-/Beobachtungsrunden; Start auf ausdrückliches Go hin (eigener Chat, Start-Prompt in §11).
+Diese Datei ist in sich geschlossen: `.kilo/command/start-prompt.md` + dieses Dokument reichen einer
+frischen Session zur Umsetzung.
 **Backlog item:** six Progress stubs D-509…D-514 assigned at implementation start (§7) — this file
 stays the single umbrella document.
 

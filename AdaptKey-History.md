@@ -24425,3 +24425,93 @@ written, stored off wins). 1,822 unit tests total (1,815 + 7), 0 failures; `:app
 `versionCode` 592 -> 593, `versionName` "1.2.96" -> "1.2.97". **Device-confirmed by the user 2026-10-31**
 ("Funktioniert wunderbar") against the plan §5 checklist - the off state's behaviour and the switch-back
 sanity both passed on the device. The plan file is marked CLOSED; the round is closed.
+
+## §538 - D-509..D-514: the Alt-Belegungs-Reform - dual corners, the reformed number row and letters page, the base+delta union merge (v1.2.98-v1.2.102)
+
+Umbrella plan: `AdaptKey-Plan-Alt-Belegungen-Reform.md` (Status READY, five Abstimmungs-/Beobachtungsrunden
+closed before execution; the file stays the single umbrella document). Six phases, one round each with its
+own commit and version bump (D-514 docs-only, rides v1.2.102), starting from the user's explicit go in a
+fresh chat per the plan's own section 11. NOT yet device-confirmed as a whole - the plan's section-9 device
+pass (both-corner legibility, the popup acceptance items, the release-default shifts, the per-language
+visibility rule, the C-09 fallback, URL/email unchanged, AZERTY's apostrophe placement) is the standing
+open item; each phase shipped with the house "NOT device-confirmed" note.
+
+**D-509 (v1.2.98, phase A) - the corner model.** `Key` gained `leftHint` beside the legacy `hint` (which
+stays the derived right corner for the whole migration) plus the derived `defaultCornerHint` encoding the
+reform's one rule for every layout: the right corner is the release default, a lone left corner becomes it
+by fallback. Both corners draw (the left one at the mirrored 6dp inset, same baseline, per-corner shifted
+uppercasing via `cornerHintDisplayTextFor`), the D-98 more-alternatives triangle is corner-aware (it only
+fills a corner slot no real corner glyph occupies), and the three long-press gates
+(`hasLongPressAction`/`longPressSymbol`/`popupAlternativesFor`) read the corner-default rule instead of the
+raw hint. Inert by construction: every existing key was still right-corner-only when it shipped - pinned by
+a layout-test walk plus new `KeyCornerTest` cases for the pure rule.
+
+**D-510 (v1.2.99, phase B) - the popup geometry.** `HorizontalLongPressPopup.placementStrategy` answers
+D-44 centring while it fits, then the drift-gated clamp: the row shifts left by exactly the missing pixels
+when that keeps the pre-selected cell's centre within the pressed key's own bounds (the o key's fix -
+natural order kept, so the extra cell lands RIGHT of the pre-selected one, away from the left index
+finger's smear path), and only when even that drift would push it past the key's left edge does D-282's own
+reversal remain the last resort (the p key's observed, user-approved shape). Single-cell rows never reverse
+- the plain clamp they always had IS the drift position. `isDualCornerStraddle`/`straddleRowLeft` build the
+corner-aligned placement for a dual-corner key's own popup row (left edge at the key's left edge, the
+right-corner cell pre-selected, the drift trivially satisfied per the plan's edge-case note); `openPopup`
+dispatches the three strategies, with D-44/D-53/D-54 behaviour otherwise byte-identical.
+
+**D-511 (v1.2.100, phase C) - the number row.** `numberKey` builds the reform's dual-corner row per the
+user's exact assignment table: right corners are the US shifted row `! @ # $ % ^ & * ( )` on `1..0`, each
+also its digit's release default (1/4/5 keep their old defaults); left corners are the German survivors
+`~ " § =` plus the math singles `+ - /`; `7` carries the middle `÷` ahead of D-498's kept backslash. Popups
+are the explicit straddle data `[leftCorner, extras…, rightCorner]` with the right corner last; right-only
+digits 4/8/9 keep the pre-reform shape. D-382/D-417's apostrophe/superscript/subscript order and every
+superscript/subscript kept. The row stays the one shared builder, so Greek/Jcuken/Serbian/Azerbaijani/AZERTY
+ride along (§2.12); page 2 (the C-09 fallback) deliberately untouched, only its stale `NUMBER_HINTS`
+comment refreshed.
+
+**D-512 (v1.2.101, phase D) - the letters page.** `letterKey` assembles from explicit data: the right
+corner stays the per-language hint entry (first D-497 variant), the reform's left corners are the per-key
+`BASE_LEFT_CORNERS` map (`d` = `°` beside its new `$` default, `n` = `(` beside the universal `ñ`, `m` =
+`)` as its lone corner and therefore release default, `s` = `*` - the one operator rescued from C-09's
+hidden-number-row loss), and the `+` slot rides the geometry's first third-row key (`y` QWERTZ, `z` QWERTY,
+`w` AZERTY) via a plusSlot parameter, never displacing a language letter. The five hardcoded hint-equality
+popup couplings became `BASE_HINT_EXTRAS` data armed by the same default-hint equality (the D-99 invariant
+kept); n's old plus-to-tilde-n coupling is gone outright. The pre-reform data contract is preserved (a lone
+hint or lone left corner stays out of the alternatives list; only genuine multi-cell popups carry explicit
+data; a dual-corner key's alternatives are its straddle list). `DEFAULT_LETTER_HINTS` became the reformed
+German base; the dedicated apostrophe key (corners `" | '`, releasing `'`) sits right of `l` on
+QWERTY/QWERTZ and right of `m` on AZERTY (middle row 10/11 keys, absorbed by the existing weight
+normalisation). The non-Latin layouts receive no letters-page corners (§2.12): Greek/Jcuken/Serbian build
+their own keys untouched, Azerbaijani's shared call sites get no corner map. Pack hints data still carried
+the pre-reform values at the end of this phase - the de/en hints equality tests were pinned to the literal
+current files with that deferral noted.
+
+**D-513 (v1.2.102, phase E) - the hints data.** `LetterHints.parseDelta` parses the persisted format plus
+the empty-value REMOVAL marker (a corrupt variant value demotes to a removal, never resurrecting base
+data), and `LetterHints.unionMerge` implements the reform's operational "alle lateinischen Layouts
+übernehmen die deutsche Alt-Belegung": the language's first variant becomes the right corner with its
+remaining variants as first extras, the base value appends LAST when genuinely new, and the four German
+umlaut letters (`ä ö ü ß`) never append over a key the language owns (§2.10's L-05 rationale) while the
+universal base symbols and the explicitly-universal ñ (§2.6) do. `LayoutRegistry.consumesLatinHintOverlay`
+scopes the union to QWERTY/QWERTZ/AZERTY - Azerbaijani keeps the pre-reform replace semantics, Greek and
+the Cyrillic layouts never read the map - and `SettingsStore.loadLetterHints` applies it at the single
+choke point (a delta file that carries only removals must never collapse into "no data", or English's
+umlaut policy loses its one mechanism). Data, script-driven and script-verified
+(`scratchpad/d513_*`): the German reference pack rewritten to exactly the new base (version.txt 49 -> 50),
+the bundled English asset reduced to its whole delta as four removals (`a=;o=;u=;s=`), and the 25 remaining
+packs dropping exactly their stale German-derived entries (`b=* c=÷ d=° l=~/l=ñ m=- n=+ v=/`, fr `w=è`
+retired per §2.8) while keeping every language's own letters verbatim - each version.txt +1, each zip
+rebuilt and verified by reading hints.tsv/version.txt back out of the archive, each `LanguagePackCatalog`
+entry +1 with the round's comment. The merged outcomes reproduce §5's pinned orders from the real files in
+tests: fr `e=é,è,ê,ë` merges to `é è ê ë €`, pl/cs/lv `n` to the `[( | ñ | letter ]` straddle data, the
+Scandinavian/Turkish/hu/pt corners byte-identical to today.
+
+**D-514 (rides v1.2.102, phase F - docs, no bump).** Page 2 explicitly untouched (its tests pin the
+pre-D-511 symbols), full suite green, the spec addenda (L-05's corner model and drift-gate notes, L-06's
+reformed row, §24/D-336's n bullet, the D-497 delta-format note), the six Progress stubs above, and this
+entry. No behaviour change.
+
+Tests across the six phases: +38 net unit tests (KeyCornerTest's six, the popup-geometry ten, the
+number-row and letters-page table walks, the merge/delta/registry cases, and the §5-table data tests over
+the real pack files). 1,860 unit tests total (1,822 + 38), 0 failures; `:app:assembleRelease` green at
+every phase boundary. `versionCode` 593 -> 598, `versionName` "1.2.97" -> "1.2.102". NOT device-confirmed:
+the plan §9 device pass is the round's remaining item; the plan file stays the umbrella until the user's
+device look closes it.

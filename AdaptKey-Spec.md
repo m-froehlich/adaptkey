@@ -192,6 +192,25 @@ every language's own geometry. The sticky window reuses the double-tap delay set
 rather than a separately tuned duration of its own.
 
 ### L-05 - Secondary Symbols via Long-Press (AltGr-Style)
+
+**D-509 addendum - the corner model (the Alt-Belegungs-Reform's foundation).** Every key carries up to two
+corner glyphs: a RIGHT corner (the legacy `hint`, the release default) and a LEFT corner (`leftHint`). One
+rule for every layout: the right corner is what a plain long-press release commits; a key with only a left
+corner commits that instead. A dual-corner key's own popup is its corner pair as explicit straddle data
+`[leftCorner, extras…, rightCorner]` - the left corner above the key's left edge, the right corner above the
+right one and pre-selected, extras in between (D-510's corner-aligned placement, never centred, never
+reversed). The "more alternatives" triangle (D-98) is corner-aware: it only fills a corner slot no real
+corner glyph occupies.
+
+**D-510 addendum - the drift-gated clamp replaces D-282's unconditional reversal.** The passage below
+described the pre-reform behaviour. Since D-510, a right-edge overflow no longer reverses the popup order
+outright: the row shifts left by exactly the missing pixels as long as the pre-selected cell's centre stays
+within the pressed key's own horizontal bounds (the o key's fix: natural order kept, so the extra cell lands
+to the RIGHT of the pre-selected one, away from the left index finger's smear path). Only when even that
+drift would push the pre-selected cell past the key's left edge does D-282's own reversal remain the last
+resort (the p key keeps its observed shape: π over the key, Greek letters growing left). Single-cell rows
+are never reversed - the plain clamp they always had is the same position the drift produces.
+
 Frequently used symbols are placed as secondary characters on letter keys, reachable by long-press and shown
 as a small hint glyph in the corner of the key - analogous to the AltGr labels on a hardware QWERTZ
 keyboard. The default mapping is now per-language (D-281) rather than one single set for every language: it
@@ -228,24 +247,52 @@ Swedish/Finnish å, Portuguese, Italian, French - so a language's full native al
 the base keys without holding for anything. The mapping is always the
 active language's own default; it is not user-configurable (D-301: a former per-key override editor combined
 incorrectly with the per-language default above, silently reintroducing cross-language hint bleed the moment
-any single symbol was customised, so the override layer was removed entirely rather than fixed). Together
-with L-03 and L-06 this removes the need to switch to `?123` for most everyday input.
+any single symbol was customised, so the override layer was removed entirely rather than fixed).
+
+**D-512/D-513 addendum - the reform's letters page, and the base+delta union merge.** The letters page's
+corner assignment is the reform's §3 base map, explicit per key: `d` carries `°` as its left corner with `$`
+as the new release default (° was), `n` carries `(` left with the universally-added `ñ` right (the plus that
+used to live there moved to the digit row), `m` is left-corner-only `)` (so it releases `)`), `s` carries `*`
+left beside its `ß`/`š`/`ś` right corner (the one operator rescued from a hidden number row), the geometry's
+first third-row key (`y` QWERTZ, `z` QWERTY, `w` AZERTY - screen-stable as a slot) carries `+` left and
+gains a long-press it never had, `v`/`b`/`c` are freed entirely (no corners, no popups - their `/` `*` `÷`
+live on the reformed digit row, `×` stays on `x`), and a dedicated apostrophe key sits right of `l`
+(QWERTY/QWERTZ) or right of `m` (AZERTY) with corners `" | '`, releasing `'`. A language's own letter always
+wins its key's right corner (pl ń / cs ň / lv ņ take n's corner with ñ demoted to the popup's first extra;
+their `+`-slot and other letters keep their corners too).
+
+Operationally this is a compiled-in universal BASE (the reformed German map, right corners + the per-key
+left corners as code) plus every pack's `hints.tsv` as a DELTA, merged by UNION - not the pre-reform
+whole-map replace: a delta entry's first variant becomes the right corner with the remaining variants as
+first extras and the base value appended last when genuinely new (`e=é,è,ê,ë` merges to
+`é è ê ë €`), an EMPTY value is an explicit removal (`a=`), and the four German umlaut letters (`ä ö ü ß`)
+never append over a key the language owns (L-05's own per-language rationale). English's whole delta is four
+removals (`a=;o=;u=;s=` - it gains no umlauts, §2.10), German's file is the base map itself; the
+non-Latin layouts (Greek, Cyrillic, Azerbaijani) receive no reform data at all - only their digit rows
+moved (L-06's D-511 note). Together with L-03 and L-06 this removes the need to switch to `?123` for most
+everyday input.
 
 ### L-06 - Persistent Number Row
 A dedicated number row (`1`-`0`) is shown at the top of the alpha view by default and can be toggled off in
-Settings (C-09). It behaves like an ordinary key row (full height, its own long-press popups): each digit
-carries two long-press alternatives - its German-QWERTZ shifted symbol (`1`→`!`, `2`→`"`, `3`→`§`, `4`→`$`,
-`5`→`%`, `6`→`&`, `7`→`/`, `8`→`(`, `9`→`)`, `0`→`=`) and its own superscript form (e.g. `2`→`²`) - reached
-via the same multi-alternative popup as L-05. D-382: the `2` key additionally offers an apostrophe (`'`) and
-its own subscript (`₂`) as a second and fourth alternative - D-417 reordered the popup to
-`"` / `'` / `²` / `₂` (apostrophe ahead of the superscript, subscript last) - unlike every other digit's
-plain two-alternative popup. D-498: the `7` key's popup carries the backslash (`\`) directly after its
-slash - `/ \ ⁷` - on **every** layout's number row (all six layouts share one number-row builder by
-construction, so Greek/Serbian/Jcuken/AZERTY/Azerbaijani ride along; the letters page's `v` key keeps its
-`/` direct-commit AltGr hint, no popup). C-09 governs only the main letters page; the dedicated URL-mode and email-mode
+Settings (C-09). D-511: the row is the Alt-Belegungs-Reform's dual-corner row - each digit carries a RIGHT
+corner (the US shifted row `! @ # $ % ^ & * ( )` on `1…0`, each also its digit's release default - "US holy
+cows stay put") and, where assigned, a LEFT corner (the German-QWERTZ survivors `~ " § =` plus the math
+singles `+ - /`), with `÷` as the row's one middle glyph on `7` (the accepted ×÷ split: `×` stays on `x`).
+The release-default shifts against the old German-QWERTZ row: `2 "→@`, `3 §→#`, `6 &→^`, `7 /→&`, `8 (→*`,
+`9 )→(`, `0 =→)` (`1`/`4`/`5` unchanged); slide-left now delivers `" § =` and the math singles `+ - /`.
+It behaves like an ordinary key row (full height, its own long-press popups): a dual-corner digit's popup is
+the corner-aligned straddle `[leftCorner, extras…, rightCorner]` - e.g. `2` = `" ' ² ₂ @`, `7` = `/ ÷ \ ⁷ &` -
+while the right-corner-only digits (`4`/`8`/`9`) keep the pre-reform `[corner, superscript]` shape with the
+corner pre-selected. D-382: the `2` key additionally offers an apostrophe (`'`) and its own subscript (`₂`)
+as extras - D-417's order kept (apostrophe ahead of the superscript, subscript last). D-498: the `7` key
+still carries the backslash, with the middle `÷` inserted ahead of it. The superscript/subscript
+alternatives (D-105) all stay. D-314/D-498/D-511: all six layouts share one number-row builder by
+construction, so Greek/Jcuken/Serbian/Azerbaijani/AZERTY ride along - the reform's row is universal
+(§2.12), the non-Latin layouts' LETTER pages are not. C-09 governs only the main letters page; the dedicated URL-mode and email-mode
 bottom rows never show
 a number row at all, and symbol page 2 (§15) always shows a digit row regardless of C-09, as a guaranteed
-fallback when the main row is off.
+fallback when the main row is off (that page deliberately keeps the PRE-D-511 symbols - nobody reaches it
+to long-press things).
 
 ### L-07 - Calculator Layer
 A dedicated calculator layout is reachable from the symbol pages (§15): a 4×4 digit/operator grid with a
@@ -2559,6 +2606,10 @@ long-press popup alternatives on three letters, appended after each key's existi
 - **a** — `ä` (umlaut, the existing corner hint) plus the Nordic ligatures `æ` and `å`.
 - **e** — `€` (currency, the existing corner hint) plus the French diacritics `é`, `è`, `ê`, `ë`.
 - **n** — `+` (plus, the existing corner hint) plus the Spanish tilde-n `ñ`.
+  D-512: replaced by the reform's corner pair - `n` now carries `(` as its left corner with the
+  universally-added `ñ` as its right corner (the plus moved to the digit row's `5`-left), so this key's
+  long-press is the `[( | ñ ]` corner-pair straddle; the languages owning an n-letter (pl ń, cs ň, lv ņ)
+  keep it as the release default with ñ as the first extra (§2.6).
 
 Each popup pre-selects the key's own secondary hint (the first entry), so a straight-up release still types
 the familiar secondary. The remaining entries are reached by sliding. Upper-case forms (`Æ`/`Å`, `É`/`È`/`Ê`/

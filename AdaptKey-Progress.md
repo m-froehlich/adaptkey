@@ -453,6 +453,37 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
+- **D-509..D-514 - the Alt-Belegungs-Reform, ALL SIX PHASES IMPLEMENTED (§538, v1.2.98-v1.2.102; NOT yet
+  device-confirmed - the reform's plan-section-9 device pass is the standing open item).** Umbrella plan:
+  `AdaptKey-Plan-Alt-Belegungen-Reform.md` (READY -> implemented; single umbrella document per its own
+  header). One phase per round, own commit + version bump each (D-514 is docs-only and rides):
+  - **D-509 (v1.2.98) - the corner model:** Key's leftHint beside the legacy hint (derived right corner for
+    the whole migration) plus the derived defaultCornerHint (right corner first, a lone left corner the
+    release default); both corners drawn (mirrored 6dp inset, per-corner shifted uppercasing), the D-98
+    triangle corner-aware, the three long-press gates read the corner-default rule. Inert by construction -
+    every existing key still right-corner-only when it shipped.
+  - **D-510 (v1.2.99) - the popup geometry:** the drift-gated clamp replaces D-282's unconditional reversal
+    (the o key's fix: natural order, the extra cell RIGHT of the pre-selected one; the p key keeps its
+    observed reversal as the last resort); the dual-corner straddle placement built (corner-aligned row,
+    right corner pre-selected).
+  - **D-511 (v1.2.100) - the number row:** dual corners per the user's assignment table (US row as right
+    corners/release defaults, German survivors + math singles as left corners, ÷ middle on 7), one shared
+    builder for all six layouts. Release defaults 2→@ 3→# 6→^ 7→& 8→* 9→( 0→) (1/4/5 unchanged).
+  - **D-512 (v1.2.101) - the letters page:** d °|$ (release °→$), n ( | universal ñ, m ) (release )),
+    s *-left beside ß/š/ś, + slot on y/z/w, c/v/b freed, the dedicated apostrophe key right of l/m;
+    non-Latin layouts receive no letter corners (§2.12).
+  - **D-513 (v1.2.102) - the hints data:** the base+delta UNION merge (parseDelta with removals +
+    unionMerge; the four German umlaut letters never append over an owned key; universal base symbols and
+    the explicitly-universal ñ do), scoped to QWERTY/QWERTZ/AZERTY; 26 packs rewritten as deltas
+    (script-verified drops, each version.txt/zip/catalog +1), German = the new base map, English = its four
+    removals; §5's pinned merge orders (fr e, pl/cs/lv n) reproduced from the real files in tests.
+  - **D-514 (rides v1.2.102, docs-only, no bump):** page 2 explicitly untouched, full suite green,
+    spec addenda (L-05/L-06 + §24/D-336, the D-282 drift-gate note, the D-497 format note), these stubs +
+    History §538.
+  Device pass owed per plan §9: both corners legible (portrait/landscape, light/dark, shifted uppercasing),
+  popup acceptance (o/p/u/s/a/digit popups), release defaults (§3b), per-language visibility (DE umlauts,
+  EN none, own-letters pages), C-09 fallback + page 2 unchanged, URL/email unchanged, AZERTY ' right of m.
+
 - **D-508 - RESOLVED (§534, v1.2.94), device-confirmed 2026-10-31: the gesture/long-press calibration for
   slow users - the community report's whole solution.** The D-401 space long-press cancels on motion alone,
   an armed-but-never-moved slow tap commits its space ("empty arm" rescue), the swipe travel is
