@@ -55,11 +55,11 @@ android {
         // D-500/C-28: the auto-capitalisation switch (default on) - the off state is a coarse gate on
         // AdaptKey's proactive caps: no live Shift-arming anywhere, and the ordinary commit skips the
         // linguistic force-capitalisation rules (noun-only, LLM lift, acronym restore).
-        // D-509 phase A of the Alt-Belegungs-Reform: the corner model - Key's left/right corner pair
-        // (right corner = release default, left-corner fallback), both corners drawn, triangle and the
-        // long-press gates corner-aware; inert by construction until D-511 fills the first left corners.
-        versionCode = 594
-        versionName = "1.2.98"
+        // D-510 phase B of the Alt-Belegungs-Reform: the popup geometry - the drift-gated clamp replaces
+        // D-282's unconditional reversal (o: natural order with the extra cell to the right; p: reversal
+        // kept as last resort), the dual-corner straddle placement built ahead of D-511's corner data.
+        versionCode = 595
+        versionName = "1.2.99"
         
         // The ONNX Runtime native libs (tier-3 mini-LLM) ship per ABI; keep only the ones real phones
         // use (arm64 + 32-bit arm), dropping the emulator-only x86/x86_64 libs (~43 MB). Device testing
