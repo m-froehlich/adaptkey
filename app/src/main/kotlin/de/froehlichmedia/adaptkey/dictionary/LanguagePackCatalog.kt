@@ -517,7 +517,8 @@ object LanguagePackCatalog {
             // drops; the 1,638 retags and the 38 kept review rows change tags only).
             // `dictionaries/de/version.txt` 48 -> 49, pack rebuilt and verified byte-identical after
             // unzip, `LanguagePackCatalog` version 48 -> 49. Not yet device-confirmed.
-            version = 49
+            // D-513 (Alt-Belegungs-Reform section 7.5): hints.tsv rewritten as a union-merge delta - the stale German-derived symbols (b=* c=÷ d=° l=~/ñ m=- n=+ v=/, fr w=è) dropped, every language's own letters kept verbatim. version.txt 49 -> 50, pack rebuilt and verified by reading hints.tsv/version.txt back out of the archive, LanguagePackCatalog version 49 -> 50.
+            version = 50
         ),
         Entry(
             Language.GREEK,
@@ -765,7 +766,8 @@ object LanguagePackCatalog {
             // `dictionaries/fr/version.txt` 2 -> 3, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 2 -> 3. Data-only; no Kotlin touched.
             // D-497-followup (§519, v1.2.78): a â / e é,è,ê,ë / i î,ï / u ù,û variants (the old one-hint workaround hints on t/w/y/z/k stay - deliberate duplication) - dictionaries/fr/version.txt 3 -> 4, this Entry 3 -> 4.
-            version = 4
+            // D-513 (Alt-Belegungs-Reform section 7.5): hints.tsv rewritten as a union-merge delta - the stale German-derived symbols (b=* c=÷ d=° l=~/ñ m=- n=+ v=/, fr w=è) dropped, every language's own letters kept verbatim. version.txt 4 -> 5, pack rebuilt and verified by reading hints.tsv/version.txt back out of the archive, LanguagePackCatalog version 4 -> 5.
+            version = 5
         ),
         Entry(
             Language.SPANISH,
@@ -898,7 +900,8 @@ object LanguagePackCatalog {
             //
             // `dictionaries/es/version.txt` 2 -> 3, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 2 -> 3. Data-only; no Kotlin touched.
-            version = 3
+            // D-513 (Alt-Belegungs-Reform section 7.5): hints.tsv rewritten as a union-merge delta - the stale German-derived symbols (b=* c=÷ d=° l=~/ñ m=- n=+ v=/, fr w=è) dropped, every language's own letters kept verbatim. version.txt 3 -> 4, pack rebuilt and verified by reading hints.tsv/version.txt back out of the archive, LanguagePackCatalog version 3 -> 4.
+            version = 4
         ),
         Entry(
             Language.PORTUGUESE,
@@ -1022,7 +1025,8 @@ object LanguagePackCatalog {
             // `dictionaries/pt/version.txt` 2 -> 3, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 2 -> 3. Data-only; no Kotlin touched.
             // D-497-followup (§519, v1.2.78): a á,ã,â,à / e é,ê / o ó,õ,ô variants (corner glyphs of a/o now lead with á/ó) - dictionaries/pt/version.txt 3 -> 4, this Entry 3 -> 4.
-            version = 4
+            // D-513 (Alt-Belegungs-Reform section 7.5): hints.tsv rewritten as a union-merge delta - the stale German-derived symbols (b=* c=÷ d=° l=~/ñ m=- n=+ v=/, fr w=è) dropped, every language's own letters kept verbatim. version.txt 4 -> 5, pack rebuilt and verified by reading hints.tsv/version.txt back out of the archive, LanguagePackCatalog version 4 -> 5.
+            version = 5
         ),
         Entry(
             Language.ITALIAN,
@@ -1104,7 +1108,8 @@ object LanguagePackCatalog {
             // `dictionaries/it/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
             // D-497-followup (§519, v1.2.78): e è,é / o ò,ó / u ù,ú variants - dictionaries/it/version.txt 2 -> 3, this Entry 2 -> 3.
-            version = 3
+            // D-513 (Alt-Belegungs-Reform section 7.5): hints.tsv rewritten as a union-merge delta - the stale German-derived symbols (b=* c=÷ d=° l=~/ñ m=- n=+ v=/, fr w=è) dropped, every language's own letters kept verbatim. version.txt 3 -> 4, pack rebuilt and verified by reading hints.tsv/version.txt back out of the archive, LanguagePackCatalog version 3 -> 4.
+            version = 4
         ),
         Entry(
             Language.DUTCH,
@@ -1204,7 +1209,8 @@ object LanguagePackCatalog {
             //
             // `dictionaries/nl/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
-            version = 2
+            // D-513 (Alt-Belegungs-Reform section 7.5): hints.tsv rewritten as a union-merge delta - the stale German-derived symbols (b=* c=÷ d=° l=~/ñ m=- n=+ v=/, fr w=è) dropped, every language's own letters kept verbatim. version.txt 2 -> 3, pack rebuilt and verified by reading hints.tsv/version.txt back out of the archive, LanguagePackCatalog version 2 -> 3.
+            version = 3
         ),
         Entry(
             Language.POLISH,
@@ -1301,7 +1307,8 @@ object LanguagePackCatalog {
             // `dictionaries/pl/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
             // D-497-followup (§519, v1.2.78): z ż,ź variant - dictionaries/pl/version.txt 2 -> 3, this Entry 2 -> 3.
-            version = 3
+            // D-513 (Alt-Belegungs-Reform section 7.5): hints.tsv rewritten as a union-merge delta - the stale German-derived symbols (b=* c=÷ d=° l=~/ñ m=- n=+ v=/, fr w=è) dropped, every language's own letters kept verbatim. version.txt 3 -> 4, pack rebuilt and verified by reading hints.tsv/version.txt back out of the archive, LanguagePackCatalog version 3 -> 4.
+            version = 4
         ),
         Entry(
             Language.TURKISH,
@@ -1440,7 +1447,8 @@ object LanguagePackCatalog {
             //
             // `dictionaries/tr/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
-            version = 2
+            // D-513 (Alt-Belegungs-Reform section 7.5): hints.tsv rewritten as a union-merge delta - the stale German-derived symbols (b=* c=÷ d=° l=~/ñ m=- n=+ v=/, fr w=è) dropped, every language's own letters kept verbatim. version.txt 2 -> 3, pack rebuilt and verified by reading hints.tsv/version.txt back out of the archive, LanguagePackCatalog version 2 -> 3.
+            version = 3
         ),
         Entry(
             Language.SWEDISH,
@@ -1541,7 +1549,8 @@ object LanguagePackCatalog {
             // `dictionaries/sv/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
             // D-497-followup (§519, v1.2.78): a ä,å variant - dictionaries/sv/version.txt 2 -> 3, this Entry 2 -> 3.
-            version = 3
+            // D-513 (Alt-Belegungs-Reform section 7.5): hints.tsv rewritten as a union-merge delta - the stale German-derived symbols (b=* c=÷ d=° l=~/ñ m=- n=+ v=/, fr w=è) dropped, every language's own letters kept verbatim. version.txt 3 -> 4, pack rebuilt and verified by reading hints.tsv/version.txt back out of the archive, LanguagePackCatalog version 3 -> 4.
+            version = 4
         ),
         Entry(
             Language.NORWEGIAN,
@@ -1629,7 +1638,8 @@ object LanguagePackCatalog {
             // `dictionaries/nb/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
             // D-497-followup (§519, v1.2.78): a å,æ variant - dictionaries/nb/version.txt 2 -> 3, this Entry 2 -> 3.
-            version = 3
+            // D-513 (Alt-Belegungs-Reform section 7.5): hints.tsv rewritten as a union-merge delta - the stale German-derived symbols (b=* c=÷ d=° l=~/ñ m=- n=+ v=/, fr w=è) dropped, every language's own letters kept verbatim. version.txt 3 -> 4, pack rebuilt and verified by reading hints.tsv/version.txt back out of the archive, LanguagePackCatalog version 3 -> 4.
+            version = 4
         ),
         Entry(
             Language.DANISH,
@@ -1709,7 +1719,8 @@ object LanguagePackCatalog {
             // `dictionaries/da/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
             // D-497-followup (§519, v1.2.78): a å,æ variant - dictionaries/da/version.txt 2 -> 3, this Entry 2 -> 3.
-            version = 3
+            // D-513 (Alt-Belegungs-Reform section 7.5): hints.tsv rewritten as a union-merge delta - the stale German-derived symbols (b=* c=÷ d=° l=~/ñ m=- n=+ v=/, fr w=è) dropped, every language's own letters kept verbatim. version.txt 3 -> 4, pack rebuilt and verified by reading hints.tsv/version.txt back out of the archive, LanguagePackCatalog version 3 -> 4.
+            version = 4
         ),
         Entry(
             Language.FINNISH,
@@ -1824,7 +1835,8 @@ object LanguagePackCatalog {
             // `dictionaries/fi/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
             // D-497-followup (§519, v1.2.78): a ä,å variant (the confirmed optional one) - dictionaries/fi/version.txt 2 -> 3, this Entry 2 -> 3.
-            version = 3
+            // D-513 (Alt-Belegungs-Reform section 7.5): hints.tsv rewritten as a union-merge delta - the stale German-derived symbols (b=* c=÷ d=° l=~/ñ m=- n=+ v=/, fr w=è) dropped, every language's own letters kept verbatim. version.txt 3 -> 4, pack rebuilt and verified by reading hints.tsv/version.txt back out of the archive, LanguagePackCatalog version 3 -> 4.
+            version = 4
         ),
         Entry(
             Language.CZECH,
@@ -1916,7 +1928,8 @@ object LanguagePackCatalog {
             // `dictionaries/cs/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
             // D-497-followup (§519, v1.2.78): e é,ě / u ú,ů variants - dictionaries/cs/version.txt 2 -> 3, this Entry 2 -> 3.
-            version = 3
+            // D-513 (Alt-Belegungs-Reform section 7.5): hints.tsv rewritten as a union-merge delta - the stale German-derived symbols (b=* c=÷ d=° l=~/ñ m=- n=+ v=/, fr w=è) dropped, every language's own letters kept verbatim. version.txt 3 -> 4, pack rebuilt and verified by reading hints.tsv/version.txt back out of the archive, LanguagePackCatalog version 3 -> 4.
+            version = 4
         ),
         Entry(
             Language.SLOVAK,
@@ -2022,7 +2035,8 @@ object LanguagePackCatalog {
             // `dictionaries/sk/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
             // D-497-followup (§519, v1.2.78): a á,ä / o ó,ô / l ľ,ĺ variants (ĺ the confirmed optional one) - dictionaries/sk/version.txt 2 -> 3, this Entry 2 -> 3.
-            version = 3
+            // D-513 (Alt-Belegungs-Reform section 7.5): hints.tsv rewritten as a union-merge delta - the stale German-derived symbols (b=* c=÷ d=° l=~/ñ m=- n=+ v=/, fr w=è) dropped, every language's own letters kept verbatim. version.txt 3 -> 4, pack rebuilt and verified by reading hints.tsv/version.txt back out of the archive, LanguagePackCatalog version 3 -> 4.
+            version = 4
         ),
         Entry(
             Language.HUNGARIAN,
@@ -2142,7 +2156,8 @@ object LanguagePackCatalog {
             // `dictionaries/hu/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
             // D-497-followup (§519, v1.2.78): o ó,ö,ő / u ú,ü,ű variants (the one genuine 3-variant case) - dictionaries/hu/version.txt 2 -> 3, this Entry 2 -> 3.
-            version = 3
+            // D-513 (Alt-Belegungs-Reform section 7.5): hints.tsv rewritten as a union-merge delta - the stale German-derived symbols (b=* c=÷ d=° l=~/ñ m=- n=+ v=/, fr w=è) dropped, every language's own letters kept verbatim. version.txt 3 -> 4, pack rebuilt and verified by reading hints.tsv/version.txt back out of the archive, LanguagePackCatalog version 3 -> 4.
+            version = 4
         ),
         Entry(
             Language.ROMANIAN,
@@ -2233,7 +2248,8 @@ object LanguagePackCatalog {
             // `dictionaries/ro/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
             // D-497-followup (§519, v1.2.78): a ă,â variant - dictionaries/ro/version.txt 2 -> 3, this Entry 2 -> 3.
-            version = 3
+            // D-513 (Alt-Belegungs-Reform section 7.5): hints.tsv rewritten as a union-merge delta - the stale German-derived symbols (b=* c=÷ d=° l=~/ñ m=- n=+ v=/, fr w=è) dropped, every language's own letters kept verbatim. version.txt 3 -> 4, pack rebuilt and verified by reading hints.tsv/version.txt back out of the archive, LanguagePackCatalog version 3 -> 4.
+            version = 4
         ),
         Entry(
             Language.CROATIAN,
@@ -2351,7 +2367,8 @@ object LanguagePackCatalog {
             // `dictionaries/hr/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
             // D-497-followup (§519, v1.2.78): c č,ć variant - dictionaries/hr/version.txt 2 -> 3, this Entry 2 -> 3.
-            version = 3
+            // D-513 (Alt-Belegungs-Reform section 7.5): hints.tsv rewritten as a union-merge delta - the stale German-derived symbols (b=* c=÷ d=° l=~/ñ m=- n=+ v=/, fr w=è) dropped, every language's own letters kept verbatim. version.txt 3 -> 4, pack rebuilt and verified by reading hints.tsv/version.txt back out of the archive, LanguagePackCatalog version 3 -> 4.
+            version = 4
         ),
         Entry(
             Language.BOSNIAN,
@@ -2438,7 +2455,8 @@ object LanguagePackCatalog {
             // `dictionaries/bs/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
             // D-497-followup (§519, v1.2.78): c č,ć variant - dictionaries/bs/version.txt 2 -> 3, this Entry 2 -> 3.
-            version = 3
+            // D-513 (Alt-Belegungs-Reform section 7.5): hints.tsv rewritten as a union-merge delta - the stale German-derived symbols (b=* c=÷ d=° l=~/ñ m=- n=+ v=/, fr w=è) dropped, every language's own letters kept verbatim. version.txt 3 -> 4, pack rebuilt and verified by reading hints.tsv/version.txt back out of the archive, LanguagePackCatalog version 3 -> 4.
+            version = 4
         ),
         Entry(
             Language.ESTONIAN,
@@ -2513,7 +2531,8 @@ object LanguagePackCatalog {
             // `dictionaries/et/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
             // D-497-followup (§519, v1.2.78): o õ,ö variant - dictionaries/et/version.txt 2 -> 3, this Entry 2 -> 3.
-            version = 3
+            // D-513 (Alt-Belegungs-Reform section 7.5): hints.tsv rewritten as a union-merge delta - the stale German-derived symbols (b=* c=÷ d=° l=~/ñ m=- n=+ v=/, fr w=è) dropped, every language's own letters kept verbatim. version.txt 3 -> 4, pack rebuilt and verified by reading hints.tsv/version.txt back out of the archive, LanguagePackCatalog version 3 -> 4.
+            version = 4
         ),
         Entry(
             Language.LATVIAN,
@@ -2589,7 +2608,8 @@ object LanguagePackCatalog {
             //
             // `dictionaries/lv/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
-            version = 2
+            // D-513 (Alt-Belegungs-Reform section 7.5): hints.tsv rewritten as a union-merge delta - the stale German-derived symbols (b=* c=÷ d=° l=~/ñ m=- n=+ v=/, fr w=è) dropped, every language's own letters kept verbatim. version.txt 2 -> 3, pack rebuilt and verified by reading hints.tsv/version.txt back out of the archive, LanguagePackCatalog version 2 -> 3.
+            version = 3
         ),
         Entry(
             Language.LITHUANIAN,
@@ -2672,7 +2692,8 @@ object LanguagePackCatalog {
             // D-497 multi-variant hints mechanism: `e=ę,ė`, `u=ų,ū` - first variant stays the corner
             // hint/pre-selected popup cell, the second variant is the popup's new cell.
             // `dictionaries/lt/version.txt` 2 -> 3, pack rebuilt, this Entry 2 -> 3.
-            version = 3
+            // D-513 (Alt-Belegungs-Reform section 7.5): hints.tsv rewritten as a union-merge delta - the stale German-derived symbols (b=* c=÷ d=° l=~/ñ m=- n=+ v=/, fr w=è) dropped, every language's own letters kept verbatim. version.txt 3 -> 4, pack rebuilt and verified by reading hints.tsv/version.txt back out of the archive, LanguagePackCatalog version 3 -> 4.
+            version = 4
         ),
         Entry(
             Language.MALAY,
@@ -2762,7 +2783,8 @@ object LanguagePackCatalog {
             //
             // `dictionaries/ms/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
-            version = 2
+            // D-513 (Alt-Belegungs-Reform section 7.5): hints.tsv rewritten as a union-merge delta - the stale German-derived symbols (b=* c=÷ d=° l=~/ñ m=- n=+ v=/, fr w=è) dropped, every language's own letters kept verbatim. version.txt 2 -> 3, pack rebuilt and verified by reading hints.tsv/version.txt back out of the archive, LanguagePackCatalog version 2 -> 3.
+            version = 3
         ),
         Entry(
             Language.INDONESIAN,
@@ -2866,7 +2888,8 @@ object LanguagePackCatalog {
             //
             // `dictionaries/id/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
-            version = 2
+            // D-513 (Alt-Belegungs-Reform section 7.5): hints.tsv rewritten as a union-merge delta - the stale German-derived symbols (b=* c=÷ d=° l=~/ñ m=- n=+ v=/, fr w=è) dropped, every language's own letters kept verbatim. version.txt 2 -> 3, pack rebuilt and verified by reading hints.tsv/version.txt back out of the archive, LanguagePackCatalog version 2 -> 3.
+            version = 3
         ),
         Entry(
             Language.SWAHILI,
@@ -2956,7 +2979,8 @@ object LanguagePackCatalog {
             //
             // `dictionaries/sw/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
-            version = 2
+            // D-513 (Alt-Belegungs-Reform section 7.5): hints.tsv rewritten as a union-merge delta - the stale German-derived symbols (b=* c=÷ d=° l=~/ñ m=- n=+ v=/, fr w=è) dropped, every language's own letters kept verbatim. version.txt 2 -> 3, pack rebuilt and verified by reading hints.tsv/version.txt back out of the archive, LanguagePackCatalog version 2 -> 3.
+            version = 3
         ),
         Entry(
             Language.TAGALOG,
@@ -3045,7 +3069,8 @@ object LanguagePackCatalog {
             //
             // `dictionaries/tl/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
-            version = 2
+            // D-513 (Alt-Belegungs-Reform section 7.5): hints.tsv rewritten as a union-merge delta - the stale German-derived symbols (b=* c=÷ d=° l=~/ñ m=- n=+ v=/, fr w=è) dropped, every language's own letters kept verbatim. version.txt 2 -> 3, pack rebuilt and verified by reading hints.tsv/version.txt back out of the archive, LanguagePackCatalog version 2 -> 3.
+            version = 3
         ),
         Entry(
             Language.SERBIAN,
@@ -3589,7 +3614,8 @@ object LanguagePackCatalog {
             //
             // `dictionaries/uz/version.txt` 1 -> 2, pack rebuilt and verified byte-identical after unzip,
             // `LanguagePackCatalog` version 1 -> 2. Data-only; no Kotlin touched.
-            version = 2
+            // D-513 (Alt-Belegungs-Reform section 7.5): hints.tsv rewritten as a union-merge delta - the stale German-derived symbols (b=* c=÷ d=° l=~/ñ m=- n=+ v=/, fr w=è) dropped, every language's own letters kept verbatim. version.txt 2 -> 3, pack rebuilt and verified by reading hints.tsv/version.txt back out of the archive, LanguagePackCatalog version 2 -> 3.
+            version = 3
         )
     )
 }

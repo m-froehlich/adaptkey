@@ -140,4 +140,23 @@ object LayoutRegistry {
         }
         return kindFor(activeLanguage)
     }
+    
+    /**
+     * D-513: whether [language]'s hints ride the Alt-Belegungs-Reform's base+delta union merge - exactly
+     * the layouts that consume the shared Latin hint overlay with the reform's own left corners
+     * ([KeyboardLayout.BASE_LEFT_CORNERS]): QWERTY/QWERTZ/AZERTY. The dedicated Azerbaijani layout shares
+     * the overlay builder but deliberately keeps the pre-reform replace semantics (§2.12 - its letters
+     * page receives no reform data, its digit row already did), and the Greek/Cyrillic layouts ignore the
+     * Latin hint map entirely.
+     *
+     * @param language a keyboard-typing language
+     * @return true when the language's hints are a delta against the compiled-in base, false when its own
+     *         data (when any) replaces it wholesale as before D-513
+     */
+    fun consumesLatinHintOverlay(language: Language): Boolean {
+        return when (kindFor(language)) {
+            LayoutKind.LATIN_QWERTZ, LayoutKind.LATIN_QWERTY, LayoutKind.LATIN_AZERTY -> true
+            else -> false
+        }
+    }
 }

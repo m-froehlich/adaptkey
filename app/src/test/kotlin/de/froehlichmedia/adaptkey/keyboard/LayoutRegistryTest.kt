@@ -5,6 +5,8 @@ package de.froehlichmedia.adaptkey.keyboard
 
 import de.froehlichmedia.adaptkey.language.Language
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.util.Locale
 
@@ -47,6 +49,24 @@ class LayoutRegistryTest {
             setOf(Language.GREEK, Language.SERBIAN, Language.RUSSIAN, Language.UKRAINIAN),
             LayoutRegistry.NON_LATIN_LANGUAGES
         )
+    }
+    
+    @Test
+    fun `D-513 consumesLatinHintOverlay is exactly the three shared Latin geometries`() {
+        // QWERTY/QWERTZ/AZERTY consume the shared overlay WITH the reform's left corners - union merge.
+        assertTrue(LayoutRegistry.consumesLatinHintOverlay(Language.GERMAN))
+        assertTrue(LayoutRegistry.consumesLatinHintOverlay(Language.ENGLISH))
+        assertTrue(LayoutRegistry.consumesLatinHintOverlay(Language.FRENCH))
+        assertTrue(LayoutRegistry.consumesLatinHintOverlay(Language.POLISH))
+        assertTrue(LayoutRegistry.consumesLatinHintOverlay(Language.UZBEK))
+        // Azerbaijani shares the overlay builder but keeps the pre-reform replace semantics (section 2.12
+        // - its letters page receives no reform data; its digit row already did, in D-511).
+        assertFalse(LayoutRegistry.consumesLatinHintOverlay(Language.AZERBAIJANI))
+        // Greek/Cyrillic never read the Latin hint map at all.
+        assertFalse(LayoutRegistry.consumesLatinHintOverlay(Language.GREEK))
+        assertFalse(LayoutRegistry.consumesLatinHintOverlay(Language.SERBIAN))
+        assertFalse(LayoutRegistry.consumesLatinHintOverlay(Language.RUSSIAN))
+        assertFalse(LayoutRegistry.consumesLatinHintOverlay(Language.UKRAINIAN))
     }
     
     @Test

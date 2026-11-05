@@ -84,7 +84,7 @@ object LetterHints {
      * Parses a persisted string back into a validated per-key map. A null, blank, or fully invalid
      * input yields an empty map - the caller ([LanguageLetterHintsLoader]) falls back to the compiled-in
      * default in that case.
-     * 
+     *
      * @param value the persisted string, or null
      * @return the validated per-key map (possibly empty)
      */
@@ -100,5 +100,93 @@ object LetterHints {
             }
         }
         return sanitize(raw)
+    }
+    
+    /**
+     * D-513: parses a pack's hints DELTA - the same `key=value` persisted string [parse] reads, with one
+     * addition: an entry with an EMPTY value (`a=`) is an explicit REMOVAL, dropping the compiled-in
+     * base's right-corner/extras data for that key (the Alt-Belegungs-Reform's §2.10 umlaut policy - it
+     * is how English keeps ä ö ü ß out entirely, and how a pack retires a stale German-derived symbol).
+     * The reform's left corners are compiled-in per-key data ([KeyboardLayout.BASE_LEFT_CORNERS]) and
+     * are never affected by a removal.
+     *
+     * A missing value is representable only here, never in [parse]'s own validated map - a null marks
+     * the removal, and [unionMerge] is the only consumer.
+     *
+     * @param value the persisted delta string, or null
+     * @return the validated per-key delta: the key's own variant list, or null for an explicit removal
+     */
+    fun parseDelta(value: String?): Map<Char, String?> {
+        if (value.isNullOrBlank()) {
+            return emptyMap()
+        }
+        val raw = HashMap<Char, String?>()
+        for (entry in value.split(ENTRY_SEPARATOR)) {
+            val parts = entry.split(KEY_VALUE_SEPARATOR, limit = 2)
+            if (parts.size == 2 && parts[0].length == 1) {
+                val key = parts[0][0].lowercaseChar()
+                if (key < 'a' || key > 'z') {
+                    continue
+                }
+                val symbol = parts[1]
+                raw[key] = if (symbol.isEmpty()) null else symbol
+            }
+        }
+        // A non-removal value passes the same validation as always; a removal entry is valid by
+        // definition. A malformed variant value demotes to a plain removal rather than resurrecting
+        // the base data - dropping towards the base is the safe direction.
+        val result = sortedMapOf<Char, String?>()
+        for ((key, symbol) in raw) {
+            result[key] = if (symbol == null || isValidEntry(key, symbol)) symbol else null
+        }
+        return result
+    }
+    
+    /**
+     * The four German umlaut/scharf-s letters (§2.10's per-language-data policy): the only base values
+     * that never append to a key a language owns with its own entry. L-05's own founding rationale is
+     * that a set tuned for German is not what a language without those characters needs, so `a=á` keeps
+     * Czech a Czech (no silent ß/ä extras), while the genuinely universal base symbols (@ # $ € π × ƒ)
+     * and the explicitly-universal ñ (§2.6) still append - exactly the two merged orders §5 pins: French
+     * `e=é,è,ê,ë` merges to `é,è,ê,ë,€` and Polish `n=ń` to the `[( | ñ | ń ]` straddle.
+     */
+    private val GERMAN_SPECIFIC_LETTERS = setOf("ä", "ö", "ü", "ß")
+    
+    /**
+     * D-513: the base+delta UNION merge - the reform's operational "alle lateinischen Layouts übernehmen
+     * die deutsche Alt-Belegung". Per key:
+     * - an explicit delta REMOVAL (a null from [parseDelta]) drops the key entirely,
+     * - a delta entry makes its first variant the right corner, with the delta's remaining variants as
+     *   the first extras and the base's own value appended LAST when it is genuinely new (never
+     *   duplicated, never one of [GERMAN_SPECIFIC_LETTERS]),
+     * - a key only the base carries stays exactly the base's.
+     *
+     * The result is the same variant-string form [parse] produces, so [KeyboardLayout.letterKey]'s own
+     * corner/extras assembly consumes it unchanged - including the dual-corner straddle case, where the
+     * appended base value (e.g. ñ under Polish `n=ń`) becomes the popup's middle cell.
+     *
+     * @param base the compiled-in universal base map (the reform's German right corners)
+     * @param delta the language's own delta, removals included
+     * @return the merged per-key variant map, sorted by key
+     */
+    fun unionMerge(base: Map<Char, String>, delta: Map<Char, String?>): Map<Char, String> {
+        val result = sortedMapOf<Char, String>()
+        for ((key, baseValue) in base) {
+            if (!delta.containsKey(key)) {
+                result[key] = baseValue
+            }
+            // An explicit removal (key present, value null) drops the key entirely - the reform's left
+            // corners are code-side data and are never affected.
+        }
+        for ((key, deltaValue) in delta) {
+            val variants = deltaValue?.split(VARIANT_SEPARATOR) ?: continue
+            val extras = variants.drop(1).toMutableList()
+            val baseValue = base[key]
+            if (baseValue != null && !variants.contains(baseValue) && baseValue !in GERMAN_SPECIFIC_LETTERS) {
+                extras.add(baseValue)
+            }
+            result[key] = (listOf(variants.first()) + extras).joinToString("$VARIANT_SEPARATOR")
+        }
+        return result
     }
 }

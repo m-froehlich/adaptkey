@@ -10,6 +10,7 @@ import androidx.preference.PreferenceManager
 import de.froehlichmedia.adaptkey.capitalisation.Abbreviations
 import de.froehlichmedia.adaptkey.keyboard.CombinedKeyMode
 import de.froehlichmedia.adaptkey.keyboard.KeyboardLayout
+import de.froehlichmedia.adaptkey.keyboard.LayoutRegistry
 import de.froehlichmedia.adaptkey.language.ActiveLanguageStore
 import de.froehlichmedia.adaptkey.language.DiacriticFoldingRegistry
 import de.froehlichmedia.adaptkey.language.Language
@@ -291,14 +292,27 @@ object SettingsStore {
      * default, silently reintroducing cross-language hint bleed the moment any single symbol was
      * customised, so it was removed entirely rather than fixed; see D-281 for the per-language default
      * mechanism itself).
-     * 
+     *
+     * D-513: for the Latin layouts (QWERTY/QWERTZ/AZERTY, [LayoutRegistry.consumesLatinHintOverlay])
+     * the language's own file is a hints DELTA against the compiled-in universal base - the
+     * Alt-Belegungs-Reform's union merge ([LetterHints.unionMerge]), removals included, so English's
+     * `a=;o=;u=;s=` keeps the German umlauts out entirely (§2.10) while every other Latin language's
+     * own letters win their keys' corners. The non-Latin-layout languages (Greek, Cyrillic, Azerbaijani)
+     * keep the pre-reform replace semantics - their letters pages receive no reform data (§2.12), and a
+     * language without any hints file of its own still falls back to the compiled-in default there.
+     *
      * @param context any valid context
      * @param language the language whose own default hint set to resolve; defaults to whichever language
      *        is currently active ([ActiveLanguageStore])
-     * @return [language]'s own default per-key map, or the compiled-in default when [language] has none
+     * @return [language]'s merged per-key map, or the compiled-in default when [language] has none
      */
     fun loadLetterHints(context: Context, language: Language = ActiveLanguageStore.load(context)): Map<Char, String> {
-        return LanguageLetterHintsLoader.loadFor(context, language) ?: KeyboardLayout.DEFAULT_LETTER_HINTS
+        val delta = LanguageLetterHintsLoader.loadDeltaFor(context, language)
+        return if (LayoutRegistry.consumesLatinHintOverlay(language)) {
+            LetterHints.unionMerge(KeyboardLayout.DEFAULT_LETTER_HINTS, delta)
+        } else {
+            delta.filterValues { it != null }.mapValues { it.value!! }.ifEmpty { KeyboardLayout.DEFAULT_LETTER_HINTS }
+        }
     }
     
     /**
