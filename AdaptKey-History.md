@@ -24562,3 +24562,9 @@ failures; `:app:assembleRelease` green. `versionCode` 599 -> 600, `versionName` 
 Also recorded: the user pushed v1.2.103 and the round's packs themselves mid-session, so origin/main
 carries the reform through the first placement fix; v1.2.104 is local until their next push. Re-test owed:
 the 7 key (and the mirrored 2 key) plus the rest of the plan §9 checklist.
+
+**CLOSED (2026-11-05, device-confirmed by the user on v1.2.104): "Danke, das hat geklappt. Jetzt ist es
+perfekt."** The re-build with the grow placement passed the 7-key scenario on the device; the user pushed
+v1.2.104 themselves (origin/main carries the round through versionCode 600), the plan file is marked
+CLOSED, and the round is closed. Not yet tagged/released - the next F-Droid release (when the user asks
+for it) would carry v1.2.104/versionCode 600 per the RELEASE RECIPE.

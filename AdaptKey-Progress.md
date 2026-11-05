@@ -453,19 +453,22 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
-- **D-509..D-514 - the Alt-Belegungs-Reform, ALL SIX PHASES IMPLEMENTED (§538, v1.2.98-v1.2.102; NOT yet
-  device-confirmed - the reform's plan-section-9 device pass is the standing open item).** Umbrella plan:
-  `AdaptKey-Plan-Alt-Belegungen-Reform.md` (READY -> implemented; single umbrella document per its own
-  header). One phase per round, own commit + version bump each (D-514 is docs-only and rides):
+- **D-509..D-514 - the Alt-Belegungs-Reform - RESOLVED, device-confirmed (§538; v1.2.98-v1.2.104,
+  versionCode 594-600; closed 2026-11-05: "Jetzt ist es perfekt").** Umbrella plan:
+  `AdaptKey-Plan-Alt-Belegungen-Reform.md` (CLOSED). One phase per round, own commit + version bump each
+  (D-514 is docs-only and rides):
   - **D-509 (v1.2.98) - the corner model:** Key's leftHint beside the legacy hint (derived right corner for
     the whole migration) plus the derived defaultCornerHint (right corner first, a lone left corner the
     release default); both corners drawn (mirrored 6dp inset, per-corner shifted uppercasing), the D-98
     triangle corner-aware, the three long-press gates read the corner-default rule. Inert by construction -
     every existing key still right-corner-only when it shipped.
-  - **D-510 (v1.2.99) - the popup geometry:** the drift-gated clamp replaces D-282's unconditional reversal
-    (the o key's fix: natural order, the extra cell RIGHT of the pre-selected one; the p key keeps its
-    observed reversal as the last resort); the dual-corner straddle placement built (corner-aligned row,
-    right corner pre-selected).
+  - **D-510 (v1.2.99, placement corrected v1.2.103/v1.2.104) - the popup geometry:** the drift-gated clamp
+    replaces D-282's unconditional reversal (the o key's fix: natural order, the extra cell RIGHT of the
+    pre-selected one; the p key keeps its observed reversal as the last resort). Dual-corner rows
+    (device-corrected over two passes): centred over the host with at most one extra (a screen-edge
+    overflow flips it to the far side - the 1 key's `~ ! ¹`, the 0 key's `⁰ = )`); with two or more extras
+    the row grows toward the screen centre with the first extra kept in the middle between the corners
+    over the host (the 7 key's `\ ⁷ / ÷ &`, the 2 key's `" ' @ ² ₂` growing right).
   - **D-511 (v1.2.100) - the number row:** dual corners per the user's assignment table (US row as right
     corners/release defaults, German survivors + math singles as left corners, ÷ middle on 7), one shared
     builder for all six layouts. Release defaults 2→@ 3→# 6→^ 7→& 8→* 9→( 0→) (1/4/5 unchanged).
@@ -480,34 +483,12 @@ non-trivial changes).
   - **D-514 (rides v1.2.102, docs-only, no bump):** page 2 explicitly untouched, full suite green,
     spec addenda (L-05/L-06 + §24/D-336, the D-282 drift-gate note, the D-497 format note), these stubs +
     History §538.
-  Device pass owed per plan §9: both corners legible (portrait/landscape, light/dark, shifted uppercasing),
-  popup acceptance (o/p/u/s/a/digit popups), release defaults (§3b), per-language visibility (DE umlauts,
-  EN none, own-letters pages), C-09 fallback + page 2 unchanged, URL/email unchanged, AZERTY ' right of m.
-  **Device pass 1 (2026-11-05, v1.2.102) done - one defect found and fixed (v1.2.103): the corner row had
-  been left-aligned at the key's edge (trailing cells far from the host); now centred over the host per the
-  user's placement spec, flipping its extras toward the screen interior at an edge overflow (1: `~ ! ¹`,
-  0: `⁰ = )`). The math symbols still on c/v/b/n/m are the STALE INSTALLED German pack (origin/main still
-  hosts v49 - unpushed by convention); they resolve by pushing + re-importing the pack (v50), no code
-defect - see History §538's device-pass tail. Re-test owed after the push + re-import.**
-  **Device pass 1 (2026-11-05, v1.2.102) done - one defect found and fixed (v1.2.103): the corner row had
-  been left-aligned at the key's edge (trailing cells far from the host); now centred over the host per the
-  user's placement spec, flipping its extras toward the screen interior at an edge overflow (1: `~ ! ¹`,
-  0: `⁰ = )`). The math symbols still on c/v/b/n/m are the STALE INSTALLED German pack (origin/main still
-  hosts v49 - unpushed by convention); they resolve by pushing + re-importing the pack (v50), no code
-  defect - see History §538's device-pass tail. Re-test owed after the push + re-import.**
-  **Follow-up (same day, user): CONFIRMED - the user pushed v1.2.98-v1.2.102 mid-round himself and
-  re-imported the German pack: "c bis m stimmen jetzt" - the stale-pack explanation is device-confirmed,
-  the freed keys and the universal tilde-n behave per the reform. origin/main carries the round through
-  D-514/v1.2.102 (packs at v50); the v1.2.103 placement fix is local-only until his next push, and the
-  v1.2.103 re-test (corner rows centred, the 1/0 flips) is the remaining open item.**
-  **Device pass 2 (2026-11-05, v1.2.103, after the user's own push + pack re-import: "Fast perfekt...
-  Nur auf der 7 passt es aus irgendeinem Grund nicht"): the 7 key's five-cell corner row was merely
-  centred (its middle cell, the backslash, landed over the host centre). Fixed (v1.2.104): with two or
-  more extras the corner row grows toward the screen centre, the FIRST extra staying in the middle between
-  the corners over the host - the 7 key renders `\ ⁷ / ÷ &` (slash/division/ampersand directly over the
-  host, backslash + superscript hanging left), the 2 key mirrors it as `" ' @ ² ₂` growing right. The 2-3-
-  cell rows and the 1/0 flips are unchanged. See History §538's device-pass-2 tail. Re-test owed: the 7
-  (and mirrored 2) plus the rest of the plan §9 checklist; v1.2.104 is local until the user's next push.**
+  Two device passes (2026-11-05) closed the round: pass 1 fixed the left-aligned corner-row placement
+  (centred over the host + edge flips) and explained the stale-v49-pack symptoms (the math symbols on
+  c/v/b/n/m) - resolved by the user's own push + de-pack re-import (v50, "c bis m stimmen jetzt"); pass 2
+  fixed the 7 key with the grow rule above. The user closed the round on v1.2.104 ("Jetzt ist es perfekt")
+  and pushed it; the next F-Droid release carries v1.2.104/versionCode 600 per the RELEASE RECIPE when
+  asked for.
 
 - **D-508 - RESOLVED (§534, v1.2.94), device-confirmed 2026-10-31: the gesture/long-press calibration for
   slow users - the community report's whole solution.** The D-401 space long-press cancels on motion alone,
