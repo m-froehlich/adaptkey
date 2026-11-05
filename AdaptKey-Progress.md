@@ -453,6 +453,17 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
+- **D-515 - IMPLEMENTED (§539, v1.2.105), NOT yet device-confirmed: the apostrophe key's opt-in for the
+  non-English layouts (default off).** The D-512 apostrophe key right of `l`/`m` would meet resistance in
+  the German community on the German QWERTZ (the changed home row is the sore point). New Layout-category
+  switch (`d515_apostrophe_key`, default off): the English-style QWERTY arrangement always shows the key;
+  QWERTZ/AZERTY only when on (the view resolves the flag per layout kind; Greek/Cyrillic/Azerbaijani never
+  had the key). Full settings chain + backup order + title/summary in all 32 locales
+  (`scratchpad/d515_strings.py`). Version sequencing per explicit user instruction: the bump (1.2.104 ->
+  1.2.105/601) was edited BEFORE the build ran, so the test APK carries the round's version - the user's
+  correction of the house build-then-bump order. 1,872 unit tests (1,869 + 3), 0 failures;
+  `:app:assembleRelease` green. See §539 and spec L-05's D-515 addendum.
+
 - **D-509..D-514 - the Alt-Belegungs-Reform - RESOLVED, device-confirmed (§538; v1.2.98-v1.2.104,
   versionCode 594-600; closed 2026-11-05: "Jetzt ist es perfekt").** Umbrella plan:
   `AdaptKey-Plan-Alt-Belegungen-Reform.md` (CLOSED). One phase per round, own commit + version bump each

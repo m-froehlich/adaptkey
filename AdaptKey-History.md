@@ -24568,3 +24568,29 @@ perfekt."** The re-build with the grow placement passed the 7-key scenario on th
 v1.2.104 themselves (origin/main carries the round through versionCode 600), the plan file is marked
 CLOSED, and the round is closed. Not yet tagged/released - the next F-Droid release (when the user asks
 for it) would carry v1.2.104/versionCode 600 per the RELEASE RECIPE.
+
+## §539 - D-515: the apostrophe key becomes an opt-in for the non-English layouts (v1.2.105)
+
+User request right after closing the Alt-Belegungs-Reform (§538): D-512's dedicated apostrophe key right of
+`l`/`m` would "be taken badly by the German community" on the German QWERTZ - the reform changed the home
+row's length, and that is exactly what should not ship as a silent default for non-English layouts. New
+Layout-category switch ("Apostrophe key", `d515_apostrophe_key`, default **off**): the English-style QWERTY
+arrangement always shows the `'` key; QWERTZ and AZERTY show it only when the switch is on (the view
+resolves the effective flag per layout kind - `LayoutKind.LATIN_QWERTY` always wins, the switch gates
+QWERTZ/AZERTY; Greek/Cyrillic/Azerbaijani never had the key). One version-sequencing change per explicit
+user instruction: the version bump (1.2.104 -> 1.2.105, versionCode 600 -> 601) was edited BEFORE the
+build ran, so the day-to-day test APK actually carries the round's version - the user's correction of the
+house build-then-bump order, whose old consequence ("im Paket sehe ich die Version nicht") had just
+surfaced on the device.
+
+Mechanics: `KeyboardLayout.rows`/`AzertyLayout.rows` gained a `showApostropheKey` parameter (function
+default true = the reform's shape; the view resolves the user-facing default per layout kind and passes
+it), the view gained `showApostropheKeyOnNonEnglishLayouts` (rebuild-triggering property, default false),
+and the setting rides the full chain (`d515_apostrophe_key` SwitchPreferenceCompat after C-09 in the
+Layout category -> SettingsStore KEY/DEF(false) -> RawSettings -> SettingsMapper -> AdaptSettings ->
+service applySettings -> view), plus the D-278 backup display order (right after the number-row toggle).
+Strings: title + summary in English + all 31 locales (`scratchpad/d515_strings.py`, drafts per the
+standing D-478 rule, `UiLocaleConsistencyTest` enforces). Tests: +3 net (the gated QWERTZ/AZERTY shapes
+and the mapper default/pass-through). 1,872 unit tests total (1,869 + 3), 0 failures;
+`:app:assembleRelease` green with versionName 1.2.105 in the APK. NOT device-confirmed (a settings row +
+a conditional layout key; the German default shape is exactly the pre-reform middle row, pinned by tests).

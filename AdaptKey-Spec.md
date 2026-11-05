@@ -276,6 +276,12 @@ live on the reformed digit row, `×` stays on `x`), and a dedicated apostrophe k
 wins its key's right corner (pl ń / cs ň / lv ņ take n's corner with ñ demoted to the popup's first extra;
 their `+`-slot and other letters keep their corners too).
 
+**D-515 addendum - the apostrophe key is gated for the non-English layouts (default off).** The English-style
+QWERTY arrangement always shows the `'` key; on QWERTZ and AZERTY it appears only when the Layout-category
+switch ("Apostrophe key", `d515_apostrophe_key`, default **off**) is on - a German/AZERTY middle row keeps
+its canonical length unless the user opts in, since the changed home row is exactly what a German-speaking
+community would take against the reform. The switch is Layout-category-scoped and rides in backups.
+
 Operationally this is a compiled-in universal BASE (the reformed German map, right corners + the per-key
 left corners as code) plus every pack's `hints.tsv` as a DELTA, merged by UNION - not the pre-reform
 whole-map replace: a delta entry's first variant becomes the right corner with the remaining variants as
