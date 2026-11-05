@@ -55,11 +55,11 @@ android {
         // D-500/C-28: the auto-capitalisation switch (default on) - the off state is a coarse gate on
         // AdaptKey's proactive caps: no live Shift-arming anywhere, and the ordinary commit skips the
         // linguistic force-capitalisation rules (noun-only, LLM lift, acronym restore).
-        // D-512 phase D of the Alt-Belegungs-Reform: the letters page - explicit corners and popups
-        // (d = degree | $, n = paren | universal tilde-n, m = paren, s = star | szlig, + slot on the
-        // first third-row key, freed c/v/b) and the dedicated apostrophe key right of l/m.
-        versionCode = 597
-        versionName = "1.2.101"
+        // D-513 phase E of the Alt-Belegungs-Reform: the hints data - the base+delta union merge
+        // (universal base, per-language deltas with removals; German umlauts never append over an
+        // owned key), all 26 packs rewritten as deltas with version/zip/catalog bumps, en's removal asset.
+        versionCode = 598
+        versionName = "1.2.102"
         
         // The ONNX Runtime native libs (tier-3 mini-LLM) ship per ABI; keep only the ones real phones
         // use (arm64 + 32-bit arm), dropping the emulator-only x86/x86_64 libs (~43 MB). Device testing
