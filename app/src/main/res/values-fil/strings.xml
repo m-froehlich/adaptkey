@@ -386,4 +386,6 @@
     <string name="blacklist_origin_bundled_seed">Kasama ng app</string>
     <string name="blacklist_origin_unknown">Hindi kilala (mula sa mas lumang bersyon)</string>
     <string name="d506_pack_base_notice">Paalala: Sa kasalukuyan, tanging ang Aleman na pakete ang manu-manong na-curate. Ang lahat ng iba pang wika – kabilang ang nakapaloob na Ingles – ay awtomatikong binuong basehan: mga kulang na salita, maling o ayaw na pagwawasto at katulad na mga glitch ay karaniwang nagmumula sa data ng pakete, hindi mula sa app mismo. Kung bihasa kayo sa isang wika, maaari kayong tumulong pagbutihin ang pakete nito (tingnan ang gabay sa pag-aambag sa repositoryo ng proyekto).</string>
+    <string name="d515_apostrophe_key_title">Apostrope key</string>
+    <string name="d515_apostrophe_key_summary">Ipakita ang apostrope key (sa kanan ng l/m) sa mga keyboard na hindi Ingles. Naka-off: mga keyboard na Ingles lang.</string>
 </resources>

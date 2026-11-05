@@ -386,4 +386,6 @@
     <string name="blacklist_origin_bundled_seed">Sisältyy sovellukseen</string>
     <string name="blacklist_origin_unknown">Tuntematon (aiemmasta versiosta)</string>
     <string name="d506_pack_base_notice">Huomautus: Tällä hetkellä vain saksan paketti on käsin kuratoitu. Kaikki muut kielet – mukaan lukien mukana toimitettu englanti – ovat automaattisesti rakennettu perusta: puuttuvat sanat, väärät tai ei-toivotut korjaukset ja vastaavat ongelmat johtuvat yleensä paketin tiedoista, eivät sovelluksesta itsestään. Jos osaat jonkin kielen hyvin, voit auttaa parantamaan sen pakettia (katso projektin varastossa oleva avustusopas).</string>
+    <string name="d515_apostrophe_key_title">Heittomerkkinäppäin</string>
+    <string name="d515_apostrophe_key_summary">Näytä heittomerkkinäppäin (l/m:n oikealla puolella) myös ei-enganninkielisillä näppäimistöillä. Pois käytöstä: vain englanninkieliset näppäimistöt.</string>
 </resources>

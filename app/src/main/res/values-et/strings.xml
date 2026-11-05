@@ -386,4 +386,6 @@
     <string name="blacklist_origin_bundled_seed">Kaasas rakendusega</string>
     <string name="blacklist_origin_unknown">Teadmata (varasemast versioonist)</string>
     <string name="d506_pack_base_notice">Märkus: Praegu on käsitsi koostatud ainult saksa pakett. Kõik teised keeled – sealhulgas kaasas olev inglise keel – on automaatselt loodud alus: puuduvad sõnad, valed või soovimatud parandused ja sarnased vead tulevad tavaliselt paketi andmetest, mitte rakendusest endast. Kui valdate keelt hästi, saate aidata selle paketti parandada (vaadake projekti hoidla kaastöö juhendit).</string>
+    <string name="d515_apostrophe_key_title">Apostrofi klahv</string>
+    <string name="d515_apostrophe_key_summary">Kuva apostrofi klahv (l/m-st paremal) ka mitteingliskeelsetel klaviatuuridel. Väljas: ainult ingliskeelsed klaviatuurid.</string>
 </resources>

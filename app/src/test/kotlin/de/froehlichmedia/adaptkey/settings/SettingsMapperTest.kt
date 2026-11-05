@@ -63,6 +63,13 @@ class SettingsMapperTest {
     }
     
     @Test
+    fun `D-515 showApostropheKey defaults to off and an explicit value passes through`() {
+        assertFalse(SettingsMapper.toAdaptSettings(RawSettings()).showApostropheKey)
+        assertFalse(AdaptSettings().showApostropheKey)
+        assertTrue(SettingsMapper.toAdaptSettings(RawSettings(showApostropheKey = true)).showApostropheKey)
+    }
+    
+    @Test
     fun `maxSuggestions is clamped into the recommended range`() {
         assertEquals(SettingsMapper.MIN_MAX_SUGGESTIONS, SettingsMapper.toSuggestionConfig(RawSettings(maxSuggestions = 0)).maxSuggestions)
         assertEquals(SettingsMapper.MAX_MAX_SUGGESTIONS, SettingsMapper.toSuggestionConfig(RawSettings(maxSuggestions = 99)).maxSuggestions)

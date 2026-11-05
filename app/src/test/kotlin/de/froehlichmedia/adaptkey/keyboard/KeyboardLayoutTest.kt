@@ -232,6 +232,19 @@ class KeyboardLayoutTest {
     }
     
     @Test
+    fun `D-515 the apostrophe key is gated by showApostropheKey on the non-English geometries`() {
+        // Off (the app's default for non-English layouts): the middle row keeps its canonical length.
+        val without = KeyboardLayout.rows(showApostropheKey = false)[2]
+        assertEquals("asdfghjkl", without.filter { it.code == KeyCode.CHAR }.joinToString("") { it.char.toString() })
+        assertFalse(without.any { it.char == '\'' })
+        // On: the reform's shape is back.
+        assertEquals(
+            KeyboardLayout.rows()[2],
+            KeyboardLayout.rows(showApostropheKey = true)[2]
+        )
+    }
+    
+    @Test
     fun `D-99 the pi key offers a Greek-letter popup alongside pi itself, in its natural order`() {
         val pKey = KeyboardLayout.rows()[1].byChar('p')
         

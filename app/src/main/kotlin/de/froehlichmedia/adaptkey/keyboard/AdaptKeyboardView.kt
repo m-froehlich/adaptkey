@@ -470,6 +470,19 @@ class AdaptKeyboardView @JvmOverloads constructor(
             rebuildRows()
         }
     
+    /**
+     * D-515: whether the dedicated apostrophe key (D-512 §2.2) also sits right of `l`/`m` on the
+     * NON-English Latin geometries (QWERTZ/AZERTY). The English-style QWERTY arrangement always shows it;
+     * this switch is the opt-in for every other layout, default OFF - a German/AZERTY middle row keeps
+     * its canonical length unless the user asks for the extra key. The view resolves the effective flag
+     * in [rowsFor] ([layoutKind] == LATIN_QWERTY always wins), the service pushes the setting here.
+     */
+    var showApostropheKeyOnNonEnglishLayouts: Boolean = false
+        set(value) {
+            field = value
+            rebuildRows()
+        }
+    
     
     /** Per-letter secondary-symbol map drawn as corner hints (L-05 / C-08), always [language]'s own default. */
     var letterHints: Map<Char, String> = KeyboardLayout.DEFAULT_LETTER_HINTS
@@ -946,15 +959,17 @@ class AdaptKeyboardView @JvmOverloads constructor(
         return when (targetSurface) {
             // G-01/D-314: the letter surface is the Greek alphabet, French AZERTY, or the Latin QWERTZ/
             // QWERTY layout (D-106 stage 1's own y/z-swap variant flag).
+            // D-515: the apostrophe key always shows on the English-style QWERTY arrangement; on QWERTZ/
+            // AZERTY only when the user's switch is on.
             InputSurface.LETTERS -> when (layoutKind) {
                 LayoutKind.GREEK -> GreekLayout.rows(proportions, showNumberRow, urlMode, emailMode, systemLocale)
                 LayoutKind.SERBIAN_CYRILLIC -> SerbianLayout.rows(proportions, showNumberRow, urlMode, emailMode, systemLocale)
                 LayoutKind.RUSSIAN_CYRILLIC -> JcukenLayout.rows(proportions, showNumberRow, urlMode, emailMode, systemLocale, ukrainian = false)
                 LayoutKind.UKRAINIAN_CYRILLIC -> JcukenLayout.rows(proportions, showNumberRow, urlMode, emailMode, systemLocale, ukrainian = true)
-                LayoutKind.LATIN_AZERTY -> AzertyLayout.rows(proportions, showNumberRow, letterHints, urlMode, emailMode, systemLocale)
+                LayoutKind.LATIN_AZERTY -> AzertyLayout.rows(proportions, showNumberRow, letterHints, urlMode, emailMode, systemLocale, showApostropheKey = showApostropheKeyOnNonEnglishLayouts)
                 LayoutKind.LATIN_AZERBAIJANI -> AzerbaijaniLayout.rows(proportions, showNumberRow, letterHints, urlMode, emailMode, systemLocale)
-                LayoutKind.LATIN_QWERTZ -> KeyboardLayout.rows(proportions, showNumberRow, letterHints, qwerty = false, urlMode = urlMode, emailMode = emailMode, locale = systemLocale)
-                LayoutKind.LATIN_QWERTY -> KeyboardLayout.rows(proportions, showNumberRow, letterHints, qwerty = true, urlMode = urlMode, emailMode = emailMode, locale = systemLocale)
+                LayoutKind.LATIN_QWERTZ -> KeyboardLayout.rows(proportions, showNumberRow, letterHints, qwerty = false, urlMode = urlMode, emailMode = emailMode, locale = systemLocale, showApostropheKey = showApostropheKeyOnNonEnglishLayouts)
+                LayoutKind.LATIN_QWERTY -> KeyboardLayout.rows(proportions, showNumberRow, letterHints, qwerty = true, urlMode = urlMode, emailMode = emailMode, locale = systemLocale, showApostropheKey = true)
             }
             
             InputSurface.SYMBOLS -> SymbolLayout.rows(targetSymbolPage, proportions, systemLocale)

@@ -1512,6 +1512,9 @@ class AdaptKeyService : InputMethodService() {
             view.proportions = s.keyProportions
             view.showNumberRow = s.showNumberRow
             view.letterHints = s.letterHints
+            // D-515: the apostrophe key's opt-in for the non-English layouts (the English-style QWERTY
+            // arrangement always shows it - the view resolves the effective flag per layout kind).
+            view.showApostropheKeyOnNonEnglishLayouts = s.showApostropheKey
             // D-05 / D-06: optional key-press sound + haptics (both default off).
             view.soundEnabled = s.keySoundEnabled
             view.hapticsEnabled = s.keyHapticsEnabled

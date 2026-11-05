@@ -386,4 +386,6 @@
     <string name="blacklist_origin_bundled_seed">Ingebouwd in de app</string>
     <string name="blacklist_origin_unknown">Onbekend (uit een eerdere versie)</string>
     <string name="d506_pack_base_notice">Let op: momenteel is alleen het Duitse pakket handmatig gecureerd. Alle andere talen – inclusief de ingebouwde Engelse – zijn een automatisch opgebouwde basis: ontbrekende woorden, verkeerde of ongewenste correcties en vergelijkbare fouten komen meestal uit de pakketgegevens, niet uit de app zelf. Als u een taal goed beheerst, kunt u helpen het bijbehorende paket te verbeteren (zie de bijdragegids in de projectrepository).</string>
+    <string name="d515_apostrophe_key_title">Apostroftoets</string>
+    <string name="d515_apostrophe_key_summary">Toon de apostroftoets (rechts van l/m) ook op niet-Engelse toetsenborden. Uit: alleen Engelse toetsenborden.</string>
 </resources>

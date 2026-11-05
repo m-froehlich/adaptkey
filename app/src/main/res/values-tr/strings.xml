@@ -386,4 +386,6 @@
     <string name="blacklist_origin_bundled_seed">Uygulamayla birlikte gelir</string>
     <string name="blacklist_origin_unknown">Bilinmiyor (önceki sürümden)</string>
     <string name="d506_pack_base_notice">Not: Şu anda yalnızca Almanca paket elle derlenmiştir. Diğer tüm diller – yerleşik İngilizce dahil – otomatik olarak oluşturulmuş bir temeldir: eksik kelimeler, yanlış veya istenmeyen düzeltmeler ve benzeri sorunlar genellikle paket verilerinden, uygulamanın kendisinden değil gelir. Bir dili iyi biliyorsanız, paketini geliştirmeye yardımcı olabilirsiniz (proje deposundaki katkı kılavuzuna bakın).</string>
+    <string name="d515_apostrophe_key_title">Kesme işareti tuşu</string>
+    <string name="d515_apostrophe_key_summary">Kesme işareti tuşunu (l/m\'nin sağında) İngilizce olmayan klavyelerde de göster. Kapalı: yalnızca İngilizce klavyeler.</string>
 </resources>

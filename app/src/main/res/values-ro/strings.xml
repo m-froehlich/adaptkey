@@ -386,4 +386,6 @@
     <string name="blacklist_origin_bundled_seed">Inclus în aplicație</string>
     <string name="blacklist_origin_unknown">Necunoscut (dintr-o versiune anterioară)</string>
     <string name="d506_pack_base_notice">Notă: În prezent, doar pachetul german este curat manual. Toate celelalte limbi – inclusiv engleza integrată – sunt o bază construită automat: cuvinte lipsă, corecturi greșite sau nedorite și alte defecțiuni provin de obicei din datele pachetului, nu din aplicația în sine. Dacă cunoașteți bine o limbă, puteți ajuta la îmbunătățirea pachetului acesteia (vezi ghidul de contribuție din depozitul proiectului).</string>
+    <string name="d515_apostrophe_key_title">Tasta apostrof</string>
+    <string name="d515_apostrophe_key_summary">Afișează tasta apostrof (la dreapta lui l/m) și pe tastaturile neengleze. Dezactivat: doar tastaturi engleze.</string>
 </resources>

@@ -386,4 +386,6 @@
     <string name="blacklist_origin_bundled_seed">Incluida con la aplicación</string>
     <string name="blacklist_origin_unknown">Desconocido (de una versión anterior)</string>
     <string name="d506_pack_base_notice">Nota: hoy solo el paquete alemán está curado a mano. Todos los demás idiomas – incluido el inglés – son una base creada automáticamente: palabras que faltan, correcciones erróneas o no deseadas y otros fallos suelen venir de los datos del paquete, no de la propia aplicación. Si conoces bien un idioma, puedes ayudar a mejorar su paquete (ver la guía de contribución en el repositorio del proyecto).</string>
+    <string name="d515_apostrophe_key_title">Tecla de apóstrofo</string>
+    <string name="d515_apostrophe_key_summary">Mostrar la tecla de apóstrofo (a la derecha de l/m) también en teclados no ingleses. Desactivado: solo teclados ingleses.</string>
 </resources>

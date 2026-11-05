@@ -45,6 +45,19 @@ class AzertyLayoutTest {
     }
     
     @Test
+    fun `D-515 the AZERTY apostrophe key is gated by showApostropheKey too`() {
+        // Off (the app's default for non-English layouts): the AZERTY middle row keeps its canonical length.
+        val without = AzertyLayout.rows(showApostropheKey = false)[2]
+        assertEquals("qsdfghjklm", without.filter { it.code == KeyCode.CHAR }.joinToString("") { it.char.toString() })
+        assertFalse(without.any { it.char == '\'' })
+        // On: the reform's shape is back.
+        assertEquals(
+            AzertyLayout.rows()[2],
+            AzertyLayout.rows(showApostropheKey = true)[2]
+        )
+    }
+    
+    @Test
     fun `m sits on the home row, not the third row`() {
         val rows = AzertyLayout.rows()
         

@@ -339,6 +339,15 @@
             android:summary="@string/c09_summary"
             android:defaultValue="true" />
 
+        <!-- D-515: the dedicated apostrophe key (D-512) on the NON-English Latin layouts - default off,
+             so a German/AZERTY middle row keeps its canonical length; the English-style QWERTY arrangement
+             always shows the key (the view resolves the effective flag per layout kind). -->
+        <SwitchPreferenceCompat
+            android:key="d515_apostrophe_key"
+            android:title="@string/d515_apostrophe_key_title"
+            android:summary="@string/d515_apostrophe_key_summary"
+            android:defaultValue="false" />
+
         <!-- D-507: the combined key's slot function, one three-value setting (the user's own decision -
              a single enum instead of two coupled booleans, so "both at once" cannot exist and no
              cross-setting dependency wiring is needed). A plain ListPreference like c06/d486 - the

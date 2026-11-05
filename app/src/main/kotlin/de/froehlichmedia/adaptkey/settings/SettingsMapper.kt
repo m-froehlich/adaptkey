@@ -78,7 +78,8 @@ data class RawSettings(
     val spaceSwipeScalePercent: Int = AdaptSettings.DEFAULT_SPACE_SWIPE_SCALE,
     val fieldSwipeScalePercent: Int = AdaptSettings.DEFAULT_FIELD_SWIPE_SCALE,
     val backspaceRepeatInitialDelayMs: Long = AdaptSettings.DEFAULT_BACKSPACE_REPEAT_INITIAL_DELAY_MS,
-    val bottomInsetModeKey: String? = null
+    val bottomInsetModeKey: String? = null,
+    val showApostropheKey: Boolean = false // D-515: the apostrophe key on non-English layouts (default off)
 )
 
 /**
@@ -369,7 +370,8 @@ object SettingsMapper {
             backspaceRepeatInitialDelayMs = raw.backspaceRepeatInitialDelayMs.coerceIn(
                 MIN_BACKSPACE_REPEAT_INITIAL_DELAY_MS, MAX_BACKSPACE_REPEAT_INITIAL_DELAY_MS
             ),
-            bottomInsetMode = BottomInsetMode.fromKey(raw.bottomInsetModeKey)
+            bottomInsetMode = BottomInsetMode.fromKey(raw.bottomInsetModeKey),
+            showApostropheKey = raw.showApostropheKey
         )
     }
 }

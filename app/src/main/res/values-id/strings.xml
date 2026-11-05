@@ -386,4 +386,6 @@
     <string name="blacklist_origin_bundled_seed">Termasuk dalam aplikasi</string>
     <string name="blacklist_origin_unknown">Tidak diketahui (dari versi sebelumnya)</string>
     <string name="d506_pack_base_notice">Catatan: Saat ini hanya paket Jerman yang dikurasi secara manual. Semua bahasa lain – termasuk bahasa Inggris bawaan – adalah dasar yang dibuat otomatis: kata yang hilang, koreksi yang salah atau tidak diinginkan, dan gangguan serupa biasanya berasal dari data paket, bukan dari aplikasi itu sendiri. Jika Anda menguasai suatu bahasa, Anda dapat membantu memperbaiki paketnya (lihat panduan kontribusi di repositori proyek).</string>
+    <string name="d515_apostrophe_key_title">Tombol apostrof</string>
+    <string name="d515_apostrophe_key_summary">Tampilkan tombol apostrof (di kanan l/m) juga pada papan ketik non-Inggris. Mati: hanya papan ketik Inggris.</string>
 </resources>

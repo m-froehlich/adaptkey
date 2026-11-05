@@ -169,6 +169,10 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  * @property bottomInsetMode D-486: how much room is kept free below the keyboard (default
  *           [BottomInsetMode.DEFAULT], automatic) - a three-position slider, last in the Layout category, for
  *           phones whose reported navigation/gesture insets do not match what is really on screen.
+ * @property showApostropheKey D-515: whether the dedicated apostrophe key (D-512 §2.2) also sits right of
+ *           `l`/`m` on the NON-English Latin layouts (QWERTZ/AZERTY); default OFF - the English-style
+ *           QWERTY arrangement always shows it, a German/AZERTY middle row keeps its canonical length
+ *           unless the user opts in.
  */
 data class AdaptSettings(
     val keyProportions: KeyProportions = KeyProportions.DEFAULT,
@@ -208,7 +212,8 @@ data class AdaptSettings(
     val spaceSwipeScalePercent: Int = DEFAULT_SPACE_SWIPE_SCALE,
     val fieldSwipeScalePercent: Int = DEFAULT_FIELD_SWIPE_SCALE,
     val backspaceRepeatInitialDelayMs: Long = DEFAULT_BACKSPACE_REPEAT_INITIAL_DELAY_MS,
-    val bottomInsetMode: BottomInsetMode = BottomInsetMode.DEFAULT
+    val bottomInsetMode: BottomInsetMode = BottomInsetMode.DEFAULT,
+    val showApostropheKey: Boolean = false // D-515: the apostrophe key on non-English layouts (default off)
 ) {
     
     companion object {

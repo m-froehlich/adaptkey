@@ -386,4 +386,6 @@
     <string name="blacklist_origin_bundled_seed">Inakuja na programu</string>
     <string name="blacklist_origin_unknown">Haijulikani (kutoka toleo la awali)</string>
     <string name="d506_pack_base_notice">Taarifa: Kwa sasa ni kifurushi cha Kijerumani pekee kimethibitishwa kwa mkono. Lugha zote nyingine – ikijumuisha Kiingereza iliyojumlishwa – ni msingi uliotengenezwa kiotomatiki: maneno yaliyokosekana, marekebisho yasiyo sahihi au yasiyotakiwa na makosa kama hayo kwa kawaida hutokana na data ya kifurushi, si kutoka kwa programu yenyewe. Ukiwa unaujua lugha vyema, unaweza kusaidia kuboresha kifurushi chake (angalia mwongozo wa michango kwenye hazina ya mradi).</string>
+    <string name="d515_apostrophe_key_title">Kitufe cha apostrof</string>
+    <string name="d515_apostrophe_key_summary">Onyesha kitufe cha apostrof (kulia kwa l/m) kwenye kibodi zisizo za Kiingereza pia. Zima: kibodi za Kiingereza pekee.</string>
 </resources>

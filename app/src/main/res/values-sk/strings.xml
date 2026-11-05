@@ -386,4 +386,6 @@
     <string name="blacklist_origin_bundled_seed">Súčasť aplikácie</string>
     <string name="blacklist_origin_unknown">Neznámy (zo staršej verzie)</string>
     <string name="d506_pack_base_notice">Poznámka: Ručne upravený je dnes iba nemecký balík. Všetky ostatné jazyky – vrátane priloženej angličtiny – sú automaticky vytvorený základ: chýbajúce slová, nesprávne alebo nechcené opravy a podobné chyby zvyčajne pochádzajú z dát balíka, nie zo samotnej aplikácie. Ak jazyk dobre ovládate, môžete pomôcť jeho balík vylepšiť (viac v príručke pre prispievateľov v repozitári projektu).</string>
+    <string name="d515_apostrophe_key_title">Klávesa apostrofu</string>
+    <string name="d515_apostrophe_key_summary">Zobraziť klávesu apostrofu (vpravo od l/m) aj na neanglických klávesniciach. Vypnuté: iba anglické klávesnice.</string>
 </resources>

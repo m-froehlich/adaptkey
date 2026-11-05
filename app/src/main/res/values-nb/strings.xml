@@ -386,4 +386,6 @@
     <string name="blacklist_origin_bundled_seed">Leveres med appen</string>
     <string name="blacklist_origin_unknown">Ukjent (fra en tidligere versjon)</string>
     <string name="d506_pack_base_notice">Merk: I dag er det bare den tyske pakken som er håndkuratert. Alle andre språk – inkludert den innebygde engelsken – er en automatisk bygget base: manglende ord, feil eller uønskede rettelser og lignende feil kommer vanligvis fra pakkens data, ikke fra selve appen. Hvis du kan et språk godt, kan du hjelpe til med å forbedre pakken (se bidragsguiden i prosjektets kodebibliotek).</string>
+    <string name="d515_apostrophe_key_title">Apostroftast</string>
+    <string name="d515_apostrophe_key_summary">Vis apostroftasten (til høyre for l/m) også på ikke-engelske tastatur. Av: kun engelske tastatur.</string>
 </resources>

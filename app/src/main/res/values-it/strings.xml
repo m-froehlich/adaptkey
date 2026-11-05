@@ -386,4 +386,6 @@
     <string name="blacklist_origin_bundled_seed">Inclusa con l\'app</string>
     <string name="blacklist_origin_unknown">Sconosciuto (da una versione precedente)</string>
     <string name="d506_pack_base_notice">Nota: oggi solo il pacchetto tedesco è curato a mano. Tutte le altre lingue – compreso l’inglese integrato – sono una base creata automaticamente: parole mancanti, correzioni errate o indesiderate e simili difetti di solito derivano dai dati del pacchetto, non dall’app stessa. Se conosci bene una lingua, puoi contribuire a migliorarne il pacchetto (vedi la guida per i contributi nel repository del progetto).</string>
+    <string name="d515_apostrophe_key_title">Tasto apostrofo</string>
+    <string name="d515_apostrophe_key_summary">Mostra il tasto apostrofo (a destra di l/m) anche sulle tastiere non inglesi. Disattivato: solo tastiere inglesi.</string>
 </resources>

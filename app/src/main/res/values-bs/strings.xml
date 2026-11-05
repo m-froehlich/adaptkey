@@ -386,4 +386,6 @@
     <string name="blacklist_origin_bundled_seed">Isporučuje se s aplikacijom</string>
     <string name="blacklist_origin_unknown">Nepoznato (iz starije verzije)</string>
     <string name="d506_pack_base_notice">Napomena: Danas je samo njemački paket ručno uređivan. Svi ostali jezici – uključujući uključeni engleski – automatski su izrađena osnova: nedostajuće riječi, pogrešne ili nepotrebne ispravke i slične greške obično dolaze iz podataka paketa, a ne iz same aplikacije. Ako dobro znate jezik, možete pomoći poboljšati njegov paket (vidi vodič za doprinos u repozitoriju projekta).</string>
+    <string name="d515_apostrophe_key_title">Tipka apostrofa</string>
+    <string name="d515_apostrophe_key_summary">Prikaži tipku apostrofa (desno od l/m) i na neengleskim tastaturama. Isključeno: samo engleske tastature.</string>
 </resources>

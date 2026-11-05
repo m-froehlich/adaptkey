@@ -49,7 +49,8 @@ object AzertyLayout {
         letterHints: Map<Char, String> = KeyboardLayout.DEFAULT_LETTER_HINTS,
         urlMode: Boolean = false,
         emailMode: Boolean = false,
-        locale: Locale = Locale.getDefault()
+        locale: Locale = Locale.getDefault(),
+        showApostropheKey: Boolean = true
     ): List<List<Key>> {
         val result = ArrayList<List<Key>>()
         
@@ -62,7 +63,9 @@ object AzertyLayout {
         
         result.add(TOP_ROW.map { c -> KeyboardLayout.topRowKey(c, letterHints, KeyboardLayout.BASE_LEFT_CORNERS) })
         // D-512 §2.2: the dedicated apostrophe key right of `m` on AZERTY (right of `l` on QWERTY/QWERTZ).
-        result.add(MIDDLE_ROW.map { c -> KeyboardLayout.letterKey(c, letterHints, KeyboardLayout.BASE_LEFT_CORNERS) } + KeyboardLayout.apostropheKey())
+        // D-515: gated by [showApostropheKey] like the QWERTZ/QWERTY rows - default off for AZERTY too.
+        val middleRow = MIDDLE_ROW.map { c -> KeyboardLayout.letterKey(c, letterHints, KeyboardLayout.BASE_LEFT_CORNERS) }
+        result.add(if (showApostropheKey) middleRow + KeyboardLayout.apostropheKey() else middleRow)
         
         val thirdRowLetterWeight = proportions.thirdRowLetterWeight(THIRD_ROW.length)
         result.add(buildList {

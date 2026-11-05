@@ -386,4 +386,6 @@
     <string name="blacklist_origin_bundled_seed">Disertakan bersama apl</string>
     <string name="blacklist_origin_unknown">Tidak diketahui (daripada versi terdahulu)</string>
     <string name="d506_pack_base_notice">Nota: Buat masa ini hanya paket Jerman yang disemak secara manual. Semua bahasa lain – termasuk bahasa Inggeris terbina dalam – adalah asas yang dibina secara automatik: perkataan yang tiada, pembetulan yang salah atau tidak diingini dan gangguan serupa biasanya datang daripada data paket, bukan daripada aplikasi itu sendiri. Jika anda menguasai sesuatu bahasa, anda boleh membantu menambah baik paketnya (lihat panduan sumbangan dalam repositori projek).</string>
+    <string name="d515_apostrophe_key_title">Kekunci apostrof</string>
+    <string name="d515_apostrophe_key_summary">Paparkan kekunci apostrof (di kanan l/m) pada papan kekunci bukan Inggeris juga. Mati: papan kekunci Inggeris sahaja.</string>
 </resources>

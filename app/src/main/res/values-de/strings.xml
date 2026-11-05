@@ -446,4 +446,6 @@
     <string name="blacklist_origin_bundled_seed">Mit der App mitgeliefert</string>
     <string name="blacklist_origin_unknown">Unbekannt (aus einer früheren Version)</string>
     <string name="d506_pack_base_notice">Hinweis: Nur das deutsche Paket ist heute handkuratiert. Alle anderen Sprachen – einschließlich des mitgelieferten Englisch – sind eine automatisch erstellte Basis: Fehlende Wörter, falsche oder ungewollte Korrekturen und ähnliche Fehler stammen meist aus den Paketdaten, nicht aus der App selbst. Wenn du eine Sprache sicher beherrschst, kannst du helfen, ihr Paket zu verbessern (siehe den Contribution Guide im Projekt-Repository).</string>
+    <string name="d515_apostrophe_key_title">Apostrophe-Taste</string>
+    <string name="d515_apostrophe_key_summary">Apostrophe-Taste (rechts neben l bzw. m) auch in nicht-englischen Tastaturen anzeigen. Aus: nur englische Tastaturen.</string>
 </resources>

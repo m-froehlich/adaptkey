@@ -222,6 +222,10 @@ object KeyboardLayout {
      * @param locale D-143 / D-158: the system locale [urlBottomRow]'s/[emailBottomRow]'s period key
      *        resolves its TLD popup from ([UrlLocale]); only meaningful when [urlMode] or [emailMode] is
      *        true.
+     * @param showApostropheKey D-515: whether the dedicated apostrophe key sits right of `l` (§2.2).
+     *        Defaults to true - the reform's shape - while the app's own user-facing default keeps the key
+     *        on the English-style QWERTY arrangement only (the view resolves the setting per layout kind,
+     *        so a German/AZERTY middle row keeps its canonical length unless the switch is on).
      * @return the keyboard as a list of rows, each a list of [Key] from left to right
      */
     fun rows(
@@ -231,7 +235,8 @@ object KeyboardLayout {
         qwerty: Boolean = false,
         urlMode: Boolean = false,
         emailMode: Boolean = false,
-        locale: Locale = Locale.getDefault()
+        locale: Locale = Locale.getDefault(),
+        showApostropheKey: Boolean = true
     ): List<List<Key>> {
         val result = ArrayList<List<Key>>()
         
@@ -244,7 +249,11 @@ object KeyboardLayout {
         val thirdRowLetters = if (qwerty) THIRD_ROW_LETTERS_QWERTY else THIRD_ROW_LETTERS_QWERTZ
         result.add(topRowLetters.map { c -> letterKey(c, letterHints, leftCorners = BASE_LEFT_CORNERS) })
         // D-512 §2.2: the dedicated apostrophe key right of `l` - corners `" | '`, release `'`.
-        result.add("asdfghjkl".map { c -> letterKey(c, letterHints, leftCorners = BASE_LEFT_CORNERS) } + apostropheKey())
+        // D-515: gated by [showApostropheKey] - default off for the non-English geometries (the reform's
+        // letters-page `'` key is an English arrangement; a German/AZERTY middle row keeps its canonical
+        // length unless the user opts in), while the English-style QWERTY arrangement always shows it.
+        val middleRow = "asdfghjkl".map { c -> letterKey(c, letterHints, leftCorners = BASE_LEFT_CORNERS) }
+        result.add(if (showApostropheKey) middleRow + apostropheKey() else middleRow)
         
         // L-04: the backspace surcharge is taken evenly from the third-row letters.
         val thirdRowLetterWeight = proportions.thirdRowLetterWeight(thirdRowLetters.length)

@@ -386,4 +386,6 @@
     <string name="blacklist_origin_bundled_seed">Ingår i appen</string>
     <string name="blacklist_origin_unknown">Okänt (från en tidigare version)</string>
     <string name="d506_pack_base_notice">Obs: Idag är det bara det tyska paketet som är handkuraterat. Alla andra språk – inklusive den inbyggda engelskan – är en automatiskt byggd bas: saknade ord, felaktiga eller oönskade rättelser och liknande fel kommer vanligtvis från paketets data, inte från appen själv. Om du kan ett språk väl kan du hjälpa till att förbedra dess paket (se bidragsguiden i projektets arkiv).</string>
+    <string name="d515_apostrophe_key_title">Apostroftangent</string>
+    <string name="d515_apostrophe_key_summary">Visa apostroftangenten (till höger om l/m) även på icke-engelska tangentbord. Av: endast engelska tangentbord.</string>
 </resources>

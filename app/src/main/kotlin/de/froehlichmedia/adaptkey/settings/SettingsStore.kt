@@ -91,6 +91,10 @@ object SettingsStore {
     const val KEY_FIELD_SWIPE_SCALE = "d508_field_swipe_scale"
     const val KEY_BACKSPACE_REPEAT_INITIAL_DELAY = "d508_backspace_repeat_initial_delay_ms"
     const val KEY_BOTTOM_INSET_MODE = "d486_bottom_inset_mode"
+    // D-515: the apostrophe key's opt-in for the non-English Latin layouts (QWERTZ/AZERTY); the
+    // English-style QWERTY arrangement always shows it. Default OFF - a German/AZERTY middle row keeps
+    // its canonical length unless the user asks for the extra key.
+    const val KEY_SHOW_APOSTROPHE_KEY = "d515_apostrophe_key"
     
     /**
      * D-389: epoch millis the daily [de.froehlichmedia.adaptkey.dictionary.LearnedWordExpirySweep] last
@@ -184,6 +188,9 @@ object SettingsStore {
     /** Default stored integer for the D-398 sustained-language-switch-threshold slider (5 words). */
     const val DEF_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD = AdaptSettings.DEFAULT_SUSTAINED_LANGUAGE_SWITCH_THRESHOLD
     
+    /** Default stored boolean for the D-515 apostrophe-key-on-non-English-layouts toggle (off). */
+    const val DEF_SHOW_APOSTROPHE_KEY = false
+    
     /**
      * @param context any valid context
      * @return the shared default preferences backing both the settings screen and this store
@@ -250,7 +257,8 @@ object SettingsStore {
             spaceSwipeScalePercent = p.getInt(KEY_SPACE_SWIPE_SCALE, DEF_SPACE_SWIPE_SCALE),
             fieldSwipeScalePercent = p.getInt(KEY_FIELD_SWIPE_SCALE, DEF_FIELD_SWIPE_SCALE),
             backspaceRepeatInitialDelayMs = p.getInt(KEY_BACKSPACE_REPEAT_INITIAL_DELAY, DEF_BACKSPACE_REPEAT_INITIAL_DELAY).toLong(),
-            bottomInsetModeKey = p.getString(KEY_BOTTOM_INSET_MODE, null)
+            bottomInsetModeKey = p.getString(KEY_BOTTOM_INSET_MODE, null),
+            showApostropheKey = p.getBoolean(KEY_SHOW_APOSTROPHE_KEY, DEF_SHOW_APOSTROPHE_KEY)
         )
         return SettingsMapper.toAdaptSettings(raw)
     }
@@ -430,6 +438,7 @@ object SettingsStore {
         KEY_FIELD_SWIPE_SCALE,
         KEY_BACKSPACE_REPEAT_INITIAL_DELAY,
         KEY_NUMBER_ROW,
+        KEY_SHOW_APOSTROPHE_KEY,
         KEY_COMBINED_KEY_MODE,
         KEY_SPACE_BELOW_NUMBER_ROW,
         KEY_SPACE_ABOVE_SPACE_ROW,

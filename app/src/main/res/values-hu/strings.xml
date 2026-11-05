@@ -386,4 +386,6 @@
     <string name="blacklist_origin_bundled_seed">Az alkalmazással érkezik</string>
     <string name="blacklist_origin_unknown">Ismeretlen (korábbi verzióból)</string>
     <string name="d506_pack_base_notice">Megjegyzés: Jelenleg csak a német csomag kézzel szerkesztett. Minden más nyelv – a beépített angolt is beleértve – automatikusan összeállított alap: a hiányzó szavak, a hibás vagy nem kívánt javítások és hasonló hibák általában a csomag adataiból származnak, nem magából az alkalmazásból. Ha jól ismer egy nyelvet, segíthet javítani a csomagját (lásd a projekttárolóban található hozzájárulási útmutatót).</string>
+    <string name="d515_apostrophe_key_title">Aposztróf billentyű</string>
+    <string name="d515_apostrophe_key_summary">Az aposztróf billentyű (az l/m jobb oldalán) megjelenítése a nem angol billentyűzeteken is. Ki: csak angol billentyűzeteken.</string>
 </resources>

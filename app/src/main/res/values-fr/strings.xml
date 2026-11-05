@@ -386,4 +386,6 @@
     <string name="blacklist_origin_bundled_seed">Fourni avec l\'application</string>
     <string name="blacklist_origin_unknown">Inconnu (d\'une version antérieure)</string>
     <string name="d506_pack_base_notice">Remarque : aujourd’hui, seul le paquet allemand est structuré à la main. Toutes les autres langues – y compris l’anglais intégré – constituent une base créée automatiquement : mots manquants, corrections erronées ou indésirables et autres anomalies proviennent généralement des données du paquet, et non de l’application elle-même. Si vous maîtrisez bien une langue, vous pouvez aider à améliorer son paquet (voir le guide de contribution dans le dépôt du projet).</string>
+    <string name="d515_apostrophe_key_title">Touche apostrophe</string>
+    <string name="d515_apostrophe_key_summary">Afficher la touche apostrophe (à droite de l/m) aussi sur les claviers non anglais. Désactivé : claviers anglais uniquement.</string>
 </resources>

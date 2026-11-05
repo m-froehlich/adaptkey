@@ -386,4 +386,6 @@
     <string name="blacklist_origin_bundled_seed">Iekļauts lietotnē</string>
     <string name="blacklist_origin_unknown">Nezināms (no iepriekšējās versijas)</string>
     <string name="d506_pack_base_notice">Piezīme: Šobrīd manuāli ir apkopota tikai vācu pakotne. Visas pārējās valodas – to skaitā iebūvētā angļu valoda – ir automātiski izveidots pamats: trūkstošie vārdi, kļūdainie vai nevēlamie labojumi un līdzīgas kļūdas parasti nāk no pakotnes datiem, ne no pašas lietotnes. Ja labi pārvaldāt kādu valodu, varat palīdzēt uzlabot tās pakotni (skat. projekta krātuves līdzautoru ceļvedi).</string>
+    <string name="d515_apostrophe_key_title">Apostrofa taustiņš</string>
+    <string name="d515_apostrophe_key_summary">Rādīt apostrofa taustiņu (pa labi no l/m) arī neangļu tastatūrās. Izslēgts: tikai angļu tastatūras.</string>
 </resources>

@@ -386,4 +386,6 @@
     <string name="blacklist_origin_bundled_seed">Tətbiqlə birlikdə gəlir</string>
     <string name="blacklist_origin_unknown">Naməlum (əvvəlki versiyadan)</string>
     <string name="d506_pack_base_notice">Qeyd: Hazırda yalnız alman paketi əl ilə tərtib edilib. Digər bütün dillər – daxil edilmiş ingilis dili daxil olmaqla – avtomatik yaradılmış əsasdır: çatışmayan sözlər, yanlış və ya lazımsız düzəlişlər və bənzər xətalar adətən paket məlumatlarından, tətbiqin özündən deyil gəlir. Bir dili yaxşı bilirsinizsə, onun paketini təkmilləşdirməyə kömək edə bilərsiniz (layihə deposundakı töhfə bələdçisinə baxın).</string>
+    <string name="d515_apostrophe_key_title">Apostrof düyməsi</string>
+    <string name="d515_apostrophe_key_summary">Apostrof düyməsini (l/m-dən sağda) ingiliscə olmayan klaviaturalarda da göstər. Bağlı: yalnız ingiliscə klaviaturalar.</string>
 </resources>

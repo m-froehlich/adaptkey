@@ -386,4 +386,6 @@
     <string name="blacklist_origin_bundled_seed">Ilova bilan birga keladi</string>
     <string name="blacklist_origin_unknown">Nomaʼlum (avvalgi versiyadan)</string>
     <string name="d506_pack_base_notice">Eslatma: Hozircha faqat nemcha paket qo‘lda tahrirlangan. Boshqa barcha tillar – ichki o‘rnatilgan ingliz tili ham – avtomatik yaratilgan asos: yetishmayotgan so‘zlar, noto‘g‘ri yoki keraksiz tuzatishlar va shunga o‘xshash xatolar odatda paket ma’lumotlaridan keladi, ilovaning o‘zidan emas. Bir tilni yaxshi biladigan bo‘lsangiz, uning paketini yaxshilashga yordam bera olasiz (loyiha omboridagi hissa qo‘shuvchilar qo‘llanmasiga qarang).</string>
+    <string name="d515_apostrophe_key_title">Apostrof tugmasi</string>
+    <string name="d515_apostrophe_key_summary">Apostrof tugmasini (l/m dan oʻngda) inglizcha boʻlmagan klaviaturalarda ham koʻrsatish. Oʻchirilgan: faqat inglizcha klaviaturalar.</string>
 </resources>
