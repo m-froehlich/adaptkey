@@ -95,9 +95,13 @@ object SymbolLayout {
     // page's number row.
     private const val CATCHALL_DIGITS = "1234567890"
     
-    // D-102: the main number row's shifted symbols (L-06 / NUMBER_HINTS, in 1..0 order), directly
+    // D-102: the main number row's PRE-D-511 shifted symbols (in 1..0 order), directly
     // tappable here rather than hidden behind a long-press - the whole point is restoring easy access to
     // them when the main number row (and its long-press hints) are hidden.
+    // D-511 deliberately does NOT reform this page (plan §1/§7.6): nobody reaches the special-characters
+    // page to long-press things, its space lets nearly everything sit directly on a key, so the row keeps
+    // the old German-QWERTZ symbols verbatim (`&` among them - the one reformed-row symbol only reachable
+    // as 7's right-corner release default otherwise).
     private const val CATCHALL_NUMBER_SYMBOLS = "!\"§$%&/()="
     
     // §29 follow-up: the main letter page's remaining alt-hint symbols, distributed here now that there's

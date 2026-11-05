@@ -75,14 +75,15 @@ class AzerbaijaniLayoutTest {
     }
     
     @Test
-    fun `the number row carries digits with shifted-symbol hints`() {
+    fun `D-511 the number row shares the reform's dual-corner row with the US right corners`() {
         val numberRow = AzerbaijaniLayout.rows().first()
         
         assertEquals(10, numberRow.size)
         assertEquals('1', numberRow.first().char)
         assertEquals("!", numberRow.byChar('1').hint)
-        // D-498: the backslash rides along on the shared number-row builder, all layouts alike.
-        assertEquals(listOf("/", "\\", "⁷"), numberRow.byChar('7').alternatives)
+        // D-498: the backslash rides along on the shared number-row builder, all layouts alike - now with
+        // the middle division sign ahead of it and the ampersand as the release default.
+        assertEquals(listOf("/", "÷", "\\", "⁷", "&"), numberRow.byChar('7').alternatives)
     }
     
     @Test

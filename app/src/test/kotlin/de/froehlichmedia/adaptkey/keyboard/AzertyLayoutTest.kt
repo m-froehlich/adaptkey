@@ -126,22 +126,25 @@ class AzertyLayoutTest {
     }
     
     @Test
-    fun `the number row carries digits with shifted-symbol hints`() {
+    fun `D-511 the number row shares the reform's dual-corner row`() {
         val numberRow = AzertyLayout.rows().first()
         
         assertEquals(10, numberRow.size)
         assertEquals('1', numberRow.first().char)
         assertEquals("!", numberRow.byChar('1').hint)
+        assertEquals("~", numberRow.byChar('1').leftHint)
+        assertEquals(listOf("!", "@", "#", "$", "%", "^", "&", "*", "(", ")"), numberRow.map { it.hint })
     }
     
     @Test
-    fun `every digit key has two alternatives - its shifted symbol and its own superscript`() {
+    fun `D-105 D-511 every digit key rides the reformed popup orders`() {
         val numberRow = AzertyLayout.rows().first()
         
-        assertEquals(listOf("!", "¹"), numberRow.byChar('1').alternatives)
-        assertEquals(listOf("=", "⁰"), numberRow.byChar('0').alternatives)
-        // D-498: the backslash rides along on the shared number-row builder, all layouts alike.
-        assertEquals(listOf("/", "\\", "⁷"), numberRow.byChar('7').alternatives)
+        assertEquals(listOf("~", "¹", "!"), numberRow.byChar('1').alternatives)
+        assertEquals(listOf("=", "⁰", ")"), numberRow.byChar('0').alternatives)
+        // D-498: the backslash rides along on the shared number-row builder, all layouts alike - now with
+        // the middle division sign ahead of it and the ampersand as the release default.
+        assertEquals(listOf("/", "÷", "\\", "⁷", "&"), numberRow.byChar('7').alternatives)
     }
     
     @Test

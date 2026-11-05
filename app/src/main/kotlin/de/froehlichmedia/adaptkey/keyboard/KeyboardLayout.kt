@@ -30,10 +30,18 @@ object KeyboardLayout {
     private const val SYMBOL_KEY_LABEL = "😊"
     private const val SYMBOL_KEY_HINT = "123"
     
-    // L-06: German-QWERTZ shifted symbol per digit, shown as a corner hint.
-    private val NUMBER_HINTS = mapOf(
-        '1' to "!", '2' to "\"", '3' to "§", '4' to "$", '5' to "%",
-        '6' to "&", '7' to "/", '8' to "(", '9' to ")", '0' to "="
+    // D-511 (Alt-Belegungs-Reform plan §2.3/§2.4): the reformed number row - every digit carries a RIGHT
+    // corner (the US shifted row, each also its digit's release default - "US holy cows stay put" as right
+    // corners) and, where the user's assignment table gives one, a LEFT corner: the German-QWERTZ survivors
+    // `~ " § =` plus the math singles `+ - /` (§3b's slide-left set). `7` additionally carries the division
+    // sign as the row's one MIDDLE glyph (§2.10's accepted ×÷ split: × stays on x, ÷ lives here).
+    private val NUMBER_RIGHT_HINTS = mapOf(
+        '1' to "!", '2' to "@", '3' to "#", '4' to "$", '5' to "%",
+        '6' to "^", '7' to "&", '8' to "*", '9' to "(", '0' to ")"
+    )
+    
+    private val NUMBER_LEFT_HINTS = mapOf(
+        '1' to "~", '2' to "\"", '3' to "§", '5' to "+", '6' to "-", '7' to "/", '0' to "="
     )
     
     // D-105: every digit's own superscript form, offered as a second D-01 popup alternative alongside
@@ -377,38 +385,34 @@ object KeyboardLayout {
     }
     
     /**
-     * D-105: builds a number-row key with its existing shifted symbol (index 0, pre-selected - unchanged
-     * from before) and its own superscript form (index 1) as a real D-01 two-cell popup, instead of the
-     * shifted symbol applying immediately on long-press.
-     * 
-     * D-382: `2` additionally gets an apostrophe and its own subscript `₂` (a second, unrelated ask bundled
-     * onto the same key by the user) - every other digit is unaffected, still exactly the shifted-symbol +
-     * superscript pair above. D-417: the apostrophe was moved ahead of the superscript in the popup order
-     * (`"` / `'` / `²` / `₂`), per the user's own preference.
-     * 
-     * D-498: `7` additionally carries the backslash (`\`) directly after its slash, so the popup reads
-     * `/ \ ⁷` (order per the user's decision, 2026-10-26) - the one Latin-script character previously
-     * absent from every layout (the only backslash anywhere was Jcuken's own letter arrangement). The
-     * letters page's `v` key deliberately does NOT gain it: its `/` AltGr hint stays a direct-commit hint,
-     * and turning it into a popup would change an existing long-press behaviour beyond the request.
-     * 
-     * D-282: `0` sits at the row's right edge, the same problem §34 originally hand-fixed for `p` above -
-     * now handled the same dynamic way, by [AdaptKeyboardView.openPopup] itself, not by reversing the list
-     * here.
-     * 
+     * D-511: builds a number-row key per the reform's assignment table (plan §2.3) - a RIGHT corner (the
+     * US row, the release default) plus, where assigned, a LEFT corner, with the popup as explicit data
+     * in the `[leftCorner, extras…, rightCorner]` straddle order (plan §6): the left corner first, the
+     * digit's superscript and specials in the middle, the right corner (pre-selected) last.
+     *
+     * Right-only digits (`4`/`8`/`9`) keep exactly the pre-reform popup shape `[corner, superscript]`
+     * (D-105), with the right corner pre-selected by the ordinary index-0 fallback.
+     *
+     * D-382/D-417 kept: `2`'s apostrophe sits ahead of the superscript, its subscript `₂` last
+     * (`" ' ² ₂ @`). D-498 kept: `7` still carries the backslash, now with the middle `÷` inserted
+     * ahead of it (`/ ÷ \ ⁷ &`). D-282's popup-time handling was replaced by D-510's drift-gated clamp;
+     * the data here is always in its natural order.
+     *
      * D-314/D-498: not private - every dedicated layout's number row delegates here (their local copies
      * already documented themselves as "identical treatment" to this one), so the six number rows stay
-     * byte-identical by construction instead of by six synchronized edits.
+     * byte-identical by construction instead of by six synchronized edits. §2.12: the non-Latin layouts
+     * (Greek, Jcuken, Serbian, Azerbaijani) receive the reformed row too - no pinning.
      */
     fun numberKey(c: Char): Key {
-        val hint = NUMBER_HINTS[c]
-        val superscript = NUMBER_SUPERSCRIPTS[c]
-        val alternatives = when {
-            hint == null || superscript == null -> emptyList()
-            c == '2' -> listOf(hint, "'", superscript, "₂")
-            c == '7' -> listOf(hint, "\\", superscript)
-            else -> listOf(hint, superscript)
+        val right = requireNotNull(NUMBER_RIGHT_HINTS[c]) { "no right corner assigned for digit $c" }
+        val left = NUMBER_LEFT_HINTS[c]
+        val superscript = requireNotNull(NUMBER_SUPERSCRIPTS[c]) { "no superscript assigned for digit $c" }
+        val extras = when (c) {
+            '2' -> listOf("'", superscript, "₂")
+            '7' -> listOf("÷", "\\", superscript)
+            else -> listOf(superscript)
         }
-        return charKey(c, hint, alternatives = alternatives)
+        val alternatives = if (left != null) listOf(left) + extras + right else listOf(right) + extras
+        return Key(label = c.toString(), code = KeyCode.CHAR, char = c, hint = right, leftHint = left, alternatives = alternatives)
     }
 }

@@ -33,64 +33,102 @@ class KeyboardLayoutTest {
     }
     
     @Test
-    fun `number row carries digits one to zero with shifted hints`() {
-        val numberRow = KeyboardLayout.rows().first()
+    fun `D-511 the number row carries the reform's right corners - the US row as release defaults`() {
+        val numberRow = KeyboardLayout.rows()
         
-        assertEquals(10, numberRow.size)
-        assertEquals('1', numberRow.first().char)
-        assertEquals('0', numberRow.last().char)
-        assertEquals("!", numberRow.byChar('1').hint)
-        assertEquals("/", numberRow.byChar('7').hint)
-        assertEquals("=", numberRow.byChar('0').hint)
+        assertEquals(10, numberRow.first().size)
+        assertEquals('1', numberRow.first().first().char)
+        assertEquals('0', numberRow.first().last().char)
+        assertEquals(
+            listOf("!", "@", "#", "$", "%", "^", "&", "*", "(", ")"),
+            numberRow.first().map { it.hint }
+        )
+        // §2.4: each right corner is also its digit's release default (1/4/5 unchanged from the old row).
+        assertEquals(numberRow.first().map { it.hint }, numberRow.first().map { it.defaultCornerHint })
     }
     
     @Test
-    fun `D-105 every digit key now has two alternatives - its shifted symbol and its own superscript`() {
+    fun `D-511 the number row's left corners are the German survivors and the math singles`() {
         val numberRow = KeyboardLayout.rows().first()
         
-        // The shifted symbol (unchanged) stays index 0, pre-selected; the superscript is the new index 1.
-        assertEquals(listOf("!", "¹"), numberRow.byChar('1').alternatives)
-        assertEquals(listOf("§", "³"), numberRow.byChar('3').alternatives)
+        assertEquals(
+            listOf("~", "\"", "§", "+", "-", "/", "="),
+            numberRow.mapNotNull { it.leftHint }
+        )
+        // 4/8/9 are right-corner-only (their releases keep the pre-reform behaviour, §3b).
+        assertEquals(listOf('4', '8', '9'), numberRow.filter { it.leftHint == null }.map { it.char })
+    }
+    
+    @Test
+    fun `D-511 every dual-corner digit key carries the contract-conforming straddle popup`() {
+        val numberRow = KeyboardLayout.rows().first()
+        
+        numberRow.filter { it.leftHint != null }.forEach { key ->
+            assertEquals(key.leftHint, key.alternatives.first())
+            assertEquals(key.hint, key.alternatives.last())
+            assertTrue(HorizontalLongPressPopup.isDualCornerStraddle(key, key.alternatives))
+        }
+    }
+    
+    @Test
+    fun `D-511 the 1 key offers tilde and superscript around its exclamation release default`() {
+        val numberRow = KeyboardLayout.rows().first()
+        
+        assertEquals(listOf("~", "¹", "!"), numberRow.byChar('1').alternatives)
         assertTrue(KeyboardLayout.hasLongPressAction(numberRow.byChar('1')))
     }
     
     @Test
-    fun `D-382 D-417 the 2 key additionally offers an apostrophe and a subscript, apostrophe ahead of the superscript`() {
+    fun `D-511 the 3 key offers section sign and superscript around its hash release default`() {
         val numberRow = KeyboardLayout.rows().first()
         
-        assertEquals(listOf("\"", "'", "²", "₂"), numberRow.byChar('2').alternatives)
+        assertEquals(listOf("§", "³", "#"), numberRow.byChar('3').alternatives)
+    }
+    
+    @Test
+    fun `D-382 D-417 D-511 the 2 key keeps apostrophe ahead of the superscript, subscript last`() {
+        val numberRow = KeyboardLayout.rows().first()
+        
+        assertEquals(listOf("\"", "'", "²", "₂", "@"), numberRow.byChar('2').alternatives)
         assertTrue(KeyboardLayout.hasLongPressAction(numberRow.byChar('2')))
     }
     
     @Test
-    fun `D-498 the 7 key's popup carries the backslash directly after the slash, superscript last`() {
+    fun `D-498 D-511 the 7 key offers slash, middle division sign, backslash and superscript around its ampersand default`() {
         val numberRow = KeyboardLayout.rows().first()
         
-        assertEquals(listOf("/", "\\", "⁷"), numberRow.byChar('7').alternatives)
-        // The corner hint stays the slash; the v key's AltGr hint deliberately remains a direct-commit
-        // hint without a popup (D-498 scoped the backslash to the number row and the symbol pages).
-        assertEquals("/", numberRow.byChar('7').hint)
+        assertEquals(listOf("/", "÷", "\\", "⁷", "&"), numberRow.byChar('7').alternatives)
+        // The v key's AltGr hint deliberately remains a direct-commit hint without a popup (D-498 scoped
+        // the backslash to the number row and the symbol pages).
         val thirdRow = KeyboardLayout.rows()[3]
         assertTrue(thirdRow.byChar('v').alternatives.isEmpty())
     }
     
     @Test
-    fun `D-105 the 0 key keeps its natural alternatives order - D-282 reverses it dynamically at popup time, not here`() {
+    fun `D-105 D-511 the 0 key offers equals and superscript around its closing-paren release default`() {
         val numberRow = KeyboardLayout.rows().first()
-        assertEquals(listOf("=", "⁰"), numberRow.byChar('0').alternatives)
+        
+        assertEquals(listOf("=", "⁰", ")"), numberRow.byChar('0').alternatives)
     }
     
     @Test
-    fun `D-509 no behaviour change yet - every built key is still right-corner-only`() {
-        // The corner model ships inert: until the reform's data phases (D-511/D-512) fill the left
-        // corners, no key on any surface carries a leftHint and the derived default stays the right
-        // corner - the drawing/long-press paths must behave exactly as before the model existed.
+    fun `D-511 right-only digits keep the pre-reform popup shape with the right corner pre-selected`() {
+        val numberRow = KeyboardLayout.rows().first()
+        
+        assertEquals(listOf("$", "⁴"), numberRow.byChar('4').alternatives)
+        assertEquals(listOf("*", "⁸"), numberRow.byChar('8').alternatives)
+        assertEquals(listOf("(", "⁹"), numberRow.byChar('9').alternatives)
+    }
+    
+    @Test
+    fun `D-509 migration state - the letters page and mode rows are still right-corner-only`() {
+        // D-511 ended this for the number row; the letters page's own corners are D-512's round, so until
+        // then every letters/mode key still carries only its right corner and the derived default is it.
         listOf(
-            KeyboardLayout.rows(),
-            KeyboardLayout.rows(qwerty = true),
             KeyboardLayout.rows(showNumberRow = false),
-            KeyboardLayout.rows(urlMode = true, locale = Locale.US),
-            KeyboardLayout.rows(emailMode = true, locale = Locale.US)
+            KeyboardLayout.rows(showNumberRow = false, qwerty = true),
+            KeyboardLayout.rows(showNumberRow = false, urlMode = true, locale = Locale.US),
+            KeyboardLayout.rows(showNumberRow = false, emailMode = true, locale = Locale.US)
         ).forEach { rows ->
             rows.flatten().forEach { key ->
                 assertNull(key.leftHint)
@@ -227,7 +265,9 @@ class KeyboardLayoutTest {
         val rows = KeyboardLayout.rows()
         
         assertEquals("@", KeyboardLayout.longPressSymbol(rows[1].byChar('q')))
-        assertEquals("/", KeyboardLayout.longPressSymbol(rows.first().byChar('7')))
+        // D-511: the release default is the right corner - 7's is now the ampersand (the slash is its left
+        // corner, reachable by slide-left).
+        assertEquals("&", KeyboardLayout.longPressSymbol(rows.first().byChar('7')))
         assertNull(KeyboardLayout.longPressSymbol(rows[2].byChar('g')))
         assertNull(KeyboardLayout.longPressSymbol(rows[3].first()))
     }
