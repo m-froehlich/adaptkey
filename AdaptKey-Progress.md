@@ -488,7 +488,12 @@ non-trivial changes).
   user's placement spec, flipping its extras toward the screen interior at an edge overflow (1: `~ ! ¹`,
   0: `⁰ = )`). The math symbols still on c/v/b/n/m are the STALE INSTALLED German pack (origin/main still
   hosts v49 - unpushed by convention); they resolve by pushing + re-importing the pack (v50), no code
-  defect - see History §538's device-pass tail. Re-test owed after the push + re-import.**
+defect - see History §538's device-pass tail. Re-test owed after the push + re-import.**
+  **Follow-up (same day, user): CONFIRMED - the user pushed v1.2.98-v1.2.102 mid-round himself and
+  re-imported the German pack: "c bis m stimmen jetzt" - the stale-pack explanation is device-confirmed,
+  the freed keys and the universal tilde-n behave per the reform. origin/main carries the round through
+  D-514/v1.2.102 (packs at v50); the v1.2.103 placement fix is local-only until his next push, and the
+  v1.2.103 re-test (corner rows centred, the 1/0 flips) is the remaining open item.**
 
 - **D-508 - RESOLVED (§534, v1.2.94), device-confirmed 2026-10-31: the gesture/long-press calibration for
   slow users - the community report's whole solution.** The D-401 space long-press cancels on motion alone,

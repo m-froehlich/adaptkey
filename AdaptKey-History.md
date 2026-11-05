@@ -24535,3 +24535,11 @@ mechanism; a defensive letterKey dedupe now also collapses the stale d=° corner
 tests total (1,860 + 7), 0 failures; `:app:assembleRelease` green. `versionCode` 598 -> 599,
 `versionName` "1.2.102" -> "1.2.103". Still owed from the plan §9 checklist: the re-test on the device
 after the push + pack re-import.
+
+**Device pass 1 follow-up (same day, user-confirmed): the stale-pack half is CONFIRMED and RESOLVED on
+device.** The user pushed v1.2.98-v1.2.102 (through D-514) mid-round himself - origin/main now hosts the
+reform and the v50 packs - and re-imported the German pack: "c bis m stimmen jetzt". That closes the
+stale-pack symptoms (the freed keys' math symbols, n's plus, d's duplicate popup) as data-state, not a
+code defect, exactly per the D-473-followup mechanism. Still open: the v1.2.103 placement-fix re-test
+(corner rows centred over the host, the 1/0 edge flips) plus the rest of the plan §9 checklist; v1.2.103
+itself is local-only until the user's next push.
