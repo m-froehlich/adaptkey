@@ -55,11 +55,12 @@ android {
         // D-500/C-28: the auto-capitalisation switch (default on) - the off state is a coarse gate on
         // AdaptKey's proactive caps: no live Shift-arming anywhere, and the ordinary commit skips the
         // linguistic force-capitalisation rules (noun-only, LLM lift, acronym restore).
-        // Device pass 1 (2026-11-05) correction to the reform's popup placement: corner rows centred
-        // over the host key (left corner over the left half, pre-selected right corner over the right
-        // edge), edge overflows flipping the extras to the far side (1: ~ ! ¹, 0: ⁰ = )).
-        versionCode = 599
-        versionName = "1.2.103"
+        // Device pass 2 (2026-11-05) correction to the reform's popup placement: corner rows with two or
+        // more extras grow toward the screen centre - the first extra stays in the middle between the
+        // corners over the host (the 7 key renders backslash superscript-seven slash division ampersand),
+        // the 2 key mirrors it growing right.
+        versionCode = 600
+        versionName = "1.2.104"
         
         // The ONNX Runtime native libs (tier-3 mini-LLM) ship per ABI; keep only the ones real phones
         // use (arm64 + 32-bit arm), dropping the emulator-only x86/x86_64 libs (~43 MB). Device testing
