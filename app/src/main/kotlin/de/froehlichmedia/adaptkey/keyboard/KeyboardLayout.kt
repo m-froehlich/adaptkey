@@ -8,12 +8,13 @@ import java.util.Locale
 /**
  * QWERTZ key map (L-01).
  * 
- * Each key carries its secondary long-press symbol as [Key.hint]: the persistent number row (L-06)
- * uses the German-QWERTZ shifted symbols and letters use the AltGr-style map (L-05 / C-08). The hint
- * is always populated so the long-press function works even when the corner glyphs are hidden; only
- * the drawing is gated by the view. Key proportions (L-02 narrower space / wider comma & full stop,
- * L-04 wider backspace) are driven by a [KeyProportions] configuration (C-01) rather than hard-coded
- * weights.
+ * Each key carries its secondary long-press symbols as corner glyphs (L-05 / L-06) - the D-509 corner
+ * model: [Key.hint] is the right corner (the release default, and today still the only one every key
+ * carries), [Key.leftHint] the left one. The persistent number row (L-06) uses the German-QWERTZ shifted
+ * symbols and letters use the AltGr-style map (L-05 / C-08). The corner glyphs are always populated so
+ * the long-press function works even when the corner glyphs are hidden; only the drawing is gated by the
+ * view. Key proportions (L-02 narrower space / wider comma & full stop, L-04 wider backspace) are driven
+ * by a [KeyProportions] configuration (C-01) rather than hard-coded weights.
  */
 object KeyboardLayout {
     
@@ -288,14 +289,15 @@ object KeyboardLayout {
     }
     
     /**
-     * The symbol a long-press on [key] should emit (L-05 / L-06): a character key's secondary
-     * [Key.hint], or null when the key has no secondary or is a control key.
+     * The symbol a long-press on [key] should emit (L-05 / L-06): a character key's default corner glyph
+     * (D-509 corner model - the right corner, falling back to the left one where no right corner exists),
+     * or null when the key has no secondary or is a control key.
      * 
      * @param key the pressed key
      * @return the secondary symbol to commit on long-press, or null when there is none
      */
     fun longPressSymbol(key: Key): String? {
-        return if (key.code == KeyCode.CHAR) key.hint else null
+        return if (key.code == KeyCode.CHAR) key.defaultCornerHint else null
     }
     
     /**
@@ -310,7 +312,7 @@ object KeyboardLayout {
      * @return true when a long-press on this key should be scheduled
      */
     fun hasLongPressAction(key: Key): Boolean {
-        return ((key.code == KeyCode.CHAR || key.code == KeyCode.TEXT) && (key.hint != null || key.alternatives.size >= 2)) ||
+        return ((key.code == KeyCode.CHAR || key.code == KeyCode.TEXT) && (key.defaultCornerHint != null || key.alternatives.size >= 2)) ||
             key.code == KeyCode.SYMBOL ||
             key.code == KeyCode.SHIFT ||
             (key.code == KeyCode.CHAR && key.char == SymbolLayout.MINUS_SIGN)

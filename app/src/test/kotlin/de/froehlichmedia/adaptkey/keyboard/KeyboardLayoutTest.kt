@@ -77,8 +77,26 @@ class KeyboardLayoutTest {
     @Test
     fun `D-105 the 0 key keeps its natural alternatives order - D-282 reverses it dynamically at popup time, not here`() {
         val numberRow = KeyboardLayout.rows().first()
-        
         assertEquals(listOf("=", "⁰"), numberRow.byChar('0').alternatives)
+    }
+    
+    @Test
+    fun `D-509 no behaviour change yet - every built key is still right-corner-only`() {
+        // The corner model ships inert: until the reform's data phases (D-511/D-512) fill the left
+        // corners, no key on any surface carries a leftHint and the derived default stays the right
+        // corner - the drawing/long-press paths must behave exactly as before the model existed.
+        listOf(
+            KeyboardLayout.rows(),
+            KeyboardLayout.rows(qwerty = true),
+            KeyboardLayout.rows(showNumberRow = false),
+            KeyboardLayout.rows(urlMode = true, locale = Locale.US),
+            KeyboardLayout.rows(emailMode = true, locale = Locale.US)
+        ).forEach { rows ->
+            rows.flatten().forEach { key ->
+                assertNull(key.leftHint)
+                assertEquals(key.hint, key.defaultCornerHint)
+            }
+        }
     }
     
     @Test

@@ -860,6 +860,14 @@ class AdaptKeyboardView @JvmOverloads constructor(
         textSize = dp(11f)
     }
     
+    // D-509: the left corner's own paint - identical to [hintPaint] except its alignment, so a left-corner
+    // glyph starts at the key's left-edge inset (the right corner keeps ending at the right-edge inset).
+    private val leftHintPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = ContextCompat.getColor(context, R.color.key_hint)
+        textAlign = Paint.Align.LEFT
+        textSize = dp(11f)
+    }
+    
     // D-01 / D-44: the horizontal long-press popup. Active while popupKey is non-null. The alternatives are
     // a single row of cells above the key, centred over the stem so the pre-selected cell (the key's own
     // character) sits over the finger; sliding the finger left/right below the row changes popupSelectedIndex
@@ -1126,6 +1134,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
             }
             
             val hint = key.hint
+            val leftHint = key.leftHint
             // D-47 / §49: no "123" corner hint on the combined key - it always already reads "?123".
             val suppressHint = key.code == KeyCode.SYMBOL
             if (!suppressHint) {
@@ -1140,11 +1149,19 @@ class AdaptKeyboardView @JvmOverloads constructor(
                     // misleading for this key - no popup ever appears. SIGN_FLIP_GLYPH ("±", the plus/minus
                     // ligature the user asked for) reads directly as "flips the sign" instead.
                     canvas.drawText(SIGN_FLIP_GLYPH, rect.right - dp(6f), rect.top + dp(14f), hintPaint)
-                } else if (key.alternatives.size >= 2) {
-                    // D-98: a key with no single corner glyph but a multi-alternative popup (D-01) - comma,
+                } else if (leftHint == null && key.alternatives.size >= 2) {
+                    // D-98: a key with no corner glyph but a multi-alternative popup (D-01) - comma,
                     // period, the calculator page's ×/÷/=/currency keys, etc. - still gets a corner
                     // indicator instead of no visual cue at all, Gboard/AOSP-style.
+                    // D-509: corner-aware - the triangle only fills a corner slot no real corner glyph
+                    // occupies; a key showing a corner advertises its popup through that corner itself.
                     canvas.drawText(MORE_ALTERNATIVES_GLYPH, rect.right - dp(6f), rect.top + dp(14f), hintPaint)
+                }
+                if (leftHint != null) {
+                    // D-509: the left corner drawn independently of the right one - same baseline, same
+                    // 6dp inset mirrored to the key's left edge. Never suppresses (or is suppressed by)
+                    // the right corner, the sign-flip glyph, or the triangle above.
+                    canvas.drawText(cornerHintDisplayTextFor(key, leftHint), rect.left + dp(6f), rect.top + dp(14f), leftHintPaint)
                 }
             }
         }
@@ -1259,6 +1276,9 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * they must never be shown uppercased here. Restricted to the letters surface's own char keys, mirroring
      * [labelFor]'s identical guard for the identical reason (a symbol/calculator-page key's hint must never
      * gain a case it has no business having).
+     *
+     * D-509: applied per corner - the drawing loop invokes it separately for the right corner and the left
+     * one ([Key.leftHint]), so a dual-corner key's two glyphs get the identical case treatment independently.
      */
     private fun cornerHintDisplayTextFor(key: Key, hint: String): String {
         if (!(shifted || capsLock) || key.code != KeyCode.CHAR || surface != InputSurface.LETTERS || !AlternativeScript.extendsWord(hint, layoutKind == LayoutKind.GREEK)) {
@@ -1816,9 +1836,9 @@ class AdaptKeyboardView @JvmOverloads constructor(
     
     /**
      * The long-press popup alternatives for [key] (D-01 / D-14): its explicit [Key.alternatives] when
-     * present, otherwise its single [Key.hint] as a one-item list for a character or §53 [KeyCode.TEXT] key.
-     * Empty for a key with no secondary (e.g. the combined ?123 key), which falls back to its listener
-     * action.
+     * present, otherwise its default corner glyph (D-509 corner model - the right corner, falling back to
+     * the left one) as a one-item list for a character or §53 [KeyCode.TEXT] key. Empty for a key with no
+     * secondary (e.g. the combined ?123 key), which falls back to its listener action.
      * 
      * @param key the pressed key
      * @return the alternatives to show in the popup, or empty when there is none
@@ -1826,7 +1846,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private fun popupAlternativesFor(key: Key): List<String> {
         return when {
             key.alternatives.isNotEmpty() -> key.alternatives
-            (key.code == KeyCode.CHAR || key.code == KeyCode.TEXT) && key.hint != null -> listOf(key.hint)
+            key.code == KeyCode.CHAR || key.code == KeyCode.TEXT -> key.defaultCornerHint?.let { listOf(it) } ?: emptyList()
             else -> emptyList()
         }
     }

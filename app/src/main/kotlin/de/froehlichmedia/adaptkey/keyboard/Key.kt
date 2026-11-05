@@ -31,10 +31,16 @@ enum class KeyCode {
  * @property label the primary glyph drawn on the key
  * @property code the functional category, see [KeyCode]
  * @property char the character emitted for [KeyCode.CHAR] keys, otherwise null
- * @property hint optional corner hint glyph for the long-press secondary (L-05 / L-06); not yet active in the scaffold
+ * @property hint the key's RIGHT corner glyph (L-05 / L-06) - the long-press secondary and, while it is
+ *           present, the release-default corner of the D-509 corner model. During the Alt-Belegungs-Reform
+ *           migration (D-509..D-512) this legacy property stays exactly what it always was; every existing
+ *           key is still right-corner-only.
+ * @property leftHint D-509: the key's LEFT corner glyph - the second half of the corner pair, drawn at the
+ *           key's left edge and committed on long-press release only where no right corner exists (see
+ *           [defaultCornerHint]). null on every key until the reform's data phases fill it.
  * @property alternatives the ordered secondary alternatives shown in the D-01 long-press popup (most
  *           common first, which is pre-selected); a size of two or more triggers the popup, otherwise
- *           the single [hint] is applied immediately on long-press
+ *           the single default corner glyph is applied immediately on long-press
  * @property weight relative horizontal weight within its row; drives the configurable key proportions (L-02 / L-04, C-01)
  */
 data class Key(
@@ -42,9 +48,20 @@ data class Key(
     val code: KeyCode,
     val char: Char? = null,
     val hint: String? = null,
+    val leftHint: String? = null,
     val alternatives: List<String> = emptyList(),
     val weight: Float = 1f
 ) {
+    
+    /**
+     * D-509 corner model: the glyph a plain long-press release commits - the RIGHT corner ([hint]) when
+     * the key carries one, otherwise the LEFT corner ([leftHint]) - one rule for every layout: the right
+     * corner is always the default, a lone left corner becomes it by fallback. null when the key has no
+     * corner at all. Behaviour-identical today (every existing key is right-corner-only); the reform's
+     * later phases (D-511/D-512) are what first puts a left-only key on a layout.
+     */
+    val defaultCornerHint: String?
+        get() = hint ?: leftHint
     
     /**
      * Stable identifier used to key the personal offset model (T-03). Char keys are keyed by their
