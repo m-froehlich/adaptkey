@@ -4,7 +4,9 @@
 package de.froehlichmedia.adaptkey.keyboard
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /**
@@ -117,5 +119,119 @@ class HorizontalLongPressPopupTest {
     @Test
     fun `wouldClampRight rejects an empty cell list`() {
         assertThrows(IllegalArgumentException::class.java) { HorizontalLongPressPopup.wouldClampRight(0f, emptyList(), 0, 100f) }
+    }
+    
+    // D-510 §2.11.3: the o-key scenario - a 2-cell popup (O_ALTERNATIVES' shape) whose centred row slightly
+    // overflows the right screen edge. Key 88px wide (centre 1040, left edge 996): ideal = 1040 - 22 = 1018,
+    // maxLeft = 1000, overflow 18px - the shifted pre-selected centre 1040 - 18 = 1022 stays inside the key,
+    // so the row DRIFTS left by exactly the missing pixels and keeps its natural order.
+    @Test
+    fun `D-510 a small right-edge overflow drifts the row instead of reversing it - the o-key fix`() {
+        val widths = listOf(44f, 44f)
+        assertEquals(
+            HorizontalLongPressPopup.PopupRowStrategy.DRIFT_CLAMPED,
+            HorizontalLongPressPopup.placementStrategy(1040f, 996f, widths, 0, 1000f)
+        )
+        // The drift position is the same value the old plain clamp produced - but the ORDER is now kept,
+        // so the extra cell lands to the RIGHT of the pre-selected one (away from the left index finger's
+        // smear path), which is the whole point of the o fix.
+        assertEquals(1000f, HorizontalLongPressPopup.rowLeft(1040f, widths, 0, 15f, 1000f))
+    }
+    
+    // D-510 §2.11.4: the p-key scenario - a 7-cell popup (PI_ALTERNATIVES' shape) on the same key: the
+    // drift (218px) would push the pre-selected cell far past the key's left edge, so D-282's own reversal
+    // remains the last resort and p keeps its observed shape (π over the key, extras growing left).
+    @Test
+    fun `D-510 a large right-edge overflow still reverses - the p-key shape is kept`() {
+        val widths = List(7) { 44f }
+        assertEquals(
+            HorizontalLongPressPopup.PopupRowStrategy.REVERSED,
+            HorizontalLongPressPopup.placementStrategy(1040f, 996f, widths, 0, 800f)
+        )
+    }
+    
+    // The drift gate's boundary: the shift may consume exactly the whole half-key width (the pre-selected
+    // centre landing ON the key's left edge still counts as within the key); one pixel more reverses.
+    @Test
+    fun `D-510 the drift gate allows exactly up to the key's left edge`() {
+        val widths = listOf(44f, 44f)
+        // ideal = 1040 - 22 = 1018, maxLeft = 974 -> overflow 44 = the centre's distance to keyLeft 996.
+        assertEquals(
+            HorizontalLongPressPopup.PopupRowStrategy.DRIFT_CLAMPED,
+            HorizontalLongPressPopup.placementStrategy(1040f, 996f, widths, 0, 974f)
+        )
+        // maxLeft = 973 -> overflow 45 -> the shifted centre (995) leaves the key by one pixel.
+        assertEquals(
+            HorizontalLongPressPopup.PopupRowStrategy.REVERSED,
+            HorizontalLongPressPopup.placementStrategy(1040f, 996f, widths, 0, 973f)
+        )
+    }
+    
+    // D-510: without a right-edge overflow the placement stays the ordinary D-44 centring.
+    @Test
+    fun `D-510 a fitting popup stays centred`() {
+        val widths = listOf(44f, 44f)
+        assertEquals(
+            HorizontalLongPressPopup.PopupRowStrategy.CENTRED,
+            HorizontalLongPressPopup.placementStrategy(300f, 256f, widths, 0, 1000f)
+        )
+    }
+    
+    // D-510: a single-cell row is never reversed (nothing to reorder) - it keeps the plain clamp it always
+    // had, which is the same position the drift produces.
+    @Test
+    fun `D-510 a single-cell overflow keeps the plain clamp, never reverses`() {
+        val widths = listOf(44f)
+        assertEquals(
+            HorizontalLongPressPopup.PopupRowStrategy.DRIFT_CLAMPED,
+            HorizontalLongPressPopup.placementStrategy(1040f, 996f, widths, 0, 900f)
+        )
+    }
+    
+    @Test
+    fun `D-510 placementStrategy rejects an empty cell list`() {
+        assertThrows(IllegalArgumentException::class.java) {
+            HorizontalLongPressPopup.placementStrategy(0f, 0f, emptyList(), 0, 100f)
+        }
+    }
+    
+    // D-510 §2.11.1: the dual-corner straddle recognition - the reform's explicit data shape
+    // [leftCorner, extras…, rightCorner] on a key carrying both corners.
+    @Test
+    fun `D-510 a dual-corner key with a contract-conforming popup is a straddle`() {
+        val key = Key(label = "7", code = KeyCode.CHAR, char = '7', hint = "&", leftHint = "/")
+        assertTrue(HorizontalLongPressPopup.isDualCornerStraddle(key, listOf("/", "÷", "\\", "⁷", "&")))
+        assertTrue(HorizontalLongPressPopup.isDualCornerStraddle(key, listOf("/", "&")))
+    }
+    
+    @Test
+    fun `D-510 a popup that does not follow the corner contract is not a straddle`() {
+        val key = Key(label = "7", code = KeyCode.CHAR, char = '7', hint = "&", leftHint = "/")
+        // Wrong last cell (not the right corner), wrong first cell, too short, or no explicit list at all.
+        assertFalse(HorizontalLongPressPopup.isDualCornerStraddle(key, listOf("/", "÷")))
+        assertFalse(HorizontalLongPressPopup.isDualCornerStraddle(key, listOf("÷", "\\", "&")))
+        assertFalse(HorizontalLongPressPopup.isDualCornerStraddle(key, listOf("/")))
+        assertFalse(HorizontalLongPressPopup.isDualCornerStraddle(key, emptyList()))
+    }
+    
+    @Test
+    fun `D-510 a key without both corners is never a straddle`() {
+        val rightOnly = Key(label = "q", code = KeyCode.CHAR, char = 'q', hint = "@")
+        assertFalse(HorizontalLongPressPopup.isDualCornerStraddle(rightOnly, listOf("@")))
+        val leftOnly = Key(label = "m", code = KeyCode.CHAR, char = 'm', leftHint = ")")
+        assertFalse(HorizontalLongPressPopup.isDualCornerStraddle(leftOnly, listOf(")")))
+        val cornerless = Key(label = "l", code = KeyCode.CHAR, char = 'l')
+        assertFalse(HorizontalLongPressPopup.isDualCornerStraddle(cornerless, listOf("x", "y")))
+    }
+    
+    // D-510 §2.11.1: the corner-aligned row starts at the key's own left edge; when that row would
+    // overflow the screen's right edge the drift-gated clamp takes it to maxLeft (the pre-selected cell
+    // is the row's last one, so the leftward shift carries it toward the key's interior - the guard is
+    // met trivially and there is no reversal), and the defensive left clamp honours minLeft.
+    @Test
+    fun `D-510 the straddle row is aligned with the key's left edge and drift-clamps on overflow`() {
+        assertEquals(200f, HorizontalLongPressPopup.straddleRowLeft(200f, 15f, 760f))
+        assertEquals(150f, HorizontalLongPressPopup.straddleRowLeft(200f, 15f, 150f))
+        assertEquals(15f, HorizontalLongPressPopup.straddleRowLeft(10f, 15f, 760f))
     }
 }

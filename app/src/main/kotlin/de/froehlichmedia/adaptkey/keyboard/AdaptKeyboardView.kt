@@ -1857,14 +1857,20 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * first alternative when the key's character is not among them) sits over the finger; the row is clamped
      * to stay within the view.
      * 
-     * D-282: when that clamp would otherwise push the row leftward with no room to grow rightward - a key
-     * near the row's right edge with a wide enough popup, [HorizontalLongPressPopup.wouldClampRight] - the
-     * whole [alternatives] order (and its matching [cellWidths]) is reversed first, so whichever entry the
-     * caller lists first (its own convention for "the primary one", e.g. [KeyboardLayout.PI_ALTERNATIVES]'
-     * own π) ends up nearest the finger after the clamp instead of pushed away by it. This replaces
-     * D-99/D-105's own hand-picked reversal, hard-coded to exactly `'p'` (letters row) and `'0'` (number
-     * row) - a real geometry check here works for any key's popup, including one a language pack's own
-     * data (D-281) might put on a right-edge key that neither of those two hard-coded cases ever covered.
+     * D-510 (plan §2.11): the right-edge overflow handling is a drift-gated clamp replacing D-282's
+     * unconditional reversal. [HorizontalLongPressPopup.placementStrategy] decides: centring while it fits;
+     * a shift left by exactly the missing pixels when that keeps the pre-selected cell's centre within the
+     * pressed key's own bounds (the o key's fix - natural order preserved, so the extra cell lands to the
+     * RIGHT of the pre-selected one, away from the smear path); and only when even that drift would push
+     * the pre-selected cell past the key's left edge does D-282's own order reversal remain the last
+     * resort, so the p key keeps its observed, user-approved shape (π right-aligned over the key, Greek
+     * letters growing left). A geometry-based rule like D-282's, working for any key's popup including
+     * one a language pack's own data (D-281) might put on a right-edge key.
+     * 
+     * D-510 (plan §2.11.1): a dual-corner key's own popup row ([HorizontalLongPressPopup.isDualCornerStraddle])
+     * is corner-aligned instead of centred - its left edge starts at the key's left edge (left-corner cell
+     * above that edge, pre-selected right-corner cell above/near the right one, extras in between and past
+     * the key when the row is wider), with the right-corner cell pre-selected.
      * 
      * D-53: the row always sits above the key. For the number row this reaches above the keyboard into the
      * suggestion-bar area; the service disables child-clipping on the container/root so it is drawn on top
@@ -1873,24 +1879,57 @@ class AdaptKeyboardView @JvmOverloads constructor(
      */
     private fun openPopup(key: Key, alternatives: List<String>) {
         val rect = keyRects.firstOrNull { it.first === key }?.second ?: return
-        val preSelectedRaw = preSelectedIndexFor(key, alternatives)
         // D-144: each cell sized to its own text content instead of a single uniform width, so wide entries
         // (a URL protocol popup's "https://"/"ftp://") are no longer cramped/overflowing.
         val cellWidthsRaw = alternatives.map { popupCellWidthFor(it) }
         val rowWidth = cellWidthsRaw.sum()
         val maxLeft = (width - gapPx - rowWidth).coerceAtLeast(gapPx)
+        // D-510 §2.11.1: the corner-aligned straddle for a dual-corner key's own popup row - never centred,
+        // never reversed; the right-corner cell (last) is pre-selected by the data contract, not by
+        // [preSelectedIndexFor]'s own self-value/fallback rules.
+        if (HorizontalLongPressPopup.isDualCornerStraddle(key, alternatives)) {
+            popupRowTop = rect.top - gapPx - popupCellHeightPx
+            popupRowLeft = HorizontalLongPressPopup.straddleRowLeft(rect.left, gapPx, maxLeft)
+            popupAlternatives = alternatives
+            popupCellWidths = cellWidthsRaw
+            popupSelectedIndex = alternatives.lastIndex
+            popupKey = key
+            invalidate()
+            return
+        }
+        val preSelectedRaw = preSelectedIndexFor(key, alternatives)
         // D-54: only single-cell popups are nudged; multi-cell popups stay centred over the stem (D-44).
         val nudge = if (alternatives.size == 1) {
             if (rect.centerX() < width / 2f) popupSingleNudgePx else -popupSingleNudgePx
         } else {
             0f
         }
-        val reversed = alternatives.size >= 2 &&
-            HorizontalLongPressPopup.wouldClampRight(rect.centerX() + nudge, cellWidthsRaw, preSelectedRaw, maxLeft)
-        val finalAlternatives = if (reversed) alternatives.reversed() else alternatives
-        val finalCellWidths = if (reversed) cellWidthsRaw.reversed() else cellWidthsRaw
-        val preSelected = if (reversed) finalAlternatives.size - 1 - preSelectedRaw else preSelectedRaw
-        popupRowLeft = HorizontalLongPressPopup.rowLeft(rect.centerX() + nudge, finalCellWidths, preSelected, gapPx, maxLeft)
+        val finalAlternatives: List<String>
+        val finalCellWidths: List<Float>
+        val preSelected: Int
+        when (HorizontalLongPressPopup.placementStrategy(rect.centerX() + nudge, rect.left, cellWidthsRaw, preSelectedRaw, maxLeft)) {
+            HorizontalLongPressPopup.PopupRowStrategy.CENTRED -> {
+                finalAlternatives = alternatives
+                finalCellWidths = cellWidthsRaw
+                preSelected = preSelectedRaw
+                popupRowLeft = HorizontalLongPressPopup.rowLeft(rect.centerX() + nudge, finalCellWidths, preSelected, gapPx, maxLeft)
+            }
+            HorizontalLongPressPopup.PopupRowStrategy.DRIFT_CLAMPED -> {
+                // §2.11.3: natural order kept, the whole row shifted left by exactly the overflow.
+                finalAlternatives = alternatives
+                finalCellWidths = cellWidthsRaw
+                preSelected = preSelectedRaw
+                popupRowLeft = maxLeft
+            }
+            HorizontalLongPressPopup.PopupRowStrategy.REVERSED -> {
+                // §2.11.4: D-282's own last resort, unchanged from before D-510 - the pre-selected cell
+                // stays under the finger and the extras extend left instead.
+                finalAlternatives = alternatives.reversed()
+                finalCellWidths = cellWidthsRaw.reversed()
+                preSelected = finalAlternatives.size - 1 - preSelectedRaw
+                popupRowLeft = HorizontalLongPressPopup.rowLeft(rect.centerX() + nudge, finalCellWidths, preSelected, gapPx, maxLeft)
+            }
+        }
         // D-53: always place the row above the key. For the number row this reaches above the keyboard, which
         // is fine: the service disables child-clipping on the container/root, so the popup draws over the
         // suggestion bar rather than being clipped.
