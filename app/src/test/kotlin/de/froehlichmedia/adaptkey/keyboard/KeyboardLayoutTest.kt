@@ -121,23 +121,6 @@ class KeyboardLayoutTest {
     }
     
     @Test
-    fun `D-509 migration state - the letters page and mode rows are still right-corner-only`() {
-        // D-511 ended this for the number row; the letters page's own corners are D-512's round, so until
-        // then every letters/mode key still carries only its right corner and the derived default is it.
-        listOf(
-            KeyboardLayout.rows(showNumberRow = false),
-            KeyboardLayout.rows(showNumberRow = false, qwerty = true),
-            KeyboardLayout.rows(showNumberRow = false, urlMode = true, locale = Locale.US),
-            KeyboardLayout.rows(showNumberRow = false, emailMode = true, locale = Locale.US)
-        ).forEach { rows ->
-            rows.flatten().forEach { key ->
-                assertNull(key.leftHint)
-                assertEquals(key.hint, key.defaultCornerHint)
-            }
-        }
-    }
-    
-    @Test
     fun `D-497 a pack hints value with comma-separated variants builds a popup, hint first`() {
         val packHints = KeyboardLayout.DEFAULT_LETTER_HINTS + mapOf('e' to "ę,ė", 'u' to "ų,ū")
         val rows = KeyboardLayout.rows(letterHints = packHints)
@@ -159,24 +142,78 @@ class KeyboardLayoutTest {
     }
     
     @Test
-    fun `letters carry the AltGr long-press hints`() {
+    fun `letters carry the reformed right corners`() {
         val rows = KeyboardLayout.rows()
         
         assertEquals("@", rows[1].byChar('q').hint)
         assertEquals("€", rows[1].byChar('e').hint)
-        assertEquals("°", rows[2].byChar('d').hint)
+        // D-512 §3: d's release default moved from ° to $.
+        assertEquals("$", rows[2].byChar('d').hint)
         assertEquals("#", rows[2].byChar('h').hint)
-        assertEquals("+", rows[3].byChar('n').hint)
-        assertEquals("-", rows[3].byChar('m').hint)
+        // D-512 §2.6: ñ is n's universal right corner.
+        assertEquals("ñ", rows[3].byChar('n').hint)
         // D-90: math-symbol hint on p.
         assertEquals("π", rows[1].byChar('p').hint)
-        // D-96: reorganised math-symbol hints - × on x, ÷ on c, / on v, * on b.
+        // D-96/§2.10: × stays on x (÷ moved to the digit row's 7-middle).
         assertEquals("×", rows[3].byChar('x').hint)
-        assertEquals("÷", rows[3].byChar('c').hint)
-        assertEquals("/", rows[3].byChar('v').hint)
-        assertEquals("*", rows[3].byChar('b').hint)
         // §29 follow-up: the function-symbol hint on f.
         assertEquals("ƒ", rows[2].byChar('f').hint)
+    }
+    
+    @Test
+    fun `D-512 the letters page carries the reform's left corners`() {
+        val rows = KeyboardLayout.rows()
+        
+        assertEquals("°", rows[2].byChar('d').leftHint)
+        assertEquals("(", rows[3].byChar('n').leftHint)
+        assertEquals(")", rows[3].byChar('m').leftHint)
+        assertEquals("*", rows[2].byChar('s').leftHint)
+        // §2.8: the + slot is the geometry's first third-row key (y under QWERTZ, z under QWERTY).
+        assertEquals("+", rows[3].byChar('y').leftHint)
+        assertEquals("+", KeyboardLayout.rows(qwerty = true)[3].byChar('z').leftHint)
+        // The dual-corner keys carry their corners as the straddle popup data.
+        assertEquals(listOf("°", "$"), rows[2].byChar('d').alternatives)
+        assertEquals(listOf("(", "ñ"), rows[3].byChar('n').alternatives)
+        assertEquals(listOf("*", "ß"), rows[2].byChar('s').alternatives)
+        // m is left-corner-only: a lone left corner is the release default (no explicit popup data -
+        // the single-cell preview is the default-corner fallback, D-54).
+        assertNull(rows[3].byChar('m').hint)
+        assertTrue(rows[3].byChar('m').alternatives.isEmpty())
+        assertEquals(")", rows[3].byChar('m').defaultCornerHint)
+        assertTrue(KeyboardLayout.hasLongPressAction(rows[3].byChar('m')))
+        // The + slot keys are left-corner-only the same way (y gains a long-press it never had, §3b).
+        assertNull(rows[3].byChar('y').hint)
+        assertTrue(rows[3].byChar('y').alternatives.isEmpty())
+        assertEquals("+", rows[3].byChar('y').defaultCornerHint)
+        assertTrue(KeyboardLayout.hasLongPressAction(rows[3].byChar('y')))
+    }
+    
+    @Test
+    fun `D-512 c v b are freed entirely - no corners, no popups, no long-press`() {
+        val rows = KeyboardLayout.rows()
+        
+        listOf('c', 'v', 'b').forEach { c ->
+            val key = rows[3].byChar(c)
+            assertNull(key.hint, "$c")
+            assertNull(key.leftHint, "$c")
+            assertTrue(key.alternatives.isEmpty(), "$c")
+            assertFalse(KeyboardLayout.hasLongPressAction(key), "$c")
+        }
+    }
+    
+    @Test
+    fun `D-512 the dedicated apostrophe key sits right of l with corners double-quote and apostrophe`() {
+        val middleRow = KeyboardLayout.rows()[2]
+        val apostropheKey = middleRow.last()
+        
+        // Right of l: the row's letters read asdfghjkl followed by the new key.
+        assertEquals("asdfghjkl'", middleRow.filter { it.code == KeyCode.CHAR }.joinToString("") { it.char.toString() })
+        assertEquals('\'', apostropheKey.char)
+        assertEquals("\"", apostropheKey.leftHint)
+        assertEquals("'", apostropheKey.hint)
+        assertEquals("'", apostropheKey.defaultCornerHint)
+        assertEquals(listOf("\"", "'"), apostropheKey.alternatives)
+        assertTrue(HorizontalLongPressPopup.isDualCornerStraddle(apostropheKey, apostropheKey.alternatives))
     }
     
     @Test
@@ -229,11 +266,12 @@ class KeyboardLayoutTest {
     }
     
     @Test
-    fun `D-336 the n key offers the Spanish tilde-n alongside the plus sign`() {
+    fun `D-336 D-512 the n key offers the universal tilde-n as its right corner, paren as its left one`() {
         val nKey = KeyboardLayout.rows()[3].byChar('n')
         
-        assertEquals("+", nKey.hint)
-        assertEquals(listOf("+", "ñ"), nKey.alternatives)
+        assertEquals("ñ", nKey.hint)
+        assertEquals("(", nKey.leftHint)
+        assertEquals(listOf("(", "ñ"), nKey.alternatives)
     }
     
     @Test
@@ -253,11 +291,14 @@ class KeyboardLayoutTest {
     }
     
     @Test
-    fun `D-336 a reassigned n key loses the tilde-n popup`() {
+    fun `D-336 D-512 a reassigned dual-corner key keeps its left corner and gains the pack's own right one`() {
         val nKey = KeyboardLayout.rows(letterHints = mapOf('n' to "!"))[3].byChar('n')
         
+        // The pack reassignment arms the right corner (the release default); the reform's left corner is
+        // fixed per-key data, so the corners themselves remain the popup.
         assertEquals("!", nKey.hint)
-        assertTrue(nKey.alternatives.isEmpty())
+        assertEquals("(", nKey.leftHint)
+        assertEquals(listOf("(", "!"), nKey.alternatives)
     }
     
     @Test

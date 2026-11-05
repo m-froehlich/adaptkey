@@ -39,7 +39,8 @@ class AzertyLayoutTest {
         val rows = AzertyLayout.rows(showNumberRow = false)
         
         assertEquals("azertyuiop", rows[0].joinToString("") { it.char.toString() })
-        assertEquals("qsdfghjklm", rows[1].filter { it.code == KeyCode.CHAR }.joinToString("") { it.char.toString() })
+        // D-512 §2.2: the dedicated apostrophe key sits right of m on AZERTY.
+        assertEquals("qsdfghjklm'", rows[1].filter { it.code == KeyCode.CHAR }.joinToString("") { it.char.toString() })
         assertEquals("wxcvbn", rows[2].filter { it.code == KeyCode.CHAR }.joinToString("") { it.char.toString() })
     }
     
@@ -100,10 +101,28 @@ class AzertyLayoutTest {
     }
     
     @Test
-    fun `D-336 the n key offers the Spanish tilde-n, same as the Latin layout, at the AZERTY third row`() {
+    fun `D-336 D-512 the n key offers the universal tilde-n right corner with its paren left corner, at the AZERTY third row`() {
         val nKey = AzertyLayout.rows()[3].byChar('n')
         
-        assertEquals(listOf("+", "ñ"), nKey.alternatives)
+        assertEquals("ñ", nKey.hint)
+        assertEquals("(", nKey.leftHint)
+        assertEquals(listOf("(", "ñ"), nKey.alternatives)
+    }
+    
+    @Test
+    fun `D-512 the apostrophe key sits right of m and the w key leads the third row with the plus slot`() {
+        val rows = AzertyLayout.rows()
+        
+        val apostropheKey = rows[2].last()
+        assertEquals('\'', apostropheKey.char)
+        assertEquals("\"", apostropheKey.leftHint)
+        assertEquals("'", apostropheKey.hint)
+        assertEquals(listOf("\"", "'"), apostropheKey.alternatives)
+        // §2.8: w (AZERTY's first third-row key) carries the + left corner, screen-stable as a slot -
+        // left-corner-only, so the release default is the + itself (left-corner fallback).
+        assertEquals("+", rows[3].byChar('w').leftHint)
+        assertNull(rows[3].byChar('w').hint)
+        assertEquals("+", rows[3].byChar('w').defaultCornerHint)
     }
     
     @Test

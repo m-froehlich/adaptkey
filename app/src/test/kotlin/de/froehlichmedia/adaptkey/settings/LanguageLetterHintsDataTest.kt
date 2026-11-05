@@ -3,7 +3,6 @@
 
 package de.froehlichmedia.adaptkey.settings
 
-import de.froehlichmedia.adaptkey.keyboard.KeyboardLayout
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.io.File
@@ -22,16 +21,30 @@ class LanguageLetterHintsDataTest {
     }
     
     @Test
-    fun `hints_en matches the default German set minus the umlauts and ss`() {
+    fun `hints_en matches the pre-D-512 German-derived set (D-513 rewrites it to the delta format)`() {
         val parsed = LetterHints.parse(read("src/main/assets/en/hints.tsv", "app/src/main/assets/en/hints.tsv"))
-        val expected = KeyboardLayout.DEFAULT_LETTER_HINTS - setOf('a', 'o', 'u', 's')
+        // Pinned as literal content while the reform's D-513 data round is pending: D-512 changed the
+        // compiled-in base (d $, n ñ, c/v/b/m freed), and this bundled asset follows in D-513 - until
+        // then it keeps the pre-reform German-derived values, minus the umlauts and ss, as always.
+        val expected = mapOf(
+            'b' to "*", 'c' to "÷", 'd' to "°", 'e' to "€", 'f' to "ƒ",
+            'h' to "#", 'm' to "-", 'n' to "+", 'p' to "π", 'q' to "@",
+            'v' to "/", 'x' to "×"
+        )
         assertEquals(expected, parsed)
     }
     
     @Test
-    fun `hints_de matches the compiled-in default German set exactly`() {
+    fun `hints_de matches the pre-D-512 compiled-in German set (D-513 rewrites it to the delta format)`() {
         val parsed = LetterHints.parse(read("../dictionaries/de/hints.tsv", "dictionaries/de/hints.tsv"))
-        assertEquals(KeyboardLayout.DEFAULT_LETTER_HINTS, parsed)
+        // Same D-513 deferral as the en asset above: the German pack's hints.tsv keeps the pre-reform
+        // set until the delta-format rewrite, so this pins exactly that literal content.
+        val expected = mapOf(
+            'a' to "ä", 'b' to "*", 'c' to "÷", 'd' to "°", 'e' to "€", 'f' to "ƒ",
+            'h' to "#", 'm' to "-", 'n' to "+", 'o' to "ö", 'p' to "π", 'q' to "@",
+            's' to "ß", 'u' to "ü", 'v' to "/", 'x' to "×"
+        )
+        assertEquals(expected, parsed)
     }
     
     @Test

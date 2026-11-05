@@ -54,18 +54,31 @@ object AzertyLayout {
         val result = ArrayList<List<Key>>()
         
         if (showNumberRow) {
-            // L-06 / D-498: the shared number-row builder - the AZERTY number row is deliberately the
-            // Latin one (German-QWERTZ shifted symbols, D-105 popups), byte-identical by construction.
+            // L-06 / D-498 / D-511: the shared number-row builder - the AZERTY number row is deliberately
+            // the Latin one, byte-identical to every other layout's by construction (the reform's
+            // dual-corner row rides along like it does for the non-Latin layouts, §2.12).
             result.add("1234567890".map { c -> KeyboardLayout.numberKey(c) })
         }
         
-        result.add(TOP_ROW.map { c -> KeyboardLayout.topRowKey(c, letterHints) })
-        result.add(MIDDLE_ROW.map { c -> KeyboardLayout.letterKey(c, letterHints) })
+        result.add(TOP_ROW.map { c -> KeyboardLayout.topRowKey(c, letterHints, KeyboardLayout.BASE_LEFT_CORNERS) })
+        // D-512 §2.2: the dedicated apostrophe key right of `m` on AZERTY (right of `l` on QWERTY/QWERTZ).
+        result.add(MIDDLE_ROW.map { c -> KeyboardLayout.letterKey(c, letterHints, KeyboardLayout.BASE_LEFT_CORNERS) } + KeyboardLayout.apostropheKey())
         
         val thirdRowLetterWeight = proportions.thirdRowLetterWeight(THIRD_ROW.length)
         result.add(buildList {
             add(Key(label = "⇧", code = KeyCode.SHIFT, weight = proportions.shiftWeight))
-            THIRD_ROW.forEach { c -> add(KeyboardLayout.letterKey(c, letterHints, weight = thirdRowLetterWeight)) }
+            THIRD_ROW.forEachIndexed { index, c ->
+                // D-512 §2.8: `w` (AZERTY's first third-row key) carries the `+` left corner.
+                add(
+                    KeyboardLayout.letterKey(
+                        c,
+                        letterHints,
+                        leftCorners = KeyboardLayout.BASE_LEFT_CORNERS,
+                        weight = thirdRowLetterWeight,
+                        plusSlot = index == 0
+                    )
+                )
+            }
             add(Key(label = "⌫", code = KeyCode.DELETE, weight = proportions.backspaceWeight))
         })
         

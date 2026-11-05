@@ -145,12 +145,6 @@ object KeyboardLayout {
     /** D-336: the e key's long-press popup - € plus the four common French diacritic variants. */
     private val E_ALTERNATIVES = listOf(E_HINT, "é", "è", "ê", "ë")
     
-    /** D-336: the n key's own corner hint (the plus sign). */
-    private const val N_HINT = "+"
-    
-    /** D-336: the n key's long-press popup - + plus the Spanish ñ (tilde n). */
-    private val N_ALTERNATIVES = listOf(N_HINT, "ñ")
-    
     /**
      * D-497: separates one letter's long-press variants inside a pack hints value (`e=ę,ė` builds the
      * `e` key a two-cell popup). Kept in sync with LetterHints.VARIANT_SEPARATOR, the data layer's
@@ -160,18 +154,55 @@ object KeyboardLayout {
     const val HINT_VARIANT_SEPARATOR = ','
     
     /**
-     * L-05 / C-08: default AltGr-style secondary symbols on selected letters. Exposed so the settings
-     * layer can offer it as the reset baseline for the configurable per-key map.
+     * L-05 / C-08: default AltGr-style secondary symbols on selected letters - since D-512 these are the
+     * reform's RIGHT corners (the release defaults) of the German base map. Exposed so the settings layer
+     * can offer it as the reset baseline and as the fallback whenever a language has no hint set of its
+     * own (D-281). The reform's LEFT corners live separately in [BASE_LEFT_CORNERS], and `c`/`v`/`b`/`m`
+     * no longer carry a right corner at all: `c`/`v`/`b` are freed entirely (their `÷` `/` `*` live on the
+     * reformed digit row, §2.5) and `m`'s `)` is its left corner.
      */
     val DEFAULT_LETTER_HINTS = mapOf(
-        'q' to "@", 'e' to E_HINT, 'h' to "#", 'm' to "-", 'n' to N_HINT, 'd' to "°",
+        'q' to "@", 'e' to E_HINT, 'h' to "#",
+        // D-512 §3: the d key's release default moves from ° to $ (° becomes its left corner).
+        'd' to "$",
         // D-90: the math-symbol hint on p, alongside the original AltGr-style set above.
         'p' to PI_HINT,
-        // D-96: reorganised math-symbol hints - × moved to x, ÷ moved to c, v gets /, b gets *.
-        'x' to "×", 'c' to "÷", 'v' to "/", 'b' to "*",
-        // §29 follow-up: f was still free - the function symbol goes here.
+        // D-96: × stays on x (§2.10's accepted ×÷ split - × here, ÷ on the digit row's 7-middle).
+        'x' to "×",
+        // §29 follow-up: the function-symbol hint on f.
         'f' to "ƒ",
-        'a' to A_HINT, 'o' to O_HINT, 'u' to "ü", 's' to "ß"
+        'a' to A_HINT, 'o' to O_HINT, 'u' to "ü", 's' to "ß",
+        // D-512 §2.6: ñ is the universal right corner of n on every Latin language (its ( is the left one).
+        'n' to "ñ"
+    )
+    
+    /**
+     * D-512: the reform's LEFT corners of the Latin letters page - fixed per key (§3): the d key's °
+     * (its release default moved to $), the n key's ( beside the universal ñ, the m key's ) (the one
+     * corner it has - a lone left corner is the release default, so m commits `)`), and the s key's *
+     * (the one operator rescued from C-09's hidden-number-row loss). Scoped to the two Latin geometries
+     * ([rows] and [AzertyLayout], which pass it explicitly): the non-Latin layouts receive only the
+     * reformed digit row (§2.12), not the letters-page corners. The `+` slot is geometry-dependent
+     * (the first third-row key: `y` QWERTZ, `z` QWERTY, `w` AZERTY) and is applied by [rows]/
+     * [AzertyLayout] via [letterKey]'s own [plusSlot] parameter, not by this per-letter map.
+     */
+    val BASE_LEFT_CORNERS = mapOf('d' to "°", 'n' to "(", 'm' to ")", 's' to "*")
+    
+    /** D-512 §2.8: the `+` carried by the first third-row key's slot (see [BASE_LEFT_CORNERS]'s KDoc). */
+    private const val PLUS_SLOT_LEFT_CORNER = "+"
+    
+    /**
+     * D-512: the letters page's popup couplings as explicit per-key data (replacing the five hardcoded
+     * when-equals branches) - each entry arms on the letter still carrying its DEFAULT right-corner hint,
+     * so a pack that reassigns the key keeps its own single-symbol/variant long-press (the D-99 invariant,
+     * D-301's no-override lesson). The values are the popup EXTRAS only (the arming hint itself is always
+     * part of the assembled list: first on a centred key, last on a dual-corner one).
+     */
+    private val BASE_HINT_EXTRAS = mapOf(
+        'p' to (PI_HINT to PI_ALTERNATIVES.drop(1)),
+        'o' to (O_HINT to O_ALTERNATIVES.drop(1)),
+        'a' to (A_HINT to A_ALTERNATIVES.drop(1)),
+        'e' to (E_HINT to E_ALTERNATIVES.drop(1))
     )
     
     /**
@@ -211,14 +242,19 @@ object KeyboardLayout {
         
         val topRowLetters = if (qwerty) TOP_ROW_QWERTY else TOP_ROW_QWERTZ
         val thirdRowLetters = if (qwerty) THIRD_ROW_LETTERS_QWERTY else THIRD_ROW_LETTERS_QWERTZ
-        result.add(topRowLetters.map { c -> letterKey(c, letterHints) })
-        result.add("asdfghjkl".map { c -> letterKey(c, letterHints) })
+        result.add(topRowLetters.map { c -> letterKey(c, letterHints, leftCorners = BASE_LEFT_CORNERS) })
+        // D-512 §2.2: the dedicated apostrophe key right of `l` - corners `" | '`, release `'`.
+        result.add("asdfghjkl".map { c -> letterKey(c, letterHints, leftCorners = BASE_LEFT_CORNERS) } + apostropheKey())
         
         // L-04: the backspace surcharge is taken evenly from the third-row letters.
         val thirdRowLetterWeight = proportions.thirdRowLetterWeight(thirdRowLetters.length)
         result.add(buildList {
             add(Key(label = "⇧", code = KeyCode.SHIFT, weight = proportions.shiftWeight))
-            thirdRowLetters.forEach { c -> add(letterKey(c, letterHints, weight = thirdRowLetterWeight)) }
+            thirdRowLetters.forEachIndexed { index, c ->
+                // D-512 §2.8: the `+` sits as the LEFT corner of the geometry's first third-row key
+                // (`y` QWERTZ, `z` QWERTY) - screen-stable as a slot, never displacing a language letter.
+                add(letterKey(c, letterHints, leftCorners = BASE_LEFT_CORNERS, weight = thirdRowLetterWeight, plusSlot = index == 0))
+            }
             add(Key(label = "⌫", code = KeyCode.DELETE, weight = proportions.backspaceWeight))
         })
         
@@ -327,52 +363,94 @@ object KeyboardLayout {
     }
     
     /**
-     * D-99 / §29 follow-up / D-336: builds a letter key, giving `p` its Greek-letter popup
-     * ([PI_ALTERNATIVES]), `o` its Ø popup ([O_ALTERNATIVES]), `a` its æ/å popup ([A_ALTERNATIVES]), `e` its
-     * é/è/ê/ë popup ([E_ALTERNATIVES]) and `n` its ñ popup ([N_ALTERNATIVES]) - but only while each still
-     * carries its own default hint, so a user who has reassigned the key via the C-08 editor keeps their own
-     * single-symbol long-press instead of an unrelated popup.
+     * D-99 / §29 follow-up / D-336 / D-512: builds a letter key from the reform's explicit data - the
+     * key's RIGHT corner ([letterHints]'s entry, or the first D-497 variant), its LEFT corner
+     * ([leftCorners], the reform's per-key map; overridden by [plusSlot] for the `+` slot), and its
+     * popup alternatives assembled from that data ([BASE_HINT_EXTRAS] arming on the default hint, pack
+     * variants appending after the left corner, the corners themselves forming a dual-corner key's own
+     * straddle popup). A letter with no hint and no left corner carries no popup at all - the freed
+     * `c`/`v`/`b` (§2.5).
      * 
-     * D-497: any OTHER value carrying [HINT_VARIANT_SEPARATOR]-separated variants (`e=ę,ė` from a
-     * language pack's own `hints.tsv`) becomes a multi-cell popup the same way the five hardcoded cases
-     * above work: first variant = corner hint = the popup's first cell (which D-44's fallback then
-     * pre-selects, since the key's own base letter is deliberately not among the variants - a plain tap
-     * types the base letter, the popup exists for the variants). A single-variant value keeps the
-     * pre-D-497 direct-commit hint behaviour unchanged.
+     * D-497: a hint value carrying [HINT_VARIANT_SEPARATOR]-separated variants (`e=ę,ė` from a
+     * language pack's own `hints.tsv`) is a multi-cell popup the same way the data-driven cases above
+     * work: first variant = right corner = the popup's first cell on a centred key (which D-44's
+     * fallback then pre-selects - the base letter is deliberately not among the variants). On a
+     * dual-corner key the variants become the popup's extras between the two corners (D-513's data
+     * shape for the s-owning languages). A single-variant value keeps the direct-commit hint behaviour.
      * 
-     * D-282: `p` sits at the row's right edge, where a wide popup like [PI_ALTERNATIVES] can run out of
-     * room to grow rightward and gets clamped leftward instead by [AdaptKeyboardView] - handled dynamically
-     * there now ([HorizontalLongPressPopup.wouldClampRight]), not by reversing the list here as §34/D-99
-     * originally did; [PI_ALTERNATIVES] is always passed in its natural, un-reversed order (`π` first),
-     * exactly like every other alternatives list.
+     * D-512: the former five hardcoded hint-equality couplings (`p`=π→Greek letters, `o`=ö→Ø, `a`=ä→æ å à,
+     * `e`=€→é è ê ë, `n`=+→ñ) are [BASE_HINT_EXTRAS] now - armed by the same default-hint equality, so a
+     * pack that reassigns a key keeps its own long-press (the D-99 invariant); `n`'s old coupling is gone
+     * outright (ñ is its right corner now, its `+` moved to the digit row).
      * 
-     * D-314 / D-336: not private - [AzertyLayout] reuses this directly for its own letter rows, rather than
-     * duplicating the special-casing. Generalised in D-336 from the top-row-only `topRowKey` into a
-     * row-agnostic `letterKey` so the same (char, hint) → alternatives decision applies regardless of which
-     * row a letter sits in (e.g. `a` is QWERTZ/QWERTY middle row but AZERTY top row, `n` is third row,
-     * `e` is top row) - the popup set never depended on row position, only on the letter and its hint.
+     * D-282/D-510: `p` sits at the row's right edge, where a wide popup runs out of room to grow
+     * rightward - handled dynamically by [AdaptKeyboardView.openPopup]'s drift-gated clamp;
+     * [PI_ALTERNATIVES] is always passed in its natural, un-reversed order (`π` first).
+     * 
+     * D-314 / D-336: not private - [AzertyLayout] reuses this directly for its own letter rows, rather
+     * than duplicating the special-casing; both Latin geometries pass [BASE_LEFT_CORNERS], while the
+     * non-Latin layouts' letter pages stay pre-reform (§2.12). Generalised in D-336 from the top-row-only
+     * `topRowKey` into a row-agnostic `letterKey` - the popup set never depended on row position, only on
+     * the letter and its hint.
+     * 
+     * @param plusSlot D-512 §2.8: true for the geometry's first third-row key (`y` QWERTZ, `z` QWERTY,
+     *        `w` AZERTY) - that key carries `+` as its left corner, screen-stable as a slot across
+     *        geometries, never displacing a language letter (which stays the right corner per the
+     *        standing rule).
      */
-    fun letterKey(c: Char, letterHints: Map<Char, String>, weight: Float = 1f): Key {
-        val hint = letterHints[c]
+    fun letterKey(
+        c: Char,
+        letterHints: Map<Char, String>,
+        leftCorners: Map<Char, String> = emptyMap(),
+        weight: Float = 1f,
+        plusSlot: Boolean = false
+    ): Key {
+        val rawValue = letterHints[c]
+        val hint = rawValue?.substringBefore(HINT_VARIANT_SEPARATOR)
+        val leftCorner = if (plusSlot) PLUS_SLOT_LEFT_CORNER else leftCorners[c]
+        val variants = rawValue?.split(HINT_VARIANT_SEPARATOR)?.takeIf { it.size >= 2 }
+        val extras = variants?.drop(1)
+            ?: BASE_HINT_EXTRAS[c]?.takeIf { it.first == hint }?.second
+        // The pre-reform data contract (Key's own KDoc): a size of two or more triggers the popup,
+        // otherwise the single default corner glyph applies immediately on long-press - so a lone hint
+        // (or a lone left corner, which the default-corner rule covers) stays OUT of the alternatives
+        // list and only a genuine multi-cell popup carries explicit data.
         val alternatives = when {
-            c == 'p' && hint == PI_HINT -> PI_ALTERNATIVES
-            c == 'o' && hint == O_HINT -> O_ALTERNATIVES
-            c == 'a' && hint == A_HINT -> A_ALTERNATIVES
-            c == 'e' && hint == E_HINT -> E_ALTERNATIVES
-            c == 'n' && hint == N_HINT -> N_ALTERNATIVES
-            else -> hint
-                ?.split(HINT_VARIANT_SEPARATOR)
-                ?.takeIf { it.size >= 2 }
-                ?: emptyList()
+            hint == null || (leftCorner == null && extras == null) -> emptyList()
+            leftCorner != null -> buildList {
+                add(leftCorner)
+                extras?.let { addAll(it) }
+                add(hint)
+            }
+            else -> buildList {
+                add(hint!!)
+                addAll(extras!!)
+            }
         }
-        return charKey(c, hint?.substringBefore(HINT_VARIANT_SEPARATOR), alternatives = alternatives, weight = weight)
+        return Key(label = c.toString(), code = KeyCode.CHAR, char = c, hint = hint, leftHint = leftCorner, alternatives = alternatives, weight = weight)
     }
+    
+    /**
+     * D-512 §2.2: the dedicated apostrophe key right of `l` (QWERTY/QWERTZ) / right of `m` (AZERTY) -
+     * corners `" | '`, the right corner the release default so a straight long-press release commits `'`
+     * and the double quote is a slide-left away. Its popup is exactly the corner pair (the straddle
+     * data [leftCorner, extras…, rightCorner] with no extras). Not private: [AzertyLayout] shares it.
+     */
+    fun apostropheKey(): Key = Key(
+        label = "'",
+        code = KeyCode.CHAR,
+        char = '\'',
+        hint = "'",
+        leftHint = "\"",
+        alternatives = listOf("\"", "'")
+    )
     
     /**
      * D-314: the top-row entry point - a weight-defaulted delegate to [letterKey], kept so [AzertyLayout]'s
      * own top-row call sites read naturally and stay unchanged.
      */
-    fun topRowKey(c: Char, letterHints: Map<Char, String>): Key = letterKey(c, letterHints)
+    fun topRowKey(c: Char, letterHints: Map<Char, String>, leftCorners: Map<Char, String> = emptyMap()): Key =
+        letterKey(c, letterHints, leftCorners)
     
     
     private fun charKey(c: Char, hint: String? = null, alternatives: List<String> = emptyList(), weight: Float = 1f): Key {
