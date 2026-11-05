@@ -22,8 +22,10 @@ package de.froehlichmedia.adaptkey.keyboard
  * as long as the pre-selected cell's centre stays within the pressed key's own horizontal bounds
  * ([placementStrategy]'s [PopupRowStrategy.DRIFT_CLAMPED]); only when the drift would push that cell past
  * the key's left edge does D-282's own reversal remain the last resort ([PopupRowStrategy.REVERSED], the
- * shape the `p` key keeps). A key's dual-corner popup ([isDualCornerStraddle]) is centred over the host
- * key by [cornerRowPlacement], flipping its extras toward the screen interior at an edge overflow.
+ * shape the `p` key keeps). A key's dual-corner popup ([isDualCornerStraddle]) is placed by
+ * [cornerRowPlacement]: centred over the host key (at most one extra, an edge overflow flipping the extra
+ * toward the screen interior), or growing toward the screen centre with the first extra kept in the
+ * middle between the corners (two or more extras, the `7` key's `\ ⁷ / ÷ &`).
  */
 object HorizontalLongPressPopup {
     
@@ -204,17 +206,45 @@ object HorizontalLongPressPopup {
     }
     
     /**
-     * D-510 follow-up (device-corrected placement): positions a dual-corner key's popup row. The row is
-     * CENTRED over the host key - the left-corner cell lands over the key's left half, the right-corner
-     * cell (pre-selected, the release default) over its right edge, the extras in between; wider rows
-     * keep that shape, growing symmetrically "wie bisher" while both corner symbols hold their positions
-     * relative to the host. When the centred row would overflow a screen edge the row grows fully AWAY
-     * from that edge and the extras flip to the far side so the corners never leave the host: trailing
-     * behind the right corner at the left edge ([extrasTrailingRow], the `1` key), leading ahead of the
-     * left corner at the right edge ([extrasLeadingRow], the `0` key) - with D-44's own pre-selected
-     * centring placing the flipped row, so the right-corner symbol stays over the key.
+     * The corner row's cells reordered for the GROW case (three or more extras, i.e. four or more cells):
+     * the FIRST extra stays in the middle between the corners over the host (the `7` key's division sign),
+     * and the remaining extras move to the grow side - `[left, middle, right, rest…]` when the row grows
+     * RIGHT (a key in the screen's left half), `[rest…, left, middle, right]` when it grows LEFT (a key
+     * in the screen's right half, the `7` key: `\ ⁷ / ÷ &`). The release default stays the right corner.
+     */
+    fun <T> growTrailingRow(row: List<T>): List<T> {
+        require(row.size >= 4) { "the grow split needs both corners, a middle cell and at least one grow extra" }
+        return listOf(row[0], row[1], row.last()) + row.subList(2, row.lastIndex)
+    }
+    
+    /** The grow-case mirror of [growTrailingRow]: the rest lead ahead, the middle cell stays between the corners. */
+    fun <T> growLeadingRow(row: List<T>): List<T> {
+        require(row.size >= 4) { "the grow split needs both corners, a middle cell and at least one grow extra" }
+        return row.subList(2, row.lastIndex) + listOf(row[0], row[1], row.last())
+    }
+    
+    /**
+     * D-510 follow-up (device-corrected placement, second device pass): positions a dual-corner key's
+     * popup row.
+     *
+     * With at most ONE extra (two or three cells) the row is CENTRED over the host key - the left-corner
+     * cell lands over the key's left half, the right-corner cell (pre-selected, the release default) over
+     * its right edge, the extra in between; at a screen-edge overflow the single extra flips to the far
+     * side so the corners never leave the host: trailing behind the right corner at the left edge
+     * ([extrasTrailingRow], the `1` key's `~ ! ¹`), leading ahead of the left corner at the right edge
+     * ([extrasLeadingRow], the `0` key's `⁰ = )`) - with D-44's own pre-selected centring placing the
+     * flipped row, so the right-corner symbol stays over the key.
+     *
+     * With TWO OR MORE extras (four or more cells) they cannot all fit between the corners over the host,
+     * so the row GROWS toward the screen centre (D-54's own direction: a key in the left half grows
+     * right, a key in the right half grows left): the FIRST extra stays in the middle between the two
+     * corners directly over the host (the `7` key's `÷`), the remaining extras attach on the grow side,
+     * and the placement anchors the middle cell over the key centre - the `7` key renders as
+     * `\ ⁷ / ÷ &` with `/ ÷ &` directly over the host and the backslash/superscript hanging left.
+     * The release default stays the right-corner cell in every order.
      *
      * @param keyCenterX the host key's own centre
+     * @param viewWidth the view's own width (decides which screen half the key sits in, hence the grow side)
      * @param alternatives the corner row `[leftCorner, extras…, rightCorner]` (the straddle contract)
      * @param cellWidths the matching per-cell widths
      * @param minLeft the smallest allowed row-left (usually a small edge gap)
@@ -223,6 +253,7 @@ object HorizontalLongPressPopup {
      */
     fun cornerRowPlacement(
         keyCenterX: Float,
+        viewWidth: Float,
         alternatives: List<String>,
         cellWidths: List<Float>,
         minLeft: Float,
@@ -230,17 +261,29 @@ object HorizontalLongPressPopup {
     ): CornerRow {
         require(alternatives.size >= 2) { "a corner row carries both corners" }
         require(cellWidths.size == alternatives.size) { "every cell needs its own width" }
-        val ideal = keyCenterX - cellWidths.sum() / 2f
-        return when {
-            ideal >= minLeft && ideal <= maxLeft -> CornerRow(ideal, alternatives, cellWidths, alternatives.lastIndex)
-            ideal < minLeft -> {
-                val widths = extrasTrailingRow(cellWidths)
-                CornerRow(rowLeft(keyCenterX, widths, 1, minLeft, maxLeft), extrasTrailingRow(alternatives), widths, 1)
+        val lastIndex = alternatives.lastIndex
+        if (alternatives.size <= 3) {
+            val ideal = keyCenterX - cellWidths.sum() / 2f
+            return when {
+                ideal >= minLeft && ideal <= maxLeft -> CornerRow(ideal, alternatives, cellWidths, lastIndex)
+                ideal < minLeft -> {
+                    val widths = extrasTrailingRow(cellWidths)
+                    CornerRow(rowLeft(keyCenterX, widths, 1, minLeft, maxLeft), extrasTrailingRow(alternatives), widths, 1)
+                }
+                else -> {
+                    val widths = extrasLeadingRow(cellWidths)
+                    CornerRow(rowLeft(keyCenterX, widths, widths.lastIndex, minLeft, maxLeft), extrasLeadingRow(alternatives), widths, widths.lastIndex)
+                }
             }
-            else -> {
-                val widths = extrasLeadingRow(cellWidths)
-                CornerRow(rowLeft(keyCenterX, widths, widths.lastIndex, minLeft, maxLeft), extrasLeadingRow(alternatives), widths, widths.lastIndex)
-            }
+        }
+        return if (keyCenterX < viewWidth / 2f) {
+            // Left half: grow right - the rest trail behind the right corner, the middle cell over the key centre.
+            val widths = growTrailingRow(cellWidths)
+            CornerRow(rowLeft(keyCenterX, widths, 1, minLeft, maxLeft), growTrailingRow(alternatives), widths, 2)
+        } else {
+            // Right half: grow left - the rest lead ahead of the left corner, the middle cell over the key centre.
+            val widths = growLeadingRow(cellWidths)
+            CornerRow(rowLeft(keyCenterX, widths, widths.lastIndex - 1, minLeft, maxLeft), growLeadingRow(alternatives), widths, widths.lastIndex)
         }
     }
 }

@@ -1867,11 +1867,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * letters growing left). A geometry-based rule like D-282's, working for any key's popup including
      * one a language pack's own data (D-281) might put on a right-edge key.
      * 
-     * D-510 (plan §2.11.1, device-corrected): a dual-corner key's own popup row
-     * ([HorizontalLongPressPopup.isDualCornerStraddle]) is centred over the host key - the left-corner
-     * cell over the key's left half, the pre-selected right-corner cell (the release default) over its
-     * right edge, extras in between; at a screen-edge overflow the extras flip toward the screen interior
-     * so both corner symbols stay near the host (the 1 key's `~ ! ¹`, the 0 key's `⁰ = )`).
+     * D-510 (plan §2.11.1, device-corrected twice): a dual-corner key's own popup row
+     * ([HorizontalLongPressPopup.isDualCornerStraddle]) keeps its corners over the host key - the
+     * left-corner cell over the key's left half, the pre-selected right-corner cell (the release
+     * default) over its right edge. With at most one extra the row is centred (a screen-edge overflow
+     * flips the extra toward the screen interior: the 1 key's `~ ! ¹`, the 0 key's `⁰ = )`); with two or
+     * more extras the row grows toward the screen centre with the first extra kept in the middle between
+     * the corners (the 7 key's `\ ⁷ / ÷ &`).
      * 
      * D-53: the row always sits above the key. For the number row this reaches above the keyboard into the
      * suggestion-bar area; the service disables child-clipping on the container/root so it is drawn on top
@@ -1885,15 +1887,15 @@ class AdaptKeyboardView @JvmOverloads constructor(
         val cellWidthsRaw = alternatives.map { popupCellWidthFor(it) }
         val rowWidth = cellWidthsRaw.sum()
         val maxLeft = (width - gapPx - rowWidth).coerceAtLeast(gapPx)
-        // D-510 follow-up (device-corrected placement): the corner row is CENTRED over the host key -
-        // the left-corner cell over the key's left half, the pre-selected right-corner cell (the release
-        // default) over its right edge, extras in between; wider rows grow symmetrically. At a screen
-        // edge the row grows fully away and the extras flip to the far side so both corner symbols stay
-        // near the host (the 1 key: `~ ! ¹` trailing; the 0 key: `⁰ = )` leading). The pre-selection
-        // always stays the right-corner cell.
+        // D-510 follow-up (device-corrected placement, second pass): the corner row keeps its corners
+        // over the host key - at most one extra sits between them and the row is centred (edge overflow
+        // flips that extra to the far side: the 1 key's `~ ! ¹` trailing, the 0 key's `⁰ = )` leading);
+        // with two or more extras the row grows toward the screen centre with the first extra kept in
+        // the middle between the corners (the 7 key renders `\ ⁷ / ÷ &` with / ÷ & over the host).
+        // The pre-selection always stays the right-corner cell (the release default).
         if (HorizontalLongPressPopup.isDualCornerStraddle(key, alternatives)) {
             popupRowTop = rect.top - gapPx - popupCellHeightPx
-            val placement = HorizontalLongPressPopup.cornerRowPlacement(rect.centerX(), alternatives, cellWidthsRaw, gapPx, maxLeft)
+            val placement = HorizontalLongPressPopup.cornerRowPlacement(rect.centerX(), width.toFloat(), alternatives, cellWidthsRaw, gapPx, maxLeft)
             popupRowLeft = placement.rowLeft
             popupAlternatives = placement.alternatives
             popupCellWidths = placement.cellWidths

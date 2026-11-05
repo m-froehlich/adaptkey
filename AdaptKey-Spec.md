@@ -210,16 +210,21 @@ drift would push the pre-selected cell past the key's left edge does D-282's own
 resort (the p key keeps its observed shape: π over the key, Greek letters growing left). Single-cell rows
 are never reversed - the plain clamp they always had is the same position the drift produces.
 
-**D-510 follow-up (device-corrected, v1.2.103) - the corner row is centred over the host key.** The first
-implementation had left-aligned the corner row at the key's left edge, which pushed the trailing cells far
-from the host. As placed on the device: the corner row is CENTRED over the key - the left-corner symbol
-lands over the key's left half, the right-corner symbol over its right edge, extras in between (two cells:
-exactly centred; a middle extra stays over the centre; wider rows keep that shape, growing symmetrically
-"wie bisher" while both corner symbols hold their positions relative to the host). When the centred row
-would overflow a screen edge the row grows fully AWAY from that edge and the extras flip to the far side so
-both corner symbols stay near the host: at the left edge they trail behind the right corner (the `1` key's
-`~ ¹ !` shows as `~ ! ¹`), at the right edge they lead ahead of the left corner (the `0` key's `= ⁰ )` shows
-as `⁰ = )`) - the release default stays the right corner in every order.
+**D-510 follow-up (device-corrected, v1.2.103/104) - the corner row keeps its corners over the host key.**
+The first implementation had left-aligned the corner row at the key's left edge, which pushed the trailing
+cells far from the host. As placed on the device: with at most ONE extra (two or three cells) the row is
+CENTRED over the key - the left-corner symbol lands over the key's left half, the right-corner symbol over
+its right edge, the extra in between; at a screen-edge overflow the row grows fully away from that edge and
+the extra flips to the far side so both corner symbols stay near the host: at the left edge it trails
+behind the right corner (the `1` key's `~ ¹ !` shows as `~ ! ¹`), at the right edge it leads ahead of the
+left corner (the `0` key's `= ⁰ )` shows as `⁰ = )`) - the release default stays the right corner in every
+order. With TWO OR MORE extras (four or more cells) they cannot all fit between the corners over the host,
+so the row GROWS toward the screen centre (a key in the left half grows right, a key in the right half
+grows left): the FIRST extra stays in the middle between the two corners directly over the host, the
+remaining extras attach on the grow side, and the placement anchors that middle cell over the key centre -
+the `7` key renders as `\ ⁷ / ÷ &` with `/ ÷ &` directly over the host (slash left, division sign centre,
+ampersand right) and the backslash/superscript hanging left; the `2` key mirrors it as `" ' @ ² ₂`
+growing right.
 
 Frequently used symbols are placed as secondary characters on letter keys, reachable by long-press and shown
 as a small hint glyph in the corner of the key - analogous to the AltGr labels on a hardware QWERTZ

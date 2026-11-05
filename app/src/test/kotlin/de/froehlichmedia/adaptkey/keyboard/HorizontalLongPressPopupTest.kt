@@ -226,12 +226,12 @@ class HorizontalLongPressPopupTest {
     
     // D-510 follow-up (device-corrected placement): the corner row is CENTRED over the host key - two
     // cells put the left corner over the key's left half and the right corner over its right edge; a
-    // middle extra stays over the key centre; wider rows grow symmetrically while both corner symbols
-    // hold their positions relative to the host.
+    // middle extra stays over the key centre. (At most one extra fits between the corners; two or more
+    // take the grow split below.)
     @Test
     fun `D-510 follow-up a fitting corner row is centred over the host key, right corner pre-selected`() {
         val placement = HorizontalLongPressPopup.cornerRowPlacement(
-            300f, listOf("°", "$"), listOf(44f, 44f), 15f, 1000f
+            300f, 800f, listOf("°", "$"), listOf(44f, 44f), 15f, 1000f
         )
         // Row width 88 centred on 300: rowLeft = 256, cell centres at 278 (left half) and 322 (right edge).
         assertEquals(256f, placement.rowLeft)
@@ -242,7 +242,7 @@ class HorizontalLongPressPopupTest {
     @Test
     fun `D-510 follow-up a three-cell corner row keeps the extra in the middle, centred`() {
         val placement = HorizontalLongPressPopup.cornerRowPlacement(
-            300f, listOf("~", "¹", "!"), listOf(44f, 44f, 44f), 15f, 1000f
+            300f, 800f, listOf("~", "¹", "!"), listOf(44f, 44f, 44f), 15f, 1000f
         )
         // Row width 132 centred on 300: cell centres at 212, 300, 388 - the extra over the key centre,
         // the two corner symbols over the key's flanks.
@@ -251,16 +251,38 @@ class HorizontalLongPressPopupTest {
         assertEquals(2, placement.preSelectedIndex)
     }
     
+    // The 7-key scenario (second device pass): five cells (two or more extras cannot all fit between the
+    // corners over the host), key in the screen's RIGHT half - the row grows LEFT, the first extra (the
+    // middle glyph ÷) stays between the corners over the host, and the remaining extras attach ahead of
+    // the left corner: \ ⁷ / ÷ & with / ÷ & directly over the host and ÷ over its centre.
     @Test
-    fun `D-510 follow-up a wider corner row stays centred with the corners at its ends`() {
+    fun `D-510 follow-up the 7 key grows left with the middle glyph over the host`() {
         val placement = HorizontalLongPressPopup.cornerRowPlacement(
-            300f, listOf("\"", "'", "²", "₂", "@"), List(5) { 44f }, 15f, 1000f
+            700f, 800f, listOf("/", "÷", "\\", "⁷", "&"), List(5) { 44f }, 15f, 1000f
         )
-        // Row width 220 centred on 300: the left corner's centre sits 88 left of the key's centre, the
-        // right corner's 88 right of it - the corners hold their relative positions, extras between.
-        assertEquals(190f, placement.rowLeft)
-        assertEquals(listOf("\"", "'", "²", "₂", "@"), placement.alternatives)
+        assertEquals(listOf("\\", "⁷", "/", "÷", "&"), placement.alternatives)
+        assertEquals(listOf(44f, 44f, 44f, 44f, 44f), placement.cellWidths)
+        // The release default stays the right corner (&), now the last cell.
         assertEquals(4, placement.preSelectedIndex)
+        // Anchored on the middle cell (÷, index 3) over the key centre: / ÷ & span the host's
+        // left/centre/right, the backslash and superscript hang left toward the screen centre.
+        assertEquals(700f - 154f, placement.rowLeft)
+    }
+    
+    // The 2-key scenario, mirrored: five cells, key in the screen's LEFT half - the row grows RIGHT, the
+    // first extra (the apostrophe) stays between the corners over the host, the remaining extras trail
+    // behind the right corner: " ' @ ² ₂.
+    @Test
+    fun `D-510 follow-up the 2 key grows right with the middle cell over the host`() {
+        val placement = HorizontalLongPressPopup.cornerRowPlacement(
+            200f, 800f, listOf("\"", "'", "²", "₂", "@"), List(5) { 44f }, 15f, 1000f
+        )
+        assertEquals(listOf("\"", "'", "@", "²", "₂"), placement.alternatives)
+        // The release default stays the right corner (@), now the third cell.
+        assertEquals(2, placement.preSelectedIndex)
+        // Anchored on the middle cell (', index 1) over the key centre: " ' @ span the host's
+        // left/centre/right, the superscript and subscript trail right toward the screen centre.
+        assertEquals(200f - 66f, placement.rowLeft)
     }
     
     // The 1-key scenario: the centred three-cell row would poke past the screen's left edge, so the row
@@ -269,7 +291,7 @@ class HorizontalLongPressPopupTest {
     @Test
     fun `D-510 follow-up a left-edge corner row flips its extras behind the right corner`() {
         val placement = HorizontalLongPressPopup.cornerRowPlacement(
-            65f, listOf("~", "¹", "!"), List(3) { 44f }, 15f, 1000f
+            65f, 800f, listOf("~", "¹", "!"), List(3) { 44f }, 15f, 1000f
         )
         assertEquals(listOf("~", "!", "¹"), placement.alternatives)
         assertEquals(listOf(44f, 44f, 44f), placement.cellWidths)
@@ -284,7 +306,7 @@ class HorizontalLongPressPopupTest {
     @Test
     fun `D-510 follow-up a right-edge corner row flips its extras ahead of the left corner`() {
         val placement = HorizontalLongPressPopup.cornerRowPlacement(
-            935f, listOf("=", "⁰", ")"), List(3) { 44f }, 15f, 800f
+            935f, 800f, listOf("=", "⁰", ")"), List(3) { 44f }, 15f, 800f
         )
         assertEquals(listOf("⁰", "=", ")"), placement.alternatives)
         assertEquals(2, placement.preSelectedIndex)
@@ -296,10 +318,10 @@ class HorizontalLongPressPopupTest {
     @Test
     fun `D-510 follow-up cornerRowPlacement rejects a mismatched or too-short row`() {
         assertThrows(IllegalArgumentException::class.java) {
-            HorizontalLongPressPopup.cornerRowPlacement(0f, listOf("~"), listOf(44f), 15f, 100f)
+            HorizontalLongPressPopup.cornerRowPlacement(0f, 800f, listOf("~"), listOf(44f), 15f, 100f)
         }
         assertThrows(IllegalArgumentException::class.java) {
-            HorizontalLongPressPopup.cornerRowPlacement(0f, listOf("~", "¹", "!"), listOf(44f, 44f), 15f, 100f)
+            HorizontalLongPressPopup.cornerRowPlacement(0f, 800f, listOf("~", "¹", "!"), listOf(44f, 44f), 15f, 100f)
         }
     }
     
@@ -309,5 +331,14 @@ class HorizontalLongPressPopupTest {
         assertEquals(listOf("(", "ñ", "ń"), HorizontalLongPressPopup.extrasTrailingRow(listOf("(", "ń", "ñ")))
         assertEquals(listOf("(", "ñ"), HorizontalLongPressPopup.extrasLeadingRow(listOf("(", "ñ")))
         assertEquals(listOf("ń", "(", "ñ"), HorizontalLongPressPopup.extrasLeadingRow(listOf("(", "ń", "ñ")))
+    }
+    
+    @Test
+    fun `D-510 follow-up the grow reorders keep the middle cell between the corners and move the rest to the grow side`() {
+        val row = listOf("/", "÷", "\\", "⁷", "&")
+        assertEquals(listOf("/", "÷", "&", "\\", "⁷"), HorizontalLongPressPopup.growTrailingRow(row))
+        assertEquals(listOf("\\", "⁷", "/", "÷", "&"), HorizontalLongPressPopup.growLeadingRow(row))
+        assertThrows(IllegalArgumentException::class.java) { HorizontalLongPressPopup.growTrailingRow(listOf("(", "ñ")) }
+        assertThrows(IllegalArgumentException::class.java) { HorizontalLongPressPopup.growLeadingRow(listOf("(", "ñ")) }
     }
 }

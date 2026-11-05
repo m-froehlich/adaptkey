@@ -5,9 +5,12 @@ Runde mit Commit + Bump (D-514 Docs-only, rides v1.2.102); History §538, Progre
 Device-Pass 1 (2026-11-05, v1.2.102): Corner-Reihen-Platzierung korrigiert (zentriert über dem Host-Key,
 Rand-Flips `~ ! ¹` / `⁰ = )`) → v1.2.103. Die Alt-Symbole auf c/v/b/n/m stammten aus dem STALE installierten
 deutschen Pack (v49) — vom Nutzer bestätigt gelöst: er hat die Runde (bis v1.2.102) selbst gepusht und das
-de-Pack (v50) re-importiert, „c bis m stimmen jetzt". Offen: Re-Test des v1.2.103-Placement-Fix auf dem
-Gerät (übrige §9-Punkte: beide Corners lesbar, Release-Defaults §3b, Sprach-Sichtbarkeit DE/EN/Eigene,
-C-09-Fallback, URL/Email unverändert, AZERTY-' rechts von m); v1.2.103 ist lokal, bis der Nutzer pusht.** Die
+de-Pack (v50) re-importiert, „c bis m stimmen jetzt". Device-Pass 2 (v1.2.103, „Fast perfekt — nur auf der
+7 passt es nicht"): 4+-Zellen-Eckreihen wachsen jetzt zur bildschirmmittigen Seite, das erste Extra bleibt
+als Mittelzeichen zwischen den Corners über dem Host — die 7 rendert `\ ⁷ / ÷ &`, die 2 gespiegelt
+`" ' @ ² ₂` → v1.2.104. Offen: Re-Test der 7 (und gespiegelt der 2) plus die übrigen §9-Punkte (beide
+Corners lesbar, Release-Defaults §3b, Sprach-Sichtbarkeit DE/EN/Eigene, C-09-Fallback, URL/Email
+unverändert, AZERTY-' rechts von m); v1.2.104 ist lokal, bis der Nutzer pusht.** Die
 ursprüngliche Ausführungsnotiz: ausführungsbereit nach fünf Abstimmungs-/Beobachtungsrunden; Start auf
 ausdrückliches Go hin (eigener Chat, Start-Prompt in §11).
 Diese Datei ist in sich geschlossen: `.kilo/command/start-prompt.md` + dieses Dokument reichen einer

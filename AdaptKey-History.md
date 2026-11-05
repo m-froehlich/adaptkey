@@ -24543,3 +24543,22 @@ stale-pack symptoms (the freed keys' math symbols, n's plus, d's duplicate popup
 code defect, exactly per the D-473-followup mechanism. Still open: the v1.2.103 placement-fix re-test
 (corner rows centred over the host, the 1/0 edge flips) plus the rest of the plan §9 checklist; v1.2.103
 itself is local-only until the user's next push.
+
+**Device pass 2 (2026-11-05, user on-device, v1.2.103): the 7 key's corner row placement corrected
+(v1.2.104) - the second placement rule made explicit.** Everything passed except the `7` key: its
+five-cell row was simply centred, which put the backslash (the row's middle cell) over the host centre -
+"völlig falsch" and correctly so, because with TWO OR MORE extras the row cannot keep its corners over the
+host while centring. The placement rule, per the user's own spec: with two or more extras the row GROWS
+toward the screen centre (a key in the left half grows right, a key in the right half grows left - the
+D-54 direction), the FIRST extra stays in the middle between the corners directly over the host, and the
+placement anchors that middle cell over the key centre. The `7` key renders as `\ ⁷ / ÷ &` - slash left,
+division sign centre, ampersand right, directly over the host, with the backslash and superscript hanging
+left toward the screen centre; the `2` key mirrors it as `" ' @ ² ₂` growing right. The 2-3-cell rows
+(exactly centred, the extra in the middle) and the 1/0 edge flips are unchanged and device-approved.
+`straddleRowLeft`'s replacement `cornerRowPlacement` gained the view width (it decides the grow side), two
+new generic reorder helpers (`growTrailingRow`/`growLeadingRow`), and seven net-new test scenarios
+(the 7/2 grow rows, the flips, the reorder helpers, the rejects). 1,869 unit tests total (1,867 + 2), 0
+failures; `:app:assembleRelease` green. `versionCode` 599 -> 600, `versionName` "1.2.103" -> "1.2.104".
+Also recorded: the user pushed v1.2.103 and the round's packs themselves mid-session, so origin/main
+carries the reform through the first placement fix; v1.2.104 is local until their next push. Re-test owed:
+the 7 key (and the mirrored 2 key) plus the rest of the plan §9 checklist.

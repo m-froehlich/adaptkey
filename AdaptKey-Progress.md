@@ -489,11 +489,25 @@ non-trivial changes).
   0: `⁰ = )`). The math symbols still on c/v/b/n/m are the STALE INSTALLED German pack (origin/main still
   hosts v49 - unpushed by convention); they resolve by pushing + re-importing the pack (v50), no code
 defect - see History §538's device-pass tail. Re-test owed after the push + re-import.**
+  **Device pass 1 (2026-11-05, v1.2.102) done - one defect found and fixed (v1.2.103): the corner row had
+  been left-aligned at the key's edge (trailing cells far from the host); now centred over the host per the
+  user's placement spec, flipping its extras toward the screen interior at an edge overflow (1: `~ ! ¹`,
+  0: `⁰ = )`). The math symbols still on c/v/b/n/m are the STALE INSTALLED German pack (origin/main still
+  hosts v49 - unpushed by convention); they resolve by pushing + re-importing the pack (v50), no code
+  defect - see History §538's device-pass tail. Re-test owed after the push + re-import.**
   **Follow-up (same day, user): CONFIRMED - the user pushed v1.2.98-v1.2.102 mid-round himself and
   re-imported the German pack: "c bis m stimmen jetzt" - the stale-pack explanation is device-confirmed,
   the freed keys and the universal tilde-n behave per the reform. origin/main carries the round through
   D-514/v1.2.102 (packs at v50); the v1.2.103 placement fix is local-only until his next push, and the
   v1.2.103 re-test (corner rows centred, the 1/0 flips) is the remaining open item.**
+  **Device pass 2 (2026-11-05, v1.2.103, after the user's own push + pack re-import: "Fast perfekt...
+  Nur auf der 7 passt es aus irgendeinem Grund nicht"): the 7 key's five-cell corner row was merely
+  centred (its middle cell, the backslash, landed over the host centre). Fixed (v1.2.104): with two or
+  more extras the corner row grows toward the screen centre, the FIRST extra staying in the middle between
+  the corners over the host - the 7 key renders `\ ⁷ / ÷ &` (slash/division/ampersand directly over the
+  host, backslash + superscript hanging left), the 2 key mirrors it as `" ' @ ² ₂` growing right. The 2-3-
+  cell rows and the 1/0 flips are unchanged. See History §538's device-pass-2 tail. Re-test owed: the 7
+  (and mirrored 2) plus the rest of the plan §9 checklist; v1.2.104 is local until the user's next push.**
 
 - **D-508 - RESOLVED (§534, v1.2.94), device-confirmed 2026-10-31: the gesture/long-press calibration for
   slow users - the community report's whole solution.** The D-401 space long-press cancels on motion alone,
