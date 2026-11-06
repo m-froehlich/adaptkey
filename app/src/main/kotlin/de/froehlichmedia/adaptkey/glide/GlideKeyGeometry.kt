@@ -10,7 +10,7 @@ package de.froehlichmedia.adaptkey.glide
  * characters that are actual letter keys of the active layout belong here - a candidate whose folded
  * spelling contains a character without a centre is not typeable as one stroke and is skipped.
  */
-class GlideKeyGeometry(private val centers: Map<Char, GlidePoint>) {
+class GlideKeyGeometry(val centers: Map<Char, GlidePoint>) {
 
     /**
      * The smallest distance between any two key centres - the natural scale of this geometry. Used
