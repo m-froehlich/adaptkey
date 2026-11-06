@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Galaw ng kontrol sa cursor</string>
     <string name="d401_cursor_control_summary">Pindutin nang matagal ang space bar para ilipat ang cursor sa pamamagitan ng pag-drag; manatiling tahimik para lumipat sa pagpili ng teksto.</string>
     <string name="d19_surface_swipe_title">Mag-swipe para lumipat ng pahina ng keyboard</string>
-    <string name="d19_surface_swipe_summary">Mag-swipe pakaliwa o pakanan sa keyboard para lumipat sa pagitan ng mga titik at ng mga pahina ng numero/simbolo. Kapag naka-off, ang ?123 / ABC key lang ang lumilipat.</string>
+    <string name="d19_surface_swipe_summary">Mag-swipe pakaliwa o pakanan sa keyboard para lumipat sa pagitan ng mga titik at ng mga pahina ng numero/simbolo. Kapag naka-off, ang ?123 / ABC key lang ang lumilipat. Kapag naka-on ang pag-slide sa pag-type, ang pahina ng mga titik ay nagpapalit lamang sa ?123 key.</string>
     <string name="g03_swipe_down_dismiss_title">Mag-swipe pababa para isara ang keyboard</string>
     <string name="g03_swipe_down_dismiss_summary">Isinasara ang keyboard kapag nag-swipe pababa dito. Kapag naka-off, ang extra row lang ang isinasara at nananatiling bukas ang keyboard.</string>
     <string name="d508_space_swipe_scale_title">Distansya ng swipe para sa wika</string>
@@ -388,4 +388,8 @@
     <string name="d506_pack_base_notice">Paalala: Sa kasalukuyan, tanging ang Aleman na pakete ang manu-manong na-curate. Ang lahat ng iba pang wika – kabilang ang nakapaloob na Ingles – ay awtomatikong binuong basehan: mga kulang na salita, maling o ayaw na pagwawasto at katulad na mga glitch ay karaniwang nagmumula sa data ng pakete, hindi mula sa app mismo. Kung bihasa kayo sa isang wika, maaari kayong tumulong pagbutihin ang pakete nito (tingnan ang gabay sa pag-aambag sa repositoryo ng proyekto).</string>
     <string name="d515_apostrophe_key_title">Apostrope key</string>
     <string name="d515_apostrophe_key_summary">Ipakita ang apostrope key (sa kanan ng l/m) sa mga keyboard na hindi Ingles. Naka-off: mga keyboard na Ingles lang.</string>
+    <string name="d516_glide_typing_title">Pag-slide sa pag-type (glide typing)</string>
+    <string name="d516_glide_typing_summary">Guhit ang salita sa isang tuloy-tuloy na linya sa mga titik para i-type ito. Nakasara bilang default; kapag naka-on, ang pahina ng mga titik ay nagpapalit lamang sa ?123 key.</string>
+    <string name="d89_f39_title">Pag-slide sa pag-type (glide typing)</string>
+    <string name="d89_f39_desc">Opsyonal: guhit ang salita sa isang tuloy-tuloy na linya sa mga titik - ang pinakamahusay na tugma ay mai-type para sa iyo, kasama ang diksyunaryo, pag-tiklop ng mga diakritiko at personal na konteksto. Nakasara bilang default.</string>
 </resources>

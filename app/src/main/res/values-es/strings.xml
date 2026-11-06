@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Gesto de control del cursor</string>
     <string name="d401_cursor_control_summary">Mantén pulsada la barra espaciadora para mover el cursor arrastrando; quédate quieto para pasar a la selección de texto.</string>
     <string name="d19_surface_swipe_title">Deslizar para cambiar de página del teclado</string>
-    <string name="d19_surface_swipe_summary">Desliza a la izquierda o a la derecha sobre el teclado para cambiar entre letras y las páginas de números/símbolos. Si está desactivado, solo cambia la tecla ?123 / ABC.</string>
+    <string name="d19_surface_swipe_summary">Desliza a la izquierda o a la derecha sobre el teclado para cambiar entre letras y las páginas de números/símbolos. Si está desactivado, solo cambia la tecla ?123 / ABC. Con la escritura gestual activada, la página de letras solo cambia mediante la tecla ?123.</string>
     <string name="g03_swipe_down_dismiss_title">Deslizar hacia abajo para cerrar el teclado</string>
     <string name="g03_swipe_down_dismiss_summary">Deslizar hacia abajo sobre el teclado lo cierra. Si está desactivado, solo cierra la fila adicional y el teclado sigue abierto.</string>
     <string name="d508_space_swipe_scale_title">Distancia del deslizamiento de idioma</string>
@@ -388,4 +388,8 @@
     <string name="d506_pack_base_notice">Nota: hoy solo el paquete alemán está curado a mano. Todos los demás idiomas – incluido el inglés – son una base creada automáticamente: palabras que faltan, correcciones erróneas o no deseadas y otros fallos suelen venir de los datos del paquete, no de la propia aplicación. Si conoces bien un idioma, puedes ayudar a mejorar su paquete (ver la guía de contribución en el repositorio del proyecto).</string>
     <string name="d515_apostrophe_key_title">Tecla de apóstrofo</string>
     <string name="d515_apostrophe_key_summary">Mostrar la tecla de apóstrofo (a la derecha de l/m) también en teclados no ingleses. Desactivado: solo teclados ingleses.</string>
+    <string name="d516_glide_typing_title">Escritura gestual (glide typing)</string>
+    <string name="d516_glide_typing_summary">Dibuja una palabra en un solo trazo continuo sobre las letras para escribirla. Desactivada por defecto; cuando está activada, la página de letras solo cambia mediante la tecla ?123.</string>
+    <string name="d89_f39_title">Escritura gestual (glide typing)</string>
+    <string name="d89_f39_desc">Opcional: dibuja una palabra en un solo trazo continuo sobre las letras y se escribe la mejor coincidencia, con diccionario, plegado de diacríticos y contexto personal. Desactivada por defecto.</string>
 </resources>

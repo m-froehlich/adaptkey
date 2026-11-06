@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Gesto di controllo del cursore</string>
     <string name="d401_cursor_control_summary">Tieni premuta la barra spaziatrice per spostare il cursore trascinando; resta fermo per passare alla selezione del testo.</string>
     <string name="d19_surface_swipe_title">Scorri per cambiare pagina della tastiera</string>
-    <string name="d19_surface_swipe_summary">Scorri a sinistra o a destra sulla tastiera per passare tra lettere e pagine di numeri/simboli. Se disattivato, cambia solo il tasto ?123 / ABC.</string>
+    <string name="d19_surface_swipe_summary">Scorri a sinistra o a destra sulla tastiera per passare tra lettere e pagine di numeri/simboli. Se disattivato, cambia solo il tasto ?123 / ABC. Con la scrittura gestuale attiva, la pagina delle lettere cambia solo tramite il tasto ?123.</string>
     <string name="g03_swipe_down_dismiss_title">Scorri verso il basso per chiudere la tastiera</string>
     <string name="g03_swipe_down_dismiss_summary">Uno scorrimento verso il basso sulla tastiera la chiude. Se disattivato, chiude solo la riga aggiuntiva e la tastiera resta aperta.</string>
     <string name="d508_space_swipe_scale_title">Distanza dello scorrimento lingua</string>
@@ -388,4 +388,8 @@
     <string name="d506_pack_base_notice">Nota: oggi solo il pacchetto tedesco è curato a mano. Tutte le altre lingue – compreso l’inglese integrato – sono una base creata automaticamente: parole mancanti, correzioni errate o indesiderate e simili difetti di solito derivano dai dati del pacchetto, non dall’app stessa. Se conosci bene una lingua, puoi contribuire a migliorarne il pacchetto (vedi la guida per i contributi nel repository del progetto).</string>
     <string name="d515_apostrophe_key_title">Tasto apostrofo</string>
     <string name="d515_apostrophe_key_summary">Mostra il tasto apostrofo (a destra di l/m) anche sulle tastiere non inglesi. Disattivato: solo tastiere inglesi.</string>
+    <string name="d516_glide_typing_title">Scrittura gestuale (glide typing)</string>
+    <string name="d516_glide_typing_summary">Disegna una parola con un unico tratto continuo sulle lettere per scriverla. Disattivata per impostazione predefinita; quando attiva, la pagina delle lettere cambia solo tramite il tasto ?123.</string>
+    <string name="d89_f39_title">Scrittura gestuale (glide typing)</string>
+    <string name="d89_f39_desc">Opzionale: disegna una parola con un unico tratto continuo sulle lettere - la corrispondenza migliore viene scritta per te, con dizionario, riporto dei diacritici e contesto personale. Disattivata per impostazione predefinita.</string>
 </resources>

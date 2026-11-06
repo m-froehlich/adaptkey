@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">İmleç kontrol hareketi</string>
     <string name="d401_cursor_control_summary">İmleci sürükleyerek taşımak için boşluk çubuğuna uzun bas; metin seçimine geçmek için sabit dur.</string>
     <string name="d19_surface_swipe_title">Klavye sayfasını kaydırarak değiştir</string>
-    <string name="d19_surface_swipe_summary">Harfler ile rakam/sembol sayfaları arasında geçiş yapmak için klavyede sola veya sağa kaydırın. Kapalıyken yalnızca ?123 / ABC tuşu geçiş yapar.</string>
+    <string name="d19_surface_swipe_summary">Harfler ile rakam/sembol sayfaları arasında geçiş yapmak için klavyede sola veya sağa kaydırın. Kapalıyken yalnızca ?123 / ABC tuşu geçiş yapar. Kaydırarak yazma açıkken harf sayfası yalnızca ?123 tuşuyla değişir.</string>
     <string name="g03_swipe_down_dismiss_title">Klavyeyi kapatmak için aşağı kaydırın</string>
     <string name="g03_swipe_down_dismiss_summary">Klavyede aşağı kaydırmak onu kapatır. Kapalıyken yalnızca ek satırı kapatır ve klavye açık kalır.</string>
     <string name="d508_space_swipe_scale_title">Dil kaydırma mesafesi</string>
@@ -388,4 +388,8 @@
     <string name="d506_pack_base_notice">Not: Şu anda yalnızca Almanca paket elle derlenmiştir. Diğer tüm diller – yerleşik İngilizce dahil – otomatik olarak oluşturulmuş bir temeldir: eksik kelimeler, yanlış veya istenmeyen düzeltmeler ve benzeri sorunlar genellikle paket verilerinden, uygulamanın kendisinden değil gelir. Bir dili iyi biliyorsanız, paketini geliştirmeye yardımcı olabilirsiniz (proje deposundaki katkı kılavuzuna bakın).</string>
     <string name="d515_apostrophe_key_title">Kesme işareti tuşu</string>
     <string name="d515_apostrophe_key_summary">Kesme işareti tuşunu (l/m\'nin sağında) İngilizce olmayan klavyelerde de göster. Kapalı: yalnızca İngilizce klavyeler.</string>
+    <string name="d516_glide_typing_title">Kaydırarak yazma (glide typing)</string>
+    <string name="d516_glide_typing_summary">Bir kelimeyi harflerin üzerinde kesintisiz bir çizgiyle çizin ve yazılsın. Varsayılan olarak kapalı; açıkken harf sayfası yalnızca ?123 tuşuyla değişir.</string>
+    <string name="d89_f39_title">Kaydırarak yazma (glide typing)</string>
+    <string name="d89_f39_desc">İsteğe bağlı: bir kelimeyi harflerin üzerinde kesintisiz bir çizgiyle çizin - en iyi eşleşme sizin adınıza yazılır; sözlük, diakritik eşleme ve kişisel bağlam dahil. Varsayılan olarak kapalı.</string>
 </resources>

@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Kursori juhtimise žest</string>
     <string name="d401_cursor_control_summary">Vajuta pikalt tühikuklahvi, et liigutada kursorit lohistades; püsi paigal, et lülituda teksti valimisele.</string>
     <string name="d19_surface_swipe_title">Klaviatuuri lehtede vahetamine pühkides</string>
-    <string name="d19_surface_swipe_summary">Pühi üle klaviatuuri vasakule või paremale, et vahetada tähtede ja numbrite/sümbolite lehtede vahel. Kui väljas, vahetab ainult klahv ?123 / ABC.</string>
+    <string name="d19_surface_swipe_summary">Pühi üle klaviatuuri vasakule või paremale, et vahetada tähtede ja numbrite/sümbolite lehtede vahel. Kui väljas, vahetab ainult klahv ?123 / ABC. Kui libisev kirjutamine on sees, vahetub tähtede leht ainult klahviga ?123.</string>
     <string name="g03_swipe_down_dismiss_title">Pühi alla, et klaviatuur sulgeda</string>
     <string name="g03_swipe_down_dismiss_summary">Allapoole pühkimine klaviatuuril sulgeb selle. Kui väljas, sulgub ainult lisarida ja klaviatuur jääb avatuks.</string>
     <string name="d508_space_swipe_scale_title">Keelevahetuse pühkimiskaugus</string>
@@ -388,4 +388,8 @@
     <string name="d506_pack_base_notice">Märkus: Praegu on käsitsi koostatud ainult saksa pakett. Kõik teised keeled – sealhulgas kaasas olev inglise keel – on automaatselt loodud alus: puuduvad sõnad, valed või soovimatud parandused ja sarnased vead tulevad tavaliselt paketi andmetest, mitte rakendusest endast. Kui valdate keelt hästi, saate aidata selle paketti parandada (vaadake projekti hoidla kaastöö juhendit).</string>
     <string name="d515_apostrophe_key_title">Apostrofi klahv</string>
     <string name="d515_apostrophe_key_summary">Kuva apostrofi klahv (l/m-st paremal) ka mitteingliskeelsetel klaviatuuridel. Väljas: ainult ingliskeelsed klaviatuurid.</string>
+    <string name="d516_glide_typing_title">Libisev kirjutamine (glide typing)</string>
+    <string name="d516_glide_typing_summary">Joonista sõna ühe katkematu joonega tähtede peale ja see kirjutatakse. Vaikimisi väljas; kui sees, vahetub tähtede leht ainult klahviga ?123.</string>
+    <string name="d89_f39_title">Libisev kirjutamine (glide typing)</string>
+    <string name="d89_f39_desc">Valikuline: joonista sõna ühe katkematu joonega tähtede peale - parim vaste kirjutatakse sinu eest, koos sõnaraamatu, diakriitika-teisenduse ja isikliku kontekstiga. Vaikimisi väljas.</string>
 </resources>

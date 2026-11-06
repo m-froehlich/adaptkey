@@ -68,6 +68,8 @@ object FeatureCatalog {
         Entry(R.string.d89_f35_title, R.string.d89_f35_desc),
         Entry(R.string.d89_f36_title, R.string.d89_f36_desc),
         Entry(R.string.d89_f37_title, R.string.d89_f37_desc),
-        Entry(R.string.d89_f38_title, R.string.d89_f38_desc)
+        Entry(R.string.d89_f38_title, R.string.d89_f38_desc),
+        // D-516/G-09: glide typing joins the catalog with its own entry.
+        Entry(R.string.d89_f39_title, R.string.d89_f39_desc)
     )
 }

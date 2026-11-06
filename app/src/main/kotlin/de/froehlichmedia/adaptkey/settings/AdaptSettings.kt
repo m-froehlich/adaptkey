@@ -209,6 +209,7 @@ data class AdaptSettings(
     val cursorControlEnabled: Boolean = true,
     val surfaceSwipeEnabled: Boolean = true,
     val swipeDownDismissEnabled: Boolean = true,
+    val glideTypingEnabled: Boolean = false, // D-516/G-09: glide typing (opt-in, default off)
     val spaceSwipeScalePercent: Int = DEFAULT_SPACE_SWIPE_SCALE,
     val fieldSwipeScalePercent: Int = DEFAULT_FIELD_SWIPE_SCALE,
     val backspaceRepeatInitialDelayMs: Long = DEFAULT_BACKSPACE_REPEAT_INITIAL_DELAY_MS,

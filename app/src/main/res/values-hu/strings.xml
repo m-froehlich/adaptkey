@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Kurzorvezérlő kézmozdulat</string>
     <string name="d401_cursor_control_summary">Nyomd hosszan a szóközt, hogy húzással mozgasd a kurzort; maradj mozdulatlan, hogy szövegkijelölésre válts.</string>
     <string name="d19_surface_swipe_title">Billentyűzetoldal váltása csúsztatással</string>
-    <string name="d19_surface_swipe_summary">Csúsztasson balra vagy jobbra a billentyűzeten a betűk és a szám-/szimbólumoldalak közötti váltáshoz. Kikapcsolva csak a ?123 / ABC gomb vált.</string>
+    <string name="d19_surface_swipe_summary">Csúsztasson balra vagy jobbra a billentyűzeten a betűk és a szám-/szimbólumoldalak közötti váltáshoz. Kikapcsolva csak a ?123 / ABC gomb vált. Csúszó gépelés mellett a betűoldal csak a ?123 gombbal vált.</string>
     <string name="g03_swipe_down_dismiss_title">Lefelé húzás bezárja a billentyűzetet</string>
     <string name="g03_swipe_down_dismiss_summary">A billentyűzeten lefelé húzva bezárul. Kikapcsolva csak a kiegészítő sort zárja be, a billentyűzet nyitva marad.</string>
     <string name="d508_space_swipe_scale_title">Nyelvváltó húzási távolság</string>
@@ -388,4 +388,8 @@
     <string name="d506_pack_base_notice">Megjegyzés: Jelenleg csak a német csomag kézzel szerkesztett. Minden más nyelv – a beépített angolt is beleértve – automatikusan összeállított alap: a hiányzó szavak, a hibás vagy nem kívánt javítások és hasonló hibák általában a csomag adataiból származnak, nem magából az alkalmazásból. Ha jól ismer egy nyelvet, segíthet javítani a csomagját (lásd a projekttárolóban található hozzájárulási útmutatót).</string>
     <string name="d515_apostrophe_key_title">Aposztróf billentyű</string>
     <string name="d515_apostrophe_key_summary">Az aposztróf billentyű (az l/m jobb oldalán) megjelenítése a nem angol billentyűzeteken is. Ki: csak angol billentyűzeteken.</string>
+    <string name="d516_glide_typing_title">Csúszó gépelés (glide typing)</string>
+    <string name="d516_glide_typing_summary">Rajzolj egy szót egy folyamatos vonallal a betűk fölött, és beíródik. Alapból ki; bekapcsolva a betűoldal csak a ?123 gombbal vált.</string>
+    <string name="d89_f39_title">Csúszó gépelés (glide typing)</string>
+    <string name="d89_f39_desc">Opcionális: rajzolj egy szót egy folyamatos vonallal a betűk fölött - a legjobb találat beíródik helyetted, szótárral, ékezet-hajtogatással és személyes kontextussal. Alapból ki.</string>
 </resources>

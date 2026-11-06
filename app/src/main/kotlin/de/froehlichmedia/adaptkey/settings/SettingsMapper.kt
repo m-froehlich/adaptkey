@@ -75,6 +75,7 @@ data class RawSettings(
     val cursorControlEnabled: Boolean = true,
     val surfaceSwipeEnabled: Boolean = true,
     val swipeDownDismissEnabled: Boolean = true,
+    val glideTypingEnabled: Boolean = false,
     val spaceSwipeScalePercent: Int = AdaptSettings.DEFAULT_SPACE_SWIPE_SCALE,
     val fieldSwipeScalePercent: Int = AdaptSettings.DEFAULT_FIELD_SWIPE_SCALE,
     val backspaceRepeatInitialDelayMs: Long = AdaptSettings.DEFAULT_BACKSPACE_REPEAT_INITIAL_DELAY_MS,
@@ -365,6 +366,7 @@ object SettingsMapper {
             cursorControlEnabled = raw.cursorControlEnabled,
             surfaceSwipeEnabled = raw.surfaceSwipeEnabled,
             swipeDownDismissEnabled = raw.swipeDownDismissEnabled,
+            glideTypingEnabled = raw.glideTypingEnabled,
             spaceSwipeScalePercent = raw.spaceSwipeScalePercent.coerceIn(MIN_SWIPE_SCALE_PERCENT, MAX_SWIPE_SCALE_PERCENT),
             fieldSwipeScalePercent = raw.fieldSwipeScalePercent.coerceIn(MIN_SWIPE_SCALE_PERCENT, MAX_SWIPE_SCALE_PERCENT),
             backspaceRepeatInitialDelayMs = raw.backspaceRepeatInitialDelayMs.coerceIn(

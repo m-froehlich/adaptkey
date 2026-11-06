@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Gestur kontrol kursor</string>
     <string name="d401_cursor_control_summary">Tekan lama bilah spasi untuk memindahkan kursor dengan menyeret; diam sejenak untuk beralih ke pemilihan teks.</string>
     <string name="d19_surface_swipe_title">Geser untuk berganti halaman keyboard</string>
-    <string name="d19_surface_swipe_summary">Geser ke kiri atau kanan di keyboard untuk beralih antara huruf dan halaman angka/simbol. Jika nonaktif, hanya tombol ?123 / ABC yang beralih.</string>
+    <string name="d19_surface_swipe_summary">Geser ke kiri atau kanan di keyboard untuk beralih antara huruf dan halaman angka/simbol. Jika nonaktif, hanya tombol ?123 / ABC yang beralih. Saat mengetik geser aktif, halaman huruf hanya beralih melalui tombol ?123.</string>
     <string name="g03_swipe_down_dismiss_title">Geser ke bawah untuk menutup keyboard</string>
     <string name="g03_swipe_down_dismiss_summary">Geser ke bawah pada keyboard untuk menutupnya. Jika nonaktif, hanya baris tambahan yang ditutup dan keyboard tetap terbuka.</string>
     <string name="d508_space_swipe_scale_title">Jarak geser bahasa</string>
@@ -388,4 +388,8 @@
     <string name="d506_pack_base_notice">Catatan: Saat ini hanya paket Jerman yang dikurasi secara manual. Semua bahasa lain – termasuk bahasa Inggris bawaan – adalah dasar yang dibuat otomatis: kata yang hilang, koreksi yang salah atau tidak diinginkan, dan gangguan serupa biasanya berasal dari data paket, bukan dari aplikasi itu sendiri. Jika Anda menguasai suatu bahasa, Anda dapat membantu memperbaiki paketnya (lihat panduan kontribusi di repositori proyek).</string>
     <string name="d515_apostrophe_key_title">Tombol apostrof</string>
     <string name="d515_apostrophe_key_summary">Tampilkan tombol apostrof (di kanan l/m) juga pada papan ketik non-Inggris. Mati: hanya papan ketik Inggris.</string>
+    <string name="d516_glide_typing_title">Mengetik geser (glide typing)</string>
+    <string name="d516_glide_typing_summary">Gambar sebuah kata dalam satu garisan menerus di atas huruf untuk mengetiknya. Dimatikan secara bawaan; saat aktif, halaman huruf hanya beralih melalui tombol ?123.</string>
+    <string name="d89_f39_title">Mengetik geser (glide typing)</string>
+    <string name="d89_f39_desc">Opsional: gambar sebuah kata dalam satu garisan menerus di atas huruf - padanan terbaik diketik untukmu, dengan kamus, pelipatan diakritik dan konteks pribadi. Dimatikan secara bawaan.</string>
 </resources>

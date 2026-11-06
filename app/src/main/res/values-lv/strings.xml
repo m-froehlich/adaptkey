@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Kursora vadības žests</string>
     <string name="d401_cursor_control_summary">Ilgi turiet atstarpes taustiņu, lai pārvietotu kursoru, velkot; stāviet mierīgi, lai pārslēgtos uz teksta atlasi.</string>
     <string name="d19_surface_swipe_title">Tastatūras lapu pārslēgšana ar vilkšanu</string>
-    <string name="d19_surface_swipe_summary">Velciet pa kreisi vai pa labi pāri tastatūrai, lai pārslēgtos starp burtiem un ciparu/simbolu lapām. Ja izslēgts, pārslēdz tikai taustiņš ?123 / ABC.</string>
+    <string name="d19_surface_swipe_summary">Velciet pa kreisi vai pa labi pāri tastatūrai, lai pārslēgtos starp burtiem un ciparu/simbolu lapām. Ja izslēgts, pārslēdz tikai taustiņš ?123 / ABC. Kad slīdošā rakstīšana ir ieslēgta, burtu lapa mainās tikai ar taustiņu ?123.</string>
     <string name="g03_swipe_down_dismiss_title">Velciet uz leju, lai aizvērtu tastatūru</string>
     <string name="g03_swipe_down_dismiss_summary">Vilkšana uz leju pa tastatūru to aizver. Ja izslēgts, tiek aizvērta tikai papildu rinda, un tastatūra paliek atvērta.</string>
     <string name="d508_space_swipe_scale_title">Valodas parslēgšanas vilkšanas attālums</string>
@@ -388,4 +388,8 @@
     <string name="d506_pack_base_notice">Piezīme: Šobrīd manuāli ir apkopota tikai vācu pakotne. Visas pārējās valodas – to skaitā iebūvētā angļu valoda – ir automātiski izveidots pamats: trūkstošie vārdi, kļūdainie vai nevēlamie labojumi un līdzīgas kļūdas parasti nāk no pakotnes datiem, ne no pašas lietotnes. Ja labi pārvaldāt kādu valodu, varat palīdzēt uzlabot tās pakotni (skat. projekta krātuves līdzautoru ceļvedi).</string>
     <string name="d515_apostrophe_key_title">Apostrofa taustiņš</string>
     <string name="d515_apostrophe_key_summary">Rādīt apostrofa taustiņu (pa labi no l/m) arī neangļu tastatūrās. Izslēgts: tikai angļu tastatūras.</string>
+    <string name="d516_glide_typing_title">Slīdošā rakstīšana (glide typing)</string>
+    <string name="d516_glide_typing_summary">Zīmē vārdu ar vienu nepārtrauktu līniju pār burtiem, un tas tiks uzrakstīts. Pēc noklusējuma izslēgts; kad ieslēgts, burtu lapa mainās tikai ar taustiņu ?123.</string>
+    <string name="d89_f39_title">Slīdošā rakstīšana (glide typing)</string>
+    <string name="d89_f39_desc">Neobligāti: zīmē vārdu ar vienu nepārtrauktu līniju pār burtiem - labākā atbilstība tiek uzrakstīta jūsu vietā, ar vārdnīcu, diakritisko zīmju savienošanu un personīgo kontekstu. Pēc noklusējuma izslēgts.</string>
 </resources>

@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Gesta upravljanja pokazivačem</string>
     <string name="d401_cursor_control_summary">Dugo pritisnite razmaknicu da biste pomicali pokazivač povlačenjem; ostanite mirni da biste prešli na odabir teksta.</string>
     <string name="d19_surface_swipe_title">Prevlačenje za promjenu stranica tipkovnice</string>
-    <string name="d19_surface_swipe_summary">Prevucite lijevo ili desno preko tipkovnice za prelazak između slova i stranica s brojevima/simbolima. Kada je isključeno, prebacuje samo tipka ?123 / ABC.</string>
+    <string name="d19_surface_swipe_summary">Prevucite lijevo ili desno preko tipkovnice za prelazak između slova i stranica s brojevima/simbolima. Kada je isključeno, prebacuje samo tipka ?123 / ABC. Kad je klizno tipkanje uključeno, stranica slova mijenja se samo tipkom ?123.</string>
     <string name="g03_swipe_down_dismiss_title">Povuci prema dolje za zatvaranje tipkovnice</string>
     <string name="g03_swipe_down_dismiss_summary">Povlačenje prema dolje po tipkovnici je zatvara. Kada je isključeno, zatvara se samo dodatni red, a tipkovnica ostaje otvorena.</string>
     <string name="d508_space_swipe_scale_title">Duljina poteza za jezik</string>
@@ -388,4 +388,8 @@
     <string name="d506_pack_base_notice">Napomena: Danas je samo njemački paket ručno uređivan. Svi ostali jezici – uključivo s uključenim engleskim – automatski su izrađena osnova: nedostajuće riječi, pogrešne ili nepotrebne ispravke i slične pogreške obično dolaze iz podataka paketa, a ne iz same aplikacije. Ako dobro znate jezik, možete pomoći poboljšati njegov paket (vidi vodič za doprinos u repozitoriju projekta).</string>
     <string name="d515_apostrophe_key_title">Tipka apostrofa</string>
     <string name="d515_apostrophe_key_summary">Prikaži tipku apostrofa (desno od l/m) i na neengleskim tipkovnicama. Isključeno: samo engleske tipkovnice.</string>
+    <string name="d516_glide_typing_title">Klizno tipkanje (glide typing)</string>
+    <string name="d516_glide_typing_summary">Nacrtaj riječ jednim povezanim pokretom preko slova i bit će upisana. Zadano isključeno; kad je uključeno, stranica slova mijenja se samo tipkom ?123.</string>
+    <string name="d89_f39_title">Klizno tipkanje (glide typing)</string>
+    <string name="d89_f39_desc">Neobavezno: nacrtaj riječ jednim povezanim pokretom preko slova - najbolja podudarnost upisuje se umjesto tebe, uz rječnik, preslikavanje dijakritika i osobni kontekst. Zadano isključeno.</string>
 </resources>

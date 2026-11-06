@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Gerak isyarat kawalan kursor</string>
     <string name="d401_cursor_control_summary">Tekan lama bar ruang untuk menggerakkan kursor dengan menyeret; diam sebentar untuk beralih kepada pemilihan teks.</string>
     <string name="d19_surface_swipe_title">Leret untuk menukar halaman papan kekunci</string>
-    <string name="d19_surface_swipe_summary">Leret ke kiri atau kanan pada papan kekunci untuk bertukar antara huruf dan halaman nombor/simbol. Apabila dimatikan, hanya kekunci ?123 / ABC yang menukar.</string>
+    <string name="d19_surface_swipe_summary">Leret ke kiri atau kanan pada papan kekunci untuk bertukar antara huruf dan halaman nombor/simbol. Apabila dimatikan, hanya kekunci ?123 / ABC yang menukar. Semasa taipan luncur aktif, halaman huruf hanya bertukar melalui kekunci ?123.</string>
     <string name="g03_swipe_down_dismiss_title">Leret ke bawah untuk menutup papan kekunci</string>
     <string name="g03_swipe_down_dismiss_summary">Leretan ke bawah pada papan kekunci menutupnya. Jika dimatikan, ia hanya menutup baris tambahan dan papan kekunci kekal terbuka.</string>
     <string name="d508_space_swipe_scale_title">Jarak leret bahasa</string>
@@ -388,4 +388,8 @@
     <string name="d506_pack_base_notice">Nota: Buat masa ini hanya paket Jerman yang disemak secara manual. Semua bahasa lain – termasuk bahasa Inggeris terbina dalam – adalah asas yang dibina secara automatik: perkataan yang tiada, pembetulan yang salah atau tidak diingini dan gangguan serupa biasanya datang daripada data paket, bukan daripada aplikasi itu sendiri. Jika anda menguasai sesuatu bahasa, anda boleh membantu menambah baik paketnya (lihat panduan sumbangan dalam repositori projek).</string>
     <string name="d515_apostrophe_key_title">Kekunci apostrof</string>
     <string name="d515_apostrophe_key_summary">Paparkan kekunci apostrof (di kanan l/m) pada papan kekunci bukan Inggeris juga. Mati: papan kekunci Inggeris sahaja.</string>
+    <string name="d516_glide_typing_title">Taipan luncur (glide typing)</string>
+    <string name="d516_glide_typing_summary">Lukis satu perkataan dalam satu garisan berterusan merentas huruf untuk menaipnya. Dimatikan secara lalai; semasa aktif, halaman huruf hanya bertukar melalui kekunci ?123.</string>
+    <string name="d89_f39_title">Taipan luncur (glide typing)</string>
+    <string name="d89_f39_desc">Pilihan: lukis satu perkataan dalam satu garisan berterusan merentas huruf - padanan terbaik ditaip untuk anda, dengan kamus, pelipatan diakritik dan konteks peribadi. Dimatikan secara lalai.</string>
 </resources>

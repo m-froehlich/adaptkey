@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Gesto ovládání kurzoru</string>
     <string name="d401_cursor_control_summary">Dlouze stiskněte mezerník a táhnutím posouvejte kurzor; zůstaňte v klidu a přepnete na výběr textu.</string>
     <string name="d19_surface_swipe_title">Přepínání stránek klávesnice přejetím</string>
-    <string name="d19_surface_swipe_summary">Přejetím doleva nebo doprava přes klávesnici přepnete mezi písmeny a stránkami s čísly/symboly. Když je vypnuto, přepíná pouze klávesa ?123 / ABC.</string>
+    <string name="d19_surface_swipe_summary">Přejetím doleva nebo doprava přes klávesnici přepnete mezi písmeny a stránkami s čísly/symboly. Když je vypnuto, přepíná pouze klávesa ?123 / ABC. Když je tažení prstem zapnuté, stránka písmen se přepíná pouze klávesou ?123.</string>
     <string name="g03_swipe_down_dismiss_title">Přejetím dolů zavřít klávesnici</string>
     <string name="g03_swipe_down_dismiss_summary">Přejetí prstem dolů po klávesnici ji zavře. Když je vypnuto, zavře se jen doplňkový řádek a klávesnice zůstane otevřená.</string>
     <string name="d508_space_swipe_scale_title">Vzdálenost přejetí pro jazyk</string>
@@ -388,4 +388,8 @@
     <string name="d506_pack_base_notice">Poznámka: Ručně upraven je dnes pouze německý balíček. Všechny ostatní jazyky – včetně přiložené angličtiny – jsou automaticky vytvořený základ: chybějící slova, nesprávné nebo nechtěné opravy a podobné chyby obvykle pocházejí z dat balíčku, nikoli z aplikace samotné. Pokud jazyk dobře ovládáte, můžete pomoci jeho balíček vylepšit (viz příručka pro přispěvatele v repozitáři projektu).</string>
     <string name="d515_apostrophe_key_title">Klávesa apostrofu</string>
     <string name="d515_apostrophe_key_summary">Zobrazit klávesu apostrofu (vpravo od l/m) i na neanglických klávesnicích. Vypnuto: pouze anglické klávesnice.</string>
+    <string name="d516_glide_typing_title">Tažení prstem (glide typing)</string>
+    <string name="d516_glide_typing_summary">Nakreslete slovo jedním souvislým tahem přes písmena a bude napsáno. Ve výchozím stavu vypnuto; při zapnutí se stránka písmen přepíná pouze klávesou ?123.</string>
+    <string name="d89_f39_title">Tažení prstem (glide typing)</string>
+    <string name="d89_f39_desc">Volitelné: nakreslete slovo jedním souvislým tahem přes písmena - nejlepší shoda se napíše za vás, včetně slovníku, skládání diakritiky a osobního kontextu. Ve výchozím stavu vypnuto.</string>
 </resources>

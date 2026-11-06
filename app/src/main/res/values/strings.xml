@@ -129,7 +129,7 @@
     <string name="d401_cursor_control_title">Cursor control gesture</string>
     <string name="d401_cursor_control_summary">Long-press the space bar to move the cursor by dragging; hold still to switch to text selection.</string>
     <string name="d19_surface_swipe_title">Swipe to switch keyboard pages</string>
-    <string name="d19_surface_swipe_summary">Swipe left or right across the keyboard to switch between letters and the number/symbol pages. When off, only the ?123 / ABC key switches.</string>
+    <string name="d19_surface_swipe_summary">Swipe left or right across the keyboard to switch between letters and the number/symbol pages. When off, only the ?123 / ABC key switches. With glide typing on, the letters page switches pages only via the ?123 key.</string>
     <string name="g03_swipe_down_dismiss_title">Swipe down to close the keyboard</string>
     <string name="g03_swipe_down_dismiss_summary">A downward swipe on the keyboard closes it. When off, it only closes the extra row and the keyboard stays open.</string>
     <string name="d508_space_swipe_scale_title">Language swipe distance</string>
@@ -468,4 +468,8 @@
     <string name="d506_pack_base_notice">Note: today only the German pack is hand-curated. Every other language - including the bundled English - is an automatically built base: missing words, wrong or unwanted corrections and similar glitches usually come from the pack data, not from the app itself. If you know a language well, you can help improve its pack (see the contribution guide in the project repository).</string>
     <string name="d515_apostrophe_key_title">Apostrophe key</string>
     <string name="d515_apostrophe_key_summary">Show the apostrophe key (right of l / m) on non-English keyboards as well. Off: English keyboards only.</string>
+    <string name="d516_glide_typing_title">Glide typing</string>
+    <string name="d516_glide_typing_summary">Draw a word in one continuous stroke across the letters to type it. Off by default; while on, the letters page switches pages only via the ?123 key.</string>
+    <string name="d89_f39_title">Glide typing</string>
+    <string name="d89_f39_desc">Optional: draw a word in one continuous stroke across the letters, and the best match is typed for you - with dictionary, diacritic folding and personal context. Off by default.</string>
 </resources>

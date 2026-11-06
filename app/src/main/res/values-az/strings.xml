@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Kursor idarəetmə jesti</string>
     <string name="d401_cursor_control_summary">Kursoru sürükləməklə hərəkət etdirmək üçün boşluq düyməsini uzun basın; mətn seçiminə keçmək üçün hərəkətsiz durun.</string>
     <string name="d19_surface_swipe_title">Klaviatura səhifələrini sürüşdürərək dəyiş</string>
-    <string name="d19_surface_swipe_summary">Hərflər və rəqəm/simvol səhifələri arasında keçmək üçün klaviatura üzərində sola və ya sağa sürüşdürün. Söndürüldükdə yalnız ?123 / ABC düyməsi keçid edir.</string>
+    <string name="d19_surface_swipe_summary">Hərflər və rəqəm/simvol səhifələri arasında keçmək üçün klaviatura üzərində sola və ya sağa sürüşdürün. Söndürüldükdə yalnız ?123 / ABC düyməsi keçid edir. Sürüşərək yazma açıq olduqda hərf səhifəsi yalnız ?123 düyməsi ilə dəyişir.</string>
     <string name="g03_swipe_down_dismiss_title">Klaviaturanı bağlamaq üçün aşağı sürüşdürün</string>
     <string name="g03_swipe_down_dismiss_summary">Klaviaturada aşağı sürüşdürmə onu bağlayır. Söndürüləndə yalnız əlavə sıra bağlanır, klaviatura açıq qalır.</string>
     <string name="d508_space_swipe_scale_title">Dil sürüşmə məsafəsi</string>
@@ -388,4 +388,8 @@
     <string name="d506_pack_base_notice">Qeyd: Hazırda yalnız alman paketi əl ilə tərtib edilib. Digər bütün dillər – daxil edilmiş ingilis dili daxil olmaqla – avtomatik yaradılmış əsasdır: çatışmayan sözlər, yanlış və ya lazımsız düzəlişlər və bənzər xətalar adətən paket məlumatlarından, tətbiqin özündən deyil gəlir. Bir dili yaxşı bilirsinizsə, onun paketini təkmilləşdirməyə kömək edə bilərsiniz (layihə deposundakı töhfə bələdçisinə baxın).</string>
     <string name="d515_apostrophe_key_title">Apostrof düyməsi</string>
     <string name="d515_apostrophe_key_summary">Apostrof düyməsini (l/m-dən sağda) ingiliscə olmayan klaviaturalarda da göstər. Bağlı: yalnız ingiliscə klaviaturalar.</string>
+    <string name="d516_glide_typing_title">Sürüşərək yazma (glide typing)</string>
+    <string name="d516_glide_typing_summary">Sözu hərflər üzərində fasiləsiz bir xəttlə çizin və yazılsın. Standart olaraq bağlı; açıq olduqda hərf səhifəsi yalnız ?123 düyməsi ilə dəyişir.</string>
+    <string name="d89_f39_title">Sürüşərək yazma (glide typing)</string>
+    <string name="d89_f39_desc">İstəyə bağlı: sözu hərflər üzərində fasiləsiz bir xəttlə çizin - ən yaxşı uyğunluq sizin əvəzinizə yazılır; lüğət, diakritik uyğunlaşdırma və şəxsi kontekst daxil olmaqla. Standart olaraq bağlı.</string>
 </resources>

@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Geste de contrôle du curseur</string>
     <string name="d401_cursor_control_summary">Un appui long sur la barre d\'espace déplace le curseur par glissement ; restez immobile pour passer à la sélection de texte.</string>
     <string name="d19_surface_swipe_title">Balayer pour changer de page du clavier</string>
-    <string name="d19_surface_swipe_summary">Balayez vers la gauche ou la droite sur le clavier pour passer des lettres aux pages de chiffres/symboles. Si désactivé, seule la touche ?123 / ABC permet de changer.</string>
+    <string name="d19_surface_swipe_summary">Balayez vers la gauche ou la droite sur le clavier pour passer des lettres aux pages de chiffres/symboles. Si désactivé, seule la touche ?123 / ABC permet de changer. Avec la saisie gestuelle active, la page des lettres ne change que via la touche ?123.</string>
     <string name="g03_swipe_down_dismiss_title">Balayer vers le bas pour fermer le clavier</string>
     <string name="g03_swipe_down_dismiss_summary">Un balayage vers le bas sur le clavier le ferme. Désactivé, il ferme seulement la rangée supplémentaire et le clavier reste ouvert.</string>
     <string name="d508_space_swipe_scale_title">Distance du balayage de langue</string>
@@ -388,4 +388,8 @@
     <string name="d506_pack_base_notice">Remarque : aujourd’hui, seul le paquet allemand est structuré à la main. Toutes les autres langues – y compris l’anglais intégré – constituent une base créée automatiquement : mots manquants, corrections erronées ou indésirables et autres anomalies proviennent généralement des données du paquet, et non de l’application elle-même. Si vous maîtrisez bien une langue, vous pouvez aider à améliorer son paquet (voir le guide de contribution dans le dépôt du projet).</string>
     <string name="d515_apostrophe_key_title">Touche apostrophe</string>
     <string name="d515_apostrophe_key_summary">Afficher la touche apostrophe (à droite de l/m) aussi sur les claviers non anglais. Désactivé : claviers anglais uniquement.</string>
+    <string name="d516_glide_typing_title">Saisie gestuelle (glide typing)</string>
+    <string name="d516_glide_typing_summary">Tracez un mot en un seul trait continu sur les lettres pour l\'écrire. Désactivée par défaut ; lorsqu\'elle est active, la page des lettres ne change que via la touche ?123.</string>
+    <string name="d89_f39_title">Saisie gestuelle (glide typing)</string>
+    <string name="d89_f39_desc">Optionnel : tracez un mot en un seul trait continu sur les lettres - la meilleure correspondance est tapée pour vous, avec dictionnaire, repli des diacritiques et contexte personnel. Désactivée par défaut.</string>
 </resources>

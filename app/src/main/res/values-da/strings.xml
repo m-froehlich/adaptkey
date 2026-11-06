@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Bevægelse til markørstyring</string>
     <string name="d401_cursor_control_summary">Tryk længe på mellemrumstasten for at flytte markøren ved at trække; hold dig i ro for at skifte til tekstmarkering.</string>
     <string name="d19_surface_swipe_title">Stryg for at skifte tastaturside</string>
-    <string name="d19_surface_swipe_summary">Stryg til venstre eller højre hen over tastaturet for at skifte mellem bogstaver og tal-/symbolsiderne. Når slået fra, skifter kun ?123 / ABC-tasten.</string>
+    <string name="d19_surface_swipe_summary">Stryg til venstre eller højre hen over tastaturet for at skifte mellem bogstaver og tal-/symbolsiderne. Når slået fra, skifter kun ?123 / ABC-tasten. Med glide-indtastning til skifter bogstavssiden kun via ?123-tasten.</string>
     <string name="g03_swipe_down_dismiss_title">Stryg nedad for at lukke tastaturet</string>
     <string name="g03_swipe_down_dismiss_summary">Et stryg nedad på tastaturet lukker det. Når slået fra, lukker det kun den ekstra række, og tastaturet forbliver åbent.</string>
     <string name="d508_space_swipe_scale_title">Strygeafstand for sprogskift</string>
@@ -388,4 +388,8 @@
     <string name="d506_pack_base_notice">Bemærk: Kun den tyske pakke er håndkureret i dag. Alle andre sprog – inklusive det medfølgende engelsk – er en automatisk opbygget base: manglende ord, forkerte eller uønskede rettelser og lignende fejl kommer normalt fra pakkens data, ikke fra selve appen. Hvis du kan et sprog godt, kan du hjælpe med at forbedre dets pakke (se bidragsguiden i projektets repository).</string>
     <string name="d515_apostrophe_key_title">Apostroftast</string>
     <string name="d515_apostrophe_key_summary">Vis apostroftasten (til højre for l/m) også på ikke-engelske tastaturer. Fra: kun engelske tastaturer.</string>
+    <string name="d516_glide_typing_title">Glide-indtastning (strøgskrivning)</string>
+    <string name="d516_glide_typing_summary">Tegn et ord i én sammenhængende bevægelse over bogstaverne for at skrive det. Fra som standard; når til, skifter bogstavssiden kun via ?123-tasten.</string>
+    <string name="d89_f39_title">Glide-indtastning (strøgskrivning)</string>
+    <string name="d89_f39_desc">Valgfrit: tegn et ord i én sammenhængende bevægelse over bogstaverne - det bedste match skrives for dig, med ordbog, diakritisk sammenfoldning og personlig kontekst. Fra som standard.</string>
 </resources>

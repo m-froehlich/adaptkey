@@ -87,6 +87,8 @@ object SettingsStore {
     const val KEY_CURSOR_CONTROL_ENABLED = "d401_cursor_control"
     const val KEY_SURFACE_SWIPE_ENABLED = "d19_surface_swipe"
     const val KEY_SWIPE_DOWN_DISMISS_ENABLED = "g03_swipe_down_dismiss"
+    // D-516/G-09: glide typing (opt-in, default off - see the plan's §3/§8.1 for the naming).
+    const val KEY_GLIDE_TYPING_ENABLED = "d516_glide_typing"
     const val KEY_SPACE_SWIPE_SCALE = "d508_space_swipe_scale"
     const val KEY_FIELD_SWIPE_SCALE = "d508_field_swipe_scale"
     const val KEY_BACKSPACE_REPEAT_INITIAL_DELAY = "d508_backspace_repeat_initial_delay_ms"
@@ -172,6 +174,9 @@ object SettingsStore {
     
     /** Default stored boolean for the G-03 swipe-down-to-dismiss toggle (on). */
     const val DEF_SWIPE_DOWN_DISMISS_ENABLED = true
+
+    /** Default stored boolean for the D-516/G-09 glide-typing switch (off - opt-in per the plan). */
+    const val DEF_GLIDE_TYPING_ENABLED = false
     
     /** Default stored integer for the D-508 space-swipe travel scaling slider (100 %). */
     const val DEF_SPACE_SWIPE_SCALE = AdaptSettings.DEFAULT_SPACE_SWIPE_SCALE
@@ -254,6 +259,7 @@ object SettingsStore {
             cursorControlEnabled = p.getBoolean(KEY_CURSOR_CONTROL_ENABLED, DEF_CURSOR_CONTROL_ENABLED),
             surfaceSwipeEnabled = p.getBoolean(KEY_SURFACE_SWIPE_ENABLED, DEF_SURFACE_SWIPE_ENABLED),
             swipeDownDismissEnabled = p.getBoolean(KEY_SWIPE_DOWN_DISMISS_ENABLED, DEF_SWIPE_DOWN_DISMISS_ENABLED),
+            glideTypingEnabled = p.getBoolean(KEY_GLIDE_TYPING_ENABLED, DEF_GLIDE_TYPING_ENABLED),
             spaceSwipeScalePercent = p.getInt(KEY_SPACE_SWIPE_SCALE, DEF_SPACE_SWIPE_SCALE),
             fieldSwipeScalePercent = p.getInt(KEY_FIELD_SWIPE_SCALE, DEF_FIELD_SWIPE_SCALE),
             backspaceRepeatInitialDelayMs = p.getInt(KEY_BACKSPACE_REPEAT_INITIAL_DELAY, DEF_BACKSPACE_REPEAT_INITIAL_DELAY).toLong(),
@@ -434,6 +440,7 @@ object SettingsStore {
         KEY_CURSOR_CONTROL_ENABLED,
         KEY_SURFACE_SWIPE_ENABLED,
         KEY_SWIPE_DOWN_DISMISS_ENABLED,
+        KEY_GLIDE_TYPING_ENABLED,
         KEY_SPACE_SWIPE_SCALE,
         KEY_FIELD_SWIPE_SCALE,
         KEY_BACKSPACE_REPEAT_INITIAL_DELAY,

@@ -305,6 +305,15 @@
             android:summary="@string/g03_swipe_down_dismiss_summary"
             android:defaultValue="true" />
 
+        <!-- D-516/G-09: glide typing - opt-in, default off. While on, the letters page's horizontal
+             page swipe (D-19) is swallowed in favour of glide strokes starting on a letter key; the
+             D-19 switch's own summary carries the corresponding hint. -->
+        <SwitchPreferenceCompat
+            android:key="d516_glide_typing"
+            android:title="@string/d516_glide_typing_title"
+            android:summary="@string/d516_glide_typing_summary"
+            android:defaultValue="false" />
+
         <!-- D-508: user-facing swipe travel scaling, percentages over the calibrated base distances
              (44 dp space language swipe, 110 dp / three key widths field gestures; the D-57 per-gesture
              factors apply on top). Plain SeekBarPreference like d32 - the value is a percentage, not a

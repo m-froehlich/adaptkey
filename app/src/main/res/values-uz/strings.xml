@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Kursorni boshqarish ishorasi</string>
     <string name="d401_cursor_control_summary">Kursorni sudrab siljitish uchun probel tugmasini uzoq bosing; matn tanlashga o‘tish uchun qimirlamay turing.</string>
     <string name="d19_surface_swipe_title">Klaviatura sahifalarini surib almashtirish</string>
-    <string name="d19_surface_swipe_summary">Harflar va raqam/belgi sahifalari orasida o‘tish uchun klaviatura bo‘ylab chapga yoki o‘ngga suring. O‘chirilganda faqat ?123 / ABC tugmasi almashtiradi.</string>
+    <string name="d19_surface_swipe_summary">Harflar va raqam/belgi sahifalari orasida o‘tish uchun klaviatura bo‘ylab chapga yoki o‘ngga suring. O‘chirilganda faqat ?123 / ABC tugmasi almashtiradi. Sirishtirib yozish yoqilganda harflar sahifasi faqat ?123 tugmasi orqali almashadi.</string>
     <string name="g03_swipe_down_dismiss_title">Klaviaturani yopish uchun pastga suring</string>
     <string name="g03_swipe_down_dismiss_summary">Klaviatura ustida pastga surish uni yopadi. O‘chirilganda faqat qo‘shimcha qator yopiladi va klaviatura ochiq qoladi.</string>
     <string name="d508_space_swipe_scale_title">Til almashtirish siljish masofasi</string>
@@ -388,4 +388,8 @@
     <string name="d506_pack_base_notice">Eslatma: Hozircha faqat nemcha paket qo‘lda tahrirlangan. Boshqa barcha tillar – ichki o‘rnatilgan ingliz tili ham – avtomatik yaratilgan asos: yetishmayotgan so‘zlar, noto‘g‘ri yoki keraksiz tuzatishlar va shunga o‘xshash xatolar odatda paket ma’lumotlaridan keladi, ilovaning o‘zidan emas. Bir tilni yaxshi biladigan bo‘lsangiz, uning paketini yaxshilashga yordam bera olasiz (loyiha omboridagi hissa qo‘shuvchilar qo‘llanmasiga qarang).</string>
     <string name="d515_apostrophe_key_title">Apostrof tugmasi</string>
     <string name="d515_apostrophe_key_summary">Apostrof tugmasini (l/m dan oʻngda) inglizcha boʻlmagan klaviaturalarda ham koʻrsatish. Oʻchirilgan: faqat inglizcha klaviaturalar.</string>
+    <string name="d516_glide_typing_title">Sirishtirib yozish (glide typing)</string>
+    <string name="d516_glide_typing_summary">So\'zni harflar ustidan uzluksiz bir chiziq bilan chizing va yoziladi. Standart bo\'yicha o\'chirilgan; yoqilganda harflar sahifasi faqat ?123 tugmasi orqali almashadi.</string>
+    <string name="d89_f39_title">Sirishtirib yozish (glide typing)</string>
+    <string name="d89_f39_desc">Ixtiyoriy: so\'zni harflar ustidan uzluksiz bir chiziq bilan chizing - eng yaxshi moslik siz uchun yoziladi; lug\'at, diakritik moslashtirish va shaxsiy kontekst bilan. Standart bo\'yicha o\'chirilgan.</string>
 </resources>

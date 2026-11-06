@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Ishara ya kudhibiti kielekezi</string>
     <string name="d401_cursor_control_summary">Bonyeza kwa muda mrefu upau wa nafasi ili kusogeza kielekezi kwa kuburuta; tulia ili kubadilisha kwenda uteuzi wa maandishi.</string>
     <string name="d19_surface_swipe_title">Telezesha ili kubadilisha kurasa za kibodi</string>
-    <string name="d19_surface_swipe_summary">Telezesha kushoto au kulia kwenye kibodi ili kubadilisha kati ya herufi na kurasa za nambari/alama. Ikizimwa, kitufe cha ?123 / ABC pekee ndicho hubadilisha.</string>
+    <string name="d19_surface_swipe_summary">Telezesha kushoto au kulia kwenye kibodi ili kubadilisha kati ya herufi na kurasa za nambari/alama. Ikizimwa, kitufe cha ?123 / ABC pekee ndicho hubadilisha. Kuchapisha kwa kusogeza kikiwa kimewashwa, ukurasa wa herufi hubadilika kwa kitufe cha ?123 pekee.</string>
     <string name="g03_swipe_down_dismiss_title">Telezesha chini ili kufunga kibodi</string>
     <string name="g03_swipe_down_dismiss_summary">Kutelezesha chini kwenye kibodi kunaifunga. Ikizimwa, inafunga tu safu ya ziada na kibodi inabaki wazi.</string>
     <string name="d508_space_swipe_scale_title">Umbali wa kusogeza lugha</string>
@@ -388,4 +388,8 @@
     <string name="d506_pack_base_notice">Taarifa: Kwa sasa ni kifurushi cha Kijerumani pekee kimethibitishwa kwa mkono. Lugha zote nyingine – ikijumuisha Kiingereza iliyojumlishwa – ni msingi uliotengenezwa kiotomatiki: maneno yaliyokosekana, marekebisho yasiyo sahihi au yasiyotakiwa na makosa kama hayo kwa kawaida hutokana na data ya kifurushi, si kutoka kwa programu yenyewe. Ukiwa unaujua lugha vyema, unaweza kusaidia kuboresha kifurushi chake (angalia mwongozo wa michango kwenye hazina ya mradi).</string>
     <string name="d515_apostrophe_key_title">Kitufe cha apostrof</string>
     <string name="d515_apostrophe_key_summary">Onyesha kitufe cha apostrof (kulia kwa l/m) kwenye kibodi zisizo za Kiingereza pia. Zima: kibodi za Kiingereza pekee.</string>
+    <string name="d516_glide_typing_title">Kuchapisha kwa kusogeza (glide typing)</string>
+    <string name="d516_glide_typing_summary">Chora neno kwa mstari mmoja unaoendelea juu ya herufi ili uandike. Imezimwa kwa chaguo-msingi; ikiwa imewashwa, ukurasa wa herufi hubadilika kwa kitufe cha ?123 pekee.</string>
+    <string name="d89_f39_title">Kuchapisha kwa kusogeza (glide typing)</string>
+    <string name="d89_f39_desc">Hiari: chora neno kwa mstari mmoja unaoendelea juu ya herufi - maelezano bora huandikwa kwa niaba yako, pamoja na kamusi, kuunganisha alama za sauti na muktadha wako binafsi. Imezimwa kwa chaguo-msingi.</string>
 </resources>
