@@ -1,6 +1,6 @@
 Bitte mache dich mit dem Projekt vertraut.
-Lies /AdaptKey-Spec.md und /AdaptKey-Progress.md ganz;
-**AdaptKey-History.md nie durchlesen – nur gezielt:** erst per Suche lokalisieren (D-/§-Nummer, Stichwort, oder `## §`-Überschriften hinten für die neuesten Einträge), dann nur die getroffenen Abschnitte. Ohne konkretes Thema: nur die letzten 2–3 §-Einträge.
+Lies /doc/books/AdaptKey-Spec.md und /doc/books/AdaptKey-Progress.md ganz;
+**/doc/books/AdaptKey-History.md nie durchlesen – nur gezielt:** erst per Suche lokalisieren (D-/§-Nummer, Stichwort, oder `## §`-Überschriften hinten für die neuesten Einträge), dann nur die getroffenen Abschnitte. Ohne konkretes Thema: nur die letzten 2–3 §-Einträge.
 
 Read rules/version-bump.md
 
