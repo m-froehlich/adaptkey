@@ -93,6 +93,12 @@ import de.froehlichmedia.adaptkey.gesture.KeyGesture
 import de.froehlichmedia.adaptkey.gesture.SwipeDirection
 import de.froehlichmedia.adaptkey.gesture.WordBoundary
 import de.froehlichmedia.adaptkey.gesture.WordExtent
+import de.froehlichmedia.adaptkey.glide.GlideCandidate
+import de.froehlichmedia.adaptkey.glide.GlideCommitPolicy
+import de.froehlichmedia.adaptkey.glide.GlideKeyGeometry
+import de.froehlichmedia.adaptkey.glide.GlidePoint
+import de.froehlichmedia.adaptkey.glide.GlideRecognizer
+import de.froehlichmedia.adaptkey.glide.GlideTrace
 import de.froehlichmedia.adaptkey.keyboard.AdaptKeyboardView
 import de.froehlichmedia.adaptkey.keyboard.AlternativeScript
 import de.froehlichmedia.adaptkey.keyboard.BackspaceRepeat
@@ -339,6 +345,12 @@ class AdaptKeyService : InputMethodService() {
     // capitalisation/suggestions exactly like a recognised login field (see finalizeAndCommit/
     // refreshSuggestions) - a domain/path is not natural-language prose either.
     private var urlMode = false
+    
+    // D-516/G-09: whether the currently-focused field allows glide strokes at all - re-derived
+    // per field in onStartInput and refreshed at the two mid-field toggles that change the field's
+    // own kind (the extra row's credential/URL buttons), pushed into the view (the actual arming
+    // gate) every time. False for every verbatim surface (login/URL/email, no-suggestions flag).
+    private var glideFieldAllowed = false
     
     // D-293/D-303: whether the currently-focused field is one of THIS APP's OWN fields that explicitly
     // declares InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS (e.g. the Learned Words casing-edit field) -
@@ -1535,6 +1547,9 @@ class AdaptKeyService : InputMethodService() {
             // D-401: gated off outright while emoji search owns the keyboard (enterEmojiSearch()'s own
             // note) - a settings reload mid-search would otherwise silently re-enable it there too.
             view.cursorControlEnabled = s.cursorControlEnabled && !emojiSearchActive
+            // D-516/G-09: the same emoji-search gate the cursor gesture uses - the capture mode's
+            // letters surface must never arm glide strokes either.
+            view.glideTypingEnabled = s.glideTypingEnabled && !emojiSearchActive
             // D-508: the user-facing swipe travel scaling (space language swipe, field gestures) - applied
             // to the whole per-gesture requirement inside the view, so D-46/D-57's calibrated shape survives.
             view.spaceSwipeScaleFactor = s.spaceSwipeScalePercent / 100f
@@ -1874,6 +1889,16 @@ class AdaptKeyService : InputMethodService() {
         // field that is visibly labelled as one (confirmed on device) - both are only ever reached via the
         // extra row's manual toggle, optionally nudged by the weak weakSignalKind() below.
         loginFieldKind = LoginFieldDetector.classify((info?.inputType ?: 0) and InputType.TYPE_MASK_VARIATION)
+        // D-516/G-09: glide runs only on ordinary letters-surface text fields - every verbatim
+        // surface (login/URL/email, the no-suggestions flag) and any login-relevant field forbids
+        // it, mirroring the plan's §3 surface list. Also kills any stroke still live from the
+        // previous field and drops its auto-space flag: a field change is exactly the "next
+        // arbitrary input" the one-shot rule is consumed by.
+        keyboardView?.resetGlideStroke()
+        glideFieldAllowed = loginFieldKind == LoginFieldKind.NONE && !urlMode && !emailMode && !noSuggestionsField
+        keyboardView?.glideFieldAllowed = glideFieldAllowed
+        glideAutoSpaceArmed = false
+        glideLastCommittedWord = null
         credentialCaptured = false
         credentialModeManuallyActivated = false
         credentialSnapshot.setLength(0)
@@ -3201,6 +3226,11 @@ class AdaptKeyService : InputMethodService() {
         if (key.code != KeyCode.SHIFT) {
             lastShiftTime = 0L
         }
+        // D-516/G-09: any ordinary keystroke is the "next arbitrary input" that consumes the glide
+        // auto-space one-shot (plan §8.4 - only a glide stroke itself may still spend it, which is
+        // exactly the path that never reaches handleKey: a claimed stroke suppresses its tap).
+        glideAutoSpaceArmed = false
+        glideLastCommittedWord = null
         // D-217 (temporary diagnostic): the actual per-key processing cost the user asked to see alongside
         // AdaptKeyJitter's own per-call timestamps - everything below runs synchronously on the main thread
         // between the tap being resolved and this function returning, so `finally` (covering every branch's
@@ -3557,6 +3587,21 @@ class AdaptKeyService : InputMethodService() {
     private var cursorControlTargetActive = false
     private var cursorControlServoPasses = 0
     
+    // D-516/G-09: the glide session's own state. glideSessionActive spans one claimed stroke (claim
+    // to commit/cancel) and gates the ordinary suggestion pipeline off the bar; glideGeneration
+    // supersedes in-flight live-recognition passes (the cooperative-cancellation pattern: a stale
+    // result is dropped instead of racing the preview); glideCandidates is the latest session's
+    // ranked list, rewritten by every live pass and consumed at release. The auto-space pair is the
+    // plan's §8.4 one-shot flag: set at a glide commit, consumed (or discarded) at the next stroke
+    // start - "lazy at the next stroke's start, only glide->glide".
+    private val glideExecutor = Executors.newSingleThreadExecutor()
+    private var glideSessionActive = false
+    private var glideGeneration = 0
+    private var glideLayout: GlideKeyGeometry? = null
+    private var glideCandidates: List<GlideCandidate> = emptyList()
+    private var glideAutoSpaceArmed = false
+    private var glideLastCommittedWord: String? = null
+    
     // D-401-followup: the newline-based fallback path's own de-duplication, now that the view reports every
     // motion event rather than only the ones that changed these totals (the screen-space path needs the
     // unquantised ones in between). Purely an optimisation - applying the same totals twice is harmless by
@@ -3642,6 +3687,208 @@ class AdaptKeyService : InputMethodService() {
             // already is, exactly like any other external caret move already would.
             refreshSuggestions()
         }
+    }
+    
+    /**
+     * D-516/G-09: the glide stroke lifecycle's service half - see the session methods below
+     * ([startGlideSession]/[scheduleGlideRecognition]/[finishGlideSession]/[discardGlidePreview]).
+     * The view owns touch, classification and trail; this object only receives the already-classified
+     * events and owns recognition plus every composing/commit side.
+     */
+    private val glideListener = object : AdaptKeyboardView.OnGlideListener {
+        override fun onGlideStrokeStarted() {
+            startGlideSession()
+        }
+        
+        override fun onGlideUpdate(points: List<GlidePoint>) {
+            scheduleGlideRecognition(points)
+        }
+        
+        override fun onGlideReleased(points: List<GlidePoint>, inferredSequence: String) {
+            finishGlideSession(points, inferredSequence)
+        }
+        
+        override fun onGlideCancelled() {
+            discardGlidePreview()
+        }
+    }
+    
+    /**
+     * D-516/G-09: a stroke just claimed - the session starts. The plan's §4.3 steps in order: the
+     * lazy auto-space first (only when the directly preceding word is still exactly the previous
+     * glide commit's own word - the caret must still sit right after it, so the flag is discarded
+     * whenever anything moved in between), then the ordinary fresh-token steps a first letter tap
+     * would run ([captureTokenContext]/[resetWordEndShift]/[reclaimSurroundingWord] - the reclaim
+     * with no tap of its own, the long-press-letter precedent: a glide stroke is never tap data).
+     * The composing token itself is seeded only once the first candidate result arrives, so a
+     * stroke that dies before any result (a second finger, a cancel) never touched the document.
+     */
+    private fun startGlideSession() {
+        val ic = currentInputConnection ?: return
+        glideSessionActive = true
+        glideGeneration++
+        glideCandidates = emptyList()
+        glideLayout = keyboardView?.glideKeyGeometry()
+        val last = glideLastCommittedWord
+        if (glideAutoSpaceArmed && last != null) {
+            val before = ic.getTextBeforeCursor(last.length, 0)?.toString()
+            if (before == last) {
+                ic.commitText(" ", 1)
+            }
+            glideAutoSpaceArmed = false
+            glideLastCommittedWord = null
+        }
+        captureTokenContext(ic)
+        resetWordEndShift()
+        pendingSuggestionSpace = false
+        keyboardView?.pendingSpaceIndicator = false
+        reclaimSurroundingWord(ic, null)
+    }
+    
+    /**
+     * D-516/G-09: one throttled live-recognition request (the view already throttles to
+     * [GlideGestureController.UPDATE_THROTTLE_MS]). Runs on the single-thread glide executor - the
+     * store-backed recognizer is the same shape of work the suggestion provider's background passes
+     * do - and posts the result back to the main thread, where a superseded generation (a newer
+     * request, or the session already over) is dropped instead of racing the preview.
+     */
+    private fun scheduleGlideRecognition(points: List<GlidePoint>) {
+        val layout = glideLayout ?: return
+        val trace = GlideTrace.resample(points) ?: return
+        val generation = ++glideGeneration
+        val store = dictionaryStore
+        val folding = SettingsStore.loadDiacriticFolding(this, activeLanguage)
+        val previous = previousWord
+        val previousPrevious = previousPreviousWord
+        glideExecutor.execute {
+            val results = GlideRecognizer(store, layout, folding).candidates(
+                trace, previous, previousPrevious
+            )
+            handler.post {
+                if (generation != glideGeneration || !glideSessionActive) {
+                    return@post // superseded while in flight
+                }
+                glideCandidates = results
+                applyGlidePreview(results)
+            }
+        }
+    }
+    
+    /**
+     * D-516/G-09: rewrites the composing token to the current top candidate - the ordinary
+     * composing-rewrite path ([updateComposing]), the same mechanism every keystroke uses, so the
+     * §1 invariants are untouched (the anchor was resolved at claim; no new commit/teardown path
+     * exists). No candidates yet (the very first request still in flight): nothing is shown and
+     * nothing is written.
+     */
+    private fun applyGlidePreview(results: List<GlideCandidate>) {
+        val ic = currentInputConnection ?: return
+        val top = results.firstOrNull() ?: return
+        val word = top.word
+        if (composing.isEmpty()) {
+            composing.append(word)
+            composingFlags.addAll(List(word.length) { TapAmbiguity.NONE })
+        } else {
+            composing.replace(0, composing.length, word)
+            composingFlags.clear()
+            composingFlags.addAll(List(word.length) { TapAmbiguity.NONE })
+        }
+        // composingTaps deliberately stays empty: a glide stroke has no tap data (plan §3, T-03) -
+        // every tap-coordinate consumer already treats the length mismatch as "no candidates".
+        composingCursor = composing.length
+        updateComposing(ic)
+        // The pinned live candidate ahead of its alternates (plan §3: S-01/S-06 alternate-content
+        // precedence, pushed directly past the ordinary pipeline like every other takeover).
+        val chips = results.take(GLIDE_BAR_CANDIDATES).mapIndexed { index, candidate ->
+            SuggestionController.DisplayItem(
+                candidate.word,
+                if (index == 0) SuggestionController.Kind.GLIDE_CANDIDATE else SuggestionController.Kind.NORMAL,
+                candidate.word
+            )
+        }
+        setSuggestionBarItems(chips)
+        suggestionBar?.visibility = View.VISIBLE
+    }
+    
+    /**
+     * D-516/G-09: the release - the plan's one definitive recognition pass (a synchronous retry
+     * here only when no live result had arrived yet; bounded, once per stroke) followed by the
+     * chip-commit semantics: resolved casing via [GlideCommitPolicy] (D-440's gate on the live
+     * composing text), the pre-armed Shift capitalising the first character exactly like a typed
+     * one, no autocorrect, ordinary learning for a dictionary candidate (never for the unknown-word
+     * fallback), no trailing space (the lazy auto-space at the next stroke start owns separation),
+     * and the remaining candidates left in the bar as ordinary chips to pick instead.
+     */
+    private fun finishGlideSession(points: List<GlidePoint>, inferredSequence: String) {
+        if (!glideSessionActive) {
+            return
+        }
+        glideSessionActive = false
+        glideGeneration++ // any still-in-flight live pass is now stale
+        val ic = currentInputConnection ?: return
+        clearUndo()
+        pendingMergeChar = null
+        var results = glideCandidates
+        if (results.isEmpty()) {
+            val layout = glideLayout
+            val trace = GlideTrace.resample(points)
+            if (layout != null && trace != null) {
+                results = GlideRecognizer(
+                    dictionaryStore, layout, SettingsStore.loadDiacriticFolding(this, activeLanguage)
+                ).candidates(trace, previousWord, previousPreviousWord)
+            }
+        }
+        val top = results.firstOrNull()
+        var word = GlideCommitPolicy.resolve(
+            top?.word, inferredSequence, composing.toString()
+        ) { candidate -> capitalisation.capitalise(candidate, contextFor(composing.toString())) }
+        // The pre-armed Shift spends itself on glide's first character exactly like on a typed one -
+        // the live-only sentence-start capitalisation (D-405) materialises here, at the only place a
+        // glide word has a "first keystroke". The same plain uppercaseChar() the CHAR handler uses.
+        var cased = word.word
+        if (cased.isNotEmpty() && cased[0].isLetter() && isUpperArmed() && !cased[0].isUpperCase()) {
+            cased = cased[0].uppercaseChar() + cased.substring(1)
+        }
+        consumeShift()
+        ic.commitText(cased, 1)
+        clearComposing()
+        if (word.learn) {
+            learnWord(cased)
+        }
+        notifySuggestionAccepted(cased)
+        glideAutoSpaceArmed = true
+        glideLastCommittedWord = cased
+        // Alternates stay in the bar as ordinary chips to pick instead (plan §3); with none left,
+        // the flow continues with the next-word predictions like any other commit.
+        val alternates = results.drop(1).take(GLIDE_BAR_CANDIDATES - 1)
+        if (alternates.isEmpty()) {
+            showNextWordPredictions()
+        } else {
+            setSuggestionBarItems(alternates.map { SuggestionController.DisplayItem(it.word, SuggestionController.Kind.NORMAL, it.word) })
+            suggestionBar?.visibility = View.VISIBLE
+        }
+        armShiftForNextWord(ic)
+    }
+    
+    /**
+     * D-516/G-09: the stroke died after candidates were already shown (a second finger, a system
+     * cancel) - the preview is provisional text this session wrote, so it is removed outright
+     * (never finishComposingText, which would keep it as real text the finger never chose; the
+     * empty-write is the established delete-composing-content mechanism, and nothing is ever
+     * re-inserted afterwards, which is the case D-383 guards against).
+     */
+    private fun discardGlidePreview() {
+        glideSessionActive = false
+        glideGeneration++
+        val ic = currentInputConnection ?: run {
+            clearComposing()
+            return
+        }
+        if (composing.isNotEmpty()) {
+            ic.setComposingText("", 1)
+        }
+        clearComposing()
+        setSuggestionBarItems(emptyList())
     }
     
     /**
@@ -4095,6 +4342,8 @@ class AdaptKeyService : InputMethodService() {
         view.onBackspaceRepeatEndListener = AdaptKeyboardView.OnBackspaceRepeatEndListener { handleBackspaceRepeatEnd() }
         view.onLongPressPopupListener = AdaptKeyboardView.OnLongPressPopupListener { key, alternative -> handleLongPressAlternative(key, alternative) }
         view.onCursorControlListener = cursorControlListener
+        // D-516/G-09: the glide stroke lifecycle (null while emoji search captures the keyboard).
+        view.onGlideListener = glideListener
     }
     
     /**
@@ -4117,11 +4366,16 @@ class AdaptKeyService : InputMethodService() {
         view?.onSwipeListener = null
         view?.onBackspaceRepeatListener = null
         view?.onLongPressPopupListener = null
+        view?.onGlideListener = null
         // D-401: the space-bar cursor-control gesture must never arm while search captures every keystroke
         // locally (see this function's own class KDoc) - cursorControlEnabled is the one flag the view
         // itself gates arming on, so forcing it off here is enough; restored from the real setting in
         // exitEmojiSearch() below.
         view?.cursorControlEnabled = false
+        // D-516/G-09: the same for glide strokes - the capture mode's letters surface is only shown for
+        // its key geometry, never as a glide surface.
+        view?.glideTypingEnabled = false
+        view?.resetGlideStroke()
         cancelEmojiSearchButtonView?.visibility = View.VISIBLE
         updateEmojiSearchResults()
     }
@@ -4143,6 +4397,8 @@ class AdaptKeyService : InputMethodService() {
         wireLetterKeyListeners()
         // D-401: restores whatever the real setting says, mirroring the forced-off in enterEmojiSearch().
         keyboardView?.cursorControlEnabled = settings.cursorControlEnabled
+        // D-516/G-09: likewise restores the real glide switch.
+        keyboardView?.glideTypingEnabled = settings.glideTypingEnabled
         cancelEmojiSearchButtonView?.visibility = View.GONE
         clearSuggestions()
     }
@@ -4502,6 +4758,7 @@ class AdaptKeyService : InputMethodService() {
             credentialModeManuallyActivated = true
         }
         extraRow?.credentialModeActive = loginFieldKind != LoginFieldKind.NONE
+        refreshGlideFieldAllowed()
         refreshSuggestions()
     }
     
@@ -4518,7 +4775,18 @@ class AdaptKeyService : InputMethodService() {
         urlMode = !urlMode
         keyboardView?.urlMode = urlMode
         extraRow?.urlModeActive = urlMode
+        refreshGlideFieldAllowed()
         refreshSuggestions()
+    }
+    
+    /**
+     * D-516/G-09: re-derives the glide field gate from the current field kind/mode state and pushes
+     * it into the view. Called wherever the state it reads changes mid-field (the extra row's two
+     * toggles); onStartInput's own derivation mirrors this expression inline.
+     */
+    private fun refreshGlideFieldAllowed() {
+        glideFieldAllowed = loginFieldKind == LoginFieldKind.NONE && !urlMode && !emailMode && !noSuggestionsField
+        keyboardView?.glideFieldAllowed = glideFieldAllowed
     }
     
     /**
@@ -6514,6 +6782,13 @@ class AdaptKeyService : InputMethodService() {
         if (cursorControlSessionActive) {
             return
         }
+        // D-516/G-09: the same choke-point gate for an active glide stroke - the bar belongs to the
+        // stroke's pinned candidate while it lives, and no keystroke-driven trigger can fire mid-stroke
+        // anyway (the finger owns the keyboard). finishGlideSession()/discardGlidePreview() restore the
+        // ordinary pipeline afterwards.
+        if (glideSessionActive) {
+            return
+        }
         // D-143: a URL is not natural-language prose - no dictionary word or autocorrect candidate is ever
         // useful while entering one, so the bar simply stays empty. D-293: a field explicitly opted out of
         // suggestions (TYPE_TEXT_FLAG_NO_SUGGESTIONS) gets the identical bare-bar treatment.
@@ -6933,6 +7208,14 @@ class AdaptKeyService : InputMethodService() {
         // pushes directly via setSuggestionBarItems() - so this gate cannot suppress the gesture's own bar
         // content, only every other, now-stale caller.
         if (cursorControlSessionActive) {
+            return
+        }
+        // D-516/G-09: the same rendering choke-point gate for an active glide stroke - the bar belongs
+        // to the stroke's pinned candidate while it lives. applyGlidePreview() pushes directly via
+        // setSuggestionBarItems(), so this gate cannot suppress the stroke's own bar content; only the
+        // stale callers are held off. finishGlideSession()/discardGlidePreview() restore the ordinary
+        // pipeline afterwards.
+        if (glideSessionActive) {
             return
         }
         // D-452 (temporary diagnostic): total wall time for this function - see refreshSuggestions()'s own
@@ -7857,6 +8140,10 @@ class AdaptKeyService : InputMethodService() {
         val ic = currentInputConnection ?: return
         clearUndo()
         pendingMergeChar = null
+        // D-516/G-09: a chip tap is ordinary input - it consumes the glide auto-space one-shot
+        // (plan §8.4: only the next glide stroke itself may still spend it).
+        glideAutoSpaceArmed = false
+        glideLastCommittedWord = null
         when (item.kind) {
             // S-06: keep exactly what was typed and cancel the pending autocorrect for this occurrence.
             SuggestionController.Kind.VERBATIM -> {
@@ -8089,6 +8376,12 @@ class AdaptKeyService : InputMethodService() {
             // timeout or a Stage 2 release already do (dismissCursorControl() is a no-op if the gesture
             // somehow already ended, e.g. a stale tap racing the timeout).
             SuggestionController.Kind.CURSOR_CONTROL_DONE -> keyboardView?.dismissCursorControl()
+            
+            // D-516/G-09: the pinned live glide candidate - purely informational. The finger that owns
+            // the stroke cannot tap this chip (a second finger kills the stroke first, D-495); a stale
+            // tap arriving after the release must not re-commit anything, so a tap does nothing - the
+            // released word's alternates are the ordinary NORMAL chips above.
+            SuggestionController.Kind.GLIDE_CANDIDATE -> Unit
         }
     }
     
@@ -8760,6 +9053,10 @@ class AdaptKeyService : InputMethodService() {
         // via getTextBeforeCursor()/getTextAfterCursor() to find line-boundary newlines - generous enough
         // for any realistic single line/paragraph on a mobile field without requesting the whole document.
         private const val CURSOR_CONTROL_LINE_SCAN_WINDOW = 2000
+        
+        // D-516/G-09: how many glide candidates the bar shows at once - the pinned live chip plus its
+        // alternates, mirroring the ordinary bar's own handful.
+        private const val GLIDE_BAR_CANDIDATES = 8
         
         // D-401-followup (§473): how many proposals driveCursorControlServo() may make for one target point
         // before giving up on it. Only ever reached by an editor whose reported caret positions do not

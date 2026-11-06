@@ -35,6 +35,9 @@ import de.froehlichmedia.adaptkey.diagnostics.DiagnosticLog
 import de.froehlichmedia.adaptkey.gesture.SwipeDirection
 import de.froehlichmedia.adaptkey.gesture.SwipeGesture
 import de.froehlichmedia.adaptkey.gesture.TouchSequenceTracker
+import de.froehlichmedia.adaptkey.glide.GlideGestureController
+import de.froehlichmedia.adaptkey.glide.GlideKeyGeometry
+import de.froehlichmedia.adaptkey.glide.GlidePoint
 import de.froehlichmedia.adaptkey.touch.AmbiguityBands
 import de.froehlichmedia.adaptkey.touch.AmbiguityResult
 import de.froehlichmedia.adaptkey.touch.KeyBox
@@ -145,6 +148,28 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     /**
+     * D-516/G-09: callbacks for the glide-typing stroke lifecycle. The view owns the touch stream,
+     * the claim classification ([GlideGestureController]) and the trail drawing; the listener (the
+     * service) owns recognition and every composing/commit side. [onGlideReleased] carries the
+     * stroke's inferred letter sequence for the unknown-word fallback (plan §8.3) - computed at
+     * release time, since the stroke's own geometry dies with it.
+     */
+    interface OnGlideListener {
+        
+        /** The stroke just claimed as glide: the session may start (auto-space, composing seed). */
+        fun onGlideStrokeStarted()
+        
+        /** A throttled live-recognition request; [points] is the stroke so far. */
+        fun onGlideUpdate(points: List<GlidePoint>)
+        
+        /** The claimed stroke released: commit the top candidate (or the [inferredSequence]). */
+        fun onGlideReleased(points: List<GlidePoint>, inferredSequence: String)
+        
+        /** The claimed stroke died without its release (a second finger, a system cancel): discard. */
+        fun onGlideCancelled()
+    }
+    
+    /**
      * D-401: callbacks for the space-bar cursor/selection-control gesture (see [CursorControlGesture] for
      * the underlying stage/timing policy). D-401-followup: [onCursorControlMove]'s own `characters`/`lines`
      * are the *total* signed offset from the gesture's own origin (this view's own running "already sent"
@@ -204,8 +229,11 @@ class AdaptKeyboardView @JvmOverloads constructor(
     var onBackspaceRepeatEndListener: OnBackspaceRepeatEndListener? = null
     
     var onLongPressPopupListener: OnLongPressPopupListener? = null
-    
+
     var onCursorControlListener: OnCursorControlListener? = null
+
+    /** D-516/G-09: the glide-typing stroke lifecycle; null while the feature or the field forbids it. */
+    var onGlideListener: OnGlideListener? = null
     
     /**
      * D-03: the label drawn on the space bar, showing the current input language (e.g. "Deutsch",
@@ -599,6 +627,11 @@ class AdaptKeyboardView @JvmOverloads constructor(
     // unrecord() for this tap is a no-op instead of subtracting a sample that was never added.
     private var pendingRecordWeight = OffsetModel.NOT_RECORDED_WEIGHT
     
+    // D-516/G-09: the contact area recorded with this tap at ACTION_DOWN (event.size), retained so a
+    // claimed glide stroke can unrecord the exact sample (T-03: a glide is never tap training data) -
+    // unrecord() needs every argument the original record() call used, size included.
+    private var pendingRecordSize = 0f
+    
     private val longPressHandler = Handler(Looper.getMainLooper())
     private var longPressRunnable: Runnable? = null
     private var longPressFired = false
@@ -692,6 +725,20 @@ class AdaptKeyboardView @JvmOverloads constructor(
     var cursorControlEnabled: Boolean = false
     
     /**
+     * D-516/G-09: whether glide typing is switched on (the `d516_glide_typing` setting, default off).
+     * The view gates stroke arming on this alone; whether the current *field* allows glide is the
+     * separate [glideFieldAllowed] flag below, which the service re-derives per field.
+     */
+    var glideTypingEnabled: Boolean = false
+    
+    /**
+     * D-516/G-09: whether the currently focused field allows glide at all - false for the verbatim
+     * surfaces (login/URL/email fields, the no-suggestions flag) and the emoji-search capture mode.
+     * Re-derived per field by the service; never true together with a password field.
+     */
+    var glideFieldAllowed: Boolean = false
+    
+    /**
      * D-508: percentage scaling (1.0 = the hardcoded base distance) of the G-01 space-bar language
      * swipe's own travel requirement. Set from the settings; the D-57 per-gesture factor applies on
      * top of this, so the calibrated relationship between the gestures survives scaling unchanged.
@@ -718,6 +765,16 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private var cursorControlActive = false
     private var cursorControlStage = CursorControlGesture.Stage.CURSOR
     private var cursorControlGraceActive = false
+    
+    // D-516/G-09: the glide stroke's own state. The pure [GlideGestureController] owns the claim
+    // and throttle decisions (see its own class KDoc); the trail below is this view's own drawing
+    // state - segment-wise alpha by age (plan §4.4: fade ~0.6-0.8 s, thin line, hint colour), kept
+    // fading after the stroke ends until the last segment expires.
+    private val glideController = GlideGestureController()
+    private val glideTrail = ArrayList<GlideTrailPoint>()
+    
+    /** One drawn trail sample; age-driven alpha comes from [GlideTrailPoint.atMs]. */
+    private class GlideTrailPoint(val x: Float, val y: Float, val atMs: Long)
     
     // D-508: true only for the very touch that armed the gesture (the finger was still down when the
     // long-press fired) and reset by the first ACTION_DOWN afterwards - so a lift-grace re-touch, which
@@ -879,6 +936,18 @@ class AdaptKeyboardView @JvmOverloads constructor(
         color = ContextCompat.getColor(context, R.color.key_hint)
         textAlign = Paint.Align.LEFT
         textSize = dp(11f)
+    }
+    
+    // D-516/G-09: the glide trail's own paint - thin rounded line in the hint colour (the plan's
+    // "Farbe aus dem Hint/Akzent-Repertoire"; dark theme inherits it like every other key_hint user),
+    // per-segment alpha set at draw time, so the shared Paint is mutated only inside this view's own
+    // draw call, never while other draws hold it.
+    private val glideTrailPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = ContextCompat.getColor(context, R.color.key_hint)
+        style = Paint.Style.STROKE
+        strokeWidth = dp(2.5f)
+        strokeCap = Paint.Cap.ROUND
+        strokeJoin = Paint.Join.ROUND
     }
     
     // D-01 / D-44: the horizontal long-press popup. Active while popupKey is non-null. The alternatives are
@@ -1080,6 +1149,8 @@ class AdaptKeyboardView @JvmOverloads constructor(
         if (cursorControlActive) {
             canvas.restore()
         }
+        // D-516/G-09: the glide trail, clipped like the keys (it belongs to the keyboard body).
+        drawGlideTrail(canvas)
         canvas.restore()
         if (showTouchModel) {
             drawTouchModel(canvas)
@@ -1388,6 +1459,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 // reinforcing exactly the wrong lesson; this is what drove the reported bottom-row-into-space
                 // drift from repeated space mistaps.
                 // D-474: nor while the user has switched touch-zone learning off.
+                pendingRecordSize = event.size
                 pendingRecordWeight = if (touchLearningEnabled && pendingAmbiguity.kind == TapAmbiguity.NONE) {
                     offsetModel?.record(
                         key.id,
@@ -1412,6 +1484,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
                         (pendingAmbiguity.inferredChar?.let { " inferredChar=$it" } ?: "")
                 )
                 scheduleLongPress(key)
+                // D-516/G-09: a stroke starting on a letter key of the letters surface is a
+                // potential glide - the pure controller records it. Nothing else changes until it
+                // claims: the long-press stays armed, the tap stays pending, T-01 is untouched.
+                if (glideEligible(key)) {
+                    glideTrail.clear()
+                    glideController.begin(glideKeyGeometry(), rect.width(), event.x, event.y, SystemClock.uptimeMillis())
+                }
                 // D-07: holding the backspace key starts an accelerating repeat delete.
                 if (key.code == KeyCode.DELETE) {
                     // D-361: (re-)arms the sticky zone for whatever comes next.
@@ -1446,6 +1525,46 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 if (movedBeyondSlop(event.x, event.y)) {
                     touchTracker.onMoveBeyondSlop()
                 }
+                // D-516/G-09: feed the live stroke. A claimed glide owns the stream from here on -
+                // it un-taps the origin key (T-03: the stroke's ACTION_DOWN tap sample is unrecorded,
+                // a glide is never training data per the plan's §3) and hands the session to the
+                // listener; an unclaimed stroke keeps behaving exactly like an ordinary press.
+                if (glideController.hasStroke) {
+                    val decision = glideController.move(event.x, event.y, SystemClock.uptimeMillis())
+                    if (decision == GlideGestureController.Decision.CLAIMED) {
+                        cancelPendingLongPress()
+                        // T-03: the ACTION_DOWN tap this stroke began as was recorded into the offset
+                        // model - a claimed glide is not a tap and must never train it (plan §3).
+                        // unrecord() is the exact algebraic inverse and needs the original record()
+                        // arguments, all of which this view still holds; it no-ops on the
+                        // NOT_RECORDED sentinel (ambiguous taps, D-474-off).
+                        pressedKey?.let { key ->
+                            val rect = pressedKeyRect
+                            if (rect != null && pendingRecordWeight != OffsetModel.NOT_RECORDED_WEIGHT) {
+                                offsetModel?.unrecord(
+                                    key.id,
+                                    rect.centerX(),
+                                    rect.centerY(),
+                                    downX,
+                                    downY,
+                                    pendingRecordWeight,
+                                    pendingRecordSize
+                                )
+                            }
+                        }
+                        pendingRecordWeight = OffsetModel.NOT_RECORDED_WEIGHT
+                        pressedKey = null
+                        pressedKeyRect = null
+                        onGlideListener?.onGlideStrokeStarted()
+                    }
+                    if (glideController.claimed) {
+                        glideTrail.add(GlideTrailPoint(event.x, event.y, SystemClock.uptimeMillis()))
+                        if (decision == GlideGestureController.Decision.UPDATE) {
+                            onGlideListener?.onGlideUpdate(glideController.points.toList())
+                        }
+                        invalidate()
+                    }
+                }
                 // Movement does not change the resolved key (T-01). D-108: a small smear that has not
                 // actually left the pressed key's own bounds must not cancel a pending long-press - only
                 // leaving the key does. D-380: leaving the key is not enough by itself either - only a
@@ -1472,6 +1591,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
                     // wobble during the hold keeps arming).
                     val cancelLongPress = if (heldKey.code == KeyCode.SPACE) {
                         movedOutsideKey(event.x, event.y) || movedBeyondSlop(event.x, event.y)
+                    } else if (glideEligible(heldKey)) {
+                        // D-516/G-09 conflict matrix (plan §4.1, D-380 row): while glide is on, a
+                        // letter key's smear protection applies only within the key - a smear that
+                        // leaves it already cancels the long-press arm (the glide user opted against
+                        // popups on a smeared hold). Glide off, and every non-letter key, keep the
+                        // exact D-380 rule below.
+                        movedOutsideKey(event.x, event.y)
                     } else {
                         movedOutsideKey(event.x, event.y) &&
                             swipeDirectionIfFarEnough(heldKey, event.x - downX, event.y - downY) != null
@@ -1517,6 +1643,20 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 val ownsRelease = touchTracker.ownsRelease(event.getPointerId(event.actionIndex))
                 val continuousMotion = touchTracker.motionWasObserved
                 touchTracker.end()
+                // D-516/G-09: a claimed glide stroke owns this release entirely - commit through the
+                // listener; never a tap, never a swipe, never a popup (plan §4.1.3). An unclaimed
+                // stroke falls through to the ordinary resolution below, where the D-19/G-03 gates
+                // apply.
+                if (glideController.hasStroke) {
+                    val wasClaimed = glideController.claimed
+                    val points = glideController.points.toList()
+                    val sequence = if (wasClaimed) glideController.inferredLetterSequence() else ""
+                    glideController.end()
+                    if (wasClaimed && ownsRelease) {
+                        onGlideListener?.onGlideReleased(points, sequence)
+                        return true
+                    }
+                }
                 // D-01: releasing over the alternatives popup commits the highlighted alternative.
                 if (popupKey != null && ownsRelease) {
                     commitPopupSelection()
@@ -1581,6 +1721,16 @@ class AdaptKeyboardView @JvmOverloads constructor(
         cancelPendingLongPress()
         cancelBackspaceRepeat()
         dismissPopup()
+        // D-516/G-09: a claimed glide stroke dies with the sequence (D-495, unchanged - a second
+        // finger kills the stroke, plan §4.1.3). The listener discards the preview; an unclaimed
+        // stroke just ends silently.
+        if (glideController.hasStroke) {
+            val wasClaimed = glideController.claimed
+            glideController.end()
+            if (wasClaimed) {
+                onGlideListener?.onGlideCancelled()
+            }
+        }
         touchTracker.end()
         pressedKey = null
         pressedKeyRect = null
@@ -2385,6 +2535,25 @@ class AdaptKeyboardView @JvmOverloads constructor(
      */
     private fun resolveSwipe(key: Key, dx: Float, dy: Float): Boolean {
         val direction = swipeDirectionIfFarEnough(key, dx, dy) ?: return false
+        // D-516/G-09 conflict matrix (plan §4.1): while glide is on, a letters-surface letter-key
+        // stroke can never be a page swipe - it is either a glide (which never reaches this method,
+        // its release commits instead) or falls back to a plain tap, exactly like the D-19
+        // switch-off behaviour. The D-19 switch itself stays effective and visible for every other
+        // origin, and the space-bar language swipe is untouched (G-01 never starts on a letter).
+        val isLetterStroke = surface == InputSurface.LETTERS &&
+            key.code == KeyCode.CHAR && key.char?.isLetter() == true
+        if (glideTypingEnabled && isLetterStroke) {
+            if (direction == SwipeDirection.LEFT || direction == SwipeDirection.RIGHT) {
+                return false
+            }
+            // G-03 dominance gate: a down-swipe from a letter key dismisses only when the vertical
+            // travel clearly dominates the horizontal - a real down-zopfer from the keyboard's
+            // middle, not a glide that merely runs out downwards (the stroke claimed here would
+            // never have reached resolveSwipe). Considered starting point, R3-calibrated.
+            if (direction == SwipeDirection.DOWN && abs(dy) < GLIDE_DISMISS_DOMINANCE * abs(dx)) {
+                return false
+            }
+        }
         return onSwipeListener?.onSwipe(key, direction) == true
     }
     
@@ -2418,6 +2587,67 @@ class AdaptKeyboardView @JvmOverloads constructor(
         return keyRects
             .filter { (key, _) -> key.code == KeyCode.CHAR }
             .map { (key, rect) -> OffsetModel.Candidate(key.id, rect.centerX(), rect.centerY(), rect.width() / 2f, rect.height() / 2f) }
+    }
+    
+    /**
+     * D-516/G-09: the letters surface's letter-key centres, as a pure [GlideKeyGeometry] for the
+     * glide recognizer and stroke controller. Rebuilt per stroke begin - the map copy is a few
+     * dozen entries. Only genuine letters count (the number row's digit keys and every
+     * symbol-surface key are excluded; a glide never starts on, nor scores against, them).
+     */
+    fun glideKeyGeometry(): GlideKeyGeometry {
+        val centers = LinkedHashMap<Char, GlidePoint>()
+        for ((key, rect) in keyRects) {
+            val c = key.char
+            if (key.code == KeyCode.CHAR && c != null && c.isLetter() && c !in centers) {
+                centers[c] = GlidePoint(rect.centerX().toDouble(), rect.centerY().toDouble())
+            }
+        }
+        return GlideKeyGeometry(centers)
+    }
+    
+    /** D-516/G-09: whether a touch starting on [key] can become a glide stroke at all. */
+    private fun glideEligible(key: Key): Boolean {
+        return glideTypingEnabled && glideFieldAllowed &&
+            surface == InputSurface.LETTERS &&
+            key.code == KeyCode.CHAR && key.char?.isLetter() == true
+    }
+    
+    /**
+     * D-516/G-09: silently ends any live glide stroke - the service's field-change defensive reset.
+     * No listener callbacks (the field they would talk to is gone); the trail keeps fading.
+     */
+    fun resetGlideStroke() {
+        if (glideController.hasStroke) {
+            glideController.end()
+        }
+    }
+    
+    /**
+     * D-516/G-09: draws the stroke trail - a thin rounded line whose segments fade with their age
+     * (plan §4.4: ~0.6-0.8 s, then gone). Points only ever accumulate while a stroke is claimed, so
+     * a live stroke fades at its tail exactly like a finished one fades as a whole. Keeps itself
+     * scheduled until the last segment expires.
+     */
+    private fun drawGlideTrail(canvas: Canvas) {
+        if (glideTrail.isEmpty()) {
+            return
+        }
+        val now = SystemClock.uptimeMillis()
+        while (glideTrail.isNotEmpty() && now - glideTrail.first().atMs >= GLIDE_TRAIL_FADE_MS) {
+            glideTrail.removeAt(0)
+        }
+        if (glideTrail.isEmpty()) {
+            return
+        }
+        for (i in 1 until glideTrail.size) {
+            val a = glideTrail[i - 1]
+            val b = glideTrail[i]
+            val age = (now - b.atMs).coerceIn(0L, GLIDE_TRAIL_FADE_MS).toFloat()
+            glideTrailPaint.alpha = (255f * (1f - age / GLIDE_TRAIL_FADE_MS)).toInt()
+            canvas.drawLine(a.x, a.y, b.x, b.y, glideTrailPaint)
+        }
+        postInvalidateOnAnimation()
     }
     
     /**
@@ -2775,6 +3005,16 @@ class AdaptKeyboardView @JvmOverloads constructor(
         // into the reclaimable part of the bottom gesture inset (setSpaceTouchExtension()'s own cap,
         // alongside the inset's own actual size) - a considered starting point, not yet device-tuned.
         private const val SPACE_TOUCH_EXTENSION_FACTOR = 0.25f
+        
+        // D-516/G-09: the G-03 dominance gate's factor (plan §4.1) - a letter-key down-swipe
+        // dismisses only when the vertical travel is at least this multiple of the horizontal one,
+        // so a glide-shaped stroke never dismisses by "running out downwards". Considered starting
+        // point, R3-calibrated.
+        private const val GLIDE_DISMISS_DOMINANCE = 2f
+        
+        // D-516/G-09: the glide trail's fade window (plan §4.4/§8.6: ~0.6-0.8 s, hardcoded - Gboard
+        // likewise fades the trail quickly, no switch of its own).
+        private const val GLIDE_TRAIL_FADE_MS = 700L
         
         // D-05 / D-70 / D-83 / D-85: key-click sample playback volume (SoundPool's 0f..1f linear range -
         // not dB, so this is a much bigger perceived cut than the number alone suggests) and concurrent

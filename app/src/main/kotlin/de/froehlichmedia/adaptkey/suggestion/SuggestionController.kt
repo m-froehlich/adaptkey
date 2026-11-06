@@ -115,7 +115,14 @@ class SuggestionController(private val config: SuggestionConfig) {
         /** D-401-followup: a green checkmark chip shown alongside [CURSOR_CONTROL_HINT] - an explicit,
          * discoverable way to end the gesture on tap, since the user reported the gesture-only ways to end
          * it (waiting out the lift-grace window, or releasing a Stage 2 drag) were not obvious on their own. */
-        CURSOR_CONTROL_DONE
+        CURSOR_CONTROL_DONE,
+        
+        /** D-516/G-09: the glide stroke's pinned live top candidate, first in the bar for the stroke's
+         * duration (the plan's S-01/S-06 alternate-content precedence, pushed directly past
+         * [update]/[displayed] like every other takeover). Purely informational: the finger that owns
+         * the stroke cannot tap it, and a stale tap after the release must not re-commit anything -
+         * the released word's alternates are ordinary [NORMAL] chips. */
+        GLIDE_CANDIDATE
     }
     
     /**

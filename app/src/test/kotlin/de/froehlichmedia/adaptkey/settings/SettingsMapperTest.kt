@@ -230,6 +230,12 @@ class SettingsMapperTest {
     }
     
     @Test
+    fun `D-516 glideTypingEnabled flag passes through unchanged, defaulting to off`() {
+        assertFalse(SettingsMapper.toAdaptSettings(RawSettings()).glideTypingEnabled)
+        assertTrue(SettingsMapper.toAdaptSettings(RawSettings(glideTypingEnabled = true)).glideTypingEnabled)
+    }
+    
+    @Test
     fun `D-352 autoSplitMode resolves from the stored key, defaulting to AUTOMATIC`() {
         assertEquals(AutoSplitMode.AUTOMATIC, SettingsMapper.toAdaptSettings(RawSettings()).autoSplitMode)
         assertEquals(
