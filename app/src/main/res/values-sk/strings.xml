@@ -392,4 +392,5 @@
     <string name="d516_glide_typing_summary">Nakreslite slovo jedným súvislým ťahom cez písmená a bude napísané. Predvolene vypnuté; pri zapnutí sa stránka písmen prepína iba klávesou ?123.</string>
     <string name="d89_f39_title">Ťahanie prstom (glide typing)</string>
     <string name="d89_f39_desc">Voliteľné: nakreslite slovo jedným súvislým ťahom cez písmená - najlepšia zhoda sa napíše za vás, vrátane slovníka, skladania diakritiky a osobného kontextu. Predvolene vypnuté.</string>
+    <string name="d89_footer_note">Poznámka: od reformy alternatívneho priradenia kláves stránka písmen sprístupňuje prakticky všetky relevantné znaky priamo - klávesy s dvojitým rohom, rad číslic s vlastnými symbolmi a vyskakovacie okná dlhého stlačenia vrátane - bežné písanie nikdy nepotrebuje výlet na stránky špeciálnych znakov.</string>
 </resources>

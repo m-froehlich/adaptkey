@@ -452,4 +452,5 @@
     <string name="d516_glide_typing_summary">Ein Wort in einem durchgehenden Strich über die Buchstaben ziehen, um es zu schreiben. Standardmäßig aus; bei eingeschalteter Gesteeneingabe schaltet die Buchstaben-Seite nur noch über die ?123-Taste.</string>
     <string name="d89_f39_title">Gesteeneingabe (Glide-Typing)</string>
     <string name="d89_f39_desc">Optional: Ein Wort in einem durchgehenden Strich über die Buchstaben ziehen - der beste Treffer wird geschrieben, mit Wörterbuch, Umlaut-Folding und persönlichem Kontext. Standardmäßig aus.</string>
+    <string name="d89_footer_note">Nachtrag: Seit der Alt-Belegungs-Reform macht die Buchstaben-Seite praktisch alle relevanten Zeichen direkt verfügbar - Doppel-Ecken-Tasten, die Ziffernleiste samt ihrer Symbole und die Langdruck-Popups eingeschlossen. Für den Alltag ist kein Zugriff auf die Sonderzeichen-Seiten notwendig.</string>
 </resources>

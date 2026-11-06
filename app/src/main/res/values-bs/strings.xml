@@ -392,4 +392,5 @@
     <string name="d516_glide_typing_summary">Nacrtaj riječ jednim povezanim pokretom preko slova i biće upisana. Podrazumijevano isključeno; kad je uključeno, stranica slova mijenja se samo tipkom ?123.</string>
     <string name="d89_f39_title">Klizno kucanje (glide typing)</string>
     <string name="d89_f39_desc">Neobavezno: nacrtaj riječ jednim povezanim pokretom preko slova - najbolja podudarnost upisuje se umjesto tebe, uz rječnik, preslikavanje dijakritika i lični kontekst. Podrazumijevano isključeno.</string>
+    <string name="d89_footer_note">Napomena: od reforme alternativne raspodjele tipki stranica slova čini praktički sve relevantne znakove direktno dostupnima - tipke s dvostrukim uglom, red brojeva sa svojim simbolima i iskačući prozori dugog pritiska uključeni - svakodnevno kucanje nikada ne treba posjet stranicama posebnih znakova.</string>
 </resources>

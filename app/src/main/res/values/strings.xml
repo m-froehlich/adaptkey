@@ -472,4 +472,5 @@
     <string name="d516_glide_typing_summary">Draw a word in one continuous stroke across the letters to type it. Off by default; while on, the letters page switches pages only via the ?123 key.</string>
     <string name="d89_f39_title">Glide typing</string>
     <string name="d89_f39_desc">Optional: draw a word in one continuous stroke across the letters, and the best match is typed for you - with dictionary, diacritic folding and personal context. Off by default.</string>
+    <string name="d89_footer_note">Note: since the alternative key-assignment reform, the letters page makes practically all relevant characters directly available - dual-corner keys, the digits row with its own symbols, and the long-press popups included - so everyday typing never needs a trip to the special-character pages.</string>
 </resources>

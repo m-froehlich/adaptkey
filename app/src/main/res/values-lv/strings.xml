@@ -392,4 +392,5 @@
     <string name="d516_glide_typing_summary">Zīmē vārdu ar vienu nepārtrauktu līniju pār burtiem, un tas tiks uzrakstīts. Pēc noklusējuma izslēgts; kad ieslēgts, burtu lapa mainās tikai ar taustiņu ?123.</string>
     <string name="d89_f39_title">Slīdošā rakstīšana (glide typing)</string>
     <string name="d89_f39_desc">Neobligāti: zīmē vārdu ar vienu nepārtrauktu līniju pār burtiem - labākā atbilstība tiek uzrakstīta jūsu vietā, ar vārdnīcu, diakritisko zīmju savienošanu un personīgo kontekstu. Pēc noklusējuma izslēgts.</string>
+    <string name="d89_footer_note">Piezīme: kopš alternatīvo taustiņu piešķiršanas reformas burtu lapa padara gandrīz visus būtiskos simbolus tieši pieejamus - dubultā stūra taustiņi, ciparu rinda ar savējiem simboliem un ilgas nospiešanas uznirstošie logi ieskaitot - ikdienas rakstīšanai nekad nav vajadzīgs apmeklējums īpašo simbolu lapām.</string>
 </resources>

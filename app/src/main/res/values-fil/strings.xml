@@ -392,4 +392,5 @@
     <string name="d516_glide_typing_summary">Guhit ang salita sa isang tuloy-tuloy na linya sa mga titik para i-type ito. Nakasara bilang default; kapag naka-on, ang pahina ng mga titik ay nagpapalit lamang sa ?123 key.</string>
     <string name="d89_f39_title">Pag-slide sa pag-type (glide typing)</string>
     <string name="d89_f39_desc">Opsyonal: guhit ang salita sa isang tuloy-tuloy na linya sa mga titik - ang pinakamahusay na tugma ay mai-type para sa iyo, kasama ang diksyunaryo, pag-tiklop ng mga diakritiko at personal na konteksto. Nakasara bilang default.</string>
+    <string name="d89_footer_note">Paalala: mula nang reporma sa alternatibong pagtatalaga ng mga key, ginagawang direktang available ng pahina ng mga titik ang praktikal na lahat ng mahahalagang karakter - mga key na dobleng sulok, ang hilera ng mga digit na may sariling mga simbolo, at mga pop-up ng mahabang pagpindot kasama - hindi kailanman kailangan ng pang-araw-araw na pag-type na daanan ang mga pahina ng mga espesyal na karakter.</string>
 </resources>

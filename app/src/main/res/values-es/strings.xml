@@ -392,4 +392,5 @@
     <string name="d516_glide_typing_summary">Dibuja una palabra en un solo trazo continuo sobre las letras para escribirla. Desactivada por defecto; cuando está activada, la página de letras solo cambia mediante la tecla ?123.</string>
     <string name="d89_f39_title">Escritura gestual (glide typing)</string>
     <string name="d89_f39_desc">Opcional: dibuja una palabra en un solo trazo continuo sobre las letras y se escribe la mejor coincidencia, con diccionario, plegado de diacríticos y contexto personal. Desactivada por defecto.</string>
+    <string name="d89_footer_note">Nota: desde la reforma de asignación alternativa de teclas, la página de letras pone prácticamente todos los caracteres relevantes directamente disponibles - teclas de doble esquina, la fila de dígitos con sus propios símbolos y las ventanas emergentes de pulsación larga incluidas - el tecleo diario nunca necesita un pase por las páginas de caracteres especiales.</string>
 </resources>

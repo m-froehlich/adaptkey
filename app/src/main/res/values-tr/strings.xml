@@ -392,4 +392,5 @@
     <string name="d516_glide_typing_summary">Bir kelimeyi harflerin üzerinde kesintisiz bir çizgiyle çizin ve yazılsın. Varsayılan olarak kapalı; açıkken harf sayfası yalnızca ?123 tuşuyla değişir.</string>
     <string name="d89_f39_title">Kaydırarak yazma (glide typing)</string>
     <string name="d89_f39_desc">İsteğe bağlı: bir kelimeyi harflerin üzerinde kesintisiz bir çizgiyle çizin - en iyi eşleşme sizin adınıza yazılır; sözlük, diakritik eşleme ve kişisel bağlam dahil. Varsayılan olarak kapalı.</string>
+    <string name="d89_footer_note">Not: alternatif tuş ataması reformundan bu yana harf sayfası ilgili karakterlerin neredeyse tamamını doğrudan sunar - çift köşeli tuşlar, kendi sembolleriyle rakam sırası ve uzun basma pencereleri dahil - günlük yazma için özel karakter sayfalarına uğramak hiç gerekmez.</string>
 </resources>

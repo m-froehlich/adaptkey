@@ -46,6 +46,19 @@ class FeatureOverviewActivity : SettingsScreenActivity() {
         val list = findViewById<LinearLayout>(R.id.feature_overview_list)
         val topMarginPx = (ENTRY_SPACING_DP * resources.displayMetrics.density).toInt()
         FeatureCatalog.ENTRIES.forEach { entry -> list.addView(buildEntryView(entry, topMarginPx)) }
+        // D-518: the trailing note (a deliberate afterword, not a numbered feature entry) - since the
+        // Alt-Belegungs-Reform the letters page itself carries practically every relevant character,
+        // so everyday typing never needs the special-character pages. Italic, extra spacing: reads as
+        // an editorial note, clearly apart from the numbered entries above.
+        val note = TextView(this)
+        note.setText(R.string.d89_footer_note)
+        note.setTypeface(note.typeface, Typeface.ITALIC)
+        val noteParams = LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        ).apply { topMargin = (NOTE_SPACING_DP * resources.displayMetrics.density).toInt() }
+        note.layoutParams = noteParams
+        list.addView(note)
     }
     
     private fun buildEntryView(entry: FeatureCatalog.Entry, topMarginPx: Int): LinearLayout {
@@ -71,5 +84,8 @@ class FeatureOverviewActivity : SettingsScreenActivity() {
     companion object {
         
         private const val ENTRY_SPACING_DP = 16f
+        
+        // D-518: the trailing note's extra separation from the last numbered entry.
+        private const val NOTE_SPACING_DP = 24f
     }
 }

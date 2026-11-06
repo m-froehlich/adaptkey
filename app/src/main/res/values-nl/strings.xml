@@ -392,4 +392,5 @@
     <string name="d516_glide_typing_summary">Trek een woord in één doorlopende lijn over de letters om het te typen. Standaard uit; wanneer ingeschakeld, wisselt de letterspagina alleen via de ?123-toets.</string>
     <string name="d89_f39_title">Glide-typen (veegtypen)</string>
     <string name="d89_f39_desc">Optioneel: trek een woord in één doorlopende lijn over de letters - de beste match wordt voor je getypt, met woordenboek, diakrieten-samenvoeging en persoonlijke context. Standaard uit.</string>
+    <string name="d89_footer_note">Let op: sinds de alternatieve-toetsindelingshervorming biedt de letterspagina vrijwel alle relevante tekens direct - dubbelhoektoetsen, de cijferrij met eigen symbolen en de ingedrukt-houd-popups inbegrepen - alledaags typen heeft nooit een omweg naar de specialetekenspagina\'s nodig.</string>
 </resources>

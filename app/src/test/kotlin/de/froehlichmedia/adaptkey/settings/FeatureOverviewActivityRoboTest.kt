@@ -25,8 +25,11 @@ class FeatureOverviewActivityRoboTest {
         val activity = Robolectric.buildActivity(FeatureOverviewActivity::class.java).setup().get()
         
         val list = activity.findViewById<LinearLayout>(R.id.feature_overview_list)
-        assertEquals(FeatureCatalog.ENTRIES.size, list.childCount)
+        // D-518: the catalog entries plus the one trailing italic note (d89_footer_note) after them.
+        assertEquals(FeatureCatalog.ENTRIES.size + 1, list.childCount)
         val firstEntry = list.getChildAt(0) as LinearLayout
         assertEquals(2, firstEntry.childCount)
+        val note = list.getChildAt(list.childCount - 1) as android.widget.TextView
+        assertEquals(activity.getString(R.string.d89_footer_note), note.text.toString())
     }
 }

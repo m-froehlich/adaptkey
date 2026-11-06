@@ -392,4 +392,5 @@
     <string name="d516_glide_typing_summary">Tracez un mot en un seul trait continu sur les lettres pour l\'écrire. Désactivée par défaut ; lorsqu\'elle est active, la page des lettres ne change que via la touche ?123.</string>
     <string name="d89_f39_title">Saisie gestuelle (glide typing)</string>
     <string name="d89_f39_desc">Optionnel : tracez un mot en un seul trait continu sur les lettres - la meilleure correspondance est tapée pour vous, avec dictionnaire, repli des diacritiques et contexte personnel. Désactivée par défaut.</string>
+    <string name="d89_footer_note">Remarque : depuis la réforme de l\'attribution alternative des touches, la page des lettres rend pratiquement tous les caractères pertinents directement disponibles - touches à double coin, rangée de chiffres avec ses propres symboles et popups d\'appui long compris - la frappe quotidienne n\'a jamais besoin d\'un détour par les pages de caractères spéciaux.</string>
 </resources>
