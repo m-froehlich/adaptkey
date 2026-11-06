@@ -890,6 +890,72 @@ lift-grace with nothing achieved. This closes the companion finding that a slow 
 long-press delay, no movement) armed the gesture and silently swallowed the space outright. A lift-grace
 re-touch is an explicitly deliberate gesture entry and excluded from the rescue.
 
+### G-09 - Glide Typing (D-516/D-517, "Gesteeneingabe")
+
+Drawing a word in one continuous stroke across the letter keys types it - Gboard-style glide typing, the
+community feature request behind the swipe-typing plan. **Opt-in**: a switch in the gesture settings
+category (`d516_glide_typing`, DE title "Gesteeneingabe (Glide-Typing)" - the established Gboard
+DE/AOSP product term, §8.1's naming call; English "Glide typing"), default **off**. With the switch off,
+AdaptKey behaves byte-identically to the pre-D-516 build: the stroke classification is never armed, no
+trail is drawn, no overhead of any kind.
+
+**Where glide works**: only the letters surface, only one finger (a second finger kills the stroke,
+D-495 unchanged), only as a stroke that *begins* on a letter key. Symbol/calculator pages, URL/email
+mode, emoji search (D-317), and every login-relevant or no-suggestions field never run glide
+(`glideFieldAllowed`, re-derived per field and at the two mid-field kind toggles).
+
+**What becomes a glide**: a stroke claims as glide once it has passed at least two different letter keys
+in sufficient proximity (within half the layout's own minimum key pitch), its path clearly exceeds the
+origin key's own width, and it has lasted longer than a minimum duration separating glide from the
+fastest legitimate tap-sweep - all hardcoded starting points (`GlideGestureController`), deliberately
+NOT coupled to `d508_field_swipe_scale` (which calibrates a different question), R3-calibrated on the
+device. Before the claim the stroke is an ordinary tap candidate - existing behaviour for short strokes
+is intact - and a stroke that never claims falls back to the ordinary tap/swipe resolution. After the
+claim: no tap, no popup, no page swipe, no dismiss from this stroke. The unrecorded claim also un-taps
+the origin key's ACTION_DOWN sample (T-03): a glide is never tap training data, and the same holds
+through commit (no composingTaps) - T-01/T-02/T-03 untouched.
+
+**Recognition core** (D-516's R1, pure `glide/` package): the stroke is resampled to constant
+arc-length spacing (speed-invariant); each dictionary candidate's ideal path is the polyline through the
+rendered key centres of its folded spelling (the active `DiacriticFolding` - a trace over `a` matches
+ä-words at zero geometric penalty, the umlauts-are-ordinary principle); a simplified DTW aligns the two;
+the mean aligned distance plus a small length-ratio penalty compete against a log-scaled frequency prior
+(the D-411/D-365 curve family) and a personal bigram/trigram context bonus (the existing
+`LearnedBigramBoost` rescaling). No kernel, no neural net, no precomputed tables. A doubled letter's
+waypoints collapse under arc resampling, so that family separates by frequency/context exactly like the
+other adversarial identical-line pairs the synthetic-trace tests pin.
+
+**Live behaviour**: while the stroke is claimed, the suggestion bar shows the current top candidate
+pinned first (a `GLIDE_CANDIDATE` chip, informational; alternates follow as ordinary chips), and the
+field shows the candidate as a composing preview, throttled (~40 ms) on a dedicated executor with
+superseded generations dropped, rewritten through the ordinary `updateComposing` path - the anchor is
+resolved at the claim, no new commit/teardown path exists, and the §1 invariants are untouched. The
+drawn trail is a thin hint-coloured line fading segment-wise (~0.7 s), hardcoded, no switch of its own
+(§8.6).
+
+**Release**: the top candidate commits through the chip-commit semantics (`GlideCommitPolicy`) -
+resolved casing via `capitalise()` keyed on the live composing text (D-440's gate), with the pre-armed
+Shift spending itself on the word's first character exactly like a typed one (D-405's live-only rule,
+materialised at the only place a glide word has a first keystroke), no autocorrect/A-01 intervention,
+n-gram learning over the ordinary commit. No trailing space at release. **Unknown word**: the stroke's
+inferred letter sequence (the clearly-visited key centres) is inserted as a word - like other
+keyboards, without being auto-added to the personal dictionary, without a toast; alternatives stay in
+the bar as ordinary chips to pick instead. **Auto-space** (default on, no switch of its own, §8.4):
+when the next glide stroke begins directly after a glide-committed word, a space is inserted first -
+lazily at the next stroke's start (the caret stays freely movable and the candidate correctable after
+the release), only between two glide strokes, never after typed or chip input.
+
+**Conflict matrix** (each case pinned by the plan's unit-test list): D-19's horizontal page swipe is
+fully swallowed on the letters surface while glide is on - a letter-key-origin stroke is either a glide
+or falls back to a plain tap, and only the `?123`/ABC key switches pages (the D-19 switch stays
+effective and visible; its summary carries a hint sentence, §8.5 - no graying-out, the D-301 lesson).
+G-03's dismiss-down gains a dominance gate on letter-key strokes (vertical travel must clearly dominate
+the horizontal, and a claimed stroke never dismisses at all). G-01/G-02/G-08 are untouched (none starts
+on a letter key). D-380's smear protection narrows while glide is on: for a letter key, leaving the
+key's own bounds already cancels the long-press arm (the glide user opted against popups on a smeared
+hold); glide off means byte-identical D-380 behaviour (§8.7). Glide candidates are displayed outside
+S-03's position stabilisation, the same display-time exception family as S-06/S-08.
+
 ---
 
 ## 5. Suggestion Bar

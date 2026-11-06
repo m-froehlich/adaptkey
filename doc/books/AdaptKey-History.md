@@ -24643,3 +24643,70 @@ the stroke arc ~2x and tripped the ratio window - replaced with correlated, inte
 wobble (real digitizer shapes). 1,890 unit tests total (1,872 + 18), 0 failures;
 `:app:assembleRelease` green. NOT device-confirmed and deliberately invisible - R1 has no user
 surface at all; all thresholds are hardcoded starting points for R3's calibration round.
+
+## §541 - D-517, R2: glide typing's complete first release - switch, stroke classification, commit path, live preview, pinned chip, trail (v1.2.106)
+
+The swipe-typing plan's R2: the whole feature in one throw, per §8.8's "keine halbe Sache" bar. The
+switch (`d516_glide_typing`, default off - byte-identical behaviour with it off: the stroke
+classification never arms, nothing draws, no overhead) rides the full settings chain
+(SettingsStore KEY/DEF(false) + load + backup export order after g03, the gesture category's screen
+order; RawSettings/SettingsMapper/AdaptSettings pass-through; the SwitchPreferenceCompat row after
+g03; title/summary in English + all 31 locales via `scratchpad/d516_strings.py`, drafts per the
+D-478 rule, `UiLocaleConsistencyTest` enforcing). DE naming per §8.1: "Gesteeneingabe
+(Glide-Typing)". Per §8.5 the D-19 switch's own summary gains the hint sentence in all 32 locales (no
+graying-out, no flag copying - the D-301 lesson); FeatureCatalog gains f39.
+
+View: `AdaptKeyboardView` arms a stroke on a letters-surface letter key when the switch is on and the
+field allows glide (`glideTypingEnabled`/`glideFieldAllowed` flags - the field gate re-derived per
+field in onStartInput and refreshed at the extra row's two mid-field kind toggles; the emoji-search
+capture mode forces it off exactly like the D-401 cursor gate, listener detached too). The pure
+`GlideGestureController` (§540's classification) classifies; at the claim the origin key un-taps -
+the ACTION_DOWN tap sample is unrecorded through OffsetModel's exact algebraic inverse with every
+original record argument (a new `pendingRecordSize` field retains event.size for it; T-03: a glide is
+never tap training data) - and the stroke owns its release: never a tap, never a swipe, never a
+popup. The conflict matrix lives at the established dispatch points: D-19's page swipe fully
+swallowed on the letters surface (letter-key-origin strokes fall back to a plain tap, resolveSwipe
+gated); G-03's dismiss-down gains the dominance gate (vertical travel >= 2x horizontal, claimed
+strokes never dismiss); D-380's smear rule narrows to within-the-key for letter keys while glide is
+on (§8.7 confirmed), byte-identical when off. The trail: a thin (2.5 dp) rounded line in the hint
+colour (dark theme inherits it), segment-wise alpha by age over ~700 ms, hardcoded (§8.6), kept
+fading after the stroke ends, `postInvalidateOnAnimation` until expired.
+
+Service: one session per claimed stroke. Start = the lazy glide-to-glide auto-space first (the §8.4
+one-shot flag set at each glide commit, consumed only by the next stroke's start when the document
+right before the caret still is that word - cleared by every ordinary keystroke, chip tap and field
+change), then the ordinary fresh-token steps a first-letter tap would run
+(captureTokenContext/resetWordEndShift/reclaim with a null tap - the long-press-letter precedent).
+Recognition: throttled live requests (the controller's 40 ms window) on a dedicated single-thread
+executor, results posted back and dropped when a newer generation superseded them (the cooperative
+cancellation pattern; the release bumps the generation and, if no live result ever arrived, runs one
+synchronous definitive pass itself). The preview: `applyGlidePreview` rewrites the composing token to
+the top candidate through the ordinary `updateComposing` path - anchor resolved at the claim, cursor
+at the token end, no new commit/teardown path anywhere, so the four §1 invariants are untouched by
+construction (the guardrail check the plan mandates). The bar: the pinned `GLIDE_CANDIDATE` chip plus
+its alternates pushed directly past the ordinary pipeline (the S-01/S-06 alternate-content
+precedence); refreshSuggestions()/showSuggestions() early-return while the session is live, the same
+choke-point gates the cursor gesture uses. Release = `GlideCommitPolicy` (pure, 4 tests): a
+dictionary candidate commits with chip-commit casing semantics - capitalise() keyed on the live
+composing text (D-440's gate), the pre-armed Shift spending itself on the word's first character
+exactly like a typed one (D-405's live-only rule materialised at glide's only "first keystroke"),
+no autocorrect, ordinary learning only for a dictionary candidate; no candidate commits the stroke's
+inferred letter sequence (the clearly-visited key centres - midpoint ambiguity names neither key)
+verbatim and never learns it (§8.3). No trailing space at release (the lazy auto-space owns
+separation); alternates stay as ordinary NORMAL chips, next-word predictions when none remain;
+armShiftForNextWord afterwards. A stroke that dies before any candidate arrived never touched the
+document; a claimed stroke killed by a second finger (D-495 unchanged) or a system cancel removes its
+preview outright (setComposingText("") + clearComposing - provisional text, nothing re-inserted, not
+D-383's shape).
+
+Tests: +14 (GlideGestureController 9 - claim exactly once, the duration gate against the fastest
+legitimate tap sweep, sub-key-width never claims, the throttle window, clean reset, the inference's
+unambiguity margin and off-keyboard skipping, no-op safety; GlideCommitPolicy 4; SettingsMapper 1).
+One design fix from the tests: the letter-sequence inference originally took each point's bare
+nearest key - a point midway between two centres named one of them arbitrarily; now a key is appended
+only when a point sits clearly inside its neighbourhood (nearest + dominance margin over the
+runner-up). 1,904 unit tests total (1,890 + 14), 0 failures; `:app:assembleRelease` green with
+versionName 1.2.106 in the APK (bump edited BEFORE the build, the corrected house order). NOT
+device-confirmed: R3 (D-518) is the bounded device/community calibration round - threshold feel,
+G-03 dominance, D-380 feel, the DE naming checked against the device's Gboard, and the §6
+classification/commit checklist; no further rounds planned beyond it.

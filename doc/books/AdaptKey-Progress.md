@@ -453,16 +453,18 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
-- **D-516/G-09 glide-typing (swipe typing) - IN PROGRESS: R1 (the recognition core, §540) implemented
-  2026-11-06 - invisible by design, no setting/commit/UI surface yet.** New pure `glide/` package
-  (trace resampling, key-centre geometry, bounded DTW alignment, log-scaled frequency prior +
-  `LearnedBigramBoost` context bonus, endpoint/ratio prefilter, A-04 filter, cooperative
-  `isCancelled`). 1,890 unit tests (1,872 + 18), 0 failures; `:app:assembleRelease` green; **no
-  version bump** (invisible intermediate round). Next: **R2 (D-517)** - the complete first release in
-  one throw (switch `d516_glide_typing` in 32 locales + classification/conflict matrix +
-  commit path incl. unknown word + auto-space + live composing preview + pinned chip + trail
-  drawing), then **R3 (D-518)** - the bounded device/community calibration round (all thresholds are
-  hardcoded starting points). Plan: `doc/plan/swipe-typing.md`. See §540.
+- **D-516/G-09 glide-typing ("Gesteeneingabe"/Glide-Typing) - R2 (D-517, §541, v1.2.106) IMPLEMENTED
+  2026-11-06, NOT yet device-confirmed.** Complete first release in one throw: the opt-in switch
+  (`d516_glide_typing`, default off, 32 locales, backup order), the stroke classification + conflict
+  matrix (D-19 swallow, G-03 dominance gate, D-380 narrowing, D-495 kill), the chip-commit-semantics
+  release (resolved casing + armed Shift on the first char, no autocorrect, unknown word = inferred
+  sequence never learned, lazy glide-to-glide auto-space), the live composing preview + pinned
+  `GLIDE_CANDIDATE` chip + alternates, and the fading trail. 1,904 unit tests (1,890 + 14), 0
+  failures; `:app:assembleRelease` green with versionName 1.2.106 (bump 601 -> 602 edited before the
+  build). **Next: R3 (D-518)** - the bounded device/community calibration round (threshold feel,
+  G-03 dominance, D-380 feel, DE naming vs. the device's Gboard, the plan's §6 device checklist);
+  after its user-Go the feature is closed. R1 (D-516, recognition core) is §540. Plan:
+  `doc/plan/swipe-typing.md`; spec G-09.
 
 - **D-515 - IMPLEMENTED (§539, v1.2.105), NOT yet device-confirmed: the apostrophe key's opt-in for the
   non-English layouts (default off).** The D-512 apostrophe key right of `l`/`m` would meet resistance in
