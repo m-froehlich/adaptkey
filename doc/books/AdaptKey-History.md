@@ -24594,3 +24594,52 @@ standing D-478 rule, `UiLocaleConsistencyTest` enforces). Tests: +3 net (the gat
 and the mapper default/pass-through). 1,872 unit tests total (1,869 + 3), 0 failures;
 `:app:assembleRelease` green with versionName 1.2.105 in the APK. NOT device-confirmed (a settings row +
 a conditional layout key; the German default shape is exactly the pre-reform middle row, pinned by tests).
+
+## §540 - D-516, R1: the glide-typing recognition core - trace resampling, alignment, ranking; invisible until R2 (no version bump)
+
+The swipe-typing plan (`doc/plan/swipe-typing.md`, decided the day before) executed its first round: the
+pure recognition core in the new `glide/` package - deliberately no UI connection, no setting, no
+commit path (those are R2/D-517), so nothing is observable with the feature not yet shipped. The plan's
+literature-standard shape (SHARK2-lineage, AOSP LatinIME's conceptual design, no kernel, no neural net,
+no precomputed per-word tables): the stroke is resampled to constant arc-length spacing
+(`GlideTrace`, speed-invariant, ~8 px - a hardcoded starting point for R3, deliberately NOT coupled to
+`d508_field_swipe_scale`), each candidate's ideal path is the polyline through the rendered key centres
+of its *folded* spelling (`GlideKeyGeometry`, fed by R2 from `AdaptKeyboardView`'s real bounds; the
+fold via the active `DiacriticFolding` so a trace over the `a` key matches ä-initial words at zero
+geometric penalty - the umlauts-are-ordinary principle carried over), and a simplified DTW aligns the
+two (`GlideRecognizer.alignmentCost`, mean aligned point distance over the optimal monotone path,
+bounded to 160 points per side by adaptive spacing, so one alignment is at most 160x160 cells). The
+total score is geometric cost + a small length-ratio penalty, minus a log-scaled frequency prior (the
+D-411/D-365 curve family) and minus a personal bigram/trigram context bonus (the existing
+`LearnedBigramBoost` rescaling incl. its recency factor, trigram-first with D-246's own Stupid-Backoff
+discount for a bigram-only candidate under trigram context) - ranking-only, same discipline as the
+provider's score.
+
+Candidate pool: a shortlist, never a full scan - `unigramsByPrefix` over the stroke's start key plus
+its diacritic variants (so a trace over `a` also reaches ä-initial words), cut at 2000 per prefix
+(`SqliteDictionaryStore`'s own established CANDIDATE_LIMIT scale), then prefiltered cheaply by the
+plan's two endpoint rules (first and last folded letter = the stroke's start/end keys, each within one
+minimum key pitch of the resolved centre) and an arc-ratio window [0.3, 3.0]. The pool's frequency
+truncation stays the known recall bound for very rare words (the ordinary prefix scan's accepted
+trade-off, D-65/D-209); R3 revisits if device use shows it binding. A doubled letter's two waypoints
+collapse under arc resampling (a dwell has no length), so e.g. "Messe"/"Mese" are geometrically
+identical - that family separates by frequency/context, exactly the plan's adversarial-pair design,
+and both ASCII conventions (ß folded to "ss" formally and to a single "s" via the host-key shorthand,
+D-204) resolve to the same folded path, so both trace shapes find the canonical entry. A-04 blacklist
+filters the pool; cooperative `isCancelled` polls between candidates (the provider's established
+pattern for the R2 background-executor wiring).
+
+Tests (+18): `GlideTraceTest` (constant spacing, speed invariance, dwell skipping, degenerate
+rejection) and `GlideRecognizerTest` - seeded synthetic traces walked over a synthetic QWERTZ grid:
+eight everyday words at position 1 at sigma=8 px (with same-endpoint distractors like
+hallo/halo, morgen/gern, wasser/weber, danke/dame/dose so the alignment really decides), a long word
+at sigma=12, the identical-ideal-line pair messe/mese pinned to frequency (the rarer-spelled word
+seeded more frequent wins), a 100x-more-frequent but wrong-shaped word losing, a personal bigram
+flipping the near-tie while never overriding a clear shape loss, both ß conventions finding the
+canonical "Grüße" casing, blacklist exclusion, off-layout letters skipped, strokes far from any key
+or wobbling around one key yielding nothing, and cancellation. One methodology lesson fixed en route:
+the first trace generator jittered every raw 5 px report independently, which unphysically inflated
+the stroke arc ~2x and tripped the ratio window - replaced with correlated, interpolated waypoint
+wobble (real digitizer shapes). 1,890 unit tests total (1,872 + 18), 0 failures;
+`:app:assembleRelease` green. NOT device-confirmed and deliberately invisible - R1 has no user
+surface at all; all thresholds are hardcoded starting points for R3's calibration round.

@@ -453,6 +453,17 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
+- **D-516/G-09 glide-typing (swipe typing) - IN PROGRESS: R1 (the recognition core, §540) implemented
+  2026-11-06 - invisible by design, no setting/commit/UI surface yet.** New pure `glide/` package
+  (trace resampling, key-centre geometry, bounded DTW alignment, log-scaled frequency prior +
+  `LearnedBigramBoost` context bonus, endpoint/ratio prefilter, A-04 filter, cooperative
+  `isCancelled`). 1,890 unit tests (1,872 + 18), 0 failures; `:app:assembleRelease` green; **no
+  version bump** (invisible intermediate round). Next: **R2 (D-517)** - the complete first release in
+  one throw (switch `d516_glide_typing` in 32 locales + classification/conflict matrix +
+  commit path incl. unknown word + auto-space + live composing preview + pinned chip + trail
+  drawing), then **R3 (D-518)** - the bounded device/community calibration round (all thresholds are
+  hardcoded starting points). Plan: `doc/plan/swipe-typing.md`. See §540.
+
 - **D-515 - IMPLEMENTED (§539, v1.2.105), NOT yet device-confirmed: the apostrophe key's opt-in for the
   non-English layouts (default off).** The D-512 apostrophe key right of `l`/`m` would meet resistance in
   the German community on the German QWERTZ (the changed home row is the sore point). New Layout-category

@@ -1,7 +1,9 @@
 # AdaptKey — Plan: Swipe/Glide-Typing (G-09, Entscheidungen ab D-516)
 
-**Status: AUSFÜHRUNGSBEREIT (2026-11-05) — nichts umgesetzt.** Alle acht offenen Punkte sind entschieden
-(Nutzer-Calls, §8); Umsetzung erst auf ausdrückliches Go hin. Diese Datei ist in sich geschlossen:
+**Status: IN UMSETZUNG (2026-11-06). R1 (D-516, Erkennungskern + Tests) erledigt — History §540,
+für den Nutzer unsichtbar, kein Bump.** R2 (D-517, komplette Erstfreigabe) und R3 (D-518,
+Kalibrierung) stehen noch aus. Alle acht offenen Punkte sind entschieden
+(Nutzer-Calls, §8); Umsetzung auf das Go vom 2026-11-06 hin. Diese Datei ist in sich geschlossen:
 `.kilo/command/start-prompt.md` + dieses Dokument reichen einer frischen Session zur Umsetzung.
 Origin: Community-Anfrage (2026-11-05) — Glide-Typing fehle als Kern-Feature; Nutzer-Calls vorab:
 opt-in (Schalter, default **aus**), bei aktivem Glide entfällt der Page-Wechsel per Swipe (D-19-Konflikt),
@@ -236,7 +238,7 @@ zu Anfang" — daraus folgt: die erste sichtbare Version ist das **vollständige
 
 | Runde | Inhalt | Bump |
 |---|---|---|
-| **R1 (D-516)** | Erkennungskern `glide/` + synthetische-Trace-Tests. Kein UI-Anschluss, für den Nutzer unsichtbar. | keiner (unsichtbarer Zwischenschritt) |
+| **R1 (D-516)** | ~~Erkennungskern `glide/` + synthetische-Trace-Tests. Kein UI-Anschluss, für den Nutzer unsichtbar.~~ **ERLEDIGT 2026-11-06 (History §540).** | keiner (unsichtbarer Zwischenschritt) |
 | **R2 (D-517)** | **Komplette Erstfreigabe in einem Wurf:** Schalter (32 Locales) + Klassifikation/Konflikt-Matrix + Commit-Pfad (inkl. unbekanntes Wort, Auto-Space) + Live-Composing-Preview + gepinnter Kandidat in der Leiste + Weg-Zeichnung. Keine halbe Sache. | bump |
 | **R3 (D-518)** | **Begrenzte** Geräte-/Community-Feedback-Runde: Schwellwerte, G-03-Dominanz-Gate, D-380-Gefühl, deutsche Bezeichnung am Gerät gegenprüfen, evtl. Region-Invalidierung. **Abschlusskriterium:** Geräteliste (§6-Klassifikations- + Commit-Fälle am Gerät) grün + Nutzer-Go → Feature fertig; weitere Wünsche laufen danach als normale Post-Release-Community-Runden, nicht als offener Plan. | bump nur falls Code-Änderungen anfallen |
 
