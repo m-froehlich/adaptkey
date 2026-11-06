@@ -24710,3 +24710,36 @@ versionName 1.2.106 in the APK (bump edited BEFORE the build, the corrected hous
 device-confirmed: R3 (D-518) is the bounded device/community calibration round - threshold feel,
 G-03 dominance, D-380 feel, the DE naming checked against the device's Gboard, and the §6
 classification/commit checklist; no further rounds planned beyond it.
+
+## §542 - D-518, R3 opened: the user's own verdict hands glide typing to the community; version scheme switches to 1.3.3+; the feature-overview page gains its afterword (v1.2.106 -> 1.3.3, versionCode 602 -> 603)
+
+The user installed v1.2.106 and tried glide typing himself. His verdict, recorded verbatim in intent:
+"Ich komme damit gar nicht klar. Aber ich kenne mich auch nicht mit Glide Typing aus." - explicitly a
+no-experience verdict, NOT a defect report: no concrete failure, no threshold complaint, no wrong
+commit was named, so nothing in the code or its constants is changed on this basis (per this
+project's own convention, thresholds are only tuned against specific reports - R3's whole purpose).
+His call, matching the plan's R3 design: the Community checks it. The round's Abschlusskriterium
+therefore shifts accordingly - R3 stays open until community feedback arrives and the user gives his
+Go on top of it; further wishes run as normal post-release community rounds, not as an open plan.
+
+**Version scheme change (user decision): future versions count from "1.3.3"** - the minor is raised
+(1.2 -> 1.3) and the patch starts already at 3, so this round's bump is 1.2.106 -> 1.3.3 (versionCode
+602 -> 603), then 1.3.4, 1.3.5, ... until the user says otherwise; versionCode keeps counting up by
+1. Recorded in `rules/version-bump.md` so every future session follows it; the bump was edited
+BEFORE the build per the corrected house order.
+
+**The "Was AdaptKey alles kann" page (D-89): glide typing itself was already on it - f39 landed
+there with §541's own catalog entry - so the page is only touched once more, for the user's requested
+afterword ("als Nachtrag ... hat nichts mit dem aktuellen Thema zu tun. Aber dann fassen wir die Seite
+nur einmal an")**: a trailing italic note (`d89_footer_note`, English + all 31 locales via
+`scratchpad/d518_strings.py`, drafts) stating that since the Alt-Belegungs-Reform the letters page
+makes practically all relevant characters directly available - dual-corner keys, the digits row with
+its own symbols, and the long-press popups included - so everyday typing never needs the
+special-character pages. A deliberate afterword, not a numbered feature entry: extra top spacing,
+italic, after the list; the Robo test now expects ENTRIES.size + 1 children and pins the note's text.
+
+1,904 unit tests, 0 failures; `:app:assembleRelease` green with versionName 1.3.3 in the APK. R3's
+state: OPEN as the community-feedback round; no code changes from the user's own attempt; the next
+code change happens only against concrete community reports (thresholds, G-03 dominance, D-380 feel,
+the DE naming vs. the device's Gboard, and the plan's §6 checklist), with a bump only if code
+changes fall out, per the plan's R3 row.

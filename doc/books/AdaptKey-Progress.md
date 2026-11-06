@@ -453,18 +453,19 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
-- **D-516/G-09 glide-typing ("Gesteeneingabe"/Glide-Typing) - R2 (D-517, §541, v1.2.106) IMPLEMENTED
-  2026-11-06, NOT yet device-confirmed.** Complete first release in one throw: the opt-in switch
-  (`d516_glide_typing`, default off, 32 locales, backup order), the stroke classification + conflict
-  matrix (D-19 swallow, G-03 dominance gate, D-380 narrowing, D-495 kill), the chip-commit-semantics
-  release (resolved casing + armed Shift on the first char, no autocorrect, unknown word = inferred
-  sequence never learned, lazy glide-to-glide auto-space), the live composing preview + pinned
-  `GLIDE_CANDIDATE` chip + alternates, and the fading trail. 1,904 unit tests (1,890 + 14), 0
-  failures; `:app:assembleRelease` green with versionName 1.2.106 (bump 601 -> 602 edited before the
-  build). **Next: R3 (D-518)** - the bounded device/community calibration round (threshold feel,
-  G-03 dominance, D-380 feel, DE naming vs. the device's Gboard, the plan's §6 device checklist);
-  after its user-Go the feature is closed. R1 (D-516, recognition core) is §540. Plan:
-  `doc/plan/swipe-typing.md`; spec G-09.
+- **D-516/G-09 glide-typing ("Gesteeneingabe"/Glide-Typing) - R3 (D-518, §542) OPEN as the
+  community-feedback round since 2026-11-06.** R2 (D-517, §541, v1.2.106) implemented and installed
+  by the user; **his own verdict: "komme damit gar nicht klar" - explicitly a no-glide-experience
+  verdict, NOT a defect report (nothing concrete named, no code change derived)**; his call: the
+  community checks it. The community-feedback release candidate is **v1.3.3/603** (version scheme
+  switched by user decision: minor 1.3, patch starts at 3 - recorded in `rules/version-bump.md`),
+  which also carries the D-89 page's trailing afterword (the letters page makes practically all
+  relevant characters directly available, everyday typing never needs the special-characters pages).
+  1,904 unit tests, 0 failures; `:app:assembleRelease` green. **Closes when community feedback
+  arrives and the user gives his Go on top** - then thresholds/G-03/D-380/DE-naming tuning happens
+  against concrete reports only (bump only if code changes), and further wishes become normal
+  post-release rounds. R1 (D-516) is §540, R2 (D-517) is §541. Plan: `doc/plan/swipe-typing.md`;
+  spec G-09.
 
 - **D-515 - IMPLEMENTED (§539, v1.2.105), NOT yet device-confirmed: the apostrophe key's opt-in for the
   non-English layouts (default off).** The D-512 apostrophe key right of `l`/`m` would meet resistance in

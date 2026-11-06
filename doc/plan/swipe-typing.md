@@ -1,9 +1,12 @@
 # AdaptKey — Plan: Swipe/Glide-Typing (G-09, Entscheidungen ab D-516)
 
-**Status: IN UMSETZUNG (2026-11-06). R1 (D-516, Erkennungskern, §540) und R2 (D-517, komplette
-Erstfreigabe v1.2.106, §541) erledigt — R2 noch nicht geräte-bestätigt.** Ausstehend: R3 (D-518,
-begrenzte Geräte-/Community-Kalibrierungsrunde mit Abschlusskriterium). Alle acht offenen Punkte sind
-entschieden (Nutzer-Calls, §8). Diese Datei ist in sich geschlossen:
+**Status: R3 (D-518) OFFEN — die Community-Feedback-Runde (2026-11-06 eröffnet).** R1 (D-516,
+Erkennungskern, §540) und R2 (D-517, komplette Erstfreigabe, §541) sind umgesetzt; der eigene
+Nutzer-Eigentest auf v1.2.106 fiel als Erfahrungs-Verdict aus („komme damit gar nicht klar“ — ohne
+Glide-Erfahrung, kein konkreter Defekt), sein Call: die Community checkt es. Release-Kandidat:
+**v1.3.3/603** (neues Versionsschema ab Nutzer-Entscheid: minor 1.3, Patch startet bei 3). R3
+schließt auf Community-Feedback + Nutzer-Go; weitere Wünsche danach als normale Post-Release-Runden.
+Alle acht offenen Punkte sind entschieden (Nutzer-Calls, §8). Diese Datei ist in sich geschlossen:
 `.kilo/command/start-prompt.md` + dieses Dokument reichen einer frischen Session zur Umsetzung.
 Origin: Community-Anfrage (2026-11-05) — Glide-Typing fehle als Kern-Feature; Nutzer-Calls vorab:
 opt-in (Schalter, default **aus**), bei aktivem Glide entfällt der Page-Wechsel per Swipe (D-19-Konflikt),
@@ -240,7 +243,7 @@ zu Anfang" — daraus folgt: die erste sichtbare Version ist das **vollständige
 |---|---|---|
 | **R1 (D-516)** | ~~Erkennungskern `glide/` + synthetische-Trace-Tests. Kein UI-Anschluss, für den Nutzer unsichtbar.~~ **ERLEDIGT 2026-11-06 (History §540).** | keiner (unsichtbarer Zwischenschritt) |
 | **R2 (D-517)** | ~~**Komplette Erstfreigabe in einem Wurf:** Schalter (32 Locales) + Klassifikation/Konflikt-Matrix + Commit-Pfad (inkl. unbekanntes Wort, Auto-Space) + Live-Composing-Preview + gepinnter Kandidat in der Leiste + Weg-Zeichnung.~~ **ERLEDIGT 2026-11-06 (§541, v1.2.106) — noch nicht geräte-bestätigt.** | bump (1.2.106/602) |
-| **R3 (D-518)** | **Begrenzte** Geräte-/Community-Feedback-Runde: Schwellwerte, G-03-Dominanz-Gate, D-380-Gefühl, deutsche Bezeichnung am Gerät gegenprüfen, evtl. Region-Invalidierung. **Abschlusskriterium:** Geräteliste (§6-Klassifikations- + Commit-Fälle am Gerät) grün + Nutzer-Go → Feature fertig; weitere Wünsche laufen danach als normale Post-Release-Community-Runden, nicht als offener Plan. | bump nur falls Code-Änderungen anfallen |
+| **R3 (D-518)** | **Begrenzte** Geräte-/Community-Feedback-Runde — 2026-11-06 eröffnet: der eigene Nutzer-Eigentest (v1.2.106) ergab „komme damit gar nicht klar“ (ohne Glide-Erfahrung, kein konkreter Defekt → keine Code-Änderung daraus); sein Call: die Community checkt es. Release-Kandidat v1.3.3/603 (neues Versionsschema). Schwellwerte, G-03-Dominanz-Gate, D-380-Gefühl, deutsche Bezeichnung am Gerät gegenprüfen, evtl. Region-Invalidierung — nur gegen konkrete Meldungen. **Abschlusskriterium:** Community-Feedback + Nutzer-Go → Feature fertig; weitere Wünsche laufen danach als normale Post-Release-Community-Runden, nicht als offener Plan. | bump nur falls Code-Änderungen anfallen |
 
 **Budget-Ehrlichkeit**: R1 1–2 Sessions, R2 2–3, R3 1–2 (Kalibrierung ist die historisch nachlaufende
 Größe — siehe D-508/D-380/D-401-Historie). Gesamt **4–7 Sessions**; fertiges Feature nach **3–5**.
