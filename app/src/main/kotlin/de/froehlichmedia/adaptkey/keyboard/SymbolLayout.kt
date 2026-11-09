@@ -81,15 +81,18 @@ object SymbolLayout {
     // weight) - row 5 needs this named explicitly since its own three cells no longer split it evenly.
     private const val CALC_DIGIT_COLUMN_WEIGHT = 3f
     
-    // §29 follow-up: page 2's leftover characters, not reachable elsewhere, plus € (moved here from the
-    // letter-hints row below - it now leads the row) and a handful of new additions: ® next to © (the
+    // §29 follow-up: page 2's leftover characters, plus a handful of additions: ® next to © (the
     // circled C/R pair), Ø ("Durchschnitt", the German shorthand for "average" - also added as an alt on
     // the letters page's o key), and ƒ (the function symbol, also newly added to the letters page's f key).
     // • moved ahead of @ (correction). The underscore that used to live here on its own is gone - now
     // redundant with the "-" key's own _ alt below. The apostrophe that used to live here moved to the
     // letter-hints row (still below); ± moved there too (correction - the plain + stays put, it was never
     // meant to move); the bracket family that used to live here moved to page 1 (D-101).
-    private const val CATCHALL_ROW1_SYMBOLS = "€•@©®Øƒ"
+    // D-519: the tilde leads the row now, replacing the € key - the currency moved to the letters page's
+    // d key (D-520, the reform's former $ corner), while ~ keeps its other homes (the number row's
+    // 1-left corner, page 1's row 1) and gains this direct-tap one, this page being the guaranteed
+    // fallback when the main number row is hidden (C-09).
+    private const val CATCHALL_ROW1_SYMBOLS = "~•@©®Øƒ"
     
     // D-102: a fixed digit row, independent of C-09 - the fallback for anyone who has hidden the main
     // page's number row.
@@ -105,31 +108,24 @@ object SymbolLayout {
     private const val CATCHALL_NUMBER_SYMBOLS = "!\"§$%&/()="
     
     // §29 follow-up: the main letter page's remaining alt-hint symbols, distributed here now that there's
-    // room. € moved out to CATCHALL_ROW1_SYMBOLS above (its own first position there); the apostrophe moved
-    // in right after #, so it roughly sits under row 3's own " above it; ± moved in at the very end
-    // (correction - + was never meant to move, it stays in its original spot). ° moved ahead of + so the
-    // arithmetic operators (- + × ÷) aren't split apart (correction), then swapped with - itself (§33) so °
-    // now leads. ^ inserted at position 3 to fill the row out to 10 keys, matching rows 2 and 3's width
-    // (correction). / (v's hint, D-96) is still skipped - already covered by CATCHALL_NUMBER_SYMBOLS (7's
-    // shifted symbol). π keeps its own Greek-letter popup (D-99) on the letters page rather than being
-    // duplicated here. Still a first draft, per the user's own "schauen wir, wie sich das ergibt und
-    // sortieren ggf. nochmal um".
+    // room. the apostrophe moved in right after #, so it roughly sits under row 3's own " above it; ± moved
+    // in at the very end (correction - + was never meant to move, it stays in its original spot). ° moved
+    // ahead of + so the arithmetic operators (- + × ÷) aren't split apart (correction), then swapped with
+    // - itself (§33) so ° now leads. ^ inserted at position 3 to fill the row out to 10 keys, matching
+    // rows 2 and 3's width (correction). / (v's hint, D-96) is still skipped - already covered by
+    // CATCHALL_NUMBER_SYMBOLS (7's shifted symbol). π keeps its own Greek-letter popup (D-99) on the
+    // letters page rather than being duplicated here. Still a first draft, per the user's own "schauen
+    // wir, wie sich das ergibt und sortieren ggf. nochmal um".
     private const val CATCHALL_LETTER_HINTS = "#'^°-+×÷*±"
-    
-    // D-102 (correction): this page's € key (now the first key of row 1 above) also gets the common-currency
-    // popup - redundant with page 1's dedicated currency key, by explicit request. It sits on the *left*
-    // here, unlike page 1's, so the base glyph stays first (grows rightward), not reversed like
-    // CalculatorLocale.COMMON_CURRENCY_SYMBOLS.
-    private val CATCHALL_CURRENCY_ALTERNATIVES = listOf("€", "$", "£", "¥")
-    
-    // D-102 (correction): this page's distributed "-" key (m's hint) gets "_" as its single long-press alt -
-    // which is also why the standalone underscore key in row 1 above could be dropped (§29 follow-up).
-    private const val UNDERSCORE_HINT = "_"
     
     // D-498: the shifted-symbols row's own `/` key (the slash from the `7` position) carries the backslash
     // as its single direct-commit long-press hint - the special-characters-page placement the request
     // named, next to the slash (page 1's ÷ popup carries it there, order `/ \ ÷ :`).
     private const val BACKSLASH_HINT = "\\"
+    
+    // D-102 (correction): this page's distributed "-" key (m's hint) gets "_" as its single long-press alt -
+    // which is also why the standalone underscore key in row 1 above could be dropped (§29 follow-up).
+    private const val UNDERSCORE_HINT = "_"
     
     /**
      * Builds the symbol/numeric keyboard for [page]. Both pages' `ABC` key is always present in the
@@ -227,9 +223,9 @@ object SymbolLayout {
     private fun catchAllRows(proportions: KeyProportions): List<List<Key>> {
         val result = ArrayList<List<Key>>()
         
-        // Row 1: leftover symbols (led by €, §29 follow-up), then backspace. No page-toggle key (D-100).
+        // Row 1: leftover symbols (led by the tilde since D-519), then backspace. No page-toggle key (D-100).
         result.add(buildList {
-            CATCHALL_ROW1_SYMBOLS.forEach { c -> add(catchAllRow1Key(c)) }
+            CATCHALL_ROW1_SYMBOLS.forEach { c -> add(charKey(c)) }
             add(Key(label = "⌫", code = KeyCode.DELETE, weight = proportions.backspaceWeight))
         })
         
@@ -287,11 +283,6 @@ object SymbolLayout {
             '/' -> charKey(c, hint = BACKSLASH_HINT)
             else -> charKey(c)
         }
-    }
-    
-    /** §29 follow-up: gives `€` (now leading row 1) the common-currency popup; the rest stay plain. */
-    private fun catchAllRow1Key(c: Char): Key {
-        return if (c == '€') charKey(c, alternatives = CATCHALL_CURRENCY_ALTERNATIVES) else charKey(c)
     }
     
     /** D-102 (corrected): gives `-` an `_` alt; the rest of this row stays plain. */

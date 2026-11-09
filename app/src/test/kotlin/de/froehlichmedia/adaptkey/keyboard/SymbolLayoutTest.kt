@@ -177,19 +177,23 @@ class SymbolLayoutTest {
     }
     
     @Test
-    fun `paragraph 29 follow-up - page 2 row one is led by euro, then the leftover symbols, then backspace`() {
+    fun `paragraph 29 follow-up - page 2 row one is led by the leftover symbols, then backspace`() {
         val row = SymbolLayout.rows(2)[0]
         
-        assertEquals("€•@©®Øƒ".toList(), row.dropLast(1).map { it.char })
+        assertEquals("•@©®Øƒ".toList(), row.drop(1).dropLast(1).map { it.char })
         assertEquals(KeyCode.DELETE, row.last().code)
         assertTrue(row.none { it.code == KeyCode.LETTERS })
     }
     
     @Test
-    fun `paragraph 29 follow-up - page 2 row one's euro key gets a currency popup growing rightward`() {
+    fun `D-519 the tilde replaces the currency key as row one's leading cell`() {
         val row = SymbolLayout.rows(2)[0]
         
-        assertEquals(listOf("€", "$", "£", "¥"), row.byChar('€').alternatives)
+        assertEquals('~', row.first().char)
+        // The former € key's currency popup is gone with the key itself - the currency lives on the
+        // letters page's d key now (D-520), and page 1's calculator column keeps its own D-92 key.
+        assertTrue(row.first().alternatives.isEmpty())
+        assertNull(row.first().hint)
     }
     
     @Test
