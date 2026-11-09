@@ -163,7 +163,9 @@ object KeyboardLayout {
      */
     val DEFAULT_LETTER_HINTS = mapOf(
         'q' to "@", 'e' to E_HINT, 'h' to "#",
-        // D-512 §3: the d key's release default moves from ° to $ (° becomes its left corner).
+        // D-512 §3: the d key's release default moves from ° to $ (° becomes its left corner). D-520:
+        // at layout-build time this base `$` is the currency slot's placeholder - [letterKey]'s
+        // [currencySlot] parameter replaces it with the system region's own currency symbol.
         'd' to "$",
         // D-90: the math-symbol hint on p, alongside the original AltGr-style set above.
         'p' to PI_HINT,
@@ -171,6 +173,11 @@ object KeyboardLayout {
         'x' to "×",
         // §29 follow-up: the function-symbol hint on f.
         'f' to "ƒ",
+        // D-521: the ampersand redundant to the number row's 7-right-corner (& stays there as the
+        // release default; the k key keeps it reachable when C-09 hides the row). A language pack
+        // owning k (pl %, cs %, ...) keeps its own letter as the release default - the universal
+        // base symbol appends to its popup instead, per the standing union-merge rule.
+        'k' to "&",
         'a' to A_HINT, 'o' to O_HINT, 'u' to "ü", 's' to "ß",
         // D-512 §2.6: ñ is the universal right corner of n on every Latin language (its ( is the left one).
         'n' to "ñ"
@@ -190,6 +197,27 @@ object KeyboardLayout {
     
     /** D-512 §2.8: the `+` carried by the first third-row key's slot (see [BASE_LEFT_CORNERS]'s KDoc). */
     private const val PLUS_SLOT_LEFT_CORNER = "+"
+    
+    /**
+     * D-522: the `^` carried as the left corner of the caret slot - the top-row key sitting under the
+     * digit row's 6 (the reform's second geometry-stable letter slot beside [PLUS_SLOT_LEFT_CORNER]:
+     * `z` QWERTZ, `y` QWERTY, `y` AZERTY). Redundant to the number row's 6-right-corner `^` (C-09's
+     * hidden-row motivation, the same reasoning as D-521's `&`): the slot adds the LEFT corner, so a
+     * language letter owning the right corner (fr â, cs ž, pl ż...) keeps it as the release default,
+     * while a key with no right corner (German/English z/y) makes the lone left corner its release
+     * default. A slot, not a per-letter assignment - the same screen-stable reasoning §2.8 recorded.
+     */
+    const val CARET_SLOT_LEFT_CORNER = "^"
+    
+    /** D-522: the top-row position of the caret slot - directly under the number row's 6. */
+    private const val CARET_SLOT_POSITION = 5
+    
+    /**
+     * D-520: the base map's placeholder occupying the currency slot until build time replaces it -
+     * [DEFAULT_LETTER_HINTS] stays compile-time data, so the region-resolved symbol is substituted
+     * by [letterKey]'s [currencySlot] parameter, never written into the base map itself.
+     */
+    private const val CURRENCY_SLOT_BASE = "$"
     
     /**
      * D-512: the letters page's popup couplings as explicit per-key data (replacing the five hardcoded
@@ -247,12 +275,21 @@ object KeyboardLayout {
         
         val topRowLetters = if (qwerty) TOP_ROW_QWERTY else TOP_ROW_QWERTZ
         val thirdRowLetters = if (qwerty) THIRD_ROW_LETTERS_QWERTY else THIRD_ROW_LETTERS_QWERTZ
-        result.add(topRowLetters.map { c -> letterKey(c, letterHints, leftCorners = BASE_LEFT_CORNERS) })
+        // D-520: the d key's currency slot resolves from the same system locale the URL/email rows
+        // already take; D-522: the top-row key under the 6 carries the caret slot.
+        val currency = CurrencyLocale.primarySymbol(locale)
+        result.add(
+            topRowLetters.mapIndexed { index, c ->
+                letterKey(c, letterHints, leftCorners = BASE_LEFT_CORNERS, caretSlot = index == CARET_SLOT_POSITION)
+            }
+        )
         // D-512 §2.2: the dedicated apostrophe key right of `l` - corners `" | '`, release `'`.
         // D-515: gated by [showApostropheKey] - default off for the non-English geometries (the reform's
         // letters-page `'` key is an English arrangement; a German/AZERTY middle row keeps its canonical
         // length unless the user opts in), while the English-style QWERTY arrangement always shows it.
-        val middleRow = "asdfghjkl".map { c -> letterKey(c, letterHints, leftCorners = BASE_LEFT_CORNERS) }
+        val middleRow = "asdfghjkl".mapIndexed { _, c ->
+            letterKey(c, letterHints, leftCorners = BASE_LEFT_CORNERS, currencySlot = if (c == 'd') currency else null)
+        }
         result.add(if (showApostropheKey) middleRow + apostropheKey() else middleRow)
         
         // L-04: the backspace surcharge is taken evenly from the third-row letters.
@@ -374,12 +411,21 @@ object KeyboardLayout {
     /**
      * D-99 / §29 follow-up / D-336 / D-512: builds a letter key from the reform's explicit data - the
      * key's RIGHT corner ([letterHints]'s entry, or the first D-497 variant), its LEFT corner
-     * ([leftCorners], the reform's per-key map; overridden by [plusSlot] for the `+` slot), and its
-     * popup alternatives assembled from that data ([BASE_HINT_EXTRAS] arming on the default hint, pack
-     * variants appending after the left corner, the corners themselves forming a dual-corner key's own
-     * straddle popup). A letter with no hint and no left corner carries no popup at all - the freed
-     * `c`/`v`/`b` (§2.5).
-     * 
+     * ([leftCorners], the reform's per-key map; overridden by [plusSlot] for the `+` slot or
+     * [caretSlot] for the `^` slot), and its popup alternatives assembled from that data ([BASE_HINT_EXTRAS]
+     * arming on the default hint, pack variants appending after the left corner, the corners themselves
+     * forming a dual-corner key's own straddle popup). A letter with no hint and no left corner carries
+     * no popup at all - the freed `c`/`v`/`b` (§2.5).
+     *
+     * D-520: the currency slot - [currencySlot] is non-null only for the d key (the reform's former `$`
+     * corner), and replaces the base map's [CURRENCY_SLOT_BASE] placeholder wherever the D-513 union
+     * merge placed it: as the release default on German/English (the corner becomes the region's own
+     * currency symbol, whose popup is exactly [CurrencyLocale.popupSymbols] - the world's ten most
+     * relevant currencies minus the primary, no pre-selected cell, the corner contract preserved), or
+     * as a demoted extra behind a pack's own letter (pl/cs/hr `d=đ/ď` keep their letter as the release
+     * default, the currency joins the straddle as an ordinary middle cell). An explicit pack REMOVAL
+     * of d is respected - the removed base symbol is not resurrected as a currency.
+     *
      * D-497: a hint value carrying [HINT_VARIANT_SEPARATOR]-separated variants (`e=ę,ė` from a
      * language pack's own `hints.tsv`) is a multi-cell popup the same way the data-driven cases above
      * work: first variant = right corner = the popup's first cell on a centred key (which D-44's
@@ -406,26 +452,56 @@ object KeyboardLayout {
      *        `w` AZERTY) - that key carries `+` as its left corner, screen-stable as a slot across
      *        geometries, never displacing a language letter (which stays the right corner per the
      *        standing rule).
+     * @param caretSlot D-522: true for the geometry's top-row key under the number row's 6 (`z`
+     *        QWERTZ, `y` QWERTY, `y` AZERTY) - the same slot reasoning as [plusSlot], with `^` as the
+     *        left corner (redundant to the number row's 6-right-corner `^`). Disjoint from [plusSlot]
+     *        by construction (top row vs third row).
+     * @param currencySlot D-520: the system region's currency symbol, passed only for the d key.
      */
     fun letterKey(
         c: Char,
         letterHints: Map<Char, String>,
         leftCorners: Map<Char, String> = emptyMap(),
         weight: Float = 1f,
-        plusSlot: Boolean = false
+        plusSlot: Boolean = false,
+        caretSlot: Boolean = false,
+        currencySlot: String? = null
     ): Key {
-        val rawValue = letterHints[c]
-        val hint = rawValue?.substringBefore(HINT_VARIANT_SEPARATOR)
-        val leftCorner = if (plusSlot) PLUS_SLOT_LEFT_CORNER else leftCorners[c]
-        val variants = rawValue?.split(HINT_VARIANT_SEPARATOR)?.takeIf { it.size >= 2 }
-        val extras = variants?.drop(1)
+        val variants = letterHints[c]?.split(HINT_VARIANT_SEPARATOR)
+        // D-520: the base `$` placeholder becomes the region's currency wherever the merge put it;
+        // distinct() keeps a coincidental duplicate (a pack value equal to the resolved symbol) from
+        // drawing the same glyph twice, the D-513-follow-up rule.
+        val effective = if (currencySlot != null && variants != null) {
+            variants.map { v -> if (v == CURRENCY_SLOT_BASE) currencySlot else v }.distinct()
+        } else {
+            variants
+        }
+        val hint = effective?.first()
+        val leftCorner = when {
+            plusSlot -> PLUS_SLOT_LEFT_CORNER
+            caretSlot -> CARET_SLOT_LEFT_CORNER
+            else -> leftCorners[c]
+        }
+        val extras = effective?.takeIf { it.size >= 2 }?.drop(1)
             ?: BASE_HINT_EXTRAS[c]?.takeIf { it.first == hint }?.second
+        // D-520: the currency IS this key's release default (German/English) - the popup carries only
+        // the other top currencies, alternating around the anchor cell over the host, with no
+        // pre-selected cell (a straight release commits the corner itself). The flag is what
+        // [AdaptKeyboardView.openPopup] places by; the when condition is inlined rather than reusing
+        // the flag so currencySlot smart-casts to non-null inside the branch.
+        val currencyIsCorner = currencySlot != null && hint == currencySlot
         // The pre-reform data contract (Key's own KDoc): a size of two or more triggers the popup,
         // otherwise the single default corner glyph applies immediately on long-press - so a lone hint
         // (or a lone left corner, which the default-corner rule covers) stays OUT of the alternatives
         // list and only a genuine multi-cell popup carries explicit data.
         val alternatives = when {
             hint == null || (leftCorner == null && extras == null) -> emptyList()
+            currencySlot != null && hint == currencySlot -> buildList {
+                if (leftCorner != null) {
+                    add(leftCorner)
+                }
+                addAll(CurrencyLocale.popupSymbols(currencySlot))
+            }
             leftCorner != null -> buildList {
                 add(leftCorner)
                 // D-513 follow-up: a pre-reform installed pack's stale corner duplicate (delta d=° under
@@ -442,7 +518,16 @@ object KeyboardLayout {
                 addAll(extras!!)
             }
         }
-        return Key(label = c.toString(), code = KeyCode.CHAR, char = c, hint = hint, leftHint = leftCorner, alternatives = alternatives, weight = weight)
+        return Key(
+            label = c.toString(),
+            code = KeyCode.CHAR,
+            char = c,
+            hint = hint,
+            leftHint = leftCorner,
+            alternatives = alternatives,
+            alternatingPopup = currencyIsCorner,
+            weight = weight
+        )
     }
     
     /**
@@ -462,10 +547,17 @@ object KeyboardLayout {
     
     /**
      * D-314: the top-row entry point - a weight-defaulted delegate to [letterKey], kept so [AzertyLayout]'s
-     * own top-row call sites read naturally and stay unchanged.
+     * own top-row call sites read naturally and stay unchanged. D-522/D-520: the slot parameters pass
+     * straight through.
      */
-    fun topRowKey(c: Char, letterHints: Map<Char, String>, leftCorners: Map<Char, String> = emptyMap()): Key =
-        letterKey(c, letterHints, leftCorners)
+    fun topRowKey(
+        c: Char,
+        letterHints: Map<Char, String>,
+        leftCorners: Map<Char, String> = emptyMap(),
+        caretSlot: Boolean = false,
+        currencySlot: String? = null
+    ): Key =
+        letterKey(c, letterHints, leftCorners, caretSlot = caretSlot, currencySlot = currencySlot)
     
     
     private fun charKey(c: Char, hint: String? = null, alternatives: List<String> = emptyList(), weight: Float = 1f): Key {

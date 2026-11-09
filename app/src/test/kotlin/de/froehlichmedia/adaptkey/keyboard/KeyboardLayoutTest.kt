@@ -3,6 +3,7 @@
 
 package de.froehlichmedia.adaptkey.keyboard
 
+import de.froehlichmedia.adaptkey.settings.LetterHints
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
@@ -143,13 +144,18 @@ class KeyboardLayoutTest {
     
     @Test
     fun `letters carry the reformed right corners`() {
-        val rows = KeyboardLayout.rows()
+        // D-520: the d key's base `$` becomes the currency slot's placeholder at build time, so this
+        // base-map assertion pins Locale.US - the one region whose currency IS the placeholder, leaving
+        // the compile-time base map visible. The slot itself is D-520's own tests below.
+        val rows = KeyboardLayout.rows(locale = Locale.US)
         
         assertEquals("@", rows[1].byChar('q').hint)
         assertEquals("€", rows[1].byChar('e').hint)
         // D-512 §3: d's release default moved from ° to $.
         assertEquals("$", rows[2].byChar('d').hint)
         assertEquals("#", rows[2].byChar('h').hint)
+        // D-521: the ampersand redundant to the number row's 7-right-corner.
+        assertEquals("&", rows[2].byChar('k').hint)
         // D-512 §2.6: ñ is n's universal right corner.
         assertEquals("ñ", rows[3].byChar('n').hint)
         // D-90: math-symbol hint on p.
@@ -162,7 +168,8 @@ class KeyboardLayoutTest {
     
     @Test
     fun `D-512 the letters page carries the reform's left corners`() {
-        val rows = KeyboardLayout.rows()
+        // D-520: Locale.US pinned, see `letters carry the reformed right corners`.
+        val rows = KeyboardLayout.rows(locale = Locale.US)
         
         assertEquals("°", rows[2].byChar('d').leftHint)
         assertEquals("(", rows[3].byChar('n').leftHint)
@@ -170,9 +177,12 @@ class KeyboardLayoutTest {
         assertEquals("*", rows[2].byChar('s').leftHint)
         // §2.8: the + slot is the geometry's first third-row key (y under QWERTZ, z under QWERTY).
         assertEquals("+", rows[3].byChar('y').leftHint)
-        assertEquals("+", KeyboardLayout.rows(qwerty = true)[3].byChar('z').leftHint)
-        // The dual-corner keys carry their corners as the straddle popup data.
-        assertEquals(listOf("°", "$"), rows[2].byChar('d').alternatives)
+        assertEquals("+", KeyboardLayout.rows(qwerty = true, locale = Locale.US)[3].byChar('z').leftHint)
+        // The dual-corner keys carry their corners as the straddle popup data. The d key is the D-520
+        // exception: even on a dollar region the slot arms the alternating popup (the key's own $ is
+        // the release default with no popup cell of its own), so its shape lives in D-520's own tests.
+        assertEquals(listOf("°") + CurrencyLocale.popupSymbols("$"), rows[2].byChar('d').alternatives)
+        assertTrue(rows[2].byChar('d').alternatingPopup)
         assertEquals(listOf("(", "ñ"), rows[3].byChar('n').alternatives)
         assertEquals(listOf("*", "ß"), rows[2].byChar('s').alternatives)
         // m is left-corner-only: a lone left corner is the release default (no explicit popup data -
@@ -193,7 +203,8 @@ class KeyboardLayoutTest {
         // An old installed German pack still carries d=° (n=+, m=-, c=÷, ...); merged with the new base
         // that reads "°,$" - and the merged hint (the delta's first variant) EQUALS the code-side left
         // corner. The assembly must collapse the duplicate, never draw the same glyph twice in one row.
-        val dKey = KeyboardLayout.rows(letterHints = mapOf('d' to "°,$"))[2].byChar('d')
+        // D-520: Locale.US pinned - the base $ placeholder survives it unchanged (see above).
+        val dKey = KeyboardLayout.rows(letterHints = mapOf('d' to "°,$"), locale = Locale.US)[2].byChar('d')
         assertEquals("°", dKey.hint)
         assertEquals("°", dKey.leftHint)
         assertEquals(listOf("°", "$"), dKey.alternatives)
@@ -597,5 +608,167 @@ class KeyboardLayoutTest {
     @Test
     fun `D-158 urlMode takes priority over emailMode when both are somehow set`() {
         assertEquals(KeyboardLayout.rows(urlMode = true).last(), KeyboardLayout.rows(urlMode = true, emailMode = true).last())
+    }
+    
+    @Test
+    fun `D-520 the German currency slot puts the euro on the d key with the alternating popup`() {
+        val dKey = KeyboardLayout.rows(locale = Locale.GERMANY)[2].byChar('d')
+        
+        // The release default IS the region's currency, the ° left corner keeps its reform position.
+        assertEquals("€", dKey.hint)
+        assertEquals("°", dKey.leftHint)
+        assertEquals("€", dKey.defaultCornerHint)
+        // The popup carries exactly the world's other top currencies in relevance order - the primary
+        // never repeats in it, and the ° left corner keeps its straddle-convention first cell - plus
+        // the flag is what the view places the alternating arrangement by.
+        assertEquals(listOf("°") + CurrencyLocale.popupSymbols("€"), dKey.alternatives)
+        assertTrue(dKey.alternatingPopup)
+        // The shape is deliberately NOT a straddle (no right-corner cell), so the view's ordinary
+        // placement paths stay away from it.
+        assertFalse(HorizontalLongPressPopup.isDualCornerStraddle(dKey, dKey.alternatives))
+        // A dollar-primary device mirrors the arrangement around its own currency.
+        val usKey = KeyboardLayout.rows(locale = Locale.US)[2].byChar('d')
+        assertEquals("$", usKey.hint)
+        assertEquals(listOf("°") + CurrencyLocale.popupSymbols("$"), usKey.alternatives)
+        assertTrue(usKey.alternatingPopup)
+    }
+    
+    @Test
+    fun `D-520 a pack owning the d letter keeps its corner and demotes the currency to a straddle extra`() {
+        // The hr pack owns d (đ); the union merge appends the base $ which the slot substitutes - the
+        // pack letter stays the release default, the currency becomes an ordinary middle cell.
+        val dKey = KeyboardLayout.rows(
+            letterHints = LetterHints.unionMerge(KeyboardLayout.DEFAULT_LETTER_HINTS, LetterHints.parseDelta("d=đ")),
+            locale = Locale.GERMANY
+        )[2].byChar('d')
+        
+        assertEquals("đ", dKey.hint)
+        assertEquals("°", dKey.leftHint)
+        assertEquals(listOf("°", "€", "đ"), dKey.alternatives)
+        assertFalse(dKey.alternatingPopup)
+        assertTrue(HorizontalLongPressPopup.isDualCornerStraddle(dKey, dKey.alternatives))
+    }
+    
+    @Test
+    fun `D-520 an explicit pack removal of d is respected - no currency resurrection`() {
+        val dKey = KeyboardLayout.rows(
+            letterHints = LetterHints.unionMerge(KeyboardLayout.DEFAULT_LETTER_HINTS, LetterHints.parseDelta("d=")),
+            locale = Locale.GERMANY
+        )[2].byChar('d')
+        
+        // The removal drops the right-corner data (the base $ / its currency never resurrect), while
+        // the reform's left corner is code-side data and stays, per D-513's own removal rule.
+        assertNull(dKey.hint)
+        assertEquals("°", dKey.leftHint)
+        assertTrue(dKey.alternatives.isEmpty())
+        assertFalse(dKey.alternatingPopup)
+    }
+    
+    @Test
+    fun `D-520 the az pack's own degree corner keeps the currency as its extra, like the pre-slot dollar did`() {
+        // az d=° merged with the base reads "°,$" - the slot substitutes the extra behind their own
+        // corner, and their corner (first variant) stays the release default exactly as before D-520.
+        val dKey = KeyboardLayout.rows(
+            letterHints = LetterHints.unionMerge(KeyboardLayout.DEFAULT_LETTER_HINTS, LetterHints.parseDelta("d=°")),
+            locale = Locale.GERMANY
+        )[2].byChar('d')
+        
+        assertEquals("°", dKey.hint)
+        assertEquals("°", dKey.leftHint)
+        assertEquals(listOf("°", "€"), dKey.alternatives)
+        assertFalse(dKey.alternatingPopup)
+    }
+    
+    @Test
+    fun `D-521 the k key carries the ampersand as its right corner, redundant to the number row`() {
+        val rows = KeyboardLayout.rows(locale = Locale.US)
+        
+        assertEquals("&", rows[2].byChar('k').hint)
+        assertEquals("&", rows[2].byChar('k').defaultCornerHint)
+        assertNull(rows[2].byChar('k').leftHint)
+        // A single corner stays out of the alternatives list (the direct-commit hint contract).
+        assertTrue(rows[2].byChar('k').alternatives.isEmpty())
+        assertEquals("&", KeyboardLayout.longPressSymbol(rows[2].byChar('k')))
+        // The number row's 7 keeps its own ampersand right corner - the redundancy's other half.
+        assertEquals("&", rows.first().byChar('7').hint)
+    }
+    
+    @Test
+    fun `D-521 a pack owning k keeps its letter as the release default with the ampersand appended`() {
+        val kKey = KeyboardLayout.rows(
+            letterHints = LetterHints.unionMerge(KeyboardLayout.DEFAULT_LETTER_HINTS, LetterHints.parseDelta("k=%")),
+            locale = Locale.US
+        )[2].byChar('k')
+        
+        assertEquals("%", kKey.hint)
+        assertEquals("%", kKey.defaultCornerHint)
+        assertEquals(listOf("%", "&"), kKey.alternatives)
+    }
+    
+    @Test
+    fun `D-522 the caret slot sits under the 6 - z on QWERTZ, y on QWERTY, as the left corner`() {
+        val qwertz = KeyboardLayout.rows(locale = Locale.US)
+        val qwerty = KeyboardLayout.rows(qwerty = true, locale = Locale.US)
+        
+        // QWERTZ: the top row's 6th key is z; QWERTY: y - the screen-stable slot reasoning §2.8 recorded.
+        assertEquals('z', qwertz[1][5].char)
+        assertEquals("^", qwertz[1][5].leftHint)
+        assertEquals('y', qwerty[1][5].char)
+        assertEquals("^", qwerty[1][5].leftHint)
+        // German/English have no right corner here, so the lone left corner is the release default.
+        assertNull(qwertz[1][5].hint)
+        assertEquals("^", qwertz[1][5].defaultCornerHint)
+        assertTrue(qwertz[1][5].alternatives.isEmpty())
+        assertEquals("^", KeyboardLayout.longPressSymbol(qwertz[1][5]))
+        // The number row's 6 keeps its own ^ right corner - the redundancy's other half.
+        assertEquals("^", qwertz.first().byChar('6').hint)
+    }
+    
+    @Test
+    fun `D-522 a language letter owning the caret slot keeps its right corner beside the caret`() {
+        // cs owns z (ž) - the slot adds the left corner, the language letter stays the release default,
+        // and the corners form the ordinary straddle popup. (French's y=â equivalent rides the AZERTY
+        // geometry, whose own top-row slot test follows below.)
+        val zKey = KeyboardLayout.rows(
+            letterHints = LetterHints.unionMerge(KeyboardLayout.DEFAULT_LETTER_HINTS, LetterHints.parseDelta("z=ž")),
+            locale = Locale.US
+        )[1].byChar('z')
+        
+        assertEquals("ž", zKey.hint)
+        assertEquals("^", zKey.leftHint)
+        assertEquals(listOf("^", "ž"), zKey.alternatives)
+        assertTrue(HorizontalLongPressPopup.isDualCornerStraddle(zKey, zKey.alternatives))
+        // The slot never lands on a key BASE_LEFT_CORNERS already arms - disjoint by construction.
+        assertEquals("^", KeyboardLayout.rows(locale = Locale.US)[1][5].leftHint)
+        assertEquals("°", KeyboardLayout.rows(locale = Locale.US)[2].byChar('d').leftHint)
+    }
+    
+    @Test
+    fun `D-522 the AZERTY caret slot is its own y under the 6, and its d carries the currency`() {
+        val rows = AzertyLayout.rows(locale = Locale.GERMANY)
+        
+        // AZERTY's top row reads azertyuiop - position 5 under the 6 is y, the same letter QWERTY has.
+        assertEquals('y', rows[1][5].char)
+        assertEquals("^", rows[1][5].leftHint)
+        assertNull(rows[1][5].hint)
+        // The currency slot rides AZERTY's middle-row d like QWERTZ/QWERTY's.
+        assertEquals("€", rows[2].byChar('d').hint)
+        assertTrue(rows[2].byChar('d').alternatingPopup)
+    }
+    
+    @Test
+    fun `D-520 the Azerbaijani d keeps its own corner with the currency as the substituted extra`() {
+        // The az pack's own delta merged over the base reads "°,$" - their degree corner (the first
+        // variant) stays the release default, the base $ extra becomes the euro. The Azerbaijani rows
+        // pass no left corners (§2.12), so no straddle data arms here - exactly the pre-slot shape,
+        // with only the extra's glyph swapped.
+        val rows = AzerbaijaniLayout.rows(
+            letterHints = LetterHints.unionMerge(KeyboardLayout.DEFAULT_LETTER_HINTS, LetterHints.parseDelta("d=°")),
+            locale = Locale.GERMANY
+        )
+        
+        assertEquals("°", rows.flatten().byChar('d').hint)
+        assertEquals(listOf("°", "€"), rows.flatten().byChar('d').alternatives)
+        assertFalse(rows.flatten().byChar('d').alternatingPopup)
     }
 }

@@ -518,7 +518,13 @@ object LanguagePackCatalog {
             // `dictionaries/de/version.txt` 48 -> 49, pack rebuilt and verified byte-identical after
             // unzip, `LanguagePackCatalog` version 48 -> 49. Not yet device-confirmed.
             // D-513 (Alt-Belegungs-Reform section 7.5): hints.tsv rewritten as a union-merge delta - the stale German-derived symbols (b=* c=÷ d=° l=~/ñ m=- n=+ v=/, fr w=è) dropped, every language's own letters kept verbatim. version.txt 49 -> 50, pack rebuilt and verified by reading hints.tsv/version.txt back out of the archive, LanguagePackCatalog version 49 -> 50.
-            version = 50
+            //
+            // D-521: the ampersand joins the base map (`k=&`, redundant to the number row's 7-right-corner
+            // & - D-519..D-522 layout round). Data parity with KeyboardLayout.DEFAULT_LETTER_HINTS (the
+            // union merge delivers the symbol to older installed packs from the compiled-in base anyway).
+            // version.txt 50 -> 51, pack rebuilt and verified by reading hints.tsv/version.txt back out
+            // of the archive, LanguagePackCatalog version 50 -> 51.
+            version = 51
         ),
         Entry(
             Language.GREEK,
