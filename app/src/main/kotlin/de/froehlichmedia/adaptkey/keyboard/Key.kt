@@ -41,6 +41,13 @@ enum class KeyCode {
  * @property alternatives the ordered secondary alternatives shown in the D-01 long-press popup (most
  *           common first, which is pre-selected); a size of two or more triggers the popup, otherwise
  *           the single default corner glyph is applied immediately on long-press
+ * @property alternatingPopup D-520: the popup is the currency slot's alternating arrangement - the
+ *           anchor cell (the first entry past the key's own left corner, if any) is kept centred
+ *           directly over the host key with the remaining cells alternating left/right around it,
+ *           and NO cell is pre-selected: the key's own release default ([defaultCornerHint], the
+ *           corner glyph drawn on the key itself) is deliberately not among the cells, so a straight
+ *           long-press release commits the corner, while a slide commits whichever cell the finger
+ *           reached. Only the letters page's currency slot sets this.
  * @property weight relative horizontal weight within its row; drives the configurable key proportions (L-02 / L-04, C-01)
  */
 data class Key(
@@ -50,6 +57,7 @@ data class Key(
     val hint: String? = null,
     val leftHint: String? = null,
     val alternatives: List<String> = emptyList(),
+    val alternatingPopup: Boolean = false,
     val weight: Float = 1f
 ) {
     

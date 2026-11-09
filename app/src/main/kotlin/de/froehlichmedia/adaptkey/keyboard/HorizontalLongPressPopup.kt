@@ -224,6 +224,42 @@ object HorizontalLongPressPopup {
     }
     
     /**
+     * D-520: the currency slot's alternating popup - the placed row and the anchor's index within it.
+     */
+    data class AlternatingRow<T>(val row: List<T>, val anchorIndex: Int)
+    
+    /**
+     * D-520: the alternating arrangement for the letters page's currency slot - the ANCHOR cell (the
+     * key's most relevant secondary currency, the popup's first entry past the key's own left corner)
+     * stays directly over the host key, and the remaining cells alternate left/right around it in the
+     * list's own relevance order, so the second entry lands immediately left of the anchor, the third
+     * immediately right, the fourth two-left, and so on (the German example: euro on the d key, dollar
+     * centred above it, yuan left, pound right). Any cells AHEAD of the anchor keep their order at the
+     * row's far left - a dual-corner key's left corner (`°` on the d key), preserving the straddle
+     * convention that a left corner is the row's first cell.
+     *
+     * The row is placed by the ordinary [rowLeft] centring with [AlternatingRow.anchorIndex] as the
+     * pre-selected position - the anchor over the host key centre, clamped at the screen edges like
+     * every wide popup - but carries NO pre-selected cell in the selection sense: the key's own
+     * release default (the corner glyph drawn on the key itself, deliberately absent from this popup)
+     * commits on a straight release, and only a genuine slide commits the cell the finger reached.
+     *
+     * @param row the alternatives in relevance order, `[leftCorner]?, anchor, rest…`
+     * @param anchorIndex the anchor cell's index in [row] - the first entry past the key's own left corner
+     * @throws IllegalArgumentException when [row] is empty or [anchorIndex] is out of range
+     */
+    fun <T> alternatingRow(row: List<T>, anchorIndex: Int): AlternatingRow<T> {
+        require(row.isNotEmpty()) { "a popup row is never empty" }
+        require(anchorIndex in row.indices) { "anchor index $anchorIndex out of range for ${row.size} cells" }
+        val anchor = row[anchorIndex]
+        val before = row.subList(0, anchorIndex)
+        val after = row.subList(anchorIndex + 1, row.size)
+        val lefts = after.filterIndexed { index, _ -> index % 2 == 0 }.reversed()
+        val rights = after.filterIndexed { index, _ -> index % 2 == 1 }
+        return AlternatingRow(before + lefts + listOf(anchor) + rights, before.size + lefts.size)
+    }
+    
+    /**
      * D-510 follow-up (device-corrected placement, second device pass): positions a dual-corner key's
      * popup row.
      *

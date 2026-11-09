@@ -52,4 +52,12 @@ class AlternativeScriptTest {
         assertFalse(AlternativeScript.extendsWord("ƒ", activeLanguageIsGreek = false))
         assertFalse(AlternativeScript.extendsWord("ƒ", activeLanguageIsGreek = true))
     }
+    
+    @Test
+    fun `D-520 the Swiss-franc Fr never extends the word, even though every character is a Latin letter`() {
+        // The currency slot's two-glyph CHF sign - display (Shift/Caps never uppercase it) and commit
+        // (verbatim symbol, never word text) share this gate.
+        assertFalse(AlternativeScript.extendsWord("Fr", activeLanguageIsGreek = false))
+        assertFalse(AlternativeScript.extendsWord("Fr", activeLanguageIsGreek = true))
+    }
 }

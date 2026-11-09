@@ -341,4 +341,66 @@ class HorizontalLongPressPopupTest {
         assertThrows(IllegalArgumentException::class.java) { HorizontalLongPressPopup.growTrailingRow(listOf("(", "ñ")) }
         assertThrows(IllegalArgumentException::class.java) { HorizontalLongPressPopup.growLeadingRow(listOf("(", "ñ")) }
     }
+    
+    // D-520: the currency slot's alternating arrangement - the anchor (the most relevant other currency,
+    // the popup's first entry past the key's own left corner) stays over the host key centre, the rest
+    // alternate left/right around it in relevance order, and the left corner keeps its straddle-convention
+    // first position at the row's far left. The German example: euro on the d key, dollar centred above
+    // it, yuan immediately left, pound immediately right.
+    @Test
+    fun `D-520 the German currency popup alternates around the dollar anchor with the degree sign far left`() {
+        val placement = HorizontalLongPressPopup.alternatingRow(
+            listOf("°", "$", "¥", "£", "₹", "₩", "₽", "₺", "Fr", "R$"),
+            anchorIndex = 1
+        )
+        
+        assertEquals(listOf("°", "Fr", "₽", "₹", "¥", "$", "£", "₩", "₺", "R$"), placement.row)
+        // ° + [Fr, ₽, ₹, ¥] left of the anchor, [£, ₩, ₺, R$] right of it - the anchor cell (display
+        // index 5) is what the ordinary rowLeft centring anchors over the host key centre.
+        assertEquals(5, placement.anchorIndex)
+    }
+    
+    @Test
+    fun `D-520 a dollar-primary popup alternates around the euro anchor with no leading corner`() {
+        val placement = HorizontalLongPressPopup.alternatingRow(
+            listOf("€", "¥", "£", "₹", "₩", "₽", "₺", "Fr", "R$"),
+            anchorIndex = 0
+        )
+        
+        // No left corner: the anchor is the row's first entry and stays centred, nothing hangs left of it.
+        assertEquals(listOf("Fr", "₽", "₹", "¥", "€", "£", "₩", "₺", "R$"), placement.row)
+        assertEquals(4, placement.anchorIndex)
+    }
+    
+    @Test
+    fun `D-520 the anchor index is recomputed for the placed row and stays out-of-range-safe`() {
+        // An anchor in the middle: everything before it stays ahead (far left), everything after alternates.
+        val placement = HorizontalLongPressPopup.alternatingRow(
+            listOf("A", "B", "C", "D", "E"),
+            anchorIndex = 2
+        )
+        
+        // before = [A, B]; after = [D, E] -> lefts = [D], rights = [E] -> [A, B, D, C, E], anchor at index 3.
+        assertEquals(listOf("A", "B", "D", "C", "E"), placement.row)
+        assertEquals(3, placement.anchorIndex)
+    }
+    
+    @Test
+    fun `D-520 alternatingRow rejects an empty row or an out-of-range anchor`() {
+        assertThrows(IllegalArgumentException::class.java) { HorizontalLongPressPopup.alternatingRow(emptyList<String>(), 0) }
+        assertThrows(IllegalArgumentException::class.java) { HorizontalLongPressPopup.alternatingRow(listOf("$"), 1) }
+        assertThrows(IllegalArgumentException::class.java) { HorizontalLongPressPopup.alternatingRow(listOf("$"), -1) }
+    }
+    
+    @Test
+    fun `D-520 the placed anchor cell is the cell rowLeft centres over the host key`() {
+        // The German example's placed row with equal 44px cells, anchor at display index 5: offset to the
+        // anchor's centre is 5*44 + 22 = 242, so a key centred at 300 places the row at 58 - the dollar
+        // cell directly over the key centre, the degree sign five cells left, R$ four right.
+        val placement = HorizontalLongPressPopup.alternatingRow(
+            listOf("°", "$", "¥", "£", "₹", "₩", "₽", "₺", "Fr", "R$"),
+            anchorIndex = 1
+        )
+        assertEquals(300f - 242f, HorizontalLongPressPopup.rowLeft(300f, List(10) { 44f }, placement.anchorIndex, 15f, 1000f))
+    }
 }

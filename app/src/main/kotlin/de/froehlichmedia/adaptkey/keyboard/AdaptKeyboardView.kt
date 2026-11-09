@@ -961,6 +961,15 @@ class AdaptKeyboardView @JvmOverloads constructor(
     // which overflowed for wide multi-character content (e.g. a URL protocol popup's "https://"/"ftp://").
     private var popupCellWidths: List<Float> = emptyList()
     private var popupSelectedIndex = 0
+    
+    /**
+     * D-520: the alternating popup's "no cell selected" sentinel - the popup opened but the finger
+     * never slid to a cell, so a release commits the key's own release default ([Key.defaultCornerHint],
+     * the corner currency drawn on the key, deliberately absent from this popup's cells). Once the
+     * finger moves, [updatePopupSelection] resolves a real cell index from the pointer x, exactly like
+     * every other popup's selection, and that cell commits.
+     */
+    private val POPUP_NO_CELL_SELECTED = -1
     private var popupRowLeft = 0f
     private var popupRowTop = 0f
     // D-144: the floor every cell width is coerced to, and the horizontal padding added around a cell's own
@@ -2052,6 +2061,25 @@ class AdaptKeyboardView @JvmOverloads constructor(
         val cellWidthsRaw = alternatives.map { popupCellWidthFor(it) }
         val rowWidth = cellWidthsRaw.sum()
         val maxLeft = (width - gapPx - rowWidth).coerceAtLeast(gapPx)
+        // D-520: the currency slot's alternating popup - the anchor cell (the key's most relevant other
+        // currency, the first entry past the key's own left corner) is kept directly over the host key
+        // and the rest alternate left/right around it in relevance order. NO cell is pre-selected: the
+        // key's own release default - the corner currency drawn on the key itself, deliberately absent
+        // from this popup - commits on a straight release (the D-509 corner contract), while a slide
+        // commits whichever cell the finger reached (the sentinel's meaning, see commitPopupSelection).
+        if (key.alternatingPopup) {
+            popupRowTop = rect.top - gapPx - popupCellHeightPx
+            val anchorIndex = alternatives.indexOfFirst { it != key.leftHint }.coerceAtLeast(0)
+            val placement = HorizontalLongPressPopup.alternatingRow(alternatives, anchorIndex)
+            val displayWidths = placement.row.map { popupCellWidthFor(it) }
+            popupRowLeft = HorizontalLongPressPopup.rowLeft(rect.centerX(), displayWidths, placement.anchorIndex, gapPx, maxLeft)
+            popupAlternatives = placement.row
+            popupCellWidths = displayWidths
+            popupSelectedIndex = POPUP_NO_CELL_SELECTED
+            popupKey = key
+            invalidate()
+            return
+        }
         // D-510 follow-up (device-corrected placement, second pass): the corner row keeps its corners
         // over the host key - at most one extra sits between them and the row is centred (edge overflow
         // flips that extra to the far side: the 1 key's `~ ! ¹` trailing, the 0 key's `⁰ = )` leading);
@@ -2157,7 +2185,14 @@ class AdaptKeyboardView @JvmOverloads constructor(
     
     private fun commitPopupSelection() {
         val key = popupKey
-        val alternative = popupAlternatives.getOrNull(popupSelectedIndex)
+        val alternative = if (popupSelectedIndex >= 0) {
+            popupAlternatives.getOrNull(popupSelectedIndex)
+        } else {
+            // D-520: the alternating popup's sentinel - no cell was ever selected, so the release
+            // commits the key's own release default (the D-509 corner contract). The corner symbol
+            // deliberately has no popup cell of its own: the key displays it as its corner glyph.
+            key?.defaultCornerHint
+        }
         dismissPopup()
         if (key != null && alternative != null) {
             // D-396-followup (v3): the one genuinely missing haptic in this flow - accepting an alt-char

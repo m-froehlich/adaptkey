@@ -24,12 +24,24 @@ object AlternativeScript {
     private val LATIN_SYMBOL_LETTERS = setOf('ƒ')
     
     /**
+     * D-520: whole-word alternatives that are nothing but letters yet still pure symbols - the currency
+     * slot's two-glyph Swiss-franc sign `Fr` is the one case in the currency popup (and, on a Swiss
+     * device, the d key's own corner glyph). Excluded by exact match for the same reason [LATIN_SYMBOL_LETTERS]
+     * excludes `ƒ` by character: `extendsWord` is the shared gate both the display side ([AdaptKeyboardView.popupDisplayTextFor]/
+     * [AdaptKeyboardView.cornerHintDisplayTextFor] - Shift/Caps must never show it uppercased) and the
+     * commit side ([AdaptKeyService.commitLongPressSymbol] - it must commit verbatim as a symbol, never
+     * extend the composing word as word text) consult, and an all-letter answer would put it on the wrong
+     * side of both. Extend it if a future currency or pack symbol of the same shape appears.
+     */
+    private val SYMBOL_WORDS = setOf("Fr")
+    
+    /**
      * @param symbol a long-press alternative
      * @param activeLanguageIsGreek whether the keyboard is currently in Greek input mode
      * @return true when [symbol] should extend the composing word like ordinary typed text
      */
     fun extendsWord(symbol: String, activeLanguageIsGreek: Boolean): Boolean {
-        if (symbol.isEmpty() || !symbol.all { it.isLetter() } || symbol.any { it in LATIN_SYMBOL_LETTERS }) {
+        if (symbol.isEmpty() || !symbol.all { it.isLetter() } || symbol.any { it in LATIN_SYMBOL_LETTERS } || symbol in SYMBOL_WORDS) {
             return false
         }
         if (activeLanguageIsGreek) {
