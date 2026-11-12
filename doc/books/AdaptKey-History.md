@@ -24967,3 +24967,55 @@ its D-516 glide hint), the D-516 summary and the D-89 f08 entry reworded across 
 defensive-symbol cases split while the old plain-toggle case merged into the D-531 one),
 `SymbolLayoutTest`'s two page-2 row-5 assertions updated. `:app:assembleRelease`/`:app:testDebugUnitTest` green with versionName 1.3.8 in the
 APK. NOT yet device-confirmed - closes with the user's next device check of the new chain.
+
+## §548 - D-532/D-533/D-534: the glide round - an icon and an extra-row shortcut for the setting, the word completes on the finger's lift (real trailing space, the lazy auto-space gone), and full field-debug logging for the community (v1.3.8 -> v1.3.9, versionCode 608 -> 609)
+
+User request (2026-11-12), closing in on the open D-518/R3 community round: glide typing needs (a) an
+icon for the settings switch and a keyboard-side shortcut for it, (b) the word must complete on the
+finger's lift alone - "derzeit muss man noch Space drücken, um das Wort abzuschließen" - and (c) as
+much usable debug logging in the Settings protocol as possible, since the community's repros are the
+only way defects will ever be named (the user cannot observe them himself).
+
+**D-532 - the icon and the shortcut.** The icon is the wavy dash `〰` (U+3030) - the one continuous
+stroke drawn across the letters; no standard Unicode glide icon exists, and the app's own D-361-
+followup precedent is glyph icons over bundled image assets anyway (the thin Mathematical/
+Arrows-block candidates were already rejected once for reading too faint on a real device). It shows
+as the settings switch's icon (`GlyphIconDrawable`, tinted like the rest of the set) AND on a new
+extra-row toggle button, second from the right - directly left of the settings gear, the user's own
+placement (the touch-zone toggle moved one slot further left). The button writes the
+`d516_glide_typing` boolean itself (the settings screen's own switch reads the same preference back,
+so they can never disagree), styles pressed like the row's other toggles, and the shared
+`ExtraRowView.GLIDE_ICON` constant keeps the two glyphs permanently in sync.
+
+**D-533 - the word completes on the lift.** The release commit now carries a real trailing space,
+through the exact chip-commit machinery (`suggestionTrailingSpace` + armed `pendingSuggestionSpace`
++ `suppressNextReclaimSpaceReset`): an immediately following sentence punctuation still eats the
+space (D-29), the next word - glided OR typed - starts fresh, and the old failure class "glided a
+word, typed the next, got `hallowelt`" is gone by construction. The plan §8.4 lazy glide→glide
+auto-space (insert at the next stroke's start, one-shot flag + last-committed-word verification) is
+removed outright - it was the reason the old commit carried no space, and its remaining glide→glide
+job is done by the real space now. Two follow-on rules: a manual Space pressed right after the glide
+commit is swallowed while the flag is armed and the document really ends in a space (ground-truth
+verified, D-29's own read precedent - the habitual press must not double the separation; a deliberate
+second Space still commits one), and punctuation behaviour is unchanged. This replaces §8.4's
+explicit user decision - the underlying goal ("wie andere Tastaturen/Gboard") is unchanged; only its
+mechanism moved from lazy to eager, which is what Gboard actually does.
+
+**D-534 - the field-debug log.** A glide repro from the community is now fully observable in the
+in-app diagnostic log (Settings -> Diagnostics, tag `AdaptKeyGlide`, 60-second rolling window,
+opt-in). View side (`logGlide`, dual-output like logTouch/logHaptics): `begin` (origin key, contact
+point), `claimed` (the stroke's facts at claim time), `release` (facts + inferred sequence),
+`notClaimed` (facts + the failed claim gate visible: path width, distinct keys, duration),
+`cancelled`/`aborted` (second finger, system cancel, park, field reset) and `dropGlide` (foreign
+release). Service side (`diag`): `sessionStart`, `recognize` per throttled pass (resampled size, arc
+length, context words), `candidates` (top-3 word/score/geometric-cost), `superseded`, the full
+`commit` decision (top vs unknown-word fallback, casing, learned, trailing space) and `discard` (with
+the preview's content). The pure `GlideGestureController.strokeSummary()` (`points= pathPx=
+pathWidths= distinctKeys= durationMs=`, locale-free integer formatting, survives `end()`) is the
+shared fact source. No password guard needed on the view side: `glideEligible` can never arm a stroke
+on a password field, and the logged facts are geometry, not typed content.
+
+`GlideGestureControllerTest` +2 (the summary's facts and its post-`end` survival). 1,936 unit tests,
+0 failures; `:app:assembleRelease` green with versionName 1.3.9 in the APK. NOT yet device-confirmed -
+D-533's space behaviour and D-534's log are what the next device pass and the community round are asked
+to verify.

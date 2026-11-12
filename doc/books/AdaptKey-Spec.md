@@ -1038,17 +1038,47 @@ drawn trail is a thin hint-coloured line fading segment-wise (~0.7 s), hardcoded
 resolved casing via `capitalise()` keyed on the live composing text (D-440's gate), with the pre-armed
 Shift spending itself on the word's first character exactly like a typed one (D-405's live-only rule,
 materialised at the only place a glide word has a first keystroke), no autocorrect/A-01 intervention,
-n-gram learning over the ordinary commit. No trailing space at release. **Unknown word**: the stroke's
+n-gram learning over the ordinary commit. **Unknown word**: the stroke's
 inferred letter sequence (the clearly-visited key centres) is inserted as a word - like other
 keyboards, without being auto-added to the personal dictionary, without a toast; alternatives stay in
-the bar as ordinary chips to pick instead. **Auto-space** (default on, no switch of its own, §8.4):
-when the next glide stroke begins directly after a glide-committed word, a space is inserted first -
-lazily at the next stroke's start (the caret stays freely movable and the candidate correctable after
-the release), only between two glide strokes, never after typed or chip input.
+the bar as ordinary chips to pick instead.
+
+**D-533 addendum - the word completes on the finger's lift.** The release commit carries a real
+trailing space (`suggestionTrailingSpace`, the exact chip-commit machinery: the armed
+`pendingSuggestionSpace` lets an immediately following sentence punctuation eat the space again per
+D-29, and D-123's suppress guard keeps the commit's own reclaim echo from clearing it) - the user's
+own call replacing §8.4's lazy auto-space: every word needs only the finger's lift, no Space press,
+and a word glided and then typed no longer glues. The lazy glide→glide insertion at the next stroke's
+start is removed outright (it was the reason the old commit carried no space). Two follow-on rules
+keep the separation honest: a manual Space pressed directly after the glide commit is swallowed while
+the flag is armed and the document really ends in a space (ground-truth verified - the habitual press
+must not double the separation, while a deliberate second Space still commits one), and punctuation
+behaviour is unchanged (the space before it is eaten, the next word glues to the punctuation, exactly
+as after a chip tap).
+
+**D-532 addendum - the glide icon and the extra-row shortcut.** The feature has its own icon now: the
+wavy dash `〰` (U+3030) - the one continuous stroke drawn across the letters - used both as the
+settings switch's icon (`GlyphIconDrawable`, no bundled asset, the D-361-followup precedent; no
+standard Unicode glide icon exists) and on a new extra-row toggle button, second from the right,
+directly left of the settings gear (the user's own placement). The button flips the same
+`d516_glide_typing` boolean directly as a shortcut (persisted via the ordinary preferences write, so
+the settings screen's own switch always agrees), styled like the row's other toggles (pressed
+background while on).
+
+**D-534 addendum - the field-debug log.** Every glide stroke logs into the in-app diagnostic log
+(Settings -> Diagnostics, tag `AdaptKeyGlide`), so community repros need no PC tether: stroke begin
+(origin key, contact point), the claim (point/path/distinct-key/duration facts from
+`GlideGestureController.strokeSummary()`, locale-free), every throttled recognition pass (resampled
+size, arc length, context words) with its posted candidate list (word, score, geometric cost), the
+commit decision (top candidate vs unknown-word fallback, casing, learned, trailing space), and every
+non-commit end - a stroke that never claimed (with the failed gate visible in its facts), a
+second-finger/system cancel, a field-change abort, a discarded preview. The view-side lines carry no
+password guard because glide can never arm on a password field (`glideFieldAllowed`), and the
+stroke facts are geometry, not typed content.
 
 **Conflict matrix** (each case pinned by the plan's unit-test list): D-19's horizontal page swipe is
 fully swallowed on the letters surface while glide is on - a letter-key-origin stroke is either a glide
-or falls back to a plain tap, and only the `?123`/ABC key switches pages (the D-19 switch stays
+or falls back to a plain tap, and only the page keys switch pages (the D-19 switch stays
 effective and visible; its summary carries a hint sentence, §8.5 - no graying-out, the D-301 lesson).
 G-03's dismiss-down gains a dominance gate on letter-key strokes (vertical travel must clearly dominate
 the horizontal, and a claimed stroke never dismisses at all). G-01/G-02/G-08 are untouched (none starts
@@ -2542,7 +2572,10 @@ An upward swipe anywhere on the keyboard reveals a row sitting above the suggest
 always-visible emoji-panel button (no setting gates it - opening the emoji panel is described under L-03),
 a settings-app shortcut, a session-only touch-zone-visualisation toggle (§17, T-06), a manual credential-mode
 toggle (also flashes on a weak login-field signal, §12), and a manual URL-mode toggle (visible only while a
-URL field is focused, §11). A downward swipe closes the row first, and a second downward swipe (with the row
+URL field is focused, §11). **D-532:** a glide-typing toggle joins the right edge - second from the right,
+directly left of the settings gear (the user's own placement; the touch-zone toggle shifted one slot
+further left) - flipping the persisted `d516_glide_typing` setting directly as a shortcut, its icon the
+same wavy-dash glyph the settings switch shows (G-09's D-532 addendum). A downward swipe closes the row first, and a second downward swipe (with the row
 already closed) dismisses the keyboard (G-03). Activating a button in the row does not auto-close it. The
 clear-clipboard button that used to live here now sits in the suggestion bar itself instead (§16, V-03) - as
 does the manual Reclaim chip that used to live here too (D-414/D-414-followup, §5, S-10).

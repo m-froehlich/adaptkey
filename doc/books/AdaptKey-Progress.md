@@ -453,16 +453,28 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
-- **D-531 - IMPLEMENTED (§547, v1.3.8/608), NOT yet device-confirmed: the page-navigation reform.** The
-  letters page's combined key is the `!?#` special-characters-page toggle (was the `?123` number-layer
-  toggle); the special-characters page's own bottom key is the `?123` number-layer toggle (was `ABC`);
-  the number layer's `ABC` still returns to letters - the accessibility chain visits every page exactly
-  once (`letters !?# -> special characters ?123 -> number layer ABC -> letters`), the number layer is
-  reserved for genuinely numeric fields (which open it themselves, `initialSurfaceFor`), and the D-19
-  swipe cycle follows the same order (`letters -> 2 -> 1`) as the fast path. Long-press/upward swipe on
-  the combined key goes straight to the number layer (its only remaining direct route from letters).
-  D-507 strings reworded across all 32 locales (`scratchpad/d531_strings.py`). Build+tests green.
-  See §547 and spec L-03/L-08's D-531 addenda.
+- **D-531/D-532/D-533/D-534 - IMPLEMENTED (§547+§548, v1.3.8/608 + v1.3.9/609), NOT yet
+  device-confirmed: the page-navigation reform and the glide round.**
+  - **D-531 (v1.3.8):** the letters page's combined key is the `!?#` special-characters-page toggle
+    (was the `?123` number-layer toggle); the special-characters page's own bottom key is the `?123`
+    number-layer toggle (was `ABC`); the number layer's `ABC` still returns to letters - the
+    accessibility chain visits every page exactly once (`letters !?# -> special characters ?123 ->
+    number layer ABC -> letters`), the number layer is reserved for genuinely numeric fields (which
+    open it themselves, `initialSurfaceFor`), and the D-19 swipe cycle follows the same order
+    (`letters -> 2 -> 1`) as the fast path. Long-press/upward swipe on the combined key goes straight
+    to the number layer (its only remaining direct route from letters). D-507 strings reworded across
+    all 32 locales (`scratchpad/d531_strings.py`). See §547 and spec L-03/L-08/D-19 addenda.
+  - **D-532 (v1.3.9):** the glide icon (wavy dash `〰`) on the settings switch and on a new extra-row
+    toggle button, second from the right (directly left of the settings gear), writing the persisted
+    `d516_glide_typing` boolean directly as a shortcut. See §548, spec G-09/R-01 addenda.
+  - **D-533 (v1.3.9):** the glide word completes on the finger's lift - the release commits word +
+    real trailing space through the chip machinery (punctuation still eats it, D-29); the lazy
+    glide→glide auto-space (plan §8.4) is removed; a habitual manual Space right after the commit is
+    swallowed while armed. See §548, spec G-09's D-533 addendum.
+  - **D-534 (v1.3.9):** full glide field-debug logging into the Settings protocol (tag
+    `AdaptKeyGlide`, view + service sides) - begin/claim/release/not-claimed/cancel facts, every
+    recognition pass with its candidates, the commit decision; the community repro round (D-518/R3,
+    still open) reads these logs. See §548, spec G-09's D-534 addendum.
 
 - **D-519..D-527 - RESOLVED, device-confirmed (§543+§544+§545, v1.3.6; closed 2026-11-12: "Perfekt, so
   können wir das Thema abhaken"): the layout round - the tilde and the currency key on the
