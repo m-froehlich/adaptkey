@@ -66,8 +66,6 @@ object AzertyLayout {
         
         // D-522: the caret slot rides AZERTY's top row too - position 5 under the 6 is `y` here, the
         // same letter position QWERTY has (the plus slot's §2.8 reasoning, applied to the second slot).
-        // D-520: the d key's currency slot (AZERTY's middle row, like QWERTZ/QWERTY's).
-        val currency = CurrencyLocale.primarySymbol(locale)
         result.add(
             TOP_ROW.mapIndexed { index, c ->
                 KeyboardLayout.topRowKey(
@@ -80,14 +78,7 @@ object AzertyLayout {
         )
         // D-512 §2.2: the dedicated apostrophe key right of `m` on AZERTY (right of `l` on QWERTY/QWERTZ).
         // D-515: gated by [showApostropheKey] like the QWERTZ/QWERTY rows - default off for AZERTY too.
-        val middleRow = MIDDLE_ROW.map { c ->
-            KeyboardLayout.letterKey(
-                c,
-                letterHints,
-                leftCorners = KeyboardLayout.BASE_LEFT_CORNERS,
-                currencySlot = if (c == 'd') currency else null
-            )
-        }
+        val middleRow = MIDDLE_ROW.map { c -> KeyboardLayout.letterKey(c, letterHints, KeyboardLayout.BASE_LEFT_CORNERS) }
         result.add(if (showApostropheKey) middleRow + KeyboardLayout.apostropheKey() else middleRow)
         
         val thirdRowLetterWeight = proportions.thirdRowLetterWeight(THIRD_ROW.length)

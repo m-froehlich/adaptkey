@@ -2040,14 +2040,14 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * resort, so the p key keeps its observed, user-approved shape (π right-aligned over the key, Greek
      * letters growing left). A geometry-based rule like D-282's, working for any key's popup including
      * one a language pack's own data (D-281) might put on a right-edge key.
-     * 
-     * D-510 (plan §2.11.1, device-corrected twice): a dual-corner key's own popup row
-     * ([HorizontalLongPressPopup.isDualCornerStraddle]) keeps its corners over the host key - the
-     * left-corner cell over the key's left half, the pre-selected right-corner cell (the release
-     * default) over its right edge. With at most one extra the row is centred (a screen-edge overflow
-     * flips the extra toward the screen interior: the 1 key's `~ ! ¹`, the 0 key's `⁰ = )`); with two or
-     * more extras the row grows toward the screen centre with the first extra kept in the middle between
-     * the corners (the 7 key's `\ ⁷ / ÷ &`).
+     * D-510 (plan §2.11.1, device-corrected twice; the wide case reworked by D-525): a dual-corner key's
+     * own popup row ([HorizontalLongPressPopup.isDualCornerStraddle]) keeps its corners over the host
+     * key - the left-corner cell over the key's left half, the pre-selected right-corner cell (the
+     * release default) over its right edge. With at most one extra the row is centred (a screen-edge
+     * overflow flips the extra toward the screen interior: the 1 key's `~ ! ¹`, the 0 key's `⁰ = )`);
+     * with two or more extras the row stays symmetric (D-525): the corners keep the flanking positions
+     * and the extras interleave right/left in turn around the centre (the 7 key's `/ \ ÷ ⁷ &`, the 2
+     * key's `" ² ' ₂ @`).
      * 
      * D-53: the row always sits above the key. For the number row this reaches above the keyboard into the
      * suggestion-bar area; the service disables child-clipping on the container/root so it is drawn on top
@@ -2080,11 +2080,12 @@ class AdaptKeyboardView @JvmOverloads constructor(
             invalidate()
             return
         }
-        // D-510 follow-up (device-corrected placement, second pass): the corner row keeps its corners
-        // over the host key - at most one extra sits between them and the row is centred (edge overflow
-        // flips that extra to the far side: the 1 key's `~ ! ¹` trailing, the 0 key's `⁰ = )` leading);
-        // with two or more extras the row grows toward the screen centre with the first extra kept in
-        // the middle between the corners (the 7 key renders `\ ⁷ / ÷ &` with / ÷ & over the host).
+        // D-510 follow-up (device-corrected placement, second pass; wide case reworked by D-525): the
+        // corner row keeps its corners over the host key - at most one extra sits between them and the
+        // row is centred (edge overflow flips that extra to the far side: the 1 key's `~ ! ¹` trailing,
+        // the 0 key's `⁰ = )` leading); with two or more extras the row stays symmetric - the corners
+        // keep the flanking positions, the extras interleave right/left in turn around the centre (the
+        // 7 key renders `/ \ ÷ ⁷ &`, the 2 key `" ² ' ₂ @`).
         // The pre-selection always stays the right-corner cell (the release default).
         if (HorizontalLongPressPopup.isDualCornerStraddle(key, alternatives)) {
             popupRowTop = rect.top - gapPx - popupCellHeightPx
@@ -2189,9 +2190,10 @@ class AdaptKeyboardView @JvmOverloads constructor(
             popupAlternatives.getOrNull(popupSelectedIndex)
         } else {
             // D-520: the alternating popup's sentinel - no cell was ever selected, so the release
-            // commits the key's own release default (the D-509 corner contract). The corner symbol
-            // deliberately has no popup cell of its own: the key displays it as its corner glyph.
-            key?.defaultCornerHint
+            // commits the key's own release default: its corner where one exists (the corner glyph
+            // drawn on the key), otherwise - the special-characters page's currency key has no corner
+            // (its label already IS the primary, D-523) - the key's own symbol.
+            key?.defaultCornerHint ?: key?.char?.toString() ?: key?.label
         }
         dismissPopup()
         if (key != null && alternative != null) {

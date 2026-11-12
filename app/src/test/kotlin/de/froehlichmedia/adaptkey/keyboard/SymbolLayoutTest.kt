@@ -4,6 +4,7 @@
 package de.froehlichmedia.adaptkey.keyboard
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -205,12 +206,17 @@ class SymbolLayoutTest {
     
     @Test
     fun `D-102 page 2 row three is the main number row's shifted symbols, directly tappable`() {
-        val row = SymbolLayout.rows(2)[2]
+        // D-523: the row's $ position is the currency key now (a §53 TEXT key with no char of its own),
+        // so this verbatim-row assertion pins Locale.US - there the key's own label IS the dollar - and
+        // reads each key's own display character.
+        val row = SymbolLayout.rows(2, locale = Locale.US)[2]
         
-        assertEquals("!\"§$%&/()=".toList(), row.map { it.char })
+        assertEquals("!\"§$%&/()=".toList(), row.map { it.char ?: it.label.first() })
         // D-498: `/` additionally carries the backslash as its single direct-commit hint; everything else
-        // except the bracket keys stays plain.
-        assertTrue(row.none { it.char != '(' && it.char != ')' && it.char != '/' && (it.hint != null || it.alternatives.isNotEmpty()) })
+        // except the bracket keys and the currency key (index 3) stays plain.
+        assertTrue(row.filterIndexed { index, _ -> index != 3 }.none { key ->
+            key.char != '(' && key.char != ')' && key.char != '/' && (key.hint != null || key.alternatives.isNotEmpty())
+        })
     }
     
     @Test
@@ -227,6 +233,43 @@ class SymbolLayoutTest {
         
         assertEquals(listOf("(", "[", "{", "<"), row.byChar('(').alternatives)
         assertEquals(listOf(")", "]", "}", ">"), row.byChar(')').alternatives)
+    }
+    
+    @Test
+    fun `D-523 the currency key takes the shifted-symbols row's dollar position with the alternating top-10 popup`() {
+        val currencyKey = SymbolLayout.rows(2, locale = Locale.GERMANY)[2][3]
+        
+        // The key's own identity IS the region's currency: a §53 TEXT key whose label commits verbatim
+        // (one glyph or two - "Fr"/"R$" work, unlike a CHAR key's single char), deliberately without a
+        // corner hint (the label already shows the primary).
+        assertEquals(KeyCode.TEXT, currencyKey.code)
+        assertEquals("€", currencyKey.label)
+        assertNull(currencyKey.char)
+        assertNull(currencyKey.hint)
+        assertNull(currencyKey.leftHint)
+        // The popup is exactly the world's other top currencies in relevance order - the primary never
+        // repeats - and the flag is what the view places the alternating arrangement by (the anchor cell
+        // directly over the key, the rest left/right in turn, a straight release committing the key's
+        // own symbol via the view's sentinel fallback).
+        assertEquals(listOf("$", "¥", "£", "₹", "₩", "₽", "₺", "Fr", "R$"), currencyKey.alternatives)
+        assertTrue(currencyKey.alternatingPopup)
+        assertFalse(HorizontalLongPressPopup.isDualCornerStraddle(currencyKey, currencyKey.alternatives))
+        assertTrue(KeyboardLayout.hasLongPressAction(currencyKey))
+        // A dollar-primary device keeps its own $ as the key, the euro leading the popup.
+        val usKey = SymbolLayout.rows(2, locale = Locale.US)[2][3]
+        assertEquals("$", usKey.label)
+        assertEquals(listOf("€", "¥", "£", "₹", "₩", "₽", "₺", "Fr", "R$"), usKey.alternatives)
+        assertTrue(usKey.alternatingPopup)
+    }
+    
+    @Test
+    fun `D-523 a Swiss device's currency key carries the two-glyph Fr as its label, excluded from the popup`() {
+        val currencyKey = SymbolLayout.rows(2, locale = Locale("de", "CH"))[2][3]
+        
+        assertEquals("Fr", currencyKey.label)
+        assertEquals(CurrencyLocale.popupSymbols("Fr"), currencyKey.alternatives)
+        assertFalse(currencyKey.alternatives.contains("Fr"))
+        assertTrue(currencyKey.alternatingPopup)
     }
     
     @Test

@@ -105,6 +105,10 @@ object SymbolLayout {
     // page to long-press things, its space lets nearly everything sit directly on a key, so the row keeps
     // the old German-QWERTZ symbols verbatim (`&` among them - the one reformed-row symbol only reachable
     // as 7's right-corner release default otherwise).
+    // D-523: the `$` in this string is the one exception - its position is the currency key
+    // ([currencyKey], the D-520 arrangement: the region's own symbol as the key's identity, the world's
+    // ten above it), and the plain `$` itself stays reachable one slide away in that popup (where it is
+    // the anchor cell for every non-dollar region) plus on the number row's 4-right-corner.
     private const val CATCHALL_NUMBER_SYMBOLS = "!\"§$%&/()="
     
     // §29 follow-up: the main letter page's remaining alt-hint symbols, distributed here now that there's
@@ -147,7 +151,7 @@ object SymbolLayout {
         locale: Locale = Locale.getDefault()
     ): List<List<Key>> {
         requireValidPage(page)
-        return if (page == 1) calculatorRows(proportions, locale) else catchAllRows(proportions)
+        return if (page == 1) calculatorRows(proportions, locale) else catchAllRows(proportions, locale)
     }
     
     private fun calculatorRows(proportions: KeyProportions, locale: Locale): List<List<Key>> {
@@ -220,7 +224,7 @@ object SymbolLayout {
         return result
     }
     
-    private fun catchAllRows(proportions: KeyProportions): List<List<Key>> {
+    private fun catchAllRows(proportions: KeyProportions, locale: Locale): List<List<Key>> {
         val result = ArrayList<List<Key>>()
         
         // Row 1: leftover symbols (led by the tilde since D-519), then backspace. No page-toggle key (D-100).
@@ -234,7 +238,13 @@ object SymbolLayout {
         
         // Row 3 (D-102): the main number row's shifted symbols, directly tappable. ( and ) also get their
         // bracket-family popups (correction), matching page 1's bracket keys.
-        result.add(CATCHALL_NUMBER_SYMBOLS.map { c -> catchAllNumberSymbolKey(c) })
+        // D-523: the row's own `$` position (the shifted-symbols dollar key) is the currency key now -
+        // the D-520 arrangement moved here from the letters page's d key: the key's label IS the system
+        // region's currency symbol (a tap commits it, §53-verbatim, so "Fr"/"R$" work too), its
+        // long-press popup is exactly the world's ten most relevant currencies minus the primary in the
+        // alternating arrangement (the anchor cell directly over the key, the rest left/right in
+        // relevance order, no pre-selected cell - a straight release commits the key's own symbol).
+        result.add(CATCHALL_NUMBER_SYMBOLS.map { c -> if (c == '$') currencyKey(locale) else catchAllNumberSymbolKey(c) })
         
         // Row 4 (D-102): the main letter page's remaining alt-hint symbols, distributed here. - also gets
         // _ as its alt (correction), redundant with elsewhere by explicit request.
@@ -291,6 +301,28 @@ object SymbolLayout {
             '-' -> charKey(c, hint = UNDERSCORE_HINT)
             else -> charKey(c)
         }
+    }
+    
+    /**
+     * D-523: the special-characters page's currency key at the shifted-symbols row's `$` position - the
+     * D-520 arrangement relocated from the letters page's d key. The key's own identity IS the system
+     * region's currency symbol: a §53 [KeyCode.TEXT] key whose label commits verbatim on a plain tap
+     * (one glyph or two - "Fr"/"R$" work, unlike a [KeyCode.CHAR] key's single char), and whose
+     * long-press popup is exactly [CurrencyLocale.popupSymbols] - the world's ten most relevant
+     * currencies minus the primary - placed by the alternating arrangement ([Key.alternatingPopup]:
+     * the anchor cell directly over the key, the rest left/right in relevance order, no pre-selected
+     * cell, a straight release committing the key's own symbol via the view's sentinel fallback).
+     * Deliberately no corner hint: the label already shows the primary, and a corner glyph would
+     * duplicate it.
+     */
+    private fun currencyKey(locale: Locale): Key {
+        val primary = CurrencyLocale.primarySymbol(locale)
+        return Key(
+            label = primary,
+            code = KeyCode.TEXT,
+            alternatives = CurrencyLocale.popupSymbols(primary),
+            alternatingPopup = true
+        )
     }
     
     private fun charKey(c: Char, hint: String? = null, alternatives: List<String> = emptyList(), weight: Float = 1f): Key {

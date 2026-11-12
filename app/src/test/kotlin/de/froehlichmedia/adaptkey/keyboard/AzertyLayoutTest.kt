@@ -128,9 +128,11 @@ class AzertyLayoutTest {
         
         val apostropheKey = rows[2].last()
         assertEquals('\'', apostropheKey.char)
-        assertEquals("\"", apostropheKey.leftHint)
-        assertEquals("'", apostropheKey.hint)
-        assertEquals(listOf("\"", "'"), apostropheKey.alternatives)
+        // D-524: `"` is the apostrophe key's single corner (the long-press release default, committing
+        // the double quote directly); the apostrophe itself is no longer its own alternative.
+        assertEquals("\"", apostropheKey.hint)
+        assertNull(apostropheKey.leftHint)
+        assertTrue(apostropheKey.alternatives.isEmpty())
         // §2.8: w (AZERTY's first third-row key) carries the + left corner, screen-stable as a slot -
         // left-corner-only, so the release default is the + itself (left-corner fallback).
         assertEquals("+", rows[3].byChar('w').leftHint)

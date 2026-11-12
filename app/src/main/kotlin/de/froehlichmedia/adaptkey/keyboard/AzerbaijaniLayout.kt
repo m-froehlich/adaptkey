@@ -71,12 +71,7 @@ object AzerbaijaniLayout {
             result.add("1234567890".map { c -> KeyboardLayout.numberKey(c) })
         }
         
-        // D-520: the currency slot rides this layout's own d key too (top row here, index 4 of the
-        // "QÜERTY"-shaped arrangement) - it is a per-character letterHints overlay like the base `$`
-        // it replaces, so it applies wherever that letter sits in this layout's own rows. The reform's
-        // geometry slots (§2.8 plus, D-522 caret) stay scoped to the three Latin geometries, §2.12.
-        val currency = CurrencyLocale.primarySymbol(locale)
-        result.add(TOP_ROW.map { c -> KeyboardLayout.topRowKey(c, letterHints, currencySlot = if (c == 'd') currency else null) })
+        result.add(TOP_ROW.map { c -> KeyboardLayout.topRowKey(c, letterHints) })
         result.add(MIDDLE_ROW.map { c -> KeyboardLayout.letterKey(c, letterHints) })
         
         val thirdRowLetterWeight = proportions.thirdRowLetterWeight(THIRD_ROW.length)
