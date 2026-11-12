@@ -1468,6 +1468,23 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 "touchEvent: action=POINTER_UP pointers=${event.pointerCount} pointerId=${event.getPointerId(event.actionIndex)}"
             )
         }
+        // D-538: the delivery fix for the delayed-pairing pattern the D-537 logs exposed - UPs arriving
+        // only together with the NEXT gesture's DOWN (space taps becoming cursor-control holds, taps
+        // landing one-behind). Requesting unbuffered dispatch for the stream is the sanctioned knob:
+        // events are delivered as soon as they arrive instead of being batched - exactly right for a
+        // self-drawing keyboard whose handling is strictly per-event anyway.
+        if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+            requestUnbufferedDispatch(event)
+        }
+        // D-537: the stranded-press recovery must run BEFORE any routing decision - an orphaned SPACE
+        // press (its UP lost) otherwise survives into the D-401 cursor-control arm and the machine then
+        // eats the next taps. Recovered here - at the next tap, typically ~250 ms in, well before the
+        // ~400-500 ms arm - the space commits as a tap and its long-press arm dies with the press.
+        // In cursor mode the recovery is a no-op (armCursorControl clears pressedKey), so the
+        // machine's own re-touch DOWN handling is untouched.
+        if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+            recoverStrandedPressIfAny()
+        }
         // D-401: once armed, every motion event for this gesture is its own self-contained state machine,
         // routed here instead of the ordinary key-press handling below - see handleCursorControlTouch()'s
         // own KDoc for why this is a separate function rather than more conditionals threaded through it.
