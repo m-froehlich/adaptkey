@@ -49,7 +49,7 @@
     <string name="d89_f07_title">Persistent number row</string>
     <string name="d89_f07_desc">Digits stay on a row of their own above the letters, each with its shifted symbol one long-press away; switch it off in settings if you prefer.</string>
     <string name="d89_f08_title">Swipe between letters and symbols</string>
-    <string name="d89_f08_desc">A left/right swipe anywhere on the keys cycles through the letter page and both symbol pages — no need to reach for the small "?123" key.</string>
+    <string name="d89_f08_desc">A left/right swipe anywhere on the keys cycles through the letter page and both symbol pages — no need to reach for the small "!?#" key.</string>
     <string name="d89_f09_title">Space-bar language switch</string>
     <string name="d89_f09_desc">Swipe left or right on the space bar to switch which language you\'re typing in.</string>
     <string name="d89_f10_title">Swipe to delete a whole word</string>
@@ -129,7 +129,7 @@
     <string name="d401_cursor_control_title">Cursor control gesture</string>
     <string name="d401_cursor_control_summary">Long-press the space bar to move the cursor by dragging; hold still to switch to text selection.</string>
     <string name="d19_surface_swipe_title">Swipe to switch keyboard pages</string>
-    <string name="d19_surface_swipe_summary">Swipe left or right across the keyboard to switch between letters and the number/symbol pages. When off, only the ?123 / ABC key switches. With glide typing on, the letters page switches pages only via the ?123 key.</string>
+    <string name="d19_surface_swipe_summary">Swipe left or right across the keyboard to switch between the letters page and the symbol pages. When off, only the page keys (!?# / ?123 / ABC) switch. With glide typing on, the letters page switches pages only via the !?# key.</string>
     <string name="g03_swipe_down_dismiss_title">Swipe down to close the keyboard</string>
     <string name="g03_swipe_down_dismiss_summary">A downward swipe on the keyboard closes it. When off, it only closes the extra row and the keyboard stays open.</string>
     <string name="d508_space_swipe_scale_title">Language swipe distance</string>
@@ -177,10 +177,10 @@
     <string name="d32_summary">How long to hold a key before its alternatives pop up, in ms (D-32).</string>
     <string name="double_tap_delay_title">Double-tap delay</string>
     <string name="double_tap_delay_summary">Maximum time between two taps to count as a double-tap, in ms - Shift case-toggle, double-tap Backspace to revert, and sticky Backspace all share this window.</string>
-    <string name="d507_combined_key_title">Combined key (?123/Emoji)</string>
-    <string name="d507_combined_key_summary">What the combined key in the bottom row does: switch to the numeric/symbol layer (?123), open the emoji panel, or nothing - the key disappears and its slot stays empty (D-507).</string>
+    <string name="d507_combined_key_title">Combined key (!?#/Emoji)</string>
+    <string name="d507_combined_key_summary">What the combined key in the bottom row does: jump to the special-characters page (!?#), open the emoji panel, or nothing - the key disappears and its slot stays empty (D-507).</string>
     <string name="d507_mode_off">Off</string>
-    <string name="d507_mode_symbols">\?123 only</string>
+    <string name="d507_mode_symbols">!?# only</string>
     <string name="d507_mode_emoji">Emoji only</string>
     <string name="d55_below_title">Space below number row</string>
     <string name="d55_below_summary">Extra gap under the digits, in dp, to reduce mis-taps into the top letter row (D-55).</string>
@@ -469,7 +469,7 @@
     <string name="d515_apostrophe_key_title">Apostrophe key</string>
     <string name="d515_apostrophe_key_summary">Show the apostrophe key (right of l / m) on non-English keyboards as well. Off: English keyboards only.</string>
     <string name="d516_glide_typing_title">Glide typing</string>
-    <string name="d516_glide_typing_summary">Draw a word in one continuous stroke across the letters to type it. Off by default; while on, the letters page switches pages only via the ?123 key.</string>
+    <string name="d516_glide_typing_summary">Draw a word in one continuous stroke across the letters to type it. Off by default; while on, the letters page switches pages only via the !?# key.</string>
     <string name="d89_f39_title">Glide typing</string>
     <string name="d89_f39_desc">Optional: draw a word in one continuous stroke across the letters, and the best match is typed for you - with dictionary, diacritic folding and personal context. Off by default.</string>
     <string name="d89_footer_note">Note: since the alternative key-assignment reform, the letters page makes practically all relevant characters directly available - dual-corner keys, the digits row with its own symbols, and the long-press popups included - so everyday typing never needs a trip to the special-character pages.</string>

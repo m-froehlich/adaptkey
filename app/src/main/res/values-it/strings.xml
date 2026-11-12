@@ -37,7 +37,7 @@
     <string name="d89_f07_title">Riga dei numeri permanente</string>
     <string name="d89_f07_desc">Le cifre restano su una riga propria sopra le lettere, ciascuna con il suo simbolo maiuscolo a una pressione lunga; si può disattivare nelle impostazioni se preferisci.</string>
     <string name="d89_f08_title">Scorrere tra lettere e simboli</string>
-    <string name="d89_f08_desc">Uno scorrimento a sinistra o a destra in un punto qualsiasi dei tasti passa dalla pagina delle lettere alle due pagine dei simboli — senza cercare il piccolo tasto «?123».</string>
+    <string name="d89_f08_desc">Uno scorrimento a sinistra o a destra in un punto qualsiasi dei tasti passa dalla pagina delle lettere alle due pagine dei simboli — senza cercare il piccolo tasto «!?#».</string>
     <string name="d89_f09_title">Cambio lingua con la barra spaziatrice</string>
     <string name="d89_f09_desc">Scorri a sinistra o a destra sulla barra spaziatrice per cambiare la lingua in cui scrivi.</string>
     <string name="d89_f10_title">Scorrere per cancellare un\'intera parola</string>
@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Gesto di controllo del cursore</string>
     <string name="d401_cursor_control_summary">Tieni premuta la barra spaziatrice per spostare il cursore trascinando; resta fermo per passare alla selezione del testo.</string>
     <string name="d19_surface_swipe_title">Scorri per cambiare pagina della tastiera</string>
-    <string name="d19_surface_swipe_summary">Scorri a sinistra o a destra sulla tastiera per passare tra lettere e pagine di numeri/simboli. Se disattivato, cambia solo il tasto ?123 / ABC. Con la scrittura gestuale attiva, la pagina delle lettere cambia solo tramite il tasto ?123.</string>
+    <string name="d19_surface_swipe_summary">Scorri a sinistra o a destra sulla tastiera per passare dalla pagina delle lettere alle pagine dei simboli. Se disattivato, cambiano solo i tasti di pagina (!?# / ?123 / ABC). Con la scrittura gestuale attiva, la pagina delle lettere cambia solo tramite il tasto !?#.</string>
     <string name="g03_swipe_down_dismiss_title">Scorri verso il basso per chiudere la tastiera</string>
     <string name="g03_swipe_down_dismiss_summary">Uno scorrimento verso il basso sulla tastiera la chiude. Se disattivato, chiude solo la riga aggiuntiva e la tastiera resta aperta.</string>
     <string name="d508_space_swipe_scale_title">Distanza dello scorrimento lingua</string>
@@ -159,10 +159,10 @@
     <string name="d32_summary">Quanto tenere premuto un tasto prima che compaiano le sue alternative, in ms (D-32).</string>
     <string name="double_tap_delay_title">Ritardo del doppio tocco</string>
     <string name="double_tap_delay_summary">Tempo massimo tra due tocchi per contare come doppio tocco, in ms - il cambio di maiuscola con Maiusc, il doppio tocco su Backspace per annullare e il Backspace adesivo condividono tutti questa finestra.</string>
-    <string name="d507_combined_key_title">Tasto combinato (?123/Emoji)</string>
-    <string name="d507_combined_key_summary">Cosa fa il tasto combinato nella riga inferiore: passare al livello numeri/simboli (?123), aprire il pannello delle emoji o niente - il tasto scompare e il suo spazio resta vuoto (D-507).</string>
+    <string name="d507_combined_key_title">Tasto combinato (!?#/Emoji)</string>
+    <string name="d507_combined_key_summary">Cosa fa il tasto combinato nella riga inferiore: passare alla pagina dei caratteri speciali (!?#), aprire il pannello delle emoji o niente - il tasto scompare e il suo spazio resta vuoto (D-507).</string>
     <string name="d507_mode_off">Disattivato</string>
-    <string name="d507_mode_symbols">Solo ?123</string>
+    <string name="d507_mode_symbols">Solo !?#</string>
     <string name="d507_mode_emoji">Solo emoji</string>
     <string name="d55_below_title">Spazio sotto la riga dei numeri</string>
     <string name="d55_below_summary">Spazio extra sotto le cifre, in dp, per ridurre i tocchi sbagliati nella riga superiore delle lettere (D-55).</string>
@@ -389,7 +389,7 @@
     <string name="d515_apostrophe_key_title">Tasto apostrofo</string>
     <string name="d515_apostrophe_key_summary">Mostra il tasto apostrofo (a destra di l/m) anche sulle tastiere non inglesi. Disattivato: solo tastiere inglesi.</string>
     <string name="d516_glide_typing_title">Scrittura gestuale (glide typing)</string>
-    <string name="d516_glide_typing_summary">Disegna una parola con un unico tratto continuo sulle lettere per scriverla. Disattivata per impostazione predefinita; quando attiva, la pagina delle lettere cambia solo tramite il tasto ?123.</string>
+    <string name="d516_glide_typing_summary">Disegna una parola con un unico tratto continuo sulle lettere per scriverla. Disattivata per impostazione predefinita; quando attiva, la pagina delle lettere cambia solo tramite il tasto !?#.</string>
     <string name="d89_f39_title">Scrittura gestuale (glide typing)</string>
     <string name="d89_f39_desc">Opzionale: disegna una parola con un unico tratto continuo sulle lettere - la corrispondenza migliore viene scritta per te, con dizionario, riporto dei diacritici e contesto personale. Disattivata per impostazione predefinita.</string>
     <string name="d89_footer_note">Nota: dalla riforma dell\'assegnazione alternativa dei tasti, la pagina delle lettere rende praticamente tutti i caratteri rilevanti direttamente disponibili - tasti con doppio angolo, riga delle cifre con i propri simboli e popup di pressione prolungata inclusi - la digitazione quotidiana non ha mai bisogno di un passaggio dalle pagine dei caratteri speciali.</string>

@@ -296,10 +296,11 @@ class SymbolLayoutTest {
     }
     
     @Test
-    fun `page 2 bottom row hosts abc, space and enter with no sentence punctuation`() {
+    fun `D-531 page 2 bottom row hosts the number-layer toggle, space and enter with no sentence punctuation`() {
         val bottomRow = SymbolLayout.rows(2).last()
         
-        assertEquals(KeyCode.LETTERS, bottomRow[0].code)
+        assertEquals(KeyCode.NUMERIC, bottomRow[0].code)
+        assertEquals("?123", bottomRow[0].label)
         assertEquals(KeyCode.SPACE, bottomRow[1].code)
         assertEquals(KeyCode.ENTER, bottomRow[2].code)
         assertNull(bottomRow.firstOrNull { it.char == ',' || it.char == '.' })
@@ -314,14 +315,14 @@ class SymbolLayoutTest {
     }
     
     @Test
-    fun `corrected - both pages' abc key is always present, its reserved-slot hiding is AdaptKeyboardView's job`() {
+    fun `corrected - both pages' page-switch keys are always present, their reserved-slot hiding is AdaptKeyboardView's job`() {
         val page1Row5 = SymbolLayout.rows(1)[4]
         val page2Bottom = SymbolLayout.rows(2).last()
         
         assertEquals(5, page1Row5.size)
         assertEquals(KeyCode.LETTERS, page1Row5[0].code)
         
-        assertEquals(KeyCode.LETTERS, page2Bottom[0].code)
+        assertEquals(KeyCode.NUMERIC, page2Bottom[0].code)
     }
     
     @Test

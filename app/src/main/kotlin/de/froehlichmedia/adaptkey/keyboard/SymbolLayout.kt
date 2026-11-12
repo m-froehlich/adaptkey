@@ -132,13 +132,14 @@ object SymbolLayout {
     private const val UNDERSCORE_HINT = "_"
     
     /**
-     * Builds the symbol/numeric keyboard for [page]. Both pages' `ABC` key is always present in the
-     * returned rows, regardless of whether the combined `?123` key (D-59) is enabled - its slot must stay
-     * reserved (page 1 for the calculator column's proportions, D-100; page 2 so `space` doesn't grow to
-     * fill the gap and look oversized). [AdaptKeyboardView] hides it visually and makes it inert when the
-     * setting is off, the same way it already treats the disabled combined key.
+     * Builds the symbol/numeric keyboard for [page]. Page 1's `ABC` key and page 2's `?123` key
+     * (D-531) are always present in the returned rows, regardless of whether the combined key (D-59)
+     * is enabled - their slots must stay reserved (page 1 for the calculator column's proportions,
+     * D-100; page 2 so `space` doesn't grow to fill the gap and look oversized). [AdaptKeyboardView]
+     * hides them visually and makes them inert when the setting is off, the same way it already treats
+     * the disabled combined key.
      * 
-     * @param page the symbol page, 1 (calculator) or 2 (leftover catch-all)
+     * @param page the symbol page, 1 (calculator) or 2 (special characters, the D-531 re-scoped catch-all)
      * @param proportions the key-proportion configuration (C-01); defaults to [KeyProportions.DEFAULT]
      * @param locale the system locale the calculator page's currency key and decimal/thousands
      *        separators are resolved from ([CalculatorLocale]); defaults to the JVM default locale
@@ -250,12 +251,15 @@ object SymbolLayout {
         // _ as its alt (correction), redundant with elsewhere by explicit request.
         result.add(CATCHALL_LETTER_HINTS.map { c -> catchAllLetterHintKey(c) })
         
-        // Row 5 (corrected): ABC's slot next to space stays reserved when hidden (D-59/D-100-style, via
-        // AdaptKeyboardView) rather than collapsing (D-93's old omit-and-grow) - so space doesn't grow to
-        // fill the gap and end up looking oversized when the combined ?123 key is disabled.
+        // Row 5 (corrected): the page-switch key's slot next to space stays reserved when hidden
+        // (D-59/D-100-style, via AdaptKeyboardView) rather than collapsing (D-93's old omit-and-grow) -
+        // so space doesn't grow to fill the gap and end up looking oversized when the combined ?123 key
+        // is disabled. D-531: this page's key is the `?123` number-layer toggle now (was `ABC` - the
+        // letters page is reached via the number page's own ABC, or a swipe), so the chain reads
+        // letters `!?#` -> this page `?123` -> number layer `ABC` -> letters.
         result.add(
             listOf(
-                Key(label = "ABC", code = KeyCode.LETTERS, weight = proportions.symbolWeight),
+                Key(label = "?123", code = KeyCode.NUMERIC, weight = proportions.symbolWeight),
                 Key(label = "space", code = KeyCode.SPACE, char = ' ', weight = proportions.spaceWeight),
                 Key(label = "↵", code = KeyCode.ENTER, weight = proportions.enterWeight)
             )

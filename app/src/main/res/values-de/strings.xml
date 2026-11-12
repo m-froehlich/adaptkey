@@ -43,7 +43,7 @@
     <string name="d89_f07_title">Feste Zahlenreihe</string>
     <string name="d89_f07_desc">Ziffern stehen dauerhaft in einer eigenen Reihe über den Buchstaben, jede mit ihrem Shift-Symbol per langem Druck erreichbar; in den Einstellungen abschaltbar.</string>
     <string name="d89_f08_title">Wischen zwischen Buchstaben und Sonderzeichen</string>
-    <string name="d89_f08_desc">Ein Wisch nach links oder rechts an beliebiger Stelle auf den Tasten wechselt zwischen der Buchstabenseite und beiden Sonderzeichen-Seiten – ohne Umweg über die kleine „?123"-Taste.</string>
+    <string name="d89_f08_desc">Ein Wisch nach links oder rechts an beliebiger Stelle auf den Tasten wechselt zwischen der Buchstabenseite und beiden Sonderzeichen-Seiten – ohne Umweg über die kleine „!?#"-Taste.</string>
     <string name="d89_f09_title">Sprachwechsel über die Leertaste</string>
     <string name="d89_f09_desc">Wische auf der Leertaste nach links oder rechts, um die Eingabesprache zu wechseln.</string>
     <string name="d89_f10_title">Ganzes Wort per Wisch löschen</string>
@@ -123,7 +123,7 @@
     <string name="d401_cursor_control_title">Cursor-Steuerungsgeste</string>
     <string name="d401_cursor_control_summary">Langes Drücken der Leertaste bewegt per Ziehen den Cursor; kurz stillhalten wechselt zur Textauswahl.</string>
     <string name="d19_surface_swipe_title">Wischen zum Seitenwechsel</string>
-    <string name="d19_surface_swipe_summary">Nach links oder rechts über die Tastatur wischen wechselt zwischen Buchstaben und den Zahlen-/Sonderzeichenseiten. Wenn aus, wechselt nur die ?123-/ABC-Taste. Bei aktiver Gesteeneingabe (Glide-Typing) schaltet auf der Buchstaben-Seite nur die ?123-Taste.</string>
+    <string name="d19_surface_swipe_summary">Nach links oder rechts über die Tastatur wischen wechselt zwischen der Buchstaben-Seite und den Symbol-Seiten. Wenn aus, wechseln nur die Seiten-Tasten (!?# / ?123 / ABC). Bei aktiver Gesteeneingabe (Glide-Typing) schaltet auf der Buchstaben-Seite nur die !?#-Taste.</string>
     <string name="g03_swipe_down_dismiss_title">Nach unten wischen schließt die Tastatur</string>
     <string name="g03_swipe_down_dismiss_summary">Nach unten über die Tastatur wischen schließt sie. Wenn aus, schließt die Geste nur die Zusatzzeile und die Tastatur bleibt offen.</string>
     <string name="d508_space_swipe_scale_title">Sprachwechsel-Wegdistanz</string>
@@ -171,10 +171,10 @@
     <string name="d32_summary">Wie lange eine Taste gehalten werden muss, bis die Alternativen erscheinen, in ms (D-32).</string>
     <string name="double_tap_delay_title">Doppeltipp-Verzögerung</string>
     <string name="double_tap_delay_summary">Maximale Zeit zwischen zwei Tipps, um als Doppeltipp zu zählen, in ms - Shift-Großschreibung umschalten, Doppel-Backspace zum Zurücksetzen und klebende Rücktaste teilen sich dieses Zeitfenster.</string>
-    <string name="d507_combined_key_title">Kombinierte Taste (?123/Emoji)</string>
-    <string name="d507_combined_key_summary">Was die kombinierte Taste in der unteren Reihe macht: zur Zahlen-/Symbol-Ebene wechseln (?123), das Emoji-Panel öffnen oder nichts - die Taste verschwindet, ihr Platz bleibt leer (D-507).</string>
+    <string name="d507_combined_key_title">Kombinierte Taste (!?#/Emoji)</string>
+    <string name="d507_combined_key_summary">Was die kombinierte Taste in der unteren Reihe macht: zur Sonderzeichen-Seite springen (!?#), das Emoji-Panel öffnen oder nichts - die Taste verschwindet, ihr Platz bleibt leer (D-507).</string>
     <string name="d507_mode_off">Aus</string>
-    <string name="d507_mode_symbols">Nur ?123</string>
+    <string name="d507_mode_symbols">Nur !?#</string>
     <string name="d507_mode_emoji">Nur Emoji</string>
     <string name="d55_below_title">Abstand unter der Ziffernreihe</string>
     <string name="d55_below_summary">Zusätzlicher Abstand unter den Ziffern, in dp, gegen Vertipper in die obere Buchstabenreihe (D-55).</string>
@@ -449,7 +449,7 @@
     <string name="d515_apostrophe_key_title">Apostrophe-Taste</string>
     <string name="d515_apostrophe_key_summary">Apostrophe-Taste (rechts neben l bzw. m) auch in nicht-englischen Tastaturen anzeigen. Aus: nur englische Tastaturen.</string>
     <string name="d516_glide_typing_title">Gesteeneingabe (Glide-Typing)</string>
-    <string name="d516_glide_typing_summary">Ein Wort in einem durchgehenden Strich über die Buchstaben ziehen, um es zu schreiben. Standardmäßig aus; bei eingeschalteter Gesteeneingabe schaltet die Buchstaben-Seite nur noch über die ?123-Taste.</string>
+    <string name="d516_glide_typing_summary">Ein Wort in einem durchgehenden Strich über die Buchstaben ziehen, um es zu schreiben. Standardmäßig aus; bei eingeschalteter Gesteeneingabe schaltet die Buchstaben-Seite nur noch über die !?#-Taste.</string>
     <string name="d89_f39_title">Gesteeneingabe (Glide-Typing)</string>
     <string name="d89_f39_desc">Optional: Ein Wort in einem durchgehenden Strich über die Buchstaben ziehen - der beste Treffer wird geschrieben, mit Wörterbuch, Umlaut-Folding und persönlichem Kontext. Standardmäßig aus.</string>
     <string name="d89_footer_note">Nachtrag: Seit der Alt-Belegungs-Reform macht die Buchstaben-Seite praktisch alle relevanten Zeichen direkt verfügbar - Doppel-Ecken-Tasten, die Ziffernleiste samt ihrer Symbole und die Langdruck-Popups eingeschlossen. Für den Alltag ist kein Zugriff auf die Sonderzeichen-Seiten notwendig.</string>

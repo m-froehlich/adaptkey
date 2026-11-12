@@ -8,6 +8,11 @@ package de.froehlichmedia.adaptkey.keyboard
  * one setting (the user's own decision: a single enum instead of two coupled booleans, so the impossible
  * "both at once" state structurally cannot exist and no cross-setting dependency wiring is needed).
  * 
+ * D-531: the symbol mode's key is the `!?#` special-characters-page toggle now - the number layer itself
+ * is only needed for genuinely numeric input (number/date/phone fields, which open it automatically),
+ * so the letters page's own key leads to the special-characters page instead, and that page's own
+ * `?123` key ([KeyCode.NUMERIC]) is the one way onto the number layer.
+ *
  * The stored values are `off` / `symbol` / `emoji` - keep them in sync with `arrays.xml`
  * (`d507_combined_key_values`). Declared with "off" first (the standing rule for pick-one settings),
  * default [SYMBOL] (the behaviour every install has always had - nobody sees a change until the setting
@@ -42,68 +47,77 @@ enum class CombinedKeyMode {
 }
 
 /**
- * Pure transition policy for the combined emoji / ?123 key and its surrounding "back" affordances
- * (L-03).
+ * Pure transition policy for the combined emoji / special-characters key and its surrounding "back"
+ * affordances (L-03). D-531: the page chain is letters -(!?#)-> special-characters page -(?123)->
+ * number layer -(ABC)-> letters; the D-19 swipe cycle visits the same pages in the same order, so
+ * the gesture is simply the fast-forward of the key path.
  */
 object PanelNavigation {
     
+    /** D-531: the special-characters page - the combined key's tap destination from the letters page. */
+    const val SPECIAL_KEYS_PAGE = 2
+    
     /**
-     * A tap on the combined key toggles between the letter view and the numeric/symbol layer - or, since
-     * D-507, opens the emoji panel when the combined-key setting has put the emoji function into the key's
-     * slot. The `[InputSurface.EMOJI]` return value goes through the ordinary [InputSurface] switch, so
-     * `AdaptKeyService`'s one [InputSurface] choke point (panel visibility, the D-472 return button, and
-     * D-507's extra-row auto-open) handles every entry point identically.
-     * 
-     * §49 (implementing §48): the combined key used to also open the emoji panel (D-18, gated on the now-
-     * retired `emojiPanelEnabled` setting) - now that the emoji button has its own dedicated,
-     * always-reachable home in the settings row, that dual purpose was gone; the combined key was always a
-     * plain `?123` toggle, unconditionally. D-507 re-introduces the emoji function on this key, but as its
-     * own dedicated setting mode rather than D-18's second gate, and the extra-row button deliberately
-     * stays alongside it.
+     * A tap on the combined key. D-531: from the letters page it opens the special-characters page
+     * (the reform's re-scoping: the number layer is reserved for genuinely numeric fields, which
+     * open it themselves, so the letters page's own key leads to the special characters instead) -
+     * the `[InputSurface.EMOJI]` return value goes through the ordinary [InputSurface] switch, so
+     * `AdaptKeyService`'s one [InputSurface] choke point (panel visibility, the D-472 return button,
+     * and D-507's extra-row auto-open) handles every entry point identically. From a symbol page the
+     * key does not exist (that slot carries the `?123`/`ABC` keys there); the letters fallthrough is
+     * defensive only.
      * 
      * [CombinedKeyMode.OFF] never dispatches (the key is hidden then); it falls through to the ordinary
      * toggle purely so the function stays total.
      * 
      * @param current the currently shown surface
      * @param mode what the combined key's slot currently carries
-     * @return the surface to switch to
+     * @return the surface/page to switch to
      */
-    fun onCombinedKeyTap(current: InputSurface, mode: CombinedKeyMode = CombinedKeyMode.SYMBOL): InputSurface {
+    fun onCombinedKeyTap(current: InputSurface, mode: CombinedKeyMode = CombinedKeyMode.SYMBOL): Page {
         if (mode == CombinedKeyMode.EMOJI) {
-            return InputSurface.EMOJI
+            return Page(InputSurface.EMOJI, 1)
         }
-        return if (current == InputSurface.LETTERS) InputSurface.SYMBOLS else InputSurface.LETTERS
+        return if (current == InputSurface.LETTERS) {
+            Page(InputSurface.SYMBOLS, SPECIAL_KEYS_PAGE)
+        } else {
+            Page(InputSurface.LETTERS, 1)
+        }
     }
     
     /**
-     * A long-press or upward swipe on the combined key always switches to the numeric/symbol layer,
-     * regardless of the current surface.
+     * A long-press or upward swipe on the combined key always switches straight to the numeric layer -
+     * the number page (D-531: the calculator page the reform reserved for genuinely numeric input, and
+     * the one page no key leads to any more, so the shortcut is its only direct route from letters).
      * 
-     * @return [InputSurface.SYMBOLS]
+     * @return the [InputSurface.SYMBOLS] page 1
      */
-    fun onSwitchToSymbols(): InputSurface = InputSurface.SYMBOLS
+    fun onSwitchToSymbols(): Page = Page(InputSurface.SYMBOLS, 1)
     
     /**
-     * A visible surface/page in the D-19 horizontal-swipe cycle: the letter view, then the two
-     * numeric/symbol pages. The emoji panel is deliberately not part of the swipe cycle (it is reached
-     * by tapping the combined key).
+     * A visible surface/page in the D-19 horizontal-swipe cycle. The emoji panel is deliberately not
+     * part of the swipe cycle (it is reached by tapping the combined key in its emoji mode, or the
+     * extra-row button).
      * 
      * @property surface the input surface to show
      * @property symbolPage the numeric/symbol page (only meaningful when [surface] is [InputSurface.SYMBOLS])
      */
     data class Page(val surface: InputSurface, val symbolPage: Int)
     
-    // D-19: letters -> symbols page 1 -> symbols page 2, cycled by a full-field horizontal swipe.
+    // D-19/D-531: letters -> special-characters page (2) -> number layer (1), cycled by a full-field
+    // horizontal swipe - the same chain the keys build (letters `!?#` -> page 2's `?123` -> page 1's
+    // `ABC`), so a swipe is simply the fast-forward of the button path.
     private val SWIPE_CYCLE = listOf(
         Page(InputSurface.LETTERS, 1),
-        Page(InputSurface.SYMBOLS, 1),
-        Page(InputSurface.SYMBOLS, 2)
+        Page(InputSurface.SYMBOLS, SPECIAL_KEYS_PAGE),
+        Page(InputSurface.SYMBOLS, 1)
     )
     
     /**
      * The surface/page a D-19 horizontal swipe moves to. A right swipe ([forward] true) advances through
-     * [letters → symbols-1 → symbols-2] and wraps; a left swipe goes back. The emoji surface is treated
-     * as the letter view (its own tap affordance leaves it), so a swipe from emoji lands on symbols.
+     * [letters → special-characters page → number layer] and wraps; a left swipe goes back. The emoji
+     * surface is treated as the letter view (its own tap affordance leaves it), so a swipe from emoji
+     * lands on the special-characters page.
      * 
      * @param current the currently shown surface
      * @param symbolPage the current numeric/symbol page (used only when [current] is [InputSurface.SYMBOLS])

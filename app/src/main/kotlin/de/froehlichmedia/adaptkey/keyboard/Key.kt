@@ -15,8 +15,15 @@ enum class KeyCode {
     SPACE,
     SYMBOL,
     
-    /** L-03: the "ABC" key on the numeric/symbol layer, returning to the letter view. */
+    /** L-03: the "ABC" key on the numeric layer (calculator page), returning to the letter view. */
     LETTERS,
+    
+    /**
+     * D-531: the `?123` key on the special-characters page (the reform's second page), switching to
+     * the numeric layer - the calculator page the reform re-scoped to genuinely numeric input
+     * (number/date/phone fields, which open it on their own).
+     */
+    NUMERIC,
     
     /**
      * §53 (D-103/D-104): a key whose tap commits a literal multi-character [Key.label] verbatim (e.g. the

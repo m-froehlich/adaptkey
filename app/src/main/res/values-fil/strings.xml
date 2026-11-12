@@ -37,7 +37,7 @@
     <string name="d89_f07_title">Permanenteng hanay ng numero</string>
     <string name="d89_f07_desc">Ang mga digit ay nasa sarili nilang hanay sa itaas ng mga letra, bawat isa may simbolong Shift nito isang mahabang pindot ang layo; maaaring i-off sa mga setting kung gusto mo.</string>
     <string name="d89_f08_title">Mag-swipe sa pagitan ng mga letra at simbolo</string>
-    <string name="d89_f08_desc">Ang pag-swipe pakaliwa o pakanan kahit saan sa mga key ay dumadaan sa pahina ng letra at sa parehong pahina ng simbolo — hindi mo na kailangang hanapin ang maliit na «?123» key.</string>
+    <string name="d89_f08_desc">Ang pag-swipe pakaliwa o pakanan kahit saan sa mga key ay dumadaan sa pahina ng letra at sa parehong pahina ng simbolo — hindi mo na kailangang hanapin ang maliit na «!?#» key.</string>
     <string name="d89_f09_title">Pagpapalit ng wika gamit ang space bar</string>
     <string name="d89_f09_desc">Mag-swipe pakaliwa o pakanan sa space bar para palitan ang wikang tina-type mo.</string>
     <string name="d89_f10_title">Mag-swipe para burahin ang buong salita</string>
@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Galaw ng kontrol sa cursor</string>
     <string name="d401_cursor_control_summary">Pindutin nang matagal ang space bar para ilipat ang cursor sa pamamagitan ng pag-drag; manatiling tahimik para lumipat sa pagpili ng teksto.</string>
     <string name="d19_surface_swipe_title">Mag-swipe para lumipat ng pahina ng keyboard</string>
-    <string name="d19_surface_swipe_summary">Mag-swipe pakaliwa o pakanan sa keyboard para lumipat sa pagitan ng mga titik at ng mga pahina ng numero/simbolo. Kapag naka-off, ang ?123 / ABC key lang ang lumilipat. Kapag naka-on ang pag-slide sa pag-type, ang pahina ng mga titik ay nagpapalit lamang sa ?123 key.</string>
+    <string name="d19_surface_swipe_summary">Mag-swipe pakaliwa o pakanan sa keyboard para lumipat sa pagitan ng pahina ng mga titik at ng mga pahina ng simbolo. Kapag naka-off, ang mga page key lang (!?# / ?123 / ABC) ang lumilipat. Kapag naka-on ang pag-slide sa pag-type, ang pahina ng mga titik ay nagpapalit lamang sa !?# key.</string>
     <string name="g03_swipe_down_dismiss_title">Mag-swipe pababa para isara ang keyboard</string>
     <string name="g03_swipe_down_dismiss_summary">Isinasara ang keyboard kapag nag-swipe pababa dito. Kapag naka-off, ang extra row lang ang isinasara at nananatiling bukas ang keyboard.</string>
     <string name="d508_space_swipe_scale_title">Distansya ng swipe para sa wika</string>
@@ -159,10 +159,10 @@
     <string name="d32_summary">Gaano katagal hawakan ang isang key bago lumitaw ang mga alternatibo nito, sa ms (D-32).</string>
     <string name="double_tap_delay_title">Delay ng double-tap</string>
     <string name="double_tap_delay_summary">Pinakamahabang oras sa pagitan ng dalawang tap para mabilang bilang double-tap, sa ms - ang pagpapalit ng laki ng letra gamit ang Shift, double-tap sa Backspace para i-undo, at malagkit na Backspace ay lahat gumagamit ng window na ito.</string>
-    <string name="d507_combined_key_title">Pinagsamang pindutan (?123/Emoji)</string>
-    <string name="d507_combined_key_summary">Ano ang ginagawa ng pinagsamang pindutan sa pinakailalim na hanay: paglipat sa layer ng mga numero/simbolo (?123), pagbukas ng emoji panel, o wala - mawawala ang pindutan at mananatiling bakante ang puwang nito (D-507).</string>
+    <string name="d507_combined_key_title">Pinagsamang pindutan (!?#/Emoji)</string>
+    <string name="d507_combined_key_summary">Ano ang ginagawa ng pinagsamang pindutan sa pinakailalim na hanay: paglipat sa pahina ng mga espesyal na karakter (!?#), pagbukas ng emoji panel, o wala - mawawala ang pindutan at mananatiling bakante ang puwang nito (D-507).</string>
     <string name="d507_mode_off">Naka-off</string>
-    <string name="d507_mode_symbols">\?123 lang</string>
+    <string name="d507_mode_symbols">!?# lang</string>
     <string name="d507_mode_emoji">Emoji lang</string>
     <string name="d55_below_title">Espasyo sa ilalim ng hanay ng numero</string>
     <string name="d55_below_summary">Dagdag na puwang sa ilalim ng mga digit, sa dp, para mabawasan ang mga sablay na tap sa itaas na hanay ng letra (D-55).</string>
@@ -389,7 +389,7 @@
     <string name="d515_apostrophe_key_title">Apostrope key</string>
     <string name="d515_apostrophe_key_summary">Ipakita ang apostrope key (sa kanan ng l/m) sa mga keyboard na hindi Ingles. Naka-off: mga keyboard na Ingles lang.</string>
     <string name="d516_glide_typing_title">Pag-slide sa pag-type (glide typing)</string>
-    <string name="d516_glide_typing_summary">Guhit ang salita sa isang tuloy-tuloy na linya sa mga titik para i-type ito. Nakasara bilang default; kapag naka-on, ang pahina ng mga titik ay nagpapalit lamang sa ?123 key.</string>
+    <string name="d516_glide_typing_summary">Guhit ang salita sa isang tuloy-tuloy na linya sa mga titik para i-type ito. Nakasara bilang default; kapag naka-on, ang pahina ng mga titik ay nagpapalit lamang sa !?# key.</string>
     <string name="d89_f39_title">Pag-slide sa pag-type (glide typing)</string>
     <string name="d89_f39_desc">Opsyonal: guhit ang salita sa isang tuloy-tuloy na linya sa mga titik - ang pinakamahusay na tugma ay mai-type para sa iyo, kasama ang diksyunaryo, pag-tiklop ng mga diakritiko at personal na konteksto. Nakasara bilang default.</string>
     <string name="d89_footer_note">Paalala: mula nang reporma sa alternatibong pagtatalaga ng mga key, ginagawang direktang available ng pahina ng mga titik ang praktikal na lahat ng mahahalagang karakter - mga key na dobleng sulok, ang hilera ng mga digit na may sariling mga simbolo, at mga pop-up ng mahabang pagpindot kasama - hindi kailanman kailangan ng pang-araw-araw na pag-type na daanan ang mga pahina ng mga espesyal na karakter.</string>

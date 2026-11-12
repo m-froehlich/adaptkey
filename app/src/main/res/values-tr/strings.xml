@@ -37,7 +37,7 @@
     <string name="d89_f07_title">Kalıcı rakam satırı</string>
     <string name="d89_f07_desc">Rakamlar harflerin üstünde kendi satırında durur, her biri uzun basmayla ulaşılan Shift simgesiyle; istersen ayarlardan kapatabilirsin.</string>
     <string name="d89_f08_title">Harfler ve simgeler arasında kaydırma</string>
-    <string name="d89_f08_desc">Tuşların herhangi bir yerinde sola veya sağa kaydırmak harf sayfasında ve iki simge sayfasında gezdirir — küçük «?123» tuşunu aramana gerek kalmaz.</string>
+    <string name="d89_f08_desc">Tuşların herhangi bir yerinde sola veya sağa kaydırmak harf sayfasında ve iki simge sayfasında gezdirir — küçük «!?#» tuşunu aramana gerek kalmaz.</string>
     <string name="d89_f09_title">Boşluk çubuğuyla dil değiştirme</string>
     <string name="d89_f09_desc">Yazdığın dili değiştirmek için boşluk çubuğunda sola veya sağa kaydır.</string>
     <string name="d89_f10_title">Bütün bir sözcüğü silmek için kaydırma</string>
@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">İmleç kontrol hareketi</string>
     <string name="d401_cursor_control_summary">İmleci sürükleyerek taşımak için boşluk çubuğuna uzun bas; metin seçimine geçmek için sabit dur.</string>
     <string name="d19_surface_swipe_title">Klavye sayfasını kaydırarak değiştir</string>
-    <string name="d19_surface_swipe_summary">Harfler ile rakam/sembol sayfaları arasında geçiş yapmak için klavyede sola veya sağa kaydırın. Kapalıyken yalnızca ?123 / ABC tuşu geçiş yapar. Kaydırarak yazma açıkken harf sayfası yalnızca ?123 tuşuyla değişir.</string>
+    <string name="d19_surface_swipe_summary">Harf sayfası ile simge sayfaları arasında geçiş yapmak için klavyede sola veya sağa kaydırın. Kapalıyken yalnızca sayfa tuşları (!?# / ?123 / ABC) geçiş yapar. Kaydırarak yazma açıkken harf sayfası yalnızca !?# tuşuyla değişir.</string>
     <string name="g03_swipe_down_dismiss_title">Klavyeyi kapatmak için aşağı kaydırın</string>
     <string name="g03_swipe_down_dismiss_summary">Klavyede aşağı kaydırmak onu kapatır. Kapalıyken yalnızca ek satırı kapatır ve klavye açık kalır.</string>
     <string name="d508_space_swipe_scale_title">Dil kaydırma mesafesi</string>
@@ -159,10 +159,10 @@
     <string name="d32_summary">Bir tuşun seçenekleri açılmadan önce ne kadar basılı tutulacağı, ms cinsinden (D-32).</string>
     <string name="double_tap_delay_title">Çift dokunma gecikmesi</string>
     <string name="double_tap_delay_summary">İki dokunuşun çift dokunma sayılması için aralarındaki en uzun süre, ms cinsinden - Shift ile büyük/küçük harf çevirme, geri almak için Geri Sil\'e çift dokunma ve yapışkan Geri Sil bu pencereyi paylaşır.</string>
-    <string name="d507_combined_key_title">Birleşik tuş (?123/Emoji)</string>
-    <string name="d507_combined_key_summary">Alt sıradaki birleşik tuşun yaptığı şey: rakam/sembol katmanına geçmek (?123), emoji panelini açmak ya da hiçbir şey - tuş kaybolur ve yeri boş kalır (D-507).</string>
+    <string name="d507_combined_key_title">Birleşik tuş (!?#/Emoji)</string>
+    <string name="d507_combined_key_summary">Alt sıradaki birleşik tuşun yaptığı şey: özel karakterler sayfasına geçmek (!?#), emoji panelini açmak ya da hiçbir şey - tuş kaybolur ve yeri boş kalır (D-507).</string>
     <string name="d507_mode_off">Kapalı</string>
-    <string name="d507_mode_symbols">Yalnızca ?123</string>
+    <string name="d507_mode_symbols">Yalnızca !?#</string>
     <string name="d507_mode_emoji">Yalnızca emoji</string>
     <string name="d55_below_title">Rakam satırının altındaki boşluk</string>
     <string name="d55_below_summary">Üst harf satırına yanlış dokunuşları azaltmak için rakamların altında ek boşluk, dp cinsinden (D-55).</string>
@@ -389,7 +389,7 @@
     <string name="d515_apostrophe_key_title">Kesme işareti tuşu</string>
     <string name="d515_apostrophe_key_summary">Kesme işareti tuşunu (l/m\'nin sağında) İngilizce olmayan klavyelerde de göster. Kapalı: yalnızca İngilizce klavyeler.</string>
     <string name="d516_glide_typing_title">Kaydırarak yazma (glide typing)</string>
-    <string name="d516_glide_typing_summary">Bir kelimeyi harflerin üzerinde kesintisiz bir çizgiyle çizin ve yazılsın. Varsayılan olarak kapalı; açıkken harf sayfası yalnızca ?123 tuşuyla değişir.</string>
+    <string name="d516_glide_typing_summary">Bir kelimeyi harflerin üzerinde kesintisiz bir çizgiyle çizin ve yazılsın. Varsayılan olarak kapalı; açıkken harf sayfası yalnızca !?# tuşuyla değişir.</string>
     <string name="d89_f39_title">Kaydırarak yazma (glide typing)</string>
     <string name="d89_f39_desc">İsteğe bağlı: bir kelimeyi harflerin üzerinde kesintisiz bir çizgiyle çizin - en iyi eşleşme sizin adınıza yazılır; sözlük, diakritik eşleme ve kişisel bağlam dahil. Varsayılan olarak kapalı.</string>
     <string name="d89_footer_note">Not: alternatif tuş ataması reformundan bu yana harf sayfası ilgili karakterlerin neredeyse tamamını doğrudan sunar - çift köşeli tuşlar, kendi sembolleriyle rakam sırası ve uzun basma pencereleri dahil - günlük yazma için özel karakter sayfalarına uğramak hiç gerekmez.</string>

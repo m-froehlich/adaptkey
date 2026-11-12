@@ -37,7 +37,7 @@
     <string name="d89_f07_title">Rând permanent de cifre</string>
     <string name="d89_f07_desc">Cifrele stau pe un rând propriu deasupra literelor, fiecare cu simbolul său cu Shift la o apăsare lungă distanță; poate fi dezactivat din setări dacă preferi.</string>
     <string name="d89_f08_title">Glisare între litere și simboluri</string>
-    <string name="d89_f08_desc">O glisare la stânga sau la dreapta oriunde pe taste parcurge pagina cu litere și ambele pagini de simboluri — nu mai trebuie să cauți mica tastă «?123».</string>
+    <string name="d89_f08_desc">O glisare la stânga sau la dreapta oriunde pe taste parcurge pagina cu litere și ambele pagini de simboluri — nu mai trebuie să cauți mica tastă «!?#».</string>
     <string name="d89_f09_title">Schimbarea limbii cu bara de spațiu</string>
     <string name="d89_f09_desc">Glisează la stânga sau la dreapta pe bara de spațiu ca să schimbi limba în care scrii.</string>
     <string name="d89_f10_title">Glisare pentru a șterge un cuvânt întreg</string>
@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Gest de control al cursorului</string>
     <string name="d401_cursor_control_summary">Apasă lung bara de spațiu ca să muți cursorul prin tragere; stai nemișcat ca să treci la selectarea textului.</string>
     <string name="d19_surface_swipe_title">Glisare pentru schimbarea paginii tastaturii</string>
-    <string name="d19_surface_swipe_summary">Glisați la stânga sau la dreapta pe tastatură pentru a comuta între litere și paginile de cifre/simboluri. Când este dezactivat, comută doar tasta ?123 / ABC. Cu tastarea prin glisare activă, pagina de litere comută doar prin tasta ?123.</string>
+    <string name="d19_surface_swipe_summary">Glisați la stânga sau la dreapta pe tastatură pentru a comuta între pagina de litere și paginile de simboluri. Când este dezactivat, comută doar tastele de pagină (!?# / ?123 / ABC). Cu tastarea prin glisare activă, pagina de litere comută doar prin tasta !?#.</string>
     <string name="g03_swipe_down_dismiss_title">Glisați în jos pentru a închide tastatura</string>
     <string name="g03_swipe_down_dismiss_summary">O glisare în jos pe tastatură o închide. Când este dezactivat, închide doar rândul suplimentar, iar tastatura rămâne deschisă.</string>
     <string name="d508_space_swipe_scale_title">Distanța glisării pentru limbă</string>
@@ -159,10 +159,10 @@
     <string name="d32_summary">Cât timp să ții apăsată o tastă până apar alternativele ei, în ms (D-32).</string>
     <string name="double_tap_delay_title">Întârziere la dublă atingere</string>
     <string name="double_tap_delay_summary">Timpul maxim dintre două atingeri ca să conteze drept dublă atingere, în ms - comutarea majusculei cu Shift, dubla atingere pe Backspace pentru anulare și Backspace lipicios folosesc toate această fereastră.</string>
-    <string name="d507_combined_key_title">Tastă combinată (?123/Emoji)</string>
-    <string name="d507_combined_key_summary">Ce face tasta combinată din rândul de jos: comutarea la stratul de cifre/simboluri (?123), deschiderea panoului de emoji sau nimic - tasta dispare, iar locul ei rămâne gol (D-507).</string>
+    <string name="d507_combined_key_title">Tastă combinată (!?#/Emoji)</string>
+    <string name="d507_combined_key_summary">Ce face tasta combinată din rândul de jos: trecerea la pagina de caractere speciale (!?#), deschiderea panoului de emoji sau nimic - tasta dispare, iar locul ei rămâne gol (D-507).</string>
     <string name="d507_mode_off">Dezactivat</string>
-    <string name="d507_mode_symbols">Doar ?123</string>
+    <string name="d507_mode_symbols">Doar !?#</string>
     <string name="d507_mode_emoji">Doar emoji</string>
     <string name="d55_below_title">Spațiu sub rândul de cifre</string>
     <string name="d55_below_summary">Spațiu suplimentar sub cifre, în dp, pentru a reduce atingerile ratate în rândul de sus al literelor (D-55).</string>
@@ -389,7 +389,7 @@
     <string name="d515_apostrophe_key_title">Tasta apostrof</string>
     <string name="d515_apostrophe_key_summary">Afișează tasta apostrof (la dreapta lui l/m) și pe tastaturile neengleze. Dezactivat: doar tastaturi engleze.</string>
     <string name="d516_glide_typing_title">Tastare prin glisare (glide typing)</string>
-    <string name="d516_glide_typing_summary">Desenează un cuvânt într-o singură linie continuă peste litere pentru a-l scrie. Dezactivat în mod implicit; când este activ, pagina de litere comută doar prin tasta ?123.</string>
+    <string name="d516_glide_typing_summary">Desenează un cuvânt într-o singură linie continuă peste litere pentru a-l scrie. Dezactivat în mod implicit; când este activ, pagina de litere comută doar prin tasta !?#.</string>
     <string name="d89_f39_title">Tastare prin glisare (glide typing)</string>
     <string name="d89_f39_desc">Opțional: desenează un cuvânt într-o singură linie continuă peste litere - cea mai bună potrivire se scrie pentru tine, cu dicționar, replierea diacriticelor și context personal. Dezactivat în mod implicit.</string>
     <string name="d89_footer_note">Notă: de la reforma atribuirii alternative a tastelor, pagina de litere face practic toate caracterele relevante direct disponibile - taste cu colț dublu, rândul de cifre cu propriile simboluri și ferestrele pop-up de apăsare lungă incluse - tastarea zilnică nu are nevoie niciodată de o vizită la paginile de caractere speciale.</string>

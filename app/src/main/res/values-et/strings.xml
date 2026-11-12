@@ -37,7 +37,7 @@
     <string name="d89_f07_title">Püsiv numbririda</string>
     <string name="d89_f07_desc">Numbrid on tähtede kohal omaette real, igaüks oma Shifti sümboliga ühe pika vajutuse kaugusel; soovi korral saab seadetes välja lülitada.</string>
     <string name="d89_f08_title">Pühkimine tähtede ja sümbolite vahel</string>
-    <string name="d89_f08_desc">Vasakule või paremale pühkimine klahvide mis tahes kohas käib läbi tähelehe ja mõlemad sümbolilehed — väikest «?123» klahvi pole vaja otsida.</string>
+    <string name="d89_f08_desc">Vasakule või paremale pühkimine klahvide mis tahes kohas käib läbi tähelehe ja mõlemad sümbolilehed — väikest «!?#» klahvi pole vaja otsida.</string>
     <string name="d89_f09_title">Keelevahetus tühikuklahviga</string>
     <string name="d89_f09_desc">Pühi tühikuklahvil vasakule või paremale, et vahetada kirjutamiskeelt.</string>
     <string name="d89_f10_title">Pühkimine terve sõna kustutamiseks</string>
@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Kursori juhtimise žest</string>
     <string name="d401_cursor_control_summary">Vajuta pikalt tühikuklahvi, et liigutada kursorit lohistades; püsi paigal, et lülituda teksti valimisele.</string>
     <string name="d19_surface_swipe_title">Klaviatuuri lehtede vahetamine pühkides</string>
-    <string name="d19_surface_swipe_summary">Pühi üle klaviatuuri vasakule või paremale, et vahetada tähtede ja numbrite/sümbolite lehtede vahel. Kui väljas, vahetab ainult klahv ?123 / ABC. Kui libisev kirjutamine on sees, vahetub tähtede leht ainult klahviga ?123.</string>
+    <string name="d19_surface_swipe_summary">Pühi üle klaviatuuri vasakule või paremale, et vahetada tähtede lehe ja sümbolilehtede vahel. Kui väljas, vahetavad ainult leheklahvid (!?# / ?123 / ABC). Kui libisev kirjutamine on sees, vahetub tähtede leht ainult klahviga !?#.</string>
     <string name="g03_swipe_down_dismiss_title">Pühi alla, et klaviatuur sulgeda</string>
     <string name="g03_swipe_down_dismiss_summary">Allapoole pühkimine klaviatuuril sulgeb selle. Kui väljas, sulgub ainult lisarida ja klaviatuur jääb avatuks.</string>
     <string name="d508_space_swipe_scale_title">Keelevahetuse pühkimiskaugus</string>
@@ -159,10 +159,10 @@
     <string name="d32_summary">Kui kaua klahvi all hoida, enne kui selle alternatiivid ilmuvad, ms (D-32).</string>
     <string name="double_tap_delay_title">Topeltpuudutuse viivitus</string>
     <string name="double_tap_delay_summary">Maksimaalne aeg kahe puudutuse vahel, et need loetaks topeltpuudutuseks, ms - Shifti suur-/väiketähe vahetus, tühistav Tagasilüke topeltpuudutus ja kleepuv Tagasilüke jagavad kõik seda akent.</string>
-    <string name="d507_combined_key_title">Kombineeritud klahv (?123/Emoji)</string>
-    <string name="d507_combined_key_summary">Mida teeb alumisel real olev kombineeritud klahv: lülitumine numbrite/sümbolite kihile (?123), emoji-paneeli avamine või mitte midagi - klahv kaob ja selle koht jääb tühjaks (D-507).</string>
+    <string name="d507_combined_key_title">Kombineeritud klahv (!?#/Emoji)</string>
+    <string name="d507_combined_key_summary">Mida teeb alumisel real olev kombineeritud klahv: üleminek erimärkide lehele (!?#), emoji-paneeli avamine või mitte midagi - klahv kaob ja selle koht jääb tühjaks (D-507).</string>
     <string name="d507_mode_off">Väljas</string>
-    <string name="d507_mode_symbols">Ainult ?123</string>
+    <string name="d507_mode_symbols">Ainult !?#</string>
     <string name="d507_mode_emoji">Ainult emoji</string>
     <string name="d55_below_title">Ruum numberrea all</string>
     <string name="d55_below_summary">Lisaruum numbrite all, dp-des, et vähendada möödalööke ülemisse tähereasse (D-55).</string>
@@ -389,7 +389,7 @@
     <string name="d515_apostrophe_key_title">Apostrofi klahv</string>
     <string name="d515_apostrophe_key_summary">Kuva apostrofi klahv (l/m-st paremal) ka mitteingliskeelsetel klaviatuuridel. Väljas: ainult ingliskeelsed klaviatuurid.</string>
     <string name="d516_glide_typing_title">Libisev kirjutamine (glide typing)</string>
-    <string name="d516_glide_typing_summary">Joonista sõna ühe katkematu joonega tähtede peale ja see kirjutatakse. Vaikimisi väljas; kui sees, vahetub tähtede leht ainult klahviga ?123.</string>
+    <string name="d516_glide_typing_summary">Joonista sõna ühe katkematu joonega tähtede peale ja see kirjutatakse. Vaikimisi väljas; kui sees, vahetub tähtede leht ainult klahviga !?#.</string>
     <string name="d89_f39_title">Libisev kirjutamine (glide typing)</string>
     <string name="d89_f39_desc">Valikuline: joonista sõna ühe katkematu joonega tähtede peale - parim vaste kirjutatakse sinu eest, koos sõnaraamatu, diakriitika-teisenduse ja isikliku kontekstiga. Vaikimisi väljas.</string>
     <string name="d89_footer_note">Märkus: alternatiivse klahvijaotuse reformi järel pakub tähtede leht peaaegu kõiki olulisi märke otse - topelt-nurgaklahvid, numbrite rida oma sümbolitega ja pikalt vajutamise hüpikaknad kaasa arvatud - igapäevane tippimine ei vaja kunagi külastust erimärkide lehtedele.</string>

@@ -37,7 +37,7 @@
     <string name="d89_f07_title">Nuolatinė skaičių eilutė</string>
     <string name="d89_f07_desc">Skaitmenys yra savo eilutėje virš raidžių, kiekvienas su savo Shift simboliu vieno ilgo paspaudimo atstumu; jei norite, nustatymuose galima išjungti.</string>
     <string name="d89_f08_title">Braukimas tarp raidžių ir simbolių</string>
-    <string name="d89_f08_desc">Braukimas kairėn ar dešinėn bet kur ant klavišų perjungia raidžių puslapį ir abu simbolių puslapius — nereikia ieškoti mažo «?123» klavišo.</string>
+    <string name="d89_f08_desc">Braukimas kairėn ar dešinėn bet kur ant klavišų perjungia raidžių puslapį ir abu simbolių puslapius — nereikia ieškoti mažo «!?#» klavišo.</string>
     <string name="d89_f09_title">Kalbos keitimas tarpo klavišu</string>
     <string name="d89_f09_desc">Braukite kairėn ar dešinėn per tarpo klavišą, kad pakeistumėte kalbą, kuria rašote.</string>
     <string name="d89_f10_title">Braukimas viso žodžio ištrynimui</string>
@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Žymeklio valdymo gestas</string>
     <string name="d401_cursor_control_summary">Ilgai paspauskite tarpo klavišą, kad tempdami perkeltumėte žymeklį; nejudėkite, kad pereitumėte prie teksto žymėjimo.</string>
     <string name="d19_surface_swipe_title">Klaviatūros puslapių perjungimas braukiant</string>
-    <string name="d19_surface_swipe_summary">Braukite kairėn arba dešinėn per klaviatūrą, kad perjungtumėte raides ir skaičių / simbolių puslapius. Išjungus perjungia tik klavišas ?123 / ABC. Kai slydantis rašymas įjungtas, raidžių puslapis keičiasi tik klavišu ?123.</string>
+    <string name="d19_surface_swipe_summary">Braukite kairėn arba dešinėn per klaviatūrą, kad perjungtumėte raidžių puslapį ir simbolių puslapius. Išjungus perjungia tik puslapių klavišai (!?# / ?123 / ABC). Kai slydantis rašymas įjungtas, raidžių puslapis keičiasi tik klavišu !?#.</string>
     <string name="g03_swipe_down_dismiss_title">Perbraukite žemyn, kad uždarytumėte klaviatūrą</string>
     <string name="g03_swipe_down_dismiss_summary">Perbraukus žemyn per klaviatūrą, ji užsidaro. Išjungus uždaroma tik papildoma eilutė, o klaviatūra lieka atidaryta.</string>
     <string name="d508_space_swipe_scale_title">Kalbos perjungimo brūkšnio atstumas</string>
@@ -159,10 +159,10 @@
     <string name="d32_summary">Kiek laiko laikyti klavišą, kol pasirodys jo alternatyvos, ms (D-32).</string>
     <string name="double_tap_delay_title">Dvigubo palietimo delsa</string>
     <string name="double_tap_delay_summary">Didžiausias laikas tarp dviejų palietimų, kad jie būtų laikomi dvigubu palietimu, ms - Shift registro perjungimas, dvigubas palietimas Backspace atšaukimui ir lipnus Backspace visi dalijasi šiuo langu.</string>
-    <string name="d507_combined_key_title">Kombinuotas klavišas (?123/Emoji)</string>
-    <string name="d507_combined_key_summary">Ką kombinuotas klavišas apatinėje eilėje daro: perjungimas į skaitmenų/simbolių sluoksnį (?123), emoji skydelio atvėrimas arba nieko - klavišas išnyksta, o jo vieta lieka tuščia (D-507).</string>
+    <string name="d507_combined_key_title">Kombinuotas klavišas (!?#/Emoji)</string>
+    <string name="d507_combined_key_summary">Ką kombinuotas klavišas apatinėje eilėje daro: perjungimas į specialiųjų simbolių puslapį (!?#), emoji skydelio atvėrimas arba nieko - klavišas išnyksta, o jo vieta lieka tuščia (D-507).</string>
     <string name="d507_mode_off">Išjungta</string>
-    <string name="d507_mode_symbols">Tik ?123</string>
+    <string name="d507_mode_symbols">Tik !?#</string>
     <string name="d507_mode_emoji">Tik emoji</string>
     <string name="d55_below_title">Vieta po skaičių eilute</string>
     <string name="d55_below_summary">Papildomas tarpas po skaitmenimis, dp, siekiant sumažinti prasilenkimus su viršutine raidžių eilute (D-55).</string>
@@ -389,7 +389,7 @@
     <string name="d515_apostrophe_key_title">Apostrofo klavišas</string>
     <string name="d515_apostrophe_key_summary">Rodyti apostrofo klavišą (dešinėje nuo l/m) ir ne anglų kalbos klaviatūrose. Išjungta: tik anglų klaviatūros.</string>
     <string name="d516_glide_typing_title">Slydantis rašymas (glide typing)</string>
-    <string name="d516_glide_typing_summary">Nupiešk žodį viena nenutrūkstama linija per raides ir jis bus parašytas. Pagal nutylėjimą išjungta; įjungus raidžių puslapis keičiasi tik klavišu ?123.</string>
+    <string name="d516_glide_typing_summary">Nupiešk žodį viena nenutrūkstama linija per raides ir jis bus parašytas. Pagal nutylėjimą išjungta; įjungus raidžių puslapis keičiasi tik klavišu !?#.</string>
     <string name="d89_f39_title">Slydantis rašymas (glide typing)</string>
     <string name="d89_f39_desc">Nebūtina: nupiešk žodį viena nenutrūkstama linija per raides - geriausias atitikmušas parašomas už tave, su žodynu, diakritinių ženklų sudengimu ir asmeniniu kontekstu. Pagal nutylėjimą išjungta.</string>
     <string name="d89_footer_note">Pastaba: nuo alternatyvios klaviatūros paskirstymo reformos raidžių puslapis padaro beveik visus svarbius simbolius tiesiogiai prieinamus - dvigubo kampo klavišai, skaitmenų eilė su savais simboliais ir ilgo paspaudimo iškylantieji langai įskaitant - kasdieniam rašymui niekada nereikia užsukti į specialiųjų simbolių puslapius.</string>

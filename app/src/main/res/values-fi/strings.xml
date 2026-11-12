@@ -37,7 +37,7 @@
     <string name="d89_f07_title">Kiinteä numerorivi</string>
     <string name="d89_f07_desc">Numerot ovat omalla rivillään kirjainten yläpuolella, kukin Shift-symbolinsa yhden pitkän painalluksen päässä; voit kytkeä sen pois asetuksista, jos haluat.</string>
     <string name="d89_f08_title">Pyyhkäisy kirjainten ja symbolien välillä</string>
-    <string name="d89_f08_desc">Vasemmalle tai oikealle pyyhkäisy mistä tahansa näppäinten kohdasta selaa kirjainsivun ja molemmat symbolisivut — pientä «?123»-näppäintä ei tarvitse etsiä.</string>
+    <string name="d89_f08_desc">Vasemmalle tai oikealle pyyhkäisy mistä tahansa näppäinten kohdasta selaa kirjainsivun ja molemmat symbolisivut — pientä «!?#»-näppäintä ei tarvitse etsiä.</string>
     <string name="d89_f09_title">Kielen vaihto välilyöntinäppäimellä</string>
     <string name="d89_f09_desc">Pyyhkäise välilyöntinäppäimellä vasemmalle tai oikealle vaihtaaksesi kirjoituskieltä.</string>
     <string name="d89_f10_title">Pyyhkäisy koko sanan poistamiseksi</string>
@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Kohdistimen hallintaele</string>
     <string name="d401_cursor_control_summary">Paina välilyöntinäppäintä pitkään siirtääksesi kohdistinta vetämällä; pysy paikallaan siirtyäksesi tekstin valintaan.</string>
     <string name="d19_surface_swipe_title">Vaihda näppäimistön sivua pyyhkäisemällä</string>
-    <string name="d19_surface_swipe_summary">Pyyhkäise näppäimistön yli vasemmalle tai oikealle vaihtaaksesi kirjainten ja numero-/symbolisivujen välillä. Kun pois päältä, vain ?123 / ABC -näppäin vaihtaa. Kun liukukirjoitus on käytössä, kirjainsivu vaihtuu vain ?123-näppäimellä.</string>
+    <string name="d19_surface_swipe_summary">Pyyhkäise näppäimistön yli vasemmalle tai oikealle vaihtaaksesi kirjainsivun ja symbolisivujen välillä. Kun pois päältä, vain sivunäppäimet (!?# / ?123 / ABC) vaihtavat. Kun liukukirjoitus on käytössä, kirjainsivu vaihtuu vain !?#-näppäimellä.</string>
     <string name="g03_swipe_down_dismiss_title">Sulje näppäimistö pyyhkäisemällä alas</string>
     <string name="g03_swipe_down_dismiss_summary">Pyyhkäisy alaspäin näppäimistön päällä sulkee sen. Kun pois päältä, se sulkee vain lisärivin ja näppäimistö pysyy auki.</string>
     <string name="d508_space_swipe_scale_title">Kielen vaihdon pyyhkäisymatka</string>
@@ -159,10 +159,10 @@
     <string name="d32_summary">Kuinka kauan näppäintä pidetään painettuna ennen kuin sen vaihtoehdot avautuvat, ms (D-32).</string>
     <string name="double_tap_delay_title">Kaksoisnapautuksen viive</string>
     <string name="double_tap_delay_summary">Suurin aika kahden napautuksen välillä, jotta ne lasketaan kaksoisnapautukseksi, ms - Shiftin kirjainkoon vaihto, Askelpalauttimen kaksoisnapautus kumoamiseen ja tahmea Askelpalautin jakavat kaikki tämän ikkunan.</string>
-    <string name="d507_combined_key_title">Yhdistetty näppäin (?123/Emoji)</string>
-    <string name="d507_combined_key_summary">Mitä alimmalla rivillä oleva yhdistetty näppäin tekee: vaihto numero-/symbolitasoon (?123), emoji-paneelin avaaminen tai ei mitään - näppäin katoaa ja sen paikka jää tyhjäksi (D-507).</string>
+    <string name="d507_combined_key_title">Yhdistetty näppäin (!?#/Emoji)</string>
+    <string name="d507_combined_key_summary">Mitä alimmalla rivillä oleva yhdistetty näppäin tekee: siirtyminen erikoismerkkien sivulle (!?#), emoji-paneelin avaaminen tai ei mitään - näppäin katoaa ja sen paikka jää tyhjäksi (D-507).</string>
     <string name="d507_mode_off">Pois</string>
-    <string name="d507_mode_symbols">Vain ?123</string>
+    <string name="d507_mode_symbols">Vain !?#</string>
     <string name="d507_mode_emoji">Vain emojit</string>
     <string name="d55_below_title">Tila numerorivin alla</string>
     <string name="d55_below_summary">Lisätila numeroiden alla, dp, vähentämään ohi menneitä napautuksia ylimpään kirjainriviin (D-55).</string>
@@ -389,7 +389,7 @@
     <string name="d515_apostrophe_key_title">Heittomerkkinäppäin</string>
     <string name="d515_apostrophe_key_summary">Näytä heittomerkkinäppäin (l/m:n oikealla puolella) myös ei-enganninkielisillä näppäimistöillä. Pois käytöstä: vain englanninkieliset näppäimistöt.</string>
     <string name="d516_glide_typing_title">Liukukirjoitus (glide typing)</string>
-    <string name="d516_glide_typing_summary">Piirrä sana yhtenäisenä viivana kirjainten yli kirjoittaaksesi sen. Oletuksena pois; kun käytössä, kirjainsivu vaihtuu vain ?123-näppäimellä.</string>
+    <string name="d516_glide_typing_summary">Piirrä sana yhtenäisenä viivana kirjainten yli kirjoittaaksesi sen. Oletuksena pois; kun käytössä, kirjainsivu vaihtuu vain !?#-näppäimellä.</string>
     <string name="d89_f39_title">Liukukirjoitus (glide typing)</string>
     <string name="d89_f39_desc">Valinnainen: piirrä sana yhtenäisenä viivana kirjainten yli - paras osuma kirjoitetaan puolestasi, sanakirja, diakriittien taitto ja henkilökohtainen konteksti mukaan lukien. Oletuksena pois.</string>
     <string name="d89_footer_note">Huom: vaihtoehtoisen näppäinjärjestelyn uudistuksen jälkeen kirjainsivu tarjoaa lähes kaikki oleelliset merkit suoraan - kaksoiskulmanäppäimet, numerorivi omine symboleineen ja pitkän painalluksen ponnahdusikkunat mukaan lukien - jokapäiväinen kirjoittaminen ei koskaan tarvitse käyntiä erikoismerkkisivuilla.</string>

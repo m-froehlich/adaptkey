@@ -37,7 +37,7 @@
     <string name="d89_f07_title">Pastāvīga ciparu rinda</string>
     <string name="d89_f07_desc">Cipari atrodas savā rindā virs burtiem, katrs ar savu Shift simbolu vienas ilgas nospiešanas attālumā; ja vēlaties, iestatījumos var izslēgt.</string>
     <string name="d89_f08_title">Vilkšana starp burtiem un simboliem</string>
-    <string name="d89_f08_desc">Vilkšana pa kreisi vai pa labi jebkur uz taustiņiem pārlapo burtu lapu un abas simbolu lapas — nav jāmeklē mazais «?123» taustiņš.</string>
+    <string name="d89_f08_desc">Vilkšana pa kreisi vai pa labi jebkur uz taustiņiem pārlapo burtu lapu un abas simbolu lapas — nav jāmeklē mazais «!?#» taustiņš.</string>
     <string name="d89_f09_title">Valodas maiņa ar atstarpes taustiņu</string>
     <string name="d89_f09_desc">Velciet pa kreisi vai pa labi pa atstarpes taustiņu, lai mainītu valodu, kurā rakstāt.</string>
     <string name="d89_f10_title">Vilkšana, lai dzēstu veselu vārdu</string>
@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Kursora vadības žests</string>
     <string name="d401_cursor_control_summary">Ilgi turiet atstarpes taustiņu, lai pārvietotu kursoru, velkot; stāviet mierīgi, lai pārslēgtos uz teksta atlasi.</string>
     <string name="d19_surface_swipe_title">Tastatūras lapu pārslēgšana ar vilkšanu</string>
-    <string name="d19_surface_swipe_summary">Velciet pa kreisi vai pa labi pāri tastatūrai, lai pārslēgtos starp burtiem un ciparu/simbolu lapām. Ja izslēgts, pārslēdz tikai taustiņš ?123 / ABC. Kad slīdošā rakstīšana ir ieslēgta, burtu lapa mainās tikai ar taustiņu ?123.</string>
+    <string name="d19_surface_swipe_summary">Velciet pa kreisi vai pa labi pāri tastatūrai, lai pārslēgtos starp burtu lapu un simbolu lapām. Ja izslēgts, pārslēdz tikai lapu taustiņi (!?# / ?123 / ABC). Kad slīdošā rakstīšana ir ieslēgta, burtu lapa mainās tikai ar taustiņu !?#.</string>
     <string name="g03_swipe_down_dismiss_title">Velciet uz leju, lai aizvērtu tastatūru</string>
     <string name="g03_swipe_down_dismiss_summary">Vilkšana uz leju pa tastatūru to aizver. Ja izslēgts, tiek aizvērta tikai papildu rinda, un tastatūra paliek atvērta.</string>
     <string name="d508_space_swipe_scale_title">Valodas parslēgšanas vilkšanas attālums</string>
@@ -159,10 +159,10 @@
     <string name="d32_summary">Cik ilgi turēt taustiņu, līdz parādās tā alternatīvas, ms (D-32).</string>
     <string name="double_tap_delay_title">Dubultpieskāriena aizkave</string>
     <string name="double_tap_delay_summary">Maksimālais laiks starp diviem pieskārieniem, lai tie skaitītos par dubultpieskārienu, ms - Shift reģistra pārslēgšana, dubultpieskāriens Atpakaļdzēsei atsaukšanai un lipīgā Atpakaļdzēse visi koplieto šo logu.</string>
-    <string name="d507_combined_key_title">Apvienotais taustiņš (?123/Emoji)</string>
-    <string name="d507_combined_key_summary">Ko apvienotais taustiņš apakšējā rindā dara: pārslēgšanās uz ciparu/simbolu slāni (?123), emocijzīmju paneļa atvēršana vai nekas - taustiņš pazūd un tā vieta paliek tukša (D-507).</string>
+    <string name="d507_combined_key_title">Apvienotais taustiņš (!?#/Emoji)</string>
+    <string name="d507_combined_key_summary">Ko apvienotais taustiņš apakšējā rindā dara: pāreja uz īpašo zīmju lapu (!?#), emocijzīmju paneļa atvēršana vai nekas - taustiņš pazūd un tā vieta paliek tukša (D-507).</string>
     <string name="d507_mode_off">Izslēgts</string>
-    <string name="d507_mode_symbols">Tikai ?123</string>
+    <string name="d507_mode_symbols">Tikai !?#</string>
     <string name="d507_mode_emoji">Tikai emocijzīmes</string>
     <string name="d55_below_title">Vieta zem ciparu rindas</string>
     <string name="d55_below_summary">Papildu atstarpe zem cipariem, dp, lai samazinātu garām trāpījumus augšējā burtu rindā (D-55).</string>
@@ -389,7 +389,7 @@
     <string name="d515_apostrophe_key_title">Apostrofa taustiņš</string>
     <string name="d515_apostrophe_key_summary">Rādīt apostrofa taustiņu (pa labi no l/m) arī neangļu tastatūrās. Izslēgts: tikai angļu tastatūras.</string>
     <string name="d516_glide_typing_title">Slīdošā rakstīšana (glide typing)</string>
-    <string name="d516_glide_typing_summary">Zīmē vārdu ar vienu nepārtrauktu līniju pār burtiem, un tas tiks uzrakstīts. Pēc noklusējuma izslēgts; kad ieslēgts, burtu lapa mainās tikai ar taustiņu ?123.</string>
+    <string name="d516_glide_typing_summary">Zīmē vārdu ar vienu nepārtrauktu līniju pār burtiem, un tas tiks uzrakstīts. Pēc noklusējuma izslēgts; kad ieslēgts, burtu lapa mainās tikai ar taustiņu !?#.</string>
     <string name="d89_f39_title">Slīdošā rakstīšana (glide typing)</string>
     <string name="d89_f39_desc">Neobligāti: zīmē vārdu ar vienu nepārtrauktu līniju pār burtiem - labākā atbilstība tiek uzrakstīta jūsu vietā, ar vārdnīcu, diakritisko zīmju savienošanu un personīgo kontekstu. Pēc noklusējuma izslēgts.</string>
     <string name="d89_footer_note">Piezīme: kopš alternatīvo taustiņu piešķiršanas reformas burtu lapa padara gandrīz visus būtiskos simbolus tieši pieejamus - dubultā stūra taustiņi, ciparu rinda ar savējiem simboliem un ilgas nospiešanas uznirstošie logi ieskaitot - ikdienas rakstīšanai nekad nav vajadzīgs apmeklējums īpašo simbolu lapām.</string>

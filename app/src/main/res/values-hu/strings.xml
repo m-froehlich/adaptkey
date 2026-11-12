@@ -37,7 +37,7 @@
     <string name="d89_f07_title">Állandó számsor</string>
     <string name="d89_f07_desc">A számjegyek a betűk fölött külön sorban vannak, mindegyik a Shift-szimbólumával egyetlen hosszú nyomásra; ha jobban szereted, a beállításokban kikapcsolható.</string>
     <string name="d89_f08_title">Söprés betűk és szimbólumok között</string>
-    <string name="d89_f08_desc">Balra vagy jobbra söprés a billentyűk bármely pontján végigléptet a betűoldalon és mindkét szimbólumoldalon — nem kell a kis «?123» billentyűt keresned.</string>
+    <string name="d89_f08_desc">Balra vagy jobbra söprés a billentyűk bármely pontján végigléptet a betűoldalon és mindkét szimbólumoldalon — nem kell a kis «!?#» billentyűt keresned.</string>
     <string name="d89_f09_title">Nyelvváltás a szóköz billentyűvel</string>
     <string name="d89_f09_desc">Söpörj balra vagy jobbra a szóköz billentyűn, hogy átválts, melyik nyelven gépelsz.</string>
     <string name="d89_f10_title">Söprés egy egész szó törléséhez</string>
@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Kurzorvezérlő kézmozdulat</string>
     <string name="d401_cursor_control_summary">Nyomd hosszan a szóközt, hogy húzással mozgasd a kurzort; maradj mozdulatlan, hogy szövegkijelölésre válts.</string>
     <string name="d19_surface_swipe_title">Billentyűzetoldal váltása csúsztatással</string>
-    <string name="d19_surface_swipe_summary">Csúsztasson balra vagy jobbra a billentyűzeten a betűk és a szám-/szimbólumoldalak közötti váltáshoz. Kikapcsolva csak a ?123 / ABC gomb vált. Csúszó gépelés mellett a betűoldal csak a ?123 gombbal vált.</string>
+    <string name="d19_surface_swipe_summary">Csúsztasson balra vagy jobbra a billentyűzeten a betűoldal és a szimbólumoldalak közötti váltáshoz. Kikapcsolva csak az oldalgombok (!?# / ?123 / ABC) váltanak. Csúszó gépelés mellett a betűoldal csak a !?# gombbal vált.</string>
     <string name="g03_swipe_down_dismiss_title">Lefelé húzás bezárja a billentyűzetet</string>
     <string name="g03_swipe_down_dismiss_summary">A billentyűzeten lefelé húzva bezárul. Kikapcsolva csak a kiegészítő sort zárja be, a billentyűzet nyitva marad.</string>
     <string name="d508_space_swipe_scale_title">Nyelvváltó húzási távolság</string>
@@ -159,10 +159,10 @@
     <string name="d32_summary">Meddig kell nyomva tartani egy billentyűt, mielőtt az alternatívái megjelennek, ms-ban (D-32).</string>
     <string name="double_tap_delay_title">Dupla érintés késleltetése</string>
     <string name="double_tap_delay_summary">A két érintés közötti legnagyobb idő, hogy dupla érintésnek számítson, ms-ban - a Shift kis-/nagybetű-váltása, a visszavonó dupla Backspace-érintés és a ragadós Backspace mind ezt az ablakot használja.</string>
-    <string name="d507_combined_key_title">Kombinált billentyű (?123/Emoji)</string>
-    <string name="d507_combined_key_summary">Mit tesz az alsó sorban lévő kombinált billentyű: váltás a szám-/szimbólumrétegre (?123), az emoji-panel megnyitása vagy semmi - a billentyű eltűnik, a helye üresen marad (D-507).</string>
+    <string name="d507_combined_key_title">Kombinált billentyű (!?#/Emoji)</string>
+    <string name="d507_combined_key_summary">Mit tesz az alsó sorban lévő kombinált billentyű: ugrás a speciális karakterek oldalára (!?#), az emoji-panel megnyitása vagy semmi - a billentyű eltűnik, a helye üresen marad (D-507).</string>
     <string name="d507_mode_off">Ki</string>
-    <string name="d507_mode_symbols">Csak ?123</string>
+    <string name="d507_mode_symbols">Csak !?#</string>
     <string name="d507_mode_emoji">Csak emoji</string>
     <string name="d55_below_title">Hely a számsor alatt</string>
     <string name="d55_below_summary">Extra hely a számjegyek alatt, dp-ben, hogy csökkenjenek a mellényúlások a felső betűsorba (D-55).</string>
@@ -389,7 +389,7 @@
     <string name="d515_apostrophe_key_title">Aposztróf billentyű</string>
     <string name="d515_apostrophe_key_summary">Az aposztróf billentyű (az l/m jobb oldalán) megjelenítése a nem angol billentyűzeteken is. Ki: csak angol billentyűzeteken.</string>
     <string name="d516_glide_typing_title">Csúszó gépelés (glide typing)</string>
-    <string name="d516_glide_typing_summary">Rajzolj egy szót egy folyamatos vonallal a betűk fölött, és beíródik. Alapból ki; bekapcsolva a betűoldal csak a ?123 gombbal vált.</string>
+    <string name="d516_glide_typing_summary">Rajzolj egy szót egy folyamatos vonallal a betűk fölött, és beíródik. Alapból ki; bekapcsolva a betűoldal csak a !?# gombbal vált.</string>
     <string name="d89_f39_title">Csúszó gépelés (glide typing)</string>
     <string name="d89_f39_desc">Opcionális: rajzolj egy szót egy folyamatos vonallal a betűk fölött - a legjobb találat beíródik helyetted, szótárral, ékezet-hajtogatással és személyes kontextussal. Alapból ki.</string>
     <string name="d89_footer_note">Megjegyzés: az alternatív billentyűhozzárendelés reformja óta a betűoldal a releváns karakterek gyakorlatilag mindegyikét közvetlenül elérhetővé teszi - duplasarkú billentyűk, a saját szimbólumokkal rendelkező numsor és a hosszú nyomás felugró ablakai is - a mindennapi gépelésnek soha nincs szüksége kitérésre a speciális karakterek oldalaira.</string>

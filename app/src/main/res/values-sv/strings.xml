@@ -37,7 +37,7 @@
     <string name="d89_f07_title">Fast sifferrad</string>
     <string name="d89_f07_desc">Siffrorna ligger på en egen rad ovanför bokstäverna, var och en med sin skift-symbol ett långt tryck bort; kan stängas av i inställningarna om du föredrar det.</string>
     <string name="d89_f08_title">Svep mellan bokstäver och symboler</string>
-    <string name="d89_f08_desc">Ett svep åt vänster eller höger var som helst på tangenterna bläddrar genom bokstavssidan och båda symbolsidorna — du behöver inte leta efter den lilla «?123»-tangenten.</string>
+    <string name="d89_f08_desc">Ett svep åt vänster eller höger var som helst på tangenterna bläddrar genom bokstavssidan och båda symbolsidorna — du behöver inte leta efter den lilla «!?#»-tangenten.</string>
     <string name="d89_f09_title">Språkbyte med mellanslagstangenten</string>
     <string name="d89_f09_desc">Svep åt vänster eller höger på mellanslagstangenten för att byta vilket språk du skriver på.</string>
     <string name="d89_f10_title">Svep för att radera ett helt ord</string>
@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Gest för markörstyrning</string>
     <string name="d401_cursor_control_summary">Tryck länge på mellanslagstangenten för att flytta markören genom att dra; håll still för att växla till textmarkering.</string>
     <string name="d19_surface_swipe_title">Svep för att byta tangentbordssida</string>
-    <string name="d19_surface_swipe_summary">Svep åt vänster eller höger över tangentbordet för att växla mellan bokstäver och siffer-/symbolsidorna. När av växlar endast tangenten ?123 / ABC. Med glide-typing på byter bokstavssidan sida endast via ?123-tangenten.</string>
+    <string name="d19_surface_swipe_summary">Svep åt vänster eller höger över tangentbordet för att växla mellan bokstavssidan och symbolsidorna. När av växlar endast sidotangenterna (!?# / ?123 / ABC). Med glide-typing på byter bokstavssidan sida endast via !?#-tangenten.</string>
     <string name="g03_swipe_down_dismiss_title">Svep nedåt för att stänga tangentbordet</string>
     <string name="g03_swipe_down_dismiss_summary">Ett svep nedåt på tangentbordet stänger det. När av stänger det bara den extra raden och tangentbordet förblir öppet.</string>
     <string name="d508_space_swipe_scale_title">Svepavstånd för språkbyte</string>
@@ -159,10 +159,10 @@
     <string name="d32_summary">Hur länge en tangent hålls ned innan dess alternativ visas, i ms (D-32).</string>
     <string name="double_tap_delay_title">Dubbeltrycksfördröjning</string>
     <string name="double_tap_delay_summary">Största tid mellan två tryck för att räknas som dubbeltryck, i ms - skiftlägesbyte med Skift, dubbeltryck på Backsteg för att ångra och klistrigt Backsteg delar alla detta fönster.</string>
-    <string name="d507_combined_key_title">Kombinerad tangent (?123/Emoji)</string>
-    <string name="d507_combined_key_summary">Vad den kombinerade tangenten i nedersta raden gör: växla till siffer-/symbollagret (?123), öppna emoji-panelen eller ingenting - tangenten försvinner och dess plats förblir tom (D-507).</string>
+    <string name="d507_combined_key_title">Kombinerad tangent (!?#/Emoji)</string>
+    <string name="d507_combined_key_summary">Vad den kombinerade tangenten i nedersta raden gör: gå till sidan med specialtecken (!?#), öppna emoji-panelen eller ingenting - tangenten försvinner och dess plats förblir tom (D-507).</string>
     <string name="d507_mode_off">Av</string>
-    <string name="d507_mode_symbols">Endast ?123</string>
+    <string name="d507_mode_symbols">Endast !?#</string>
     <string name="d507_mode_emoji">Endast emoji</string>
     <string name="d55_below_title">Utrymme under sifferraden</string>
     <string name="d55_below_summary">Extra mellanrum under siffrorna, i dp, för att minska felträffar i den övre bokstavsraden (D-55).</string>
@@ -389,7 +389,7 @@
     <string name="d515_apostrophe_key_title">Apostroftangent</string>
     <string name="d515_apostrophe_key_summary">Visa apostroftangenten (till höger om l/m) även på icke-engelska tangentbord. Av: endast engelska tangentbord.</string>
     <string name="d516_glide_typing_title">Glide-typing (svepskrivning)</string>
-    <string name="d516_glide_typing_summary">Rita ett ord i ett sammanhängande stråk över bokstäverna för att skriva det. Av som standard; när det är på byter bokstavssidan sida endast via ?123-tangenten.</string>
+    <string name="d516_glide_typing_summary">Rita ett ord i ett sammanhängande stråk över bokstäverna för att skriva det. Av som standard; när det är på byter bokstavssidan sida endast via !?#-tangenten.</string>
     <string name="d89_f39_title">Glide-typing (svepskrivning)</string>
     <string name="d89_f39_desc">Valfritt: rita ett ord i ett sammanhängande stråk över bokstäverna - bästa träffen skrivs åt dig, med ordbok, diakritisk sammanfogning och personlig kontext. Av som standard.</string>
     <string name="d89_footer_note">Obs: sedan den alternativa tangenttilldelningsreformen erbjuder bokstavssidan praktiskt taget alla relevanta tecken direkt - dubbelhörnstangenter, sifferaden med egna symboler och långtryckspopups inräknade - vardagligt skrivande behöver aldrig en omväg till specialteckensidorna.</string>

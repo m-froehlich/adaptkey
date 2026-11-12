@@ -25,8 +25,9 @@ object KeyboardLayout {
     private const val TOP_ROW_QWERTZ = "qwertzuiop"
     private const val TOP_ROW_QWERTY = "qwertyuiop"
     
-    // L-03: the combined emoji / ?123 key - tap opens the emoji panel, long-press or an upward swipe
-    // switches to the numeric/symbol layer (corner-hinted like the other secondary symbols).
+    // L-03/D-531: the combined special-characters key - drawn as `!?#` by the view (or the emoji glyph
+    // in the D-507 emoji mode); the label here is inert data (the view's labelFor always overrides it).
+    // A long-press or an upward swipe goes straight to the number layer (PanelNavigation.onSwitchToSymbols).
     private const val SYMBOL_KEY_LABEL = "😊"
     private const val SYMBOL_KEY_HINT = "123"
     
@@ -302,8 +303,9 @@ object KeyboardLayout {
                 emailBottomRow(proportions, locale)
             } else {
                 buildList {
-                    // L-03: combined emoji / numeric-layer key - tap opens the emoji panel, long-press /
-                    // swipe-up switches to ?123.
+                    // L-03/D-531: combined special-characters key - drawn `!?#`, tap opens the
+                    // special-characters page (D-507's emoji mode opens the panel instead);
+                    // long-press / swipe-up goes straight to the number layer.
                     add(Key(label = SYMBOL_KEY_LABEL, code = KeyCode.SYMBOL, hint = SYMBOL_KEY_HINT, weight = proportions.symbolWeight))
                     // L-02: comma & full stop widened, space narrowed.
                     // D-22/D-44/D-499: the comma key carries `/ - , : ; _` as its long-press popup.

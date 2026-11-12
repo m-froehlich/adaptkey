@@ -1556,7 +1556,8 @@ class AdaptKeyService : InputMethodService() {
             view.fieldSwipeScaleFactor = s.fieldSwipeScalePercent / 100f
             // D-508: the backspace repeat's first tick waits this long (D-07's former hardcoded value).
             view.backspaceRepeatInitialDelayMs = s.backspaceRepeatInitialDelayMs
-            // D-507: the combined key's slot function - the ?123 toggle, the emoji panel, or hidden.
+            // D-507: the combined key's slot function - the `!?#` special-characters-page toggle
+            // (D-531), the emoji panel, or hidden.
             view.combinedKeyMode = s.combinedKeyMode
             // D-92: the calculator page's currency/decimal-separator keys follow the device's system
             // locale (not the active keyboard alphabet - German and Greek never disagree on either point).
@@ -3454,15 +3455,23 @@ class AdaptKeyService : InputMethodService() {
                 
                 KeyCode.SHIFT -> handleShift()
                 
-                // L-03 / D-507: the combined key's slot carries the ?123 toggle, or - when the combined-key
-                // setting says so - opens the emoji panel (the same [InputSurface.EMOJI] switch the §48
-                // extra-row button drives, so every entry point shares one choke point). In the "off" mode
-                // the key is hidden and never dispatches; [PanelNavigation.onCombinedKeyTap]'s default
-                // keeps the ordinary toggle for that unreachable case.
-                KeyCode.SYMBOL -> setSurface(PanelNavigation.onCombinedKeyTap(surface, settings.combinedKeyMode))
+                // L-03 / D-507 / D-531: the combined key's slot carries the `!?#` special-characters-page
+                // toggle, or - when the combined-key setting says so - opens the emoji panel (the same
+                // [InputSurface.EMOJI] switch the §48 extra-row button drives, so every entry point shares
+                // one choke point). In the "off" mode the key is hidden and never dispatches;
+                // [PanelNavigation.onCombinedKeyTap]'s default keeps the ordinary toggle for that
+                // unreachable case.
+                KeyCode.SYMBOL -> {
+                    val page = PanelNavigation.onCombinedKeyTap(surface, settings.combinedKeyMode)
+                    setSurface(page.surface, targetSymbolPage = page.symbolPage)
+                }
                 
-                // L-03: the "ABC" key on the numeric/symbol layer returns to letters.
+                // L-03: the number layer's "ABC" key returns to letters.
                 KeyCode.LETTERS -> setSurface(InputSurface.LETTERS)
+                
+                // D-531: the special-characters page's `?123` key - on to the number layer (the chain's
+                // middle hop; back to letters is the number layer's own ABC, or a D-19 swipe).
+                KeyCode.NUMERIC -> setSurface(InputSurface.SYMBOLS, targetSymbolPage = 1)
                 
                 // §53 (D-103/D-104): a multi-character key (e.g. the calculator page's sin/deg) commits its
                 // own label verbatim, exactly like any other symbol - finalising whatever token was in
@@ -3556,12 +3565,14 @@ class AdaptKeyService : InputMethodService() {
             }
             
             // D-507: a long-press must never leak the symbol-layer function into a key whose slot carries
-            // something else now - only the genuine `?123` mode switches; emoji/off are a deliberate no-op
+            // something else now - only the genuine `!?#` mode switches; emoji/off are a deliberate no-op
             // (unreachable in practice: "off" hides the key, and the emoji glyph has no long-press action
             // of its own, but [KeyboardLayout.hasLongPressAction] is still true for KeyCode.SYMBOL).
+            // D-531: the shortcut goes straight to the number layer (page 1).
             KeyCode.SYMBOL -> {
                 if (settings.combinedKeyMode == CombinedKeyMode.SYMBOL) {
-                    setSurface(PanelNavigation.onSwitchToSymbols())
+                    val page = PanelNavigation.onSwitchToSymbols()
+                    setSurface(page.surface, targetSymbolPage = page.symbolPage)
                 }
             }
             
@@ -4608,14 +4619,15 @@ class AdaptKeyService : InputMethodService() {
                 true
             }
             
-            // L-03: upward swipe on the combined key switches to the numeric/symbol layer. D-507: only
-            // while the key's slot actually carries that function - in the emoji mode the swipe is
-            // deliberately swallowed without acting (the key has no second, hidden gesture; its tap is its
+            // L-03: upward swipe on the combined key switches straight to the number layer (D-531: page 1).
+            // D-507: only while the key's slot actually carries that function - in the emoji mode the swipe
+            // is deliberately swallowed without acting (the key has no second, hidden gesture; its tap is its
             // whole function), exactly like the "off" mode's hidden key. The KEY_GESTURE exclusion that
             // keeps the combined key from opening the extra row on an up-swipe stays as it is.
             GestureAction.OPEN_SYMBOL_LAYER -> {
                 if (settings.combinedKeyMode == CombinedKeyMode.SYMBOL) {
-                    setSurface(PanelNavigation.onSwitchToSymbols())
+                    val page = PanelNavigation.onSwitchToSymbols()
+                    setSurface(page.surface, targetSymbolPage = page.symbolPage)
                 }
                 true
             }

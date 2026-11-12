@@ -37,7 +37,7 @@
     <string name="d89_f07_title">Vaste cijferrij</string>
     <string name="d89_f07_desc">De cijfers staan op een eigen rij boven de letters, elk met zijn Shift-symbool één lange druk verwijderd; uit te zetten in de instellingen als je dat liever hebt.</string>
     <string name="d89_f08_title">Vegen tussen letters en symbolen</string>
-    <string name="d89_f08_desc">Een veeg naar links of rechts ergens op de toetsen bladert door de letterpagina en beide symboolpagina\'s — je hoeft niet naar de kleine «?123»-toets te zoeken.</string>
+    <string name="d89_f08_desc">Een veeg naar links of rechts ergens op de toetsen bladert door de letterpagina en beide symboolpagina\'s — je hoeft niet naar de kleine «!?#»-toets te zoeken.</string>
     <string name="d89_f09_title">Taal wisselen met de spatiebalk</string>
     <string name="d89_f09_desc">Veeg naar links of rechts over de spatiebalk om te wisselen in welke taal je typt.</string>
     <string name="d89_f10_title">Vegen om een heel woord te wissen</string>
@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Gebaar voor cursorbesturing</string>
     <string name="d401_cursor_control_summary">Druk lang op de spatiebalk om de cursor door te slepen te verplaatsen; houd stil om over te schakelen naar tekstselectie.</string>
     <string name="d19_surface_swipe_title">Vegen om van toetsenbordpagina te wisselen</string>
-    <string name="d19_surface_swipe_summary">Veeg naar links of rechts over het toetsenbord om te wisselen tussen letters en de cijfer-/symboolpagina\'s. Indien uit, wisselt alleen de ?123 / ABC-toets. Met glide-typen ingeschakeld wisselt de letterspagina alleen via de ?123-toets.</string>
+    <string name="d19_surface_swipe_summary">Veeg naar links of rechts over het toetsenbord om te wisselen tussen de letterpagina en de symboolpagina\'s. Indien uit, wisselen alleen de paginatoetsen (!?# / ?123 / ABC). Met glide-typen ingeschakeld wisselt de letterspagina alleen via de !?#-toets.</string>
     <string name="g03_swipe_down_dismiss_title">Omlaag vegen sluit het toetsenbord</string>
     <string name="g03_swipe_down_dismiss_summary">Omlaag vegen over het toetsenbord sluit het. Indien uit, sluit het alleen de extra rij en blijft het toetsenbord open.</string>
     <string name="d508_space_swipe_scale_title">Swipeafstand taalwissel</string>
@@ -159,10 +159,10 @@
     <string name="d32_summary">Hoe lang je een toets ingedrukt houdt voordat de alternatieven verschijnen, in ms (D-32).</string>
     <string name="double_tap_delay_title">Dubbeltikvertraging</string>
     <string name="double_tap_delay_summary">Maximale tijd tussen twee tikken om als dubbeltik te tellen, in ms - het wisselen van hoofdletter met Shift, dubbeltik op Backspace om terug te draaien en klevende Backspace delen allemaal dit venster.</string>
-    <string name="d507_combined_key_title">Gecombineerde toets (?123/Emoji)</string>
-    <string name="d507_combined_key_summary">Wat de gecombineerde toets in de onderste rij doet: schakelen naar de cijfer-/symboollaag (?123), het emoji-paneel openen of niets - de toets verdwijnt en zijn plek blijft leeg (D-507).</string>
+    <string name="d507_combined_key_title">Gecombineerde toets (!?#/Emoji)</string>
+    <string name="d507_combined_key_summary">Wat de gecombineerde toets in de onderste rij doet: naar de pagina met speciale tekens gaan (!?#), het emoji-paneel openen of niets - de toets verdwijnt en zijn plek blijft leeg (D-507).</string>
     <string name="d507_mode_off">Uit</string>
-    <string name="d507_mode_symbols">Alleen ?123</string>
+    <string name="d507_mode_symbols">Alleen !?#</string>
     <string name="d507_mode_emoji">Alleen emoji</string>
     <string name="d55_below_title">Ruimte onder de cijferrij</string>
     <string name="d55_below_summary">Extra ruimte onder de cijfers, in dp, om misgrepen in de bovenste letterrij te verminderen (D-55).</string>
@@ -389,7 +389,7 @@
     <string name="d515_apostrophe_key_title">Apostroftoets</string>
     <string name="d515_apostrophe_key_summary">Toon de apostroftoets (rechts van l/m) ook op niet-Engelse toetsenborden. Uit: alleen Engelse toetsenborden.</string>
     <string name="d516_glide_typing_title">Glide-typen (veegtypen)</string>
-    <string name="d516_glide_typing_summary">Trek een woord in één doorlopende lijn over de letters om het te typen. Standaard uit; wanneer ingeschakeld, wisselt de letterspagina alleen via de ?123-toets.</string>
+    <string name="d516_glide_typing_summary">Trek een woord in één doorlopende lijn over de letters om het te typen. Standaard uit; wanneer ingeschakeld, wisselt de letterspagina alleen via de !?#-toets.</string>
     <string name="d89_f39_title">Glide-typen (veegtypen)</string>
     <string name="d89_f39_desc">Optioneel: trek een woord in één doorlopende lijn over de letters - de beste match wordt voor je getypt, met woordenboek, diakrieten-samenvoeging en persoonlijke context. Standaard uit.</string>
     <string name="d89_footer_note">Let op: sinds de alternatieve-toetsindelingshervorming biedt de letterspagina vrijwel alle relevante tekens direct - dubbelhoektoetsen, de cijferrij met eigen symbolen en de ingedrukt-houd-popups inbegrepen - alledaags typen heeft nooit een omweg naar de specialetekenspagina\'s nodig.</string>

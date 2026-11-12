@@ -37,7 +37,7 @@
     <string name="d89_f07_title">Daimi rəqəm cərgəsi</string>
     <string name="d89_f07_desc">Rəqəmlər hərflərin üstündə öz cərgəsində yerləşir, hər birinin Shift simvolu bir uzun basma məsafəsindədir; istəsəniz parametrlərdən söndürə bilərsiniz.</string>
     <string name="d89_f08_title">Hərflər və simvollar arasında sürüşdürmə</string>
-    <string name="d89_f08_desc">Düymələrin istənilən yerində sola və ya sağa sürüşdürmək hərf səhifəsi və hər iki simvol səhifəsi arasında keçid edir — kiçik «?123» düyməsini axtarmağa ehtiyac yoxdur.</string>
+    <string name="d89_f08_desc">Düymələrin istənilən yerində sola və ya sağa sürüşdürmək hərf səhifəsi və hər iki simvol səhifəsi arasında keçid edir — kiçik «!?#» düyməsini axtarmağa ehtiyac yoxdur.</string>
     <string name="d89_f09_title">Boşluq düyməsi ilə dil dəyişmə</string>
     <string name="d89_f09_desc">Yazı dilini dəyişmək üçün boşluq düyməsində sola və ya sağa sürüşdürün.</string>
     <string name="d89_f10_title">Bütöv sözü silmək üçün sürüşdürmə</string>
@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Kursor idarəetmə jesti</string>
     <string name="d401_cursor_control_summary">Kursoru sürükləməklə hərəkət etdirmək üçün boşluq düyməsini uzun basın; mətn seçiminə keçmək üçün hərəkətsiz durun.</string>
     <string name="d19_surface_swipe_title">Klaviatura səhifələrini sürüşdürərək dəyiş</string>
-    <string name="d19_surface_swipe_summary">Hərflər və rəqəm/simvol səhifələri arasında keçmək üçün klaviatura üzərində sola və ya sağa sürüşdürün. Söndürüldükdə yalnız ?123 / ABC düyməsi keçid edir. Sürüşərək yazma açıq olduqda hərf səhifəsi yalnız ?123 düyməsi ilə dəyişir.</string>
+    <string name="d19_surface_swipe_summary">Hərflər səhifəsi ilə simvol səhifələri arasında keçmək üçün klaviatura üzərində sola və ya sağa sürüşdürün. Söndürüləndə yalnız səhifə düymələri (!?# / ?123 / ABC) keçid edir. Sürüşərək yazma açık olduqda hərf səhifəsi yalnız !?# düyməsi ilə dəyişir.</string>
     <string name="g03_swipe_down_dismiss_title">Klaviaturanı bağlamaq üçün aşağı sürüşdürün</string>
     <string name="g03_swipe_down_dismiss_summary">Klaviaturada aşağı sürüşdürmə onu bağlayır. Söndürüləndə yalnız əlavə sıra bağlanır, klaviatura açıq qalır.</string>
     <string name="d508_space_swipe_scale_title">Dil sürüşmə məsafəsi</string>
@@ -159,10 +159,10 @@
     <string name="d32_summary">Variantları görünməzdən əvvəl düymənin nə qədər saxlanacağı, ms ilə (D-32).</string>
     <string name="double_tap_delay_title">İkiqat toxunuş gecikməsi</string>
     <string name="double_tap_delay_summary">İki toxunuşun ikiqat toxunuş sayılması üçün aralarındakı maksimum vaxt, ms ilə - Shift ilə böyüklük dəyişmə, geri qaytarmaq üçün Backspace-ə ikiqat toxunuş və yapışqan Backspace bu pəncərəni paylaşır.</string>
-    <string name="d507_combined_key_title">Birləşdirilmiş düymə (?123/Emoji)</string>
-    <string name="d507_combined_key_summary">Aşağı sıradakı birləşdirilmiş düymə nə edir: rəqəm/simvol qatına keçid (?123), emoji panelını açmaq və ya heç nə - düymə yox olur və yeri boş qalır (D-507).</string>
+    <string name="d507_combined_key_title">Birləşdirilmiş düymə (!?#/Emoji)</string>
+    <string name="d507_combined_key_summary">Aşağı sıradakı birləşdirilmiş düymə nə edir: xüsusi işarələr səhifəsinə keçid (!?#), emoji panelını açmaq və ya heç nə - düymə yox olur və yeri boş qalır (D-507).</string>
     <string name="d507_mode_off">Bağlı</string>
-    <string name="d507_mode_symbols">Yalnız ?123</string>
+    <string name="d507_mode_symbols">Yalnız !?#</string>
     <string name="d507_mode_emoji">Yalnız emoji</string>
     <string name="d55_below_title">Rəqəm cərgəsinin altında boşluq</string>
     <string name="d55_below_summary">Yuxarı hərf cərgəsində səhv toxunuşları azaltmaq üçün rəqəmlərin altında əlavə aralıq, dp ilə (D-55).</string>
@@ -389,7 +389,7 @@
     <string name="d515_apostrophe_key_title">Apostrof düyməsi</string>
     <string name="d515_apostrophe_key_summary">Apostrof düyməsini (l/m-dən sağda) ingiliscə olmayan klaviaturalarda da göstər. Bağlı: yalnız ingiliscə klaviaturalar.</string>
     <string name="d516_glide_typing_title">Sürüşərək yazma (glide typing)</string>
-    <string name="d516_glide_typing_summary">Sözu hərflər üzərində fasiləsiz bir xəttlə çizin və yazılsın. Standart olaraq bağlı; açıq olduqda hərf səhifəsi yalnız ?123 düyməsi ilə dəyişir.</string>
+    <string name="d516_glide_typing_summary">Sözu hərflər üzərində fasiləsiz bir xəttlə çizin və yazılsın. Standart olaraq bağlı; açıq olduqda hərf səhifəsi yalnız !?# düyməsi ilə dəyişir.</string>
     <string name="d89_f39_title">Sürüşərək yazma (glide typing)</string>
     <string name="d89_f39_desc">İstəyə bağlı: sözu hərflər üzərində fasiləsiz bir xəttlə çizin - ən yaxşı uyğunluq sizin əvəzinizə yazılır; lüğət, diakritik uyğunlaşdırma və şəxsi kontekst daxil olmaqla. Standart olaraq bağlı.</string>
     <string name="d89_footer_note">Qeyd: alternativ düymə bölgüsü islahatından bəri hərf səhifəsi demək olar bütün müvafiq simvolları birbaşa əlçatan edir - ikiqutbu düymələr, öz simvolları ilə rəqəm sırası və uzun basma pəncərələri daxil olmaqla - gündəlik yazma üçün xüsusi simvol səhifələrinə müraciət heç vaxt lazım deyil.</string>

@@ -37,7 +37,7 @@
     <string name="d89_f07_title">Trvalý rad číslic</string>
     <string name="d89_f07_desc">Číslice sú vo vlastnom rade nad písmenami, každá so svojím symbolom so Shiftom na jedno dlhé stlačenie; v nastaveniach sa dá vypnúť, ak chcete.</string>
     <string name="d89_f08_title">Prechádzanie medzi písmenami a symbolmi</string>
-    <string name="d89_f08_desc">Prejdenie doľava alebo doprava kdekoľvek na klávesoch prechádza stránku s písmenami a obe stránky symbolov — netreba hľadať malú klávesu «?123».</string>
+    <string name="d89_f08_desc">Prejdenie doľava alebo doprava kdekoľvek na klávesoch prechádza stránku s písmenami a obe stránky symbolov — netreba hľadať malú klávesu «!?#».</string>
     <string name="d89_f09_title">Prepínanie jazyka medzerníkom</string>
     <string name="d89_f09_desc">Prejdením doľava alebo doprava po medzerníku zmeníte jazyk, v ktorom píšete.</string>
     <string name="d89_f10_title">Prejdenie na zmazanie celého slova</string>
@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Gesto ovládania kurzora</string>
     <string name="d401_cursor_control_summary">Dlho stlačte medzerník a ťahaním posúvajte kurzor; zostaňte v pokoji a prepnete na výber textu.</string>
     <string name="d19_surface_swipe_title">Prepínanie stránok klávesnice potiahnutím</string>
-    <string name="d19_surface_swipe_summary">Potiahnutím doľava alebo doprava cez klávesnicu prepnete medzi písmenami a stránkami s číslami/symbolmi. Keď je vypnuté, prepína iba kláves ?123 / ABC. Keď je ťahanie prstom zapnuté, stránka písmen sa prepína iba klávesou ?123.</string>
+    <string name="d19_surface_swipe_summary">Potiahnutím doľava alebo doprava cez klávesnicu prepnete medzi stránkou písmen a stránkami symbolov. Keď je vypnuté, prepínajú iba klávesy stránok (!?# / ?123 / ABC). Keď je ťahanie prstom zapnuté, stránka písmen sa prepína iba klávesou !?#.</string>
     <string name="g03_swipe_down_dismiss_title">Potiahnutím nadol zavrieť klávesnicu</string>
     <string name="g03_swipe_down_dismiss_summary">Potiahnutie prstom nadol po klávesnici ju zavrie. Keď je vypnuté, zavrie sa len doplnkový riadok a klávesnica zostane otvorená.</string>
     <string name="d508_space_swipe_scale_title">Vzdialenosť ťahania pre jazyk</string>
@@ -159,10 +159,10 @@
     <string name="d32_summary">Ako dlho držať klávesu, kým sa objavia jej alternatívy, v ms (D-32).</string>
     <string name="double_tap_delay_title">Oneskorenie dvojitého klepnutia</string>
     <string name="double_tap_delay_summary">Najdlhší čas medzi dvoma klepnutiami, aby sa počítali ako dvojité, v ms - prepínanie veľkosti písmen Shiftom, dvojité klepnutie na Backspace na vrátenie a lepkavý Backspace zdieľajú toto okno.</string>
-    <string name="d507_combined_key_title">Kombinovaná klávesa (?123/Emoji)</string>
-    <string name="d507_combined_key_summary">Čo robí kombinovaná klávesa v dolnom rade: prepnutie na vrstvu číslic/symbolov (?123), otvorenie panela emoji alebo nič - klávesa zmizne a jej miesto zostane prázdne (D-507).</string>
+    <string name="d507_combined_key_title">Kombinovaná klávesa (!?#/Emoji)</string>
+    <string name="d507_combined_key_summary">Čo robí kombinovaná klávesa v dolnom rade: prechod na stránku špeciálnych znakov (!?#), otvorenie panela emoji alebo nič - klávesa zmizne a jej miesto zostane prázdne (D-507).</string>
     <string name="d507_mode_off">Vypnuté</string>
-    <string name="d507_mode_symbols">Iba ?123</string>
+    <string name="d507_mode_symbols">Iba !?#</string>
     <string name="d507_mode_emoji">Iba emoji</string>
     <string name="d55_below_title">Medzera pod radom číslic</string>
     <string name="d55_below_summary">Extra medzera pod číslicami, v dp, na zníženie chybných dotykov do horného radu písmen (D-55).</string>
@@ -389,7 +389,7 @@
     <string name="d515_apostrophe_key_title">Klávesa apostrofu</string>
     <string name="d515_apostrophe_key_summary">Zobraziť klávesu apostrofu (vpravo od l/m) aj na neanglických klávesniciach. Vypnuté: iba anglické klávesnice.</string>
     <string name="d516_glide_typing_title">Ťahanie prstom (glide typing)</string>
-    <string name="d516_glide_typing_summary">Nakreslite slovo jedným súvislým ťahom cez písmená a bude napísané. Predvolene vypnuté; pri zapnutí sa stránka písmen prepína iba klávesou ?123.</string>
+    <string name="d516_glide_typing_summary">Nakreslite slovo jedným súvislým ťahom cez písmená a bude napísané. Predvolene vypnuté; pri zapnutí sa stránka písmen prepína iba klávesou !?#.</string>
     <string name="d89_f39_title">Ťahanie prstom (glide typing)</string>
     <string name="d89_f39_desc">Voliteľné: nakreslite slovo jedným súvislým ťahom cez písmená - najlepšia zhoda sa napíše za vás, vrátane slovníka, skladania diakritiky a osobného kontextu. Predvolene vypnuté.</string>
     <string name="d89_footer_note">Poznámka: od reformy alternatívneho priradenia kláves stránka písmen sprístupňuje prakticky všetky relevantné znaky priamo - klávesy s dvojitým rohom, rad číslic s vlastnými symbolmi a vyskakovacie okná dlhého stlačenia vrátane - bežné písanie nikdy nepotrebuje výlet na stránky špeciálnych znakov.</string>

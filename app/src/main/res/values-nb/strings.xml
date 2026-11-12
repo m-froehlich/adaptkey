@@ -37,7 +37,7 @@
     <string name="d89_f07_title">Fast tallrad</string>
     <string name="d89_f07_desc">Sifrene ligger på en egen rad over bokstavene, hver med sitt skift-symbol ett langt trykk unna; kan slås av i innstillingene hvis du foretrekker det.</string>
     <string name="d89_f08_title">Sveip mellom bokstaver og symboler</string>
-    <string name="d89_f08_desc">Et sveip til venstre eller høyre hvor som helst på tastene blar gjennom bokstavsiden og begge symbolsidene — du slipper å lete etter den lille «?123»-tasten.</string>
+    <string name="d89_f08_desc">Et sveip til venstre eller høyre hvor som helst på tastene blar gjennom bokstavsiden og begge symbolsidene — du slipper å lete etter den lille «!?#»-tasten.</string>
     <string name="d89_f09_title">Språkbytte med mellomromstasten</string>
     <string name="d89_f09_desc">Sveip til venstre eller høyre på mellomromstasten for å bytte språk du skriver på.</string>
     <string name="d89_f10_title">Sveip for å slette et helt ord</string>
@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Bevegelse for markørstyring</string>
     <string name="d401_cursor_control_summary">Trykk lenge på mellomromstasten for å flytte markøren ved å dra; hold deg i ro for å bytte til tekstmarkering.</string>
     <string name="d19_surface_swipe_title">Sveip for å bytte tastaturside</string>
-    <string name="d19_surface_swipe_summary">Sveip til venstre eller høyre over tastaturet for å bytte mellom bokstaver og tall-/symbolsidene. Når av, bytter bare ?123 / ABC-tasten. Med glide-tasting på bytter bokstavsiden kun via ?123-tasten.</string>
+    <string name="d19_surface_swipe_summary">Sveip til venstre eller høyre over tastaturet for å bytte mellom bokstavsiden og symbolsidene. Når av, bytter bare sidetastene (!?# / ?123 / ABC). Med glide-tasting på bytter bokstavsiden kun via !?#-tasten.</string>
     <string name="g03_swipe_down_dismiss_title">Sveip ned for å lukke tastaturet</string>
     <string name="g03_swipe_down_dismiss_summary">Et sveip nedover på tastaturet lukker det. Når av, lukker det bare den ekstra raden, og tastaturet forblir åpent.</string>
     <string name="d508_space_swipe_scale_title">Strykeavstand for språkskifte</string>
@@ -159,10 +159,10 @@
     <string name="d32_summary">Hvor lenge en tast holdes inne før alternativene dukker opp, i ms (D-32).</string>
     <string name="double_tap_delay_title">Dobbelttrykkforsinkelse</string>
     <string name="double_tap_delay_summary">Lengste tid mellom to trykk for å telle som dobbelttrykk, i ms - bytte av store/små bokstaver med Skift, dobbelttrykk på Tilbake for å angre og klissete Tilbake deler alle dette vinduet.</string>
-    <string name="d507_combined_key_title">Kombinert tast (?123/Emoji)</string>
-    <string name="d507_combined_key_summary">Hva den kombinerte tasten i nederste rad gjør: bytte til tall-/symbollaget (?123), åpne emoji-panelet eller ingenting - tasten forsvinner og plassen står tom (D-507).</string>
+    <string name="d507_combined_key_title">Kombinert tast (!?#/Emoji)</string>
+    <string name="d507_combined_key_summary">Hva den kombinerte tasten i nederste rad gjør: gå til siden med spesialtegn (!?#), åpne emoji-panelet eller ingenting - tasten forsvinner og plassen står tom (D-507).</string>
     <string name="d507_mode_off">Av</string>
-    <string name="d507_mode_symbols">Kun ?123</string>
+    <string name="d507_mode_symbols">Kun !?#</string>
     <string name="d507_mode_emoji">Kun emoji</string>
     <string name="d55_below_title">Rom under tallraden</string>
     <string name="d55_below_summary">Ekstra mellomrom under sifrene, i dp, for å redusere bom i den øverste bokstavraden (D-55).</string>
@@ -389,7 +389,7 @@
     <string name="d515_apostrophe_key_title">Apostroftast</string>
     <string name="d515_apostrophe_key_summary">Vis apostroftasten (til høyre for l/m) også på ikke-engelske tastatur. Av: kun engelske tastatur.</string>
     <string name="d516_glide_typing_title">Glide-tasting (sveveskriving)</string>
-    <string name="d516_glide_typing_summary">Tegn et ord i én sammenhengende bevegelse over bokstavene for å skrive det. Av som standard; når på, bytter bokstavsiden kun via ?123-tasten.</string>
+    <string name="d516_glide_typing_summary">Tegn et ord i én sammenhengende bevegelse over bokstavene for å skrive det. Av som standard; når på, bytter bokstavsiden kun via !?#-tasten.</string>
     <string name="d89_f39_title">Glide-tasting (sveveskriving)</string>
     <string name="d89_f39_desc">Valgfritt: tegn et ord i én sammenhengende bevegelse over bokstavene - best treff skrives for deg, med ordbok, diakritisk sammenslåing og personlig kontekst. Av som standard.</string>
     <string name="d89_footer_note">Merk: siden den alternative tastendreformsreformen tilbyr bokstavssiden praktisk talt alle relevante tegn direkte - dobbelthjørnetaster, sifferaden med egne symboler og langtrykksvinduer inkludert - hverdagens skriving trenger aldri en omvei til spesialtegn-sidene.</string>

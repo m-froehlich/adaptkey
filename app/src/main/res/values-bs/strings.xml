@@ -37,7 +37,7 @@
     <string name="d89_f07_title">Stalni red brojeva</string>
     <string name="d89_f07_desc">Cifre su u vlastitom redu iznad slova, svaka sa svojim simbolom uz Shift na jedan dugi pritisak; može se isključiti u postavkama ako želite.</string>
     <string name="d89_f08_title">Prevlačenje između slova i simbola</string>
-    <string name="d89_f08_desc">Prevlačenje ulijevo ili udesno bilo gdje na tipkama prolazi kroz stranicu sa slovima i obje stranice simbola — ne treba tražiti malu tipku «?123».</string>
+    <string name="d89_f08_desc">Prevlačenje ulijevo ili udesno bilo gdje na tipkama prolazi kroz stranicu sa slovima i obje stranice simbola — ne treba tražiti malu tipku «!?#».</string>
     <string name="d89_f09_title">Promjena jezika razmaknicom</string>
     <string name="d89_f09_desc">Prevucite ulijevo ili udesno po razmaknici da biste promijenili jezik na kojem kucate.</string>
     <string name="d89_f10_title">Prevlačenje za brisanje cijele riječi</string>
@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Gesta upravljanja pokazivačem</string>
     <string name="d401_cursor_control_summary">Dugo pritisnite razmaknicu da biste pomjerali pokazivač povlačenjem; ostanite mirni da biste prešli na odabir teksta.</string>
     <string name="d19_surface_swipe_title">Prevlačenje za promjenu stranica tastature</string>
-    <string name="d19_surface_swipe_summary">Prevucite lijevo ili desno preko tastature za prelazak između slova i stranica s brojevima/simbolima. Kada je isključeno, prebacuje samo tipka ?123 / ABC. Kad je klizno kucanje uključeno, stranica slova mijenja se samo tipkom ?123.</string>
+    <string name="d19_surface_swipe_summary">Prevucite lijevo ili desno preko tastature za prelazak između stranice sa slovima i stranica simbola. Kada je isključeno, prebacuju samo tipke stranica (!?# / ?123 / ABC). Kad je klizno kucanje uključeno, stranica slova mijenja se samo tipkom !?#.</string>
     <string name="g03_swipe_down_dismiss_title">Prevuci prema dolje za zatvaranje tastature</string>
     <string name="g03_swipe_down_dismiss_summary">Prevlačenje prema dolje po tastaturi je zatvara. Kada je isključeno, zatvara se samo dodatni red, a tastatura ostaje otvorena.</string>
     <string name="d508_space_swipe_scale_title">Dužina poteza za jezik</string>
@@ -159,10 +159,10 @@
     <string name="d32_summary">Koliko dugo držati tipku dok se ne pojave njene alternative, u ms (D-32).</string>
     <string name="double_tap_delay_title">Kašnjenje dvostrukog dodira</string>
     <string name="double_tap_delay_summary">Najduže vrijeme između dva dodira da se računaju kao dvostruki dodir, u ms - promjena veličine slova Shiftom, dvostruki dodir na Backspace za poništavanje i ljepljivi Backspace dijele ovaj prozor.</string>
-    <string name="d507_combined_key_title">Kombinovani taster (?123/Emoji)</string>
-    <string name="d507_combined_key_summary">Šta kombinovani taster u donjem redu radi: prebacivanje na sloj cifara/simbola (?123), otvaranje panela emojija ili ništa - taster nestane, a njegovo mjesto ostane prazno (D-507).</string>
+    <string name="d507_combined_key_title">Kombinovani taster (!?#/Emoji)</string>
+    <string name="d507_combined_key_summary">Šta kombinovani taster u donjem redu radi: prelazak na stranicu posebnih znakova (!?#), otvaranje panela emojija ili ništa - taster nestane, a njegovo mjesto ostane prazno (D-507).</string>
     <string name="d507_mode_off">Isključeno</string>
-    <string name="d507_mode_symbols">Samo ?123</string>
+    <string name="d507_mode_symbols">Samo !?#</string>
     <string name="d507_mode_emoji">Samo emoji</string>
     <string name="d55_below_title">Razmak ispod reda brojeva</string>
     <string name="d55_below_summary">Dodatni razmak ispod cifara, u dp, radi smanjenja promašaja u gornji red slova (D-55).</string>
@@ -389,7 +389,7 @@
     <string name="d515_apostrophe_key_title">Tipka apostrofa</string>
     <string name="d515_apostrophe_key_summary">Prikaži tipku apostrofa (desno od l/m) i na neengleskim tastaturama. Isključeno: samo engleske tastature.</string>
     <string name="d516_glide_typing_title">Klizno kucanje (glide typing)</string>
-    <string name="d516_glide_typing_summary">Nacrtaj riječ jednim povezanim pokretom preko slova i biće upisana. Podrazumijevano isključeno; kad je uključeno, stranica slova mijenja se samo tipkom ?123.</string>
+    <string name="d516_glide_typing_summary">Nacrtaj riječ jednim povezanim pokretom preko slova i biće upisana. Podrazumijevano isključeno; kad je uključeno, stranica slova mijenja se samo tipkom !?#.</string>
     <string name="d89_f39_title">Klizno kucanje (glide typing)</string>
     <string name="d89_f39_desc">Neobavezno: nacrtaj riječ jednim povezanim pokretom preko slova - najbolja podudarnost upisuje se umjesto tebe, uz rječnik, preslikavanje dijakritika i lični kontekst. Podrazumijevano isključeno.</string>
     <string name="d89_footer_note">Napomena: od reforme alternativne raspodjele tipki stranica slova čini praktički sve relevantne znakove direktno dostupnima - tipke s dvostrukim uglom, red brojeva sa svojim simbolima i iskačući prozori dugog pritiska uključeni - svakodnevno kucanje nikada ne treba posjet stranicama posebnih znakova.</string>

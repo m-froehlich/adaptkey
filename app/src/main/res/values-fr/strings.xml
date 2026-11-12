@@ -37,7 +37,7 @@
     <string name="d89_f07_title">Rangée de chiffres permanente</string>
     <string name="d89_f07_desc">Les chiffres restent sur leur propre rangée au-dessus des lettres, chacun avec son symbole majuscule à un appui long ; désactivable dans les paramètres si vous préférez.</string>
     <string name="d89_f08_title">Glisser entre lettres et symboles</string>
-    <string name="d89_f08_desc">Un balayage vers la gauche ou la droite n\'importe où sur les touches fait défiler la page des lettres et les deux pages de symboles — inutile de chercher la petite touche « ?123 ».</string>
+    <string name="d89_f08_desc">Un balayage vers la gauche ou la droite n\'importe où sur les touches fait défiler la page des lettres et les deux pages de symboles — inutile de chercher la petite touche « !?# ».</string>
     <string name="d89_f09_title">Changement de langue par la barre d\'espace</string>
     <string name="d89_f09_desc">Balayez vers la gauche ou la droite sur la barre d\'espace pour changer la langue de saisie.</string>
     <string name="d89_f10_title">Balayer pour supprimer un mot entier</string>
@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Geste de contrôle du curseur</string>
     <string name="d401_cursor_control_summary">Un appui long sur la barre d\'espace déplace le curseur par glissement ; restez immobile pour passer à la sélection de texte.</string>
     <string name="d19_surface_swipe_title">Balayer pour changer de page du clavier</string>
-    <string name="d19_surface_swipe_summary">Balayez vers la gauche ou la droite sur le clavier pour passer des lettres aux pages de chiffres/symboles. Si désactivé, seule la touche ?123 / ABC permet de changer. Avec la saisie gestuelle active, la page des lettres ne change que via la touche ?123.</string>
+    <string name="d19_surface_swipe_summary">Balayez vers la gauche ou la droite sur le clavier pour passer de la page des lettres aux pages de symboles. Si désactivé, seules les touches de page (!?# / ?123 / ABC) permettent de changer. Avec la saisie gestuelle active, la page des lettres ne change que via la touche !?#.</string>
     <string name="g03_swipe_down_dismiss_title">Balayer vers le bas pour fermer le clavier</string>
     <string name="g03_swipe_down_dismiss_summary">Un balayage vers le bas sur le clavier le ferme. Désactivé, il ferme seulement la rangée supplémentaire et le clavier reste ouvert.</string>
     <string name="d508_space_swipe_scale_title">Distance du balayage de langue</string>
@@ -159,10 +159,10 @@
     <string name="d32_summary">Durée de maintien d\'une touche avant l\'apparition de ses alternatives, en ms (D-32).</string>
     <string name="double_tap_delay_title">Délai de double appui</string>
     <string name="double_tap_delay_summary">Durée maximale entre deux appuis pour compter comme un double appui, en ms - la bascule de casse avec Maj, le double appui sur Retour arrière pour annuler et le Retour arrière collant partagent tous cette fenêtre.</string>
-    <string name="d507_combined_key_title">Touche combinée (?123/Emoji)</string>
-    <string name="d507_combined_key_summary">Ce que fait la touche combinée de la rangée du bas : passer à la couche chiffres/symboles (?123), ouvrir le panneau d\'émojis, ou rien - la touche disparaît et son emplacement reste vide (D-507).</string>
+    <string name="d507_combined_key_title">Touche combinée (!?#/Emoji)</string>
+    <string name="d507_combined_key_summary">Ce que fait la touche combinée de la rangée du bas : aller à la page des caractères spéciaux (!?#), ouvrir le panneau d\'émojis, ou rien - la touche disparaît et son emplacement reste vide (D-507).</string>
     <string name="d507_mode_off">Désactivé</string>
-    <string name="d507_mode_symbols">\?123 uniquement</string>
+    <string name="d507_mode_symbols">!?# uniquement</string>
     <string name="d507_mode_emoji">Emoji uniquement</string>
     <string name="d55_below_title">Espace sous la rangée de chiffres</string>
     <string name="d55_below_summary">Espace supplémentaire sous les chiffres, en dp, pour réduire les appuis manqués dans la rangée de lettres du haut (D-55).</string>
@@ -389,7 +389,7 @@
     <string name="d515_apostrophe_key_title">Touche apostrophe</string>
     <string name="d515_apostrophe_key_summary">Afficher la touche apostrophe (à droite de l/m) aussi sur les claviers non anglais. Désactivé : claviers anglais uniquement.</string>
     <string name="d516_glide_typing_title">Saisie gestuelle (glide typing)</string>
-    <string name="d516_glide_typing_summary">Tracez un mot en un seul trait continu sur les lettres pour l\'écrire. Désactivée par défaut ; lorsqu\'elle est active, la page des lettres ne change que via la touche ?123.</string>
+    <string name="d516_glide_typing_summary">Tracez un mot en un seul trait continu sur les lettres pour l\'écrire. Désactivée par défaut ; lorsqu\'elle est active, la page des lettres ne change que via la touche !?#.</string>
     <string name="d89_f39_title">Saisie gestuelle (glide typing)</string>
     <string name="d89_f39_desc">Optionnel : tracez un mot en un seul trait continu sur les lettres - la meilleure correspondance est tapée pour vous, avec dictionnaire, repli des diacritiques et contexte personnel. Désactivée par défaut.</string>
     <string name="d89_footer_note">Remarque : depuis la réforme de l\'attribution alternative des touches, la page des lettres rend pratiquement tous les caractères pertinents directement disponibles - touches à double coin, rangée de chiffres avec ses propres symboles et popups d\'appui long compris - la frappe quotidienne n\'a jamais besoin d\'un détour par les pages de caractères spéciaux.</string>

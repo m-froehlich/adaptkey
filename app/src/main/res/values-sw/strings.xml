@@ -37,7 +37,7 @@
     <string name="d89_f07_title">Safu ya nambari ya kudumu</string>
     <string name="d89_f07_desc">Tarakimu hukaa kwenye safu yake juu ya herufi, kila moja ikiwa na alama yake ya Shift umbali wa mbonyezo mmoja mrefu; inaweza kuzimwa kwenye mipangilio ukipenda.</string>
     <string name="d89_f08_title">Telezesha kati ya herufi na alama</string>
-    <string name="d89_f08_desc">Kutelezesha kushoto au kulia mahali popote kwenye vitufe hupitia ukurasa wa herufi na kurasa zote mbili za alama — hakuna haja ya kutafuta kitufe kidogo cha «?123».</string>
+    <string name="d89_f08_desc">Kutelezesha kushoto au kulia mahali popote kwenye vitufe hupitia ukurasa wa herufi na kurasa zote mbili za alama — hakuna haja ya kutafuta kitufe kidogo cha «!?#».</string>
     <string name="d89_f09_title">Kubadilisha lugha kwa upau wa nafasi</string>
     <string name="d89_f09_desc">Telezesha kushoto au kulia kwenye upau wa nafasi ili kubadilisha lugha unayoandika.</string>
     <string name="d89_f10_title">Telezesha kufuta neno zima</string>
@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Ishara ya kudhibiti kielekezi</string>
     <string name="d401_cursor_control_summary">Bonyeza kwa muda mrefu upau wa nafasi ili kusogeza kielekezi kwa kuburuta; tulia ili kubadilisha kwenda uteuzi wa maandishi.</string>
     <string name="d19_surface_swipe_title">Telezesha ili kubadilisha kurasa za kibodi</string>
-    <string name="d19_surface_swipe_summary">Telezesha kushoto au kulia kwenye kibodi ili kubadilisha kati ya herufi na kurasa za nambari/alama. Ikizimwa, kitufe cha ?123 / ABC pekee ndicho hubadilisha. Kuchapisha kwa kusogeza kikiwa kimewashwa, ukurasa wa herufi hubadilika kwa kitufe cha ?123 pekee.</string>
+    <string name="d19_surface_swipe_summary">Telezesha kushoto au kulia kwenye kibodi ili kubadilisha kati ya ukurasa wa herufi na kurasa za alama. Ikizimwa, vitufe vya kurasa pekee ndivyo hubadilisha (!?# / ?123 / ABC). Kuchapisha kwa kusogeza kikiwa kimewashwa, ukurasa wa herufi hubadilika kwa kitufe cha !?# pekee.</string>
     <string name="g03_swipe_down_dismiss_title">Telezesha chini ili kufunga kibodi</string>
     <string name="g03_swipe_down_dismiss_summary">Kutelezesha chini kwenye kibodi kunaifunga. Ikizimwa, inafunga tu safu ya ziada na kibodi inabaki wazi.</string>
     <string name="d508_space_swipe_scale_title">Umbali wa kusogeza lugha</string>
@@ -159,10 +159,10 @@
     <string name="d32_summary">Muda wa kushikilia kitufe kabla chaguo zake hazijatokea, kwa ms (D-32).</string>
     <string name="double_tap_delay_title">Ucheleweshaji wa mguso maradufu</string>
     <string name="double_tap_delay_summary">Muda wa juu kati ya miguso miwili ili ihesabiwe kama mguso maradufu, kwa ms - kubadilisha ukubwa wa herufi kwa Shift, kugusa Backspace mara mbili kutengua, na Backspace inayogandana zote hushiriki dirisha hili.</string>
-    <string name="d507_combined_key_title">Kitufe cha pamoja (?123/Emoji)</string>
-    <string name="d507_combined_key_summary">Kitufe cha pamoja kwenye safu ya chini kinafanya nini: kubadilisha kwenye tabaka ya nambari/alamu (?123), kufungua paneli ya emoji, au hakuna - kitufe kinatoweka na nafasi yake inabaki wazi (D-507).</string>
+    <string name="d507_combined_key_title">Kitufe cha pamoja (!?#/Emoji)</string>
+    <string name="d507_combined_key_summary">Kitufe cha pamoja kwenye safu ya chini kinafanya nini: kwenda ukurasa wa alama maalum (!?#), kufungua paneli ya emoji, au hakuna - kitufe kinatoweka na nafasi yake inabaki wazi (D-507).</string>
     <string name="d507_mode_off">Imezimwa</string>
-    <string name="d507_mode_symbols">\?123 pekee</string>
+    <string name="d507_mode_symbols">!?# pekee</string>
     <string name="d507_mode_emoji">Emoji pekee</string>
     <string name="d55_below_title">Nafasi chini ya safu ya nambari</string>
     <string name="d55_below_summary">Pengo la ziada chini ya tarakimu, kwa dp, kupunguza miguso iliyokosa kwenye safu ya juu ya herufi (D-55).</string>
@@ -389,7 +389,7 @@
     <string name="d515_apostrophe_key_title">Kitufe cha apostrof</string>
     <string name="d515_apostrophe_key_summary">Onyesha kitufe cha apostrof (kulia kwa l/m) kwenye kibodi zisizo za Kiingereza pia. Zima: kibodi za Kiingereza pekee.</string>
     <string name="d516_glide_typing_title">Kuchapisha kwa kusogeza (glide typing)</string>
-    <string name="d516_glide_typing_summary">Chora neno kwa mstari mmoja unaoendelea juu ya herufi ili uandike. Imezimwa kwa chaguo-msingi; ikiwa imewashwa, ukurasa wa herufi hubadilika kwa kitufe cha ?123 pekee.</string>
+    <string name="d516_glide_typing_summary">Chora neno kwa mstari mmoja unaoendelea juu ya herufi ili uandike. Imezimwa kwa chaguo-msingi; ikiwa imewashwa, ukurasa wa herufi hubadilika kwa kitufe cha !?# pekee.</string>
     <string name="d89_f39_title">Kuchapisha kwa kusogeza (glide typing)</string>
     <string name="d89_f39_desc">Hiari: chora neno kwa mstari mmoja unaoendelea juu ya herufi - maelezano bora huandikwa kwa niaba yako, pamoja na kamusi, kuunganisha alama za sauti na muktadha wako binafsi. Imezimwa kwa chaguo-msingi.</string>
     <string name="d89_footer_note">Kumbuka: tangu mageuzi ya mgawanyo mbadala wa vitufe, ukurasa wa herufi unatoa vibonyezo vinavyohusika vya kawaida moja kwa moja - vitufe vya kona mbili, safu ya nambari pamoja na ishara zake na vichenjaji vya kubonyeza kwa muda vikiwemo - kuandika ya kila siku hauhitaji kwenda kurasa za vibonyezo maalum kabisa.</string>

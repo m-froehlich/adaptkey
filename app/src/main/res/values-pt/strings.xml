@@ -37,7 +37,7 @@
     <string name="d89_f07_title">Fileira de números permanente</string>
     <string name="d89_f07_desc">Os dígitos ficam em uma fileira própria acima das letras, cada um com o seu símbolo de maiúsculas a um toque longo; dá para desativar nas configurações, se preferir.</string>
     <string name="d89_f08_title">Deslizar entre letras e símbolos</string>
-    <string name="d89_f08_desc">Um deslize para a esquerda ou a direita em qualquer lugar das teclas percorre a página de letras e as duas páginas de símbolos — sem precisar procurar a pequena tecla «?123».</string>
+    <string name="d89_f08_desc">Um deslize para a esquerda ou a direita em qualquer lugar das teclas percorre a página de letras e as duas páginas de símbolos — sem precisar procurar a pequena tecla «!?#».</string>
     <string name="d89_f09_title">Troca de idioma pela barra de espaço</string>
     <string name="d89_f09_desc">Deslize para a esquerda ou a direita na barra de espaço para trocar o idioma em que você digita.</string>
     <string name="d89_f10_title">Deslizar para apagar uma palavra inteira</string>
@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Gesto de controle do cursor</string>
     <string name="d401_cursor_control_summary">Mantenha pressionada a barra de espaço para mover o cursor arrastando; fique parado para passar à seleção de texto.</string>
     <string name="d19_surface_swipe_title">Deslizar para mudar de página do teclado</string>
-    <string name="d19_surface_swipe_summary">Deslize para a esquerda ou direita no teclado para alternar entre letras e as páginas de números/símbolos. Quando desativado, apenas a tecla ?123 / ABC alterna. Com a escrita por gestos ativa, a página de letras só muda através da tecla ?123.</string>
+    <string name="d19_surface_swipe_summary">Deslize para a esquerda ou direita no teclado para alternar entre a página de letras e as páginas de símbolos. Quando desativado, apenas as teclas de página (!?# / ?123 / ABC) alternam. Com a escrita por gestos ativa, a página de letras só muda através da tecla !?#.</string>
     <string name="g03_swipe_down_dismiss_title">Deslizar para baixo fecha o teclado</string>
     <string name="g03_swipe_down_dismiss_summary">Deslizar para baixo sobre o teclado fecha-o. Quando desativado, fecha apenas a linha extra e o teclado continua aberto.</string>
     <string name="d508_space_swipe_scale_title">Distancia do deslize de idioma</string>
@@ -159,10 +159,10 @@
     <string name="d32_summary">Quanto tempo segurar uma tecla até as alternativas aparecerem, em ms (D-32).</string>
     <string name="double_tap_delay_title">Atraso do toque duplo</string>
     <string name="double_tap_delay_summary">Tempo máximo entre dois toques para contar como toque duplo, em ms - a alternância de caixa com Shift, o toque duplo no Backspace para reverter e o Backspace aderente compartilham essa janela.</string>
-    <string name="d507_combined_key_title">Tecla combinada (?123/Emoji)</string>
-    <string name="d507_combined_key_summary">O que a tecla combinada da fileira inferior faz: mudar para a camada de números/símbolos (?123), abrir o painel de emojis ou nada - a tecla desaparece e o seu espaço fica vazio (D-507).</string>
+    <string name="d507_combined_key_title">Tecla combinada (!?#/Emoji)</string>
+    <string name="d507_combined_key_summary">O que a tecla combinada da fileira inferior faz: ir para a página de caracteres especiais (!?#), abrir o painel de emojis ou nada - a tecla desaparece e o seu espaço fica vazio (D-507).</string>
     <string name="d507_mode_off">Desativado</string>
-    <string name="d507_mode_symbols">Apenas ?123</string>
+    <string name="d507_mode_symbols">Apenas !?#</string>
     <string name="d507_mode_emoji">Apenas emojis</string>
     <string name="d55_below_title">Espaço sob a fileira de números</string>
     <string name="d55_below_summary">Espaço extra sob os dígitos, em dp, para reduzir toques errados na fileira superior de letras (D-55).</string>
@@ -389,7 +389,7 @@
     <string name="d515_apostrophe_key_title">Tecla de apóstrofo</string>
     <string name="d515_apostrophe_key_summary">Mostrar a tecla de apóstrofo (à direita de l/m) também em teclados não ingleses. Desativado: apenas teclados ingleses.</string>
     <string name="d516_glide_typing_title">Escrita por gestos (glide typing)</string>
-    <string name="d516_glide_typing_summary">Desenhe uma palavra num único traço contínuo sobre as letras para a escrever. Desativado por predefinição; quando ativo, a página de letras só muda através da tecla ?123.</string>
+    <string name="d516_glide_typing_summary">Desenhe uma palavra num único traço contínuo sobre as letras para a escrever. Desativado por predefinição; quando ativo, a página de letras só muda através da tecla !?#.</string>
     <string name="d89_f39_title">Escrita por gestos (glide typing)</string>
     <string name="d89_f39_desc">Opcional: desenhe uma palavra num único traço contínuo sobre as letras - a melhor correspondência é escrita por si, com dicionário, repliegue de diacríticos e contexto pessoal. Desativado por predefinição.</string>
     <string name="d89_footer_note">Nota: desde a reforma da atribuição alternativa de teclas, a página de letras torna praticamente todos os caracteres relevantes diretamente disponíveis - teclas de canto duplo, fila de dígitos com os seus próprios símbolos e popups de premição longa incluídos - a escrita quotidiana nunca precisa de uma visita às páginas de caracteres especiais.</string>

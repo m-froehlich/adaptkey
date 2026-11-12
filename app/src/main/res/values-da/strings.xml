@@ -37,7 +37,7 @@
     <string name="d89_f07_title">Fast talrække</string>
     <string name="d89_f07_desc">Cifrene ligger i en egen række over bogstaverne, hver med sit skift-symbol et langt tryk væk; kan slås fra i indstillingerne, hvis du foretrækker det.</string>
     <string name="d89_f08_title">Stryg mellem bogstaver og symboler</string>
-    <string name="d89_f08_desc">Et stryg til venstre eller højre et vilkårligt sted på tasterne blader gennem bogstavsiden og begge symbolsider — du behøver ikke lede efter den lille «?123»-tast.</string>
+    <string name="d89_f08_desc">Et stryg til venstre eller højre et vilkårligt sted på tasterne blader gennem bogstavsiden og begge symbolsider — du behøver ikke lede efter den lille «!?#»-tast.</string>
     <string name="d89_f09_title">Sprogskift med mellemrumstasten</string>
     <string name="d89_f09_desc">Stryg til venstre eller højre på mellemrumstasten for at skifte det sprog, du skriver på.</string>
     <string name="d89_f10_title">Stryg for at slette et helt ord</string>
@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Bevægelse til markørstyring</string>
     <string name="d401_cursor_control_summary">Tryk længe på mellemrumstasten for at flytte markøren ved at trække; hold dig i ro for at skifte til tekstmarkering.</string>
     <string name="d19_surface_swipe_title">Stryg for at skifte tastaturside</string>
-    <string name="d19_surface_swipe_summary">Stryg til venstre eller højre hen over tastaturet for at skifte mellem bogstaver og tal-/symbolsiderne. Når slået fra, skifter kun ?123 / ABC-tasten. Med glide-indtastning til skifter bogstavssiden kun via ?123-tasten.</string>
+    <string name="d19_surface_swipe_summary">Stryg til venstre eller højre hen over tastaturet for at skifte mellem bogstavssiden og symbolsiderne. Når slået fra, skifter kun sidetasterne (!?# / ?123 / ABC). Med glide-indtastning til skifter bogstavssiden kun via !?#-tasten.</string>
     <string name="g03_swipe_down_dismiss_title">Stryg nedad for at lukke tastaturet</string>
     <string name="g03_swipe_down_dismiss_summary">Et stryg nedad på tastaturet lukker det. Når slået fra, lukker det kun den ekstra række, og tastaturet forbliver åbent.</string>
     <string name="d508_space_swipe_scale_title">Strygeafstand for sprogskift</string>
@@ -159,10 +159,10 @@
     <string name="d32_summary">Hvor længe en tast holdes nede, før dens alternativer dukker op, i ms (D-32).</string>
     <string name="double_tap_delay_title">Dobbelttryksforsinkelse</string>
     <string name="double_tap_delay_summary">Maksimal tid mellem to tryk for at tælle som dobbelttryk, i ms - skift af store/små bogstaver med Skift, dobbelttryk på Tilbage for at fortryde og klæbende Tilbage deler alle dette vindue.</string>
-    <string name="d507_combined_key_title">Kombineret tast (?123/Emoji)</string>
-    <string name="d507_combined_key_summary">Hvad den kombinerede tast i nederste række gør: skifte til tal-/symbollaget (?123), åbne emoji-panelet eller intet - tasten forsvinder, og pladsen forbliver tom (D-507).</string>
+    <string name="d507_combined_key_title">Kombineret tast (!?#/Emoji)</string>
+    <string name="d507_combined_key_summary">Hvad den kombinerede tast i nederste række gør: gå til siden med specialtegn (!?#), åbne emoji-panelet eller intet - tasten forsvinder, og pladsen forbliver tom (D-507).</string>
     <string name="d507_mode_off">Fra</string>
-    <string name="d507_mode_symbols">Kun ?123</string>
+    <string name="d507_mode_symbols">Kun !?#</string>
     <string name="d507_mode_emoji">Kun emoji</string>
     <string name="d55_below_title">Plads under talrækken</string>
     <string name="d55_below_summary">Ekstra mellemrum under cifrene, i dp, for at reducere fejltryk i den øverste bogstavrække (D-55).</string>
@@ -389,7 +389,7 @@
     <string name="d515_apostrophe_key_title">Apostroftast</string>
     <string name="d515_apostrophe_key_summary">Vis apostroftasten (til højre for l/m) også på ikke-engelske tastaturer. Fra: kun engelske tastaturer.</string>
     <string name="d516_glide_typing_title">Glide-indtastning (strøgskrivning)</string>
-    <string name="d516_glide_typing_summary">Tegn et ord i én sammenhængende bevægelse over bogstaverne for at skrive det. Fra som standard; når til, skifter bogstavssiden kun via ?123-tasten.</string>
+    <string name="d516_glide_typing_summary">Tegn et ord i én sammenhængende bevægelse over bogstaverne for at skrive det. Fra som standard; når til, skifter bogstavssiden kun via !?#-tasten.</string>
     <string name="d89_f39_title">Glide-indtastning (strøgskrivning)</string>
     <string name="d89_f39_desc">Valgfrit: tegn et ord i én sammenhængende bevægelse over bogstaverne - det bedste match skrives for dig, med ordbog, diakritisk sammenfoldning og personlig kontekst. Fra som standard.</string>
     <string name="d89_footer_note">Bemærk: siden den alternative tastetildelingsreform tilbyder bogstavssiden praktisk talt alle relevante tegn direkte - dobbelthjørnetaster, cifferækken med egne symboler og langtrykspopups inkluderet - hverdagsskrivning behøver aldrig en omvej til specialtegn-siderne.</string>

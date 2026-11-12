@@ -37,7 +37,7 @@
     <string name="d89_f07_title">Baris nombor kekal</string>
     <string name="d89_f07_desc">Digit berada pada baris tersendiri di atas huruf, masing-masing dengan simbol Shift-nya satu tekan lama jauhnya; boleh dimatikan dalam tetapan jika anda suka.</string>
     <string name="d89_f08_title">Leret antara huruf dan simbol</string>
-    <string name="d89_f08_desc">Leretan ke kiri atau kanan di mana-mana pada kekunci beralih antara halaman huruf dan kedua-dua halaman simbol — tidak perlu mencari kekunci kecil «?123».</string>
+    <string name="d89_f08_desc">Leretan ke kiri atau kanan di mana-mana pada kekunci beralih antara halaman huruf dan kedua-dua halaman simbol — tidak perlu mencari kekunci kecil «!?#».</string>
     <string name="d89_f09_title">Pertukaran bahasa dengan bar ruang</string>
     <string name="d89_f09_desc">Leret ke kiri atau kanan pada bar ruang untuk menukar bahasa yang anda taip.</string>
     <string name="d89_f10_title">Leret untuk memadam satu perkataan penuh</string>
@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Gerak isyarat kawalan kursor</string>
     <string name="d401_cursor_control_summary">Tekan lama bar ruang untuk menggerakkan kursor dengan menyeret; diam sebentar untuk beralih kepada pemilihan teks.</string>
     <string name="d19_surface_swipe_title">Leret untuk menukar halaman papan kekunci</string>
-    <string name="d19_surface_swipe_summary">Leret ke kiri atau kanan pada papan kekunci untuk bertukar antara huruf dan halaman nombor/simbol. Apabila dimatikan, hanya kekunci ?123 / ABC yang menukar. Semasa taipan luncur aktif, halaman huruf hanya bertukar melalui kekunci ?123.</string>
+    <string name="d19_surface_swipe_summary">Leret ke kiri atau kanan pada papan kekunci untuk bertukar antara halaman huruf dan halaman simbol. Apabila dimatikan, hanya kekunci halaman (!?# / ?123 / ABC) yang menukar. Semasa taipan luncur aktif, halaman huruf hanya bertukar melalui kekunci !?#.</string>
     <string name="g03_swipe_down_dismiss_title">Leret ke bawah untuk menutup papan kekunci</string>
     <string name="g03_swipe_down_dismiss_summary">Leretan ke bawah pada papan kekunci menutupnya. Jika dimatikan, ia hanya menutup baris tambahan dan papan kekunci kekal terbuka.</string>
     <string name="d508_space_swipe_scale_title">Jarak leret bahasa</string>
@@ -159,10 +159,10 @@
     <string name="d32_summary">Berapa lama menahan kekunci sebelum alternatifnya muncul, dalam ms (D-32).</string>
     <string name="double_tap_delay_title">Kelewatan ketik dua kali</string>
     <string name="double_tap_delay_summary">Masa maksimum antara dua ketikan untuk dikira sebagai ketik dua kali, dalam ms - togol huruf besar/kecil Shift, ketik dua kali Backspace untuk membuat asal, dan Backspace melekit semuanya berkongsi tetingkap ini.</string>
-    <string name="d507_combined_key_title">Kekunci gabungan (?123/Emoji)</string>
-    <string name="d507_combined_key_summary">Apa yang kekunci gabungan dalam baris bawah buat: bertukar ke lapisan nombor/simbol (?123), membuka panel emoji, atau tiada - kekunci itu hilang dan tempatnya kekal kosong (D-507).</string>
+    <string name="d507_combined_key_title">Kekunci gabungan (!?#/Emoji)</string>
+    <string name="d507_combined_key_summary">Apa yang kekunci gabungan dalam baris bawah buat: bertukar ke halaman aksara khas (!?#), membuka panel emoji, atau tiada - kekunci itu hilang dan tempatnya kekal kosong (D-507).</string>
     <string name="d507_mode_off">Mati</string>
-    <string name="d507_mode_symbols">\?123 sahaja</string>
+    <string name="d507_mode_symbols">!?# sahaja</string>
     <string name="d507_mode_emoji">Emoji sahaja</string>
     <string name="d55_below_title">Ruang di bawah baris nombor</string>
     <string name="d55_below_summary">Jurang tambahan di bawah digit, dalam dp, untuk mengurangkan ketikan tersasar ke baris huruf atas (D-55).</string>
@@ -389,7 +389,7 @@
     <string name="d515_apostrophe_key_title">Kekunci apostrof</string>
     <string name="d515_apostrophe_key_summary">Paparkan kekunci apostrof (di kanan l/m) pada papan kekunci bukan Inggeris juga. Mati: papan kekunci Inggeris sahaja.</string>
     <string name="d516_glide_typing_title">Taipan luncur (glide typing)</string>
-    <string name="d516_glide_typing_summary">Lukis satu perkataan dalam satu garisan berterusan merentas huruf untuk menaipnya. Dimatikan secara lalai; semasa aktif, halaman huruf hanya bertukar melalui kekunci ?123.</string>
+    <string name="d516_glide_typing_summary">Lukis satu perkataan dalam satu garisan berterusan merentas huruf untuk menaipnya. Dimatikan secara lalai; semasa aktif, halaman huruf hanya bertukar melalui kekunci !?#.</string>
     <string name="d89_f39_title">Taipan luncur (glide typing)</string>
     <string name="d89_f39_desc">Pilihan: lukis satu perkataan dalam satu garisan berterusan merentas huruf - padanan terbaik ditaip untuk anda, dengan kamus, pelipatan diakritik dan konteks peribadi. Dimatikan secara lalai.</string>
     <string name="d89_footer_note">Nota: sejak pembaharuan penugasan kekunci alternatif, halaman huruf menyediakan hampir semua aksara relevan secara terus - kekunci sudut berganda, baris digit dengan simbolnya sendiri dan tetingkap pop tekanan panjang termasuk - menaip harian tidak pernah perlu singgah ke halaman aksara khas.</string>

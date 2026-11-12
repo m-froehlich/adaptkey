@@ -37,7 +37,7 @@
     <string name="d89_f07_title">Stały rząd cyfr</string>
     <string name="d89_f07_desc">Cyfry mają własny rząd nad literami, każda z symbolem z Shiftem pod długim naciśnięciem; można to wyłączyć w ustawieniach, jeśli wolisz.</string>
     <string name="d89_f08_title">Przesuwanie między literami a symbolami</string>
-    <string name="d89_f08_desc">Przesunięcie w lewo lub w prawo w dowolnym miejscu klawiszy przełącza stronę liter i obie strony symboli — bez szukania małego klawisza «?123».</string>
+    <string name="d89_f08_desc">Przesunięcie w lewo lub w prawo w dowolnym miejscu klawiszy przełącza stronę liter i obie strony symboli — bez szukania małego klawisza «!?#».</string>
     <string name="d89_f09_title">Zmiana języka spacją</string>
     <string name="d89_f09_desc">Przesuń palcem w lewo lub w prawo po spacji, aby zmienić język pisania.</string>
     <string name="d89_f10_title">Przesunięcie, by usunąć cały wyraz</string>
@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Gest sterowania kursorem</string>
     <string name="d401_cursor_control_summary">Przytrzymaj spację, aby przesuwać kursor przeciąganiem; zatrzymaj się, aby przejść do zaznaczania tekstu.</string>
     <string name="d19_surface_swipe_title">Przesuwanie, aby zmienić stronę klawiatury</string>
-    <string name="d19_surface_swipe_summary">Przesuń w lewo lub w prawo po klawiaturze, aby przełączać między literami a stronami cyfr/symboli. Po wyłączeniu przełącza tylko klawisz ?123 / ABC. Gdy pisanie gestami jest włączone, strona liter zmienia się tylko klawiszem ?123.</string>
+    <string name="d19_surface_swipe_summary">Przesuń w lewo lub w prawo po klawiaturze, aby przełączać między stroną liter a stronami symboli. Po wyłączeniu przełączają tylko klawisze stron (!?# / ?123 / ABC). Gdy pisanie gestami jest włączone, strona liter zmienia się tylko klawiszem !?#.</string>
     <string name="g03_swipe_down_dismiss_title">Przesuń w dół, aby zamknąć klawiaturę</string>
     <string name="g03_swipe_down_dismiss_summary">Przesunięcie w dół po klawiaturze zamyka ją. Gdy wyłączone, zamyka tylko dodatkowy rząd, a klawiatura pozostaje otwarta.</string>
     <string name="d508_space_swipe_scale_title">Dystans przesunięcia języka</string>
@@ -159,10 +159,10 @@
     <string name="d32_summary">Jak długo trzymać klawisz, zanim pojawią się jego alternatywy, w ms (D-32).</string>
     <string name="double_tap_delay_title">Opóźnienie podwójnego dotknięcia</string>
     <string name="double_tap_delay_summary">Maksymalny czas między dwoma dotknięciami, by liczyć się jako podwójne, w ms - przełączanie wielkości liter Shiftem, podwójne dotknięcie Backspace cofające i lepki Backspace dzielą to okno.</string>
-    <string name="d507_combined_key_title">Klawisz kombinowany (?123/Emoji)</string>
-    <string name="d507_combined_key_summary">Co robi klawisz kombinowany w dolnym rzędzie: przełączanie na warstwę cyfr/symboli (?123), otwieranie panelu emoji albo nic - klawisz znika, a jego miejsce pozostaje puste (D-507).</string>
+    <string name="d507_combined_key_title">Klawisz kombinowany (!?#/Emoji)</string>
+    <string name="d507_combined_key_summary">Co robi klawisz kombinowany w dolnym rzędzie: przejście na stronę znaków specjalnych (!?#), otwieranie panelu emoji albo nic - klawisz znika, a jego miejsce pozostaje puste (D-507).</string>
     <string name="d507_mode_off">Wyłączone</string>
-    <string name="d507_mode_symbols">Tylko ?123</string>
+    <string name="d507_mode_symbols">Tylko !?#</string>
     <string name="d507_mode_emoji">Tylko emoji</string>
     <string name="d55_below_title">Odstęp pod rzędem cyfr</string>
     <string name="d55_below_summary">Dodatkowy odstęp pod cyframi, w dp, by zmniejszyć chybione dotknięcia w górnym rzędzie liter (D-55).</string>
@@ -389,7 +389,7 @@
     <string name="d515_apostrophe_key_title">Klawisz apostrofu</string>
     <string name="d515_apostrophe_key_summary">Pokaż klawisz apostrofu (na prawo od l/m) także na klawiaturach nieangielskich. Wyłączone: tylko klawiatury angielskie.</string>
     <string name="d516_glide_typing_title">Pisanie gestami (glide typing)</string>
-    <string name="d516_glide_typing_summary">Przesuń palcem po literach jednym ciągiem, aby napisać słowo. Domyślnie wyłączone; gdy włączone, strona liter zmienia się tylko klawiszem ?123.</string>
+    <string name="d516_glide_typing_summary">Przesuń palcem po literach jednym ciągiem, aby napisać słowo. Domyślnie wyłączone; gdy włączone, strona liter zmienia się tylko klawiszem !?#.</string>
     <string name="d89_f39_title">Pisanie gestami (glide typing)</string>
     <string name="d89_f39_desc">Opcjonalnie: przesuń palcem po literach jednym ciągiem - najlepsze dopasowanie zostanie wpisane za ciebie, ze słownikiem, odwzorowaniem diakrytyków i osobistym kontekstem. Domyślnie wyłączone.</string>
     <string name="d89_footer_note">Uwaga: od reformy alternatywnego przypisania klawiszy strona liter udostępnia praktycznie wszystkie istotne znaki bezpośrednio - klawisze z podwójnym narożnikiem, rząd cyfr z własnymi symbolami i wyskakujące okna długiego przytrzymania włącznie - codzienne pisanie nigdy nie potrzebuje wycieczki na strony znaków specjalnych.</string>

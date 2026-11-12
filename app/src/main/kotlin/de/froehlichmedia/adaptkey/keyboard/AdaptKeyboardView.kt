@@ -1792,9 +1792,15 @@ class AdaptKeyboardView @JvmOverloads constructor(
         // D-30: clear the backspace-repeat suppression from any previous hold, so a new touch is
         // never wrongly swallowed (otherwise the keyboard freezes after a held backspace).
         backspaceRepeated = false
-        // D-05 / D-06: optional press feedback (both default off). D-396: SYMBOL/LETTERS (the
-        // ?123 <-> ABC toggle) is a mode switch; every other key is ordinary press feedback.
-        playKeyFeedback(if (key.code == KeyCode.SYMBOL || key.code == KeyCode.LETTERS) HapticTier.MODE_SWITCH else HapticTier.KEY_PRESS)
+        // D-05 / D-06: optional press feedback (both default off). D-396: SYMBOL/LETTERS/NUMERIC (the
+        // D-531 page chain's keys) are mode switches; every other key is ordinary press feedback.
+        playKeyFeedback(
+            if (key.code == KeyCode.SYMBOL || key.code == KeyCode.LETTERS || key.code == KeyCode.NUMERIC) {
+                HapticTier.MODE_SWITCH
+            } else {
+                HapticTier.KEY_PRESS
+            }
+        )
         pressedKey = key
         pressedKeyRect = rect
         longPressFired = false
@@ -3100,19 +3106,21 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     /**
-     * D-59 / D-100 (correction), D-507: whether [key] occupies a slot that is currently disabled but must
-     * stay reserved rather than collapse - the combined key (only the "off" mode hides it; the emoji mode
-     * SHOWS it, drawn with the emoji glyph - it is the panel's second entry point, not a disabled slot),
-     * or either symbol page's `ABC` key (hidden in both non-symbol modes, since without the `?123` key
-     * the symbol layers are unreachable and their return keys have nothing to return to). Page 1's `ABC`
-     * must keep its slot so the D-100 column/grid layout's per-row cell count stays consistent; page 2's
-     * `ABC` keeps its slot too (a later correction) purely so its neighbouring `space` key doesn't grow
-     * to fill the gap and end up looking oversized - both now use this same reserved-but-inert treatment
-     * instead of D-93's original omit-and-grow.
+     * D-59 / D-100 (correction), D-507, D-531: whether [key] occupies a slot that is currently disabled
+     * but must stay reserved rather than collapse - the combined key (only the "off" mode hides it; the
+     * emoji mode SHOWS it, drawn with the emoji glyph - it is the panel's second entry point, not a
+     * disabled slot), or either symbol page's own page-switch key: page 1's `ABC` (return to letters)
+     * and page 2's `?123` (D-531, on to the number layer) both hide in the non-symbol modes, since
+     * without the letters page's `!?#` key the symbol layers are unreachable and the chain breaks.
+     * Page 1's `ABC` must keep its slot so the D-100 column/grid layout's per-row cell count stays
+     * consistent; page 2's key keeps its slot too (a later correction) purely so its neighbouring
+     * `space` key doesn't grow to fill the gap and end up looking oversized - both now use this same
+     * reserved-but-inert treatment instead of D-93's original omit-and-grow.
      */
     private fun isHiddenKey(key: Key): Boolean {
         return (key.code == KeyCode.SYMBOL && combinedKeyMode == CombinedKeyMode.OFF) ||
-            (key.code == KeyCode.LETTERS && surface == InputSurface.SYMBOLS && combinedKeyMode != CombinedKeyMode.SYMBOL)
+            (key.code == KeyCode.LETTERS && surface == InputSurface.SYMBOLS && combinedKeyMode != CombinedKeyMode.SYMBOL) ||
+            (key.code == KeyCode.NUMERIC && combinedKeyMode != CombinedKeyMode.SYMBOL)
     }
     
     private fun labelFor(key: Key): String {
@@ -3127,11 +3135,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
             key.code == KeyCode.SPACE && (surface != InputSurface.LETTERS || urlMode || emailMode) -> SPACE_GLYPH
             // D-15: the Shift key shows a lock glyph while Caps Lock is engaged.
             key.code == KeyCode.SHIFT && capsLock -> "⇪"
-            // D-47 / §49 / D-507: the combined key reads "?123" in its symbol-layer mode and the emoji
-            // glyph in its emoji mode (the same glyph the §48 extra-row button shows, so the two entry
-            // points read as one function); the "off" mode never draws (the key is hidden then).
+            // D-47 / §49 / D-507 / D-531: the combined key reads "!?#" in its symbol-layer mode (the
+            // special-characters-page toggle - the number layer is reserved for genuinely numeric
+            // fields, which open it themselves) and the emoji glyph in its emoji mode (the same glyph
+            // the §48 extra-row button shows, so the two entry points read as one function); the "off"
+            // mode never draws (the key is hidden then).
             key.code == KeyCode.SYMBOL ->
-                if (combinedKeyMode == CombinedKeyMode.EMOJI) ExtraRowView.EMOJI_ICON else "?123"
+                if (combinedKeyMode == CombinedKeyMode.EMOJI) ExtraRowView.EMOJI_ICON else "!?#"
             // A char key only has case on the letters surface - a symbol/calculator-page character that
             // happens to be a Unicode letter with a case mapping (e.g. π) must not be shown uppercased.
             key.code == KeyCode.CHAR && surface == InputSurface.LETTERS && (shifted || capsLock) && ch != null && ch.isLetter() ->

@@ -37,7 +37,7 @@
     <string name="d89_f07_title">Baris angka permanen</string>
     <string name="d89_f07_desc">Angka berada di baris tersendiri di atas huruf, masing-masing dengan simbol Shift-nya satu tekan lama jauhnya; dapat dimatikan di pengaturan jika Anda suka.</string>
     <string name="d89_f08_title">Geser antara huruf dan simbol</string>
-    <string name="d89_f08_desc">Geseran ke kiri atau kanan di mana saja pada tombol berpindah antara halaman huruf dan kedua halaman simbol — tidak perlu mencari tombol kecil «?123».</string>
+    <string name="d89_f08_desc">Geseran ke kiri atau kanan di mana saja pada tombol berpindah antara halaman huruf dan kedua halaman simbol — tidak perlu mencari tombol kecil «!?#».</string>
     <string name="d89_f09_title">Pergantian bahasa dengan bilah spasi</string>
     <string name="d89_f09_desc">Geser ke kiri atau kanan pada bilah spasi untuk mengganti bahasa yang Anda ketik.</string>
     <string name="d89_f10_title">Geser untuk menghapus satu kata utuh</string>
@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Gestur kontrol kursor</string>
     <string name="d401_cursor_control_summary">Tekan lama bilah spasi untuk memindahkan kursor dengan menyeret; diam sejenak untuk beralih ke pemilihan teks.</string>
     <string name="d19_surface_swipe_title">Geser untuk berganti halaman keyboard</string>
-    <string name="d19_surface_swipe_summary">Geser ke kiri atau kanan di keyboard untuk beralih antara huruf dan halaman angka/simbol. Jika nonaktif, hanya tombol ?123 / ABC yang beralih. Saat mengetik geser aktif, halaman huruf hanya beralih melalui tombol ?123.</string>
+    <string name="d19_surface_swipe_summary">Geser ke kiri atau kanan di keyboard untuk beralih antara halaman huruf dan halaman simbol. Jika nonaktif, hanya tombol halaman (!?# / ?123 / ABC) yang beralih. Saat mengetik geser aktif, halaman huruf hanya beralih melalui tombol !?#.</string>
     <string name="g03_swipe_down_dismiss_title">Geser ke bawah untuk menutup keyboard</string>
     <string name="g03_swipe_down_dismiss_summary">Geser ke bawah pada keyboard untuk menutupnya. Jika nonaktif, hanya baris tambahan yang ditutup dan keyboard tetap terbuka.</string>
     <string name="d508_space_swipe_scale_title">Jarak geser bahasa</string>
@@ -159,10 +159,10 @@
     <string name="d32_summary">Berapa lama menahan tombol sebelum alternatifnya muncul, dalam md (D-32).</string>
     <string name="double_tap_delay_title">Jeda ketuk ganda</string>
     <string name="double_tap_delay_summary">Waktu maksimum antara dua ketukan agar dihitung sebagai ketuk ganda, dalam md - pengalih huruf besar/kecil Shift, ketuk ganda Backspace untuk membatalkan, dan Backspace lengket semuanya berbagi jendela ini.</string>
-    <string name="d507_combined_key_title">Tombol gabungan (?123/Emoji)</string>
-    <string name="d507_combined_key_summary">Apa yang dilakukan tombol gabungan di baris bawah: beralih ke lapisan angka/simbol (?123), membuka panel emoji, atau tidak sama sekali - tombolnya hilang dan tempatnya tetap kosong (D-507).</string>
+    <string name="d507_combined_key_title">Tombol gabungan (!?#/Emoji)</string>
+    <string name="d507_combined_key_summary">Apa yang dilakukan tombol gabungan di baris bawah: beralih ke halaman karakter khusus (!?#), membuka panel emoji, atau tidak sama sekali - tombolnya hilang dan tempatnya tetap kosong (D-507).</string>
     <string name="d507_mode_off">Nonaktif</string>
-    <string name="d507_mode_symbols">Hanya ?123</string>
+    <string name="d507_mode_symbols">Hanya !?#</string>
     <string name="d507_mode_emoji">Hanya emoji</string>
     <string name="d55_below_title">Ruang di bawah baris angka</string>
     <string name="d55_below_summary">Celah ekstra di bawah angka, dalam dp, untuk mengurangi ketukan meleset ke baris huruf atas (D-55).</string>
@@ -389,7 +389,7 @@
     <string name="d515_apostrophe_key_title">Tombol apostrof</string>
     <string name="d515_apostrophe_key_summary">Tampilkan tombol apostrof (di kanan l/m) juga pada papan ketik non-Inggris. Mati: hanya papan ketik Inggris.</string>
     <string name="d516_glide_typing_title">Mengetik geser (glide typing)</string>
-    <string name="d516_glide_typing_summary">Gambar sebuah kata dalam satu garisan menerus di atas huruf untuk mengetiknya. Dimatikan secara bawaan; saat aktif, halaman huruf hanya beralih melalui tombol ?123.</string>
+    <string name="d516_glide_typing_summary">Gambar sebuah kata dalam satu garisan menerus di atas huruf untuk mengetiknya. Dimatikan secara bawaan; saat aktif, halaman huruf hanya beralih melalui tombol !?#.</string>
     <string name="d89_f39_title">Mengetik geser (glide typing)</string>
     <string name="d89_f39_desc">Opsional: gambar sebuah kata dalam satu garisan menerus di atas huruf - padanan terbaik diketik untukmu, dengan kamus, pelipatan diakritik dan konteks pribadi. Dimatikan secara bawaan.</string>
     <string name="d89_footer_note">Catatan: sejak reformasi penugasan tombol alternatif, halaman huruf menyediakan hampir semua karakter relevan secara langsung - tombol sudut ganda, barisan digit dengan simbolnya sendiri, dan jendela pop tekanan panjang termasuk - mengetik sehari-hari tidak pernah perlu mampir ke halaman karakter khusus.</string>

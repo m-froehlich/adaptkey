@@ -37,7 +37,7 @@
     <string name="d89_f07_title">Doimiy raqamlar qatori</string>
     <string name="d89_f07_desc">Raqamlar harflar ustidagi o‘z qatorida turadi, har birining Shift belgisi bir uzoq bosish masofasida; xohlasangiz sozlamalarda o‘chirish mumkin.</string>
     <string name="d89_f08_title">Harflar va belgilar orasida surish</string>
-    <string name="d89_f08_desc">Tugmalarning istalgan joyida chapga yoki o‘ngga surish harflar sahifasi va ikkala belgilar sahifasi orasida almashtiradi — kichik «?123» tugmasini qidirish shart emas.</string>
+    <string name="d89_f08_desc">Tugmalarning istalgan joyida chapga yoki o‘ngga surish harflar sahifasi va ikkala belgilar sahifasi orasida almashtiradi — kichik «!?#» tugmasini qidirish shart emas.</string>
     <string name="d89_f09_title">Probel tugmasi bilan til almashtirish</string>
     <string name="d89_f09_desc">Yozish tilini almashtirish uchun probel tugmasida chapga yoki o‘ngga suring.</string>
     <string name="d89_f10_title">Butun so‘zni o‘chirish uchun surish</string>
@@ -113,7 +113,7 @@
     <string name="d401_cursor_control_title">Kursorni boshqarish ishorasi</string>
     <string name="d401_cursor_control_summary">Kursorni sudrab siljitish uchun probel tugmasini uzoq bosing; matn tanlashga o‘tish uchun qimirlamay turing.</string>
     <string name="d19_surface_swipe_title">Klaviatura sahifalarini surib almashtirish</string>
-    <string name="d19_surface_swipe_summary">Harflar va raqam/belgi sahifalari orasida o‘tish uchun klaviatura bo‘ylab chapga yoki o‘ngga suring. O‘chirilganda faqat ?123 / ABC tugmasi almashtiradi. Sirishtirib yozish yoqilganda harflar sahifasi faqat ?123 tugmasi orqali almashadi.</string>
+    <string name="d19_surface_swipe_summary">Harflar sahifasi va belgilar sahifalari orasida o\'tish uchun klaviatura bo\'ylab chapga yoki o\'ngga suring. O\'chirilganda faqat sahifa tugmalari (!?# / ?123 / ABC) almashtiradi. Sirishtirib yozish yoqilganda harflar sahifasi faqat !?# tugmasi orqali almashadi.</string>
     <string name="g03_swipe_down_dismiss_title">Klaviaturani yopish uchun pastga suring</string>
     <string name="g03_swipe_down_dismiss_summary">Klaviatura ustida pastga surish uni yopadi. O‘chirilganda faqat qo‘shimcha qator yopiladi va klaviatura ochiq qoladi.</string>
     <string name="d508_space_swipe_scale_title">Til almashtirish siljish masofasi</string>
@@ -159,10 +159,10 @@
     <string name="d32_summary">Variantlari paydo bo‘lishidan oldin tugmani qancha ushlab turish, ms da (D-32).</string>
     <string name="double_tap_delay_title">Ikkilangan bosish kechikishi</string>
     <string name="double_tap_delay_summary">Ikki bosish ikkilangan bosish hisoblanishi uchun ular orasidagi maksimal vaqt, ms da - Shift bilan registr almashtirish, bekor qilish uchun Backspace’ni ikki marta bosish va yopishqoq Backspace shu oynani baham ko‘radi.</string>
-    <string name="d507_combined_key_title">Birlashtirilgan tugma (?123/Emoji)</string>
-    <string name="d507_combined_key_summary">Pastki qatordagi birlashtirilgan tugma nima qiladi: raqam/belgilar qatlamiga o‘tish (?123), emoji panelini ochish yoki hech narsa - tugma yo‘qoladi va o‘rni bo‘sh qoladi (D-507).</string>
+    <string name="d507_combined_key_title">Birlashtirilgan tugma (!?#/Emoji)</string>
+    <string name="d507_combined_key_summary">Pastki qatordagi birlashtirilgan tugma nima qiladi: maxsus belgilar sahifasiga o\'tish (!?#), emoji panelini ochish yoki hech narsa - tugma yo\'qoladi va o\'rni bo\'sh qaladi (D-507).</string>
     <string name="d507_mode_off">O‘chirilgan</string>
-    <string name="d507_mode_symbols">Faqat ?123</string>
+    <string name="d507_mode_symbols">Faqat !?#</string>
     <string name="d507_mode_emoji">Faqat emoji</string>
     <string name="d55_below_title">Raqamlar qatori ostidagi bo‘shliq</string>
     <string name="d55_below_summary">Yuqori harflar qatorida adashgan bosishlarni kamaytirish uchun raqamlar ostidagi qo‘shimcha oraliq, dp da (D-55).</string>
@@ -389,7 +389,7 @@
     <string name="d515_apostrophe_key_title">Apostrof tugmasi</string>
     <string name="d515_apostrophe_key_summary">Apostrof tugmasini (l/m dan oʻngda) inglizcha boʻlmagan klaviaturalarda ham koʻrsatish. Oʻchirilgan: faqat inglizcha klaviaturalar.</string>
     <string name="d516_glide_typing_title">Sirishtirib yozish (glide typing)</string>
-    <string name="d516_glide_typing_summary">So\'zni harflar ustidan uzluksiz bir chiziq bilan chizing va yoziladi. Standart bo\'yicha o\'chirilgan; yoqilganda harflar sahifasi faqat ?123 tugmasi orqali almashadi.</string>
+    <string name="d516_glide_typing_summary">So\'zni harflar ustidan uzluksiz bir chiziq bilan chizing va yoziladi. Standart bo\'yicha o\'chirilgan; yoqilganda harflar sahifasi faqat !?# tugmasi orqali almashadi.</string>
     <string name="d89_f39_title">Sirishtirib yozish (glide typing)</string>
     <string name="d89_f39_desc">Ixtiyoriy: so\'zni harflar ustidan uzluksiz bir chiziq bilan chizing - eng yaxshi moslik siz uchun yoziladi; lug\'at, diakritik moslashtirish va shaxsiy kontekst bilan. Standart bo\'yicha o\'chirilgan.</string>
     <string name="d89_footer_note">Eslatma: alternativ tugma taqsimoti islohotidan beri harflar sahifasi deyarli barcha tegishli belgilarni to\'g\'ridan-to\'g\'ri mavjud qiladi - ikki burchakli tugmalar, o\'z belgilari bilan raqamlar qatori va uzoq bosish oynalari ham shu jumladan - kundalik yozish uchun maxsus belgilar sahifalariga murojaat qilish hech qachon kerak emas.</string>
