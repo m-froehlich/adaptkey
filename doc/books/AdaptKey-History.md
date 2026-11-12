@@ -25019,3 +25019,46 @@ on a password field, and the logged facts are geometry, not typed content.
 0 failures; `:app:assembleRelease` green with versionName 1.3.9 in the APK. NOT yet device-confirmed -
 D-533's space behaviour and D-534's log are what the next device pass and the community round are asked
 to verify.
+
+## §549 - D-535/D-536: the strand-the-active-press data-loss fix (Dauer-Backspace wiped the whole list), and the glide commit model corrected to defer the commit to the next word boundary (v1.3.9 -> v1.3.10, versionCode 609 -> 610)
+
+User report (2026-11-12, after installing 1.3.9): "ganz grob kaputt - ein Tastendruck blockiert den
+Main Thread und die Taste kann dauer gedrückt bleiben. Eben hat mir das via Dauer-Backspace meine
+komplette Liste weg gelöscht. Echter Datenverlust." Plus: the D-533 commit-at-lift model is wrong -
+"der Commit muss mit dem nächsten Wort passieren ... wenn ich den Finger absetze, darf das Wort
+keinesfalls schon committet werden."
+
+**D-535 - the root cause, found by code reading, not the log.** The attached log (settings-search
+window, zero `handleKey` lines, glide silent) pointed at the touch pipeline, and the §546/D-528
+rescue has a genuine release hole: at `ACTION_POINTER_UP` only the PARKED press's own finger was
+handled - when the ACTIVE (second, tracked) press's finger lifted FIRST while the parked companion
+was still down, the event fell through both branches. The active press was stranded: `pressedKey`
+never cleared (the key stayed pressed - the reported symptom), and a held backspace's accelerating
+repeat kept firing with no finger on the key - the repeat's own live guard
+(`pressedKey?.code != DELETE`) passed precisely BECAUSE the stranded state still said DELETE - until
+it reached D-31's word-deleting phase and wiped the whole text. Exactly the two-thumb overlap the
+rescue was built for; the pre-D-528 behaviour (second finger kills the whole sequence) never had this
+hole. Fix: the ACTION_POINTER_UP branch now runs the full release teardown for the tracked pointer's
+own lift (long-press arm, backspace repeat, fingerless popup, glide stroke, pressed state) plus the
+clean-tap commit D-528 promised ("both letters type") - never a swipe (the D-495 hazard; observed
+motion drops the action with a `dropTap: reason=pointer_up_over_stream` log). Parking also clears the
+parked key from the active-press state, so no stale reference feeds the repeat guard or the release
+diagnostics after the rescue.
+
+**D-536 - the glide commit model, corrected as the user specified.** The release commits NOTHING:
+the resolved word (casing incl. the Shift spend, learn flag - still decided at the release) parks in
+`glidePendingCommit`, and the composing preview stays a live, correctable token. The physical commit
+(word + trailing space through the chip machinery, punctuation eats it, D-123 guard) happens at the
+first word boundary: the next stroke's claim (`startGlideSession` finalizes the pending word first),
+a typed letter/digit/punctuation, Space, Enter, or the pinned candidate chip's explicit accept - that
+chip was a `-> Unit` no-op before and is now exactly the "accept now" affordance. Backspace edits the
+preview and drops the pending (the edited token commits with ordinary composing semantics). A pending
+word whose preview was torn down meanwhile is dropped, never ghost-inserted. The D-533 Space-swallow
+stays: after the boundary commit a habitual Space tap collapses into the finalize's own trailing
+space. D-533's commit-at-lift is thereby superseded one round after it shipped - the goal ("wie
+Gboard") stayed, the mechanism was wrong on exactly the correctability the user named.
+
+Spec G-09's D-533 addendum rewritten to the D-536 deferred model, D-535 addendum added to the §4
+overlap section. Build+tests green with versionName 1.3.10 in the APK. NOT yet device-confirmed - the
+overlap release path needs a deliberate two-finger repro (letter-then-backspace, second finger
+lifting first) and the deferred glide commit needs real glide use to judge.

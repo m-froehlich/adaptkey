@@ -453,6 +453,21 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
+- **D-535/D-536 - IMPLEMENTED (§549, v1.3.10/610), NOT yet device-confirmed: the strand-the-active-press
+  data-loss fix and the corrected glide commit model.**
+  - **D-535:** D-528's rescue stranded the ACTIVE press when its own finger lifted first via
+    ACTION_POINTER_UP (only the parked finger's lift was handled) - the key stayed pressed and a held
+    backspace's accelerating repeat kept firing unowned until D-31's word phase wiped the whole text
+    (the user's reported data loss). The POINTER_UP branch now runs the full release teardown plus the
+    clean-tap commit (never a swipe under overlap; motion drops with a log). Parking clears the parked
+    key from the active-press state. Spec §4's D-535 addendum.
+  - **D-536:** the glide release commits NOTHING any more (supersedes D-533's commit-at-lift, same
+    goal): the resolved word parks pending, the composing preview stays correctable/editable, and the
+    physical commit (word + trailing space, punctuation eats it) happens at the next word boundary -
+    the next stroke's claim, a typed character, Space, Enter, or the pinned chip's explicit accept
+    (which used to be a no-op). Backspace edits and drops the pending. Spec G-09's rewritten D-536
+    addendum.
+
 - **D-531/D-532/D-533/D-534 - IMPLEMENTED (§547+§548, v1.3.8/608 + v1.3.9/609), NOT yet
   device-confirmed: the page-navigation reform and the glide round.**
   - **D-531 (v1.3.8):** the letters page's combined key is the `!?#` special-characters-page toggle

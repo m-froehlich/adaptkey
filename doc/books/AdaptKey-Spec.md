@@ -532,6 +532,19 @@ service-side no-input-connection bail in `handleKey()`. MOVE handling reads the 
 pointer explicitly, so a parked finger's coordinates can never feed the active press's stroke,
 long-press-cancel, or popup selection gates.
 
+**D-535 addendum - the active press's own finger lifting first no longer strands it.** D-528's rescue
+handled the parked finger's lift and the last finger's ACTION_UP - but when the ACTIVE (second,
+tracked) press's finger lifted FIRST while the parked companion was still down, the release fell
+through both branches unhandled: the key stayed pressed indefinitely, and a held backspace's
+accelerating repeat (D-07/D-31, by then in its word-deleting phase) kept firing with NO finger on the
+key - the reported whole-list wipe (real data loss). The ACTION_POINTER_UP branch now runs the same
+teardown ACTION_UP's top runs (long-press arm, backspace repeat, popup, glide stroke, pressed state)
+plus the clean-tap commit the press earned (D-528's own "both letters type" promise) - never a swipe
+(classifying a swipe inside an overlapped stream is exactly the D-495 hazard; observed motion drops
+the action with a log line instead, `dropTap: reason=pointer_up_over_stream`). Parking itself also
+clears the parked key from the active-press state, so no stale reference can feed the repeat guard or
+the release diagnostics after the rescue.
+
 ### G-01 - Language Switch
 Swiping left or right on the space bar cycles the active input language through English (always first, the
 one language always available) plus every currently installed language pack (§9), in a fixed declaration
@@ -1043,18 +1056,23 @@ inferred letter sequence (the clearly-visited key centres) is inserted as a word
 keyboards, without being auto-added to the personal dictionary, without a toast; alternatives stay in
 the bar as ordinary chips to pick instead.
 
-**D-533 addendum - the word completes on the finger's lift.** The release commit carries a real
-trailing space (`suggestionTrailingSpace`, the exact chip-commit machinery: the armed
-`pendingSuggestionSpace` lets an immediately following sentence punctuation eat the space again per
-D-29, and D-123's suppress guard keeps the commit's own reclaim echo from clearing it) - the user's
-own call replacing §8.4's lazy auto-space: every word needs only the finger's lift, no Space press,
-and a word glided and then typed no longer glues. The lazy glide→glide insertion at the next stroke's
-start is removed outright (it was the reason the old commit carried no space). Two follow-on rules
-keep the separation honest: a manual Space pressed directly after the glide commit is swallowed while
-the flag is armed and the document really ends in a space (ground-truth verified - the habitual press
-must not double the separation, while a deliberate second Space still commits one), and punctuation
-behaviour is unchanged (the space before it is eaten, the next word glues to the punctuation, exactly
-as after a chip tap).
+**D-536 addendum (supersedes D-533's mechanism, same goal - the user's corrected commit model,
+2026-11-12): the release commits NOTHING; the word commits at the next word boundary.** When the
+finger lifts, the resolved word (casing incl. the pre-armed Shift's first-character spend, and the
+learn flag - decided at the release, `GlideCommitPolicy`) parks in the service's pending state and the
+composing preview stays exactly that: editable (Backspace drops the pending and the token becomes an
+ordinary hand-edited one), replaceable (the bar keeps the pinned candidate plus its alternates; the
+pinned chip is now the word's explicit "accept now" - a tap commits the stored word immediately, the
+release's own resolution verbatim), and uncommitted. The physical commit - word + trailing space
+through the chip machinery (`suggestionTrailingSpace`, the armed `pendingSuggestionSpace` so an
+immediately following sentence punctuation eats the space per D-29, D-123's suppress guard) - happens
+at the first word boundary: the next stroke's claim (its `startGlideSession` finalizes the pending
+word first, then begins the new token), a typed letter/digit/punctuation (which would otherwise
+extend or delimit the preview token), Space, Enter, or the chip accept. The D-533 Space-swallow
+stays and now serves the natural flow: after the boundary commit a habitual Space tap collapses into
+the finalize's own trailing space (armed flag + ground-truth read), and a comma eats it. A pending
+word whose preview was torn down meanwhile (field edge, external edit) is dropped, never ghost-inserted.
+D-533's commit-at-lift was wrong on exactly this point: lifting must leave the word correctable.
 
 **D-532 addendum - the glide icon and the extra-row shortcut.** The feature has its own icon now: the
 wavy dash `〰` (U+3030) - the one continuous stroke drawn across the letters - used both as the
