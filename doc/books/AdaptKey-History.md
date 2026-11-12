@@ -25132,3 +25132,40 @@ Spec §4's D-537 addendum extended with D-538. Build+tests green with versionNam
 NOT device-confirmed - the next log decides: `touchEvent: action=UP` lines appearing promptly after
 DOWNs (fix works at the source), or still late-paired (recovery keeps it usable; the search moves to
 the platform's IME input path).
+
+## §552 - D-539: the degraded-mode space fix - no cursor-control arm while touch UPs are being lost, orphaned space presses commit at the arm moment instead (v1.3.12 -> v1.3.13, versionCode 612 -> 613)
+
+User report (2026-11-12, on the correction round): "die Tastatur ist nicht benutzbar. Ich kann nur
+die normalen Tasten benutzen. Aber Space löst immer gleich den Longpress aus." Plus the pointed
+questions: is the new glide debug logging the cause (glide is off), and are we going in circles?
+
+The latest log answers the space question with the full mechanism visible: the space DOWN is
+orphaned (UP lost), the legitimate D-401 cursor-control long-press arms ~0.9-1.2 s into the dead
+press (playCursorControlStageHaptic at -25,4 s), the machine then captures the following DOWNs
+(no rawTap lines), and the user's caret jumped to the field start ([3,0] -> [0,0] EXTERNAL) - space
+untypeable and the caret teleported. My D-538b recovery could not save it: the user waits after a
+space (a word boundary!), so the next tap arrives far beyond the arm delay, and the arm had already
+cleared `pressedKey`.
+
+**The fix: a per-field degraded mode.** `touchUpLossDetected` (view state, reset per field from
+`onStartInput`): set by any recovery (each recovery is itself proof of the UP-loss condition).
+While set, `armCursorControl` skips arming entirely (`cursorControlArmSkipped:` logged) and instead
+commits the stranded press as a tap right at the arm moment - the space types ~one arm-delay late,
+the next taps stay ordinary letters, and the caret stays put. A long-press-fired strand now commits
+as well in a recovery (a fingerless popup commits nothing, so the base tap is the best available
+outcome; only an active backspace repeat still drops - its deletes already happened). Healthy
+sessions are untouched: the recovery only ever runs when the UP failed to clear `pressedKey`, and
+the flag resets at the next field, restoring the full cursor-control feature.
+
+**On the glide-logging hypothesis: ruled out with evidence.** Glide typing is off in all three
+logs and the D-534 instrumentation is inert then - every call site is behind
+`glideEligible`/`hasStroke`/session-state guards, and not one `[AdaptKeyGlide]` line appears in any
+of the three logs. The 1.3.9 delta is bigger than glide: it also shipped §546 (D-528/D-529/D-530)
+for the first time. D-528's single-finger path is line-for-line equivalent to the pre-§546 code, and
+the D-529/D-530 service changes touch only bar content and lookback reads - which is why the
+decisive next step is the bisect build below, not another blind change.
+
+Build+tests green with versionName 1.3.13 in the APK. NOT device-confirmed - and the decisive
+experiment is now in the user's hands: a 1.3.6-plus-instrumentation diagnostic build (the exact
+"Perfekt"-confirmed code, observing only) answers whether the UP-loss exists on the old code base
+on the current OS (device/preview-OS cause) or appears only after §546+ (regression in the delta).

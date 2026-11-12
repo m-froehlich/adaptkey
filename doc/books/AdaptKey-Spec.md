@@ -571,6 +571,15 @@ cancels its long-press arm before the ~400-500 ms arm fires in normal rhythm. In
 recovery stays a no-op (the arm clears `pressedKey`), leaving the machine's Stage-2 re-touch
 untouched.
 
+**D-539 addendum - the degraded mode: no cursor-control arm while UPs are being lost.** A space tap
+is the worst case of the lost-UP state (a word boundary invites a pause, the orphaned press arms the
+D-401 gesture, the machine eats the next taps, and the caret teleports). Per-field state
+(`touchUpLossDetected`, set by any recovery, reset per field): while set, `armCursorControl` skips
+arming and commits the stranded press as a tap at the arm moment; a long-press-fired strand commits
+too in a recovery (the popup was fingerless), backspace-repeat strands still drop. Healthy sessions
+are byte-identical - the flag resets per field and the recovery only runs when the UP failed to
+clear `pressedKey`.
+
 ### G-01 - Language Switch
 Swiping left or right on the space bar cycles the active input language through English (always first, the
 one language always available) plus every currently installed language pack (§9), in a fixed declaration

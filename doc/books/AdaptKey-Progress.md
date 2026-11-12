@@ -453,6 +453,15 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
+- **D-539 - IMPLEMENTED (§552, v1.3.13/613), NOT yet device-confirmed: the degraded-mode space fix.**
+  Per-field `touchUpLossDetected` (set by any recovery, reset per field): while set, the D-401
+  cursor-control arm is skipped and the stranded press commits as a tap at the arm moment (space
+  types ~one arm-delay late instead of never), long-press-fired strands commit too (fingerless popup
+  = base tap), backspace-repeat strands still drop. Healthy sessions untouched. Spec §4's D-539
+  addendum. Plus: glide-logging hypothesis ruled out with evidence (inert when off; zero
+  [AdaptKeyGlide] lines in all three broken-state logs) - the decisive experiment is the
+  1.3.6+instrumentation bisect build.
+
 - **D-538 - IMPLEMENTED (§551, v1.3.12/612), NOT yet device-confirmed: unbuffered touch dispatch +
   recovery before cursor routing.** The 1.3.11 log named the pattern: UPs arrive late, paired with the
   next DOWN; a SPACE tap's orphaned press arms D-401 cursor control and the machine eats the next taps
