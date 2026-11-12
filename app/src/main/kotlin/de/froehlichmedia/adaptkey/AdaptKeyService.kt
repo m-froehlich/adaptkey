@@ -1900,6 +1900,10 @@ class AdaptKeyService : InputMethodService() {
         // it, mirroring the plan's §3 surface list. Also kills any stroke still live from the
         // previous field (D-534: logged by the view).
         keyboardView?.resetGlideStroke()
+        // D-539: a fresh field gets fresh touch-loss detection - the degraded mode (cursor-control
+        // arm skipped, long-press-fired strands committing) is scoped to the session where the loss
+        // was actually observed, and a HEALTHY field re-enables the full feature set.
+        keyboardView?.touchUpLossDetected = false
         glideFieldAllowed = loginFieldKind == LoginFieldKind.NONE && !urlMode && !emailMode && !noSuggestionsField
         keyboardView?.glideFieldAllowed = glideFieldAllowed
         credentialCaptured = false

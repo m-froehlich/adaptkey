@@ -716,6 +716,15 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private var pressDownAtMs = 0L
     
     /**
+     * D-539: whether this field session has demonstrably lost touch UPs (any recovery fired). While
+     * set, the D-401 cursor-control arm is skipped ([armCursorControl]'s own guard) - an orphaned
+     * SPACE press must not capture the following taps - and stranded presses commit as taps even
+     * when their long-press had already fired (a fingerless popup commits nothing, so the base
+     * letter is the best available outcome). Reset per field from the service's onStartInput.
+     */
+    var touchUpLossDetected: Boolean = false
+    
+    /**
      * D-32: delay before a long-press fires (the alt char / popup). Set from the settings; defaults to
      * ~20 % below the system long-press timeout so the popup comes up sooner even without a stored value.
      */
@@ -1843,20 +1852,20 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     /**
-     * D-495: every way an in-flight key-touch sequence ends without its own release - a system
-     * ACTION_CANCEL, or a second pointer landing on the keyboard (D-495's ACTION_POINTER_DOWN branch).
-     * The exact body the ACTION_CANCEL branch always ran, extracted so both ends share it; also resets
-     * [touchTracker], so no later event of the stream can act on the dead sequence.
-     */
-    /**
      * D-537: the silent-loss safety net - a press still held in the view's state at a FRESH
      * ACTION_DOWN means its UP was lost (not delivered, or delivered as a silent system CANCEL; the
      * view has no silent clearing path of its own, and the reported broken build's logs matched this
-     * shape exactly). The stranded press is recovered instead of being silently overwritten: a clean
-     * tap commits (the letter still types - one tap behind), everything else (a fired long-press, an
-     * active repeat, observed motion) drops with its log line. Either way the stuck key un-presses,
-     * a running backspace repeat terminates here at the latest, and a fingerless popup dies - so the
+     * shape exactly). The stranded press is recovered instead of being silently overwritten: it
+     * commits as a plain tap (the letter still types - one tap behind), the stuck key un-presses, a
+     * running backspace repeat terminates here at the latest, and a fingerless popup dies - so the
      * next press always starts from a clean state.
+     *
+     * D-539: a long-press-fired strand commits too - the popup it opened was fingerless and commits
+     * nothing, so the base tap is the best available outcome; only an active backspace repeat still
+     * drops (its deletes already happened; committing would double them). The recovery can only ever
+     * run in the UP-loss state anyway - in a healthy session the UP always cleared `pressedKey`
+     * before any fresh DOWN - which is exactly why this doubles as the D-539 degraded mode's own
+     * commit path for the cursor-arm skip.
      *
      * Runs only at ACTION_DOWN (a new gesture can begin there only after the previous pointer left
      * the stream), never on the rescue path - an overlapped second finger goes through
@@ -1864,10 +1873,12 @@ class AdaptKeyboardView @JvmOverloads constructor(
      */
     private fun recoverStrandedPressIfAny() {
         val key = pressedKey ?: return
+        touchUpLossDetected = true
+        val strandedLongPress = longPressFired
         logTouch(
             "touchRecovered: reason=down_with_stuck_press key=${key.id} " +
                 "heldMs=${SystemClock.uptimeMillis() - pressDownAtMs} " +
-                "longPress=$longPressFired repeat=$backspaceRepeated motion=${touchTracker.motionWasObserved}"
+                "longPress=$strandedLongPress repeat=$backspaceRepeated motion=${touchTracker.motionWasObserved}"
         )
         cancelPendingLongPress()
         cancelBackspaceRepeat()
@@ -1875,7 +1886,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
         pressedKey = null
         pressedKeyRect = null
         invalidate()
-        if (!longPressFired && !backspaceRepeated) {
+        if (!backspaceRepeated) {
             flash(key)
             val tapX = downX
             val tapY = downY
@@ -2127,6 +2138,20 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * special case here, and specifically no commit of whatever word is currently composing.
      */
     private fun armCursorControl() {
+        // D-539: in a field session where touch UPs have demonstrably been lost (any recovery fired),
+        // an orphaned SPACE press arms cursor control and the machine then eats the following taps -
+        // Space becomes untypeable (the reported "Space löst immer gleich den Longpress aus"). The arm
+        // is skipped for the rest of the session instead, and the stranded press commits as a tap
+        // right here: the space types ~one arm-delay late, and the next taps stay ordinary letters.
+        // A genuine cursor-control hold in a HEALTHY session is unaffected - the flag only flips when
+        // a recovery proved the UP-loss condition, and resets at the next field.
+        if (touchUpLossDetected) {
+            logTouch(
+                "cursorControlArmSkipped: reason=touch_up_loss heldMs=${SystemClock.uptimeMillis() - pressDownAtMs}"
+            )
+            recoverStrandedPressIfAny()
+            return
+        }
         // D-528: the gesture mode owns the stream from here - a parked press cannot survive it (its
         // finger's lift is routed to the cursor-control machine and would otherwise dangle forever).
         parkedPress?.let { parked ->
