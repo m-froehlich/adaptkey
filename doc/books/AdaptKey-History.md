@@ -24743,3 +24743,72 @@ state: OPEN as the community-feedback round; no code changes from the user's own
 code change happens only against concrete community reports (thresholds, G-03 dominance, D-380 feel,
 the DE naming vs. the device's Gboard, and the plan's §6 checklist), with a bump only if code
 changes fall out, per the plan's R3 row.
+
+## §543 - D-519..D-522: the layout round - the tilde takes page 2's first key, the currency moves onto the d key with the world's ten currencies above it, and & and ^ join the letters page (v1.3.3 -> v1.3.4, versionCode 603 -> 604)
+
+Four layout wishes in one round, delivered as one pass ("Bitte sammle die folgenden Punkte und arbeite
+sie in einem ab"), each with its own D number so the cross-references stay precise:
+
+**D-519 - the tilde on the special-characters page.** Page 2 (the catch-all page) row 1's first key is
+the tilde now, replacing the euro key outright (`~•@©®Øƒ`): the old key, its four-currency popup and the
+whole `catchAllRow1Key` special case are gone. ~ keeps its other homes (the number row's 1-left corner,
+page 1's row 1) and gains this direct-tap one - exactly the C-09 fallback page's job.
+
+**D-520 - the currency key migrates onto the d key, improved.** "Die Währungstaste wandert auf die
+jetzige Position der Dollar-Taste" read as the letters page's d key right corner - the Alt-Belegungs-
+Reform's `$` release default (D-512's own "d = °|$" arrangement). The Host-Taste/Alt-Popup vocabulary of
+the request is the reform's own; page 2's pre-D-511 shifted-symbol row was never a candidate (D-511's
+ruling: nobody reaches that page to long-press things). The corner's glyph becomes the system region's
+own currency symbol, resolved by `CurrencyLocale` (pure, unit-tested): the answer to "Was brauchen wir?
+Die Systemsprache? Oder gibt es dort eine Region?" is the locale's REGION component, mapped through a
+curated country table (the top-10 regions plus the eurozone pinned deterministically, Switzerland/
+Liechtenstein to "Fr" where the JDK gives the unusable three-letter "CHF"), then the JDK's own
+`Currency.getSymbol` passthrough where it is already one or two glyphs (`kr`, `zł`, `R$`), then a
+currency-code fallback, then the euro - the D-92 calculator precedent's fallback. Language packs that
+own d (hr/cs đ/ď, az °) keep their letter as the release default via the standing first-variant rule,
+the currency demoting to an ordinary straddle extra; an explicit pack REMOVAL of d is respected (no
+resurrection), and the code-side ° left corner survives a removal untouched, exactly D-513's own rule.
+
+The popup is the request's explicit ordering, implemented as a new arrangement shape: `CurrencyLocale.
+RELEVANCE_ORDER` = $ € ¥ £ ₹ ₩ ₽ ₺ Fr R$ - the world's ten most relevant currencies in global relevance
+order, de-duplicated by GLYPH (¥ covers Yuan and Yen, $ covers every dollar sign; two identical cells
+could never be told apart by sliding). The primary (the key's corner) is never among the popup cells -
+the user's explicit "darf nicht im Popup enthalten sein" - so `HorizontalLongPressPopup.alternatingRow`
+places the ANCHOR (the most relevant other currency) directly over the host key and alternates the rest
+left/right around it in relevance order (German: euro on the key, dollar centred above it, yuan
+immediately left, pound immediately right), with the ° left corner keeping its straddle-convention first
+cell at the row's far left. Because the primary has no cell, the popup needs a NO-CELL-SELECTED sentinel:
+a straight long-press release commits the key's own default corner (the D-509 contract preserved - the
+corner glyph drawn on the key is exactly what a plain release types), and only a genuine slide selects
+and commits a cell. `Key.alternatingPopup` is the data flag the view places by. "Fr" is all letters, so
+`AlternativeScript` gained an exact-match symbol-word exclusion for it - otherwise the shared
+extendsWord gate would uppercase it under Shift ("FR") and commit it as word text; "R$" fails the
+all-letters check on its own.
+
+**D-521 - the ampersand redundant on the letters page.** k joins `DEFAULT_LETTER_HINTS` with `&` as its
+right corner (the user's "Ich schlage das K vor. Rechtes Ecksymbol."), redundant to the number row's
+7-right-corner & which stays put (C-09's hidden-row motivation). A pack owning k (pl/cs/sv/... k=%,
+Dutch k=&, lv k=ķ) keeps its letter as the release default per the universal-base append rule. Data
+parity: German's pack hints.tsv gains `k=&` (version.txt 50 -> 51, zip rebuilt and verified by reading
+both files back out of the archive, `LanguagePackCatalog` version 50 -> 51) - the compiled-in base
+delivers the symbol to older installed packs through the union merge either way.
+
+**D-522 - the caret redundant on the letters page.** The reform's second geometry-stable slot beside
+the + slot: the top-row key sitting under the number row's 6 (z QWERTZ, y QWERTY, y AZERTY) carries ^
+as its LEFT corner. A slot, not a letter assignment, for the same §2.8 reason as the plus slot - and a
+LEFT corner deliberately, because a language letter owning the right corner (cs z=ž, fr y=â, pl z=ż,ź)
+must keep it as the release default; a key with no right corner (German/English z/y) makes the lone
+left corner its release default, so German hold-z types ^ directly. The number row's 6-right-corner ^
+stays - the redundancy's other half.
+
+Two rejections worth the record: the 7-key-style grow arrangement (extras attaching on one grow side)
+would have violated the user's explicit alternating sketch, so the alternating shape is new code, not a
+D-510 reuse; and keeping the primary as the popup's pre-selected cell (Design-B-style) was declined on
+the user's explicit no-duplicate rule - the sentinel is what keeps the corner contract intact without
+that cell. The D-89 feature catalog is deliberately untouched: f06/f32's statements ("common symbols as
+long-press hints", "calculator currency follows the device region") remain true.
+
+1,930 unit tests, 0 failures; `:app:assembleRelease` green with versionName 1.3.4 in the APK. NOT yet
+device-confirmed - the round stays OPEN until the user has tried the three slots and the currency popup
+on the device (the anchor-over-host placement in particular is a first-pass geometry, clamped at the
+screen edges for the 10-cell row, easy to retune against a real report).

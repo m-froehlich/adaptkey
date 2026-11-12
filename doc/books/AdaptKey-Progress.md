@@ -453,6 +453,25 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
+- **D-519..D-522 - the layout round (§543, v1.3.4) - IMPLEMENTED, NOT yet device-confirmed: the tilde
+  takes the special-characters page's first key, the currency moves onto the letters page's d key with
+  the world's ten currencies above it, and & and ^ become redundant on the letters page.** D-519: page 2
+  row 1 leads with ~ (the € key and its popup gone; € stays on the e key's corner and the calculator
+  column). D-520: the d key's reform corner ($) becomes the currency slot - `CurrencyLocale` resolves the
+  system REGION's symbol (curated top-10 country table > JDK short symbol > currency-code fallback >
+  euro default), pack-owned d letters keep their corner with the currency demoted to a straddle extra,
+  removals respected; the popup = the world's ten most relevant currencies minus the primary
+  ($ € ¥ £ ₹ ₩ ₽ ₺ Fr R$, glyph-deduplicated), placed by the new alternating arrangement
+  (`HorizontalLongPressPopup.alternatingRow`): the anchor cell directly over the host key, the rest
+  alternating left/right, NO pre-selected cell - a straight long-press release commits the key's own
+  corner (the D-509 contract, via the new `Key.alternatingPopup` + view sentinel), a slide commits a
+  cell. D-521: k carries & as its right corner (pack-owned k keeps its letter; German pack v51 data
+  parity, catalog bumped). D-522: the caret slot - ^ as the left corner of the top-row key under the 6
+  (z QWERTZ, y QWERTY, y AZERTY), a language letter keeping its right corner. 1,930 unit tests,
+  0 failures; `:app:assembleRelease` green. Closes on the user's device confirmation - the anchor
+  placement is first-pass geometry (the 10-cell row clamps at the screen edges), retune against a real
+  report only. See §543 and spec L-05/L-08's D-519..D-522 addenda.
+
 - **D-516/G-09 glide-typing ("Gesteeneingabe"/Glide-Typing) - R3 (D-518, §542) OPEN as the
   community-feedback round since 2026-11-06.** R2 (D-517, §541, v1.2.106) implemented and installed
   by the user; **his own verdict: "komme damit gar nicht klar" - explicitly a no-glide-experience
