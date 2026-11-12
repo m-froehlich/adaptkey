@@ -24855,3 +24855,34 @@ currency key) keep their ordinary placements.
 1,927 unit tests, 0 failures; `:app:assembleRelease` green with versionName 1.3.5 in the APK. NOT yet
 device-confirmed - closes together with §543's round on the user's device check (the D-525 symmetric
 placement and the page-2 currency key's anchor geometry in particular are first-pass).
+
+## §545 - D-526/D-527: the popup placement strategy confirmed and implemented correctly - the corner pair always centred, extras queueing outward right-first, one-sided on space exhaustion; the currency key painted like an ordinary symbol key (v1.3.5 -> v1.3.6, versionCode 605 -> 606)
+
+Device feedback on §543+§544: the apostrophe key "perfekt", the restored d key "wieder gut", the page-2
+currency key's content right - but it rendered GREY, and the D-525 symmetric arrangement was "völlig
+irre". The user restated the intended strategy and had it summarised back BEFORE any code (a first for
+this collaboration, and the reason this round needed no correction round of its own):
+
+**D-526 - the confirmed placement, implemented as stated.** One alt = the single-cell popup with D-54's
+toward-the-centre nudge (unchanged). Two alts = the pair exactly centred over the host key (unchanged).
+From the THIRD symbol on: the corner PAIR STAYS CENTRED over the host key - exactly where the
+two-symbol popup puts it, never moving - and the extras queue OUTWARD around it, alternating RIGHT
+FIRST in their list order (the first extra immediately right of the pair, the second immediately left,
+the third right again outside the first). When a side has run out of room at the screen edge, all
+remaining extras queue only on the other side; the pair itself only shifts when even it cannot sit
+centred. The `7` key renders `\ / & ÷ ⁷` (pair `/ &` centred over the host), the `2` key
+`² " @ ' ₂`; the `1` key keeps `~ ! ¹` and the `0` key keeps `⁰ = )` - the old edge-flip shapes now
+fall out of the general rule instead of special cases. Implementation: `cornerRowPlacement` rewritten
+(the signature now takes maxRight, the absolute right bound; `symmetricCornerRow` and the D-510
+`extrasTrailingRow`/`extrasLeadingRow` flips removed - their shapes emerge from the space-aware
+queueing), the pair anchored at `keyCenterX - pairWidth/2` clamped into bounds, extras attached with
+per-side room checks and exhaustion flags, the release default staying the right-corner cell (always
+the pre-selected cell) in every arrangement.
+
+**D-527 - the currency key's paint.** The grey came from the §53 TEXT key type: every non-CHAR key
+wears the muted function-key background (sin/deg/ABC/www. styling), and the currency key only ever
+needed TEXT for its two-glyph primaries. `Key.specialStyling` (default true) opts a TEXT key out - the
+currency key paints with the ordinary character-key background, no grey.
+
+1,926 unit tests, 0 failures; `:app:assembleRelease` green with versionName 1.3.6 in the APK. NOT yet
+device-confirmed - the round closes with the user's next device check of the new arrangement.

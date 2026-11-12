@@ -453,30 +453,34 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
-- **D-519..D-525 - the layout round (§543+§544, v1.3.5) - IMPLEMENTED, NOT yet device-confirmed: the
+- **D-519..D-527 - the layout round (§543+§544+§545, v1.3.6) - IMPLEMENTED, NOT yet device-confirmed: the
   tilde and the currency key on the special-characters page, & and ^ redundant on the letters page, the
-  apostrophe key's corner fixed, wide corner popups symmetric.** D-519: page 2 row 1 leads with ~ (the
-  € key gone; € stays on the e key's corner and the calculator column). D-523 (§544's correction of the
-  §543 D-520 attempt, which had overloaded the d key and was fully reverted): page 2's shifted-symbols
-  row `$` position is the currency key - the region's own symbol (`CurrencyLocale`: curated country
-  table > JDK short symbol > currency-code fallback > euro) as a §53 TEXT key committing verbatim on
-  tap, the world's ten most relevant currencies minus the primary ($ € ¥ £ ₹ ₩ ₽ ₺ Fr R$,
+  apostrophe key's corner fixed, and the popup placement per the user's confirmed strategy.** D-519: page
+  2 row 1 leads with ~ (the € key gone; € stays on the e key's corner and the calculator column). D-523
+  (§544's correction of the §543 D-520 attempt, which had overloaded the d key and was fully reverted):
+  page 2's shifted-symbols row `$` position is the currency key - the region's own symbol (`CurrencyLocale`:
+  curated country table > JDK short symbol > currency-code fallback > euro) as a §53 TEXT key committing
+  verbatim on tap, the world's ten most relevant currencies minus the primary ($ € ¥ £ ₹ ₩ ₽ ₺ Fr R$,
   glyph-deduplicated) above it in the alternating anchor-centred arrangement
   (`HorizontalLongPressPopup.alternatingRow`, `Key.alternatingPopup`, no pre-selected cell, a straight
   release committing the key's own symbol via the view's sentinel); the plain $ stays the popup's anchor
   cell (non-dollar regions) and on the number row's 4-corner; the letters page is the reform's exact
-  °|$ again. D-521: k carries & as its right corner (pack-owned k keeps its letter; German pack v51
-  data parity, catalog bumped). D-522: the caret slot - ^ as the left corner of the top-row key under
-  the 6 (z QWERTZ, y QWERTY, y AZERTY), a language letter keeping its right corner. D-524: the
-  apostrophe key is single-cornered now - `"` the release default, a long-press commits the double
-  quote directly (the old `" | '` pair made the key re-commit its own apostrophe). D-525: dual-corner
-  popups with two or more extras stay SYMMETRIC (`symmetricCornerRow` replaces the one-sided D-510 grow
-  split): corners at the flanks, extras interleaving right/left in turn around the centre, the first
-  extra nearest the centre on the right - the 7 key `/ \ ÷ ⁷ &`, the 2 key `" ² ' ₂ @`; ≤1-extra rows
-  unchanged, the release default stays the right corner. 1,927 unit tests, 0 failures;
-  `:app:assembleRelease` green. Closes on the user's device check - the D-525 symmetric placement and
-  the page-2 currency key's anchor geometry are first-pass, retune against a real report only. See
-  §543+§544 and spec L-05/L-08's D-519..D-525 addenda.
+  °|$ again. D-527 (§545): the currency key opts out of the muted TEXT-key styling
+  (`Key.specialStyling = false`) - it paints like an ordinary character key, no grey. D-521: k carries &
+  as its right corner (pack-owned k keeps its letter; German pack v51 data parity, catalog bumped).
+  D-522: the caret slot - ^ as the left corner of the top-row key under the 6 (z QWERTZ, y QWERTY,
+  y AZERTY), a language letter keeping its right corner. D-524: the apostrophe key is single-cornered -
+  `"` the release default, a long-press commits the double quote directly (the old `" | '` pair made the
+  key re-commit its own apostrophe). D-526 (§545, the user's confirmed strategy - summarised back and
+  signed off before coding, replacing the rejected D-525 symmetric interleave and the D-510 grow split):
+  dual-corner popups keep the corner PAIR centred over the host key in every arrangement, and from the
+  third symbol on the extras queue outward around it, alternating right-first in list order, one-sided
+  once a side runs out of room at the screen edge - the 7 key `\ / & ÷ ⁷`, the 2 key `² " @ ' ₂`, the
+  1 key `~ ! ¹`, the 0 key `⁰ = )`; the release default stays the right-corner cell
+  (`cornerRowPlacement` rewritten, maxRight signature, the flip/grow/symmetric helpers removed).
+  1,926 unit tests, 0 failures; `:app:assembleRelease` green. Closes on the user's device check - the
+  D-526 placement and the page-2 currency key's anchor geometry are first-pass, retune against a real
+  report only. See §543+§544+§545 and spec L-05/L-08's D-519..D-527 addenda.
 
 - **D-516/G-09 glide-typing ("Gesteeneingabe"/Glide-Typing) - R3 (D-518, §542) OPEN as the
   community-feedback round since 2026-11-06.** R2 (D-517, §541, v1.2.106) implemented and installed

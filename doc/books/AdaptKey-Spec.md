@@ -224,10 +224,12 @@ grows left): the FIRST extra stays in the middle between the two corners directl
 remaining extras attach on the grow side, and the placement anchors that middle cell over the key centre -
 the `7` key renders as `\ ⁷ / ÷ &` with `/ ÷ &` directly over the host (slash left, division sign centre,
 ampersand right) and the backslash/superscript hanging left; the `2` key mirrors it as `" ' @ ² ₂`
-growing right. **D-525 superseded this wide case**: the row stays SYMMETRIC now - both corners keep the
-two-symbol flank positions (over the host key's edges once the row is centred) and the extras interleave
-right/left in turn around the centre, the first extra nearest the centre on the right side (the `7` key
-as `/ \ ÷ ⁷ &`, the `2` key as `" ² ' ₂ @`); see L-05's D-519..D-525 addendum.
+growing right. **D-526 superseded this wide case (and the brief D-525 symmetric interleave)**: the
+corner pair stays CENTRED over the host key in every arrangement - exactly where the two-symbol popup
+puts it - and from the third symbol on the extras queue OUTWARD around it, alternating right-first
+(the `7` key as `\ / & ÷ ⁷` with `/ &` centred over the host, the `2` key as `² " @ ' ₂`); a side that
+has run out of room at the screen edge receives all remaining extras alone (the `1` key keeps
+`~ ! ¹`, the `0` key keeps `⁰ = )`). See L-05's D-519..D-527 addendum.
 
 Frequently used symbols are placed as secondary characters on letter keys, reachable by long-press and shown
 as a small hint glyph in the corner of the key - analogous to the AltGr labels on a hardware QWERTZ
@@ -288,10 +290,10 @@ switch ("Apostrophe key", `d515_apostrophe_key`, default **off**) is on - a Germ
 its canonical length unless the user opts in, since the changed home row is exactly what a German-speaking
 community would take against the reform. The switch is Layout-category-scoped and rides in backups.
 
-**D-519..D-525 addendum - the currency key on the special-characters page, the ampersand and caret on the
-letters page, and the symmetric wide-popup arrangement.** Five mechanisms from one layout round (the
-D-520 attempt that first put the currency on the d key was reverted by D-523 - the letters page is back
-to the reform's exact data, and the currency key lives on the special-characters page):
+**D-519..D-527 addendum - the currency key on the special-characters page, the ampersand and caret on the
+letters page, the apostrophe key's corner, and the confirmed wide-popup arrangement.** The mechanisms from
+the layout rounds (the D-520 attempt that first put the currency on the d key was reverted by D-523 - the
+letters page is back to the reform's exact data, and the currency key lives on the special-characters page):
 
 - **D-523 (the currency key, on the special-characters page's shifted-symbols row).** The row's own `$`
   position is the currency key: its identity IS the system region's currency symbol, resolved by
@@ -324,14 +326,21 @@ to the reform's exact data, and the currency key lives on the special-characters
   the D-512/D-513 addendum above): a long-press commits the double quote directly - the reform's
   original `" | '` pair made the apostrophe its own long-press release default, which re-committed what
   a plain tap already types.
-- **D-525 (the symmetric wide-popup arrangement).** A dual-corner key's popup with TWO OR MORE extras
-  (four or more cells) is no longer the D-510 one-sided grow split (which hung the far cells far too
-  wide of the host): the row stays symmetric, with both corners keeping the two-symbol flank positions
-  (left corner first, right corner last - over the host key's edges once the row is centred) and the
-  extras interleaving RIGHT AND LEFT IN TURN around the row's centre, the first extra landing nearest
-  the centre on the right side (`HorizontalLongPressPopup.symmetricCornerRow`; the `7` key renders as
-  `/ \ ÷ ⁷ &`, the `2` key as `" ² ' ₂ @`). Rows with at most one extra keep the plain centred
-  arrangement, which already reads exactly like this; the release default stays the right-corner cell.
+- **D-526 (the confirmed wide-popup arrangement).** A dual-corner key's popup keeps the CORNER PAIR
+  CENTRED over the host key in every arrangement - exactly where the two-symbol popup puts it (the
+  left-corner cell over the key's left corner, the pre-selected right-corner cell over its right
+  corner). From the THIRD symbol on, the extras queue OUTWARD around that pair, alternately: the first
+  extra immediately RIGHT of the pair, the second immediately LEFT, the third right again outside the
+  first (`HorizontalLongPressPopup.cornerRowPlacement`; the `7` key renders as `\ / & ÷ ⁷` with `/ &`
+  centred over the host, the `2` key as `² " @ ' ₂`). When one side has run out of room (the screen
+  edge), all remaining extras queue only on the other side - the `1` key keeps `~ ! ¹` and the `0` key
+  keeps `⁰ = )`, the same shapes the old edge flips produced, now as the general rule. The release
+  default stays the right-corner cell in every arrangement. (Supersedes the D-510 grow split and the
+  brief D-525 symmetric interleave.)
+- **D-527 (the currency key's paint).** The currency key is a §53 [KeyCode.TEXT] key - the only reason
+  is the two-glyph primaries - and TEXT keys otherwise wear the special function-key styling (the
+  muted background of sin/deg/ABC/www.). The key opts out via `Key.specialStyling = false` and paints
+  like any character key: an ordinary symbol key in role, no grey.
 
 Operationally this is a compiled-in universal BASE (the reformed German map, right corners + the per-key
 left corners as code) plus every pack's `hints.tsv` as a DELTA, merged by UNION - not the pre-reform
