@@ -453,6 +453,16 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
+- **D-537 - IMPLEMENTED (§550, v1.3.11/611), NOT yet device-confirmed: the lost-touch-UP recovery and
+  the touch-delivery instrumentation.** The broken build's logs showed DOWNs processed but no
+  `handleKey` and no exit line for any release - UPs not reaching the view (lost or silent CANCEL);
+  every new DOWN silently overwrote the stranded press (lost letters, stuck key, the Dauer-Backspace
+  wipe). Now: a stranded press at a fresh ACTION_DOWN is recovered (clean tap commits one-behind,
+  repeat/long-press strands drop with a log, the stuck key un-presses, the repeat terminates), every
+  non-MOVE touch action logs at entry (`touchEvent:`), silent cancels name their press
+  (`touchCancelled:`), recoveries log their facts (`touchRecovered:`). The next repro's log names the
+  real delivery pattern. Spec §4's D-537 addendum.
+
 - **D-535/D-536 - IMPLEMENTED (§549, v1.3.10/610), NOT yet device-confirmed: the strand-the-active-press
   data-loss fix and the corrected glide commit model.**
   - **D-535:** D-528's rescue stranded the ACTIVE press when its own finger lifted first via

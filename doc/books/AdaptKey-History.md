@@ -25062,3 +25062,42 @@ Spec G-09's D-533 addendum rewritten to the D-536 deferred model, D-535 addendum
 overlap section. Build+tests green with versionName 1.3.10 in the APK. NOT yet device-confirmed - the
 overlap release path needs a deliberate two-finger repro (letter-then-backspace, second finger
 lifting first) and the deferred glide commit needs real glide use to judge.
+
+## §550 - D-537: the broken build root-caused to lost touch UPs - stranded presses are recovered at the next DOWN, and every touch event's delivery is now visible in the log (v1.3.10 -> v1.3.11, versionCode 610 -> 611)
+
+User report (2026-11-12, on the correction round): "Leider besteht das Problem noch." The attached
+Keep-session log pins the shape down for good: TWELVE rawTaps (`f h e t x s d g z s c e`, each with
+its press haptic, four with long-press popup haptics at ~300-400 ms holds) and **not one `handleKey`
+line** - and no `dropTap`/`tapParked`/`dead_release` exit line either, for any of them. Combined with
+the first log, the pattern is conclusive: DOWNs are processed, UPs never produce any outcome. The
+view has no silent clearing path of its own (every `pressedKey` null site either commits, logs, or is
+the UP itself), so the UPs are not being delivered to the view - lost outright, or arriving as a
+silent system CANCEL (whose only log line fires with a parked press present, which was never the
+case here). Every new DOWN then silently OVERWROTE the stranded press - the letter lost with no
+trace, the key visually stuck pressed, and a held backspace's accelerating repeat still armed
+(pressedKey still says DELETE) - the reported whole-list wipe. Why the UPs went missing is not in
+this codebase's touch path at all (no change between the working and broken builds touches event
+delivery); sdk=37 is an Android preview build, so a system/driver-level cause is plausible - the
+instrumentation below is what will name it definitively.
+
+**D-537a - the recovery (the fix that makes the keyboard work even with lost UPs).** At every fresh
+ACTION_DOWN, a stranded `pressedKey` is recovered instead of overwritten (`recoverStrandedPressIfAny`):
+a clean tap (no fired long-press, no backspace repeat) commits as a plain tap - flash, posted to the
+listener, the D-219 frame-order pattern - so the previous letter still types (one tap behind); a
+non-clean strand (popup already fired, repeat active) drops with its line. Either way the stuck key
+un-presses, the backspace repeat TERMINATES at the latest at the next DOWN, and a fingerless popup
+dies - the Dauer-Backspace data-loss window is bounded to the inter-tap gap. The recovery logs
+`touchRecovered: reason=down_with_stuck_press key=... heldMs=... longPress=... repeat=...` so the
+broken sessions become countable in the field log.
+
+**D-537b - the delivery instrumentation.** `onTouchEvent` now logs every non-MOVE action at entry
+(`touchEvent: action=DOWN/UP/CANCEL/POINTER_DOWN/POINTER_UP pointers=... pointerId=...`), and the
+silent CANCEL path logs its active press (`touchCancelled: key=... heldMs=...`). The next repro's log
+answers the root-cause question directly: UP lines present (search returns to this file), UP absent
+(events genuinely lost), or CANCEL lines (the system cancels each gesture - then the cancel source
+is the next thing to hunt).
+
+Build+tests green with versionName 1.3.11 in the APK. NOT device-confirmed: the user should install
+this build, type normally, and send the log again - the `touchEvent:`/`touchRecovered:` lines will
+show the real delivery pattern, and typing should already be usable (recovered taps trail one behind)
+with the Dauer-Backspace bounded.

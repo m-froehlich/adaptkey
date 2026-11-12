@@ -545,6 +545,22 @@ the action with a log line instead, `dropTap: reason=pointer_up_over_stream`). P
 clears the parked key from the active-press state, so no stale reference can feed the repeat guard or
 the release diagnostics after the rescue.
 
+**D-537 addendum - lost touch UPs are recovered at the next DOWN, and every event's delivery is
+logged.** The broken-build logs (§549+§550) showed the conclusive shape: DOWNs processed (rawTap +
+haptics, long-press popup haptics on held keys), but not one handleKey line and no exit line for any
+release - the UPs were never reaching the view (lost outright, or arriving as a silent system CANCEL
+whose log only fires with a parked press present). Every new DOWN then silently overwrote the
+stranded press: the letter lost without a trace, the key visually stuck, a held backspace's
+accelerating repeat still armed with `pressedKey` still reading DELETE - the whole-list wipe. No
+change between the working and broken builds touches event delivery (sdk=37 is an Android preview
+build; a system/driver-level cause is plausible), so the response is two-fold: at every fresh
+ACTION_DOWN a stranded press is recovered instead of overwritten (`recoverStrandedPressIfAny` - a
+clean tap commits as a plain tap, one tap behind; a fired long-press/repeat strand drops; the stuck
+key un-presses, the backspace repeat terminates, a fingerless popup dies), and every non-MOVE touch
+action is logged at entry (`touchEvent: action=...`), with the silent CANCEL path naming its active
+press (`touchCancelled:`) and each recovery logging its own facts (`touchRecovered:`) - so the next
+repro names the real delivery pattern (UP present / UP absent / CANCEL) definitively.
+
 ### G-01 - Language Switch
 Swiping left or right on the space bar cycles the active input language through English (always first, the
 one language always available) plus every currently installed language pack (§9), in a fixed declaration
