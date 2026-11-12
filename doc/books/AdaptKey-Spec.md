@@ -501,8 +501,21 @@ This is what closed the reported "tap `a`, then very quickly SPACE → the page 
 and its vertical twin "fast top-row/bottom-row typing dismisses the keyboard" - two separate taps could
 compose into one field-swipe displacement. Additionally, a release from a sequence that never moved
 beyond the touch slop can only ever be a tap, never a swipe (the continuity gate; real swipes always
-deliver move events, including the short G-01). The first tap of an overlapped pair stays uncommitted -
-conservative by decision, rescuing it is a separate future question.
+deliver move events, including the short G-01).
+
+**D-528 addendum - the overlapped first tap is rescued instead of lost.** The above kill now applies
+only to the states that genuinely need single-pointer exclusivity (a fired long-press, an open
+alternatives popup, a held backspace, a claimed glide stroke, an already-parked press): a still-clean
+tap is **parked** intact - its pointer id, key, contact point, ambiguity and tap record frozen - and
+the incoming pointer begins an ordinary press of its own. A parked press commits as a plain tap at its
+own finger's lift (never as a swipe; its long-press arm dies with the park), so two fast overlapping
+taps now type both letters instead of dropping the first. The swipe mis-composition D-495 closed stays
+impossible by construction: swipe classification remains per-press, and every exclusivity state keeps
+the full kill. Every outcome is logged (`tapParked` / `dropTap: reason=... refused=...`) - the silent
+losses the D-495 era left invisible in field logs are now distinguishable on device, as is the
+service-side no-input-connection bail in `handleKey()`. MOVE handling reads the live sequence's own
+pointer explicitly, so a parked finger's coordinates can never feed the active press's stroke,
+long-press-cancel, or popup selection gates.
 
 ### G-01 - Language Switch
 Swiping left or right on the space bar cycles the active input language through English (always first, the

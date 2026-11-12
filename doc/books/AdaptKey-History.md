@@ -24886,3 +24886,56 @@ currency key paints with the ordinary character-key background, no grey.
 
 1,926 unit tests, 0 failures; `:app:assembleRelease` green with versionName 1.3.6 in the APK. NOT yet
 device-confirmed - the round closes with the user's next device check of the new arrangement.
+
+## §546 - D-528/D-529/D-530: the overlapped first tap is rescued instead of lost (gated parked press), every silent tap drop becomes visible in the log, and the commit path's redundant suggestion work is deduplicated (v1.3.6 -> v1.3.7, versionCode 606 -> 607)
+
+Community report (Pixel 9a): "if I type fast, it gets stuck in every 2-4 words and skip 3-4 letter".
+The accompanying repro log proves the letter-loss class directly: an `a` tap at -62.2s is fully
+recognised (`rawTap` logged, haptic played, key cleanly resolved) yet never processed - no flash
+painted, no `handleKey` (whose D-217 `finally` logs unconditionally), composing never became "wa",
+and the committed field text confirms "w ". The tap died between ACTION_DOWN and the posted key
+handling, i.e. in one of `onTouchEvent`'s completely unlogged drop gates; the same log shows the
+"stuck" half (a key processed ~200ms late with its flash never painted, `SPACE processed in 52ms`,
+`DELETE in 101ms`) and earlier drops in `tokenContextBefore` ("is seems", "wprking"). D-495's own
+conservative decision - a second pointer landing while a press is live kills the whole sequence, and
+`TouchSequenceTracker`'s KDoc explicitly deferred "rescuing it is a separate future decision" - is
+the dominant suspected cause, since overlapping taps are routine in fast rolling/two-thumb typing.
+
+**D-528 - the rescue (gated parked press) + full drop diagnostics.** At ACTION_POINTER_DOWN the pure
+new `gesture/OverlapRescuePolicy` decides: a still-clean tap (no fired long-press, no open popup, no
+backspace hold, no claimed glide stroke, none parked yet) is PARKED intact - pointer id, key, rect,
+downX/Y, ambiguity, record weight/size and downAtMs frozen into a `ParkedPress` - and the incoming
+pointer begins an ordinary press through the extracted `beginPress()` (the exact former ACTION_DOWN
+body). Each press commits at its own pointer's lift as a plain tap: ACTION_POINTER_UP gains a
+parked-commit branch, ACTION_UP handles a parked lift when the parked finger lifts last. A parked
+press never swipes and its pending long-press arm dies with the park, so D-495's fix (two taps must
+never compose into one swipe) stays true by construction; an unclaimed glide stroke ends silently
+with the park (`resetGlideStroke()`), a claimed one keeps the kill (plan §4.1.3). ACTION_MOVE is now
+pointer-aware - the active press is fed its own pointer's coordinates via `findPointerIndex` (the
+D-401 machine's pattern), which also fixes the latent bug of a parked finger's pointer-0 coordinates
+feeding the active press's stroke, long-press-cancel and popup gates. `armCursorControl()` and
+`cancelActiveTouchSequence()` clear a parked press with its own log line. Every silent exit now logs
+(D-243 style): `tapParked:`, `dropTap: reason=second_pointer_down refused=<reason>`, `sequence_cancelled`,
+`dead_release`, `cursor_control_armed`, plus the service's logless `handleKey` null-IC bail
+(`handleKey: dropped key=... reason=no_input_connection`) that sits before the D-217 finally.
+
+**D-529 - identical suggestion-bar pushes skipped.** After every word commit the same content reaches
+`setSuggestionBarItems` 2-4 times (`showNextWordPredictions` and `armShiftForNextWord` both call
+`showSuggestions()`; the debounced Shift re-derivation adds more) - visible as the repeated identical
+`showSuggestions:` lines in the repro log, each re-running the adapter submit and the visibility
+syncs for zero visual change, in exactly the window where the next tap already lands. The choke point
+now skips an identical consecutive effective list; the blacklist takeover rides the same comparison
+and stays never-swallowed, and the always-visible bar (D-50) makes skipping visibility-safe.
+
+**D-530 - one shared lookback read for the time/speed-unit triggers.** `timeSuggestion` /
+`speedUnitSuffixSuggestion` (and their empty-composing twins) each issued their own
+`getTextBeforeCursor` on every commit; both patterns are end-anchored, so a single TIME_LOOKBACK read
+now serves all four call sites and `SPEED_UNIT_LOOKBACK` is gone - the longer window is
+behaviour-identical for the `km/$` check and strictly more correct for its letter lookbehind.
+
+New `OverlapRescuePolicyTest` (+8, including the community repro as the park scenario and every
+refusal reason). 1,934 unit tests, 0 failures; `:app:assembleRelease` green with versionName 1.3.7 in
+the APK. NOT device-confirmed - the overlap rescue needs real two-finger/rolling typing; the new
+`dropTap`/`tapParked` lines are what turn the next community field log into a definitive verdict
+(whether D-528 covers the reported drops, or an ACTION_CANCEL-source drop needs its own round).
+Round documented in `fast-typing-overlap-tap-drop.md`.
