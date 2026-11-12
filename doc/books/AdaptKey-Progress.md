@@ -453,6 +453,13 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
+- **D-538 - IMPLEMENTED (§551, v1.3.12/612), NOT yet device-confirmed: unbuffered touch dispatch +
+  recovery before cursor routing.** The 1.3.11 log named the pattern: UPs arrive late, paired with the
+  next DOWN; a SPACE tap's orphaned press arms D-401 cursor control and the machine eats the next taps
+  (Space untypeable). Now: `requestUnbufferedDispatch` per stream (deliver-as-arrived), and
+  `recoverStrandedPressIfAny` runs before every routing decision - the next tap commits an orphaned
+  space and kills its long-press arm before the ~400-500 ms arm fires. Spec §4's D-538 addendum.
+
 - **D-537 - IMPLEMENTED (§550, v1.3.11/611), NOT yet device-confirmed: the lost-touch-UP recovery and
   the touch-delivery instrumentation.** The broken build's logs showed DOWNs processed but no
   `handleKey` and no exit line for any release - UPs not reaching the view (lost or silent CANCEL);

@@ -561,6 +561,16 @@ action is logged at entry (`touchEvent: action=...`), with the silent CANCEL pat
 press (`touchCancelled:`) and each recovery logging its own facts (`touchRecovered:`) - so the next
 repro names the real delivery pattern (UP present / UP absent / CANCEL) definitively.
 
+**D-538 addendum - the pattern named, and the two-level response.** The 1.3.11 log proved UPs arrive
+LATE - paired with the next gesture's DOWN - and a SPACE tap's orphaned press therefore arms the
+D-401 cursor-control long-press and the machine eats the next taps (Space untypeable). Response:
+`requestUnbufferedDispatch(event)` at every ACTION_DOWN (deliver-as-they-arrive instead of batched -
+the sanctioned knob, and exactly right for this per-event self-drawing view), and the stranded-press
+recovery runs BEFORE every routing decision, so the next tap normalizes an orphaned space press and
+cancels its long-press arm before the ~400-500 ms arm fires in normal rhythm. In cursor mode the
+recovery stays a no-op (the arm clears `pressedKey`), leaving the machine's Stage-2 re-touch
+untouched.
+
 ### G-01 - Language Switch
 Swiping left or right on the space bar cycles the active input language through English (always first, the
 one language always available) plus every currently installed language pack (§9), in a fixed declaration

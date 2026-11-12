@@ -25101,3 +25101,34 @@ Build+tests green with versionName 1.3.11 in the APK. NOT device-confirmed: the 
 this build, type normally, and send the log again - the `touchEvent:`/`touchRecovered:` lines will
 show the real delivery pattern, and typing should already be usable (recovered taps trail one behind)
 with the Dauer-Backspace bounded.
+
+## §551 - D-538: the delivery pattern named (UPs arrive late, paired with the next DOWN) - unbuffered dispatch requested, and the stranded-press recovery now runs before the cursor-control routing (v1.3.11 -> v1.3.12, versionCode 611 -> 612)
+
+User report (2026-11-12, on 1.3.11): "die Tastatur ist nicht benutzbar. Ich kann nur die normalen
+Tasten benutzen. Aber Space löst immer gleich den Longpress aus." The new log - the D-537
+instrumentation working exactly as built - names the pattern at last: **UP events arrive only
+late-paired with the NEXT gesture's DOWN** (UP -26,6 s 100 ms after DOWN #17, UP -24,7 s after
+DOWN #19, UP -22,3 s on DOWN #21), and most UPs only surface once the D-401 cursor-control machine
+has taken the stream (whose periodic runnables keep the message queue moving). Downstreams all
+explained: letters recovered one-behind (`touchRecovered` working, "Ifehevrjgscdv" typed ✓), but a
+SPACE tap's press never ends - the legit D-401 cursor-control long-press arms at ~400-500 ms of the
+orphaned press, the machine then eats the next DOWNs, and Space can never type (the user's exact
+complaint).
+
+**D-538a - unbuffered dispatch requested per stream.** `View.requestUnbufferedDispatch(event)` at
+every ACTION_DOWN - the sanctioned knob for "deliver events as soon as they arrive rather than in
+batches", exactly right for a self-drawing keyboard whose handling is strictly per-event. If the
+sdk=37 preview's IME input pipeline batches/stalls the stream, this restores prompt delivery at the
+source; if it does not help, the recovery below still bounds the damage.
+
+**D-538b - the recovery now runs before every routing decision.** `recoverStrandedPressIfAny()` was
+behind the cursor-control routing check, so an orphaned SPACE press (still `pressedKey`) survived
+into the arm. Now it runs at the top for every ACTION_DOWN: the next tap - typically ~250 ms in -
+commits the space and cancels its long-press arm BEFORE the ~400-500 ms arm can fire in normal
+typing rhythm. In cursor mode it stays a no-op (`armCursorControl` clears `pressedKey`), so the
+machine's own Stage-2 re-touch DOWN handling is untouched.
+
+Spec §4's D-537 addendum extended with D-538. Build+tests green with versionName 1.3.12 in the APK.
+NOT device-confirmed - the next log decides: `touchEvent: action=UP` lines appearing promptly after
+DOWNs (fix works at the source), or still late-paired (recovery keeps it usable; the search moves to
+the platform's IME input path).
