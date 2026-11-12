@@ -23,10 +23,10 @@ package de.froehlichmedia.adaptkey.keyboard
  * ([placementStrategy]'s [PopupRowStrategy.DRIFT_CLAMPED]); only when the drift would push that cell past
  * the key's left edge does D-282's own reversal remain the last resort ([PopupRowStrategy.REVERSED], the
  * shape the `p` key keeps). A key's dual-corner popup ([isDualCornerStraddle]) is placed by
- * [cornerRowPlacement]: centred over the host key (at most one extra, an edge overflow flipping the extra
- * toward the screen interior); from two extras on the row stays symmetric (D-525) - the corners keep the
- * flanking positions and the extras interleave right/left in turn around the centre (the `7` key's
- * `/ \ ÷ ⁷ &`).
+ * [cornerRowPlacement]: the corner pair centred over the host key (at most one extra, an edge overflow
+ * flipping the extra toward the screen interior); from two extras on the pair STILL stays centred
+ * (D-526) - the extras queue outward around it, alternating right-first, one-sided once a side runs
+ * out of room (the `7` key's `\ / & ÷ ⁷` with / & centred over the host).
  */
 object HorizontalLongPressPopup {
     
@@ -173,9 +173,9 @@ object HorizontalLongPressPopup {
     }
     
     /**
-     * D-510 follow-up (device-corrected placement): the placed corner row - the (possibly reordered)
-     * alternatives and their matching widths, the pre-selected cell index (always the right-corner
-     * symbol, the release default), and the row's left edge.
+     * D-526: the placed corner row for the confirmed placement strategy - the corner PAIR stays centred
+     * over the host key in every arrangement, and the extras queue outward around it, alternating
+     * right-first; a side that has run out of room (screen edge) receives all remaining extras alone.
      */
     data class CornerRow(
         val rowLeft: Float,
@@ -183,46 +183,6 @@ object HorizontalLongPressPopup {
         val cellWidths: List<Float>,
         val preSelectedIndex: Int
     )
-    
-    /**
-     * The corner row's cells reordered so the EXTRAS TRAIL BEHIND the right corner: `[left, right, extras…]`.
-     * The display-time flip for a corner row that would overflow the screen's LEFT edge (the `1` key:
-     * `~ ¹ !` becomes `~ ! ¹`, so both corner symbols stay near the host and the superscript hangs right
-     * where there is room); the release default stays the right corner, now the second cell.
-     */
-    fun <T> extrasTrailingRow(row: List<T>): List<T> {
-        require(row.size >= 2) { "a corner row carries both corners" }
-        return listOf(row.first(), row.last()) + row.subList(1, row.lastIndex)
-    }
-    
-    /**
-     * The corner row's cells reordered so the EXTRAS LEAD AHEAD of the left corner: `[extras…, left, right]`.
-     * The display-time flip for a corner row that would overflow the screen's RIGHT edge (the `0` key:
-     * `= ⁰ )` becomes `⁰ = )`, so both corner symbols stay near the host and the superscript hangs left
-     * where there is room); the release default stays the right corner, still the last cell.
-     */
-    fun <T> extrasLeadingRow(row: List<T>): List<T> {
-        require(row.size >= 2) { "a corner row carries both corners" }
-        return row.subList(1, row.lastIndex) + listOf(row.first(), row.last())
-    }
-    
-    /**
-     * D-525: the symmetric corner row - the placed display order for a dual-corner key's popup with TWO
-     * OR MORE extras. Both corners keep the two-symbol flank positions in the row (left corner first,
-     * right corner last - over the host key's edges once the row is centred), and the extras interleave
-     * RIGHT AND LEFT IN TURN around the row's centre, the first extra landing nearest the centre on the
-     * right side: `[left, x4, x2, x1, x3, right]` for extras `x1..x4`. This replaces the D-510
-     * one-sided grow split (all extras attaching on one grow side, which hung the far cells far too
-     * wide of the host); rows with at most ONE extra keep the plain centred arrangement, which already
-     * reads exactly like this.
-     */
-    fun <T> symmetricCornerRow(row: List<T>): List<T> {
-        require(row.size >= 4) { "the symmetric arrangement needs both corners and at least two extras" }
-        val extras = row.subList(1, row.lastIndex)
-        val rights = extras.filterIndexed { index, _ -> index % 2 == 0 }
-        val lefts = extras.filterIndexed { index, _ -> index % 2 == 1 }
-        return listOf(row.first()) + lefts.asReversed() + rights + listOf(row.last())
-    }
     
     /**
      * D-520: the currency slot's alternating popup - the placed row and the anchor's index within it.
@@ -261,64 +221,95 @@ object HorizontalLongPressPopup {
     }
     
     /**
-     * D-510 follow-up (device-corrected placement, second device pass): positions a dual-corner key's
-     * popup row.
+     * D-526 (the user's confirmed strategy, superseding the D-510 grow split and the D-525 symmetric
+     * interleave): positions a dual-corner key's popup row.
      *
-     * With at most ONE extra (two or three cells) the row is CENTRED over the host key - the left-corner
-     * cell lands over the key's left half, the right-corner cell (pre-selected, the release default) over
-     * its right edge, the extra in between; at a screen-edge overflow the single extra flips to the far
-     * side so the corners never leave the host: trailing behind the right corner at the left edge
-     * ([extrasTrailingRow], the `1` key's `~ ! ¹`), leading ahead of the left corner at the right edge
-     * ([extrasLeadingRow], the `0` key's `⁰ = )`) - with D-44's own pre-selected centring placing the
-     * flipped row, so the right-corner symbol stays over the key.
+     * THE CORNER PAIR STAYS CENTRED OVER THE HOST KEY in every arrangement, exactly where the
+     * two-symbol popup puts it: the left-corner cell over the key's left corner, the right-corner cell
+     * (the release default, always the pre-selected cell) over its right corner. From the THIRD symbol
+     * on, the extras queue OUTWARD around that pair, alternately: the first extra immediately RIGHT of
+     * the pair, the second immediately LEFT, the third right again outside the first, and so on, in the
+     * extras' own list order. When one side has run out of room (the screen edge), all remaining
+     * extras queue only on the other side; the pair itself only ever shifts when even it cannot sit
+     * centred within the bounds, and the whole row is clamped if (never today: at most three extras)
+     * both sides are exhausted at once.
      *
-     * With TWO OR MORE extras (four or more cells) the row stays SYMMETRIC (D-525, replacing the D-510
-     * one-sided grow split whose far cells hung far too wide of the host): [symmetricCornerRow]
-     * interleaves the extras right/left in turn around the row's centre - the first extra nearest the
-     * centre on the right side, the corners keeping the row's flanking positions - and the whole row is
-     * centred over the host key (plainly clamped at the screen edges). The `7` key now renders as
-     * `/ \ ÷ ⁷ &` and the `2` key as `" ² ' ₂ @`, both corners over the host's edges. The release
-     * default stays the right-corner cell in every arrangement.
+     * The `7` key (`/ ÷ \ ⁷ &`) renders as `\ / & ÷ ⁷` with `/ &` centred over the host, the `2` key
+     * (`" ' ² ₂ @`) as `² " @ ' ₂` with `" @` centred; the `1` key at the screen's left edge keeps
+     * `~ ! ¹` (¹ queues right where the room is) and the `0` key at the right edge keeps `⁰ = )`
+     * (⁰ queues left) - the same shapes the old edge flips produced, now as the general rule.
      *
      * @param keyCenterX the host key's own centre
-     * @param viewWidth the view's own width (kept for placement-context parity with the grow case it replaces)
      * @param alternatives the corner row `[leftCorner, extras…, rightCorner]` (the straddle contract)
      * @param cellWidths the matching per-cell widths
      * @param minLeft the smallest allowed row-left (usually a small edge gap)
-     * @param maxLeft the largest allowed row-left (view width - row width - edge gap)
+     * @param maxRight the largest allowed row-right (view width - the same edge gap)
      * @throws IllegalArgumentException when [alternatives] has fewer than two cells or the widths do not match
      */
     fun cornerRowPlacement(
         keyCenterX: Float,
-        viewWidth: Float,
         alternatives: List<String>,
         cellWidths: List<Float>,
         minLeft: Float,
-        maxLeft: Float
+        maxRight: Float
     ): CornerRow {
         require(alternatives.size >= 2) { "a corner row carries both corners" }
         require(cellWidths.size == alternatives.size) { "every cell needs its own width" }
-        val lastIndex = alternatives.lastIndex
-        if (alternatives.size <= 3) {
-            val ideal = keyCenterX - cellWidths.sum() / 2f
-            return when {
-                ideal >= minLeft && ideal <= maxLeft -> CornerRow(ideal, alternatives, cellWidths, lastIndex)
-                ideal < minLeft -> {
-                    val widths = extrasTrailingRow(cellWidths)
-                    CornerRow(rowLeft(keyCenterX, widths, 1, minLeft, maxLeft), extrasTrailingRow(alternatives), widths, 1)
+        // The pair sits exactly where the two-symbol popup puts it (row centred on the pair), clamped
+        // at the screen edges - it never moves again once the extras queue around it.
+        val pairWidth = cellWidths.first() + cellWidths.last()
+        var leftExtent = (keyCenterX - pairWidth / 2f).coerceIn(minLeft, (maxRight - pairWidth).coerceAtLeast(minLeft))
+        var rightExtent = leftExtent + pairWidth
+        val rights = ArrayDeque<String>()
+        val rightWidths = ArrayDeque<Float>()
+        val lefts = ArrayDeque<String>()
+        val leftWidths = ArrayDeque<Float>()
+        var rightExhausted = false
+        var leftExhausted = false
+        var nextRight = true
+        for (index in 1 until alternatives.lastIndex) {
+            val extra = alternatives[index]
+            val width = cellWidths[index]
+            val wantRight = (nextRight && !rightExhausted) || leftExhausted
+            val placedRight = if (wantRight) {
+                if (rightExtent + width <= maxRight) {
+                    rights.addLast(extra)
+                    rightWidths.addLast(width)
+                    rightExtent += width
+                    true
+                } else {
+                    // The right side has run out of room - this and every further extra queue left.
+                    rightExhausted = true
+                    false
                 }
-                else -> {
-                    val widths = extrasLeadingRow(cellWidths)
-                    CornerRow(rowLeft(keyCenterX, widths, widths.lastIndex, minLeft, maxLeft), extrasLeadingRow(alternatives), widths, widths.lastIndex)
+            } else {
+                false
+            }
+            if (!placedRight) {
+                if (!leftExhausted && leftExtent - width >= minLeft) {
+                    lefts.addFirst(extra)
+                    leftWidths.addFirst(width)
+                    leftExtent -= width
+                } else if (rightExtent + width <= maxRight) {
+                    // The left side has run out of room - this and every further extra queue right.
+                    leftExhausted = true
+                    rights.addLast(extra)
+                    rightWidths.addLast(width)
+                    rightExtent += width
+                } else {
+                    // Both sides exhausted (never today: at most three extras) - queue right anyway;
+                    // the row is then wider than the bounds allow and the caller's own placement
+                    // clamps it. Documented fallback, not a tuned path.
+                    rights.addLast(extra)
+                    rightWidths.addLast(width)
+                    rightExtent += width
                 }
             }
+            nextRight = !nextRight
         }
-        // D-525: the symmetric wide case - the interleaved row centred over the host key, plainly
-        // clamped at the screen edges; the pre-selected cell stays the right corner (the row's last).
-        val display = symmetricCornerRow(alternatives)
-        val widths = symmetricCornerRow(cellWidths)
-        val ideal = keyCenterX - widths.sum() / 2f
-        val rowLeft = if (maxLeft < minLeft) minLeft else ideal.coerceIn(minLeft, maxLeft)
-        return CornerRow(rowLeft, display, widths, lastIndex)
+        val display = lefts.toList() + listOf(alternatives.first(), alternatives.last()) + rights.toList()
+        val widths = leftWidths.toList() + listOf(cellWidths.first(), cellWidths.last()) + rightWidths.toList()
+        // The release default stays the right-corner cell: immediately right of the row's centre.
+        return CornerRow(leftExtent, display, widths, lefts.size + 1)
     }
 }

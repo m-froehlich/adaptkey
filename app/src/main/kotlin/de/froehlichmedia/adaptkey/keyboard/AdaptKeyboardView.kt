@@ -1182,9 +1182,11 @@ class AdaptKeyboardView @JvmOverloads constructor(
             val paint = when {
                 // D-184: this key is mid-repress-gap - paint it as unpressed for one frame even though
                 // pressedKey already points at it, so the following frame's highlight reads as a new blink.
-                key === paintSuppressedKey -> if (key.code == KeyCode.CHAR) keyPaint else specialKeyPaint
+                // D-527: a §53 TEXT key may opt out of the special function-key styling - the currency
+                // key is an ordinary symbol key in role and paints like any character key.
+                key === paintSuppressedKey -> if (key.code == KeyCode.CHAR || !key.specialStyling) keyPaint else specialKeyPaint
                 key === pressedKey || key === flashKey -> pressedKeyPaint
-                key.code == KeyCode.CHAR -> keyPaint
+                key.code == KeyCode.CHAR || !key.specialStyling -> keyPaint
                 else -> specialKeyPaint
             }
             // D-217 (temporary diagnostic): the first frame that actually paints flashKey is the answer to
@@ -2040,14 +2042,14 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * resort, so the p key keeps its observed, user-approved shape (π right-aligned over the key, Greek
      * letters growing left). A geometry-based rule like D-282's, working for any key's popup including
      * one a language pack's own data (D-281) might put on a right-edge key.
-     * D-510 (plan §2.11.1, device-corrected twice; the wide case reworked by D-525): a dual-corner key's
-     * own popup row ([HorizontalLongPressPopup.isDualCornerStraddle]) keeps its corners over the host
-     * key - the left-corner cell over the key's left half, the pre-selected right-corner cell (the
-     * release default) over its right edge. With at most one extra the row is centred (a screen-edge
-     * overflow flips the extra toward the screen interior: the 1 key's `~ ! ¹`, the 0 key's `⁰ = )`);
-     * with two or more extras the row stays symmetric (D-525): the corners keep the flanking positions
-     * and the extras interleave right/left in turn around the centre (the 7 key's `/ \ ÷ ⁷ &`, the 2
-     * key's `" ² ' ₂ @`).
+     * D-526 (the confirmed strategy; superseding the D-510 grow split and the brief D-525 symmetric
+     * interleave): a dual-corner key's own popup row ([HorizontalLongPressPopup.isDualCornerStraddle])
+     * keeps its corner pair CENTRED over the host key in every arrangement - the left-corner cell over
+     * the key's left corner, the pre-selected right-corner cell (the release default) over its right
+     * corner, exactly where the two-symbol popup puts them. From the third symbol on, the extras queue
+     * outward around that pair, alternating right-first (the 7 key renders `\ / & ÷ ⁷`, the 2 key
+     * `² " @ ' ₂`); a side that has run out of room at the screen edge receives all remaining extras
+     * alone (the 1 key's `~ ! ¹`, the 0 key's `⁰ = )`).
      * 
      * D-53: the row always sits above the key. For the number row this reaches above the keyboard into the
      * suggestion-bar area; the service disables child-clipping on the container/root so it is drawn on top
@@ -2080,16 +2082,16 @@ class AdaptKeyboardView @JvmOverloads constructor(
             invalidate()
             return
         }
-        // D-510 follow-up (device-corrected placement, second pass; wide case reworked by D-525): the
-        // corner row keeps its corners over the host key - at most one extra sits between them and the
-        // row is centred (edge overflow flips that extra to the far side: the 1 key's `~ ! ¹` trailing,
-        // the 0 key's `⁰ = )` leading); with two or more extras the row stays symmetric - the corners
-        // keep the flanking positions, the extras interleave right/left in turn around the centre (the
-        // 7 key renders `/ \ ÷ ⁷ &`, the 2 key `" ² ' ₂ @`).
+        // D-526 (the confirmed strategy, superseding the D-510 grow split and the brief D-525
+        // symmetric interleave): the corner pair stays CENTRED over the host key in every arrangement
+        // - exactly where the two-symbol popup puts it - and from the third symbol on the extras queue
+        // outward around it, alternating right-first (the 7 key renders `\ / & ÷ ⁷` with / & over the
+        // host, the 2 key `² " @ ' ₂`); a side that has run out of room at the screen edge receives
+        // all remaining extras alone (the 1 key's `~ ! ¹`, the 0 key's `⁰ = )`).
         // The pre-selection always stays the right-corner cell (the release default).
         if (HorizontalLongPressPopup.isDualCornerStraddle(key, alternatives)) {
             popupRowTop = rect.top - gapPx - popupCellHeightPx
-            val placement = HorizontalLongPressPopup.cornerRowPlacement(rect.centerX(), width.toFloat(), alternatives, cellWidthsRaw, gapPx, maxLeft)
+            val placement = HorizontalLongPressPopup.cornerRowPlacement(rect.centerX(), alternatives, cellWidthsRaw, gapPx, width - gapPx)
             popupRowLeft = placement.rowLeft
             popupAlternatives = placement.alternatives
             popupCellWidths = placement.cellWidths
