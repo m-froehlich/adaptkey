@@ -3065,6 +3065,16 @@ class AdaptKeyService : InputMethodService() {
         )
     }
     
+    // D-529: the effective list pushed by the last [setSuggestionBarItems] call. After every word
+    // commit the same content currently reaches this one choke point 2-4 times (showNextWordPredictions
+    // and armShiftForNextWord both call showSuggestions(); the debounced Shift re-derivation adds
+    // more), each push re-running the adapter submit and the visibility syncs below for zero visual
+    // change - an identical consecutive push is skipped outright. The blacklist takeover rides in the
+    // same comparison: its chip differs from the ordinary list at every entry/exit transition, so
+    // takeover changes are never swallowed. The bar itself stays always-visible (D-50), so skipping a
+    // push can never change its visibility state either.
+    private var lastPushedSuggestionItems: List<SuggestionController.DisplayItem>? = null
+
     private fun setSuggestionBarItems(items: List<SuggestionController.DisplayItem>) {
         // D-488: while a blacklist confirmation is pending, the chip IS the bar (full takeover, the same
         // slot precedence the loading/clipboard/credential chips' dedicated takeovers use) - pinned here,
@@ -3072,6 +3082,10 @@ class AdaptKeyService : InputMethodService() {
         // push it off the bar. Resolved via confirmBlacklistConfirmation()/rejectBlacklistConfirmation()
         // or the two-commit yield.
         val effectiveItems = blacklistConfirmation.pending?.let { listOf(blacklistConfirmChip(it)) } ?: items
+        if (effectiveItems == lastPushedSuggestionItems) {
+            return
+        }
+        lastPushedSuggestionItems = effectiveItems
         suggestionBar?.setItems(effectiveItems)
         inlineSuggestionsBar?.visibility = View.GONE
         // D-323: the mirror of the line above - this is the one choke point every ordinary suggestion update
@@ -3205,7 +3219,14 @@ class AdaptKeyService : InputMethodService() {
     }
     
     private fun handleKey(key: Key, x: Float, y: Float, ambiguity: AmbiguityResult, weight: Double) {
-        val ic = currentInputConnection ?: return
+        // D-528: this bail sits before the D-217 finally below, so a key dropped here used to be
+        // completely invisible in the log - exactly the gap the fast-typing community repro could not
+        // close. Logged so a device log can prove (or rule out) this path.
+        val ic = currentInputConnection
+        if (ic == null) {
+            diag("AdaptKeyJitter", "handleKey: dropped key=${key.code} reason=no_input_connection")
+            return
+        }
         // D-335: safety-net clear for shiftArmedByDelete - if reclaimWordAtCaret never fired (e.g. the
         // CallbackBurstGuard tripped, or composing stayed non-empty), the flag must not persist past this
         // keystroke and suppress a later genuine tap-into-word Shift derivation.
@@ -5290,10 +5311,12 @@ class AdaptKeyService : InputMethodService() {
             // why the original wiring inside showNextWordPredictions() alone never fired for the reported
             // case; checked here too, where digit/punctuation commits actually land. D-376: showSpeedUnitSuggestion()
             // rides along here for the identical structural reason - see its own KDoc.
-            if (!showTimeSuggestion(ic) && !showSpeedUnitSuggestion(ic)) {
+            // D-530: one shared lookback read for both triggers - a null read behaves exactly like both
+            // functions' own null reads used to (neither fires, the bar clears).
+            val beforeCursor = ic.getTextBeforeCursor(TIME_LOOKBACK, 0)
+            if (beforeCursor == null || (!showTimeSuggestion(beforeCursor) && !showSpeedUnitSuggestion(beforeCursor))) {
                 clearSuggestions()
-            }
-            // A standalone letter-ambiguous space is a spurious space the next token may merge back onto.
+            }            // A standalone letter-ambiguous space is a spurious space the next token may merge back onto.
             pendingMergeChar = spaceInferred
             armShiftForNextWordUnlessOpener(ic, delimiter)
             return delimiter.length
@@ -7513,8 +7536,13 @@ class AdaptKeyService : InputMethodService() {
         lastTier3Result = Tier3Result.EMPTY
         lastCapProposal = null
         val previous = previousWord
+        // D-530: one shared lookback read feeds both just-typed-shape triggers - both patterns are
+        // end-anchored, so the longer TIME_LOOKBACK window is behaviour-identical for the speed-unit
+        // check and strictly more correct for its letter lookbehind (it can now see a disqualifying
+        // preceding letter the old 8-character window could not).
+        val beforeCursor = currentInputConnection?.getTextBeforeCursor(TIME_LOOKBACK, 0)
         val predictions = (if (previous == null) emptyList() else provider.nextWordSuggestions(previous, previousPreviousWord)) +
-            listOfNotNull(timeSuggestion(), speedUnitSuffixSuggestion())
+            listOfNotNull(beforeCursor?.let { timeSuggestion(it) }, beforeCursor?.let { speedUnitSuffixSuggestion(it) })
         controller.clear()
         controller.update("", predictions, null)
         if (justPromoted != null) {
@@ -7547,13 +7575,13 @@ class AdaptKeyService : InputMethodService() {
      * for a language with no such convention (D-410 fix: previously offered unconditionally regardless of
      * [activeLanguage]).
      * 
+     * @param textBeforeCursor the shared lookback read (D-530) - the text immediately before the cursor
      * @return the time-suggestion word, or null when the text just committed does not end in a time or the
      *         active language has no such convention
      */
-    private fun timeSuggestion(): Suggestion? {
+    private fun timeSuggestion(textBeforeCursor: CharSequence): Suggestion? {
         val word = LanguageRulesRegistry.rulesFor(activeLanguage).timeSuggestionWord() ?: return null
-        val before = currentInputConnection?.getTextBeforeCursor(TIME_LOOKBACK, 0) ?: return null
-        return if (TimePattern.endsWithTime(before)) Suggestion(word, MAX_PRIORITY_SUGGESTION_SCORE) else null
+        return if (TimePattern.endsWithTime(textBeforeCursor)) Suggestion(word, MAX_PRIORITY_SUGGESTION_SCORE) else null
     }
     
     /**
@@ -7563,12 +7591,12 @@ class AdaptKeyService : InputMethodService() {
      * [de.froehlichmedia.adaptkey.language.LanguageRules] unlike [timeSuggestion] - see
      * [SpeedUnitCompletion]'s own KDoc for why `"km/h"` is not treated as a German-specific word here.
      * 
+     * @param textBeforeCursor the shared lookback read (D-530) - the text immediately before the cursor
      * @return the `"h"` completion, or null when the text just committed does not end in a word-bounded
      *         `"km/"`
      */
-    private fun speedUnitSuffixSuggestion(): Suggestion? {
-        val before = currentInputConnection?.getTextBeforeCursor(SPEED_UNIT_LOOKBACK, 0) ?: return null
-        return SpeedUnitCompletion.suffixAfterSlash(before)?.let { Suggestion(it, MAX_PRIORITY_SUGGESTION_SCORE) }
+    private fun speedUnitSuffixSuggestion(textBeforeCursor: CharSequence): Suggestion? {
+        return SpeedUnitCompletion.suffixAfterSlash(textBeforeCursor)?.let { Suggestion(it, MAX_PRIORITY_SUGGESTION_SCORE) }
     }
     
     /**
@@ -7577,13 +7605,12 @@ class AdaptKeyService : InputMethodService() {
      * [showNextWordPredictions], is what actually needs this for a typed time). Null for a language with
      * no time-suggestion word, same as [timeSuggestion].
      * 
-     * @param ic the current input connection
+     * @param textBeforeCursor the shared lookback read (D-530) - the text immediately before the cursor
      * @return true when a time was found and the suggestion bar now shows the time-suggestion prediction
      */
-    private fun showTimeSuggestion(ic: InputConnection): Boolean {
+    private fun showTimeSuggestion(textBeforeCursor: CharSequence): Boolean {
         val word = LanguageRulesRegistry.rulesFor(activeLanguage).timeSuggestionWord() ?: return false
-        val before = ic.getTextBeforeCursor(TIME_LOOKBACK, 0) ?: return false
-        if (!TimePattern.endsWithTime(before)) {
+        if (!TimePattern.endsWithTime(textBeforeCursor)) {
             return false
         }
         handler.removeCallbacks(resortRunnable)
@@ -7602,12 +7629,11 @@ class AdaptKeyService : InputMethodService() {
      * [speedUnitSuffixSuggestion] via the ordinary word-commit path's own [showNextWordPredictions] call, the
      * same split [timeSuggestion]/[showTimeSuggestion] already have for the identical structural reason.
      * 
-     * @param ic the current input connection
+     * @param textBeforeCursor the shared lookback read (D-530) - the text immediately before the cursor
      * @return true when a word-bounded `"km/"` was found and the suggestion bar now shows the `"h"` completion
      */
-    private fun showSpeedUnitSuggestion(ic: InputConnection): Boolean {
-        val before = ic.getTextBeforeCursor(SPEED_UNIT_LOOKBACK, 0) ?: return false
-        val suffix = SpeedUnitCompletion.suffixAfterSlash(before) ?: return false
+    private fun showSpeedUnitSuggestion(textBeforeCursor: CharSequence): Boolean {
+        val suffix = SpeedUnitCompletion.suffixAfterSlash(textBeforeCursor) ?: return false
         handler.removeCallbacks(resortRunnable)
         lastTier3Result = Tier3Result.EMPTY
         lastCapProposal = null
@@ -9182,11 +9208,10 @@ class AdaptKeyService : InputMethodService() {
         
         // D-137: how far back to look for a trailing typed time - long enough for "14:30" plus a
         // reasonable amount of trailing punctuation/whitespace, short enough to stay a cheap read.
+        // D-530: this single read is shared with the speed-unit trigger, whose own dedicated constant
+        // is gone - both patterns are end-anchored, so the longer window is behaviour-identical there
+        // (and strictly more correct for the km/ lookbehind's preceding-letter check).
         private const val TIME_LOOKBACK = 16
-        
-        // D-376: how far back to look for a trailing "km/" - only ever needs to see the three characters
-        // themselves, a little slack included for the same reason TIME_LOOKBACK has some.
-        private const val SPEED_UNIT_LOOKBACK = 8
         
         // D-142: how far back to read for a login field's own value - generous enough for a realistic
         // email address or username, short enough to stay a cheap read.

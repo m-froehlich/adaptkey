@@ -32,6 +32,7 @@ import kotlin.math.abs
 import java.util.Locale
 import de.froehlichmedia.adaptkey.R
 import de.froehlichmedia.adaptkey.diagnostics.DiagnosticLog
+import de.froehlichmedia.adaptkey.gesture.OverlapRescuePolicy
 import de.froehlichmedia.adaptkey.gesture.SwipeDirection
 import de.froehlichmedia.adaptkey.gesture.SwipeGesture
 import de.froehlichmedia.adaptkey.gesture.TouchSequenceTracker
@@ -694,6 +695,25 @@ class AdaptKeyboardView @JvmOverloads constructor(
     // the D-401 cursor-control path: the two never both own a stream at once, because
     // handleCursorControlTouch() claims every event while the mode is armed.
     private val touchTracker = TouchSequenceTracker()
+    
+    // D-528: when a second pointer lands while a clean tap is still down, that first press is parked
+    // intact instead of being lost (D-495's conservative kill) and commits as a plain tap at its own
+    // finger's lift. Every field is frozen at park time, because the incoming pointer's ACTION_DOWN
+    // overwrites the view's live press state immediately afterwards.
+    private class ParkedPress(
+        val pointerId: Int,
+        val key: Key,
+        val keyRect: RectF?,
+        val downX: Float,
+        val downY: Float,
+        val ambiguity: AmbiguityResult,
+        val recordWeight: Double,
+        val recordSize: Float,
+        val downAtMs: Long
+    )
+    
+    private var parkedPress: ParkedPress? = null
+    private var pressDownAtMs = 0L
     
     /**
      * D-32: delay before a long-press fires (the alt char / popup). Set from the settings; defaults to
@@ -1433,85 +1453,23 @@ class AdaptKeyboardView @JvmOverloads constructor(
         }
         when (event.actionMasked) {
             // T-01: the initial contact point is the authoritative tap coordinate.
-            MotionEvent.ACTION_DOWN -> {
-                // D-495: the stream is tracked before anything else, so even an unclaimed DOWN (no key
-                // resolved below) can never leave the previous stream's identity behind.
-                touchTracker.onDown(event.getPointerId(event.actionIndex))
-                val resolved = resolveKey(event.x, event.y) ?: return true
-                val (key, rect) = resolved
-                // D-184: this exact key is still showing its previous tap's flash - force one off-frame
-                // so the new press reads as a distinct second blink instead of a continuation of the first.
-                if (flashKey === key) {
-                    longPressHandler.removeCallbacks(paintSuppressEndRunnable)
-                    paintSuppressedKey = key
-                    longPressHandler.postDelayed(paintSuppressEndRunnable, repressGapMs)
-                }
-                cancelFlash()
-                dismissPopup()
-                // D-30: clear the backspace-repeat suppression from any previous hold, so a new touch is
-                // never wrongly swallowed (otherwise the keyboard freezes after a held backspace).
-                backspaceRepeated = false
-                // D-05 / D-06: optional press feedback (both default off). D-396: SYMBOL/LETTERS (the
-                // ?123 <-> ABC toggle) is a mode switch; every other key is ordinary press feedback.
-                playKeyFeedback(if (key.code == KeyCode.SYMBOL || key.code == KeyCode.LETTERS) HapticTier.MODE_SWITCH else HapticTier.KEY_PRESS)
-                pressedKey = key
-                pressedKeyRect = rect
-                longPressFired = false
-                downX = event.x
-                downY = event.y
-                invalidate()
-                // T-05: classify the raw contact point into the space/letter ambiguity bands - checked
-                // before recording (D-109) so an ambiguous tap never trains the resolved key's model below.
-                pendingAmbiguity = ambiguityBands.classify(key.id, event.x, event.y, bottomLetterBoxes(), spaceBox(), offsetModel)
-                // T-03: feed the confirmed tap back into the personal offset model.
-                // event.size (T-04) lets the model track contact area for typing-pattern detection.
-                // D-109: never for an ambiguous tap (T-05) - it might genuinely have meant the *other* key
-                // (space vs. a bottom-row letter, or vice versa), so training the resolved key on it risks
-                // reinforcing exactly the wrong lesson; this is what drove the reported bottom-row-into-space
-                // drift from repeated space mistaps.
-                // D-474: nor while the user has switched touch-zone learning off.
-                pendingRecordSize = event.size
-                pendingRecordWeight = if (touchLearningEnabled && pendingAmbiguity.kind == TapAmbiguity.NONE) {
-                    offsetModel?.record(
-                        key.id,
-                        rect.centerX(),
-                        rect.centerY(),
-                        event.x,
-                        event.y,
-                        event.size,
-                        rect.width() / 2f,
-                        rect.height() / 2f
-                    ) ?: OffsetModel.NOT_RECORDED_WEIGHT
-                } else {
-                    OffsetModel.NOT_RECORDED_WEIGHT
-                }
-                // D-243: every raw ACTION_DOWN, resolved or ambiguous alike - lets the user see exactly
-                // where a tap actually landed relative to the key it resolved to (e.g. a chronically missed
-                // space bar) directly from the in-app log (Settings -> Diagnostics), no PC/`adb` needed.
-                logTouch(
-                    "rawTap: key=${key.id} x=${event.x} y=${event.y} centerX=${rect.centerX()} " +
-                        "centerY=${rect.centerY()} halfWidth=${rect.width() / 2f} halfHeight=${rect.height() / 2f} " +
-                        "ambiguity=${pendingAmbiguity.kind}" +
-                        (pendingAmbiguity.inferredChar?.let { " inferredChar=$it" } ?: "")
-                )
-                scheduleLongPress(key)
-                // D-516/G-09: a stroke starting on a letter key of the letters surface is a
-                // potential glide - the pure controller records it. Nothing else changes until it
-                // claims: the long-press stays armed, the tap stays pending, T-01 is untouched.
-                if (glideEligible(key)) {
-                    glideTrail.clear()
-                    glideController.begin(glideKeyGeometry(), rect.width(), event.x, event.y, SystemClock.uptimeMillis())
-                }
-                // D-07: holding the backspace key starts an accelerating repeat delete.
-                if (key.code == KeyCode.DELETE) {
-                    // D-361: (re-)arms the sticky zone for whatever comes next.
-                    lastBackspaceActivationAtMs = SystemClock.uptimeMillis()
-                    scheduleBackspaceRepeat()
-                }
-                return true
-            }
+            // D-528: the body lives in beginPress() so a rescued second pointer's press (the D-495
+            // overlap, now parked instead of killed) runs the exact same steps.
+            MotionEvent.ACTION_DOWN -> beginPress(
+                event.getPointerId(event.actionIndex),
+                event.x,
+                event.y,
+                event.size
+            )
             
             MotionEvent.ACTION_MOVE -> {
+                // D-528: with two live presses (a parked one plus the active one) this event carries
+                // both pointers' coordinates - the active sequence's own pointer is read explicitly,
+                // never pointer 0 blindly (which belonged to the parked finger). Without a live
+                // sequence the legacy behaviour is kept unchanged.
+                val activeIndex = if (touchTracker.hasSequence) event.findPointerIndex(touchTracker.trackedPointerId) else -1
+                val x = if (activeIndex >= 0) event.getX(activeIndex) else event.x
+                val y = if (activeIndex >= 0) event.getY(activeIndex) else event.y
                 // D-44: while the alternatives popup is open the finger slides left/right to pick a cell.
                 // D-198: only once the finger has actually moved beyond the system touch slop since the
                 // original ACTION_DOWN - previously every ACTION_MOVE re-derived the selection from the raw
@@ -1524,8 +1482,8 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 // own downX/downY-relative threshold, already established for the identical D-108 long-press
                 // smear tolerance just below.
                 if (popupKey != null) {
-                    if (movedBeyondSlop(event.x, event.y)) {
-                        updatePopupSelection(event.x)
+                    if (movedBeyondSlop(x, y)) {
+                        updatePopupSelection(x)
                     }
                     return true
                 }
@@ -1533,7 +1491,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 // as genuinely moving, which alone lets a later release classify as a swipe at all.
                 // Popup sequences return above (they commit on release, never swipe), so they need no
                 // note here.
-                if (movedBeyondSlop(event.x, event.y)) {
+                if (movedBeyondSlop(x, y)) {
                     touchTracker.onMoveBeyondSlop()
                 }
                 // D-516/G-09: feed the live stroke. A claimed glide owns the stream from here on -
@@ -1541,7 +1499,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 // a glide is never training data per the plan's §3) and hands the session to the
                 // listener; an unclaimed stroke keeps behaving exactly like an ordinary press.
                 if (glideController.hasStroke) {
-                    val decision = glideController.move(event.x, event.y, SystemClock.uptimeMillis())
+                    val decision = glideController.move(x, y, SystemClock.uptimeMillis())
                     if (decision == GlideGestureController.Decision.CLAIMED) {
                         cancelPendingLongPress()
                         // T-03: the ACTION_DOWN tap this stroke began as was recorded into the offset
@@ -1569,7 +1527,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
                         onGlideListener?.onGlideStrokeStarted()
                     }
                     if (glideController.claimed) {
-                        glideTrail.add(GlideTrailPoint(event.x, event.y, SystemClock.uptimeMillis()))
+                        glideTrail.add(GlideTrailPoint(x, y, SystemClock.uptimeMillis()))
                         if (decision == GlideGestureController.Decision.UPDATE) {
                             onGlideListener?.onGlideUpdate(glideController.points.toList())
                         }
@@ -1601,23 +1559,23 @@ class AdaptKeyboardView @JvmOverloads constructor(
                     // cursor gesture is unaffected: hold still to the haptic, then drag (sub-slop
                     // wobble during the hold keeps arming).
                     val cancelLongPress = if (heldKey.code == KeyCode.SPACE) {
-                        movedOutsideKey(event.x, event.y) || movedBeyondSlop(event.x, event.y)
+                        movedOutsideKey(x, y) || movedBeyondSlop(x, y)
                     } else if (glideEligible(heldKey)) {
                         // D-516/G-09 conflict matrix (plan §4.1, D-380 row): while glide is on, a
                         // letter key's smear protection applies only within the key - a smear that
                         // leaves it already cancels the long-press arm (the glide user opted against
                         // popups on a smeared hold). Glide off, and every non-letter key, keep the
                         // exact D-380 rule below.
-                        movedOutsideKey(event.x, event.y)
+                        movedOutsideKey(x, y)
                     } else {
-                        movedOutsideKey(event.x, event.y) &&
-                            swipeDirectionIfFarEnough(heldKey, event.x - downX, event.y - downY) != null
+                        movedOutsideKey(x, y) &&
+                            swipeDirectionIfFarEnough(heldKey, x - downX, y - downY) != null
                     }
                     if (cancelLongPress) {
                         cancelPendingLongPress()
                     }
                 }
-                if (pressedKey != null && !backspaceRepeated && movedBeyondSlop(event.x, event.y)) {
+                if (pressedKey != null && !backspaceRepeated && movedBeyondSlop(x, y)) {
                     cancelBackspaceRepeat()
                 }
                 return true
@@ -1631,9 +1589,38 @@ class AdaptKeyboardView @JvmOverloads constructor(
             // quick SPACE flips to the numbers page", and the vertical twin "fast top-row/bottom-row
             // typing dismisses the keyboard"). Nothing about a dead sequence may commit: neither tap,
             // swipe, nor an open popup's selection.
+            // D-528: the kill now only applies to the states that genuinely need single-pointer
+            // exclusivity (OverlapRescuePolicy); a still-clean tap is parked intact instead and commits
+            // as a plain tap at its own finger's lift, while the incoming pointer begins a normal
+            // press. The swipe mis-composition stays impossible because parked presses never swipe and
+            // every refusal keeps the full kill. Each outcome is logged (D-243 style) instead of
+            // staying silent.
             MotionEvent.ACTION_POINTER_DOWN -> {
                 if (touchTracker.hasSequence) {
-                    cancelActiveTouchSequence()
+                    val refusal = OverlapRescuePolicy.refusalFor(
+                        activePressExists = pressedKey != null,
+                        parkedAlreadyExists = parkedPress != null,
+                        longPressFired = longPressFired,
+                        popupOpen = popupKey != null,
+                        activePressIsDelete = pressedKey?.code == KeyCode.DELETE,
+                        glideStrokeClaimed = glideController.claimed
+                    )
+                    if (refusal == null) {
+                        parkActivePress()
+                        logTouch("tapParked: key=${parkedPress?.key?.id}")
+                        beginPress(
+                            event.getPointerId(event.actionIndex),
+                            event.getX(event.actionIndex),
+                            event.getY(event.actionIndex),
+                            event.getSize(event.actionIndex)
+                        )
+                    } else {
+                        logTouch(
+                            "dropTap: reason=second_pointer_down refused=$refusal key=${pressedKey?.id} " +
+                                "heldMs=${SystemClock.uptimeMillis() - pressDownAtMs}"
+                        )
+                        cancelActiveTouchSequence()
+                    }
                 }
                 return true
             }
@@ -1641,11 +1628,26 @@ class AdaptKeyboardView @JvmOverloads constructor(
             // D-495: multi-touch streams only - a single-pointer stream never delivers this action. The
             // sequence is already dead (cancelled at ACTION_POINTER_DOWN); this case exists so mid-stream
             // events stop falling through to super unhandled.
-            MotionEvent.ACTION_POINTER_UP -> return true
+            // D-528: except a rescued press's own lift mid-stream - that one commits as the plain tap
+            // it was parked as, without touching the active press still in flight.
+            MotionEvent.ACTION_POINTER_UP -> {
+                if (parkedPress?.pointerId == event.getPointerId(event.actionIndex)) {
+                    commitParkedPress()
+                }
+                return true
+            }
             
             MotionEvent.ACTION_UP -> {
                 cancelPendingLongPress()
                 cancelBackspaceRepeat()
+                // D-528: the last pointer lifting may be a parked press's own finger (its companion was
+                // already released, which ended the tracker). Commit the plain tap it was parked as -
+                // everything it needs was frozen at park time.
+                if (parkedPress?.pointerId == event.getPointerId(event.actionIndex)) {
+                    touchTracker.end()
+                    commitParkedPress()
+                    return true
+                }
                 // D-495: only the tracked pointer's own release, from a sequence that never went
                 // multi-touch, may act on the stream's state at all. Both flags are read before the
                 // stream ends - end() clears them. (A multi-touch stream had its sequence cancelled at
@@ -1679,6 +1681,12 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 pressedKey = null
                 pressedKeyRect = null
                 invalidate()
+                if (key != null && !ownsRelease) {
+                    // D-528: a live press whose sequence died anyway - exactly the silent loss the
+                    // community repro could never show. Defensive: the rescue paths above should have
+                    // parked or killed it visibly already.
+                    logTouch("dropTap: reason=dead_release key=${key.id} heldMs=${SystemClock.uptimeMillis() - pressDownAtMs}")
+                }
                 // D-07: once a backspace hold has repeated, the release must not also fire a tap delete.
                 // D-495: a dead or foreign release acts on nothing (`ownsRelease`); and even an owned
                 // release only classifies as a swipe when its own sequence was observed moving beyond
@@ -1743,9 +1751,144 @@ class AdaptKeyboardView @JvmOverloads constructor(
             }
         }
         touchTracker.end()
+        // D-528: a cancel or a refused rescue takes any parked press with it - visibly, since a lost
+        // parked tap is exactly the loss class this whole change makes observable.
+        parkedPress?.let { parked ->
+            logTouch("dropTap: reason=sequence_cancelled key=${parked.key.id} heldMs=${SystemClock.uptimeMillis() - parked.downAtMs}")
+        }
+        parkedPress = null
         pressedKey = null
         pressedKeyRect = null
         invalidate()
+    }
+    
+    /**
+     * D-528: the whole ordinary ACTION_DOWN press body, extracted so the overlap rescue path (a second
+     * pointer landing while a clean tap is still down) can begin the incoming pointer's press through
+     * the exact same steps instead of duplicating them. Everything is read from the parameters, never
+     * from the event, because an ACTION_POINTER_DOWN's coordinates belong to its own action pointer.
+     *
+     * @param pointerId the touch stream this press belongs to
+     * @param x the initial contact point (T-01: the authoritative tap coordinate)
+     * @param y the initial contact point
+     * @param contactSize the contact area (T-04), fed to the personal offset model
+     */
+    private fun beginPress(pointerId: Int, x: Float, y: Float, contactSize: Float) {
+        // D-495: the stream is tracked before anything else, so even an unclaimed DOWN (no key
+        // resolved below) can never leave the previous stream's identity behind.
+        touchTracker.onDown(pointerId)
+        pressDownAtMs = SystemClock.uptimeMillis()
+        val resolved = resolveKey(x, y) ?: return
+        val (key, rect) = resolved
+        // D-184: this exact key is still showing its previous tap's flash - force one off-frame
+        // so the new press reads as a distinct second blink instead of a continuation of the first.
+        if (flashKey === key) {
+            longPressHandler.removeCallbacks(paintSuppressEndRunnable)
+            paintSuppressedKey = key
+            longPressHandler.postDelayed(paintSuppressEndRunnable, repressGapMs)
+        }
+        cancelFlash()
+        dismissPopup()
+        // D-30: clear the backspace-repeat suppression from any previous hold, so a new touch is
+        // never wrongly swallowed (otherwise the keyboard freezes after a held backspace).
+        backspaceRepeated = false
+        // D-05 / D-06: optional press feedback (both default off). D-396: SYMBOL/LETTERS (the
+        // ?123 <-> ABC toggle) is a mode switch; every other key is ordinary press feedback.
+        playKeyFeedback(if (key.code == KeyCode.SYMBOL || key.code == KeyCode.LETTERS) HapticTier.MODE_SWITCH else HapticTier.KEY_PRESS)
+        pressedKey = key
+        pressedKeyRect = rect
+        longPressFired = false
+        downX = x
+        downY = y
+        invalidate()
+        // T-05: classify the raw contact point into the space/letter ambiguity bands - checked
+        // before recording (D-109) so an ambiguous tap never trains the resolved key's model below.
+        pendingAmbiguity = ambiguityBands.classify(key.id, x, y, bottomLetterBoxes(), spaceBox(), offsetModel)
+        // T-03: feed the confirmed tap back into the personal offset model.
+        // contactSize (T-04) lets the model track contact area for typing-pattern detection.
+        // D-109: never for an ambiguous tap (T-05) - it might genuinely have meant the *other* key
+        // (space vs. a bottom-row letter, or vice versa), so training the resolved key on it risks
+        // reinforcing exactly the wrong lesson; this is what drove the reported bottom-row-into-space
+        // drift from repeated space mistaps.
+        // D-474: nor while the user has switched touch-zone learning off.
+        pendingRecordSize = contactSize
+        pendingRecordWeight = if (touchLearningEnabled && pendingAmbiguity.kind == TapAmbiguity.NONE) {
+            offsetModel?.record(
+                key.id,
+                rect.centerX(),
+                rect.centerY(),
+                x,
+                y,
+                contactSize,
+                rect.width() / 2f,
+                rect.height() / 2f
+            ) ?: OffsetModel.NOT_RECORDED_WEIGHT
+        } else {
+            OffsetModel.NOT_RECORDED_WEIGHT
+        }
+        // D-243: every raw ACTION_DOWN, resolved or ambiguous alike - lets the user see exactly
+        // where a tap actually landed relative to the key it resolved to (e.g. a chronically missed
+        // space bar) directly from the in-app log (Settings -> Diagnostics), no PC/`adb` needed.
+        logTouch(
+            "rawTap: key=${key.id} x=$x y=$y centerX=${rect.centerX()} " +
+                "centerY=${rect.centerY()} halfWidth=${rect.width() / 2f} halfHeight=${rect.height() / 2f} " +
+                "ambiguity=${pendingAmbiguity.kind}" +
+                (pendingAmbiguity.inferredChar?.let { " inferredChar=$it" } ?: "")
+        )
+        scheduleLongPress(key)
+        // D-516/G-09: a stroke starting on a letter key of the letters surface is a
+        // potential glide - the pure controller records it. Nothing else changes until it
+        // claims: the long-press stays armed, the tap stays pending, T-01 is untouched.
+        if (glideEligible(key)) {
+            glideTrail.clear()
+            glideController.begin(glideKeyGeometry(), rect.width(), x, y, SystemClock.uptimeMillis())
+        }
+        // D-07: holding the backspace key starts an accelerating repeat delete.
+        if (key.code == KeyCode.DELETE) {
+            // D-361: (re-)arms the sticky zone for whatever comes next.
+            lastBackspaceActivationAtMs = SystemClock.uptimeMillis()
+            scheduleBackspaceRepeat()
+        }
+    }
+    
+    /**
+     * D-528: freezes the live clean-tap press into [parkedPress] so the incoming second pointer can
+     * begin its own press through [beginPress]. The parked press's pending long-press arm dies with
+     * the park (a parked press is a plain tap by construction), and an unclaimed glide stroke ends
+     * silently - a claimed stroke never reaches here, because [OverlapRescuePolicy] refuses it
+     * (plan §4.1.3: a second finger kills the stroke).
+     */
+    private fun parkActivePress() {
+        cancelPendingLongPress()
+        resetGlideStroke()
+        pressedKey?.let { key ->
+            parkedPress = ParkedPress(
+                pointerId = touchTracker.trackedPointerId,
+                key = key,
+                keyRect = pressedKeyRect,
+                downX = downX,
+                downY = downY,
+                ambiguity = pendingAmbiguity,
+                recordWeight = pendingRecordWeight,
+                recordSize = pendingRecordSize,
+                downAtMs = pressDownAtMs
+            )
+        }
+    }
+    
+    /**
+     * D-528: commits a parked press exactly like an ordinary tap release - flash first (D-04), then
+     * the key posted so the flash's own frame paints first (D-219). Everything the listener needs was
+     * frozen at park time, so no live view state is read here and the very next press can never
+     * corrupt the commit.
+     */
+    private fun commitParkedPress() {
+        val parked = parkedPress ?: return
+        parkedPress = null
+        flash(parked.key)
+        longPressHandler.post {
+            onKeyListener?.onKey(parked.key, parked.downX, parked.downY, parked.ambiguity, parked.recordWeight)
+        }
     }
     
     private fun scheduleLongPress(key: Key) {
@@ -1808,6 +1951,12 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * special case here, and specifically no commit of whatever word is currently composing.
      */
     private fun armCursorControl() {
+        // D-528: the gesture mode owns the stream from here - a parked press cannot survive it (its
+        // finger's lift is routed to the cursor-control machine and would otherwise dangle forever).
+        parkedPress?.let { parked ->
+            logTouch("dropTap: reason=cursor_control_armed key=${parked.key.id} heldMs=${SystemClock.uptimeMillis() - parked.downAtMs}")
+        }
+        parkedPress = null
         pressedKey = null
         pressedKeyRect = null
         cursorControlActive = true
