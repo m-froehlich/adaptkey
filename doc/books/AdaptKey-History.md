@@ -24812,3 +24812,46 @@ long-press hints", "calculator currency follows the device region") remain true.
 device-confirmed - the round stays OPEN until the user has tried the three slots and the currency popup
 on the device (the anchor-over-host placement in particular is a first-pass geometry, clamped at the
 screen edges for the 10-cell row, easy to retune against a real report).
+
+## §544 - D-523..D-525: the currency key moves to the special-characters page's dollar position (the d key reverts to the reform's °|$), the apostrophe key's corner becomes the double quote, and wide corner popups go symmetric (v1.3.4 -> v1.3.5, versionCode 604 -> 605)
+
+The user's correction of §543's central misunderstanding, plus two further wishes bundled into the same
+release ("damit wir kein Release verschenken"):
+
+**D-523 - the currency key lives on the special-characters page.** "Die Währungstaste soll auf der
+Sonderzeichenseite so sein wie du sie auf der Haupt-Seite gemacht hast" - the D-520 arrangement (region
+symbol as the key's identity, the world's ten most relevant currencies minus the primary above it in the
+alternating anchor-centred arrangement, no pre-selected cell) moves verbatim to the shifted-symbols row's
+own `$` position: a §53 TEXT key whose label commits the region's symbol verbatim on a plain tap (so the
+two-glyph "Fr"/"R$" primaries work, unlike a CHAR key's single char), no corner hint (the label already
+shows the primary), `Key.alternatingPopup` + `HorizontalLongPressPopup.alternatingRow` placement
+unchanged, and the view's straight-release sentinel extended one step (corner where one exists, otherwise
+the key's own symbol - this key has no corner, its label is the primary). The plain `$` stays reachable
+one slide away - it IS the popup's anchor cell for every non-dollar region - plus on the number row's
+4-right-corner. The letters page reverted completely: `letterKey`'s currencySlot machinery removed, the
+d key back to the reform's exact °|$ on QWERTZ/QWERTY, AZERTY and the Azerbaijani overlay, and the three
+locale pins §543 had added to the base-map tests removed with it. The tilde (D-519), the ampersand on k
+(D-521) and the caret slot (D-522) all stand as the user confirmed ("perfekt" / "super").
+
+**D-524 - the apostrophe key's corner.** The reform's dedicated key right of `l`/`m` carried `" | '` -
+the apostrophe on the key AND as its own right corner, so a long-press straight release re-committed
+what a plain tap already types ("sinnbefreit"). Single-cornered now: `"` is the right corner and the
+release default, so a long-press commits the double quote DIRECTLY (the established single-hint
+contract - no popup, no alternatives list).
+
+**D-525 - wide corner popups go symmetric.** The D-510 grow split (at two or more extras the row grew
+toward the screen centre with all remaining extras attaching on the grow side) put the far cells far too
+wide of the host - "der Weg zum linken Symbol ist viel zu weit". The new arrangement keeps the row
+SYMMETRIC at any width: both corners hold the two-symbol flank positions in the display order (left
+corner first, right corner last - over the host key's edges once the row is centred) and the extras
+interleave RIGHT AND LEFT IN TURN around the centre, the first extra nearest the centre on the right
+side (`HorizontalLongPressPopup.symmetricCornerRow`; `growTrailingRow`/`growLeadingRow` removed). The
+`7` key now renders as `/ \ ÷ ⁷ &` and the `2` key as `" ² ' ₂ @`, full-row centred and plainly clamped
+at the screen edges; rows with at most one extra keep the plain centred arrangement they already had,
+and the release default stays the right-corner cell everywhere. Only true dual-corner straddles are
+affected - right-corner-only keys (the 4/8/9 digits, fr e) and non-corner popups (the comma key, the
+currency key) keep their ordinary placements.
+
+1,927 unit tests, 0 failures; `:app:assembleRelease` green with versionName 1.3.5 in the APK. NOT yet
+device-confirmed - closes together with §543's round on the user's device check (the D-525 symmetric
+placement and the page-2 currency key's anchor geometry in particular are first-pass).

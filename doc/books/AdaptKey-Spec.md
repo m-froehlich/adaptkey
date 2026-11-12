@@ -218,13 +218,16 @@ its right edge, the extra in between; at a screen-edge overflow the row grows fu
 the extra flips to the far side so both corner symbols stay near the host: at the left edge it trails
 behind the right corner (the `1` key's `~ ¹ !` shows as `~ ! ¹`), at the right edge it leads ahead of the
 left corner (the `0` key's `= ⁰ )` shows as `⁰ = )`) - the release default stays the right corner in every
-order. With TWO OR MORE extras (four or more cells) they cannot all fit between the corners over the host,
+order. With TWO OR MORE extras (four or more cells) they cannot all fit between the corners over the host;
 so the row GROWS toward the screen centre (a key in the left half grows right, a key in the right half
 grows left): the FIRST extra stays in the middle between the two corners directly over the host, the
 remaining extras attach on the grow side, and the placement anchors that middle cell over the key centre -
 the `7` key renders as `\ ⁷ / ÷ &` with `/ ÷ &` directly over the host (slash left, division sign centre,
 ampersand right) and the backslash/superscript hanging left; the `2` key mirrors it as `" ' @ ² ₂`
-growing right.
+growing right. **D-525 superseded this wide case**: the row stays SYMMETRIC now - both corners keep the
+two-symbol flank positions (over the host key's edges once the row is centred) and the extras interleave
+right/left in turn around the centre, the first extra nearest the centre on the right side (the `7` key
+as `/ \ ÷ ⁷ &`, the `2` key as `" ² ' ₂ @`); see L-05's D-519..D-525 addendum.
 
 Frequently used symbols are placed as secondary characters on letter keys, reachable by long-press and shown
 as a small hint glyph in the corner of the key - analogous to the AltGr labels on a hardware QWERTZ
@@ -272,7 +275,10 @@ left beside its `ß`/`š`/`ś` right corner (the one operator rescued from a hid
 first third-row key (`y` QWERTZ, `z` QWERTY, `w` AZERTY - screen-stable as a slot) carries `+` left and
 gains a long-press it never had, `v`/`b`/`c` are freed entirely (no corners, no popups - their `/` `*` `÷`
 live on the reformed digit row, `×` stays on `x`), and a dedicated apostrophe key sits right of `l`
-(QWERTY/QWERTZ) or right of `m` (AZERTY) with corners `" | '`, releasing `'`. A language's own letter always
+(QWERTY/QWERTZ) or right of `m` (AZERTY) - D-524: single-cornered with `"` as its right corner and
+release default (the reform's original `" | '` pair made the apostrophe its own long-press release
+default, re-committing what a plain tap already types; now a long-press commits the double quote
+directly). A language's own letter always
 wins its key's right corner (pl ń / cs ň / lv ņ take n's corner with ñ demoted to the popup's first extra;
 their `+`-slot and other letters keep their corners too).
 
@@ -282,29 +288,28 @@ switch ("Apostrophe key", `d515_apostrophe_key`, default **off**) is on - a Germ
 its canonical length unless the user opts in, since the changed home row is exactly what a German-speaking
 community would take against the reform. The switch is Layout-category-scoped and rides in backups.
 
-**D-519..D-522 addendum - the currency, ampersand and caret join the corner model.** Three further
-letters-page mechanisms, plus one special-characters-page move:
+**D-519..D-525 addendum - the currency key on the special-characters page, the ampersand and caret on the
+letters page, and the symmetric wide-popup arrangement.** Five mechanisms from one layout round (the
+D-520 attempt that first put the currency on the d key was reverted by D-523 - the letters page is back
+to the reform's exact data, and the currency key lives on the special-characters page):
 
-- **D-520 (the currency slot).** The d key's reform corner (`$`, D-512's own release default) is the
-  slot's compile-time placeholder: at layout-build time the base `$` is substituted - wherever the D-513
-  union merge placed it - by the system region's own currency symbol, resolved by `CurrencyLocale` from
-  the locale's REGION component (curated country table > JDK short symbol > currency-code fallback >
-  euro; the D-92 device-system-locale precedent). Where the region symbol IS the key's release default
-  (German/English and every other region without a d-owning pack), the key's long-press popup is exactly
-  the world's ten most relevant currencies minus the primary (`CurrencyLocale.RELEVANCE_ORDER`: $
-  € ¥ £ ₹ ₩ ₽ ₺ Fr R$, glyph-deduplicated - ¥ covers Yuan/Yen, $ every dollar sign) in a dedicated
-  alternating arrangement: the ANCHOR cell (the most relevant other currency) sits directly over the host
-  key and the rest alternate left/right around it in relevance order (German: dollar above the key, yuan
-  immediately left, pound immediately right), with the ° left corner keeping its straddle-convention
-  first cell at the far left. The primary deliberately has NO popup cell ("darf nicht im Popup enthalten
-  sein"), so this popup carries no pre-selected cell: a straight long-press release commits the key's own
-  default corner (the corner-model rule unchanged - the corner glyph drawn on the key is what a plain
-  release types), and only a genuine slide selects and commits a cell (`Key.alternatingPopup` is the
-  view's placement flag; `HorizontalLongPressPopup.alternatingRow` the pure placement). A pack owning d
-  (hr/cs đ/ď, az °) keeps its letter as the release default with the currency as an ordinary straddle
-  extra; an explicit pack removal of d is respected, while the code-side ° left corner survives a removal
-  untouched (D-513's own rule). "Fr" is excluded from the word-text case machinery
-  (`AlternativeScript`'s symbol words) so Shift/Caps never uppercase it and it commits verbatim.
+- **D-523 (the currency key, on the special-characters page's shifted-symbols row).** The row's own `$`
+  position is the currency key: its identity IS the system region's currency symbol, resolved by
+  `CurrencyLocale` from the locale's REGION component (curated country table > JDK short symbol >
+  currency-code fallback > euro; the D-92 device-system-locale precedent) - a §53 [KeyCode.TEXT] key
+  whose label commits verbatim on a plain tap, so the two-glyph "Fr"/"R$" primaries work. Its long-press
+  popup is exactly the world's ten most relevant currencies minus the primary
+  (`CurrencyLocale.RELEVANCE_ORDER`: $ € ¥ £ ₹ ₩ ₽ ₺ Fr R$, glyph-deduplicated - ¥ covers Yuan/Yen, $
+  every dollar sign) in the dedicated alternating arrangement: the ANCHOR cell (the most relevant other
+  currency) sits directly over the key and the rest alternate left/right around it in relevance order
+  (German: dollar above the key, yuan immediately left, pound immediately right). The primary
+  deliberately has NO popup cell ("darf nicht im Popup enthalten sein"), so this popup carries no
+  pre-selected cell: a straight long-press release commits the key's own symbol (the view's sentinel
+  fallback), and only a genuine slide selects and commits a cell (`Key.alternatingPopup` is the view's
+  placement flag; `HorizontalLongPressPopup.alternatingRow` the pure placement). The plain `$` stays
+  reachable one slide away (the popup's anchor cell for every non-dollar region) and on the number row's
+  4-right-corner. "Fr" is excluded from the word-text case machinery (`AlternativeScript`'s symbol
+  words) so Shift/Caps never uppercase it and it commits verbatim.
 - **D-521 (the ampersand).** k joins the base map with `&` as its right corner - redundant to the number
   row's 7-right-corner &, which stays put (C-09's hidden-row motivation). A pack owning k keeps its own
   letter as the release default, the universal base symbol appending to its popup per the standing
@@ -314,7 +319,19 @@ letters-page mechanisms, plus one special-characters-page move:
   corner - deliberately the left one, so a language letter owning the right corner (cs z=ž, fr y=â,
   pl z=ż,ź) keeps it as the release default, while a key with no right corner (German/English z/y) makes
   the lone left corner its release default. The number row's 6-right-corner ^ stays.
-- **D-519 (page 2).** The special-characters page's row 1 leads with the tilde now (see L-08).
+- **D-519 (page 2 row 1).** The special-characters page's row 1 leads with the tilde now (see L-08).
+- **D-524 (the apostrophe key).** Single-cornered with `"` as the right corner and release default (see
+  the D-512/D-513 addendum above): a long-press commits the double quote directly - the reform's
+  original `" | '` pair made the apostrophe its own long-press release default, which re-committed what
+  a plain tap already types.
+- **D-525 (the symmetric wide-popup arrangement).** A dual-corner key's popup with TWO OR MORE extras
+  (four or more cells) is no longer the D-510 one-sided grow split (which hung the far cells far too
+  wide of the host): the row stays symmetric, with both corners keeping the two-symbol flank positions
+  (left corner first, right corner last - over the host key's edges once the row is centred) and the
+  extras interleaving RIGHT AND LEFT IN TURN around the row's centre, the first extra landing nearest
+  the centre on the right side (`HorizontalLongPressPopup.symmetricCornerRow`; the `7` key renders as
+  `/ \ ÷ ⁷ &`, the `2` key as `" ² ' ₂ @`). Rows with at most one extra keep the plain centred
+  arrangement, which already reads exactly like this; the release default stays the right-corner cell.
 
 Operationally this is a compiled-in universal BASE (the reformed German map, right corners + the per-key
 left corners as code) plus every pack's `hints.tsv` as a DELTA, merged by UNION - not the pre-reform
@@ -364,10 +381,13 @@ A second symbol page always shows a digit row plus shifted symbols as a guarante
 main-page number row is disabled. D-498: the shifted-symbols row's own `/` key carries `\` as its single
 direct-commit long-press hint - the slash is a primary key here, so the backslash lands next to it as a
 hint rather than a popup cell. D-519: the page's first row now leads with the tilde - the euro key that
-used to sit there (with its own common-currency popup) is gone, its currency having moved onto the
-letters page's d key (L-05's D-520 slot), while ~ keeps its other homes (the number row's 1-left corner,
-page 1's row 1) and gains this direct-tap one, this page being the guaranteed fallback when the main
-number row is hidden.
+used to sit there (with its own common-currency popup) is gone, while ~ keeps its other homes (the number
+row's 1-left corner, page 1's row 1) and gains this direct-tap one, this page being the guaranteed
+fallback when the main number row is hidden. D-523: the shifted-symbols row's `$` position is the
+currency key now (see L-05's D-519..D-525 addendum) - the region's own currency symbol as the key's
+identity (a §53 TEXT key, committing verbatim on a plain tap), the world's ten most relevant currencies
+minus the primary above it in the alternating popup arrangement, and the plain `$` itself one slide away
+in that popup (its anchor cell for every non-dollar region) plus on the number row's 4-right-corner.
 
 ---
 
