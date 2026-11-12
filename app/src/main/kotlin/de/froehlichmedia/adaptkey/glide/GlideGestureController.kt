@@ -48,7 +48,9 @@ class GlideGestureController {
     private var originKeyWidthPx = 0.0
     private var startTimeMs = 0L
     private var lastUpdateTimeMs = 0L
+    private var lastEventTimeMs = 0L
     private val strokePoints = ArrayList<GlidePoint>()
+    private var lastStrokeSummary = ""
 
     /** Whether a stroke is live at all (begun, not yet released/cancelled). */
     var hasStroke: Boolean = false
@@ -75,6 +77,7 @@ class GlideGestureController {
         strokePoints.add(GlidePoint(x.toDouble(), y.toDouble()))
         startTimeMs = timeMs
         lastUpdateTimeMs = 0L
+        lastEventTimeMs = timeMs
         hasStroke = true
         claimed = false
     }
@@ -88,6 +91,7 @@ class GlideGestureController {
             return Decision.NONE
         }
         strokePoints.add(GlidePoint(x.toDouble(), y.toDouble()))
+        lastEventTimeMs = timeMs
         if (!claimed && satisfiesClaimRule(timeMs)) {
             claimed = true
             lastUpdateTimeMs = timeMs
@@ -102,6 +106,9 @@ class GlideGestureController {
 
     /** Ends the stroke (release or cancel side); the view reads [claimed] before calling this. */
     fun end() {
+        if (hasStroke) {
+            lastStrokeSummary = describeStroke()
+        }
         hasStroke = false
         claimed = false
         geometry = null
@@ -111,6 +118,44 @@ class GlideGestureController {
     /** The stroke's raw points, for the recognizer. Empty when no stroke is live. */
     val points: List<GlidePoint>
         get() = strokePoints
+
+    /**
+     * D-534: one locale-free diagnostic line about the stroke - raw point count, path length in px,
+     * path length in origin-key widths (integer hundredths, `pathWidths=142` meaning 1.42), how many
+     * distinct letter keys came within the passing radius, and the elapsed duration in ms. Exactly
+     * the facts a community repro needs to say WHY a stroke never claimed (which of the three claim
+     * gates failed) or how far a committed one actually travelled. Survives [end] - an ended stroke
+     * reports its own final summary - and returns "" when no stroke was ever begun since the last
+     * clear.
+     */
+    fun strokeSummary(): String {
+        if (hasStroke) {
+            return describeStroke()
+        }
+        return lastStrokeSummary
+    }
+
+    private fun describeStroke(): String {
+        var pathLength = 0.0
+        for (i in 1 until strokePoints.size) {
+            pathLength += strokePoints[i - 1].distanceTo(strokePoints[i])
+        }
+        var distinct = 0
+        geometry?.let { layout ->
+            val passed = HashSet<Char>()
+            for (point in strokePoints) {
+                val key = layout.nearestKey(point) ?: continue
+                val center = layout.centerOf(key) ?: continue
+                if (point.distanceTo(center) <= PASSING_RADIUS_FACTOR * layout.minKeyPitch) {
+                    passed.add(key)
+                }
+            }
+            distinct = passed.size
+        }
+        val pathWidths = if (originKeyWidthPx > 0.0) (pathLength / originKeyWidthPx * 100).toInt() else 0
+        return "points=${strokePoints.size} pathPx=${pathLength.toInt()} pathWidths=$pathWidths " +
+            "distinctKeys=$distinct durationMs=${(lastEventTimeMs - startTimeMs).coerceAtLeast(0)}"
+    }
 
     /**
      * The letter sequence the stroke visited, for the unknown-word fallback (plan §8.3: when no

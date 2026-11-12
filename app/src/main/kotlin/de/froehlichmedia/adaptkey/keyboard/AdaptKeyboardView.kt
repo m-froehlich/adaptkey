@@ -1502,6 +1502,10 @@ class AdaptKeyboardView @JvmOverloads constructor(
                     val decision = glideController.move(x, y, SystemClock.uptimeMillis())
                     if (decision == GlideGestureController.Decision.CLAIMED) {
                         cancelPendingLongPress()
+                        // D-534: the claim line - with the stroke's facts at claim time, so a
+                        // repro shows exactly how far the stroke had travelled when it claimed
+                        // (or that it claimed on a barely-qualifying smear).
+                        logGlide("claimed: ${glideController.strokeSummary()}")
                         // T-03: the ACTION_DOWN tap this stroke began as was recorded into the offset
                         // model - a claimed glide is not a tap and must never train it (plan §3).
                         // unrecord() is the exact algebraic inverse and needs the original record()
@@ -1659,15 +1663,24 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 // D-516/G-09: a claimed glide stroke owns this release entirely - commit through the
                 // listener; never a tap, never a swipe, never a popup (plan §4.1.3). An unclaimed
                 // stroke falls through to the ordinary resolution below, where the D-19/G-03 gates
-                // apply.
+                // apply. D-534: both outcomes logged - the unclaimed release is THE diagnostic for
+                // "I glided but it typed/behaved like a tap": its summary shows which claim gate
+                // (path width, distinct keys, duration) the stroke failed.
                 if (glideController.hasStroke) {
                     val wasClaimed = glideController.claimed
                     val points = glideController.points.toList()
                     val sequence = if (wasClaimed) glideController.inferredLetterSequence() else ""
+                    val summary = glideController.strokeSummary()
                     glideController.end()
                     if (wasClaimed && ownsRelease) {
+                        logGlide("release: $summary sequence=$sequence")
                         onGlideListener?.onGlideReleased(points, sequence)
                         return true
+                    }
+                    if (wasClaimed) {
+                        logGlide("dropGlide: reason=foreign_release $summary")
+                    } else {
+                        logGlide("notClaimed: $summary -> tap/swipe resolution")
                     }
                 }
                 // D-01: releasing over the alternatives popup commits the highlighted alternative.
@@ -1742,12 +1755,16 @@ class AdaptKeyboardView @JvmOverloads constructor(
         dismissPopup()
         // D-516/G-09: a claimed glide stroke dies with the sequence (D-495, unchanged - a second
         // finger kills the stroke, plan §4.1.3). The listener discards the preview; an unclaimed
-        // stroke just ends silently.
+        // stroke just ends silently. D-534: both outcomes visible in the field log now.
         if (glideController.hasStroke) {
             val wasClaimed = glideController.claimed
+            val summary = glideController.strokeSummary()
             glideController.end()
             if (wasClaimed) {
+                logGlide("cancelled: reason=sequence_cancelled $summary")
                 onGlideListener?.onGlideCancelled()
+            } else {
+                logGlide("aborted: reason=sequence_cancelled claimed=false $summary")
             }
         }
         touchTracker.end()
@@ -1845,9 +1862,11 @@ class AdaptKeyboardView @JvmOverloads constructor(
         // D-516/G-09: a stroke starting on a letter key of the letters surface is a
         // potential glide - the pure controller records it. Nothing else changes until it
         // claims: the long-press stays armed, the tap stays pending, T-01 is untouched.
+        // D-534: logged, so a repro shows what the stroke started from.
         if (glideEligible(key)) {
             glideTrail.clear()
             glideController.begin(glideKeyGeometry(), rect.width(), x, y, SystemClock.uptimeMillis())
+            logGlide("begin: key=${key.id} x=${x.toInt()} y=${y.toInt()}")
         }
         // D-07: holding the backspace key starts an accelerating repeat delete.
         if (key.code == KeyCode.DELETE) {
@@ -1866,7 +1885,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
      */
     private fun parkActivePress() {
         cancelPendingLongPress()
-        resetGlideStroke()
+        resetGlideStroke(reason = "parked")
         pressedKey?.let { key ->
             parkedPress = ParkedPress(
                 pointerId = touchTracker.trackedPointerId,
@@ -2584,6 +2603,19 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     /**
+     * D-534: the glide-stroke diagnostic - the same dual-output shape (logcat tag `AdaptKeyGlide` plus
+     * the in-app rolling log, Settings -> Diagnostics), so a community glide repro needs no PC tether.
+     * No password-field guard needed: [glideEligible] forbids strokes on every non-letters surface and
+     * every field the service marks `glideFieldAllowed = false` (password fields included), so no
+     * password-field stroke can ever reach any of this logging's call sites; the stroke facts
+     * (point/path/key counts) are geometry, not typed content.
+     */
+    private fun logGlide(message: String) {
+        Log.d("AdaptKeyGlide", message)
+        DiagnosticLog.record("[AdaptKeyGlide] $message")
+    }
+    
+    /**
      * D-70: kicks off the (idempotent, async) decode of the bundled click sample the first time sound
      * feedback is actually used, rather than eagerly in the constructor - most sessions never enable it.
      * [clickSoundLoaded] only flips once [SoundPool.setOnLoadCompleteListener] confirms the sample is
@@ -2810,10 +2842,18 @@ class AdaptKeyboardView @JvmOverloads constructor(
     /**
      * D-516/G-09: silently ends any live glide stroke - the service's field-change defensive reset.
      * No listener callbacks (the field they would talk to is gone); the trail keeps fading.
+     * D-534: visible in the field log now, with the stroke's own facts and the caller's reason - a
+     * stroke dying here is a committed-looking stroke whose word never appears, exactly the repro
+     * class the log must be able to distinguish from a stroke that never claimed at all.
+     *
+     * @param reason why the stroke is being ended (logged verbatim; the park path passes its own)
      */
-    fun resetGlideStroke() {
+    fun resetGlideStroke(reason: String = "field_reset") {
         if (glideController.hasStroke) {
+            val summary = glideController.strokeSummary()
+            val claimed = glideController.claimed
             glideController.end()
+            logGlide("aborted: reason=$reason claimed=$claimed $summary")
         }
     }
     

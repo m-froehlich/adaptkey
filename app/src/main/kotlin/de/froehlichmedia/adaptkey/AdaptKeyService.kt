@@ -1342,6 +1342,8 @@ class AdaptKeyService : InputMethodService() {
         row.onCredentialModeClick = ExtraRowView.OnCredentialModeClickListener { toggleCredentialModeFromExtraRow() }
         row.onTouchZoneToggleClick = ExtraRowView.OnTouchZoneToggleClickListener { toggleTouchZoneVisualizationFromExtraRow() }
         row.onUrlModeToggleClick = ExtraRowView.OnUrlModeToggleClickListener { toggleUrlModeFromExtraRow() }
+        // D-532: the glide-typing shortcut - flips the persisted setting directly.
+        row.onGlideToggleClick = ExtraRowView.OnGlideToggleClickListener { toggleGlideTypingFromExtraRow() }
         // D-144: a downward swipe on the row itself closes it too, not only on the keyboard body below.
         row.onSwipeDown = ExtraRowView.OnSwipeDownListener { dismissKeyboardOrCloseExtraRow() }
         extraRow = row
@@ -1566,6 +1568,9 @@ class AdaptKeyService : InputMethodService() {
             view.extraSpaceBelowNumberRowDp = s.extraSpaceBelowNumberRowDp
             view.extraSpaceAboveSpaceRowDp = s.extraSpaceAboveSpaceRowDp
         }
+        // D-532: the extra row's glide toggle mirrors the setting, so a change made on the settings
+        // screen (or by the toggle itself) keeps the button's state honest whenever the row is open.
+        extraRow?.glideTypingActive = s.glideTypingEnabled
         // §56: the accepted-word flight matches the user's actual configured highlight colour (C-04/S-05),
         // not just its default.
         suggestionBar?.flyColor = config.highlightColor
@@ -1893,13 +1898,10 @@ class AdaptKeyService : InputMethodService() {
         // D-516/G-09: glide runs only on ordinary letters-surface text fields - every verbatim
         // surface (login/URL/email, the no-suggestions flag) and any login-relevant field forbids
         // it, mirroring the plan's §3 surface list. Also kills any stroke still live from the
-        // previous field and drops its auto-space flag: a field change is exactly the "next
-        // arbitrary input" the one-shot rule is consumed by.
+        // previous field (D-534: logged by the view).
         keyboardView?.resetGlideStroke()
         glideFieldAllowed = loginFieldKind == LoginFieldKind.NONE && !urlMode && !emailMode && !noSuggestionsField
         keyboardView?.glideFieldAllowed = glideFieldAllowed
-        glideAutoSpaceArmed = false
-        glideLastCommittedWord = null
         credentialCaptured = false
         credentialModeManuallyActivated = false
         credentialSnapshot.setLength(0)
@@ -3248,11 +3250,6 @@ class AdaptKeyService : InputMethodService() {
         if (key.code != KeyCode.SHIFT) {
             lastShiftTime = 0L
         }
-        // D-516/G-09: any ordinary keystroke is the "next arbitrary input" that consumes the glide
-        // auto-space one-shot (plan §8.4 - only a glide stroke itself may still spend it, which is
-        // exactly the path that never reaches handleKey: a claimed stroke suppresses its tap).
-        glideAutoSpaceArmed = false
-        glideLastCommittedWord = null
         // D-217 (temporary diagnostic): the actual per-key processing cost the user asked to see alongside
         // AdaptKeyJitter's own per-call timestamps - everything below runs synchronously on the main thread
         // between the tap being resolved and this function returning, so `finally` (covering every branch's
@@ -3623,16 +3620,14 @@ class AdaptKeyService : InputMethodService() {
     // to commit/cancel) and gates the ordinary suggestion pipeline off the bar; glideGeneration
     // supersedes in-flight live-recognition passes (the cooperative-cancellation pattern: a stale
     // result is dropped instead of racing the preview); glideCandidates is the latest session's
-    // ranked list, rewritten by every live pass and consumed at release. The auto-space pair is the
-    // plan's §8.4 one-shot flag: set at a glide commit, consumed (or discarded) at the next stroke
-    // start - "lazy at the next stroke's start, only glide->glide".
+    // ranked list, rewritten by every live pass and consumed at release. D-533 removed the former
+    // lazy auto-space pair (the one-shot flag + last-committed-word): the release commits its own
+    // trailing space now, so there is nothing left to defer.
     private val glideExecutor = Executors.newSingleThreadExecutor()
     private var glideSessionActive = false
     private var glideGeneration = 0
     private var glideLayout: GlideKeyGeometry? = null
     private var glideCandidates: List<GlideCandidate> = emptyList()
-    private var glideAutoSpaceArmed = false
-    private var glideLastCommittedWord: String? = null
     
     // D-401-followup: the newline-based fallback path's own de-duplication, now that the view reports every
     // motion event rather than only the ones that changed these totals (the screen-space path needs the
@@ -3747,13 +3742,12 @@ class AdaptKeyService : InputMethodService() {
     
     /**
      * D-516/G-09: a stroke just claimed - the session starts. The plan's §4.3 steps in order: the
-     * lazy auto-space first (only when the directly preceding word is still exactly the previous
-     * glide commit's own word - the caret must still sit right after it, so the flag is discarded
-     * whenever anything moved in between), then the ordinary fresh-token steps a first letter tap
-     * would run ([captureTokenContext]/[resetWordEndShift]/[reclaimSurroundingWord] - the reclaim
-     * with no tap of its own, the long-press-letter precedent: a glide stroke is never tap data).
-     * The composing token itself is seeded only once the first candidate result arrives, so a
-     * stroke that dies before any result (a second finger, a cancel) never touched the document.
+     * ordinary fresh-token steps a first letter tap would run ([captureTokenContext]/
+     * [resetWordEndShift]/[reclaimSurroundingWord] - the reclaim with no tap of its own, the
+     * long-press-letter precedent: a glide stroke is never tap data). The composing token itself is
+     * seeded only once the first candidate result arrives, so a stroke that dies before any result
+     * (a second finger, a cancel) never touched the document. D-533 removed the former lazy
+     * auto-space here: separation is the previous release's own trailing space now.
      */
     private fun startGlideSession() {
         val ic = currentInputConnection ?: return
@@ -3761,15 +3755,7 @@ class AdaptKeyService : InputMethodService() {
         glideGeneration++
         glideCandidates = emptyList()
         glideLayout = keyboardView?.glideKeyGeometry()
-        val last = glideLastCommittedWord
-        if (glideAutoSpaceArmed && last != null) {
-            val before = ic.getTextBeforeCursor(last.length, 0)?.toString()
-            if (before == last) {
-                ic.commitText(" ", 1)
-            }
-            glideAutoSpaceArmed = false
-            glideLastCommittedWord = null
-        }
+        diag("AdaptKeyGlide", "sessionStart")
         captureTokenContext(ic)
         resetWordEndShift()
         pendingSuggestionSpace = false
@@ -3782,7 +3768,10 @@ class AdaptKeyService : InputMethodService() {
      * [GlideGestureController.UPDATE_THROTTLE_MS]). Runs on the single-thread glide executor - the
      * store-backed recognizer is the same shape of work the suggestion provider's background passes
      * do - and posts the result back to the main thread, where a superseded generation (a newer
-     * request, or the session already over) is dropped instead of racing the preview.
+     * request, or the session already over) is dropped instead of racing the preview. D-534: the
+     * request and its posted result are logged (the result on the main thread, where `diag()`'s
+     * password guard reads consistent field state), so a repro shows the whole recognition flow -
+     * what went in, what came out, what was superseded.
      */
     private fun scheduleGlideRecognition(points: List<GlidePoint>) {
         val layout = glideLayout ?: return
@@ -3792,15 +3781,27 @@ class AdaptKeyService : InputMethodService() {
         val folding = SettingsStore.loadDiacriticFolding(this, activeLanguage)
         val previous = previousWord
         val previousPrevious = previousPreviousWord
+        diag(
+            "AdaptKeyGlide",
+            "recognize: gen=$generation resampled=${trace.points.size} arcPx=${trace.arcLength.toInt()} " +
+                "prev=$previous prevPrev=$previousPrevious"
+        )
         glideExecutor.execute {
             val results = GlideRecognizer(store, layout, folding).candidates(
                 trace, previous, previousPrevious
             )
             handler.post {
                 if (generation != glideGeneration || !glideSessionActive) {
+                    diag("AdaptKeyGlide", "superseded: gen=$generation (current=$glideGeneration active=$glideSessionActive)")
                     return@post // superseded while in flight
                 }
                 glideCandidates = results
+                diag(
+                    "AdaptKeyGlide",
+                    "candidates: gen=$generation n=${results.size} " + results.take(3).joinToString(" ") {
+                        "${it.word}(${it.score.toInt()}/${it.geometricCost.toInt()})"
+                    }
+                )
                 applyGlidePreview(results)
             }
         }
@@ -3848,8 +3849,18 @@ class AdaptKeyService : InputMethodService() {
      * chip-commit semantics: resolved casing via [GlideCommitPolicy] (D-440's gate on the live
      * composing text), the pre-armed Shift capitalising the first character exactly like a typed
      * one, no autocorrect, ordinary learning for a dictionary candidate (never for the unknown-word
-     * fallback), no trailing space (the lazy auto-space at the next stroke start owns separation),
-     * and the remaining candidates left in the bar as ordinary chips to pick instead.
+     * fallback), and the remaining candidates left in the bar as ordinary chips to pick instead.
+     * 
+     * D-533: the word completes on the finger's lift - the commit carries a real trailing space
+     * ([suggestionTrailingSpace], the exact chip-commit machinery: D-29's armed
+     * [pendingSuggestionSpace] lets an immediately following sentence punctuation eat the space
+     * again, D-123's suppress guard keeps the commit's own reclaim echo from clearing it), so the
+     * next word - glided or typed - starts fresh with no Space press. This replaces the former
+     * glide→glide lazy auto-space (plan §8.4's own start-of-next-stroke insertion), which never
+     * separated a glide word from what followed it by any other input path.
+     * 
+     * D-534: the whole decision is logged - stroke facts, the candidate pool used, the chosen word,
+     * its casing, whether it was learned, and the trailing space.
      */
     private fun finishGlideSession(points: List<GlidePoint>, inferredSequence: String) {
         if (!glideSessionActive) {
@@ -3861,10 +3872,12 @@ class AdaptKeyService : InputMethodService() {
         clearUndo()
         pendingMergeChar = null
         var results = glideCandidates
+        var retriedSync = false
         if (results.isEmpty()) {
             val layout = glideLayout
             val trace = GlideTrace.resample(points)
             if (layout != null && trace != null) {
+                retriedSync = true
                 results = GlideRecognizer(
                     dictionaryStore, layout, SettingsStore.loadDiacriticFolding(this, activeLanguage)
                 ).candidates(trace, previousWord, previousPreviousWord)
@@ -3882,14 +3895,23 @@ class AdaptKeyService : InputMethodService() {
             cased = cased[0].uppercaseChar() + cased.substring(1)
         }
         consumeShift()
-        ic.commitText(cased, 1)
+        // D-533: word + trailing space in one commit - "every word only needs the finger's lift".
+        val trailingSpace = suggestionTrailingSpace(ic)
+        ic.commitText(cased + trailingSpace, 1)
         clearComposing()
         if (word.learn) {
             learnWord(cased)
         }
         notifySuggestionAccepted(cased)
-        glideAutoSpaceArmed = true
-        glideLastCommittedWord = cased
+        // D-29/D-123, the chip-commit pair: arm the space for a following punctuation to eat, and
+        // guard this commit's own reclaim echo against clearing the flag it just armed.
+        pendingSuggestionSpace = trailingSpace.isNotEmpty()
+        suppressNextReclaimSpaceReset = true
+        diag(
+            "AdaptKeyGlide",
+            "commit: n=${results.size} syncRetry=$retriedSync top=${top?.word ?: "none"} " +
+                "inferred=$inferredSequence word=$cased learned=${word.learn} trailingSpace=${trailingSpace.isNotEmpty()}"
+        )
         // Alternates stay in the bar as ordinary chips to pick instead (plan §3); with none left,
         // the flow continues with the next-word predictions like any other commit.
         val alternates = results.drop(1).take(GLIDE_BAR_CANDIDATES - 1)
@@ -3907,18 +3929,21 @@ class AdaptKeyService : InputMethodService() {
      * cancel) - the preview is provisional text this session wrote, so it is removed outright
      * (never finishComposingText, which would keep it as real text the finger never chose; the
      * empty-write is the established delete-composing-content mechanism, and nothing is ever
-     * re-inserted afterwards, which is the case D-383 guards against).
+     * re-inserted afterwards, which is the case D-383 guards against). D-534: logged with what the
+     * preview had shown, so a repro distinguishes a discarded stroke from a committed one.
      */
     private fun discardGlidePreview() {
         glideSessionActive = false
         glideGeneration++
         val ic = currentInputConnection ?: run {
+            diag("AdaptKeyGlide", "discard: reason=no_input_connection previewWas=${composing.toString()}")
             clearComposing()
             return
         }
         if (composing.isNotEmpty()) {
             ic.setComposingText("", 1)
         }
+        diag("AdaptKeyGlide", "discard: previewWas=${composing.toString()}")
         clearComposing()
         setSuggestionBarItems(emptyList())
     }
@@ -4813,6 +4838,22 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
+     * D-532: the extra row's glide-typing toggle - writes the `d516_glide_typing` setting itself
+     * (the persisted boolean the settings screen's own switch reads back), so the shortcut and the
+     * setting can never disagree. The shared-preferences listener reloads the settings and runs
+     * [applySettings], which pushes the new flag into the view's own glide gate (and re-syncs the
+     * button's state); the button state is also set directly here, so the visual feedback is
+     * immediate rather than waiting for the listener round-trip. D-187: no longer closes the row -
+     * see [closeExtraRow]'s own KDoc.
+     */
+    private fun toggleGlideTypingFromExtraRow() {
+        val next = !settings.glideTypingEnabled
+        SettingsStore.prefs(this).edit().putBoolean(SettingsStore.KEY_GLIDE_TYPING_ENABLED, next).apply()
+        extraRow?.glideTypingActive = next
+        diag("AdaptKeyGlide", "extraRowToggle: glide typing -> $next")
+    }
+    
+    /**
      * D-516/G-09: re-derives the glide field gate from the current field kind/mode state and pushes
      * it into the view. Called wherever the state it reads changes mid-field (the extra row's two
      * toggles); onStartInput's own derivation mirrors this expression inline.
@@ -5293,6 +5334,16 @@ class AdaptKeyService : InputMethodService() {
         }
         
         if (composing.isEmpty()) {
+            // D-533: a manual Space right after a glide commit's own trailing space is swallowed -
+            // the separation already physically exists, so the habitual press (muscle memory from
+            // typing, where the Space key IS the word separator) must not double it. Verified
+            // against the real document (the D-29 precedent's ground-truth read), only in this
+            // armed state - a space before anything else is never swallowed in general. Disarms the
+            // flag, so a deliberate second Space still commits a real second space.
+            if (pendingSuggestionSpace && delimiter == " " && ic.getTextBeforeCursor(1, 0)?.toString() == " ") {
+                pendingSuggestionSpace = false
+                return 0
+            }
             // D-29: a punctuation mark right after an accepted suggestion removes the auto-added trailing
             // space, so it attaches to the word. Only in this armed state - spaces before a typed
             // punctuation are never stripped in general.
@@ -8178,10 +8229,6 @@ class AdaptKeyService : InputMethodService() {
         val ic = currentInputConnection ?: return
         clearUndo()
         pendingMergeChar = null
-        // D-516/G-09: a chip tap is ordinary input - it consumes the glide auto-space one-shot
-        // (plan §8.4: only the next glide stroke itself may still spend it).
-        glideAutoSpaceArmed = false
-        glideLastCommittedWord = null
         when (item.kind) {
             // S-06: keep exactly what was typed and cancel the pending autocorrect for this occurrence.
             SuggestionController.Kind.VERBATIM -> {

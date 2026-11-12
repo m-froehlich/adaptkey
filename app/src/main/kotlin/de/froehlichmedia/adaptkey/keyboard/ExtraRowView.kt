@@ -35,6 +35,11 @@ import de.froehlichmedia.adaptkey.gesture.TouchSequenceTracker
  * (emoji/clear-clipboard/touch-zone/credential-mode/URL-mode buttons all followed), and "settings" as the
  * name kept reading as narrower than what the row actually does, by direct request.
  * 
+ * D-532: the glide-typing toggle joins the right-edge pair - the glide icon directly left of the
+ * settings gear (second from right, the user's own placement), flipping the `d516_glide_typing`
+ * setting directly as a shortcut (persisted, so the settings screen's own switch always agrees).
+ * The touch-zone toggle shifted one slot further left to make room.
+ * 
  * D-132 (second pass - the first attempt below didn't fix the reported "pops in" complaint): the row sits
  * in the same parent [android.widget.LinearLayout] as the suggestion bar and keyboard *below* it, so the
  * originally-D-86-inspired "jump `layoutParams.height` to the target immediately, only animate content
@@ -94,6 +99,12 @@ class ExtraRowView @JvmOverloads constructor(
         fun onUrlModeToggleClick()
     }
     
+    /** D-532: invoked when the glide-typing toggle button is tapped. */
+    fun interface OnGlideToggleClickListener {
+        
+        fun onGlideToggleClick()
+    }
+    
     /** D-144: invoked when a downward swipe anywhere on the row dismisses/closes, mirroring G-03. */
     fun interface OnSwipeDownListener {
         
@@ -109,6 +120,8 @@ class ExtraRowView @JvmOverloads constructor(
     var onTouchZoneToggleClick: OnTouchZoneToggleClickListener? = null
     
     var onUrlModeToggleClick: OnUrlModeToggleClickListener? = null
+    
+    var onGlideToggleClick: OnGlideToggleClickListener? = null
     
     var onSwipeDown: OnSwipeDownListener? = null
     
@@ -152,6 +165,18 @@ class ExtraRowView @JvmOverloads constructor(
         }
     
     /**
+     * D-532: reflects whether glide typing is currently enabled (the `d516_glide_typing` setting) -
+     * the button's background mirrors [credentialModeButton]'s own active/inactive styling. The
+     * service sets this from its settings reload and again directly on a tap, so the button always
+     * agrees with the setting itself (which the tap writes straight to the preferences).
+     */
+    var glideTypingActive: Boolean = false
+        set(value) {
+            field = value
+            glideToggleButton.background = credentialModeBackground(value)
+        }
+    
+    /**
      * D-185: whether the URL-keyboard toggle button is shown at all - only while the focused field is
      * itself a URL-variation field (reserving no space in the row otherwise, unlike every other button
      * here which is always present). Tracks the field's own type, not the live toggle state
@@ -192,6 +217,12 @@ class ExtraRowView @JvmOverloads constructor(
     private val emojiButton = buttonFor(EMOJI_ICON) { onEmojiClick?.onEmojiClick() }
     private val settingsButton = buttonFor("⚙") { onSettingsClick?.onSettingsClick() }
     private val touchZoneToggleButton = buttonFor("🎯") { onTouchZoneToggleClick?.onTouchZoneToggleClick() }
+    
+    // D-532: the glide-typing toggle - second from the right, directly left of the settings gear (the
+    // user's own placement), sharing the gear's edge pair; the touch-zone toggle moved one slot further
+    // left to make room. Same glyph as the settings screen's own glide switch icon ([GLIDE_ICON]), so
+    // the shortcut and the setting read as one function.
+    private val glideToggleButton = buttonFor(GLIDE_ICON) { onGlideToggleClick?.onGlideToggleClick() }
     
     // D-185: sits between credentialModeButton and emojiButton (see [urlModeButtonVisible]) - GONE by
     // default, since it must not appear at all outside a URL field.
@@ -237,11 +268,20 @@ class ExtraRowView @JvmOverloads constructor(
                 marginStart = slotMarginStart(2)
             }
         )
-        // D-156 / D-267: directly left of the settings gear, offset by the gear's own width plus one more
-        // button-margin's worth of gap so the two read as a distinct pair at the row's right edge - this
-        // slot used to belong to the clear-clipboard button (§69), moved into the suggestion bar itself.
+        // D-156 / D-267 / D-532: on the row's right edge - the touch-zone toggle now sits third from
+        // the right (its old second-from-right slot taken by the D-532 glide toggle below), offset by
+        // the gear's and glide button's own widths plus the gaps so the right edge reads as a distinct
+        // trio. This slot used to belong to the clear-clipboard button (§69), moved into the
+        // suggestion bar itself.
         content.addView(
             touchZoneToggleButton,
+            LayoutParams(buttonSizePx, buttonSizePx, Gravity.END or Gravity.CENTER_VERTICAL).apply {
+                marginEnd = marginPx * 3 + buttonSizePx * 2
+            }
+        )
+        // D-532: the glide toggle, second from the right - directly left of the settings gear.
+        content.addView(
+            glideToggleButton,
             LayoutParams(buttonSizePx, buttonSizePx, Gravity.END or Gravity.CENTER_VERTICAL).apply {
                 marginEnd = marginPx * 2 + buttonSizePx
             }
@@ -538,6 +578,14 @@ class ExtraRowView @JvmOverloads constructor(
         // D-507 bottom-row emoji slot, so the two entry points can never drift apart glyph-wise.
         internal const val EMOJI_ICON = "😊"
         private const val BACK_TO_KEYBOARD_ICON = "⌨"
+        // D-532: the glide-typing icon - the wavy dash (U+3030), the one continuous stroke drawn across
+        // the letters, standing in for Gboard-style gesture typing. A deliberate Unicode glyph rather
+        // than a bundled image asset (the D-361-followup precedent: no asset pipeline, no extra
+        // licence), shared by this button and the settings screen's own glide switch so the two can
+        // never drift apart. No standard single icon for glide typing exists in Unicode; among the
+        // stroke/wave candidates this is the boldest-shaped one (the thin mathematical/arrows glyphs
+        // were already rejected once for reading too faint on a real device, D-361-followup v2).
+        internal const val GLIDE_ICON = "〰"
         // D-142: three reverse-repeats of a 220ms fade reads as a clear, brief pulse without lingering.
         private const val FLASH_DURATION_MS = 220L
         private const val FLASH_REPEAT_COUNT = 3

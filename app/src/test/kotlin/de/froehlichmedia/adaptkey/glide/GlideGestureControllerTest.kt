@@ -102,6 +102,32 @@ class GlideGestureControllerTest {
     }
 
     @Test
+    fun `D-534 strokeSummary reports the locale-free stroke facts and survives end`() {
+        val controller = GlideGestureController()
+        trace(controller, hToKPoints(), startMs = 1_000L, stepMs = 16L)
+
+        val summary = controller.strokeSummary()
+        assertTrue(summary.contains("points="), summary)
+        assertTrue(summary.contains("pathPx="), summary)
+        // h->a->k is several key widths wide, so the integer-hundredths width factor is well past 100.
+        assertTrue(summary.contains("pathWidths="), summary)
+        assertTrue(summary.contains("distinctKeys="), summary)
+        assertTrue(summary.contains("durationMs="), summary)
+        assertTrue(controller.claimed, "the reference stroke must claim so distinctKeys reflects real passes")
+        assertTrue(!summary.contains("."), "locale-free: no decimal separator at all ($summary)")
+
+        // An ended stroke keeps reporting its own final summary - the cancel/release log sites read it
+        // after end().
+        controller.end()
+        assertEquals(summary, controller.strokeSummary())
+    }
+
+    @Test
+    fun `D-534 strokeSummary is empty when no stroke was ever begun`() {
+        assertEquals("", GlideGestureController().strokeSummary())
+    }
+
+    @Test
     fun `cancel before the claim leaves an ordinary tap candidate`() {
         val controller = GlideGestureController()
         val h = geometry.centerOf('h')!!

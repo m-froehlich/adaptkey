@@ -31,6 +31,7 @@ import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceManager
 import androidx.preference.SwitchPreferenceCompat
 import de.froehlichmedia.adaptkey.R
+import de.froehlichmedia.adaptkey.keyboard.ExtraRowView
 import de.froehlichmedia.adaptkey.onboarding.OnboardingStore
 import de.froehlichmedia.adaptkey.touch.OffsetStore
 import de.froehlichmedia.adaptkey.touch.TypingPattern
@@ -126,6 +127,10 @@ class SettingsActivity : SettingsScreenActivity() {
                 // v4: the starting flag is now systemFlag too (was a hardcoded 🇩🇪); the target flag (English,
                 // G-01's own "always available" language) stays fixed.
                 "d398_sustained_language_switch_threshold" to "$systemFlag🇬🇧",
+                // D-532: the glide-typing switch's own icon - the same wavy-dash glyph the extra row's
+                // glide toggle button uses (ExtraRowView.GLIDE_ICON), so the setting and its keyboard
+                // shortcut read as one function.
+                "d516_glide_typing" to ExtraRowView.GLIDE_ICON,
                 // Category headers (v3) - PreferenceCategory is a Preference too, and its own Material
                 // layout already reserves the identical icon-frame column (confirmed directly in the
                 // androidx.preference AAR's preference_category_material.xml before relying on it).
