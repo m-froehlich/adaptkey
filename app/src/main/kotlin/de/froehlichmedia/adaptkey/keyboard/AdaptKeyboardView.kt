@@ -1445,6 +1445,29 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     override fun onTouchEvent(event: MotionEvent): Boolean {
+        // D-537: the delivery diagnostic - every non-MOVE action logged at entry, so the in-app log
+        // shows exactly WHICH events this view receives. The reported broken state looked precisely
+        // like lost UPs: rawTaps (DOWN processed) with zero handleKey lines and no other exit line.
+        // With these lines, the next repro names the delivery pattern definitively: "UP missing",
+        // "CANCEL delivered", or "UP delivered" (which would point the search back into this file).
+        // MOVE stays unlogged - it is the bulk volume and never commits anything on its own.
+        when (event.actionMasked) {
+            MotionEvent.ACTION_DOWN -> logTouch(
+                "touchEvent: action=DOWN pointers=${event.pointerCount} pointerId=${event.getPointerId(event.actionIndex)}"
+            )
+            MotionEvent.ACTION_UP -> logTouch(
+                "touchEvent: action=UP pointers=${event.pointerCount} pointerId=${event.getPointerId(event.actionIndex)}"
+            )
+            MotionEvent.ACTION_CANCEL -> logTouch(
+                "touchEvent: action=CANCEL pointers=${event.pointerCount} pointerId=${event.getPointerId(event.actionIndex)}"
+            )
+            MotionEvent.ACTION_POINTER_DOWN -> logTouch(
+                "touchEvent: action=POINTER_DOWN pointers=${event.pointerCount} pointerId=${event.getPointerId(event.actionIndex)}"
+            )
+            MotionEvent.ACTION_POINTER_UP -> logTouch(
+                "touchEvent: action=POINTER_UP pointers=${event.pointerCount} pointerId=${event.getPointerId(event.actionIndex)}"
+            )
+        }
         // D-401: once armed, every motion event for this gesture is its own self-contained state machine,
         // routed here instead of the ordinary key-press handling below - see handleCursorControlTouch()'s
         // own KDoc for why this is a separate function rather than more conditionals threaded through it.
@@ -1455,12 +1478,21 @@ class AdaptKeyboardView @JvmOverloads constructor(
             // T-01: the initial contact point is the authoritative tap coordinate.
             // D-528: the body lives in beginPress() so a rescued second pointer's press (the D-495
             // overlap, now parked instead of killed) runs the exact same steps.
-            MotionEvent.ACTION_DOWN -> beginPress(
-                event.getPointerId(event.actionIndex),
-                event.x,
-                event.y,
-                event.size
-            )
+            // D-537: a stale press at a fresh DOWN means its UP was lost - never delivered, or delivered
+            // as a silent CANCEL (the reported broken build's log showed rawTaps with no handleKey at
+            // all and no other exit line). Recover what that press earned instead of silently
+            // overwriting it: the previous letter still types (one tap behind), a stuck backspace's
+            // repeat terminates HERE at the latest, and a fingerless popup dies. Then the new press
+            // begins normally.
+            MotionEvent.ACTION_DOWN -> {
+                recoverStrandedPressIfAny()
+                beginPress(
+                    event.getPointerId(event.actionIndex),
+                    event.x,
+                    event.y,
+                    event.size
+                )
+            }
             
             MotionEvent.ACTION_MOVE -> {
                 // D-528: with two live presses (a parked one plus the active one) this event carries
@@ -1799,6 +1831,43 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * The exact body the ACTION_CANCEL branch always ran, extracted so both ends share it; also resets
      * [touchTracker], so no later event of the stream can act on the dead sequence.
      */
+    /**
+     * D-537: the silent-loss safety net - a press still held in the view's state at a FRESH
+     * ACTION_DOWN means its UP was lost (not delivered, or delivered as a silent system CANCEL; the
+     * view has no silent clearing path of its own, and the reported broken build's logs matched this
+     * shape exactly). The stranded press is recovered instead of being silently overwritten: a clean
+     * tap commits (the letter still types - one tap behind), everything else (a fired long-press, an
+     * active repeat, observed motion) drops with its log line. Either way the stuck key un-presses,
+     * a running backspace repeat terminates here at the latest, and a fingerless popup dies - so the
+     * next press always starts from a clean state.
+     *
+     * Runs only at ACTION_DOWN (a new gesture can begin there only after the previous pointer left
+     * the stream), never on the rescue path - an overlapped second finger goes through
+     * ACTION_POINTER_DOWN's park/refusal machinery instead.
+     */
+    private fun recoverStrandedPressIfAny() {
+        val key = pressedKey ?: return
+        logTouch(
+            "touchRecovered: reason=down_with_stuck_press key=${key.id} " +
+                "heldMs=${SystemClock.uptimeMillis() - pressDownAtMs} " +
+                "longPress=$longPressFired repeat=$backspaceRepeated motion=${touchTracker.motionWasObserved}"
+        )
+        cancelPendingLongPress()
+        cancelBackspaceRepeat()
+        dismissPopup()
+        pressedKey = null
+        pressedKeyRect = null
+        invalidate()
+        if (!longPressFired && !backspaceRepeated) {
+            flash(key)
+            val tapX = downX
+            val tapY = downY
+            val ambiguity = pendingAmbiguity
+            val weight = pendingRecordWeight
+            longPressHandler.post { onKeyListener?.onKey(key, tapX, tapY, ambiguity, weight) }
+        }
+    }
+    
     private fun cancelActiveTouchSequence() {
         cancelPendingLongPress()
         cancelBackspaceRepeat()
@@ -1824,6 +1893,14 @@ class AdaptKeyboardView @JvmOverloads constructor(
             logTouch("dropTap: reason=sequence_cancelled key=${parked.key.id} heldMs=${SystemClock.uptimeMillis() - parked.downAtMs}")
         }
         parkedPress = null
+        // D-537: an active press dying through the silent path (a system CANCEL with nothing parked)
+        // is the exact shape the broken build hid - visible now, with the press's own facts.
+        pressedKey?.let { key ->
+            logTouch(
+                "touchCancelled: key=${key.id} heldMs=${SystemClock.uptimeMillis() - pressDownAtMs} " +
+                    "longPress=$longPressFired repeat=$backspaceRepeated"
+            )
+        }
         pressedKey = null
         pressedKeyRect = null
         invalidate()
