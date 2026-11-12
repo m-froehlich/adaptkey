@@ -139,14 +139,26 @@ offers `/ - , : ; _` (D-499: the slash was re-added leftmost, deliberately re-in
 straight-up release still types `,`). All proportions and spacings are user-configurable (C-01).
 
 ### L-03 - Symbol/Numeric-Layer Key
-A single key in the bottom row switches to the numeric/symbol layer (`?123`) - a tap opens it, a further
-tap on its "ABC" key returns to letters. What the key's slot carries is one three-valued setting
-(D-507's `CombinedKeyMode` - `?123` / Emoji / Off, default `?123`; a plain ListPreference per C-27, with
+
+**D-531 addendum - the page chain reform (user request, 2026-11-12).** The navigation between the
+three pages is a fixed chain now, no longer a plain letters↔symbols toggle: the letters page's
+combined key reads **`!?#`** and opens the **special-characters page** (L-08's page 2) - the number
+layer itself is reserved for genuinely numeric input, which the keyboard already opens on its own
+(phone/number/date fields open straight onto the calculator page, `initialSurfaceFor`). That page's
+bottom-row key reads **`?123`** and opens the **number layer** (the calculator page, page 1), whose
+own **`ABC`** key returns to letters - so the accessible key path visits every page exactly once
+(`letters !?# → special characters ?123 → number layer ABC → letters`), while the D-19 swipe stays
+the fast path that jumps directly. A long-press or upward swipe on the combined key goes straight to
+the number layer (the one page no key leads to from letters any more, `PanelNavigation.onSwitchToSymbols`).
+The D-507 mode labels and every string naming the letters page's key were reworded accordingly.
+
+A single key in the bottom row switches pages. What the key's slot carries is one three-valued setting
+(D-507's `CombinedKeyMode` - `!?#` / Emoji / Off, default `!?#`; a plain ListPreference per C-27, with
 D-59's former boolean migrated on load). In the Off mode the key is drawn blank and inert while its slot
 stays reserved rather than collapsing the row (D-59/D-100); the Emoji mode shows it with the emoji glyph
-as the panel's own second entry point. In both non-`?123` modes the symbol pages' "ABC" keys
-hide - they are unreachable without the `?123` key either way (the D-19 horizontal swipe, when
-enabled, remains the one way onto those pages). The emoji mode re-introduces the combined key's pre-§49
+as the panel's own second entry point. In both non-`!?#` modes the symbol pages' own page-switch keys
+(page 1's "ABC", page 2's `?123`) hide - they are unreachable without the combined key either way (the
+D-19 horizontal swipe, when enabled, remains the one way onto those pages). The emoji mode re-introduces the combined key's pre-§49
 emoji function as a dedicated mode of its own - deliberately as a **redundant second** entry point
 beside the always-visible emoji button in the swipe-up extra row (§14, R-01), which keeps needing no
 setting of its own since it costs no keyboard-row space while closed. Because the panel can now be
@@ -387,7 +399,10 @@ and decimal/thousands separators are resolved from the device locale.
 
 ### L-08 - Catch-All Symbol Page
 A second symbol page always shows a digit row plus shifted symbols as a guaranteed fallback for when L-06's
-main-page number row is disabled. D-498: the shifted-symbols row's own `/` key carries `\` as its single
+main-page number row is disabled. D-531: this page is the letters page's own `!?#` destination now (the
+reform's "Sonderzeichen-Seite"), and its bottom-row key is the `?123` number-layer toggle (was `ABC` - back
+to letters goes via the number layer's own ABC, or a swipe), completing the D-531 chain
+`letters → this page → number layer → letters`. D-498: the shifted-symbols row's own `/` key carries `\` as its single
 direct-commit long-press hint - the slash is a primary key here, so the backslash lands next to it as a
 hint rather than a popup cell. D-519: the page's first row now leads with the tilde - the euro key that
 used to sit there (with its own common-currency popup) is gone, while ~ keeps its other homes (the number
@@ -529,8 +544,9 @@ swipe there falls through to the ordinary page-switch gesture (G-06... see D-19-
 
 **D-19 addendum (v1.2.79, §520): the full-field page swipe itself is switchable.** A separate
 gesture-settings switch ("Wischen zum Seitenwechsel", key `d19_surface_swipe`, default **on**) turns the
-horizontal full-field page swipe between the letters and the numeric/symbol pages off; the `?123`/`ABC` key
-is then the only way to switch surfaces, and a horizontal swipe on an ordinary key - the URL/email-mode
+horizontal full-field page swipe between the letters and the symbol pages off; the pages' own keys
+(`!?#` / `?123` / `ABC`, D-531) are then the only way to switch surfaces, and a horizontal swipe on an
+ordinary key - the URL/email-mode
 space key's fall-through to the page swipe included - falls back to a plain tap of that key. The space-bar
 language swipe above and the backspace word-delete swipe (G-02) are distinct gesture actions and are
 unaffected by the switch. In addition to this manual switch, the active language switches automatically after
@@ -538,6 +554,11 @@ a configurable number of consecutive words committed in a different language tha
 (C-23, D-398: a slider from 0 to 8, default 5 - a stored `0` disables the automatic switch entirely, leaving
 only the manual swipe); every switch - manual or automatic - cross-fades the space-bar's language label
 (260 ms) as a visible acknowledgement.
+
+**D-531 addendum: the swipe cycle follows the D-531 key chain.** The cycle is
+`letters → special-characters page (2) → number layer (1)` (was `letters → 1 → 2`), so a right swipe is
+simply the fast-forward of the button path - from letters it lands on the same page the `!?#` key opens,
+from there on the page the `?123` key opens, and wrapping brings it back to letters.
 
 **D-400: switching the active language does not, by itself, switch the physical key layout.** The layout
 (`LayoutRegistry.kindFor`) is pinned to the device's own system language, independent of whichever language

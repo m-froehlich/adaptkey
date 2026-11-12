@@ -24939,3 +24939,31 @@ the APK. NOT device-confirmed - the overlap rescue needs real two-finger/rolling
 `dropTap`/`tapParked` lines are what turn the next community field log into a definitive verdict
 (whether D-528 covers the reported drops, or an ACTION_CANCEL-source drop needs its own round).
 Round documented in `fast-typing-overlap-tap-drop.md`.
+
+## §547 - D-531: the page-navigation reform - the letters page's combined key becomes the `!?#` special-characters-page toggle, the special-characters page's own key becomes the `?123` number-layer toggle, and the D-19 swipe cycle follows the same chain (v1.3.7 -> v1.3.8, versionCode 607 -> 608)
+
+User request (2026-11-12): the bottom-row `?123` jump straight to the number layer is misplaced - the
+number layer is essentially only needed for fields with number or date input, and those open it
+automatically anyway (`initialSurfaceFor`, unchanged and now the layer's only regular entry point). The
+letters page's own key should lead to the special-characters page instead; on that page the `ABC` key
+should be the `?123` hop on to the number layer; the number layer's `ABC` keeps returning to letters.
+Who wants it faster uses the D-19 swipe; the button chain is the accessibility path, so it must visit
+every page exactly once instead of skipping one.
+
+Implementation: `PanelNavigation.onCombinedKeyTap` returns a `Page` now (letters -> page 2; the
+symbol-page fallthrough stays defensive - the key does not exist there), `onSwitchToSymbols` is a `Page`
+too (straight to the number layer, page 1 - the one page no key leads to from letters any more, so the
+combined key's long-press/upward swipe is its only direct route), and the D-19 `SWIPE_CYCLE` reordered
+to `letters -> 2 -> 1` so a right swipe is simply the fast-forward of the button path (the swipe
+test's expectations flipped accordingly). New `KeyCode.NUMERIC` for page 2's bottom-row key
+(`SymbolLayout.catchAllRows` row 5: label `?123`, was `ABC`/`LETTERS`; page 1's `ABC` untouched): the
+view draws the combined key as `!?#` (`labelFor`), hides the NUMERIC key in the D-507 non-symbol modes
+the same reserved-but-inert way as the other page keys (`isHiddenKey`), and gives all three chain keys
+the MODE_SWITCH haptic tier. Strings: the D-507 title/summary/mode label, the D-19 summary (including
+its D-516 glide hint), the D-516 summary and the D-89 f08 entry reworded across all 32 locales
+(`scratchpad/d531_strings.py`, full per-locale values for the two real rewrites).
+
+`PanelNavigationTest` rewritten around the chain (same test count - the letters-fallthrough and
+defensive-symbol cases split while the old plain-toggle case merged into the D-531 one),
+`SymbolLayoutTest`'s two page-2 row-5 assertions updated. `:app:assembleRelease`/`:app:testDebugUnitTest` green with versionName 1.3.8 in the
+APK. NOT yet device-confirmed - closes with the user's next device check of the new chain.
