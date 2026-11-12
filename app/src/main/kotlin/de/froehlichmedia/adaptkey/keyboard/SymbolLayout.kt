@@ -321,7 +321,10 @@ object SymbolLayout {
             label = primary,
             code = KeyCode.TEXT,
             alternatives = CurrencyLocale.popupSymbols(primary),
-            alternatingPopup = true
+            alternatingPopup = true,
+            // D-527: the key is an ordinary symbol key in role - it must not wear the muted
+            // function-key styling the §53 TEXT keys otherwise get.
+            specialStyling = false
         )
     }
     

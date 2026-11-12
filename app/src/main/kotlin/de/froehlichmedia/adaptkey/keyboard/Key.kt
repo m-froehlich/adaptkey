@@ -41,13 +41,17 @@ enum class KeyCode {
  * @property alternatives the ordered secondary alternatives shown in the D-01 long-press popup (most
  *           common first, which is pre-selected); a size of two or more triggers the popup, otherwise
  *           the single default corner glyph is applied immediately on long-press
- * @property alternatingPopup D-520: the popup is the currency slot's alternating arrangement - the
+ * @property alternatingPopup D-520: the popup is the currency key's alternating arrangement - the
  *           anchor cell (the first entry past the key's own left corner, if any) is kept centred
  *           directly over the host key with the remaining cells alternating left/right around it,
- *           and NO cell is pre-selected: the key's own release default ([defaultCornerHint], the
- *           corner glyph drawn on the key itself) is deliberately not among the cells, so a straight
- *           long-press release commits the corner, while a slide commits whichever cell the finger
- *           reached. Only the letters page's currency slot sets this.
+ *           and NO cell is pre-selected: the key's own release default ([defaultCornerHint], or -
+ *           corner-less - the key's own symbol) is deliberately not among the cells, so a straight
+ *           long-press release commits it, while a slide commits whichever cell the finger
+ *           reached. Only the special-characters page's currency key sets this.
+ * @property specialStyling D-527: whether the key wears the special function-key styling (the muted
+ *           background every non-[KeyCode.CHAR] key gets - Shift, ABC, the calculator's sin/deg, the
+ *           URL/email keys). The special-characters page's currency key is a §53 [KeyCode.TEXT] key
+ *           but an ordinary symbol key in role, so it opts out and paints like any character key.
  * @property weight relative horizontal weight within its row; drives the configurable key proportions (L-02 / L-04, C-01)
  */
 data class Key(
@@ -58,6 +62,7 @@ data class Key(
     val leftHint: String? = null,
     val alternatives: List<String> = emptyList(),
     val alternatingPopup: Boolean = false,
+    val specialStyling: Boolean = true,
     val weight: Float = 1f
 ) {
     

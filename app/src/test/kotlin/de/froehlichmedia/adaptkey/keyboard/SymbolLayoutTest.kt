@@ -253,6 +253,8 @@ class SymbolLayoutTest {
         // own symbol via the view's sentinel fallback).
         assertEquals(listOf("$", "¥", "£", "₹", "₩", "₽", "₺", "Fr", "R$"), currencyKey.alternatives)
         assertTrue(currencyKey.alternatingPopup)
+        // D-527: an ordinary symbol key in role - it must not wear the muted function-key styling.
+        assertFalse(currencyKey.specialStyling)
         assertFalse(HorizontalLongPressPopup.isDualCornerStraddle(currencyKey, currencyKey.alternatives))
         assertTrue(KeyboardLayout.hasLongPressAction(currencyKey))
         // A dollar-primary device keeps its own $ as the key, the euro leading the popup.
