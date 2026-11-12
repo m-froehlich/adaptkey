@@ -251,38 +251,37 @@ class HorizontalLongPressPopupTest {
         assertEquals(2, placement.preSelectedIndex)
     }
     
-    // The 7-key scenario (second device pass): five cells (two or more extras cannot all fit between the
-    // corners over the host), key in the screen's RIGHT half - the row grows LEFT, the first extra (the
-    // middle glyph ÷) stays between the corners over the host, and the remaining extras attach ahead of
-    // the left corner: \ ⁷ / ÷ & with / ÷ & directly over the host and ÷ over its centre.
+    // The 7-key scenario (second device pass), reworked by D-525: five cells (two or more extras can no
+    // longer all fit between the corners over the host) - the row stays SYMMETRIC now instead of growing
+    // one-sided: the corners keep the flanking positions (/ first, & last) and the extras interleave
+    // right/left in turn around the centre, the first extra (the middle glyph ÷) nearest the centre on
+    // the right side: / \ ÷ ⁷ &. The whole row is centred over the host key.
     @Test
-    fun `D-510 follow-up the 7 key grows left with the middle glyph over the host`() {
+    fun `D-525 the 7 key's wide popup stays symmetric - corners at the flanks, extras interleaved`() {
         val placement = HorizontalLongPressPopup.cornerRowPlacement(
             700f, 800f, listOf("/", "÷", "\\", "⁷", "&"), List(5) { 44f }, 15f, 1000f
         )
-        assertEquals(listOf("\\", "⁷", "/", "÷", "&"), placement.alternatives)
+        assertEquals(listOf("/", "\\", "÷", "⁷", "&"), placement.alternatives)
         assertEquals(listOf(44f, 44f, 44f, 44f, 44f), placement.cellWidths)
-        // The release default stays the right corner (&), now the last cell.
+        // The release default stays the right corner (&), still the last cell.
         assertEquals(4, placement.preSelectedIndex)
-        // Anchored on the middle cell (÷, index 3) over the key centre: / ÷ & span the host's
-        // left/centre/right, the backslash and superscript hang left toward the screen centre.
-        assertEquals(700f - 154f, placement.rowLeft)
+        // Full-row centring: 5 x 44 = 220 wide, so the row starts at 700 - 110; / and & sit symmetric
+        // over the host's edges instead of the extras hanging far to one side.
+        assertEquals(700f - 110f, placement.rowLeft)
     }
     
-    // The 2-key scenario, mirrored: five cells, key in the screen's LEFT half - the row grows RIGHT, the
-    // first extra (the apostrophe) stays between the corners over the host, the remaining extras trail
-    // behind the right corner: " ' @ ² ₂.
+    // The 2-key scenario, mirrored: five cells, extras ' ² ₂ interleave to ' (nearest centre, right),
+    // ² (left), ₂ (far right): " ² ' ₂ @ - the apostrophe cell the D-417 order put first stays nearest
+    // the finger's own key centre, the corners keep the flanks.
     @Test
-    fun `D-510 follow-up the 2 key grows right with the middle cell over the host`() {
+    fun `D-525 the 2 key's wide popup stays symmetric, the first extra nearest the centre on the right`() {
         val placement = HorizontalLongPressPopup.cornerRowPlacement(
             200f, 800f, listOf("\"", "'", "²", "₂", "@"), List(5) { 44f }, 15f, 1000f
         )
-        assertEquals(listOf("\"", "'", "@", "²", "₂"), placement.alternatives)
-        // The release default stays the right corner (@), now the third cell.
-        assertEquals(2, placement.preSelectedIndex)
-        // Anchored on the middle cell (', index 1) over the key centre: " ' @ span the host's
-        // left/centre/right, the superscript and subscript trail right toward the screen centre.
-        assertEquals(200f - 66f, placement.rowLeft)
+        assertEquals(listOf("\"", "²", "'", "₂", "@"), placement.alternatives)
+        // The release default stays the right corner (@), still the last cell.
+        assertEquals(4, placement.preSelectedIndex)
+        assertEquals(200f - 110f, placement.rowLeft)
     }
     
     // The 1-key scenario: the centred three-cell row would poke past the screen's left edge, so the row
@@ -334,19 +333,27 @@ class HorizontalLongPressPopupTest {
     }
     
     @Test
-    fun `D-510 follow-up the grow reorders keep the middle cell between the corners and move the rest to the grow side`() {
-        val row = listOf("/", "÷", "\\", "⁷", "&")
-        assertEquals(listOf("/", "÷", "&", "\\", "⁷"), HorizontalLongPressPopup.growTrailingRow(row))
-        assertEquals(listOf("\\", "⁷", "/", "÷", "&"), HorizontalLongPressPopup.growLeadingRow(row))
-        assertThrows(IllegalArgumentException::class.java) { HorizontalLongPressPopup.growTrailingRow(listOf("(", "ñ")) }
-        assertThrows(IllegalArgumentException::class.java) { HorizontalLongPressPopup.growLeadingRow(listOf("(", "ñ")) }
+    fun `D-525 symmetricCornerRow interleaves the extras right and left in turn, corners outermost`() {
+        // Three extras: x1 nearest the centre on the right, x2 left of it, x3 far right.
+        assertEquals(
+            listOf("L", "x2", "x1", "x3", "R"),
+            HorizontalLongPressPopup.symmetricCornerRow(listOf("L", "x1", "x2", "x3", "R"))
+        )
+        // Four extras: the alternation continues outward on both sides - x1/x3 right, x2/x4 left.
+        assertEquals(
+            listOf("L", "x4", "x2", "x1", "x3", "R"),
+            HorizontalLongPressPopup.symmetricCornerRow(listOf("L", "x1", "x2", "x3", "x4", "R"))
+        )
+        assertThrows(IllegalArgumentException::class.java) { HorizontalLongPressPopup.symmetricCornerRow(listOf("(", "ñ")) }
+        assertThrows(IllegalArgumentException::class.java) { HorizontalLongPressPopup.symmetricCornerRow(listOf("(", "ñ", "ń")) }
     }
     
-    // D-520: the currency slot's alternating arrangement - the anchor (the most relevant other currency,
-    // the popup's first entry past the key's own left corner) stays over the host key centre, the rest
-    // alternate left/right around it in relevance order, and the left corner keeps its straddle-convention
-    // first position at the row's far left. The German example: euro on the d key, dollar centred above
-    // it, yuan immediately left, pound immediately right.
+    // D-520: the currency key's alternating arrangement (on the special-characters page since D-523) -
+    // the anchor (the most relevant other currency, the popup's first entry past the key's own left
+    // corner) stays over the host key centre, the rest alternate left/right around it in relevance
+    // order, and a leading left corner keeps its straddle-convention first position at the row's far
+    // left. The German example: euro on the key, dollar centred above it, yuan immediately left, pound
+    // immediately right.
     @Test
     fun `D-520 the German currency popup alternates around the dollar anchor with the degree sign far left`() {
         val placement = HorizontalLongPressPopup.alternatingRow(

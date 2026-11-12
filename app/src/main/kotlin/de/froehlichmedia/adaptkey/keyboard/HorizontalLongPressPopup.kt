@@ -24,8 +24,9 @@ package de.froehlichmedia.adaptkey.keyboard
  * the key's left edge does D-282's own reversal remain the last resort ([PopupRowStrategy.REVERSED], the
  * shape the `p` key keeps). A key's dual-corner popup ([isDualCornerStraddle]) is placed by
  * [cornerRowPlacement]: centred over the host key (at most one extra, an edge overflow flipping the extra
- * toward the screen interior), or growing toward the screen centre with the first extra kept in the
- * middle between the corners (two or more extras, the `7` key's `\ ⁷ / ÷ &`).
+ * toward the screen interior); from two extras on the row stays symmetric (D-525) - the corners keep the
+ * flanking positions and the extras interleave right/left in turn around the centre (the `7` key's
+ * `/ \ ÷ ⁷ &`).
  */
 object HorizontalLongPressPopup {
     
@@ -206,21 +207,21 @@ object HorizontalLongPressPopup {
     }
     
     /**
-     * The corner row's cells reordered for the GROW case (three or more extras, i.e. four or more cells):
-     * the FIRST extra stays in the middle between the corners over the host (the `7` key's division sign),
-     * and the remaining extras move to the grow side - `[left, middle, right, rest…]` when the row grows
-     * RIGHT (a key in the screen's left half), `[rest…, left, middle, right]` when it grows LEFT (a key
-     * in the screen's right half, the `7` key: `\ ⁷ / ÷ &`). The release default stays the right corner.
+     * D-525: the symmetric corner row - the placed display order for a dual-corner key's popup with TWO
+     * OR MORE extras. Both corners keep the two-symbol flank positions in the row (left corner first,
+     * right corner last - over the host key's edges once the row is centred), and the extras interleave
+     * RIGHT AND LEFT IN TURN around the row's centre, the first extra landing nearest the centre on the
+     * right side: `[left, x4, x2, x1, x3, right]` for extras `x1..x4`. This replaces the D-510
+     * one-sided grow split (all extras attaching on one grow side, which hung the far cells far too
+     * wide of the host); rows with at most ONE extra keep the plain centred arrangement, which already
+     * reads exactly like this.
      */
-    fun <T> growTrailingRow(row: List<T>): List<T> {
-        require(row.size >= 4) { "the grow split needs both corners, a middle cell and at least one grow extra" }
-        return listOf(row[0], row[1], row.last()) + row.subList(2, row.lastIndex)
-    }
-    
-    /** The grow-case mirror of [growTrailingRow]: the rest lead ahead, the middle cell stays between the corners. */
-    fun <T> growLeadingRow(row: List<T>): List<T> {
-        require(row.size >= 4) { "the grow split needs both corners, a middle cell and at least one grow extra" }
-        return row.subList(2, row.lastIndex) + listOf(row[0], row[1], row.last())
+    fun <T> symmetricCornerRow(row: List<T>): List<T> {
+        require(row.size >= 4) { "the symmetric arrangement needs both corners and at least two extras" }
+        val extras = row.subList(1, row.lastIndex)
+        val rights = extras.filterIndexed { index, _ -> index % 2 == 0 }
+        val lefts = extras.filterIndexed { index, _ -> index % 2 == 1 }
+        return listOf(row.first()) + lefts.asReversed() + rights + listOf(row.last())
     }
     
     /**
@@ -271,16 +272,16 @@ object HorizontalLongPressPopup {
      * ([extrasLeadingRow], the `0` key's `⁰ = )`) - with D-44's own pre-selected centring placing the
      * flipped row, so the right-corner symbol stays over the key.
      *
-     * With TWO OR MORE extras (four or more cells) they cannot all fit between the corners over the host,
-     * so the row GROWS toward the screen centre (D-54's own direction: a key in the left half grows
-     * right, a key in the right half grows left): the FIRST extra stays in the middle between the two
-     * corners directly over the host (the `7` key's `÷`), the remaining extras attach on the grow side,
-     * and the placement anchors the middle cell over the key centre - the `7` key renders as
-     * `\ ⁷ / ÷ &` with `/ ÷ &` directly over the host and the backslash/superscript hanging left.
-     * The release default stays the right-corner cell in every order.
+     * With TWO OR MORE extras (four or more cells) the row stays SYMMETRIC (D-525, replacing the D-510
+     * one-sided grow split whose far cells hung far too wide of the host): [symmetricCornerRow]
+     * interleaves the extras right/left in turn around the row's centre - the first extra nearest the
+     * centre on the right side, the corners keeping the row's flanking positions - and the whole row is
+     * centred over the host key (plainly clamped at the screen edges). The `7` key now renders as
+     * `/ \ ÷ ⁷ &` and the `2` key as `" ² ' ₂ @`, both corners over the host's edges. The release
+     * default stays the right-corner cell in every arrangement.
      *
      * @param keyCenterX the host key's own centre
-     * @param viewWidth the view's own width (decides which screen half the key sits in, hence the grow side)
+     * @param viewWidth the view's own width (kept for placement-context parity with the grow case it replaces)
      * @param alternatives the corner row `[leftCorner, extras…, rightCorner]` (the straddle contract)
      * @param cellWidths the matching per-cell widths
      * @param minLeft the smallest allowed row-left (usually a small edge gap)
@@ -312,14 +313,12 @@ object HorizontalLongPressPopup {
                 }
             }
         }
-        return if (keyCenterX < viewWidth / 2f) {
-            // Left half: grow right - the rest trail behind the right corner, the middle cell over the key centre.
-            val widths = growTrailingRow(cellWidths)
-            CornerRow(rowLeft(keyCenterX, widths, 1, minLeft, maxLeft), growTrailingRow(alternatives), widths, 2)
-        } else {
-            // Right half: grow left - the rest lead ahead of the left corner, the middle cell over the key centre.
-            val widths = growLeadingRow(cellWidths)
-            CornerRow(rowLeft(keyCenterX, widths, widths.lastIndex - 1, minLeft, maxLeft), growLeadingRow(alternatives), widths, widths.lastIndex)
-        }
+        // D-525: the symmetric wide case - the interleaved row centred over the host key, plainly
+        // clamped at the screen edges; the pre-selected cell stays the right corner (the row's last).
+        val display = symmetricCornerRow(alternatives)
+        val widths = symmetricCornerRow(cellWidths)
+        val ideal = keyCenterX - widths.sum() / 2f
+        val rowLeft = if (maxLeft < minLeft) minLeft else ideal.coerceIn(minLeft, maxLeft)
+        return CornerRow(rowLeft, display, widths, lastIndex)
     }
 }
