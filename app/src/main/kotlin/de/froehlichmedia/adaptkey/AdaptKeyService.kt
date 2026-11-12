@@ -3199,6 +3199,8 @@ class AdaptKeyService : InputMethodService() {
             captureCredentialIfLoginField(ic)
         }
         composing.setLength(0)
+        // D-536: same rule as clearComposing's own - the pending glide word dies with the field.
+        glidePendingCommit = null
         clearSuggestions()
         // D-68: the typing pattern (T-04) is no longer re-derived here - it is now an explicit user choice
         // (see CalibrationActivity), not something inferred from live typing.
@@ -3257,6 +3259,16 @@ class AdaptKeyService : InputMethodService() {
         // mirroring `diag()`'s own single-choke-point reasoning. Remove once D-217 is closed for good.
         val handledAt = SystemClock.uptimeMillis()
         try {
+            // D-536: a pending glide word commits at any word-boundary key - a letter (which would
+            // otherwise extend the preview token), a digit/punctuation delimiter, Space, Enter, or a
+            // verbatim text key. Backspace deliberately does NOT go through here: it edits the preview
+            // (dropping the pending outright), and the page/Shift keys deliberately neither commit nor
+            // clear it - the pending word survives a surface switch.
+            if (key.code == KeyCode.CHAR || key.code == KeyCode.TEXT ||
+                key.code == KeyCode.SPACE || key.code == KeyCode.ENTER
+            ) {
+                finalizePendingGlideCommit(ic)
+            }
             // D-269: a genuine editor text selection takes priority over every other special mechanism
             // (A-07 undo, ...) - Backspace must bluntly delete it, any other key must simply replace it, and
             // neither may trigger anything else for this one keystroke; special handling resumes cleanly
@@ -3621,13 +3633,27 @@ class AdaptKeyService : InputMethodService() {
     // supersedes in-flight live-recognition passes (the cooperative-cancellation pattern: a stale
     // result is dropped instead of racing the preview); glideCandidates is the latest session's
     // ranked list, rewritten by every live pass and consumed at release. D-533 removed the former
-    // lazy auto-space pair (the one-shot flag + last-committed-word): the release commits its own
-    // trailing space now, so there is nothing left to defer.
+    // lazy auto-space pair (the one-shot flag + last-committed-word). D-536: the release commits
+    // NOTHING any more - it resolves the word and parks it in glidePendingCommit; the physical
+    // commit happens at the next word boundary (the next stroke's claim, an ordinary delimiter, or
+    // an explicit chip accept), so the lifted word stays a correctable composing preview.
     private val glideExecutor = Executors.newSingleThreadExecutor()
     private var glideSessionActive = false
     private var glideGeneration = 0
     private var glideLayout: GlideKeyGeometry? = null
     private var glideCandidates: List<GlideCandidate> = emptyList()
+    
+    /**
+     * D-536: the previous stroke's word, resolved at its release (casing incl. the pre-armed Shift's
+     * first-character spend, and the learn flag - the D-517 rules), waiting for its boundary commit.
+     * The preview stays a live composing token the whole time - editable via Backspace (which drops
+     * the pending), replaceable via a chip tap, committable by Space/punctuation/Enter (which
+     * finalize the composing token anyway) or by the next stroke's claim. null when nothing is
+     * pending.
+     */
+    private var glidePendingCommit: GlidePendingCommit? = null
+    
+    private data class GlidePendingCommit(val word: String, val learn: Boolean)
     
     // D-401-followup: the newline-based fallback path's own de-duplication, now that the view reports every
     // motion event rather than only the ones that changed these totals (the screen-space path needs the
@@ -3741,13 +3767,14 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * D-516/G-09: a stroke just claimed - the session starts. The plan's §4.3 steps in order: the
-     * ordinary fresh-token steps a first letter tap would run ([captureTokenContext]/
-     * [resetWordEndShift]/[reclaimSurroundingWord] - the reclaim with no tap of its own, the
-     * long-press-letter precedent: a glide stroke is never tap data). The composing token itself is
-     * seeded only once the first candidate result arrives, so a stroke that dies before any result
-     * (a second finger, a cancel) never touched the document. D-533 removed the former lazy
-     * auto-space here: separation is the previous release's own trailing space now.
+     * D-516/G-09: a stroke just claimed - the session starts. D-536: FIRST the previous stroke's
+     * pending word commits (the boundary the deferred-commit model is built on: the word becomes real
+     * text at the moment the next word begins, with its trailing space so the new word starts fresh -
+     * and the space armed for a following punctuation to eat, D-29-style), then the ordinary
+     * fresh-token steps ([captureTokenContext]/[resetWordEndShift]/[reclaimSurroundingWord] - the
+     * reclaim with no tap of its own, the long-press-letter precedent: a glide stroke is never tap
+     * data). The composing token itself is seeded only once the first candidate result arrives, so a
+     * stroke that dies before any result (a second finger, a cancel) never touched the document.
      */
     private fun startGlideSession() {
         val ic = currentInputConnection ?: return
@@ -3756,11 +3783,46 @@ class AdaptKeyService : InputMethodService() {
         glideCandidates = emptyList()
         glideLayout = keyboardView?.glideKeyGeometry()
         diag("AdaptKeyGlide", "sessionStart")
-        captureTokenContext(ic)
-        resetWordEndShift()
+        // A fresh token starts clean - but BEFORE the boundary commit below re-arms the flag with its
+        // own trailing space (the previous eager ordering wiped it again).
         pendingSuggestionSpace = false
         keyboardView?.pendingSpaceIndicator = false
+        finalizePendingGlideCommit(ic)
+        captureTokenContext(ic)
+        resetWordEndShift()
         reclaimSurroundingWord(ic, null)
+    }
+    
+    /**
+     * D-536: the pending glide word's boundary commit - word + trailing space in one write through
+     * the chip-commit machinery ([suggestionTrailingSpace], the armed [pendingSuggestionSpace] so an
+     * immediately following sentence punctuation eats the space per D-29, and D-123's suppress guard
+     * keeping this commit's own reclaim echo from clearing the flag). Called at every boundary:
+     * the next stroke's claim, a typed letter/digit/punctuation, Space, Enter, or the pinned
+     * candidate chip's explicit accept. No-op without a pending word.
+     */
+    private fun finalizePendingGlideCommit(ic: InputConnection) {
+        val pending = glidePendingCommit ?: return
+        glidePendingCommit = null
+        if (composing.isEmpty()) {
+            // The preview was torn down meanwhile (a caret-move reclaim, a field edge) - the word is
+            // already gone as a token; committing the stored form now would insert a ghost.
+            diag("AdaptKeyGlide", "boundaryCommit: dropped - composing already empty")
+            return
+        }
+        val trailingSpace = suggestionTrailingSpace(ic)
+        ic.commitText(pending.word + trailingSpace, 1)
+        clearComposing()
+        if (pending.learn) {
+            learnWord(pending.word)
+        }
+        notifySuggestionAccepted(pending.word)
+        pendingSuggestionSpace = trailingSpace.isNotEmpty()
+        suppressNextReclaimSpaceReset = true
+        diag(
+            "AdaptKeyGlide",
+            "boundaryCommit: word=${pending.word} learned=${pending.learn} trailingSpace=${trailingSpace.isNotEmpty()}"
+        )
     }
     
     /**
@@ -3846,21 +3908,21 @@ class AdaptKeyService : InputMethodService() {
     /**
      * D-516/G-09: the release - the plan's one definitive recognition pass (a synchronous retry
      * here only when no live result had arrived yet; bounded, once per stroke) followed by the
-     * chip-commit semantics: resolved casing via [GlideCommitPolicy] (D-440's gate on the live
-     * composing text), the pre-armed Shift capitalising the first character exactly like a typed
-     * one, no autocorrect, ordinary learning for a dictionary candidate (never for the unknown-word
-     * fallback), and the remaining candidates left in the bar as ordinary chips to pick instead.
+     * word's resolution via [GlideCommitPolicy] (D-440's gate on the live composing text), with the
+     * pre-armed Shift capitalising the first character exactly like a typed one (D-405's live-only
+     * rule, materialised at the only place a glide word has a first keystroke), no autocorrect/A-01
+     * intervention, and the learn flag decided here (dictionary candidate learns, the unknown-word
+     * fallback never does).
      * 
-     * D-533: the word completes on the finger's lift - the commit carries a real trailing space
-     * ([suggestionTrailingSpace], the exact chip-commit machinery: D-29's armed
-     * [pendingSuggestionSpace] lets an immediately following sentence punctuation eat the space
-     * again, D-123's suppress guard keeps the commit's own reclaim echo from clearing it), so the
-     * next word - glided or typed - starts fresh with no Space press. This replaces the former
-     * glide→glide lazy auto-space (plan §8.4's own start-of-next-stroke insertion), which never
-     * separated a glide word from what followed it by any other input path.
-     * 
-     * D-534: the whole decision is logged - stroke facts, the candidate pool used, the chosen word,
-     * its casing, whether it was learned, and the trailing space.
+     * D-536: the release commits NOTHING - the resolved word parks in [glidePendingCommit] and the
+     * composing preview stays exactly that: provisional, editable (Backspace drops the pending),
+     * replaceable (the bar keeps the pinned candidate plus its alternates as chips), and committed
+     * only at the next word boundary ([finalizePendingGlideCommit] - the next stroke's claim, a
+     * delimiter, or the candidate chip's explicit accept). This is the user's own corrected commit
+     * model, replacing D-533's commit-at-lift: "wenn ich den Finger absetze, darf das Wort keinesfalls
+     * schon committet werden". The D-533 trailing-space commit moved to the boundary with it, and the
+     * D-533 Space-swallow stays - it is what makes a habitual Space tap after the lift finalize the
+     * word naturally (the finalize's own trailing space plus the tap's delimiter collapse into one).
      */
     private fun finishGlideSession(points: List<GlidePoint>, inferredSequence: String) {
         if (!glideSessionActive) {
@@ -3868,7 +3930,11 @@ class AdaptKeyService : InputMethodService() {
         }
         glideSessionActive = false
         glideGeneration++ // any still-in-flight live pass is now stale
-        val ic = currentInputConnection ?: return
+        if (currentInputConnection == null) {
+            glidePendingCommit = null
+            diag("AdaptKeyGlide", "release: dropped - no input connection")
+            return
+        }
         clearUndo()
         pendingMergeChar = null
         var results = glideCandidates
@@ -3895,33 +3961,20 @@ class AdaptKeyService : InputMethodService() {
             cased = cased[0].uppercaseChar() + cased.substring(1)
         }
         consumeShift()
-        // D-533: word + trailing space in one commit - "every word only needs the finger's lift".
-        val trailingSpace = suggestionTrailingSpace(ic)
-        ic.commitText(cased + trailingSpace, 1)
-        clearComposing()
-        if (word.learn) {
-            learnWord(cased)
+        if (composing.isEmpty() || cased.isEmpty()) {
+            // No preview ever landed (the stroke died before the first live pass, or the recognizer
+            // found nothing and inferred nothing) - nothing to defer.
+            diag("AdaptKeyGlide", "release: nothing pending (top=${top?.word ?: "none"} inferred=$inferredSequence syncRetry=$retriedSync)")
+            return
         }
-        notifySuggestionAccepted(cased)
-        // D-29/D-123, the chip-commit pair: arm the space for a following punctuation to eat, and
-        // guard this commit's own reclaim echo against clearing the flag it just armed.
-        pendingSuggestionSpace = trailingSpace.isNotEmpty()
-        suppressNextReclaimSpaceReset = true
+        glidePendingCommit = GlidePendingCommit(cased, word.learn)
         diag(
             "AdaptKeyGlide",
-            "commit: n=${results.size} syncRetry=$retriedSync top=${top?.word ?: "none"} " +
-                "inferred=$inferredSequence word=$cased learned=${word.learn} trailingSpace=${trailingSpace.isNotEmpty()}"
+            "release: pending word=$cased learned=${word.learn} top=${top?.word ?: "none"} " +
+                "inferred=$inferredSequence n=${results.size} syncRetry=$retriedSync"
         )
-        // Alternates stay in the bar as ordinary chips to pick instead (plan §3); with none left,
-        // the flow continues with the next-word predictions like any other commit.
-        val alternates = results.drop(1).take(GLIDE_BAR_CANDIDATES - 1)
-        if (alternates.isEmpty()) {
-            showNextWordPredictions()
-        } else {
-            setSuggestionBarItems(alternates.map { SuggestionController.DisplayItem(it.word, SuggestionController.Kind.NORMAL, it.word) })
-            suggestionBar?.visibility = View.VISIBLE
-        }
-        armShiftForNextWord(ic)
+        // The bar keeps exactly what the last preview pass left: the pinned candidate plus its
+        // alternates - the correctable state the user explicitly asked for.
     }
     
     /**
@@ -4908,6 +4961,11 @@ class AdaptKeyService : InputMethodService() {
     }
     
     private fun handleBackspace(ic: InputConnection) {
+        // D-536: the pending glide word is being hand-edited from now on - whatever the preview ends
+        // up as, it is no longer the stroke's resolved word, so the boundary commit must commit the
+        // EDITED token (ordinary composing semantics) instead of the stored form. The ordinary single
+        // delete below edits the composing preview in place.
+        glidePendingCommit = null
         // D-416: the former D-262/D-406 guard here (a Backspace right after a still-pending A-12 auto-space
         // removes only that forced space, not cascading into the ordinary delete below) is gone, not merely
         // simplified - the deferred model never physically writes that space, so there is nothing to
@@ -6543,6 +6601,12 @@ class AdaptKeyService : InputMethodService() {
         composingTaps.clear()
         composingCursor = 0
         composingAnchor = -1
+        // D-536: the pending glide word's whole point is its still-live composing preview - no
+        // preview, no boundary commit. Every teardown path that goes through here (field changes,
+        // caret-move reclaims, selection consumption, the finalize itself) therefore drops the
+        // pending with the token; handleBackspace and onFinishInput clear it at their own sites
+        // (one edits without clearing the buffer, the other does not run clearComposing at all).
+        glidePendingCommit = null
         // §125 / D-194 / D-215: not required for correctness (composingPreviewFor/expensiveSuggestionSeq are
         // always checked against the current composing text/generation before use) but avoids leaving a
         // pointless callback scheduled for a token that no longer exists.
@@ -8462,11 +8526,34 @@ class AdaptKeyService : InputMethodService() {
             // somehow already ended, e.g. a stale tap racing the timeout).
             SuggestionController.Kind.CURSOR_CONTROL_DONE -> keyboardView?.dismissCursorControl()
             
-            // D-516/G-09: the pinned live glide candidate - purely informational. The finger that owns
-            // the stroke cannot tap this chip (a second finger kills the stroke first, D-495); a stale
-            // tap arriving after the release must not re-commit anything, so a tap does nothing - the
-            // released word's alternates are the ordinary NORMAL chips above.
-            SuggestionController.Kind.GLIDE_CANDIDATE -> Unit
+            // D-536: the pinned glide candidate is the pending word's explicit "accept now". The
+            // stroke's release deliberately left the word uncommitted (a correctable composing
+            // preview), and this tap commits the resolved word immediately instead of waiting for
+            // the next word boundary - the release's own resolution (casing incl. the Shift spend,
+            // the learn flag) commits verbatim, never a re-derivation: the word the user saw is the
+            // word that lands. A tap with nothing pending (a stale tap from the stroke itself, which
+            // could never reach its own chip - D-495) does nothing.
+            SuggestionController.Kind.GLIDE_CANDIDATE -> {
+                val pending = glidePendingCommit
+                if (pending != null) {
+                    glidePendingCommit = null
+                    val trailingSpace = suggestionTrailingSpace(ic)
+                    ic.commitText(pending.word + trailingSpace, 1)
+                    clearComposing()
+                    if (pending.learn) {
+                        learnWord(pending.word)
+                    }
+                    notifySuggestionAccepted(pending.word)
+                    pendingSuggestionSpace = trailingSpace.isNotEmpty()
+                    suppressNextReclaimSpaceReset = true
+                    diag(
+                        "AdaptKeyGlide",
+                        "accept: word=${pending.word} learned=${pending.learn} trailingSpace=${trailingSpace.isNotEmpty()}"
+                    )
+                    showNextWordPredictions()
+                    armShiftForNextWord(ic)
+                }
+            }
         }
     }
     

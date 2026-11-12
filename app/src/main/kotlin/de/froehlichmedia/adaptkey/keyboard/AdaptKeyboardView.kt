@@ -1637,6 +1637,56 @@ class AdaptKeyboardView @JvmOverloads constructor(
             MotionEvent.ACTION_POINTER_UP -> {
                 if (parkedPress?.pointerId == event.getPointerId(event.actionIndex)) {
                     commitParkedPress()
+                    return true
+                }
+                // D-535: the ACTIVE press's own finger lifting first (the parked companion still down)
+                // used to fall through both this branch and the parked-commit one above - §546 handled
+                // only the parked finger's lift and the last finger's ACTION_UP. The active press was
+                // stranded: its key stayed pressed (no release ever cleared it), a held backspace's
+                // accelerating repeat kept firing with NO finger on the key - the reported whole-list
+                // Dauer-Backspace wipe (real data loss) - and a held long-press's popup stayed open
+                // fingerless. The release now runs the same teardown ACTION_UP's top runs, plus the
+                // clean-tap commit the press earned (D-528's own "both letters type" promise). Never a
+                // swipe: classifying a swipe inside an overlapped stream is exactly the D-495 hazard,
+                // so observed motion drops the action with a log instead.
+                if (touchTracker.hasSequence && touchTracker.trackedPointerId == event.getPointerId(event.actionIndex)) {
+                    cancelPendingLongPress()
+                    cancelBackspaceRepeat()
+                    dismissPopup()
+                    // The same glide teardown cancelActiveTouchSequence runs - an unclaimed stroke may
+                    // still be live (a claimed one refused the park, D-528's exclusivity list, so it
+                    // cannot coexist with a parked press).
+                    if (glideController.hasStroke) {
+                        val wasClaimed = glideController.claimed
+                        val summary = glideController.strokeSummary()
+                        glideController.end()
+                        if (wasClaimed) {
+                            logGlide("cancelled: reason=pointer_up_over_stream $summary")
+                            onGlideListener?.onGlideCancelled()
+                        } else {
+                            logGlide("aborted: reason=pointer_up_over_stream claimed=false $summary")
+                        }
+                    }
+                    val key = pressedKey
+                    pressedKey = null
+                    pressedKeyRect = null
+                    invalidate()
+                    if (key != null && !longPressFired && !backspaceRepeated && !touchTracker.motionWasObserved) {
+                        // The clean overlapped tap commits - flash first, then the key posted (the
+                        // D-219 frame-order pattern, mirroring the ACTION_UP tap path exactly).
+                        flash(key)
+                        val tapX = downX
+                        val tapY = downY
+                        val ambiguity = pendingAmbiguity
+                        val weight = pendingRecordWeight
+                        longPressHandler.post { onKeyListener?.onKey(key, tapX, tapY, ambiguity, weight) }
+                    } else if (key != null) {
+                        logTouch(
+                            "dropTap: reason=pointer_up_over_stream key=${key.id} " +
+                                "heldMs=${SystemClock.uptimeMillis() - pressDownAtMs} " +
+                                "longPress=$longPressFired repeat=$backspaceRepeated motion=${touchTracker.motionWasObserved}"
+                        )
+                    }
                 }
                 return true
             }
@@ -1899,6 +1949,13 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 downAtMs = pressDownAtMs
             )
         }
+        // D-535: the press is parked - the active-press state must not keep referencing it. A stale
+        // pressedKey fed ACTION_UP's dead_release diagnostics and the pressed-key highlight after the
+        // rescue (a parked press can never be a backspace - the BACKSPACE_HOLD refusal - so the repeat
+        // guard was never at risk, but the state still had to go); the incoming pointer's beginPress
+        // re-seats both fields anyway.
+        pressedKey = null
+        pressedKeyRect = null
     }
     
     /**
