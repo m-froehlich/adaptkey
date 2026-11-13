@@ -589,6 +589,15 @@ Dauer-Backspace wipe via its own Handler timer), the next physical touch is a fr
 (pointers=1), and UPs surfaced only while the cursor-control machine owned the stream (its handling
 returns true). One line - an explicit `return true` after `beginPress()` - restores 1.3.6's exact
 behaviour; the D-535/D-537/D-538/D-539 additions stay as inert-under-healthy-delivery safety nets.
+DEVICE-CONFIRMED (2026-11-13).
+
+**D-541 addendum - the extra-row toggles: synchronous push and snap-in haptics.** The extra-row
+glide toggle reads the stored preference directly for its flip direction, reloads the settings and
+runs `applySettings` synchronously in the tap (never hanging its effect on the async
+shared-preferences listener round-trip), and logs the full post-state. Both extra-row toggles
+(glide, touch-zone overlay) play the Shift-Caps-Lock engagement vibration on ENGAGE
+(`playToggleSnapHaptic`: MODE_SWITCH tier, `capsLockHapticsEnabled` gate, engage-only - mirroring
+Caps Lock's own confirmation).
 
 ### G-01 - Language Switch
 Swiping left or right on the space bar cycles the active input language through English (always first, the

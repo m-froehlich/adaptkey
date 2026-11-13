@@ -25210,3 +25210,31 @@ Build+tests green with versionName 1.3.14 in the APK. Device confirmation pendin
 installs 1.3.14 directly over the diag build (614 > 613, learned data preserved) and verifies:
 every tap types immediately, Space types without any cursor overlay, long-press popups and holds
 behave normally.
+
+## §554 - D-541: the extra-row glide toggle hardened (synchronous push instead of the async listener round-trip, full post-state in the log) and toggle snap-in haptics; glide typing declared usable by the user (v1.3.14 -> v1.3.15, versionCode 614 -> 615)
+
+Device confirmation for D-540 arrived: **the keyboard works again, every touch delivered, Space
+included** - the one-line return-true fix closed the broken round. And with it the first positive
+glide verdict: **glide typing plus the word-boundary commit is "hervorragend" and "erstmalig
+benutzbar"** (the user's own words) - the D-536 deferred-commit model and the whole feature pass
+their usability bar; the R3 community round (D-518) remains the formal closer.
+
+**Two fixes/wishes on top:**
+
+- **D-541a - the extra-row glide toggle "had no effect"** (button snapped in, glide stayed off;
+  settings screen kept working). The service-side chain read correct end to end (pref write ->
+  prefsListener -> reload -> applySettings -> view flag), so the async listener round-trip is the
+  only unproven link - hardened: the toggle now reads the stored truth directly from the
+  preferences for its flip direction (never the settings snapshot), reloads the settings and runs
+  `applySettings` SYNCHRONOUSLY in the tap, and logs the full post-state
+  (`extraRowToggle: pref=... settings=... view=... fieldAllowed=... surface=...`) - if the symptom
+  ever recurs, the log names the broken link alone. D-538's unbuffered-dispatch lesson applied to
+  listener paths: never leave a user-visible effect hanging on an async hop.
+- **D-541b - toggle snap-in haptics.** Both extra-row toggles (glide, touch-zone overlay) play the
+  Shift-Caps-Lock engagement vibration on ENGAGE (`playToggleSnapHaptic`: MODE_SWITCH tier, gated by
+  the same `capsLockHapticsEnabled`, independent of per-key haptics, same system-slider gate);
+  snapping back off stays silent, mirroring Caps Lock's engage-only confirmation.
+
+Build+tests green with versionName 1.3.15 in the APK. Toggle-fix device confirmation pending -
+with the synchronous push the effect cannot hang on the async link; should the symptom still
+reproduce, the extraRowToggle log line names the broken state directly.

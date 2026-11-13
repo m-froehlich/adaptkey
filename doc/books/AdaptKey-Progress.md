@@ -453,13 +453,24 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
-- **D-540 - IMPLEMENTED (§553, v1.3.14/614), AWAITING DEVICE CONFIRMATION: THE root cause fixed.**
-  The 1.3.6-diag experiment proved the same OS delivers UPs to the same view when the DOWN returns
+- **D-540 - IMPLEMENTED (§553, v1.3.14/614), DEVICE-CONFIRMED (2026-11-13: "Es geht endlich
+  wieder" - every touch delivered, Space included; the broken round is closed).** THE root cause:
+  the 1.3.6-diag experiment proved the same OS delivers UPs to the same view when the DOWN returns
   true - and §546's beginPress extraction had dropped the ACTION_DOWN branch's explicit
   `return true`, declining every gesture right after handling it (no MOVE/UP delivery: rawTap-only
   logs, stranded presses, the Dauer-Backspace wipe). Fixed with the one-line explicit return;
   D-535/D-537/D-538/D-539 stay as inert safety nets. Version note: the diag build used 613, the
   real train skipped to 614 (versionCode keeps counting). Spec §4's D-540 addendum.
+- **D-541 - IMPLEMENTED (§554, v1.3.15/615), toggle-fix device confirmation pending: extra-row
+  toggle hardening + snap-in haptics; glide typing DECLARED USABLE by the user ("hervorragend,
+  erstmalig benutzbar") - word-boundary commit (D-536) confirmed working.**
+  - **D-541a:** the extra-row glide toggle "had no effect" (snapped in, glide stayed off) while the
+    settings screen worked - the async prefs-listener round-trip was the only unproven link, so the
+    toggle now reads the stored truth directly, reloads + `applySettings` synchronously in the tap,
+    and logs the full post-state (`extraRowToggle:` line).
+  - **D-541b:** both extra-row toggles (glide, touch-zone overlay) play the Shift-Caps-Lock
+    snap-in vibration on engage (`playToggleSnapHaptic`, MODE_SWITCH tier, `capsLockHapticsEnabled`
+    gate); off-snap silent. Spec §4's D-539/D-540 addenda extended, D-541 pending there.
 
 - **D-539 - IMPLEMENTED (§552, v1.3.13/613), NOT yet device-confirmed: the degraded-mode space fix.**
   Per-field `touchUpLossDetected` (set by any recovery, reset per field): while set, the D-401
