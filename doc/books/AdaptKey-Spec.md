@@ -580,6 +580,16 @@ too in a recovery (the popup was fingerless), backspace-repeat strands still dro
 are byte-identical - the flag resets per field and the recovery only runs when the UP failed to
 clear `pressedKey`.
 
+**D-540 addendum - THE root cause of the broken round: the declined DOWN.** §546's beginPress
+extraction dropped the ACTION_DOWN branch's explicit `return true`; the branch fell through to
+`super.onTouchEvent(event)` = false, which declines the gesture - no touch target, no MOVE, no UP
+delivered to this view again. DOWNs are still delivered fresh per gesture (their side effects ran:
+rawTap, haptics, timer arms - hence rawTap-only logs, stranded presses, and the orphaned
+Dauer-Backspace wipe via its own Handler timer), the next physical touch is a fresh DOWN
+(pointers=1), and UPs surfaced only while the cursor-control machine owned the stream (its handling
+returns true). One line - an explicit `return true` after `beginPress()` - restores 1.3.6's exact
+behaviour; the D-535/D-537/D-538/D-539 additions stay as inert-under-healthy-delivery safety nets.
+
 ### G-01 - Language Switch
 Swiping left or right on the space bar cycles the active input language through English (always first, the
 one language always available) plus every currently installed language pack (§9), in a fixed declaration

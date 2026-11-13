@@ -25169,3 +25169,44 @@ Build+tests green with versionName 1.3.13 in the APK. NOT device-confirmed - and
 experiment is now in the user's hands: a 1.3.6-plus-instrumentation diagnostic build (the exact
 "Perfekt"-confirmed code, observing only) answers whether the UP-loss exists on the old code base
 on the current OS (device/preview-OS cause) or appears only after §546+ (regression in the delta).
+
+## §553 - D-540: THE root cause found and fixed - §546's beginPress extraction dropped the ACTION_DOWN `return true`, so the view declined every gesture right after handling it (no MOVE, no UP ever delivered); one line restores 1.3.6 behaviour (v1.3.13 -> v1.3.14, versionCode 613 -> 614)
+
+The decisive experiment came back exactly as the bisect design hoped: **1.3.6-diag (the "Perfekt"-
+confirmed code plus the observation-only touchEvent/touchCancelled logging, versionCode 613) types
+perfectly on the same OS - every touch delivered, Space included** - while 1.3.13 on the same device
+in the same hour was still broken. User-confirmed facts: no OS update in the window, 1.3.6 typed
+normally immediately before 1.3.9. The regression is therefore provably in the 1.3.6 -> 1.3.9 code
+delta, and with delivery-ruling-out no longer an option, the one line that matters finally showed
+itself:
+
+**§546's D-528 extraction of the ACTION_DOWN body into `beginPress()` (void) dropped the explicit
+`return true` the inline DOWN body always ended with.** The branch fell through to onTouchEvent's
+tail `return super.onTouchEvent(event)`, which is FALSE for a non-clickable view. **Returning false
+on DOWN declines the gesture**: the framework establishes no touch target and never delivers MOVE or
+UP to this view again - DOWNs are delivered fresh per gesture (side effects run: rawTap, haptics,
+timer arms), which is why every broken-state log showed rawTaps with no handleKey and no exit lines,
+why `motion=false` was in every recovery line, why presses stranded visually, and why the orphaned
+backspace press's accelerating repeat (our own Handler timer, indifferent to touch delivery) ran
+until the next DOWN overwrote it - the whole-list wipe. The three UPs that ever surfaced in the logs
+arrived exactly while the D-401 cursor-control machine owned the stream, because
+`handleCursorControlTouch` returns true and re-establishes delivery. The fresh-DOWN-with-pointers=1
+signature is the framework starting a new gesture because the previous one was declined. Everything
+fits; the 1.3.6-diag pass proves the same OS delivers UPs to the same view when the DOWN returns
+true.
+
+**The fix is one line**: ACTION_DOWN ends with an explicit `return true` (as in 1.3.6; every other
+branch already returns true). D-537's recovery, D-535's POINTER_UP branch, D-538's unbuffered
+dispatch and D-539's degraded mode stay as layered safety nets for future delivery anomalies - all
+are inert under healthy delivery.
+
+The user's proposed bisect (a 1.3.7-based build excluding the glide changes) would have found
+exactly this - §546 is the guilty round; the glide-round changes and D-531 are exonerated by the
+same reading (their touch-path additions are guarded or rendering-only). The bisect build itself is
+superseded by the fix. Version note: the diagnostic build used versionCode 613, so the real train
+skipped to 614; versionCode keeps counting up by 1 from here.
+
+Build+tests green with versionName 1.3.14 in the APK. Device confirmation pending - the user
+installs 1.3.14 directly over the diag build (614 > 613, learned data preserved) and verifies:
+every tap types immediately, Space types without any cursor overlay, long-press popups and holds
+behave normally.

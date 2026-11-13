@@ -453,6 +453,14 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
+- **D-540 - IMPLEMENTED (§553, v1.3.14/614), AWAITING DEVICE CONFIRMATION: THE root cause fixed.**
+  The 1.3.6-diag experiment proved the same OS delivers UPs to the same view when the DOWN returns
+  true - and §546's beginPress extraction had dropped the ACTION_DOWN branch's explicit
+  `return true`, declining every gesture right after handling it (no MOVE/UP delivery: rawTap-only
+  logs, stranded presses, the Dauer-Backspace wipe). Fixed with the one-line explicit return;
+  D-535/D-537/D-538/D-539 stay as inert safety nets. Version note: the diag build used 613, the
+  real train skipped to 614 (versionCode keeps counting). Spec §4's D-540 addendum.
+
 - **D-539 - IMPLEMENTED (§552, v1.3.13/613), NOT yet device-confirmed: the degraded-mode space fix.**
   Per-field `touchUpLossDetected` (set by any recovery, reset per field): while set, the D-401
   cursor-control arm is skipped and the stranded press commits as a tap at the arm moment (space
