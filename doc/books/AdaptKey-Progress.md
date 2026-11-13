@@ -506,16 +506,19 @@ non-trivial changes).
     (the user's reported data loss). The POINTER_UP branch now runs the full release teardown plus the
     clean-tap commit (never a swipe under overlap; motion drops with a log). Parking clears the parked
     key from the active-press state. Spec §4's D-535 addendum.
-  - **D-536:** the glide release commits NOTHING any more (supersedes D-533's commit-at-lift, same
+  - **D-536 (device-confirmed 2026-11-13: glide typing "hervorragend, erstmalig benutzbar" on
+    device):** the glide release commits NOTHING any more (supersedes D-533's commit-at-lift, same
     goal): the resolved word parks pending, the composing preview stays correctable/editable, and the
     physical commit (word + trailing space, punctuation eats it) happens at the next word boundary -
     the next stroke's claim, a typed character, Space, Enter, or the pinned chip's explicit accept
     (which used to be a no-op). Backspace edits and drops the pending. Spec G-09's rewritten D-536
     addendum.
 
-- **D-531/D-532/D-533/D-534 - IMPLEMENTED (§547+§548, v1.3.8/608 + v1.3.9/609), NOT yet
-  device-confirmed: the page-navigation reform and the glide round.**
-  - **D-531 (v1.3.8):** the letters page's combined key is the `!?#` special-characters-page toggle
+- **D-531/D-532/D-533/D-534 - IMPLEMENTED (§547+§548, v1.3.8/608 + v1.3.9/609) - D-531
+  DEVICE-CONFIRMED (2026-11-13: "die neuen Page-Swap-Buttons funktionieren wie gewünscht mit genau
+  den Cycle", plus die korrekte Färbung der Währungstaste auf der Special-Keys-Page).** The
+  page-navigation reform and the glide round:
+  - **D-531 (v1.3.8) - DEVICE-CONFIRMED:** the letters page's combined key is the `!?#` special-characters-page toggle
     (was the `?123` number-layer toggle); the special-characters page's own bottom key is the `?123`
     number-layer toggle (was `ABC`); the number layer's `ABC` still returns to letters - the
     accessibility chain visits every page exactly once (`letters !?# -> special characters ?123 ->
