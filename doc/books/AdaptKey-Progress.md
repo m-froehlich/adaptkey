@@ -461,13 +461,15 @@ non-trivial changes).
   logs, stranded presses, the Dauer-Backspace wipe). Fixed with the one-line explicit return;
   D-535/D-537/D-538/D-539 stay as inert safety nets. Version note: the diag build used 613, the
   real train skipped to 614 (versionCode keeps counting). Spec §4's D-540 addendum.
-- **D-543 - IMPLEMENTED (§556, v1.3.18/618), toggle-live confirmation pending: the settings screen
-  live-syncs with the keyboard-side toggles (SharedPreferences listener in the settings fragment,
-  onResume/onPause), and the stroke log lines carry the view's glide state (`glideOn=`/`fieldAllowed=`)
-  for the reported intermittent "greift mal nicht" - the paired extraRowToggle + begin/notClaimed
-  lines will name the failing hop. Spec §4's D-543 addendum.
+- **D-543 - IMPLEMENTED (§556, v1.3.18/618) - DEVICE-CONFIRMED (2026-11-13: "das können wir jetzt
+  so abschließen. Das hat funktioniert"): the settings screen live-syncs with the keyboard-side
+  toggles (SharedPreferences listener in the settings fragment, onResume/onPause), and the stroke
+  log lines carry the view's glide state (`glideOn=`/`fieldAllowed=`) for any future "greift mal
+  nicht" repro - the paired extraRowToggle + begin/notClaimed lines name the failing hop. Spec §4's
+  D-543 addendum.
 
-- **D-542 - IMPLEMENTED (§555, v1.3.17/617), AWAITING DEVICE CONFIRMATION: the R3 calibration
+- **D-542 - IMPLEMENTED (§555, v1.3.17/617) - DEVICE-CONFIRMED (2026-11-13, same session as D-543's
+  confirmation): the R3 calibration
   finding - the glide geometry is now PERSONAL.** The extended toggle test proved D-541a works
   (pref/settings/view all flip correctly) and exposed the real glide gate: a genuine 415 px stroke
   produced `distinctKeys=0` - the user's personal strike bias (~50 px up-right, larger than the
@@ -489,23 +491,26 @@ non-trivial changes).
   (`playToggleSnapHaptic`, MODE_SWITCH tier, `capsLockHapticsEnabled` gate); off-snap silent. Spec
   §4's D-539/D-540/D-541 addenda.
 
-- **D-539 - IMPLEMENTED (§552, v1.3.13/613), NOT yet device-confirmed: the degraded-mode space fix.**
+- **D-539 - IMPLEMENTED (§552, v1.3.13/613) - SAFETY NET, inert under healthy delivery (the
+  D-540/D-543 round confirmed healthy delivery on the affected device): the degraded-mode space
+  fix.**
   Per-field `touchUpLossDetected` (set by any recovery, reset per field): while set, the D-401
   cursor-control arm is skipped and the stranded press commits as a tap at the arm moment (space
   types ~one arm-delay late instead of never), long-press-fired strands commit too (fingerless popup
   = base tap), backspace-repeat strands still drop. Healthy sessions untouched. Spec §4's D-539
   addendum. Plus: glide-logging hypothesis ruled out with evidence (inert when off; zero
-  [AdaptKeyGlide] lines in all three broken-state logs) - the decisive experiment is the
-  1.3.6+instrumentation bisect build.
+  [AdaptKeyGlide] lines in all three broken-state logs).
 
-- **D-538 - IMPLEMENTED (§551, v1.3.12/612), NOT yet device-confirmed: unbuffered touch dispatch +
-  recovery before cursor routing.** The 1.3.11 log named the pattern: UPs arrive late, paired with the
+- **D-538 - IMPLEMENTED (§551, v1.3.12/612) - SAFETY NET, inert under healthy delivery: unbuffered
+  touch dispatch + recovery before cursor routing.** The 1.3.11 log named the pattern: UPs arrive late, paired with the
   next DOWN; a SPACE tap's orphaned press arms D-401 cursor control and the machine eats the next taps
   (Space untypeable). Now: `requestUnbufferedDispatch` per stream (deliver-as-arrived), and
   `recoverStrandedPressIfAny` runs before every routing decision - the next tap commits an orphaned
   space and kills its long-press arm before the ~400-500 ms arm fires. Spec §4's D-538 addendum.
 
-- **D-537 - IMPLEMENTED (§550, v1.3.11/611), NOT yet device-confirmed: the lost-touch-UP recovery and
+- **D-537 - IMPLEMENTED (§550, v1.3.11/611) - SAFETY NET + OBSERVABILITY (inert under the healthy
+  delivery the D-540 fix restored; the instrumentation is what cracked the broken round): the
+  lost-touch-UP recovery and
   the touch-delivery instrumentation.** The broken build's logs showed DOWNs processed but no
   `handleKey` and no exit line for any release - UPs not reaching the view (lost or silent CANCEL);
   every new DOWN silently overwrote the stranded press (lost letters, stuck key, the Dauer-Backspace
@@ -515,7 +520,8 @@ non-trivial changes).
   (`touchCancelled:`), recoveries log their facts (`touchRecovered:`). The next repro's log names the
   real delivery pattern. Spec §4's D-537 addendum.
 
-- **D-535/D-536 - IMPLEMENTED (§549, v1.3.10/610), NOT yet device-confirmed: the strand-the-active-press
+- **D-535/D-536 - IMPLEMENTED (§549, v1.3.10/610) - D-535 IS THE PROVEN MULTI-TOUCH FIX (code-proven,
+  device-side overlap repro pending), D-536 DEVICE-CONFIRMED (2026-11-13): the strand-the-active-press
   data-loss fix and the corrected glide commit model.**
   - **D-535:** D-528's rescue stranded the ACTIVE press when its own finger lifted first via
     ACTION_POINTER_UP (only the parked finger's lift was handled) - the key stayed pressed and a held
