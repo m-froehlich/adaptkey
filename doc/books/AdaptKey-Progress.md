@@ -388,6 +388,18 @@ in every prompt.
   release `v1.2.97` live with the asset exactly `AdaptKey.apk` (re-downloaded and sha256-verified
   byte-identical to the local build). F-Droid's bot is expected to pick the tag up automatically
   (`AutoUpdateMode: Version`).
+- **2026-11-13: v1.3.18 (`versionCode` 618) released by RELEASE RECIPE** - everything since v1.2.97 in
+  one step (§538-§556: the Alt-Belegung reform, glide typing's full development R1-R3 and its personal
+  R3 calibration, the layout/popup/page-navigation rounds, the D-540 gesture root-cause fix; versions
+  1.2.98-1.3.17 ride along untagged, untagged-intermediate precedent). Tag `v1.3.18` (annotated,
+  "AdaptKey 1.3.18") on `fddab82`, the round's docs commit (D-543/D-542 device-confirmed). Fresh origin
+  clone at the tag (`build/release-v1.3.18/`, keystore copied in and removed afterwards),
+  `--no-build-cache --no-configuration-cache`; APK sha256 6995d1b3...895a, 37,307,972 bytes,
+  versionCode 618/versionName 1.3.18 (aapt2-verified), cert `3201509b...ee3666e` unchanged
+  (apksigner-verified), 910 zip entries (entry names identical to v1.2.97's), no vcs/dependency-metadata
+  block, v2-only signing block. GitHub release `v1.3.18` live with the asset exactly `AdaptKey.apk`
+  (re-downloaded and sha256-verified byte-identical to the local build). F-Droid's bot is expected to
+  pick the tag up automatically (`AutoUpdateMode: Version`).
 - **Still open:**
   - The next release: tag it and follow the RELEASE RECIPE above - F-Droid picks up new tags automatically
     (`AutoUpdateMode: Version`, `UpdateCheckMode: Tags`), no new MR needed.
