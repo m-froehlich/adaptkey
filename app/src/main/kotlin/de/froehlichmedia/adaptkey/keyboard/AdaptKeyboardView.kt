@@ -1518,6 +1518,16 @@ class AdaptKeyboardView @JvmOverloads constructor(
                     event.y,
                     event.size
                 )
+                // D-540: THE fix for the broken-build round (§549-§552) - §546's beginPress extraction
+                // dropped the explicit `return true` the inline DOWN body always ended with, so this
+                // branch fell through to onTouchEvent's tail `super.onTouchEvent(event)`, which is
+                // FALSE for a non-clickable view. Returning false on DOWN declines the gesture: the
+                // framework never delivered MOVE or UP to this view again (the reported rawTap-only
+                // logs, `motion=false` everywhere, stranded presses, the Dauer-Backspace wipe), while
+                // the next physical touch arrived as a fresh DOWN (pointers=1) - and UPs only ever
+                // surfaced while the cursor-control machine owned the stream, because ITS handling
+                // returns true. One line, restoring 1.3.6's exact return behaviour.
+                return true
             }
             
             MotionEvent.ACTION_MOVE -> {
