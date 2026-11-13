@@ -4851,6 +4851,10 @@ class AdaptKeyService : InputMethodService() {
         val visible = !(keyboardView?.showTouchModel ?: false)
         keyboardView?.showTouchModel = visible
         extraRow?.touchZoneVisible = visible
+        // D-541: the same snap-in vibration the glide toggle plays, on engage only.
+        if (visible) {
+            keyboardView?.playToggleSnapHaptic()
+        }
     }
     
     /**
@@ -4895,19 +4899,35 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * D-532: the extra row's glide-typing toggle - writes the `d516_glide_typing` setting itself
-     * (the persisted boolean the settings screen's own switch reads back), so the shortcut and the
-     * setting can never disagree. The shared-preferences listener reloads the settings and runs
-     * [applySettings], which pushes the new flag into the view's own glide gate (and re-syncs the
-     * button's state); the button state is also set directly here, so the visual feedback is
-     * immediate rather than waiting for the listener round-trip. D-187: no longer closes the row -
-     * see [closeExtraRow]'s own KDoc.
+     * D-532/D-541: the extra row's glide-typing toggle - writes the `d516_glide_typing` setting
+     * itself (the persisted boolean the settings screen's own switch reads back), so the shortcut and
+     * the setting can never disagree.
+     *
+     * D-541 hardening: the stored truth is read DIRECTLY from the preferences (never the service's
+     * settings snapshot) for the flip direction, and the reload + [applySettings] push into the view
+     * happens SYNCHRONOUSLY here instead of relying only on the async shared-preferences listener
+     * round-trip - the reported "kein Effekt" state (button snaps in, glide stays off) is exactly
+     * what a broken async link would look like, and with the full post-state in the log a repeat
+     * names its broken link from the log alone. The button state is also set directly here, so the
+     * visual feedback is immediate. D-187: no longer closes the row - see [closeExtraRow]'s own KDoc.
      */
     private fun toggleGlideTypingFromExtraRow() {
-        val next = !settings.glideTypingEnabled
-        SettingsStore.prefs(this).edit().putBoolean(SettingsStore.KEY_GLIDE_TYPING_ENABLED, next).apply()
+        val prefs = SettingsStore.prefs(this)
+        val next = !prefs.getBoolean(SettingsStore.KEY_GLIDE_TYPING_ENABLED, SettingsStore.DEF_GLIDE_TYPING_ENABLED)
+        prefs.edit().putBoolean(SettingsStore.KEY_GLIDE_TYPING_ENABLED, next).apply()
+        settings = SettingsStore.load(this)
+        applySettings()
         extraRow?.glideTypingActive = next
-        diag("AdaptKeyGlide", "extraRowToggle: glide typing -> $next")
+        // D-541: the snap-in vibration - the Shift-Caps-Lock engagement feedback, on engage only.
+        if (next) {
+            keyboardView?.playToggleSnapHaptic()
+        }
+        diag(
+            "AdaptKeyGlide",
+            "extraRowToggle: pref=$next settings=${settings.glideTypingEnabled} " +
+                "view=${keyboardView?.glideTypingEnabled} fieldAllowed=${keyboardView?.glideFieldAllowed} " +
+                "surface=$surface"
+        )
     }
     
     /**

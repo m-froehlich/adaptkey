@@ -2651,6 +2651,20 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     /**
+     * D-541: the extra-row toggle buttons' snap-in vibration - the same feedback the Shift key's
+     * Caps-Lock engagement plays (MODE_SWITCH tier, governed by [capsLockHapticsEnabled], independent
+     * of per-key haptics, same system-slider gate). Fired by the service when one of its extra-row
+     * toggles ENGAGES (the snap-in); snapping back off stays silent, mirroring Caps Lock's own
+     * engage-only confirmation.
+     */
+    fun playToggleSnapHaptic() {
+        if (!capsLockHapticsEnabled) {
+            return
+        }
+        fireHaptic(HapticTier.MODE_SWITCH, "playToggleSnapHaptic")
+    }
+    
+    /**
      * D-396/D-88: fires a [HapticTier.CORRECTION]-tier vibration for a silently-applied autocorrection or
      * an accepted suggestion chip - called by [AdaptKeyService.notifySuggestionAccepted], the single
      * existing choke point both already flow through. Gated internally on [hapticsEnabled] exactly like
