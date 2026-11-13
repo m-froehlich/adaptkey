@@ -58,8 +58,8 @@ android {
         // D-515: the apostrophe-key switch for the non-English layouts (default off - the English-style
         // QWERTY arrangement always shows the key; QWERTZ/AZERTY keep their canonical middle row unless
         // the user opts in).
-        versionCode = 616
-        versionName = "1.3.16"
+        versionCode = 617
+        versionName = "1.3.17"
         // The ONNX Runtime native libs (tier-3 mini-LLM) ship per ABI; keep only the ones real phones
         // use (arm64 + 32-bit arm), dropping the emulator-only x86/x86_64 libs (~43 MB). Device testing
         // of tier 3 therefore needs an arm device, not an x86_64 emulator.
