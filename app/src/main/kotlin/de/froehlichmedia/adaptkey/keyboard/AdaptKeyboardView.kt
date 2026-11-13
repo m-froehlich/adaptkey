@@ -1798,7 +1798,8 @@ class AdaptKeyboardView @JvmOverloads constructor(
                     if (wasClaimed) {
                         logGlide("dropGlide: reason=foreign_release $summary")
                     } else {
-                        logGlide("notClaimed: $summary -> tap/swipe resolution")
+                        logGlide("notClaimed: $summary -> tap/swipe resolution " +
+                            "glideOn=${glideTypingEnabled} fieldAllowed=${glideFieldAllowed}")
                     }
                 }
                 // D-01: releasing over the alternatives popup commits the highlighted alternative.
@@ -2036,7 +2037,8 @@ class AdaptKeyboardView @JvmOverloads constructor(
             glideController.begin(geometry, rect.width(), x, y, SystemClock.uptimeMillis())
             logGlide(
                 "begin: key=${key.id} x=${x.toInt()} y=${y.toInt()} " +
-                    "centers=${geometry.centers.size} minPitch=${geometry.minKeyPitch.toInt()}"
+                    "centers=${geometry.centers.size} minPitch=${geometry.minKeyPitch.toInt()} " +
+                    "glideOn=${glideTypingEnabled} fieldAllowed=${glideFieldAllowed}"
             )
         }
         // D-07: holding the backspace key starts an accelerating repeat delete.

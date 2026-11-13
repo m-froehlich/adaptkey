@@ -5,6 +5,7 @@ package de.froehlichmedia.adaptkey.settings
 
 import android.Manifest
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.Typeface
@@ -73,6 +74,22 @@ class SettingsActivity : SettingsScreenActivity() {
     
     /** The preference screen itself. */
     class SettingsFragment : PreferenceFragmentCompat() {
+        
+        // D-543: live-syncs the switches this screen renders with the keyboard-side extra-row
+        // toggles - the extra row's glide toggle writes the same preference this screen shows, but
+        // an androidx preference fragment does not re-read SharedPreferences on resume, so a screen
+        // kept open across a keyboard-side toggle would render a stale switch (the reported "der
+        // Toggle wirkt sich nicht auf die Settings aus"). Registered in the existing onResume /
+        // unregistered in onPause (the documented androidx pattern; also sidesteps the framework's
+        // weak listener storage), and the update only mirrors what the file already holds - the
+        // framework's own re-write of the same value on setting isChecked is harmless.
+        private val keyboardSideToggleListener =
+            SharedPreferences.OnSharedPreferenceChangeListener { prefs, key ->
+                if (key == SettingsStore.KEY_GLIDE_TYPING_ENABLED) {
+                    findPreference<SwitchPreferenceCompat>(SettingsStore.KEY_GLIDE_TYPING_ENABLED)
+                        ?.isChecked = prefs.getBoolean(key, false)
+                }
+            }
         
         // D-191: must be registered unconditionally during Fragment initialisation (the documented
         // androidx.activity.result contract - registering it later, e.g. inside onCreatePreferences, would
@@ -277,6 +294,10 @@ class SettingsActivity : SettingsScreenActivity() {
         
         override fun onResume() {
             super.onResume()
+            // D-543: live-sync for the keyboard-side extra-row toggles (the glide switch) - see
+            // keyboardSideToggleListener's own KDoc.
+            preferenceManager.sharedPreferences
+                ?.registerOnSharedPreferenceChangeListener(keyboardSideToggleListener)
             maybeOfferCalibration()
             // D-237: refreshes after returning from CalibrationActivity with a newly (or re-)chosen style -
             // onCreatePreferences() alone would only ever show whatever was current the moment the screen
@@ -286,6 +307,14 @@ class SettingsActivity : SettingsScreenActivity() {
             // the install state only ever changes via the separate Tier3ModelActivity, so returning from it
             // must re-bind this row's view to pick up a fresh Tier3ModelStorage.isModelInstalled() read.
             findPreference<Tier3ModelPreference>("c06_model")?.refresh()
+        }
+        
+        override fun onPause() {
+            // D-543: the mirror of onResume's own registration - unregistering here (not onDestroy)
+            // keeps the listener out of the framework's weak storage while the screen is gone.
+            preferenceManager.sharedPreferences
+                ?.unregisterOnSharedPreferenceChangeListener(keyboardSideToggleListener)
+            super.onPause()
         }
         
         /**
