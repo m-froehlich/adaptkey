@@ -4913,7 +4913,8 @@ class AdaptKeyService : InputMethodService() {
      */
     private fun toggleGlideTypingFromExtraRow() {
         val prefs = SettingsStore.prefs(this)
-        val next = !prefs.getBoolean(SettingsStore.KEY_GLIDE_TYPING_ENABLED, SettingsStore.DEF_GLIDE_TYPING_ENABLED)
+        val stored = prefs.getBoolean(SettingsStore.KEY_GLIDE_TYPING_ENABLED, SettingsStore.DEF_GLIDE_TYPING_ENABLED)
+        val next = !stored
         prefs.edit().putBoolean(SettingsStore.KEY_GLIDE_TYPING_ENABLED, next).apply()
         settings = SettingsStore.load(this)
         applySettings()
@@ -4924,9 +4925,10 @@ class AdaptKeyService : InputMethodService() {
         }
         diag(
             "AdaptKeyGlide",
-            "extraRowToggle: pref=$next settings=${settings.glideTypingEnabled} " +
-                "view=${keyboardView?.glideTypingEnabled} fieldAllowed=${keyboardView?.glideFieldAllowed} " +
-                "surface=$surface"
+            "extraRowToggle: stored=$stored pref=$next readback=" +
+                "${prefs.getBoolean(SettingsStore.KEY_GLIDE_TYPING_ENABLED, SettingsStore.DEF_GLIDE_TYPING_ENABLED)} " +
+                "settings=${settings.glideTypingEnabled} view=${keyboardView?.glideTypingEnabled} " +
+                "fieldAllowed=${keyboardView?.glideFieldAllowed} surface=$surface"
         )
     }
     
