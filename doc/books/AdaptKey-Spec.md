@@ -599,6 +599,15 @@ shared-preferences listener round-trip), and logs the full post-state. Both extr
 (`playToggleSnapHaptic`: MODE_SWITCH tier, `capsLockHapticsEnabled` gate, engage-only - mirroring
 Caps Lock's own confirmation).
 
+**D-542 addendum - the glide geometry is personal (offset-compensated centres, geometric pitch
+scale).** The stroke is scored against the keys where the user actually strikes them: the glide
+geometry's centres are the geometric centre plus the learned T-03 mean offset, capped by the same
+bounds the tap resolution uses; the pitch scale stays the geometric one (constructor override), so
+tolerances cannot shrink with compensated drift. Untrained keys sit exactly where they always did.
+The R3 device finding behind this: a genuine 415 px stroke produced `distinctKeys=0` because the
+user's personal strike bias (~50 px up-right) exceeded the 46.75 px passing radius - the claim gate
+never opened and gliding appeared dead even though the feature was on.
+
 ### G-01 - Language Switch
 Swiping left or right on the space bar cycles the active input language through English (always first, the
 one language always available) plus every currently installed language pack (§9), in a fixed declaration

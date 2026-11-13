@@ -461,16 +461,27 @@ non-trivial changes).
   logs, stranded presses, the Dauer-Backspace wipe). Fixed with the one-line explicit return;
   D-535/D-537/D-538/D-539 stay as inert safety nets. Version note: the diag build used 613, the
   real train skipped to 614 (versionCode keeps counting). Spec §4's D-540 addendum.
-- **D-541 - IMPLEMENTED (§554, v1.3.15/615), toggle-fix device confirmation pending: extra-row
-  toggle hardening + snap-in haptics; glide typing DECLARED USABLE by the user ("hervorragend,
-  erstmalig benutzbar") - word-boundary commit (D-536) confirmed working.**
-  - **D-541a:** the extra-row glide toggle "had no effect" (snapped in, glide stayed off) while the
-    settings screen worked - the async prefs-listener round-trip was the only unproven link, so the
-    toggle now reads the stored truth directly, reloads + `applySettings` synchronously in the tap,
-    and logs the full post-state (`extraRowToggle:` line).
-  - **D-541b:** both extra-row toggles (glide, touch-zone overlay) play the Shift-Caps-Lock
-    snap-in vibration on engage (`playToggleSnapHaptic`, MODE_SWITCH tier, `capsLockHapticsEnabled`
-    gate); off-snap silent. Spec §4's D-539/D-540 addenda extended, D-541 pending there.
+- **D-542 - IMPLEMENTED (§555, v1.3.17/617), AWAITING DEVICE CONFIRMATION: the R3 calibration
+  finding - the glide geometry is now PERSONAL.** The extended toggle test proved D-541a works
+  (pref/settings/view all flip correctly) and exposed the real glide gate: a genuine 415 px stroke
+  produced `distinctKeys=0` - the user's personal strike bias (~50 px up-right, larger than the
+  46.75 px passing radius) left no point near any geometric key centre, so the stroke never claimed
+  and nothing typed. Fix: `glideKeyGeometry()` builds offset-compensated centres (geometric centre +
+  `cappedMeanOffset` with the same bounds as tap resolution), the pitch scale stays geometric (new
+  `GlideKeyGeometry` constructor override, `GlideKeyGeometryTest` +3), `begin:` logs
+  centers/minPitch. This IS the plan's R3 device calibration. Spec G-09's D-542 addendum.
+
+- **D-541 - IMPLEMENTED (§554, v1.3.15/615) - DEVICE-CONFIRMED via the extended test log (2026-11-13):
+  the extraRowToggle line shows pref/readback/settings/view all flipping correctly in both
+  directions, and `playToggleSnapHaptic` fired - the toggle and the snap-in vibration work; the
+  reported "Setting nicht gesetzt" was the second toggle's own off-state plus/or a stale settings
+  screen (the androidx preference fragment does not re-read on resume). Glide typing DECLARED USABLE
+  by the user ("hervorragend, erstmalig benutzbar") - word-boundary commit (D-536) confirmed
+  working.** The hardening stands: direct pref read for the flip direction, reload + `applySettings`
+  synchronously in the tap, full post-state in the `extraRowToggle:` line. Both extra-row toggles
+  (glide, touch-zone overlay) play the Shift-Caps-Lock snap-in vibration on engage
+  (`playToggleSnapHaptic`, MODE_SWITCH tier, `capsLockHapticsEnabled` gate); off-snap silent. Spec
+  §4's D-539/D-540/D-541 addenda.
 
 - **D-539 - IMPLEMENTED (§552, v1.3.13/613), NOT yet device-confirmed: the degraded-mode space fix.**
   Per-field `touchUpLossDetected` (set by any recovery, reset per field): while set, the D-401

@@ -25238,3 +25238,36 @@ their usability bar; the R3 community round (D-518) remains the formal closer.
 Build+tests green with versionName 1.3.15 in the APK. Toggle-fix device confirmation pending -
 with the synchronous push the effect cannot hang on the async link; should the symptom still
 reproduce, the extraRowToggle log line names the broken state directly.
+
+## §555 - D-542: the R3 calibration finding from the first real glide log - the claim's passing radius was the gate, and the geometry is now personal (offset-compensated centres, geometric pitch scale) (v1.3.16 -> v1.3.17, versionCode 616 -> 617)
+
+The user's extended test (toggle on, glide, toggle off, each with the diagnostic line) closed TWO
+questions at once:
+
+1. **The extra-row toggle WORKS** - `extraRowToggle: stored=false pref=true readback=true
+   settings=true view=true fieldAllowed=true surface=LETTERS`, and symmetrically back to false.
+   The reported "Setting nicht gesetzt" was the second toggle's own (correct) off-state plus/or a
+   stale settings-screen render (the androidx preference fragment does not re-read on resume).
+   D-541a confirmed.
+2. **The REAL reason gliding produced nothing: `distinctKeys=0`.** With glide on, a genuine stroke
+   was logged end to end - `begin: key=c:u`, 55 points, 415 px path (4.44 key widths, 221 ms) - and
+   then `notClaimed`: **not one of the 55 points came within the 46.75 px passing radius** (half the
+   key pitch) of any key centre. The user's own touch profile explains it: his DOWN landed 54 px off
+   the u centre, and his rawTaps sit consistently ~17-40 px above centre - a personal up-right bias
+   larger than the passing radius. The claim's distinct-key gate never opened, so nothing was
+   recognized or typed - which read exactly like "glide not activated".
+
+**The fix (the plan's own R3 calibration, now with device data): the glide geometry becomes
+PERSONAL.** `glideKeyGeometry()` builds the centres as the geometric centre plus the learned T-03
+mean offset - `cappedMeanOffset` with the same per-direction bounds the tap resolution and the
+touch-zone visualisation use - so the stroke is scored against the keys where THIS user actually
+strikes them. Untrained keys resolve to (0,0) and sit exactly where they always did; the pitch
+scale stays the GEOMETRIC one (new `GlideKeyGeometry` constructor override, so tolerances cannot
+shrink when neighbouring compensated centres drift toward each other - covered by the new
+`GlideKeyGeometryTest`, +3). The recognizer, the claim gate and the inferred sequence all score
+against the same personal map. `begin:` now also logs `centers=`/`minPitch=`, so the geometry is
+never a blind spot again.
+
+Build+tests green (1,939 unit tests, 0 failures) with versionName 1.3.17 in the APK. Device
+confirmation pending: glide the same strokes - the log should now show `claimed:` instead of
+`notClaimed:`, with `distinctKeys` >= 2, and words should appear on the lift.
