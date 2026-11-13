@@ -2027,11 +2027,17 @@ class AdaptKeyboardView @JvmOverloads constructor(
         // D-516/G-09: a stroke starting on a letter key of the letters surface is a
         // potential glide - the pure controller records it. Nothing else changes until it
         // claims: the long-press stays armed, the tap stays pending, T-01 is untouched.
-        // D-534: logged, so a repro shows what the stroke started from.
+        // D-534: logged, so a repro shows what the stroke started from. D-542: the geometry facts
+        // ride along - a repeat of the distinctKeys=0 round names its broken link directly
+        // (empty centres vs pitch scale vs the passing test itself).
         if (glideEligible(key)) {
             glideTrail.clear()
-            glideController.begin(glideKeyGeometry(), rect.width(), x, y, SystemClock.uptimeMillis())
-            logGlide("begin: key=${key.id} x=${x.toInt()} y=${y.toInt()}")
+            val geometry = glideKeyGeometry()
+            glideController.begin(geometry, rect.width(), x, y, SystemClock.uptimeMillis())
+            logGlide(
+                "begin: key=${key.id} x=${x.toInt()} y=${y.toInt()} " +
+                    "centers=${geometry.centers.size} minPitch=${geometry.minKeyPitch.toInt()}"
+            )
         }
         // D-07: holding the backspace key starts an accelerating repeat delete.
         if (key.code == KeyCode.DELETE) {
@@ -3020,16 +3026,41 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * glide recognizer and stroke controller. Rebuilt per stroke begin - the map copy is a few
      * dozen entries. Only genuine letters count (the number row's digit keys and every
      * symbol-surface key are excluded; a glide never starts on, nor scores against, them).
+     *
+     * D-542 (the R3-calibration finding): the centres are the PERSONAL strike points - the
+     * geometric centre plus the learned T-03 mean offset, capped by the exact same bounds the tap
+     * resolution and the touch-zone visualisation use ([OffsetModel.cappedMeanOffset] with the
+     * per-direction offset factors). A real thumb strikes keys consistently OFF their geometric
+     * centres (the user's own ~50 px up-right bias made every point of a 415 px stroke miss the
+     * 46.75 px passing radius - `distinctKeys=0`, no claim, nothing typed), so the stroke must be
+     * scored against the keys where THIS user actually strikes them. Untrained keys resolve to a
+     * (0,0) offset and sit exactly where they always did; the pitch scale stays the geometric one
+     * (see [GlideKeyGeometry]'s override), so tolerances cannot shrink with the drift.
      */
     fun glideKeyGeometry(): GlideKeyGeometry {
-        val centers = LinkedHashMap<Char, GlidePoint>()
+        val geometric = LinkedHashMap<Char, GlidePoint>()
+        val adjusted = LinkedHashMap<Char, GlidePoint>()
+        val model = offsetModel
         for ((key, rect) in keyRects) {
             val c = key.char
-            if (key.code == KeyCode.CHAR && c != null && c.isLetter() && c !in centers) {
-                centers[c] = GlidePoint(rect.centerX().toDouble(), rect.centerY().toDouble())
+            if (key.code == KeyCode.CHAR && c != null && c.isLetter() && c !in geometric) {
+                val cx = rect.centerX().toDouble()
+                val cy = rect.centerY().toDouble()
+                geometric[c] = GlidePoint(cx, cy)
+                if (model != null) {
+                    val capXLeft = (rect.width() / 2f).toDouble() * (leftwardOffsetFactorFor(key) ?: model.maxOffsetFactor)
+                    val capYUp = (rect.height() / 2f).toDouble() * (upwardOffsetFactorFor(key) ?: model.maxOffsetFactor)
+                    val capYDown = (rect.height() / 2f).toDouble() * (downwardOffsetFactorFor(key) ?: model.maxOffsetFactor)
+                    val capXRight = (rect.width() / 2f).toDouble() * (rightwardOffsetFactorFor(key) ?: model.maxOffsetFactor)
+                    val (dx, dy) = model.cappedMeanOffset(key.id, capXLeft, capYUp, capYDown, capXRight)
+                    adjusted[c] = GlidePoint(cx + dx, cy + dy)
+                } else {
+                    adjusted[c] = GlidePoint(cx, cy)
+                }
             }
         }
-        return GlideKeyGeometry(centers)
+        // The pitch scale is taken from the geometric map: stable, unaffected by learned drift.
+        return GlideKeyGeometry(adjusted, GlideKeyGeometry(geometric).minKeyPitch)
     }
     
     /** D-516/G-09: whether a touch starting on [key] can become a glide stroke at all. */
