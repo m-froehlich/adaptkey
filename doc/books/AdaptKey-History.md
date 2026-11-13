@@ -25271,3 +25271,28 @@ never a blind spot again.
 Build+tests green (1,939 unit tests, 0 failures) with versionName 1.3.17 in the APK. Device
 confirmation pending: glide the same strokes - the log should now show `claimed:` instead of
 `notClaimed:`, with `distinctKeys` >= 2, and words should appear on the lift.
+
+## §556 - D-543: the settings screen live-syncs with the keyboard-side toggles, and the glide state rides on the stroke log lines (v1.3.17 -> v1.3.18, versionCode 617 -> 618)
+
+User observations on 1.3.17: the snap-in haptics work, and with the toggle kept in the settings
+screen's view the switch only updated after a FRESH settings open ("wenn die Settings noch offen
+bleiben, sich der Toggle nicht auf die Settings auswirkt") - the androidx preference fragment does
+not re-read SharedPreferences on resume, exactly the stale-render suspected last round. Plus:
+"irgendwie greift der Toggle mal auf das Glide live und mal nicht" - intermittent, not yet pinned.
+
+**D-543a - the settings screen live-sync.** The settings fragment registers a
+SharedPreferences listener (onResume/onPause - the documented androidx pattern, also sidestepping
+the framework's weak listener storage) that mirrors the keyboard-side `d516_glide_typing` writes
+into the rendered switch. The update only mirrors what the file already holds; the framework's
+re-write of the same value on setting isChecked is harmless.
+
+**D-543b - the glide state rides on the stroke log lines.** `begin:`/`notClaimed:`/`release:` now
+carry `glideOn=`/`fieldAllowed=` - so a "toggle greift mal nicht" session names the view state at
+stroke time directly: `glideOn=true` means the feature was live and the failure is downstream
+(geometry/claim - then centers/minPitch/distinctKeys in the same line), `glideOn=false` means the
+flag genuinely did not reach the view, and the extraRowToggle line next to it shows what the toggle
+actually did.
+
+Build+tests green with versionName 1.3.18 in the APK. Toggle-live confirmation pending: the user
+reproduces the intermittent case; the paired extraRowToggle + begin/notClaimed lines decide between
+"flag never reached the view" and "stroke-side failure with the feature live".

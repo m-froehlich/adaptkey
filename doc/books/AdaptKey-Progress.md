@@ -461,6 +461,12 @@ non-trivial changes).
   logs, stranded presses, the Dauer-Backspace wipe). Fixed with the one-line explicit return;
   D-535/D-537/D-538/D-539 stay as inert safety nets. Version note: the diag build used 613, the
   real train skipped to 614 (versionCode keeps counting). Spec §4's D-540 addendum.
+- **D-543 - IMPLEMENTED (§556, v1.3.18/618), toggle-live confirmation pending: the settings screen
+  live-syncs with the keyboard-side toggles (SharedPreferences listener in the settings fragment,
+  onResume/onPause), and the stroke log lines carry the view's glide state (`glideOn=`/`fieldAllowed=`)
+  for the reported intermittent "greift mal nicht" - the paired extraRowToggle + begin/notClaimed
+  lines will name the failing hop. Spec §4's D-543 addendum.
+
 - **D-542 - IMPLEMENTED (§555, v1.3.17/617), AWAITING DEVICE CONFIRMATION: the R3 calibration
   finding - the glide geometry is now PERSONAL.** The extended toggle test proved D-541a works
   (pref/settings/view all flip correctly) and exposed the real glide gate: a genuine 415 px stroke

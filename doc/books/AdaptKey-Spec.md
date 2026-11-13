@@ -608,6 +608,13 @@ The R3 device finding behind this: a genuine 415 px stroke produced `distinctKey
 user's personal strike bias (~50 px up-right) exceeded the 46.75 px passing radius - the claim gate
 never opened and gliding appeared dead even though the feature was on.
 
+**D-543 addendum - the settings screen live-syncs with the keyboard-side toggles.** The settings
+fragment registers a SharedPreferences listener (onResume/onPause) mirroring keyboard-side
+`d516_glide_typing` writes into the rendered switch - an androidx preference fragment does not
+re-read SharedPreferences on resume, so a screen kept open across a keyboard-side toggle rendered a
+stale switch. The stroke log lines (`begin:`/`notClaimed:`/`release:`) additionally carry
+`glideOn=`/`fieldAllowed=`, naming the view state at stroke time for any "greift mal nicht" repro.
+
 ### G-01 - Language Switch
 Swiping left or right on the space bar cycles the active input language through English (always first, the
 one language always available) plus every currently installed language pack (§9), in a fixed declaration
