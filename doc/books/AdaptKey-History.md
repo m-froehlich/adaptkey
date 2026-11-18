@@ -25296,3 +25296,59 @@ actually did.
 Build+tests green with versionName 1.3.18 in the APK. Toggle-live confirmation pending: the user
 reproduces the intermittent case; the paired extraRowToggle + begin/notClaimed lines decide between
 "flag never reached the view" and "stroke-side failure with the feature live".
+
+## §557 - D-544: the dedicated apostrophe key's character becomes an ordinary word character - never a commit character, autocorrected, learned whole (v1.3.18 -> v1.3.19, versionCode 618 -> 619)
+
+User request (2026-11-18): "Seit der Apostroph auf einer eigenen Taste liegt ist die Notwendigkeit
+entstanden, dass er wie eine normale Taste behandelt werden muss. ER darf also keinesfalls ein
+Commit-Zeichen sein und er muss genauso bei der Autokorrektur berücksichtigt werden wie die normalen
+Buchstaben. Zudem muss er so als Teil des Wortes betrachtet werden, dass Wörter wie "ist's" oder
+"sieht's" als Ganzes gelernt werden können."
+
+**D-544 - the word-character definition widens.** Until now `handleKey`'s token-extension decision was
+`raw.isLetter() && surface == LETTERS` (plus D-40's mid-token digit rule) - so tapping `'` on the
+letters surface fell into `handlePunctuationDelimiter` and committed whatever was composing, exactly
+the behaviour the request forbids. The definition of a word character now lives in one place -
+`WordExtent` (gesture), which already owned the D-62 reclaim run's own "A word character is a letter"
+wording - as `isWordChar(c) = c.isLetter() || c == APOSTROPHE` (plain U+0027, the character the key
+actually types; the typographic variants are carried by no dictionary and can never enter a token
+through the letters surface's composing path). Five consumers read it:
+
+- **handleKey (never a commit character).** `extendsToken` uses `isWordChar(raw)` under the same
+  letters-surface guard a letter has - a plain tap composes into the token, a leading one too (the
+  elision shape "'s ist" composes as one fragment). The D-536 glide-commit trigger still treats the
+  key as a word boundary first (a pending stroke word commits, then the apostrophe starts composing),
+  and D-40's mid-token digit rule is untouched. The uppercasing inside the branch stays letter-only
+  (`isWordLetter`, an apostrophe has no case).
+- **Autocorrection/suggestions (considered like the normal letters).** No provider-side change was
+  needed - the search machinery (`obviousCandidates`, `fuzzyNeighbours`, `bestCorrection`,
+  `CorrectionConfidence`, `Umlaut.fold`) is character-agnostic and never filtered on letters; with the
+  apostrophe now inside the composing token it simply participates. `correctionCandidates` searches
+  the token's own first-character bucket in both the bundled and the learned table, so a learned
+  "ist's" is reachable from "ists" (the apostrophe forgotten, one insertion = INDEL_COST), from
+  "ist'x" (one substitution) and as a live completion while "ist'" is still composing.
+- **Learning (whole words).** `learnWord`/`learnWordStrong`'s `!word.all { it.isLetter() }` gates are
+  replaced by one shared `isLearnableWord` helper reading `WordExtent.isWordChar` - letters plus the
+  apostrophe, plus a new any-letter requirement so a bare "''" run is never a word. None of
+  "ist's"/"geht's"/"sieht's" is in any bundled dictionary (verified against dict_de.tsv and the
+  bundled English dict), so learning is the only path that makes them known - exactly what the
+  request asks for.
+- **Word boundaries agree (reclaim/absorb).** `WordExtent.reclaim`'s runs now keep "ist's" whole when
+  the caret is parked inside it (before: the run stopped at the apostrophe, reclaiming only "s"),
+  `deleteComposingChar`'s D-357 exposed-character check absorbs an adjacent word across the
+  apostrophe, and `isEditingMidWord` (D-26 composing colour) counts it as mid-word.
+- **Deliberately unchanged:** an apostrophe via long-press popup (the `2` key's D-382/D-417 extra) or
+  the symbol page still commits as a delimiter - that is the genuine quote use, not word formation;
+  D-378's opener/closer exclusion (neither opener nor closer) stands; `SentenceBoundary`'s hyphen
+  segment and the A-05/compound machinery are untouched (an apostrophe word never resolves as a
+  split half or a fusion fragment, which is correct).
+
+Tests: `WordExtentTest` +4 (isWordChar table, caret between "ist'" and "s", the "'s" fragment gluing
+to "sieht", the leading-apostrophe run), `DictionarySuggestionProviderTest` +3 (completion while
+"ist'" composes, correction from "ist'x", correction from "ists"). Full `:app:testDebugUnitTest`
+suite green.
+
+Build+tests green with versionName 1.3.19 in the APK. Device confirmation pending: type "ist's" -
+no commit on the apostrophe, Space commits the whole form, a second typing of the whole form
+promotes it (W-02 threshold), and the suggestion bar shows the completion while "ist'" composes.
+

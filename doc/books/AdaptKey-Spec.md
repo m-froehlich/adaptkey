@@ -302,6 +302,23 @@ switch ("Apostrophe key", `d515_apostrophe_key`, default **off**) is on - a Germ
 its canonical length unless the user opts in, since the changed home row is exactly what a German-speaking
 community would take against the reform. The switch is Layout-category-scoped and rides in backups.
 
+**D-544 addendum - the apostrophe is an ordinary word character.** Since the key has a home of its own
+(D-512/D-524 above), its character is treated exactly like a letter everywhere a word's extent matters -
+it is **never a commit character**: a plain tap on the letters surface composes into the current token
+(a leading one too, so the elision shape "'s ist" composes as one fragment) instead of finalising it the
+way punctuation does. It participates in autocorrection and suggestions as a plain character of the token
+(the same edit-distance budget, cost weights and candidate search as any letter - a learned "ist's" is
+reached from "ists" (apostrophe forgotten) and from "ist'x" (slipped letter) alike, and typing "ist'"
+still completes to the whole form), and the learning gates accept it, so contracted forms are learned and
+counted as whole words ("ist's", "geht's", "sieht's" - none of which any bundled dictionary carries, so
+learning is the only way they become known). Word-boundary semantics agree: a caret reclaim and the
+backspace-absorb check keep "ist's" in one piece (WordExtent's word-character run = letters + the plain
+apostrophe, the shared definition every consumer reads), and the mid-word composing-colour check counts
+it too. Deliberately unchanged: an apostrophe reached through a long-press popup (e.g. the `2` key's
+D-382/D-417 extra) or the symbol page still commits as a delimiter - that is the genuine quote use, not
+word formation; and D-378's opener/closer exclusion (the apostrophe is neither) stands. A bare
+apostrophe-only token is never learned (every learned word must contain at least one letter).
+
 **D-519..D-527 addendum - the currency key on the special-characters page, the ampersand and caret on the
 letters page, the apostrophe key's corner, and the confirmed wide-popup arrangement.** The mechanisms from
 the layout rounds (the D-520 attempt that first put the currency on the d key was reverted by D-523 - the

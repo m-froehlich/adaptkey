@@ -473,6 +473,15 @@ non-trivial changes).
   logs, stranded presses, the Dauer-Backspace wipe). Fixed with the one-line explicit return;
   D-535/D-537/D-538/D-539 stay as inert safety nets. Version note: the diag build used 613, the
   real train skipped to 614 (versionCode keeps counting). Spec §4's D-540 addendum.
+- **D-544 - IMPLEMENTED (§557, v1.3.19/619), DEVICE CONFIRMATION PENDING (2026-11-18): the
+  dedicated apostrophe key's character is an ordinary word character.** Never a commit character
+  (composes into the token, a leading one too), participates in autocorrection/suggestions like any
+  letter, and the learning gates accept it - "ist's"/"sieht's" are learned as whole words (none is
+  in any bundled dictionary). The word-character definition lives in `WordExtent.isWordChar`
+  (letters + the plain apostrophe) and is read by handleKey, learnWord/learnWordStrong,
+  WordExtent.reclaim, deleteComposingChar and isEditingMidWord, so the five can never drift apart.
+  Long-press/symbol-page apostrophes stay delimiters (the genuine quote use). Spec §2's D-544
+  addendum.
 - **D-543 - IMPLEMENTED (§556, v1.3.18/618) - DEVICE-CONFIRMED (2026-11-13: "das können wir jetzt
   so abschließen. Das hat funktioniert"): the settings screen live-syncs with the keyboard-side
   toggles (SharedPreferences listener in the settings fragment, onResume/onPause), and the stroke
