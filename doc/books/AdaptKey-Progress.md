@@ -473,7 +473,8 @@ non-trivial changes).
   logs, stranded presses, the Dauer-Backspace wipe). Fixed with the one-line explicit return;
   D-535/D-537/D-538/D-539 stay as inert safety nets. Version note: the diag build used 613, the
   real train skipped to 614 (versionCode keeps counting). Spec §4's D-540 addendum.
-- **D-544 - IMPLEMENTED (§557, v1.3.19/619), DEVICE CONFIRMATION PENDING (2026-11-18): the
+- **D-544 - IMPLEMENTED (§557, v1.3.19/619) - DEVICE-CONFIRMED (2026-11-18: "Gerätebestätigt.
+  Das hat geklappt."): the
   dedicated apostrophe key's character is an ordinary word character.** Never a commit character
   (composes into the token, a leading one too), participates in autocorrection/suggestions like any
   letter, and the learning gates accept it - "ist's"/"sieht's" are learned as whole words (none is

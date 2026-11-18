@@ -25348,7 +25348,8 @@ to "sieht", the leading-apostrophe run), `DictionarySuggestionProviderTest` +3 (
 "ist'" composes, correction from "ist'x", correction from "ists"). Full `:app:testDebugUnitTest`
 suite green.
 
-Build+tests green with versionName 1.3.19 in the APK. Device confirmation pending: type "ist's" -
-no commit on the apostrophe, Space commits the whole form, a second typing of the whole form
-promotes it (W-02 threshold), and the suggestion bar shows the completion while "ist'" composes.
+Build+tests green with versionName 1.3.19 in the APK. DEVICE-CONFIRMED (2026-11-18: "Gerätebestätigt.
+Das hat geklappt."): the apostrophe composes instead of committing, Space commits the whole form,
+the contracted form is learned whole, and the suggestion bar shows the completion while "ist'"
+composes - the round is closed as implemented.
 
