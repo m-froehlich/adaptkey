@@ -58,8 +58,13 @@ android {
         // D-515: the apostrophe-key switch for the non-English layouts (default off - the English-style
         // QWERTY arrangement always shows the key; QWERTZ/AZERTY keep their canonical middle row unless
         // the user opts in).
-        versionCode = 618
-        versionName = "1.3.18"
+        // D-544: the dedicated apostrophe key's character becomes an ordinary word character - never a
+        // commit character (it composes into the token, a leading one too), considered by autocorrect
+        // like the normal letters, and learnWord/learnWordStrong accept it, so "ist's"/"sieht's" are
+        // learned whole; the shared WordExtent.isWordChar definition keeps the composing/reclaim/
+        // learning consumers in lockstep.
+        versionCode = 619
+        versionName = "1.3.19"
         // The ONNX Runtime native libs (tier-3 mini-LLM) ship per ABI; keep only the ones real phones
         // use (arm64 + 32-bit arm), dropping the emulator-only x86/x86_64 libs (~43 MB). Device testing
         // of tier 3 therefore needs an arm device, not an x86_64 emulator.
