@@ -4,6 +4,8 @@
 package de.froehlichmedia.adaptkey.gesture
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 /**
@@ -51,5 +53,44 @@ class WordExtentTest {
         val reclaim = WordExtent.reclaim("", "")
         assertEquals("", reclaim.before)
         assertEquals("", reclaim.after)
+    }
+    
+    @Test
+    fun `D-544 the apostrophe is a word character`() {
+        assertTrue(WordExtent.isWordChar('\''))
+        assertTrue(WordExtent.isWordChar('a'))
+        assertTrue(WordExtent.isWordChar('Ä'))
+        // Real delimiters stay delimiters.
+        assertFalse(WordExtent.isWordChar(' '))
+        assertFalse(WordExtent.isWordChar('.'))
+        assertFalse(WordExtent.isWordChar('-'))
+        assertFalse(WordExtent.isWordChar('"'))
+    }
+    
+    @Test
+    fun `D-544 a caret between the apostrophe and the s reclaims the whole word`() {
+        // "ist's" committed, caret parked between "ist'" and "s": the reclaim run must not stop at the
+        // apostrophe as if it were a delimiter - the whole contracted form is one word.
+        val reclaim = WordExtent.reclaim("ist'", "s")
+        assertEquals("ist'", reclaim.before)
+        assertEquals("s", reclaim.after)
+    }
+    
+    @Test
+    fun `D-544 a trailing apostrophe fragment glues onto the preceding word`() {
+        // The "sieht's" shape typed right-to-left of the caret: the "'s" fragment belongs to "sieht",
+        // not to whatever delimiter precedes it.
+        val reclaim = WordExtent.reclaim("sieht", "'s")
+        assertEquals("sieht", reclaim.before)
+        assertEquals("'s", reclaim.after)
+    }
+    
+    @Test
+    fun `D-544 a leading apostrophe opens the run it belongs to`() {
+        // The elision shape ("'s ist"): the leading apostrophe is part of the following run, while the
+        // real delimiter before it still ends the reclaim.
+        val reclaim = WordExtent.reclaim("Text. ", "'s ist")
+        assertEquals("", reclaim.before)
+        assertEquals("'s", reclaim.after)
     }
 }

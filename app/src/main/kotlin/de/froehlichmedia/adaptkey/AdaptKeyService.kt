@@ -3394,7 +3394,17 @@ class AdaptKeyService : InputMethodService() {
                     // D-40: a digit typed between letters (composing non-empty) is almost certainly an unwanted
                     // key, so it is kept in the token and corrected like any other typo ("W8rt" -> "Wort");
                     // a leading or standalone digit keeps its normal delimiter behaviour.
-                    val extendsToken = isWordLetter || (raw.isDigit() && composing.isNotEmpty())
+                    // D-544: since the apostrophe has its own letters-surface key (D-512 §2.2/D-515), its
+                    // character is an ordinary word character and must never be a commit character: exactly
+                    // like a letter it composes into the token (a leading one too - "'s ist" composes as one
+                    // fragment), participates in autocorrect/suggestions as a plain character of that token,
+                    // and is learned as part of the whole word ("ist's", "sieht's"). The same surface guard
+                    // as a letter applies, so an apostrophe reached through a long-press popup or the symbol
+                    // page (a genuine quote use) keeps its delimiter behaviour. isWordLetter itself stays
+                    // named apart only because the uppercasing below must stay letter-only (an apostrophe
+                    // has no case).
+                    val isWordChar = WordExtent.isWordChar(raw) && surface == InputSurface.LETTERS
+                    val extendsToken = isWordChar || (raw.isDigit() && composing.isNotEmpty())
                     if (extendsToken) {
                         // D-87: a reclaim's own deleteSurroundingText() must not be allowed to reach the app as
                         // a standalone edit - batched together with the setComposingText/setSelection that
@@ -5081,9 +5091,11 @@ class AdaptKeyService : InputMethodService() {
      * hand-rolling a character-by-character merge (and its own [composingFlags]/[composingTaps]
      * bookkeeping); [reclaimWordAtCaret] already correctly defers to [applyShiftAfterDelete]'s own
      * `shiftArmedByDelete` result from the deletion just above (D-335), so Shift state is unaffected by
-     * going through it here. A non-letter newly exposed (the ordinary case - the deleted character merely
-     * uncovers a genuine word boundary, e.g. another space or the start of the field) keeps the original,
-     * simpler behaviour unchanged.
+     * going through it here. A non-word-character newly exposed (the ordinary case - the deleted character
+     * merely uncovers a genuine word boundary, e.g. another space or the start of the field) keeps the
+     * original, simpler behaviour unchanged; a word character is a letter or, since D-544, the plain
+     * apostrophe - backspacing up against "ist'" while composing "s" must absorb the whole "ist's", not
+     * stop at the apostrophe as if it were a delimiter.
      * 
      * @param duringRepeat D-138: true when called from [handleBackspaceRepeat] - passed through to
      *        [refreshSuggestions] to skip its more expensive per-keystroke lookups for this tick (see there)
@@ -5100,7 +5112,7 @@ class AdaptKeyService : InputMethodService() {
                     // exposed immediately before composing, not the deleted character itself, that decides
                     // whether composing must now absorb an adjacent word (see this function's own KDoc).
                     val exposedChar = ic.getTextBeforeCursor(1, 0)?.singleOrNull()
-                    if (exposedChar != null && exposedChar.isLetter()) {
+                    if (exposedChar != null && WordExtent.isWordChar(exposedChar)) {
                         ic.finishComposingText()
                         clearComposing()
                         reclaimWordAtCaret()
@@ -6881,16 +6893,17 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * D-26: whether the cursor sits inside an existing word rather than at its end - a letter immediately
-     * following the cursor means the current edit is correcting mid-word, so the composing fragment must
-     * not be coloured (C-04/S-05). D-213: the highlight/split-colour decision itself (formerly
+     * D-26: whether the cursor sits inside an existing word rather than at its end - a word character
+     * immediately following the cursor means the current edit is correcting mid-word, so the composing
+     * fragment must not be coloured (C-04/S-05). D-213: the highlight/split-colour decision itself (formerly
      * `shouldHighlightComposing()`/`splitPreview()`) now lives inline in [composingPreviewRunnable], since
      * both need this InputConnection-dependent check done on the main thread before the rest of the
-     * decision can move to [composingPreviewExecutor].
+     * decision can move to [composingPreviewExecutor]. D-544: the apostrophe counts as a word character
+     * here too - a caret parked between "ist'" and "s" of a committed "ist's" is genuinely mid-word.
      */
     private fun isEditingMidWord(ic: InputConnection): Boolean {
         val after = ic.getTextAfterCursor(1, 0)
-        return !after.isNullOrEmpty() && after[0].isLetter()
+        return !after.isNullOrEmpty() && WordExtent.isWordChar(after[0])
     }
     
     /**
@@ -7902,11 +7915,33 @@ class AdaptKeyService : InputMethodService() {
         return word.isNotEmpty() && word.drop(1) == bundledCasing.drop(1)
     }
     
+    /**
+     * D-544: the shared learnable-word gate behind [learnWord]/[learnWordStrong] - a word token is
+     * learnable when it is long enough ([MIN_LEARN_LENGTH]), consists only of word characters
+     * ([WordExtent.isWordChar]: letters plus, since the dedicated apostrophe key, the plain apostrophe)
+     * and contains at least one real letter (so a bare apostrophe run like "''" is never a word; the
+     * any-letter requirement is what makes "ist's"/"sieht's" learnable as whole words while keeping
+     * punctuation-only fragments out). Every character check reads [WordExtent.isWordChar] rather than
+     * a local predicate, so this gate can never drift apart from the composing/reclaim semantics that
+     * decide what a token may contain in the first place. Callers keep their own null guard ahead of
+     * this (see them), mirroring the original inline checks' exact shape.
+     *
+     * @param word the word a commit (or a correction/undo-relearn) wants to learn
+     * @return true when the word may enter the learned dictionary
+     */
+    private fun isLearnableWord(word: String): Boolean {
+        return word.length >= MIN_LEARN_LENGTH &&
+            word.all { WordExtent.isWordChar(it) } &&
+            word.any { it.isLetter() }
+    }
+    
     private fun learnWord(word: String?): LearnRecord {
-        // Adaptive learning: only learn pure-letter tokens of at least MIN_LEARN_LENGTH (D-247) - updates
-        // the n-gram context (tier 1). A single letter is never a real word; the most common source is a
-        // fragment left over from an unintended Enter mid-word, not anything meant to be learned.
-        if (word.isNullOrEmpty() || word.length < MIN_LEARN_LENGTH || !word.all { it.isLetter() }) {
+        // Adaptive learning: only learn pure word-character tokens of at least MIN_LEARN_LENGTH (D-247;
+        // D-544 widened the character set from letters-only to letters + the apostrophe key's own
+        // character, so a contracted form is learned whole) - updates the n-gram context (tier 1). A
+        // single letter is never a real word; the most common source is a fragment left over from an
+        // unintended Enter mid-word, not anything meant to be learned.
+        if (word.isNullOrEmpty() || !isLearnableWord(word)) {
             return LearnRecord(word ?: "", previousWord, previousPreviousWord, LearnOutcome.SKIPPED)
         }
         // D-37: an already-*learned* word is reinforced immediately; a genuinely new word is only counted
@@ -8251,9 +8286,7 @@ class AdaptKeyService : InputMethodService() {
      *         the pop assumes the record `rememberForBackspaceUnlearn` just added actually exists.
      */
     private fun learnWordStrong(word: String?): Boolean {
-        if (word.isNullOrEmpty() || word.length < MIN_LEARN_LENGTH || !word.all { it.isLetter() } ||
-            dictionaryStore.isBlacklisted(word)
-        ) {
+        if (word.isNullOrEmpty() || !isLearnableWord(word) || dictionaryStore.isBlacklisted(word)) {
             return false
         }
         val bundledCasing = dictionaryStore.bundledCasingOf(word)

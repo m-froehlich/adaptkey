@@ -1374,4 +1374,36 @@ class DictionarySuggestionProviderTest {
         // "der " is untouched.
         assertEquals(listOf("Stadt"), provider.nextWordSuggestions("der", null).map { it.word })
     }
+    
+    @Test
+    fun `D-544 a learned apostrophe word is completed while the apostrophe itself is still composing`() {
+        // The core D-544 guarantee on the suggestion side: "ist'" no longer commits the word, so the
+        // ordinary prefix scan must see the whole learned contracted form through the composing
+        // apostrophe - exactly like any letter prefix.
+        store.putWord(WordEntry("ist's", 500L))
+        
+        val words = provider.suggestionsFor("ist'", null).map { it.word }
+        assertTrue(words.contains("ist's"))
+    }
+    
+    @Test
+    fun `D-544 a typo on the letter after the apostrophe still corrects to the learned word`() {
+        // The apostrophe must be considered by autocorrection like the normal letters: a token
+        // containing it runs the same edit-distance search, and the learned whole word ("ist's") is
+        // reachable within the ordinary cost budget (the x/s substitution is a plain SUB_COST edit).
+        store.putWord(WordEntry("ist's", 500L))
+        
+        val words = provider.suggestionsFor("ist'x", null).map { it.word }
+        assertTrue(words.contains("ist's"))
+    }
+    
+    @Test
+    fun `D-544 a missing apostrophe is corrected like any other single-character slip`() {
+        // "ists" (the apostrophe simply forgotten) is one insertion away from the learned "ist's" -
+        // the same INDEL_COST budget any letter typo gets, no penalty for the non-letter involved.
+        store.putWord(WordEntry("ist's", 500L))
+        
+        val words = provider.suggestionsFor("ists", null).map { it.word }
+        assertTrue(words.contains("ist's"))
+    }
 }
