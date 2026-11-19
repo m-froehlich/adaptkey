@@ -166,7 +166,7 @@
     <string name="c03_summary">Anzahl gleichzeitig angebotener Vorschläge (3–10).</string>
 
     <string name="c09_title">Nummernreihe</string>
-    <string name="c09_summary">Dauerhafte Ziffernreihe oberhalb der Buchstaben (L-06).</string>
+    <string name="c09_summary">Dauerhafte Ziffernreihe oberhalb der Buchstaben (L-06). Bei ausgeschalteter Reihe holt ein Swipe-Up für die Extra-Zeile die Ziffern vorübergehend zurück (D-554).</string>
     <string name="d32_title">Long-Press-Verzögerung</string>
     <string name="d32_summary">Wie lange eine Taste gehalten werden muss, bis die Alternativen erscheinen, in ms (D-32).</string>
     <string name="double_tap_delay_title">Doppeltipp-Verzögerung</string>

@@ -172,7 +172,7 @@
     <string name="c03_summary">Number of suggestions offered at once (3–10).</string>
 
     <string name="c09_title">Number row</string>
-    <string name="c09_summary">Persistent digit row above the letters (L-06).</string>
+    <string name="c09_summary">Persistent digit row above the letters (L-06). When off, a swipe up for the extra row temporarily brings the digits back (D-554).</string>
     <string name="d32_title">Long-press delay</string>
     <string name="d32_summary">How long to hold a key before its alternatives pop up, in ms (D-32).</string>
     <string name="double_tap_delay_title">Double-tap delay</string>

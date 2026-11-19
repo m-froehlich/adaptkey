@@ -404,6 +404,10 @@ a number row at all, and symbol page 2 (§15) always shows a digit row regardles
 fallback when the main row is off (that page deliberately keeps the PRE-D-511 symbols - nobody reaches it
 to long-press things).
 
+D-554: C-09-off users get the main letters page's row back by gesture - a §14 upward swipe on the letters
+surface temporarily reveals it (an ordinary C-09-on row in every respect; cleared again by §14/G-03's
+close paths and the fresh-field reset, never persisted, never backed up).
+
 ### L-07 - Calculator Layer
 A dedicated calculator layout is reachable from the symbol pages (§15): a 4×4 digit/operator grid with a
 persistent right-hand column (backspace, space, currency glyph, `ABC`, Enter), plus `sin`/`cos`/`tan`/`log`
@@ -719,7 +723,9 @@ Swiping left on the backspace key deletes the entire previous word rather than a
 ### G-03 - Dismiss Keyboard
 Swiping downward dismisses the keyboard - recognised on the keyboard body, the suggestion bar, and the
 swipe-up extra row (§14) alike. When the extra row is open, a downward swipe closes the row first; only a
-second downward swipe (with the row already closed) dismisses the keyboard. D-488: a downward drag that
+second downward swipe (with the row already closed) dismisses the keyboard. The swipe-open number row
+(L-06's D-554 reveal) is part of that first step - one downward swipe clears row and revealed digits
+together, and the second swipe dismisses exactly as before. D-488: a downward drag that
 *starts on the D-488 blacklist confirmation chip* is that chip's reject gesture, never a G-03 dismiss -
 the collision contract is a stated rule, not an implementation accident.
 
@@ -2725,6 +2731,18 @@ gone; the panel itself no longer offers a way back on its own. The row is never 
 existing rule, unchanged) - it stays open exactly as it was, so the return button stays reachable the whole
 time the panel is shown.
 
+**D-554: the number row rides the letters surface's swipe-up.** When C-09 hides the persistent number row
+(L-06), an upward swipe started on the letters surface reveals it together with the row - the pair opens
+with one gesture, and every extra-row close (the downward-swipe chain above, and the fresh-field reset that
+never carries an open row into a new field) closes the revealed digits with it: the reveal never outlives
+the row it opened alongside, so the row-first downward-swipe order above stays unambiguous. The reveal is
+gesture-only - the row's automatic openings (the credential/URL field reveals and the emoji panel's forced
+row) never grow the keyboard by a row on their own - and a swipe up from a symbol page opens only the row
+(those pages carry their digit rows anyway; once revealed, the letters surface's row survives an emoji
+round-trip, since only a close clears it). The revealed row is transient state, not a settings change: it
+is never persisted and never exported in a backup, and it is in every other respect an ordinary C-09-on row
+(same keys via L-06's shared builder, same D-55 spacing, same §43 row-crossing caps).
+
 ---
 
 ## 15. Symbol Layer & Calculator
@@ -2839,7 +2857,7 @@ Unconditionally excludes any content typed into a password field, regardless of 
 | C-05 | Word blacklist | List + categories (bundled/user), editor defaults to user-only view | Seeded with a small bundled cross-language-confusables set only (D-473-followup: the archaic-spelling set is now a dictionary removal, not a blacklist) |
 | C-06 | LLM activation threshold, or "disabled" (D-297: folds the former separate tier-3-enabled toggle into this one list) | N-gram confidence value, or off | medium |
 | C-07 | Shift grace window vs. surprising field capitalisation | 0-500 ms | 300 ms |
-| C-09 | Persistent number row (with shifted-symbol long-press) | On/Off | On |
+| C-09 | Persistent number row (with shifted-symbol long-press; when off, §14's swipe-up reveals it transiently, D-554) | On/Off | On |
 | C-10 | No sentence start after a comma-terminated line (§6, e-mail salutation) | On/Off | On |
 | C-11 | Long-press popup delay | Slider | see platform default |
 | C-12 | Key sound | On/Off | Off |
@@ -3746,6 +3764,9 @@ instruction** - when shown, it participates in `RowGeometry`'s row list like the
 the top letter row gets the same generic upward cap toward it that any other row boundary gets, and the
 digit row itself gets the same generic downward cap toward the top letter row; when the number row is
 hidden (C-09 off), the top letter row simply has no row above it and gets no upward cap, exactly as before.
+D-554's swipe-open reveal counts as "shown" for this rule: both `RowGeometry` call sites read the
+effective flag (C-09 setting OR the transient reveal), so the revealed row gets the same caps a
+permanently-shown row gets, and a C-09-off letters surface without the reveal keeps its no-cap state.
 
 **Deliberately not modelled**: the boundary between the third letter row and the space bar below it - that
 boundary already has its own tighter, device-confirmed 0.25 override (D-133), checked first, so

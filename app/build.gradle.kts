@@ -77,8 +77,10 @@ android {
         // D-548: pinned ambiguous continuations expand into their casing pair at their own leading slot
         // (superseding v1.2.85's single-casing exemption) - the pinned capital reading no longer sits in
         // front unreplaced while the pair lands later and duplicates it.
-        versionCode = 623
-        versionName = "1.3.23"
+        // D-554: when C-09 hides the number row, the §48 swipe-up on the letters surface reveals it
+        // together with the extra row; every extra-row close clears the transient reveal with it.
+        versionCode = 624
+        versionName = "1.3.24"
         // The ONNX Runtime native libs (tier-3 mini-LLM) ship per ABI; keep only the ones real phones
         // use (arm64 + 32-bit arm), dropping the emulator-only x86/x86_64 libs (~43 MB). Device testing
         // of tier 3 therefore needs an arm device, not an x86_64 emulator.

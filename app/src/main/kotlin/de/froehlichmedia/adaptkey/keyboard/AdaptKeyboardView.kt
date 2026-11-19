@@ -374,6 +374,34 @@ class AdaptKeyboardView @JvmOverloads constructor(
             rebuildRows()
         }
     
+    /**
+     * D-554 (plan `swipe-up-number-row.md`): whether the swipe-open number-row reveal currently rides
+     * along with the open extra row - the C-09-off user's one-swipe path back to digits. Set by the
+     * service from the §48 upward swipe itself, and only when the swipe starts on the letters surface
+     * (on a symbol page the digits are already there, so the flag would be a no-op anyway), and cleared
+     * by every extra-row close path (G-03's swipe-down chain and the fresh-field reset alike): the
+     * invariant "revealed ⇒ extra row open" keeps a stray reveal from ever outliving its row, which
+     * would turn the next downward swipe into a keyboard dismissal from under an open number row.
+     * Deliberately transient - never persisted, never in the backup: it is the gesture's own state,
+     * not a second, shadow copy of C-09.
+     */
+    var numberRowRevealed: Boolean = false
+        set(value) {
+            field = value
+            rebuildRows()
+        }
+    
+    /**
+     * D-554: what every letters-surface row consumer reads - the C-09 setting OR the swipe-open reveal.
+     * The revealed row is, by construction, indistinguishable from a C-09-on one: same keys (the shared
+     * L-06 number-row builder), same D-55 spacing ([extraSpacingPx] keys off the built rows, not the
+     * flag), same D-397 row caps (the [RowGeometry] call sites read this too), same T-03 geometry to
+     * learn digit strikes against. [InputSurface.SYMBOLS] ignores C-09 either way (its pages always
+     * carry their digit rows), so only [rowsFor]'s letters branch consults this.
+     */
+    private val effectiveShowNumberRow: Boolean
+        get() = showNumberRow || numberRowRevealed
+    
     /** Which layout is drawn (L-03): the letter view or the numeric/symbol layer. */
     var surface: InputSurface = InputSurface.LETTERS
         set(value) {
@@ -595,7 +623,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
      */
     private var systemHapticLevel: Int = HapticTier.KEY_PRESS.minSystemLevel
     
-    private var rows = KeyboardLayout.rows(proportions, showNumberRow, letterHints)
+    private var rows = KeyboardLayout.rows(proportions, effectiveShowNumberRow, letterHints)
     private val keyRects = ArrayList<Pair<Key, RectF>>()
     private var pressedKey: Key? = null
     // D-108: the pressed key's own bounds, so a small in-key smear does not cancel a pending long-press.
@@ -1069,14 +1097,14 @@ class AdaptKeyboardView @JvmOverloads constructor(
             // D-515: the apostrophe key always shows on the English-style QWERTY arrangement; on QWERTZ/
             // AZERTY only when the user's switch is on.
             InputSurface.LETTERS -> when (layoutKind) {
-                LayoutKind.GREEK -> GreekLayout.rows(proportions, showNumberRow, urlMode, emailMode, systemLocale)
-                LayoutKind.SERBIAN_CYRILLIC -> SerbianLayout.rows(proportions, showNumberRow, urlMode, emailMode, systemLocale)
-                LayoutKind.RUSSIAN_CYRILLIC -> JcukenLayout.rows(proportions, showNumberRow, urlMode, emailMode, systemLocale, ukrainian = false)
-                LayoutKind.UKRAINIAN_CYRILLIC -> JcukenLayout.rows(proportions, showNumberRow, urlMode, emailMode, systemLocale, ukrainian = true)
-                LayoutKind.LATIN_AZERTY -> AzertyLayout.rows(proportions, showNumberRow, letterHints, urlMode, emailMode, systemLocale, showApostropheKey = showApostropheKeyOnNonEnglishLayouts)
-                LayoutKind.LATIN_AZERBAIJANI -> AzerbaijaniLayout.rows(proportions, showNumberRow, letterHints, urlMode, emailMode, systemLocale)
-                LayoutKind.LATIN_QWERTZ -> KeyboardLayout.rows(proportions, showNumberRow, letterHints, qwerty = false, urlMode = urlMode, emailMode = emailMode, locale = systemLocale, showApostropheKey = showApostropheKeyOnNonEnglishLayouts)
-                LayoutKind.LATIN_QWERTY -> KeyboardLayout.rows(proportions, showNumberRow, letterHints, qwerty = true, urlMode = urlMode, emailMode = emailMode, locale = systemLocale, showApostropheKey = true)
+                LayoutKind.GREEK -> GreekLayout.rows(proportions, effectiveShowNumberRow, urlMode, emailMode, systemLocale)
+                LayoutKind.SERBIAN_CYRILLIC -> SerbianLayout.rows(proportions, effectiveShowNumberRow, urlMode, emailMode, systemLocale)
+                LayoutKind.RUSSIAN_CYRILLIC -> JcukenLayout.rows(proportions, effectiveShowNumberRow, urlMode, emailMode, systemLocale, ukrainian = false)
+                LayoutKind.UKRAINIAN_CYRILLIC -> JcukenLayout.rows(proportions, effectiveShowNumberRow, urlMode, emailMode, systemLocale, ukrainian = true)
+                LayoutKind.LATIN_AZERTY -> AzertyLayout.rows(proportions, effectiveShowNumberRow, letterHints, urlMode, emailMode, systemLocale, showApostropheKey = showApostropheKeyOnNonEnglishLayouts)
+                LayoutKind.LATIN_AZERBAIJANI -> AzerbaijaniLayout.rows(proportions, effectiveShowNumberRow, letterHints, urlMode, emailMode, systemLocale)
+                LayoutKind.LATIN_QWERTZ -> KeyboardLayout.rows(proportions, effectiveShowNumberRow, letterHints, qwerty = false, urlMode = urlMode, emailMode = emailMode, locale = systemLocale, showApostropheKey = showApostropheKeyOnNonEnglishLayouts)
+                LayoutKind.LATIN_QWERTY -> KeyboardLayout.rows(proportions, effectiveShowNumberRow, letterHints, qwerty = true, urlMode = urlMode, emailMode = emailMode, locale = systemLocale, showApostropheKey = true)
             }
             
             InputSurface.SYMBOLS -> SymbolLayout.rows(targetSymbolPage, proportions, systemLocale)
@@ -3150,7 +3178,7 @@ class AdaptKeyboardView @JvmOverloads constructor(
         if ((key.code == KeyCode.CHAR && key.char in BOTTOM_ROW_LETTERS) || key.code == KeyCode.DELETE) {
             return if (key.code == KeyCode.DELETE) ENTER_BACKSPACE_OFFSET_FACTOR else BOTTOM_ROW_DOWNWARD_OFFSET_FACTOR
         }
-        return genericVerticalOffsetFactorFor(key) { c -> RowGeometry.hasRowBelow(layoutKind, showNumberRow, c) }
+        return genericVerticalOffsetFactorFor(key) { c -> RowGeometry.hasRowBelow(layoutKind, effectiveShowNumberRow, c) }
     }
     
     /**
@@ -3161,15 +3189,16 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * 
      * @return the tighter upward factor for Enter; failing that, D-397's generic
      *         [GENERIC_VERTICAL_OFFSET_FACTOR] for any char key with a genuine row above it
-     *         ([RowGeometry.hasRowAbove] - the persistent number row counts here exactly like any other row,
-     *         when [showNumberRow] is on); or null (meaning "use the model's own [OffsetModel.maxOffsetFactor]")
-     *         otherwise
+     *         ([RowGeometry.hasRowAbove] - the persistent number row counts here exactly like any other
+     *         row, whenever it shows: C-09 on, or D-554's swipe-open reveal - both read as
+     *         [effectiveShowNumberRow]); or null (meaning "use the model's own
+     *         [OffsetModel.maxOffsetFactor]") otherwise
      */
     private fun upwardOffsetFactorFor(key: Key): Double? {
         if (key.code == KeyCode.ENTER) {
             return ENTER_BACKSPACE_OFFSET_FACTOR
         }
-        return genericVerticalOffsetFactorFor(key) { c -> RowGeometry.hasRowAbove(layoutKind, showNumberRow, c) }
+        return genericVerticalOffsetFactorFor(key) { c -> RowGeometry.hasRowAbove(layoutKind, effectiveShowNumberRow, c) }
     }
     
     /**

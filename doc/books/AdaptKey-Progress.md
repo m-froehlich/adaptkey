@@ -465,6 +465,21 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
+- **D-554 - IMPLEMENTED (§562, v1.3.24/624) - NOT yet device-confirmed: the C-09-off letters surface gets
+  its digits back by gesture - the §48 swipe-up reveals the number row together with the extra row.**
+  User request (2026-11-19); the digits-as-Alt-Belegung alternative was rejected by the user themselves
+  (it would overload the reform's D-511/L-05 top-row anatomy and costs long-press + slide instead of one
+  tap). One new transient flag, `AdaptKeyboardView.numberRowRevealed` (never persisted, never backed up),
+  read everywhere the setting used to be read via `effectiveShowNumberRow` (`rowsFor()`'s letters branch
+  + both §43 D-397 `RowGeometry` sites), so the revealed row IS an ordinary C-09-on row - same keys, D-55
+  spacing, caps, T-03 geometry. Set only from the swipe itself, letters surface only, regardless of prior
+  row state; the programmatic row openings (D-142/D-185/D-507) never set it; every close
+  (`closeExtraRow()`, the fresh-field reset) clears it - invariant "revealed ⇒ extra row open", or the
+  next downward swipe would dismiss the keyboard out from under an open digit row. The emoji round-trip
+  keeps the reveal (D-187). All four core decisions user-confirmed in plan `swipe-up-number-row.md`, §7
+  (field-change close = strict coupling; reveal letters-surface-only; swipe-up on an already-open row
+  still reveals; emoji round-trip preserves it); v1 without animation, `c09_summary` extended in values/
+  + values-de only. `NumberRowRevealRoboTest` +5; 1,970 tests green.
 - **D-548 - IMPLEMENTED (§561, v1.3.23/623) - DEVICE-CONFIRMED (2026-11-19: "Ole! Das ist behoben.
   Jetzt ist es wie gewünscht." - the confirmation rides on 1.3.23 and thereby covers the whole
   D-545..D-548 "jetzt" stack as installed): pinned ambiguous continuations

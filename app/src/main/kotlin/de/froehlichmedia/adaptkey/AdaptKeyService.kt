@@ -2434,6 +2434,11 @@ class AdaptKeyService : InputMethodService() {
         }
         // §48: never carry an open extra row over into a fresh keyboard presentation.
         extraRow?.closeImmediately()
+        // D-554: the number row rides the extra row's whole lifecycle - the swipe-open reveal closes
+        // with the row here too (plan decision §7.1: a fresh field closes the swipe-open pair), so the
+        // invariant "revealed ⇒ extra row open" holds across field changes as well. The auto-opens
+        // below (credential/URL) re-open only the row, never the reveal.
+        keyboardView?.numberRowRevealed = false
         // D-142 / D-189: reflect credential-mode state on the toggle button, and reveal the row for BOTH a
         // reliable EMAIL/PASSWORD classification and a weak (unreliable) email/username signal - the
         // reliable case used to only update the button's background silently, leaving the user with no way
@@ -4732,9 +4737,21 @@ class AdaptKeyService : InputMethodService() {
                 true
             }
             
-            // §48: upward swipe anywhere else reveals the extra row.
+            // §48: upward swipe anywhere else reveals the extra row. D-554 (plan
+            // `swipe-up-number-row.md`): when C-09 hides the number row, a swipe started on the letters
+            // surface also reveals it - the pair opens together. Every extra-row close path
+            // ([closeExtraRow], the fresh-field closeImmediately reset) clears the reveal again, keeping
+            // the invariant "revealed ⇒ extra row open": a de-synced state would make the next downward
+            // swipe dismiss the keyboard out from under an open number row. The reveal is gesture-only -
+            // the programmatic extra-row opens (D-142 credential, D-185 URL, D-507 emoji) never set it,
+            // so an auto-opened row never grows the keyboard by a row on its own - and it is set
+            // regardless of whether the row was already open (the swipe is the opening act, decision
+            // §7.3 of the plan): "swipe up = both on" stays the one rule.
             GestureAction.OPEN_SETTINGS_ROW -> {
                 openExtraRow()
+                if (!settings.showNumberRow && surface == InputSurface.LETTERS) {
+                    keyboardView?.numberRowRevealed = true
+                }
                 true
             }
             
@@ -4790,8 +4807,15 @@ class AdaptKeyService : InputMethodService() {
      * was meant to reveal). Left in place only for the swipe-down gesture and the field-reset path; a
      * specific action button (emoji/settings/clear-clipboard) auto-closing again is a possible future
      * exception, not reinstated speculatively here.
+     *
+     * D-554 (plan `swipe-up-number-row.md`): every close through here also clears the swipe-open
+     * number-row reveal ([AdaptKeyboardView.numberRowRevealed]) - the pair the gesture opened closes
+     * together, keeping the invariant "revealed ⇒ extra row open".
      */
     private fun closeExtraRow(onClosed: () -> Unit = {}) {
+        // D-554: the swipe-open number row is part of this close - see the invariant note in
+        // [handleSwipe]'s own OPEN_SETTINGS_ROW branch. The reveal never outlives its row.
+        keyboardView?.numberRowRevealed = false
         extraRow?.close(onClosed) ?: onClosed()
     }
     

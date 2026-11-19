@@ -25584,3 +25584,53 @@ stays version 52). NOT yet device-confirmed: with the learned "Jetzt" entry in p
 once each, never the capital twice, never the lowercase behind "jetzige"/"Netz".
 
 DEVICE-CONFIRMED (2026-11-19: "Ole! Das ist behoben. Jetzt ist es wie gewÃ¼nscht."): with the learned "Jetzt" entry in place, "jet"/"jetz" after a bigram partner shows "jetzt" then "Jetzt" at the front, once each - the round is closed as implemented. The confirmation rides on 1.3.23 and thereby covers the whole D-545..D-548 "jetzt" stack as installed (frequency raise, casing-pair placement, learn-time union tags, pinned expansion).
+
+---
+
+## §562 - D-554: the C-09-off letters surface gets its digits back by gesture - the §48 swipe-up reveals the number row together with the extra row (v1.3.23 -> v1.3.24, versionCode 623 -> 624)
+
+User request (2026-11-19): when the number row is hidden (C-09), the letters surface has no digits at all,
+and the other-keyboards answer (digits as an Alt-Belegung on the top letter row) was rejected by the user
+themselves - it would overload the reform's D-511/L-05 corner-and-hint anatomy, and it costs two
+interactions (long-press + slide) where a row costs one tap. The user's own idea instead, evaluated in
+plan `swipe-up-number-row.md` and decided on its §7 questions the same day (all four on the
+recommendations): when (and only when) C-09 is off, the §48 upward swipe reveals the number row together
+with the extra row; a downward swipe closes both again.
+
+**D-554 - a transient reveal, not a settings flip.** `AdaptKeyboardView.numberRowRevealed` is the one new
+piece of state: a session flag (never persisted, never in the backup - the gesture's own state, not a
+shadow copy of C-09), consumed through the view's `effectiveShowNumberRow` (`showNumberRow ||
+numberRowRevealed`) by exactly the places that already consumed the setting: `rowsFor()`'s letters branch
+(all six layouts through the shared L-06 number-row builder) and the two §43 D-397 `RowGeometry` call
+sites. The revealed row is therefore, by construction, an ordinary C-09-on row - same keys, same D-55
+spacing (`extraSpacingPx()` reads the built rows, not the flag), same row-crossing caps, same T-03
+geometry to learn digit strikes against; no new geometry class exists.
+
+**D-554 - gesture-only open, close-everywhere.** The reveal is set only from `handleSwipe()`'s
+OPEN_SETTINGS_ROW branch, and only when the swipe starts on the letters surface (symbol pages carry their
+digit rows anyway) and C-09 is off - regardless of whether the extra row was already open (an auto-opened
+URL/credential row included: the swipe is the opening act, "swipe up = both on" stays one rule). The
+programmatic extra-row openings (D-142 credential, D-185 URL, D-507 emoji) never set it, so nothing ever
+grows the keyboard by a row without the user's own swipe. Every extra-row close clears it - `closeExtraRow()`
+(the G-03 row-first chain: one downward swipe clears row and digits together, the second still dismisses,
+`g03_swipe_down_dismiss` gating unchanged) and the fresh-field `closeImmediately()` reset in
+`onStartInputView` (decision: the swipe-open pair closes on a field change, exactly like the row always
+did). The invariant "revealed ? extra row open" is structural: a stray reveal outliving its row would turn
+the next downward swipe into a keyboard dismissal from under an open number row. The emoji round-trip
+keeps the reveal (D-187's nothing-closes-by-itself rule): back on the letters surface the row is there
+again.
+
+Strings: `c09_summary` extended (values/ + values-de/ only - the other locales ride the next translation
+round, decision §7.6 of the plan). Animation deliberately skipped for v1 (decision §7.5): the reveal is
+the same instant-rebuild transition class as a C-09 settings flip and a LETTERS/SYMBOLS row-count change.
+
+Tests: new `NumberRowRevealRoboTest` (5 Robolectric tests: the reveal adds the row to the C-09-off
+letters surface; the revealed row is indistinguishable from the C-09-on row, height and char keys alike;
+the reveal is redundant while C-09 is on; the symbol pages ignore it; closing restores the exact C-09-off
+state). 1,970 tests total (1,965 + 5), 0 failures; `:app:assembleRelease` green.
+
+`versionCode` 623 -> 624, `versionName` `"1.3.23"` -> `"1.3.24"`. No dictionary data change. NOT yet
+device-confirmed: with C-09 off, a swipe up on the letters surface must show the extra row and the digit
+row together (digits tappable, D-55 gap intact), one downward swipe clears both, a field change closes the
+pair, a swipe up from a symbol page opens only the extra row, and the URL/credential field auto-open must
+NOT show the digit row.
