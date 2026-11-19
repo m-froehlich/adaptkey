@@ -79,8 +79,11 @@ android {
         // front unreplaced while the pair lands later and duplicates it.
         // D-554: when C-09 hides the number row, the §48 swipe-up on the letters surface reveals it
         // together with the extra row; every extra-row close clears the transient reveal with it.
-        versionCode = 624
-        versionName = "1.3.24"
+        // D-555: the dedicated bottom-row emoji key right of the combined `!?#` key - setting
+        // d555_bottom_row_emoji_key default ON, funded from the L-02 widening (variant A surplus
+        // rule), hidden while C-27 puts the emoji mode in the combined key's own slot.
+        versionCode = 625
+        versionName = "1.3.25"
         // The ONNX Runtime native libs (tier-3 mini-LLM) ship per ABI; keep only the ones real phones
         // use (arm64 + 32-bit arm), dropping the emulator-only x86/x86_64 libs (~43 MB). Device testing
         // of tier 3 therefore needs an arm device, not an x86_64 emulator.
