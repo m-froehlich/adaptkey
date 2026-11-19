@@ -1,8 +1,9 @@
 ﻿# AdaptKey — Plan: Dedicated Bottom-Row Emoji Key (D-555)
 
-**Status:** IMPLEMENTED end to end (2026-11-19; build + all unit tests green, 1,986 total, 0
-failures; `:app:assembleRelease`/`:app:testDebugUnitTest`), shipped as §563 / v1.3.25 (versionCode
-625). **NOT device-confirmed** - §7's checklist needs the device. Identifiers as built: D-555 /
+**Status:** IMPLEMENTED end to end and DEVICE-CONFIRMED (2026-11-19: "Perfekt. So läuft das.
+Verhält sich genau richtig." - §7's checklist passed on the device), shipped as §563 / v1.3.25
+(versionCode 625). Build + all unit tests green (1,986 total, 0 failures;
+`:app:assembleRelease`/`:app:testDebugUnitTest`). Identifiers as built: D-555 /
 `d555_bottom_row_emoji_key` / 1.3.25 (625) / History §563 (the parallel-round reservations this
 plan already accounted for in its original planning note).
 

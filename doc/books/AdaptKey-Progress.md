@@ -480,14 +480,15 @@ non-trivial changes).
   (field-change close = strict coupling; reveal letters-surface-only; swipe-up on an already-open row
   still reveals; emoji round-trip preserves it); v1 without animation, `c09_summary` extended in values/
   + values-de only. `NumberRowRevealRoboTest` +5; 1,970 tests green.
-- **D-555 - IMPLEMENTED (§563, v1.3.25/625) - NOT yet device-confirmed: the dedicated bottom-row
+- **D-555 - IMPLEMENTED (§563, v1.3.25/625) - DEVICE-CONFIRMED (2026-11-19: "Perfekt. So läuft
+  das. Verhält sich genau richtig." - the plan's §7 checklist passed): the dedicated bottom-row
   emoji key right of the `!?#` key (setting `d555_bottom_row_emoji_key`, default ON, hidden at
-  runtime while C-27 puts the emoji mode in the combined key's own slot; width funded by the user's
-  confirmed variant-A surplus rule - comma/period give up exactly their width above the letter floor,
-  stored C-01 values never rewritten, the space bar untouched).** KeyCode.EMOJI taps through the one
-  setSurface(EMOJI) choke point; all six letter geometries share the new lettersBottomRow builder
-  (url/email/symbol pages never carry the key). The plan's §7 device checklist
-  (`bottom-row-emoji-key.md`, now in done/) is the closing condition. 1,986 tests green.
+  runtime while C-27 puts the emoji mode in the combined key's own slot; width funded by the
+  user's confirmed variant-A surplus rule - comma/period give up exactly their width above the
+  letter floor, stored C-01 values never rewritten, the space bar untouched).** KeyCode.EMOJI
+  taps through the one setSurface(EMOJI) choke point; all six letter geometries share the new
+  lettersBottomRow builder (url/email/symbol pages never carry the key). Round closed; plan
+  `bottom-row-emoji-key.md` in done/. 1,986 tests green.
 - **D-548 - IMPLEMENTED (§561, v1.3.23/623) - DEVICE-CONFIRMED (2026-11-19: "Ole! Das ist behoben.
   Jetzt ist es wie gewünscht." - the confirmation rides on 1.3.23 and thereby covers the whole
   D-545..D-548 "jetzt" stack as installed): pinned ambiguous continuations

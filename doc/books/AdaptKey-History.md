@@ -25689,3 +25689,6 @@ device-confirmed: the plan's §7 checklist (😊 right of `!?#` opens the panel 
 visibly narrower but above letter width at defaults and respected when customised; the switch toggles live;
 C-27=Emoji shows exactly one 😊; URL/email/symbol pages unaffected; a pack geometry shows the key too; backup
 carries `d555_bottom_row_emoji_key`).
+
+DEVICE-CONFIRMED (2026-11-19: "Perfekt. So läuft das. Verhält sich genau richtig."): the key behaves exactly
+as designed on the device - the round is closed as implemented, plan `bottom-row-emoji-key.md` closed to done/.
