@@ -489,6 +489,16 @@ non-trivial changes).
   taps through the one setSurface(EMOJI) choke point; all six letter geometries share the new
   lettersBottomRow builder (url/email/symbol pages never carry the key). Round closed; plan
   `bottom-row-emoji-key.md` in done/. 1,986 tests green.
+- **D-556 - IMPLEMENTED (§564, v1.3.26/626) - DEVICE-CONFIRMED (2026-11-19: "Ja, so passt das."): the C-02
+  re-sort delay defaults to
+  0 ms - the setting key renamed `c02_resort_delay_ms` -> `d556_resort_delay_ms`, deliberately resetting
+  existing installations instead of migrating stored values.** The user's request (2026-11-19): the 300 ms
+  default read as a sluggish late jump, and the delay never stabilised anything itself - that is S-03's
+  kept-order job inside `update()`; the strict S-04 score re-sort now applies immediately after every
+  keystroke. The legacy key is scrubbed once at load (`removeLegacyResortDelay`, D-507 precedent), so old
+  backup imports leave no dead integer for the export fallback; the visible `c02_*` strings stay untouched
+  (range 0-600 ms unchanged, no default mentioned in the summary). `SettingsStoreRoboTest` +3; 1,989 tests
+  green. Round closed - no plan document existed for this single-default change, nothing to move to done/.
 - **D-548 - IMPLEMENTED (§561, v1.3.23/623) - DEVICE-CONFIRMED (2026-11-19: "Ole! Das ist behoben.
   Jetzt ist es wie gewünscht." - the confirmation rides on 1.3.23 and thereby covers the whole
   D-545..D-548 "jetzt" stack as installed): pinned ambiguous continuations

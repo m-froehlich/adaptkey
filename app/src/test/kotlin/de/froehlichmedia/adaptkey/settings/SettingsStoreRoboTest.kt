@@ -167,4 +167,42 @@ class SettingsStoreRoboTest {
         
         assertEquals(CombinedKeyMode.EMOJI, SettingsStore.load(context).combinedKeyMode)
     }
+    
+    @Test
+    fun d556TheResortDelayDefaultsToZeroWithNoKeyWritten() {
+        val context = RuntimeEnvironment.getApplication()
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        
+        assertEquals(0L, SettingsStore.load(context).suggestionConfig.reSortDelayMs)
+        assertFalse(prefs.contains(SettingsStore.KEY_RESORT_DELAY))
+    }
+    
+    @Test
+    fun d556ALegacyStoredValueAloneResetsToTheNewDefaultAndTheOldKeyIsScrubbed() {
+        val context = RuntimeEnvironment.getApplication()
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        prefs.edit().putInt(SettingsStore.KEY_LEGACY_RESORT_DELAY, 600).commit()
+        
+        // The reset is the point: the stored 600 is deliberately NOT migrated - the renamed key's
+        // 0 ms default applies instead.
+        assertEquals(0L, SettingsStore.load(context).suggestionConfig.reSortDelayMs)
+        assertFalse(prefs.contains(SettingsStore.KEY_LEGACY_RESORT_DELAY))
+        assertFalse(prefs.contains(SettingsStore.KEY_RESORT_DELAY))
+        // Idempotent: every later load is a plain read, still nothing written.
+        assertEquals(0L, SettingsStore.load(context).suggestionConfig.reSortDelayMs)
+    }
+    
+    @Test
+    fun d556AStoredValueUnderTheRenamedKeyWinsAndSurvivesTheLegacyScrub() {
+        val context = RuntimeEnvironment.getApplication()
+        val prefs = PreferenceManager.getDefaultSharedPreferences(context)
+        prefs.edit()
+            .putInt(SettingsStore.KEY_LEGACY_RESORT_DELAY, 300)
+            .putInt(SettingsStore.KEY_RESORT_DELAY, 150)
+            .commit()
+        
+        assertEquals(150L, SettingsStore.load(context).suggestionConfig.reSortDelayMs)
+        assertFalse(prefs.contains(SettingsStore.KEY_LEGACY_RESORT_DELAY))
+        assertEquals(150, prefs.getInt(SettingsStore.KEY_RESORT_DELAY, -1))
+    }
 }

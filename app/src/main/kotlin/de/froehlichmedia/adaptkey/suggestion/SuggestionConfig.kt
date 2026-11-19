@@ -7,13 +7,13 @@ package de.froehlichmedia.adaptkey.suggestion
  * Suggestion-bar configuration (C-02, C-03, C-04).
  *
  * @property maxSuggestions maximum number of stabilised suggestions shown (C-03, recommended 6-10, default 8)
- * @property reSortDelayMs pause with no input after which the bar re-sorts (C-02 / S-04, 0-600 ms, default 300)
+ * @property reSortDelayMs pause with no input after which the bar re-sorts (C-02 / S-04, 0-600 ms, default 0 - D-556)
  * @property highlightEnabled whether a recognised, complete word is highlighted while composing (C-04 / S-05)
  * @property highlightColor the highlight colour as an ARGB int (C-04 / S-05)
  */
 data class SuggestionConfig(
     val maxSuggestions: Int = 8,
-    val reSortDelayMs: Long = 300L,
+    val reSortDelayMs: Long = 0L,
     val highlightEnabled: Boolean = true,
     val highlightColor: Int = DEFAULT_HIGHLIGHT_COLOR
 ) {

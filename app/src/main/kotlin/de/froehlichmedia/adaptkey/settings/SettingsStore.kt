@@ -40,7 +40,19 @@ object SettingsStore {
     const val KEY_PERIOD_WEIGHT = "c01_period_weight"
     const val KEY_BACKSPACE_EXTRA = "c01_backspace_extra"
     const val KEY_SHIFT_EXTRA = "c01_shift_extra"
-    const val KEY_RESORT_DELAY = "c02_resort_delay_ms"
+    // D-556: renamed from "c02_resort_delay_ms" so the new 0 ms default also reaches installations
+    // where the old key was already persisted (a value under the old name is deliberately NOT
+    // migrated); the legacy key itself is scrubbed once at load time (see removeLegacyResortDelay).
+    const val KEY_RESORT_DELAY = "d556_resort_delay_ms"
+
+    /**
+     * D-556: the pre-D-556 C-02 key, kept only as the one-time cleanup source for
+     * [removeLegacyResortDelay]: the rename deliberately resets the setting in existing installations
+     * (the new 0 ms default replaces whatever was stored), so the old value is never read or migrated -
+     * the key is only removed so no stale integer lingers in the prefs, where it would otherwise ride
+     * along in every backup export as an unknown stray key. Never read.
+     */
+    const val KEY_LEGACY_RESORT_DELAY = "c02_resort_delay_ms"
     const val KEY_MAX_SUGGESTIONS = "c03_max_suggestions"
     const val KEY_HIGHLIGHT_COLOR = "c04_highlight_color"
     const val KEY_NUMBER_ROW = "c09_number_row"
@@ -139,8 +151,8 @@ object SettingsStore {
     /** Default stored integer for the shift surcharge slider, in percent (D-16, off until calibration). */
     const val DEF_SHIFT_EXTRA = 0
     
-    /** Default stored integer for the re-sort delay slider (C-02, 300 ms). */
-    const val DEF_RESORT_DELAY = 300
+    /** Default stored integer for the re-sort delay slider (C-02, 0 ms - D-556: immediate re-sorting). */
+    const val DEF_RESORT_DELAY = 0
     
     /** Default stored integer for the maximum-suggestions slider (C-03, 8). */
     const val DEF_MAX_SUGGESTIONS = 8
@@ -221,6 +233,7 @@ object SettingsStore {
      */
     fun load(context: Context): AdaptSettings {
         val p = prefs(context)
+        removeLegacyResortDelay(p)
         val highlightColorRaw = p.getString(KEY_HIGHLIGHT_COLOR, null)
         // D-507: captured before [loadCombinedKeyMode]'s one-time migration removes the legacy key, so
         // the RawSettings below always describes the same pre-migration snapshot.
@@ -277,6 +290,22 @@ object SettingsStore {
             showBottomRowEmojiKey = p.getBoolean(KEY_SHOW_BOTTOM_ROW_EMOJI_KEY, DEF_SHOW_BOTTOM_ROW_EMOJI_KEY)
         )
         return SettingsMapper.toAdaptSettings(raw)
+    }
+    
+    /**
+     * D-556: removes the pre-D-556 `c02_resort_delay_ms` key exactly once. The C-02 key was renamed so
+     * the new 0 ms default also reaches installations where the old key was already persisted; the
+     * stored value is deliberately NOT migrated - the reset is the point. The removal lives here (the
+     * storage layer), mirroring [loadCombinedKeyMode]'s one-time write: old backup imports would
+     * otherwise leave a dead integer behind that [exportableSettings]'s own "any other stored key"
+     * fallback would re-export forever. Idempotent: a device without the legacy key never writes.
+     *
+     * @param p the shared default preferences
+     */
+    private fun removeLegacyResortDelay(p: SharedPreferences) {
+        if (p.contains(KEY_LEGACY_RESORT_DELAY)) {
+            p.edit().remove(KEY_LEGACY_RESORT_DELAY).apply()
+        }
     }
     
     /**

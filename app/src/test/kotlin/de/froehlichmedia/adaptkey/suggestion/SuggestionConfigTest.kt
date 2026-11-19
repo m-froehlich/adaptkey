@@ -17,7 +17,7 @@ class SuggestionConfigTest {
     fun `defaults match the specification`() {
         val config = SuggestionConfig()
         assertEquals(8, config.maxSuggestions)
-        assertEquals(300L, config.reSortDelayMs)
+        assertEquals(0L, config.reSortDelayMs)
         // C-04 (§13): the recognised-word highlight now defaults on.
         assertTrue(config.highlightEnabled)
         assertEquals(SuggestionConfig.DEFAULT_HIGHLIGHT_COLOR, config.highlightColor)

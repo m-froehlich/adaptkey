@@ -1282,7 +1282,11 @@ pinned ahead of everything else without a score at all) rather than participatin
 ranking/stabilisation.
 
 ### S-04 - Re-sort Delay *(configurable)*
-Slider from 0 to 600 ms. A value of 0 means immediate re-sorting. Default: 300 ms.
+Slider from 0 to 600 ms. A value of 0 means immediate re-sorting. Default: 0 ms (D-556: the former 300 ms
+default is retired - it deferred the score re-sort to exactly the pause where the user starts tapping, reading
+as a late jump, while typing-time stability is already S-03's job; the setting key was renamed
+`c02_resort_delay_ms` -> `d556_resort_delay_ms`, deliberately resetting existing installations rather than
+migrating stored values, and the legacy key is scrubbed once at load time).
 
 ### S-05 - Word Confirmation Highlight *(configurable, default on)*
 The word currently being typed is highlighted, via font colour, as soon as the system recognises it as
@@ -2871,7 +2875,7 @@ Unconditionally excludes any content typed into a password field, regardless of 
 | ID | Parameter | Type | Default |
 |---|---|---|---|
 | C-01 | Key proportions (space bar / comma / full stop / backspace) + the two L-02 spacing sliders | Slider | Gboard-like |
-| C-02 | Suggestion re-sort delay | 0-600 ms | 300 ms |
+| C-02 | Suggestion re-sort delay | 0-600 ms | 0 ms (D-556: key renamed, stored values not migrated) |
 | C-03 | Maximum number of suggestions | Integer (3-10, D-399: widened from a 6 floor) | 8 |
 | C-04 | Word confirmation highlight colour, or "no highlighting" (D-298: folds the former separate on/off toggle into this one list); the settings row and its picker dialog preview each colour directly as its own entry's text colour (D-302) | Colour, or off | Green |
 | C-05 | Word blacklist | List + categories (bundled/user), editor defaults to user-only view | Seeded with a small bundled cross-language-confusables set only (D-473-followup: the archaic-spelling set is now a dictionary removal, not a blacklist) |

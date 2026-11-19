@@ -25692,3 +25692,45 @@ carries `d555_bottom_row_emoji_key`).
 
 DEVICE-CONFIRMED (2026-11-19: "Perfekt. So läuft das. Verhält sich genau richtig."): the key behaves exactly
 as designed on the device - the round is closed as implemented, plan `bottom-row-emoji-key.md` closed to done/.
+
+## §564 - D-556: the re-sort delay defaults to 0 - the C-02 key renamed so existing installations reset (v1.3.25 -> v1.3.26, versionCode 625 -> 626)
+
+The user's assessment (2026-11-19): the 300 ms default "vermittelt mehr den Eindruck einer trägen Tastatur, als
+dass es hilft, indem die Chips stabilisiert werden" - and the delay indeed never stabilised anything itself.
+S-03's kept-order mechanism inside `SuggestionController.update()` is what keeps the bar quiet while typing;
+S-04's delay only decided *when* the strict score re-sort became visible - deferred to exactly the pause where
+the user starts tapping, so the bar's final, correct order arrived a beat late as a visible jump. Default is
+now 0 ms (immediate re-sorting), the documented 0-600 ms range unchanged. The honest trade-off is deliberate:
+with 0 ms the score order applies right after every keystroke, so ordinary chips can reflow mid-burst where the
+300 ms default kept them still (pinned continuations were never subject to the delay anyway - D-503 puts them
+straight into the leading slots inside `update()`).
+
+**The rename is the reset.** `SettingsStore.load()` reads `p.getInt(KEY_RESORT_DELAY, DEF_RESORT_DELAY)`, and
+nothing in the app persists defaults on its own (no `PreferenceManager.setDefaultValues` anywhere), so a pure
+default change would only have reached installations that never touched the C-02 slider and never imported a
+backup. Renaming the key `c02_resort_delay_ms` -> `d556_resort_delay_ms` (settings_preferences.xml + the store
+constant, export order list follows the constant) also resets those - at the accepted cost that a deliberately
+customised value (e.g. 600) is silently dropped, which is the user's explicit intent. The stored value is
+deliberately NOT migrated. The legacy key is scrubbed once at load time (`removeLegacyResortDelay`, the
+storage-layer home mirroring D-507's one-time write), so an old backup import does not leave a dead integer
+behind that `exportableSettings`'s "any other stored key" fallback would re-export forever. The visible label
+(`c02_title`/`c02_summary`, all locales) is untouched - the summary's "(0-600 ms)" range text stays true, and
+the string IDs keep their c02 name because the spec item is still C-02.
+
+Consistency sweep: `SuggestionConfig.reSortDelayMs` default 300 -> 0 (plus its own KDoc), `DEF_RESORT_DELAY`
+300 -> 0, settings_preferences.xml `defaultValue` 300 -> 0, `SettingsMapper`'s 0-600 clamp untouched. Spec:
+S-04's own section and §20's C-02 table row now say 0 ms with the D-556 rationale. The D-160 expensive-fallback
+debounce (modelled on the resort-delay *pattern*) keeps its own constant and is unaffected - resorting itself
+only re-orders <= maxSuggestions chips, so 0 ms adds no hot-path cost beyond one synchronous re-sort per
+keystroke.
+
+Tests: `SettingsStoreRoboTest` +3 (a fresh install reads 0 with no key written; a legacy stored value alone
+resets to the new default and the old key is scrubbed, idempotently; a stored value under the renamed key wins
+and survives the scrub), `SuggestionConfigTest`'s default assertion 300 -> 0. 1,989 tests total (1,986 + 3),
+0 failures; `:app:assembleRelease` green.
+
+`versionCode` 625 -> 626, `versionName` `"1.3.25"` -> `"1.3.26"`. No dictionary data change.
+
+DEVICE-CONFIRMED (2026-11-19: "Ja, so passt das."): the immediate re-sort behaves as the user expects on the
+device - the previous late jump is gone, and the round is closed as implemented. No plan document existed for
+this single-default change; nothing to move to done/.
