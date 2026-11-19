@@ -63,8 +63,22 @@ android {
         // like the normal letters, and learnWord/learnWordStrong accept it, so "ist's"/"sieht's" are
         // learned whole; the shared WordExtent.isWordChar definition keeps the composing/reclaim/
         // learning consumers in lockstep.
-        versionCode = 619
-        versionName = "1.3.19"
+        // D-545: the German "jetzt" frequency recalibrated for the conversational register (1499 -> 15000,
+        // de pack version 51 -> 52) so the bar's own prefixes always surface it first, plus the settings-
+        // rebuild providers now carry the layout's own KeyboardProximity again.
+        // D-546: the S-11 dual-casing chips take their candidate's own ranked slot while typing
+        // (AmbiguousCasingPlacement, in place instead of back-append), and the ranked-list exclusion is
+        // removed - a learned casing override ("Jetzt" over "jetzt") can no longer cut the word out of
+        // its own suggestion bar.
+        // D-547: a freshly learned entry for an already-bundled word is born with the bundled reading(s)
+        // alongside its category hint (e.g. "Jetzt" over bundled OTHER: NOUN,OTHER) - the casing override
+        // stays, but the entry alone no longer nails the word to noun-only capitalisation, and the
+        // Learned Words editor shows the honest union.
+        // D-548: pinned ambiguous continuations expand into their casing pair at their own leading slot
+        // (superseding v1.2.85's single-casing exemption) - the pinned capital reading no longer sits in
+        // front unreplaced while the pair lands later and duplicates it.
+        versionCode = 623
+        versionName = "1.3.23"
         // The ONNX Runtime native libs (tier-3 mini-LLM) ship per ABI; keep only the ones real phones
         // use (arm64 + 32-bit arm), dropping the emulator-only x86/x86_64 libs (~43 MB). Device testing
         // of tier 3 therefore needs an arm device, not an x86_64 emulator.
