@@ -465,6 +465,55 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
+- **D-548 - IMPLEMENTED (§561, v1.3.23/623) - DEVICE-CONFIRMED (2026-11-19: "Ole! Das ist behoben.
+  Jetzt ist es wie gewünscht." - the confirmation rides on 1.3.23 and thereby covers the whole
+  D-545..D-548 "jetzt" stack as installed): pinned ambiguous continuations
+  expand into their casing pair at their own leading slot.** The follow-up report ("Jetzt" an Position 2
+  UND 6, "jetzt" erst an Position 5 hinter Netz/jetzige) decoded as: position 2 = the word's D-503 pinned
+  continuation (bigram partner matching the typed prefix), passed through unreplaced by the placement's
+  own pinned guard while the S-11 pair was built from its non-pinned fuzzy twin and inserted at the
+  twin's later slot — capital doubled, lowercase demoted. Fix: `ambiguousCasingChips()` drops the v1.2.85
+  pinned skip (its motivating slot-budget cut died with D-546's in-place placement) and
+  `insertInPlace()` drops its pinned-item guard — the pair takes the pinned slot (the bar's front, D-503
+  preserved), lower first, twins collapse into one pair. `AmbiguousCasingPlacementTest` rewritten +1 net
+  (pinned expansion + the reported collapse shape). 1,965 tests green.
+- **D-547 - IMPLEMENTED (§560, v1.3.22/622) - NOT yet device-confirmed: a freshly learned entry for an
+  already-bundled word is born with the bundled reading(s) plus its hint - the user's own design.** The
+  "Jetzt" question ("wieso wird das überhaupt so gelernt?"): the device entry is a pre-D-271 relic
+  (sentence-start commits were once learned with their committed casing; today sentence-start never
+  learns and fresh mid-sentence promotions have no capital source). `learn()`'s fresh-entry branch now
+  seeds `bundled.tags + hint` (enum order) — "Jetzt" over bundled OTHER is born NOUN,OTHER, the editor
+  shows the honest union, the entry alone can't nail noun-only capitalisation, casing overrides (D-264/
+  D-439) stay. Existing rows deliberately NOT migrated (display-only difference; W-01 fixes on demand).
+  Plus `AmbiguousCasingPlacementTest` +2 pinning the D-546 residual: with the tier-1 autocorrect PENDING,
+  the S-06 verbatim/replacement chips consume the ranked ambiguous candidate, so the casing pair must take
+  the replacement's slot (else the slot budget cuts it — the reported "komplett verdrängt" shape).
+  1,964 tests green.
+- **D-546 - IMPLEMENTED (§559, v1.3.21/621) - NOT yet device-confirmed: the S-11 dual-casing chips take
+  their candidate's own ranked slot while typing (in place, D-463's prediction shape), and the
+  ranked-list exclusion is gone.** Root cause of the follow-up report ("Tatsächlich war 'Jetzt' (groß)
+  gelernt. Wieso verdrängt das 'jetzt' (klein) komplett aus den Chips"): the learned override's NOUN
+  hint unions into the merged entry at `entryOf` ([NOUN, OTHER]), making the word §6-rule-5-ambiguous,
+  so the bar's best candidate was pulled from rank 1 and both casings appended behind the fuzzy junk,
+  past the 8-slot cut. The new pure `AmbiguousCasingPlacement.insertInPlace` places the chips at the
+  candidate's slot (lower first), `excludeAmbiguousCasingWords` removed at both `controller.update()`
+  call sites (the candidate stays ranked and is replaced wholesale at display time); chip computation,
+  commit semantics, D-264/D-439 and the pinned exemption untouched; S-02-removed exact-match alternates
+  keep the back-append shape. `AmbiguousCasingPlacementTest` +8. 1,957 tests green.
+- **D-545 - IMPLEMENTED (§558, v1.3.20/620) - NOT yet device-confirmed: the German "jetzt" frequency
+  recalibrated for the conversational register (1,499 -> 15,000, de pack 51 -> 52) after the user's
+  "jet"/"jetz" report.** Traced first, not guessed: with the bundled data the provider already ranked
+  `jetzt` FIRST for both prefixes (diagnostic over the real dict.tsv + bigram.tsv; the word has been
+  dictionary-present at 1,499 since the first import), so a device showing otherwise was stale personal
+  state - most likely a learned `Jetzt` casing override (D-264: the merged entry then carries the
+  learned casing, while §6's render-time capitalisation explains a capitalised chip at sentence starts
+  anyway). The raise is the D-473/D-480 Wikipedia-register-skew fix pattern (an encyclopedic corpus
+  rates the word below `jedoch` 27,743 it never loses to in real typing) and is calibration-neutral
+  (frequencyFactor saturates at 25 for a non-noun; no cost-1 adjacent rival exists - `hetzt`/`ketzt`
+  absent). Plus the real code find: the settings-rebuild providers now pass the layout's own
+  `KeyboardProximity` again (the D-353-era call site predated the parameter and silently used QWERTZ
+  for every layout after a settings change). `JetztRankingEvaluationTest` +3 pins the requirement
+  ("Spätestens bei 'jetz' MUSS 'jetzt' da stehen") against the real data. 1,949 tests green.
 - **D-540 - IMPLEMENTED (§553, v1.3.14/614), DEVICE-CONFIRMED (2026-11-13: "Es geht endlich
   wieder" - every touch delivered, Space included; the broken round is closed).** THE root cause:
   the 1.3.6-diag experiment proved the same OS delivers UPs to the same view when the DOWN returns

@@ -1225,6 +1225,20 @@ that window passes, rather than staying inflated forever. Deliberately ranking-o
 no part in any correctness decision (A-01's known-word-override check, S-06's pending-replacement logic) -
 those still read a word's real, unscaled frequency directly, exactly as before.
 
+D-545: a word this common must lead its own prefixes - the report that named this round ("Spätestens bei
+'jetz' MUSS 'jetzt' da stehen") was traced, not guessed: with the bundled data the provider already ranked
+`jetzt` first for `jet`/`jetz` (a throwaway diagnostic over the real dict.tsv + bigram.tsv), so a device
+showing otherwise was on stale personal state (an old installed pack DB, or a personally learned `Jetzt`
+casing override, D-264, whose merged entry then carries the learned casing - the lowercase spelling still
+returns through the fuzzy path behind it). The German `jetzt` frequency was nevertheless raised
+1,499 -> 15,000 per the user's explicit "viel höher gewichten und gewinnen" instruction - the same
+Wikipedia register skew D-473 fixed for `dich`/`dir` and D-480 for `wer` (an encyclopedic corpus rates it
+below written-register rivals like `jedoch` 27,743 it never loses to in real typing). Calibration-neutral
+for every `CorrectionConfidence` gate (`frequencyFactor` saturates at frequency 25 for a non-noun), it
+only strengthens the prefix/fuzzy ranking; no adjacent-key real-word rival at cost 1 exists (`hetzt`/
+`ketzt` are not in the dictionary), so A-01's override exposes nothing new. Pinned by
+`JetztRankingEvaluationTest` (de pack version 52).
+
 The bar's row is always reserved even when momentarily empty.
 Depending on the focused field, the bar's slot can instead show a platform-rendered Autofill
 inline-suggestions row, or a credential-suggestion list (§12) - S-01's own scrolling/sorting behaviour
@@ -1591,6 +1605,24 @@ render, and that middle step only reaches `clearSuggestions()` when there is no 
 committing an ambiguous word with a real prediction after it left its chips standing, appended to the *next*
 word's bar, while the same word's legitimate prediction was simultaneously filtered out of the ranked list.
 The chips now end with the token they describe.
+
+**D-546: the typing path takes D-463's placement too, and the ranked-list exclusion is gone.** The original
+D-404-followup shape (candidate pulled from the ranked list, both casings appended at the back, where a
+better ordinary suggestion may crowd them out) was reported broken from the real device with a sharper
+instance of D-463's own objection: a learned differently-cased override (`"Jetzt"` over the bundled
+`"jetzt"`, D-264/D-439) unions its nominal tag into the merged entry at `entryOf`, making the word
+§6-rule-5-ambiguous - so while typing its own prefix, the bar's single best candidate (highest-frequency
+`jet*` word by far, see the D-545 raise) was pulled from rank 1 and its two casings appended behind every
+fuzzy neighbour, where a full bar cut them entirely: "jetzt" komplett aus den Chips verdrängt. The typing
+path now inserts the chips **at their candidate's own ranked slot** (`AmbiguousCasingPlacement.insertInPlace`,
+lower first - exactly the user's stated order), and the exclusion filter is removed outright: the candidate
+stays ranked in the controller (S-03 stabilisation keeps tracking it) and its chips replace it wholesale at
+display time, so the word is never shown a second time, wrongly single-cased. An exact-match alternate whose
+candidate the controller's own case-sensitive S-02 filter removed (the typed spelling itself) has no slot to
+take and keeps the historical back-append shape. Pinned continuations keep D-503-followup's exemption (never
+replaced, single canonical casing); a chip duplicating a text the bar already shows is swallowed. The chip
+computation itself is untouched - prefix match offers both casings, an exact match only the other one, a tap
+commits verbatim.
 
 ---
 
