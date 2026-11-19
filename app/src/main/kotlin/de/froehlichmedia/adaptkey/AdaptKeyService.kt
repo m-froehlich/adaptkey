@@ -146,6 +146,7 @@ import de.froehlichmedia.adaptkey.settings.SettingsActivity
 import de.froehlichmedia.adaptkey.settings.SettingsStore
 import de.froehlichmedia.adaptkey.settings.Tier3ModelActivity
 import de.froehlichmedia.adaptkey.suggestion.Acronym
+import de.froehlichmedia.adaptkey.suggestion.AmbiguousCasingPlacement
 import de.froehlichmedia.adaptkey.suggestion.BlacklistConfirmation
 import de.froehlichmedia.adaptkey.suggestion.BlacklistConfirmationOutcome
 import de.froehlichmedia.adaptkey.suggestion.BlacklistConfirmationRequest
@@ -314,7 +315,8 @@ class AdaptKeyService : InputMethodService() {
     // D-404-followup: the §6-rule-5-ambiguous-noun dual-casing chips (see ambiguousCasingChips()) computed
     // for the current composing token by the most recent refreshSuggestions() call - showSuggestions() reads
     // this rather than recomputing it, since it is derived from that same call's own already-fetched
-    // candidate list (no separate dictionary query).
+    // candidate list (no separate dictionary query). D-546: placed at their candidate's own ranked slot by
+    // AmbiguousCasingPlacement.insertInPlace() while typing, no longer appended at the back.
     private var pendingAmbiguousCasingChips: List<SuggestionController.DisplayItem> = emptyList()
     
     // G-01: the active alphabet/input language, toggled by the space-bar swipe (see LayoutRegistry for the
@@ -1514,7 +1516,13 @@ class AdaptKeyService : InputMethodService() {
                 providers = stores.mapValues { (language, store) ->
                     DictionarySuggestionProvider(
                         store, config.maxSuggestions * 2, autocorrectAggressiveness,
-                        LanguageRulesRegistry.rulesFor(language), SettingsStore.loadDiacriticFolding(this, language)
+                        LanguageRulesRegistry.rulesFor(language), SettingsStore.loadDiacriticFolding(this, language),
+                        // D-545: the keyboardProximity argument installStores() passes was missed here -
+                        // the D-353-era rebuild predates the parameter. Without it every provider silently
+                        // fell back to the QWERTZ default after any suggestion/autocorrect settings change,
+                        // so a Greek/Serbian/other-layout session's fuzzy neighbours and correction costs
+                        // were computed with German key adjacency until the stores were reinstalled.
+                        keyboardProximity = KeyboardProximityRegistry.forLayoutKind(LayoutRegistry.kindFor(language))
                     )
                 }
                 // Re-point the active provider onto English (always present); selectActiveDictionary
@@ -6674,8 +6682,9 @@ class AdaptKeyService : InputMethodService() {
         // clearComposing() -> showNextWordPredictions() -> showSuggestions(), and that middle step only
         // reaches clearSuggestions() when there is no prediction at all. So committing an ambiguous word
         // with a real prediction following it left its chips standing, appended to the next word's own bar,
-        // while excludeAmbiguousCasingWords() simultaneously dropped a legitimate prediction for the same
-        // word from the ranked list. Clearing here ends them with the token they describe.
+        // while the exclusion filter of the time simultaneously dropped a legitimate prediction for the
+        // same word from the ranked list (the filter itself removed in D-546). Clearing here ends them
+        // with the token they describe.
         pendingAmbiguousCasingChips = emptyList()
     }
     
@@ -7036,9 +7045,11 @@ class AdaptKeyService : InputMethodService() {
         val candidatesMs = SystemClock.uptimeMillis() - candidatesStartedAt
         diag("AdaptKeySuggest", "refreshSuggestions: candidates=${candidates.size} tookMs=$candidatesMs for input=\"$input\" duringRepeat=$duringRepeat includeExpensiveFallbacks=$includeExpensiveFallbacks")
         // D-404-followup: computed from this call's own candidates above (no separate dictionary query) -
-        // see ambiguousCasingChips()'s own KDoc. showSuggestions() reads the stored result; the matching
-        // word(s) are excluded from the ordinary candidate list at every controller.update() call site below
-        // so the same word is never also shown a second time, wrongly single-cased.
+        // see ambiguousCasingChips()'s own KDoc. showSuggestions() reads the stored result. D-546: the
+        // matching word(s) are no longer excluded from the ordinary candidate list - the chips take their
+        // candidate's own ranked slot at display time (AmbiguousCasingPlacement.insertInPlace), so the
+        // exclusion would leave nothing for them to replace and the pair would fall back to the back-append
+        // shape this round removed.
         // D-452-followup: ambiguousCasingChips() was this round's own leading suspect (dictionaryStore.
         // partsOfSpeech() runs two uncached SQLite queries per candidate) for the ~1.3s unaccounted-for gap
         // a real device log (§457) found between the already-instrumented candidates= and showSuggestions()
@@ -7226,7 +7237,7 @@ class AdaptKeyService : InputMethodService() {
         }
         // A real backend runs the LLM: show the tier-1 suggestions immediately, then refine off-thread so
         // the IME never blocks. A stale result (the token changed meanwhile) is discarded via the sequence.
-        controller.update(input, excludeAmbiguousCasingWords(candidates + extras), pending)
+        controller.update(input, candidates + extras, pending)
         showSuggestions()
         scheduleResort()
         val threshold = settings.llmActivationThreshold
@@ -7343,7 +7354,7 @@ class AdaptKeyService : InputMethodService() {
     private fun applyTier3Outcome(input: String, pending: String?, outcome: Tier3Outcome, extras: List<Suggestion> = emptyList()) {
         lastTier3Result = outcome.tier3
         lastCapProposal = outcome.capitalisation
-        controller.update(input, excludeAmbiguousCasingWords(outcome.suggestions + extras), pending)
+        controller.update(input, outcome.suggestions + extras, pending)
         showSuggestions()
         scheduleResort()
     }
@@ -7453,18 +7464,24 @@ class AdaptKeyService : InputMethodService() {
         // Already pre-cased (see ambiguousCasingChips()) - never routed through the NORMAL re-capitalisation
         // above, which would collapse both variants back to the same ambiguous-default-lowercase text.
         //
-        // D-463: that appended shape is right for typing and wrong for a next-word prediction, so the two
-        // cases are split here on the same `composing.isEmpty()` discriminator D-440 already uses directly
-        // above. While typing, the ambiguous word was pulled out of the ranked list
-        // (excludeAmbiguousCasingWords) and its two chips are appended at the back, where a better ordinary
-        // suggestion may crowd them out. A prediction, by contrast, can itself be the single best thing in
-        // the bar - appending would demote it to last place - so its two casings replace it in place, at its
-        // own rank, leaving every other prediction's position untouched.
-        val remainingSlots = (config.maxSuggestions - items.size).coerceAtLeast(0)
+        // D-463: that appended shape is right for a next-word prediction's neighbours and wrong for the
+        // prediction itself, so the two cases are split here on the same `composing.isEmpty()` discriminator
+        // D-440 already uses directly above. A prediction can itself be the single best thing in the bar -
+        // appending would demote it to last place - so its two casings replace it in place, at its own rank.
+        //
+        // D-546: the typing path turned out to have the identical defect, reported from the real device -
+        // a learned differently-cased override ("Jetzt" over bundled "jetzt", D-264/D-439) makes the merged
+        // entry §6-rule-5-ambiguous via entryOf's tag union, so while typing its own prefix the bar's single
+        // best candidate was pulled from its ranked slot and its two casings appended behind every fuzzy
+        // neighbour, where a full bar cut them entirely: "jetzt" komplett aus den Chips verdrängt. The
+        // typing path now inserts the chips at their candidate's own ranked slot too (lower first, exactly
+        // the user's own stated order - "jetzt" gewinnt, das große Jetzt dahinter); only a chip whose
+        // candidate was never displayed (an exact-match alternate the S-02 filter removed as the typed
+        // spelling itself) keeps the historical back-append shape, since it has no slot to take.
         val withAmbiguousCasing = if (composing.isEmpty()) {
             expandAmbiguousCasingInPlace(items)
         } else {
-            items + pendingAmbiguousCasingChips.take(remainingSlots)
+            AmbiguousCasingPlacement.insertInPlace(items, pendingAmbiguousCasingChips, config.maxSuggestions)
         }
         // B-03/D-289: pinned ahead of everything else, the same "built outside SuggestionController, never
         // ranked against the ordinary candidates" shape CREDENTIAL/LEARNED already use - see
@@ -7551,10 +7568,12 @@ class AdaptKeyService : InputMethodService() {
      * 
      * Scans [candidates] (this call's own already-fetched suggestion list) rather than issuing a separate
      * dictionary query - an ambiguous word only matters here if the ordinary search already considered it
-     * relevant enough to surface, which also naturally satisfies "may be crowded out by more important
-     * words" (see the caller's own slot-budget check in [showSuggestions]) with no extra ranking logic of
-     * its own.
-     * 
+     * relevant enough to surface, with no extra ranking logic of its own. D-546: the chips are placed at
+     * their candidate's own ranked slot while typing ([AmbiguousCasingPlacement.insertInPlace], superseding
+     * D-404-followup's append-at-the-back, whose slot-budget crowding cut a top-ranked ambiguous word's
+     * chips entirely - the reported "jetzt" case), and expanded in place for predictions
+     * ([expandAmbiguousCasingInPlace], D-463).
+     *
      * @param input the composing token
      * @param candidates this call's own ordinary ranked candidates
      * @return the dual-casing chips to offer - one per genuinely ambiguous candidate word once [input]
@@ -7567,19 +7586,14 @@ class AdaptKeyService : InputMethodService() {
         val chips = mutableListOf<SuggestionController.DisplayItem>()
         val seen = HashSet<String>()
         for (candidate in candidates) {
-            // D-503-followup (v1.2.85): a PINNED continuation is exempt from the pull-out. Reported real
-            // case: after "Viele " the blank-slate prediction "Grüße" (NOUN,VERB -> ambiguous casing) is
-            // a pinned D-503 partner, but the machinery below stripped it from the candidate list and
-            // re-appended both casings at the BACK of the bar (D-404-followup's appended shape), where the
-            // 8-slot cut dropped them entirely - "beim G ist der Grüße-Chip weg". The pinned partner IS
-            // the prediction D-503 exists for and keeps its leading slot with its single canonical casing
-            // (the mid-word capitalise() derivation at render time; the noun reading capitalises anyway).
-            // The full dual-casing affordance returns the moment the word is typed out in full: it is no
-            // longer pinned then (S-02, case-insensitively), survives only as the ordinary exact-match
-            // candidate, and the unchanged exact-match branch below offers the alternate casing as before.
-            if (candidate.pinned) {
-                continue
-            }
+            // D-548: pinned continuations produce chips like every other candidate. The v1.2.85 exemption
+            // (single canonical casing, never pulled out) existed because the old back-append shape cut the
+            // pair past the slot budget - but since D-546 the pair takes its candidate's OWN slot, and for
+            // a pinned continuation that slot is the bar's FRONT, so the exemption had flipped into the
+            // reported defect: the pinned capital reading sat in front (unreplaced) while the pair built
+            // from its non-pinned twin landed later and duplicated it ("Jetzt" an Position 2 UND 6, das
+            // kleine "jetzt" erst an Position 5). A pinned ambiguous word is the user's most prominent
+            // candidate - both its casings belong exactly there, lower first.
             val word = candidate.word
             val key = word.lowercase()
             if (!seen.add(key) || !CapitalisationEngine.isAmbiguousCasing(dictionaryStore.partsOfSpeech(word))) {
@@ -7660,18 +7674,11 @@ class AdaptKeyService : InputMethodService() {
         return out
     }
     
-    /**
-     * D-404-followup: drops any candidate matching one of [pendingAmbiguousCasingChips]'s own words
-     * (case-insensitively) - those are shown exclusively via their own dedicated chips (see
-     * [ambiguousCasingChips]), never a second time as an ordinary, wrongly single-cased ranked entry.
-     */
-    private fun excludeAmbiguousCasingWords(suggestions: List<Suggestion>): List<Suggestion> {
-        if (pendingAmbiguousCasingChips.isEmpty()) {
-            return suggestions
-        }
-        val ambiguousWords = pendingAmbiguousCasingChips.mapTo(HashSet()) { it.word.lowercase() }
-        return suggestions.filter { it.word.lowercase() !in ambiguousWords }
-    }
+    // D-546: the D-404-followup excludeAmbiguousCasingWords() filter was removed with the placement
+    // change - the ambiguous candidate stays ranked in the controller (so the S-03 stabilisation keeps
+    // tracking it), and its chips replace it wholesale at display time (see
+    // AmbiguousCasingPlacement.insertInPlace's own KDoc for why the exclusion would have defeated that
+    // placement), so the word is never shown a second time, wrongly single-cased.
     
     private fun clearSuggestions() {
         handler.removeCallbacks(resortRunnable)

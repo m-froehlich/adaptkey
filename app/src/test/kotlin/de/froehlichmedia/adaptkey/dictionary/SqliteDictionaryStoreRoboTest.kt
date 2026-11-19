@@ -437,6 +437,28 @@ class SqliteDictionaryStoreRoboTest {
         store.close()
     }
     
+    @Test
+    fun d547AFreshLearnedEntryForABundledWordInheritsTheBundledReadingPlusTheHint() {
+        val store = store("d547-learn-tags.db")
+        store.putWord(WordEntry("jetzt", 15000L, setOf(PartOfSpeech.OTHER)))
+        store.learn("Jetzt", null, null, categoryHint = PartOfSpeech.NOUN)
+        
+        val entry = store.entryOf("Jetzt")
+        assertEquals("Jetzt", entry?.word) // D-264: the learned casing wins
+        assertEquals(setOf(PartOfSpeech.NOUN, PartOfSpeech.OTHER), entry?.partsOfSpeech)
+        store.close()
+    }
+    
+    @Test
+    fun d547AFreshLearnedEntryForABundledWordWithoutAHintCarriesJustTheBundledReading() {
+        val store = store("d547-learn-tags-nohint.db")
+        store.putWord(WordEntry("jetzt", 15000L, setOf(PartOfSpeech.OTHER)))
+        store.learn("Jetzt", null, null)
+        
+        assertEquals(setOf(PartOfSpeech.OTHER), store.entryOf("Jetzt")?.partsOfSpeech)
+        store.close()
+    }
+    
     
     @Test
     fun bundledContentVersionDefaultsToZeroForAStoreThatNeverRecordedOne() {

@@ -516,6 +516,34 @@ class InMemoryDictionaryStoreTest {
     }
     
     @Test
+    fun `D-547 a fresh learned entry for a bundled word inherits the bundled reading plus the hint`() {
+        // The reported "Jetzt" case: the bundled dictionary knows lowercase "jetzt" (OTHER), the
+        // mid-sentence capital promotes "Jetzt" with a NOUN hint - the learned entry must carry the
+        // honest union at birth (NOUN first per the enum-order convention), never the hint alone.
+        store.putWord(WordEntry("jetzt", 15000L, setOf(PartOfSpeech.OTHER)))
+        store.learn("Jetzt", null, null, categoryHint = PartOfSpeech.NOUN)
+        
+        val entry = store.learnedWords().single()
+        assertEquals("Jetzt", entry.word) // D-264: the learned casing wins
+        assertEquals(setOf(PartOfSpeech.NOUN, PartOfSpeech.OTHER), entry.partsOfSpeech)
+    }
+    
+    @Test
+    fun `D-547 a fresh learned entry for a bundled word without a hint carries just the bundled reading`() {
+        store.putWord(WordEntry("jetzt", 15000L, setOf(PartOfSpeech.OTHER)))
+        store.learn("Jetzt", null, null)
+        
+        assertEquals(setOf(PartOfSpeech.OTHER), store.learnedWords().single().partsOfSpeech)
+    }
+    
+    @Test
+    fun `D-547 an unknown word keeps hint-only tags (no bundled reading to inherit)`() {
+        store.learn("Qxyz", null, null, categoryHint = PartOfSpeech.NOUN)
+        
+        assertEquals(setOf(PartOfSpeech.NOUN), store.partsOfSpeech("qxyz"))
+    }
+    
+    @Test
     fun `D-404 learn links a newly-learned inflected form to an already-learned base - forward direction`() {
         store.learn("Hund", null)
         store.learn("Hundes", null)

@@ -524,7 +524,23 @@ object LanguagePackCatalog {
             // union merge delivers the symbol to older installed packs from the compiled-in base anyway).
             // version.txt 50 -> 51, pack rebuilt and verified by reading hints.tsv/version.txt back out
             // of the archive, LanguagePackCatalog version 50 -> 51.
-            version = 51
+            //
+            // D-545 (v1.3.20): "jetzt" (1,499) raised to 15,000 - the same Wikipedia register skew D-473
+            // fixed for "dich"/"dir" and D-480 for "wer": the word is ubiquitous in conversational German
+            // but an encyclopedic corpus rates it below written-register rivals it never loses to in real
+            // typing ("jedoch" 27,743, "allerdings" 12,464, "derzeit" 1,573 all outranked it). User report:
+            // the bar while typing "jet"/"jetz" showed everything but "jetzt", and the one casing seen
+            // carried the noun-style capital. Traced, not guessed: with the bundled data the provider
+            // already ranked "jetzt" first for both prefixes (throwaway diagnostic over the real dict.tsv +
+            // bigram.tsv), so a device showing otherwise was on stale personal state (an old installed pack
+            // DB or a learned "Jetzt" casing override, D-264) - the raise is nevertheless applied per the
+            // user's explicit "viel höher gewichten und gewinnen" instruction, it is calibration-neutral
+            // for every CorrectionConfidence gate (frequencyFactor saturates at 25 for a non-noun) and only
+            // strengthens the prefix/fuzzy ranking, with no adjacent-key real-word rival at cost 1
+            // ("hetzt"/"ketzt" are not in the dictionary) to endanger through A-01's override. Pinned by
+            // the new JetztRankingEvaluationTest. `dictionaries/de/version.txt` 51 -> 52, pack rebuilt and
+            // verified byte-identical after unzip, `LanguagePackCatalog` version 51 -> 52.
+            version = 52
         ),
         Entry(
             Language.GREEK,

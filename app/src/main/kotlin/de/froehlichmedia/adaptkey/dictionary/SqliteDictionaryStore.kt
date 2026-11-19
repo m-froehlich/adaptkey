@@ -586,10 +586,19 @@ class SqliteDictionaryStore(context: Context, databaseName: String = DATABASE_NA
         // D-404: a category is only ever set once, from whichever categoryHint call first supplies one -
         // never overridden afterwards, and never defaulted to anything when no hint is given (stays the
         // empty set, read by the editor as "unbekannt").
+        // D-547: a *fresh* entry for a word the bundled dictionary already knows never stands on its own
+        // hint alone - the bundled reading(s) ride along at creation, so the learned entry carries the same
+        // union entryOf() merges anyway (the capitalised "Jetzt" over bundled OTHER is born NOUN,OTHER:
+        // the casing override stays, D-264, but the entry is no longer nailed to noun-only capitalisation
+        // by its own tags alone, and the Learned Words editor shows the honest union). Stored in
+        // PartOfSpeech declaration order per the D-404-followup convention (OTHER last).
         val pos = when {
             existing != null && existing.partsOfSpeech.isNotEmpty() -> existing.partsOfSpeech
-            categoryHint != null -> setOf(categoryHint)
-            else -> existing?.partsOfSpeech ?: emptySet()
+            else -> {
+                val bundled = bundledEntryOf(word)?.partsOfSpeech ?: emptySet()
+                val tags = if (bundled.isNotEmpty()) bundled else existing?.partsOfSpeech ?: emptySet()
+                if (categoryHint != null) (tags + categoryHint).sortedBy { it.ordinal }.toSet() else tags
+            }
         }
         val lemma = existing?.lemma ?: linkLemma(canonical)
         putWordInternal(TABLE_LEARNED, canonical, frequency, pos, lastTouched = System.currentTimeMillis(), lemma = lemma)
