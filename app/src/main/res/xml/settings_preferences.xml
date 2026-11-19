@@ -370,6 +370,16 @@
             android:entryValues="@array/d507_combined_key_values"
             android:defaultValue="symbol" />
 
+        <!-- D-555: the dedicated bottom-row emoji key right of the combined `!?#` key - default ON
+             (the user's revised assessment: emojis matter). The key's width is funded from the L-02
+             widening of comma and full stop (the surplus rule), never from the space bar; the C-27
+             emoji mode hides the dedicated key at runtime (no duplicate 😊). -->
+        <SwitchPreferenceCompat
+            android:key="d555_bottom_row_emoji_key"
+            android:title="@string/d555_emoji_key_title"
+            android:summary="@string/d555_emoji_key_summary"
+            android:defaultValue="true" />
+
         <SeekBarPreference
             android:key="d55_space_below_number_row"
             android:title="@string/d55_below_title"

@@ -80,7 +80,14 @@ data class RawSettings(
     val fieldSwipeScalePercent: Int = AdaptSettings.DEFAULT_FIELD_SWIPE_SCALE,
     val backspaceRepeatInitialDelayMs: Long = AdaptSettings.DEFAULT_BACKSPACE_REPEAT_INITIAL_DELAY_MS,
     val bottomInsetModeKey: String? = null,
-    val showApostropheKey: Boolean = false // D-515: the apostrophe key on non-English layouts (default off)
+    val showApostropheKey: Boolean = false, // D-515: the apostrophe key on non-English layouts (default off)
+    
+    /**
+     * D-555: whether the letters page's bottom row carries the dedicated emoji key right of the
+     * combined `!?#` key (default ON). Pure pass-through - the C-27=Emoji suppression is resolved
+     * by the service, never here (the pure layer adds no logic).
+     */
+    val showBottomRowEmojiKey: Boolean = true
 )
 
 /**
@@ -373,7 +380,8 @@ object SettingsMapper {
                 MIN_BACKSPACE_REPEAT_INITIAL_DELAY_MS, MAX_BACKSPACE_REPEAT_INITIAL_DELAY_MS
             ),
             bottomInsetMode = BottomInsetMode.fromKey(raw.bottomInsetModeKey),
-            showApostropheKey = raw.showApostropheKey
+            showApostropheKey = raw.showApostropheKey,
+            showBottomRowEmojiKey = raw.showBottomRowEmojiKey
         )
     }
 }

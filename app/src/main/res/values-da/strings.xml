@@ -161,6 +161,8 @@
     <string name="double_tap_delay_summary">Maksimal tid mellem to tryk for at tælle som dobbelttryk, i ms - skift af store/små bogstaver med Skift, dobbelttryk på Tilbage for at fortryde og klæbende Tilbage deler alle dette vindue.</string>
     <string name="d507_combined_key_title">Kombineret tast (!?#/Emoji)</string>
     <string name="d507_combined_key_summary">Hvad den kombinerede tast i nederste række gør: gå til siden med specialtegn (!?#), åbne emoji-panelet eller intet - tasten forsvinder, og pladsen forbliver tom (D-507).</string>
+    <string name="d555_emoji_key_title">Emoji-tast</string>
+    <string name="d555_emoji_key_summary">Vis en emoji-tast (lige til højre for specialtegnstasten). Komma og punktum afgiver deres ekstra bredde over bogstavbredde til formålet. Fra: nederste række som før.</string>
     <string name="d507_mode_off">Fra</string>
     <string name="d507_mode_symbols">Kun !?#</string>
     <string name="d507_mode_emoji">Kun emoji</string>
@@ -394,3 +396,4 @@
     <string name="d89_f39_desc">Valgfrit: tegn et ord i én sammenhængende bevægelse over bogstaverne - det bedste match skrives for dig, med ordbog, diakritisk sammenfoldning og personlig kontekst. Fra som standard.</string>
     <string name="d89_footer_note">Bemærk: siden den alternative tastetildelingsreform tilbyder bogstavssiden praktisk talt alle relevante tegn direkte - dobbelthjørnetaster, cifferækken med egne symboler og langtrykspopups inkluderet - hverdagsskrivning behøver aldrig en omvej til specialtegn-siderne.</string>
 </resources>
+

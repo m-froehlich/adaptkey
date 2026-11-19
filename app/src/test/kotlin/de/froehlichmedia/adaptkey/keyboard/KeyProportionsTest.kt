@@ -105,4 +105,71 @@ class KeyProportionsTest {
     fun `constructor rejects a negative shift surcharge`() {
         assertThrows<IllegalArgumentException> { KeyProportions(shiftExtra = -0.1f) }
     }
+    
+    @Test
+    fun `D-555 defaults fund the emoji key fully from the L-02 widening`() {
+        val proportions = KeyProportions()
+        val funded = proportions.fundedBottomRow()
+        
+        assertEquals(1.1f, funded.commaWeight, 1e-4f)
+        assertEquals(1.1f, funded.periodWeight, 1e-4f)
+        assertEquals(KeyProportions.BOTTOM_ROW_EMOJI_KEY_WEIGHT, funded.emojiWeight, 1e-4f)
+        // The row's total weight is unchanged: the surplus above the letter weight (0.4 + 0.4)
+        // covers the key (0.6) exactly - nothing is taken from the space bar.
+        assertEquals(
+            proportions.commaWeight + proportions.periodWeight,
+            funded.commaWeight + funded.periodWeight + funded.emojiWeight,
+            1e-4f
+        )
+    }
+    
+    @Test
+    fun `D-555 deliberately widened keys give up only part of their surplus`() {
+        val funded = KeyProportions(commaWeight = 1.8f, periodWeight = 1.8f).fundedBottomRow()
+        
+        assertEquals(1.5f, funded.commaWeight, 1e-4f)
+        assertEquals(1.5f, funded.periodWeight, 1e-4f)
+        assertEquals(0.6f, funded.emojiWeight, 1e-4f)
+    }
+    
+    @Test
+    fun `D-555 narrowed keys stop exactly at the letter-width floor`() {
+        val funded = KeyProportions(commaWeight = 1.2f, periodWeight = 1.2f).fundedBottomRow()
+        
+        assertEquals(1.0f, funded.commaWeight, 1e-4f)
+        assertEquals(1.0f, funded.periodWeight, 1e-4f)
+        // The emoji key keeps its full weight; the residual (0.6 - 0.4) is left to the row's total.
+        assertEquals(0.6f, funded.emojiWeight, 1e-4f)
+    }
+    
+    @Test
+    fun `D-555 slider-minimum keys are never touched`() {
+        val funded = KeyProportions(commaWeight = 0.5f, periodWeight = 0.5f).fundedBottomRow()
+        
+        assertEquals(0.5f, funded.commaWeight, 1e-4f)
+        assertEquals(0.5f, funded.periodWeight, 1e-4f)
+        assertEquals(0.6f, funded.emojiWeight, 1e-4f)
+    }
+    
+    @Test
+    fun `D-555 an asymmetric config spends only the wide key's surplus`() {
+        val funded = KeyProportions(commaWeight = 0.5f, periodWeight = 3.0f).fundedBottomRow()
+        
+        assertEquals(0.5f, funded.commaWeight, 1e-4f)
+        assertEquals(2.4f, funded.periodWeight, 1e-4f)
+        assertEquals(0.6f, funded.emojiWeight, 1e-4f)
+    }
+    
+    @Test
+    fun `D-555 the rule never widens a key and keeps the emoji weight constant`() {
+        val widths = floatArrayOf(0.5f, 1.0f, 1.2f, 1.4f, 1.8f, 3.0f)
+        for (comma in widths) {
+            for (period in widths) {
+                val funded = KeyProportions(commaWeight = comma, periodWeight = period).fundedBottomRow()
+                assertTrue(funded.commaWeight <= comma + 1e-4f)
+                assertTrue(funded.periodWeight <= period + 1e-4f)
+                assertEquals(0.6f, funded.emojiWeight, 1e-4f)
+            }
+        }
+    }
 }

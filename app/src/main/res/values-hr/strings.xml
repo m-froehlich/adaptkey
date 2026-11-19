@@ -161,6 +161,8 @@
     <string name="double_tap_delay_summary">Najdulje vrijeme između dvaju dodira da se računaju kao dvostruki dodir, u ms - promjena veličine slova Shiftom, dvostruki dodir na Backspace za poništavanje i ljepljivi Backspace dijele ovaj prozor.</string>
     <string name="d507_combined_key_title">Kombinirana tipka (!?#/Emoji)</string>
     <string name="d507_combined_key_summary">Što kombinirana tipka u donjem redu radi: prelazak na stranicu posebnih znakova (!?#), otvaranje ploče emojija ili ništa - tipka nestane, a njezino mjesto ostaje prazno (D-507).</string>
+    <string name="d555_emoji_key_title">Tipka emoji</string>
+    <string name="d555_emoji_key_summary">Prikaži tipku emoji (odmah desno od tipke posebnih znakova). Zarez i točka za to daju svoju dodatnu širinu iznad širine slova. Isključeno: donji red kao prije.</string>
     <string name="d507_mode_off">Isključeno</string>
     <string name="d507_mode_symbols">Samo !?#</string>
     <string name="d507_mode_emoji">Samo emoji</string>
@@ -394,3 +396,4 @@
     <string name="d89_f39_desc">Neobavezno: nacrtaj riječ jednim povezanim pokretom preko slova - najbolja podudarnost upisuje se umjesto tebe, uz rječnik, preslikavanje dijakritika i osobni kontekst. Zadano isključeno.</string>
     <string name="d89_footer_note">Napomena: od reforme alternativne raspodjele tipki stranica slova čini praktički sve relevantne znakove izravno dostupnima - tipke s dvostrukim kutom, red znamenki s vlastitim simbolima i skočni prozori dugog pritiska uključeni - svakodnevno tipkanje nikada ne treba posjet stranicama posebnih znakova.</string>
 </resources>
+

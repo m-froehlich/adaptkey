@@ -219,4 +219,12 @@ class AzertyLayoutTest {
         
         assertEquals(latinRow, azertyRow)
     }
+    
+    @Test
+    fun `D-555 the emoji key rides the AZERTY bottom row when enabled and is absent by default`() {
+        val bottomRow = AzertyLayout.rows(showEmojiKey = true).last()
+        
+        assertEquals(KeyCode.EMOJI, bottomRow[1].code)
+        assertTrue(AzertyLayout.rows().last().none { it.code == KeyCode.EMOJI })
+    }
 }

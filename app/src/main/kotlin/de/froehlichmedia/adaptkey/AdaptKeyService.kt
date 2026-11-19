@@ -1569,6 +1569,11 @@ class AdaptKeyService : InputMethodService() {
             // D-507: the combined key's slot function - the `!?#` special-characters-page toggle
             // (D-531), the emoji panel, or hidden.
             view.combinedKeyMode = s.combinedKeyMode
+            // D-555: the dedicated bottom-row emoji key - the resolved setting AND not the C-27
+            // emoji mode (the combined key then shows the emoji glyph itself; a second adjacent
+            // 😊 key would be redundant). The service resolves the effective flag; the layouts
+            // never see CombinedKeyMode.
+            view.showEmojiKey = s.showBottomRowEmojiKey && s.combinedKeyMode != CombinedKeyMode.EMOJI
             // D-92: the calculator page's currency/decimal-separator keys follow the device's system
             // locale (not the active keyboard alphabet - German and Greek never disagree on either point).
             view.systemLocale = resources.configuration.locales.get(0)
@@ -3501,6 +3506,13 @@ class AdaptKeyService : InputMethodService() {
                     val page = PanelNavigation.onCombinedKeyTap(surface, settings.combinedKeyMode)
                     setSurface(page.surface, targetSymbolPage = page.symbolPage)
                 }
+                
+                // D-555: the dedicated bottom-row emoji key opens the panel through the same one
+                // choke point as the extra-row button and the combined key's emoji mode above, so
+                // the D-507 rules apply identically (the panel always brings the extra row with it,
+                // D-472's return button stays reachable). No toggle check: the keyboard view is
+                // GONE while the panel shows, so the key can never be tapped while it is open.
+                KeyCode.EMOJI -> setSurface(InputSurface.EMOJI)
                 
                 // L-03: the number layer's "ABC" key returns to letters.
                 KeyCode.LETTERS -> setSurface(InputSurface.LETTERS)

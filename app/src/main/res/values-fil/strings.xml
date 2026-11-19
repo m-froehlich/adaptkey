@@ -161,6 +161,8 @@
     <string name="double_tap_delay_summary">Pinakamahabang oras sa pagitan ng dalawang tap para mabilang bilang double-tap, sa ms - ang pagpapalit ng laki ng letra gamit ang Shift, double-tap sa Backspace para i-undo, at malagkit na Backspace ay lahat gumagamit ng window na ito.</string>
     <string name="d507_combined_key_title">Pinagsamang pindutan (!?#/Emoji)</string>
     <string name="d507_combined_key_summary">Ano ang ginagawa ng pinagsamang pindutan sa pinakailalim na hanay: paglipat sa pahina ng mga espesyal na karakter (!?#), pagbukas ng emoji panel, o wala - mawawala ang pindutan at mananatiling bakante ang puwang nito (D-507).</string>
+    <string name="d555_emoji_key_title">Emoji key</string>
+    <string name="d555_emoji_key_summary">Ipakita ang emoji key (kanan agad ng special-characters key). Ang kuwit at tuldok ay nagbibigay ng kanilang dagdag na lapad sa itaas ng lapad ng titik. Naka-off: ilalim na hanay gaya ng dati.</string>
     <string name="d507_mode_off">Naka-off</string>
     <string name="d507_mode_symbols">!?# lang</string>
     <string name="d507_mode_emoji">Emoji lang</string>
@@ -394,3 +396,4 @@
     <string name="d89_f39_desc">Opsyonal: guhit ang salita sa isang tuloy-tuloy na linya sa mga titik - ang pinakamahusay na tugma ay mai-type para sa iyo, kasama ang diksyunaryo, pag-tiklop ng mga diakritiko at personal na konteksto. Nakasara bilang default.</string>
     <string name="d89_footer_note">Paalala: mula nang reporma sa alternatibong pagtatalaga ng mga key, ginagawang direktang available ng pahina ng mga titik ang praktikal na lahat ng mahahalagang karakter - mga key na dobleng sulok, ang hilera ng mga digit na may sariling mga simbolo, at mga pop-up ng mahabang pagpindot kasama - hindi kailanman kailangan ng pang-araw-araw na pag-type na daanan ang mga pahina ng mga espesyal na karakter.</string>
 </resources>
+

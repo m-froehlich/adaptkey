@@ -161,6 +161,8 @@
     <string name="double_tap_delay_summary">Didžiausias laikas tarp dviejų palietimų, kad jie būtų laikomi dvigubu palietimu, ms - Shift registro perjungimas, dvigubas palietimas Backspace atšaukimui ir lipnus Backspace visi dalijasi šiuo langu.</string>
     <string name="d507_combined_key_title">Kombinuotas klavišas (!?#/Emoji)</string>
     <string name="d507_combined_key_summary">Ką kombinuotas klavišas apatinėje eilėje daro: perjungimas į specialiųjų simbolių puslapį (!?#), emoji skydelio atvėrimas arba nieko - klavišas išnyksta, o jo vieta lieka tuščia (D-507).</string>
+    <string name="d555_emoji_key_title">Emoji klavišas</string>
+    <string name="d555_emoji_key_summary">Rodyti emoji klavišą (tiesiogiai dešinėje nuo specialiųjų simbolių klavišo). Kablelis ir taškas tam atiduoda savo papildomą plotį virš raidės pločio. Išjungta: apatinė eilutė kaip anksčiau.</string>
     <string name="d507_mode_off">Išjungta</string>
     <string name="d507_mode_symbols">Tik !?#</string>
     <string name="d507_mode_emoji">Tik emoji</string>
@@ -394,3 +396,4 @@
     <string name="d89_f39_desc">Nebūtina: nupiešk žodį viena nenutrūkstama linija per raides - geriausias atitikmušas parašomas už tave, su žodynu, diakritinių ženklų sudengimu ir asmeniniu kontekstu. Pagal nutylėjimą išjungta.</string>
     <string name="d89_footer_note">Pastaba: nuo alternatyvios klaviatūros paskirstymo reformos raidžių puslapis padaro beveik visus svarbius simbolius tiesiogiai prieinamus - dvigubo kampo klavišai, skaitmenų eilė su savais simboliais ir ilgo paspaudimo iškylantieji langai įskaitant - kasdieniam rašymui niekada nereikia užsukti į specialiųjų simbolių puslapius.</string>
 </resources>
+

@@ -173,6 +173,8 @@
     <string name="double_tap_delay_summary">Maximale Zeit zwischen zwei Tipps, um als Doppeltipp zu zählen, in ms - Shift-Großschreibung umschalten, Doppel-Backspace zum Zurücksetzen und klebende Rücktaste teilen sich dieses Zeitfenster.</string>
     <string name="d507_combined_key_title">Kombinierte Taste (!?#/Emoji)</string>
     <string name="d507_combined_key_summary">Was die kombinierte Taste in der unteren Reihe macht: zur Sonderzeichen-Seite springen (!?#), das Emoji-Panel öffnen oder nichts - die Taste verschwindet, ihr Platz bleibt leer (D-507).</string>
+    <string name="d555_emoji_key_title">Emoji-Taste</string>
+    <string name="d555_emoji_key_summary">Emoji-Taste (😊) direkt rechts neben der Sonderzeichen-Taste anzeigen. Komma und Punkt geben dafür ihre Verbreiterung über der Buchstabenbreite ab. Aus: untere Reihe wie bisher.</string>
     <string name="d507_mode_off">Aus</string>
     <string name="d507_mode_symbols">Nur !?#</string>
     <string name="d507_mode_emoji">Nur Emoji</string>
@@ -454,3 +456,4 @@
     <string name="d89_f39_desc">Optional: Ein Wort in einem durchgehenden Strich über die Buchstaben ziehen - der beste Treffer wird geschrieben, mit Wörterbuch, Umlaut-Folding und persönlichem Kontext. Standardmäßig aus.</string>
     <string name="d89_footer_note">Nachtrag: Seit der Alt-Belegungs-Reform macht die Buchstaben-Seite praktisch alle relevanten Zeichen direkt verfügbar - Doppel-Ecken-Tasten, die Ziffernleiste samt ihrer Symbole und die Langdruck-Popups eingeschlossen. Für den Alltag ist kein Zugriff auf die Sonderzeichen-Seiten notwendig.</string>
 </resources>
+

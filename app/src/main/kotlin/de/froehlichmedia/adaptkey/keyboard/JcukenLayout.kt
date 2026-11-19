@@ -59,6 +59,10 @@ object JcukenLayout {
      *        [urlMode] or [emailMode] is true.
      * @param ukrainian false (default) builds the Russian variant, true builds the Ukrainian variant - see
      *        this object's own KDoc for the exact, real letter-by-letter differences.
+     * @param showEmojiKey D-555: whether the dedicated bottom-row emoji key sits right of the combined
+     *        `!?#` key ([KeyboardLayout.lettersBottomRow]; width funded from the L-02 widening). Defaults
+     *        to false - every pre-D-555 call site unchanged; the runtime value is the resolved setting
+     *        (default ON, hidden while C-27 puts the emoji mode in the combined key's own slot).
      * @return the keyboard as a list of rows, each a list of [Key] from left to right
      */
     fun rows(
@@ -67,7 +71,8 @@ object JcukenLayout {
         urlMode: Boolean = false,
         emailMode: Boolean = false,
         locale: Locale = Locale.getDefault(),
-        ukrainian: Boolean = false
+        ukrainian: Boolean = false,
+        showEmojiKey: Boolean = false
     ): List<List<Key>> {
         val result = ArrayList<List<Key>>()
         
@@ -93,15 +98,9 @@ object JcukenLayout {
             } else if (emailMode) {
                 KeyboardLayout.emailBottomRow(proportions, locale)
             } else {
-                buildList {
-                    // L-03: combined emoji / numeric-layer key, identical to the Latin bottom row.
-                    add(Key(label = "😊", code = KeyCode.SYMBOL, hint = "123", weight = proportions.symbolWeight))
-                    // D-22: comma / full-stop carry the same long-press punctuation sets as the Latin layout.
-                    add(charKey(',', alternatives = KeyboardLayout.COMMA_ALTERNATIVES, weight = proportions.commaWeight))
-                    add(Key(label = "space", code = KeyCode.SPACE, char = ' ', weight = proportions.spaceWeight))
-                    add(charKey('.', alternatives = KeyboardLayout.PERIOD_ALTERNATIVES, weight = proportions.periodWeight))
-                    add(Key(label = "↵", code = KeyCode.ENTER, weight = proportions.enterWeight))
-                }
+                // D-555: the shared bottom-row builder - the Cyrillic geometries carry the
+                // dedicated emoji key like every other layout (universal, never per-layout gated).
+                KeyboardLayout.lettersBottomRow(proportions, showEmojiKey)
             }
         )
         

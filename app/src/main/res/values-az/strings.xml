@@ -161,6 +161,8 @@
     <string name="double_tap_delay_summary">İki toxunuşun ikiqat toxunuş sayılması üçün aralarındakı maksimum vaxt, ms ilə - Shift ilə böyüklük dəyişmə, geri qaytarmaq üçün Backspace-ə ikiqat toxunuş və yapışqan Backspace bu pəncərəni paylaşır.</string>
     <string name="d507_combined_key_title">Birləşdirilmiş düymə (!?#/Emoji)</string>
     <string name="d507_combined_key_summary">Aşağı sıradakı birləşdirilmiş düymə nə edir: xüsusi işarələr səhifəsinə keçid (!?#), emoji panelını açmaq və ya heç nə - düymə yox olur və yeri boş qalır (D-507).</string>
+    <string name="d555_emoji_key_title">Emoji düyməsi</string>
+    <string name="d555_emoji_key_summary">Xüsusi simvollar düyməsinin birbaşa sağında emoji düyməsini göstər. Vergül və nöqtə bunun üçün hərf enindən yuxarı olan əlavə enlərini verir. Bağlı: alt sıra əvvəlki kimi.</string>
     <string name="d507_mode_off">Bağlı</string>
     <string name="d507_mode_symbols">Yalnız !?#</string>
     <string name="d507_mode_emoji">Yalnız emoji</string>
@@ -394,3 +396,4 @@
     <string name="d89_f39_desc">İstəyə bağlı: sözu hərflər üzərində fasiləsiz bir xəttlə çizin - ən yaxşı uyğunluq sizin əvəzinizə yazılır; lüğət, diakritik uyğunlaşdırma və şəxsi kontekst daxil olmaqla. Standart olaraq bağlı.</string>
     <string name="d89_footer_note">Qeyd: alternativ düymə bölgüsü islahatından bəri hərf səhifəsi demək olar bütün müvafiq simvolları birbaşa əlçatan edir - ikiqutbu düymələr, öz simvolları ilə rəqəm sırası və uzun basma pəncərələri daxil olmaqla - gündəlik yazma üçün xüsusi simvol səhifələrinə müraciət heç vaxt lazım deyil.</string>
 </resources>
+

@@ -161,6 +161,8 @@
     <string name="double_tap_delay_summary">A két érintés közötti legnagyobb idő, hogy dupla érintésnek számítson, ms-ban - a Shift kis-/nagybetű-váltása, a visszavonó dupla Backspace-érintés és a ragadós Backspace mind ezt az ablakot használja.</string>
     <string name="d507_combined_key_title">Kombinált billentyű (!?#/Emoji)</string>
     <string name="d507_combined_key_summary">Mit tesz az alsó sorban lévő kombinált billentyű: ugrás a speciális karakterek oldalára (!?#), az emoji-panel megnyitása vagy semmi - a billentyű eltűnik, a helye üresen marad (D-507).</string>
+    <string name="d555_emoji_key_title">Emoji billentyű</string>
+    <string name="d555_emoji_key_summary">Emoji billentyű megjelenítése (közvetlenül a speciális karakterek billentyűje jobbján). A vessző és a pont ehhez leadja a betűszélesség feletti többletszélességét. Ki: alsó sor, mint korábban.</string>
     <string name="d507_mode_off">Ki</string>
     <string name="d507_mode_symbols">Csak !?#</string>
     <string name="d507_mode_emoji">Csak emoji</string>
@@ -394,3 +396,4 @@
     <string name="d89_f39_desc">Opcionális: rajzolj egy szót egy folyamatos vonallal a betűk fölött - a legjobb találat beíródik helyetted, szótárral, ékezet-hajtogatással és személyes kontextussal. Alapból ki.</string>
     <string name="d89_footer_note">Megjegyzés: az alternatív billentyűhozzárendelés reformja óta a betűoldal a releváns karakterek gyakorlatilag mindegyikét közvetlenül elérhetővé teszi - duplasarkú billentyűk, a saját szimbólumokkal rendelkező numsor és a hosszú nyomás felugró ablakai is - a mindennapi gépelésnek soha nincs szüksége kitérésre a speciális karakterek oldalaira.</string>
 </resources>
+

@@ -179,6 +179,8 @@
     <string name="double_tap_delay_summary">Maximum time between two taps to count as a double-tap, in ms - Shift case-toggle, double-tap Backspace to revert, and sticky Backspace all share this window.</string>
     <string name="d507_combined_key_title">Combined key (!?#/Emoji)</string>
     <string name="d507_combined_key_summary">What the combined key in the bottom row does: jump to the special-characters page (!?#), open the emoji panel, or nothing - the key disappears and its slot stays empty (D-507).</string>
+    <string name="d555_emoji_key_title">Emoji key</string>
+    <string name="d555_emoji_key_summary">Show an emoji key (😊) directly right of the special-characters key. Comma and full stop give up their extra width above a letter\'s width to make room. Off: bottom row as before.</string>
     <string name="d507_mode_off">Off</string>
     <string name="d507_mode_symbols">!?# only</string>
     <string name="d507_mode_emoji">Emoji only</string>
@@ -474,3 +476,4 @@
     <string name="d89_f39_desc">Optional: draw a word in one continuous stroke across the letters, and the best match is typed for you - with dictionary, diacritic folding and personal context. Off by default.</string>
     <string name="d89_footer_note">Note: since the alternative key-assignment reform, the letters page makes practically all relevant characters directly available - dual-corner keys, the digits row with its own symbols, and the long-press popups included - so everyday typing never needs a trip to the special-character pages.</string>
 </resources>
+

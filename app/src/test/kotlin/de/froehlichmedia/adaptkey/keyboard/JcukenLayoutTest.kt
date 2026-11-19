@@ -129,4 +129,14 @@ class JcukenLayoutTest {
         assertEquals(33, ukExpected.size)
         assertEquals(33, uk.size, "a Ukrainian letter appears more than once")
     }
+    
+    @Test
+    fun `D-555 the emoji key rides the Cyrillic bottom rows when enabled and is absent by default`() {
+        assertEquals(KeyCode.EMOJI, JcukenLayout.rows(showEmojiKey = true).last()[1].code)
+        assertEquals(
+            KeyCode.EMOJI,
+            JcukenLayout.rows(showEmojiKey = true, ukrainian = true).last()[1].code
+        )
+        assertTrue(JcukenLayout.rows().last().none { it.code == KeyCode.EMOJI })
+    }
 }

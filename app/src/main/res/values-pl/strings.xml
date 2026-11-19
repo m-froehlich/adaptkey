@@ -161,6 +161,8 @@
     <string name="double_tap_delay_summary">Maksymalny czas między dwoma dotknięciami, by liczyć się jako podwójne, w ms - przełączanie wielkości liter Shiftem, podwójne dotknięcie Backspace cofające i lepki Backspace dzielą to okno.</string>
     <string name="d507_combined_key_title">Klawisz kombinowany (!?#/Emoji)</string>
     <string name="d507_combined_key_summary">Co robi klawisz kombinowany w dolnym rzędzie: przejście na stronę znaków specjalnych (!?#), otwieranie panelu emoji albo nic - klawisz znika, a jego miejsce pozostaje puste (D-507).</string>
+    <string name="d555_emoji_key_title">Klawisz emoji</string>
+    <string name="d555_emoji_key_summary">Pokaż klawisz emoji (bezpośrednio na prawo od klawisza znaków specjalnych). Przecinek i kropka oddają na to swoją nadwyżkę szerokości ponad szerokość litery. Wyłączone: dolny rząd jak wcześniej.</string>
     <string name="d507_mode_off">Wyłączone</string>
     <string name="d507_mode_symbols">Tylko !?#</string>
     <string name="d507_mode_emoji">Tylko emoji</string>
@@ -394,3 +396,4 @@
     <string name="d89_f39_desc">Opcjonalnie: przesuń palcem po literach jednym ciągiem - najlepsze dopasowanie zostanie wpisane za ciebie, ze słownikiem, odwzorowaniem diakrytyków i osobistym kontekstem. Domyślnie wyłączone.</string>
     <string name="d89_footer_note">Uwaga: od reformy alternatywnego przypisania klawiszy strona liter udostępnia praktycznie wszystkie istotne znaki bezpośrednio - klawisze z podwójnym narożnikiem, rząd cyfr z własnymi symbolami i wyskakujące okna długiego przytrzymania włącznie - codzienne pisanie nigdy nie potrzebuje wycieczki na strony znaków specjalnych.</string>
 </resources>
+

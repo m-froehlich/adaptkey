@@ -161,6 +161,8 @@
     <string name="double_tap_delay_summary">Tiempo máximo entre dos toques para contar como doble toque, en ms - el cambio de mayúscula con Mayús, el doble toque en Retroceso para revertir y el Retroceso pegajoso comparten esta ventana.</string>
     <string name="d507_combined_key_title">Tecla combinada (!?#/Emoji)</string>
     <string name="d507_combined_key_summary">Qué hace la tecla combinada de la fila inferior: ir a la página de caracteres especiales (!?#), abrir el panel de emojis o nada - la tecla desaparece y su hueco queda vacío (D-507).</string>
+    <string name="d555_emoji_key_title">Tecla de emojis</string>
+    <string name="d555_emoji_key_summary">Mostrar una tecla de emojis (justo a la derecha de la tecla de caracteres especiales). La coma y el punto ceden su anchura extra por encima de la anchura de una letra. Desactivado: fila inferior como antes.</string>
     <string name="d507_mode_off">Desactivado</string>
     <string name="d507_mode_symbols">Solo !?#</string>
     <string name="d507_mode_emoji">Solo emojis</string>
@@ -394,3 +396,4 @@
     <string name="d89_f39_desc">Opcional: dibuja una palabra en un solo trazo continuo sobre las letras y se escribe la mejor coincidencia, con diccionario, plegado de diacríticos y contexto personal. Desactivada por defecto.</string>
     <string name="d89_footer_note">Nota: desde la reforma de asignación alternativa de teclas, la página de letras pone prácticamente todos los caracteres relevantes directamente disponibles - teclas de doble esquina, la fila de dígitos con sus propios símbolos y las ventanas emergentes de pulsación larga incluidas - el tecleo diario nunca necesita un pase por las páginas de caracteres especiales.</string>
 </resources>
+

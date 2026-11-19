@@ -67,6 +67,38 @@ data class KeyProportions(
         get() = backspaceBaseWeight * (1f + backspaceExtra)
     
     /**
+     * D-555 (variant A): the letters-page bottom row's funded weights while the dedicated emoji
+     * key is shown - comma and full stop give up exactly their surplus above the letter weight,
+     * splitting the emoji key's own weight between them in proportion to that surplus. A key is
+     * never pushed below its own configured value, never below the floor, and never widened; a
+     * key already at (or below) the floor contributes nothing. When both keys together carry
+     * less surplus than [BOTTOM_ROW_EMOJI_KEY_WEIGHT], the emoji key keeps its full weight and
+     * the residual is left to the row's own total - every key of the row then shrinks by the
+     * same tiny factor at draw time, the space bar never specifically touched.
+     *
+     * Deliberately a pure build-time overlay: the C-01 comma/period slider values themselves are
+     * never rewritten (the D-301 lesson - no derived value ever becomes a second stored source
+     * of truth), so switching the emoji key off rebuilds the row exactly as configured.
+     *
+     * @return the funded (comma, emoji key, period) weights
+     */
+    fun fundedBottomRow(): FundedBottomRow {
+        val emojiWeight = BOTTOM_ROW_EMOJI_KEY_WEIGHT
+        val surplusComma = (commaWeight - letterWeight).coerceAtLeast(0f)
+        val surplusPeriod = (periodWeight - letterWeight).coerceAtLeast(0f)
+        val surplus = surplusComma + surplusPeriod
+        if (surplus <= 0f) {
+            return FundedBottomRow(commaWeight, emojiWeight, periodWeight)
+        }
+        val funded = minOf(emojiWeight, surplus)
+        return FundedBottomRow(
+            commaWeight = commaWeight - surplusComma / surplus * funded,
+            emojiWeight = emojiWeight,
+            periodWeight = periodWeight - surplusPeriod / surplus * funded
+        )
+    }
+    
+    /**
      * Per-letter weight in the third row after the backspace's (L-04) and shift's (D-16) extra width has
      * been taken evenly from the [letterCount] letter keys, keeping the row's total width unchanged.
      *
@@ -86,5 +118,27 @@ data class KeyProportions(
         
         /** The default, AdaptKey-tuned proportions. */
         val DEFAULT = KeyProportions()
+        
+        /**
+         * D-555: the dedicated bottom-row emoji key's weight, funded from the L-02 widening of
+         * comma and full stop (see [fundedBottomRow]). A considered starting point (~60 % of a
+         * letter key), not yet device-tuned - a single constant, easy to retune.
+         */
+        const val BOTTOM_ROW_EMOJI_KEY_WEIGHT = 0.6f
     }
 }
+
+/**
+ * D-555: the funded (comma, emoji key, period) weights of the letters-page bottom row while the
+ * dedicated emoji key is shown - see [KeyProportions.fundedBottomRow] for the rule (variant A)
+ * and its invariants.
+ *
+ * @property commaWeight the comma key's funded weight
+ * @property emojiWeight the emoji key's own weight (the constant [KeyProportions.BOTTOM_ROW_EMOJI_KEY_WEIGHT])
+ * @property periodWeight the full-stop key's funded weight
+ */
+data class FundedBottomRow(
+    val commaWeight: Float,
+    val emojiWeight: Float,
+    val periodWeight: Float
+)

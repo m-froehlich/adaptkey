@@ -98,6 +98,12 @@ object SettingsStore {
     // its canonical length unless the user asks for the extra key.
     const val KEY_SHOW_APOSTROPHE_KEY = "d515_apostrophe_key"
     
+    // D-555: the dedicated bottom-row emoji key right of the combined `!?#` key (default ON - the
+    // user's revised assessment: emojis matter in some situations, and the row funds the key from
+    // the L-02 widening). Hidden at runtime while C-27 puts the emoji mode in the combined key's
+    // own slot (the service resolves that; the stored value stays as-is).
+    const val KEY_SHOW_BOTTOM_ROW_EMOJI_KEY = "d555_bottom_row_emoji_key"
+    
     /**
      * D-389: epoch millis the daily [de.froehlichmedia.adaptkey.dictionary.LearnedWordExpirySweep] last
      * actually ran - internal throttling bookkeeping, not a user-facing setting (no `settings_preferences.xml`
@@ -196,6 +202,9 @@ object SettingsStore {
     /** Default stored boolean for the D-515 apostrophe-key-on-non-English-layouts toggle (off). */
     const val DEF_SHOW_APOSTROPHE_KEY = false
     
+    /** Default stored boolean for the D-555 bottom-row emoji-key toggle (on - default-on per the plan). */
+    const val DEF_SHOW_BOTTOM_ROW_EMOJI_KEY = true
+    
     /**
      * @param context any valid context
      * @return the shared default preferences backing both the settings screen and this store
@@ -264,7 +273,8 @@ object SettingsStore {
             fieldSwipeScalePercent = p.getInt(KEY_FIELD_SWIPE_SCALE, DEF_FIELD_SWIPE_SCALE),
             backspaceRepeatInitialDelayMs = p.getInt(KEY_BACKSPACE_REPEAT_INITIAL_DELAY, DEF_BACKSPACE_REPEAT_INITIAL_DELAY).toLong(),
             bottomInsetModeKey = p.getString(KEY_BOTTOM_INSET_MODE, null),
-            showApostropheKey = p.getBoolean(KEY_SHOW_APOSTROPHE_KEY, DEF_SHOW_APOSTROPHE_KEY)
+            showApostropheKey = p.getBoolean(KEY_SHOW_APOSTROPHE_KEY, DEF_SHOW_APOSTROPHE_KEY),
+            showBottomRowEmojiKey = p.getBoolean(KEY_SHOW_BOTTOM_ROW_EMOJI_KEY, DEF_SHOW_BOTTOM_ROW_EMOJI_KEY)
         )
         return SettingsMapper.toAdaptSettings(raw)
     }
@@ -447,6 +457,7 @@ object SettingsStore {
         KEY_NUMBER_ROW,
         KEY_SHOW_APOSTROPHE_KEY,
         KEY_COMBINED_KEY_MODE,
+        KEY_SHOW_BOTTOM_ROW_EMOJI_KEY,
         KEY_SPACE_BELOW_NUMBER_ROW,
         KEY_SPACE_ABOVE_SPACE_ROW,
         KEY_SPACE_WEIGHT,

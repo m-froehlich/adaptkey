@@ -161,6 +161,8 @@
     <string name="double_tap_delay_summary">Tempo máximo entre dois toques para contar como toque duplo, em ms - a alternância de caixa com Shift, o toque duplo no Backspace para reverter e o Backspace aderente compartilham essa janela.</string>
     <string name="d507_combined_key_title">Tecla combinada (!?#/Emoji)</string>
     <string name="d507_combined_key_summary">O que a tecla combinada da fileira inferior faz: ir para a página de caracteres especiais (!?#), abrir o painel de emojis ou nada - a tecla desaparece e o seu espaço fica vazio (D-507).</string>
+    <string name="d555_emoji_key_title">Tecla de emoji</string>
+    <string name="d555_emoji_key_summary">Mostrar uma tecla de emoji (logo à direita da tecla de caracteres especiais). A vírgula e o ponto cedem a sua largura extra acima da largura de uma letra. Desativado: linha inferior como antes.</string>
     <string name="d507_mode_off">Desativado</string>
     <string name="d507_mode_symbols">Apenas !?#</string>
     <string name="d507_mode_emoji">Apenas emojis</string>
@@ -394,3 +396,4 @@
     <string name="d89_f39_desc">Opcional: desenhe uma palavra num único traço contínuo sobre as letras - a melhor correspondência é escrita por si, com dicionário, repliegue de diacríticos e contexto pessoal. Desativado por predefinição.</string>
     <string name="d89_footer_note">Nota: desde a reforma da atribuição alternativa de teclas, a página de letras torna praticamente todos os caracteres relevantes diretamente disponíveis - teclas de canto duplo, fila de dígitos com os seus próprios símbolos e popups de premição longa incluídos - a escrita quotidiana nunca precisa de uma visita às páginas de caracteres especiais.</string>
 </resources>
+

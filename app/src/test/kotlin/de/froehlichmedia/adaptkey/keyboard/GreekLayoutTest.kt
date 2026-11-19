@@ -136,4 +136,12 @@ class GreekLayoutTest {
         
         assertEquals(latinRow, greekRow)
     }
+    
+    @Test
+    fun `D-555 the emoji key rides the Greek bottom row when enabled and is absent by default`() {
+        val bottomRow = GreekLayout.rows(showEmojiKey = true).last()
+        
+        assertEquals(KeyCode.EMOJI, bottomRow[1].code)
+        assertTrue(GreekLayout.rows().last().none { it.code == KeyCode.EMOJI })
+    }
 }

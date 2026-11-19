@@ -131,4 +131,16 @@ class KeyGestureTest {
         // The combined key keeps its own L-03 upward gesture instead.
         assertEquals(GestureAction.OPEN_SYMBOL_LAYER, KeyGesture.resolve(KeyCode.SYMBOL, SwipeDirection.UP))
     }
+    
+    @Test
+    fun `D-555 the emoji key's gestures are all generic - no action of its own`() {
+        // Up reveals the extra row like from any ordinary key (never a layer switch).
+        assertEquals(GestureAction.OPEN_SETTINGS_ROW, KeyGesture.resolve(KeyCode.EMOJI, SwipeDirection.UP))
+        // Horizontal is the ordinary D-19 surface swipe.
+        assertEquals(GestureAction.SWITCH_SURFACE_NEXT, KeyGesture.resolve(KeyCode.EMOJI, SwipeDirection.LEFT))
+        assertEquals(GestureAction.SWITCH_SURFACE_PREV, KeyGesture.resolve(KeyCode.EMOJI, SwipeDirection.RIGHT))
+        assertEquals(GestureAction.NONE, KeyGesture.resolve(KeyCode.EMOJI, SwipeDirection.NONE))
+        // Down dismisses like from everywhere.
+        assertEquals(GestureAction.DISMISS_KEYBOARD, KeyGesture.resolve(KeyCode.EMOJI, SwipeDirection.DOWN))
+    }
 }

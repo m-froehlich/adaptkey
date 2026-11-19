@@ -161,6 +161,8 @@
     <string name="double_tap_delay_summary">Najdlhší čas medzi dvoma klepnutiami, aby sa počítali ako dvojité, v ms - prepínanie veľkosti písmen Shiftom, dvojité klepnutie na Backspace na vrátenie a lepkavý Backspace zdieľajú toto okno.</string>
     <string name="d507_combined_key_title">Kombinovaná klávesa (!?#/Emoji)</string>
     <string name="d507_combined_key_summary">Čo robí kombinovaná klávesa v dolnom rade: prechod na stránku špeciálnych znakov (!?#), otvorenie panela emoji alebo nič - klávesa zmizne a jej miesto zostane prázdne (D-507).</string>
+    <string name="d555_emoji_key_title">Klávesa emoji</string>
+    <string name="d555_emoji_key_summary">Zobraziť klávesu emoji (priamo vpravo od klávesy špeciálnych znakov). Čiarka a bodka za to venujú svoju šírku nad šírkou písmena. Vypnuté: spodný riadok ako predtým.</string>
     <string name="d507_mode_off">Vypnuté</string>
     <string name="d507_mode_symbols">Iba !?#</string>
     <string name="d507_mode_emoji">Iba emoji</string>
@@ -394,3 +396,4 @@
     <string name="d89_f39_desc">Voliteľné: nakreslite slovo jedným súvislým ťahom cez písmená - najlepšia zhoda sa napíše za vás, vrátane slovníka, skladania diakritiky a osobného kontextu. Predvolene vypnuté.</string>
     <string name="d89_footer_note">Poznámka: od reformy alternatívneho priradenia kláves stránka písmen sprístupňuje prakticky všetky relevantné znaky priamo - klávesy s dvojitým rohom, rad číslic s vlastnými symbolmi a vyskakovacie okná dlhého stlačenia vrátane - bežné písanie nikdy nepotrebuje výlet na stránky špeciálnych znakov.</string>
 </resources>
+

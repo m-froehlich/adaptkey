@@ -161,6 +161,8 @@
     <string name="double_tap_delay_summary">Lengste tid mellom to trykk for å telle som dobbelttrykk, i ms - bytte av store/små bokstaver med Skift, dobbelttrykk på Tilbake for å angre og klissete Tilbake deler alle dette vinduet.</string>
     <string name="d507_combined_key_title">Kombinert tast (!?#/Emoji)</string>
     <string name="d507_combined_key_summary">Hva den kombinerte tasten i nederste rad gjør: gå til siden med spesialtegn (!?#), åpne emoji-panelet eller ingenting - tasten forsvinner og plassen står tom (D-507).</string>
+    <string name="d555_emoji_key_title">Emoji-tast</string>
+    <string name="d555_emoji_key_summary">Vis en emoji-tast (rett til høyre for spesialtegnstasten). Komma og punktum gir fra seg ekstrabredden over bokstavbredden til formålet. Av: nederste rad som før.</string>
     <string name="d507_mode_off">Av</string>
     <string name="d507_mode_symbols">Kun !?#</string>
     <string name="d507_mode_emoji">Kun emoji</string>
@@ -394,3 +396,4 @@
     <string name="d89_f39_desc">Valgfritt: tegn et ord i én sammenhengende bevegelse over bokstavene - best treff skrives for deg, med ordbok, diakritisk sammenslåing og personlig kontekst. Av som standard.</string>
     <string name="d89_footer_note">Merk: siden den alternative tastendreformsreformen tilbyr bokstavssiden praktisk talt alle relevante tegn direkte - dobbelthjørnetaster, sifferaden med egne symboler og langtrykksvinduer inkludert - hverdagens skriving trenger aldri en omvei til spesialtegn-sidene.</string>
 </resources>
+

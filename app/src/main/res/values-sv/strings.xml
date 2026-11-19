@@ -161,6 +161,8 @@
     <string name="double_tap_delay_summary">Största tid mellan två tryck för att räknas som dubbeltryck, i ms - skiftlägesbyte med Skift, dubbeltryck på Backsteg för att ångra och klistrigt Backsteg delar alla detta fönster.</string>
     <string name="d507_combined_key_title">Kombinerad tangent (!?#/Emoji)</string>
     <string name="d507_combined_key_summary">Vad den kombinerade tangenten i nedersta raden gör: gå till sidan med specialtecken (!?#), öppna emoji-panelen eller ingenting - tangenten försvinner och dess plats förblir tom (D-507).</string>
+    <string name="d555_emoji_key_title">Emoji-tangent</string>
+    <string name="d555_emoji_key_summary">Visa en emoji-tangent (direkt till höger om specialteckenstangenten). Komma och punkt avstår från sin extra bredd över bokstavsbredd. Av: undre raden som förut.</string>
     <string name="d507_mode_off">Av</string>
     <string name="d507_mode_symbols">Endast !?#</string>
     <string name="d507_mode_emoji">Endast emoji</string>
@@ -394,3 +396,4 @@
     <string name="d89_f39_desc">Valfritt: rita ett ord i ett sammanhängande stråk över bokstäverna - bästa träffen skrivs åt dig, med ordbok, diakritisk sammanfogning och personlig kontext. Av som standard.</string>
     <string name="d89_footer_note">Obs: sedan den alternativa tangenttilldelningsreformen erbjuder bokstavssidan praktiskt taget alla relevanta tecken direkt - dubbelhörnstangenter, sifferaden med egna symboler och långtryckspopups inräknade - vardagligt skrivande behöver aldrig en omväg till specialteckensidorna.</string>
 </resources>
+

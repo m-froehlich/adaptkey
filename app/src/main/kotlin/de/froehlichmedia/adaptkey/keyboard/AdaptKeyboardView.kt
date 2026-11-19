@@ -571,6 +571,19 @@ class AdaptKeyboardView @JvmOverloads constructor(
         }
     
     /**
+     * D-555: whether the letters page's bottom row carries the dedicated emoji key right of the
+     * combined `!?#` key. The service pushes the EFFECTIVE flag - the setting (default ON) AND
+     * combinedKeyMode != EMOJI, so the C-27 emoji mode never grows a second adjacent 😊 key. The
+     * key's width is funded from the L-02 widening inside [KeyboardLayout.lettersBottomRow]
+     * ([KeyProportions.fundedBottomRow]); hiding it rebuilds the row exactly as configured.
+     */
+    var showEmojiKey: Boolean = false
+        set(value) {
+            field = value
+            rebuildRows()
+        }
+    
+    /**
      * D-92: the system locale the calculator page's currency key and decimal/thousands separators are
      * resolved from ([CalculatorLocale]) - deliberately the device's system locale, not the active
      * keyboard alphabet (German/Greek never disagree on either point, see [CalculatorLocale]).
@@ -1097,14 +1110,16 @@ class AdaptKeyboardView @JvmOverloads constructor(
             // D-515: the apostrophe key always shows on the English-style QWERTY arrangement; on QWERTZ/
             // AZERTY only when the user's switch is on.
             InputSurface.LETTERS -> when (layoutKind) {
-                LayoutKind.GREEK -> GreekLayout.rows(proportions, effectiveShowNumberRow, urlMode, emailMode, systemLocale)
-                LayoutKind.SERBIAN_CYRILLIC -> SerbianLayout.rows(proportions, effectiveShowNumberRow, urlMode, emailMode, systemLocale)
-                LayoutKind.RUSSIAN_CYRILLIC -> JcukenLayout.rows(proportions, effectiveShowNumberRow, urlMode, emailMode, systemLocale, ukrainian = false)
-                LayoutKind.UKRAINIAN_CYRILLIC -> JcukenLayout.rows(proportions, effectiveShowNumberRow, urlMode, emailMode, systemLocale, ukrainian = true)
-                LayoutKind.LATIN_AZERTY -> AzertyLayout.rows(proportions, effectiveShowNumberRow, letterHints, urlMode, emailMode, systemLocale, showApostropheKey = showApostropheKeyOnNonEnglishLayouts)
-                LayoutKind.LATIN_AZERBAIJANI -> AzerbaijaniLayout.rows(proportions, effectiveShowNumberRow, letterHints, urlMode, emailMode, systemLocale)
-                LayoutKind.LATIN_QWERTZ -> KeyboardLayout.rows(proportions, effectiveShowNumberRow, letterHints, qwerty = false, urlMode = urlMode, emailMode = emailMode, locale = systemLocale, showApostropheKey = showApostropheKeyOnNonEnglishLayouts)
-                LayoutKind.LATIN_QWERTY -> KeyboardLayout.rows(proportions, effectiveShowNumberRow, letterHints, qwerty = true, urlMode = urlMode, emailMode = emailMode, locale = systemLocale, showApostropheKey = true)
+                // D-555: the emoji key rides every geometry - universal like the number row (C-09),
+                // never per-layout gated.
+                LayoutKind.GREEK -> GreekLayout.rows(proportions, effectiveShowNumberRow, urlMode, emailMode, systemLocale, showEmojiKey = showEmojiKey)
+                LayoutKind.SERBIAN_CYRILLIC -> SerbianLayout.rows(proportions, effectiveShowNumberRow, urlMode, emailMode, systemLocale, showEmojiKey = showEmojiKey)
+                LayoutKind.RUSSIAN_CYRILLIC -> JcukenLayout.rows(proportions, effectiveShowNumberRow, urlMode, emailMode, systemLocale, ukrainian = false, showEmojiKey = showEmojiKey)
+                LayoutKind.UKRAINIAN_CYRILLIC -> JcukenLayout.rows(proportions, effectiveShowNumberRow, urlMode, emailMode, systemLocale, ukrainian = true, showEmojiKey = showEmojiKey)
+                LayoutKind.LATIN_AZERTY -> AzertyLayout.rows(proportions, effectiveShowNumberRow, letterHints, urlMode, emailMode, systemLocale, showApostropheKey = showApostropheKeyOnNonEnglishLayouts, showEmojiKey = showEmojiKey)
+                LayoutKind.LATIN_AZERBAIJANI -> AzerbaijaniLayout.rows(proportions, effectiveShowNumberRow, letterHints, urlMode, emailMode, systemLocale, showEmojiKey = showEmojiKey)
+                LayoutKind.LATIN_QWERTZ -> KeyboardLayout.rows(proportions, effectiveShowNumberRow, letterHints, qwerty = false, urlMode = urlMode, emailMode = emailMode, locale = systemLocale, showApostropheKey = showApostropheKeyOnNonEnglishLayouts, showEmojiKey = showEmojiKey)
+                LayoutKind.LATIN_QWERTY -> KeyboardLayout.rows(proportions, effectiveShowNumberRow, letterHints, qwerty = true, urlMode = urlMode, emailMode = emailMode, locale = systemLocale, showApostropheKey = true, showEmojiKey = showEmojiKey)
             }
             
             InputSurface.SYMBOLS -> SymbolLayout.rows(targetSymbolPage, proportions, systemLocale)

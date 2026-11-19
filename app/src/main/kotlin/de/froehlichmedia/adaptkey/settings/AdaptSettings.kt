@@ -173,6 +173,12 @@ import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
  *           `l`/`m` on the NON-English Latin layouts (QWERTZ/AZERTY); default OFF - the English-style
  *           QWERTY arrangement always shows it, a German/AZERTY middle row keeps its canonical length
  *           unless the user opts in.
+ * @property showBottomRowEmojiKey D-555: whether the letters page's bottom row carries the dedicated
+ *           emoji key right of the combined `!?#` key (default **ON** - the user's revised assessment:
+ *           emojis matter, and the row funds the key from the L-02 widening via
+ *           [KeyProportions.fundedBottomRow], never from the space bar). At runtime the key is
+ *           additionally hidden while C-27 puts the emoji mode in the combined key's own slot - the
+ *           service resolves that; this stored value stays as-is.
  */
 data class AdaptSettings(
     val keyProportions: KeyProportions = KeyProportions.DEFAULT,
@@ -214,7 +220,8 @@ data class AdaptSettings(
     val fieldSwipeScalePercent: Int = DEFAULT_FIELD_SWIPE_SCALE,
     val backspaceRepeatInitialDelayMs: Long = DEFAULT_BACKSPACE_REPEAT_INITIAL_DELAY_MS,
     val bottomInsetMode: BottomInsetMode = BottomInsetMode.DEFAULT,
-    val showApostropheKey: Boolean = false // D-515: the apostrophe key on non-English layouts (default off)
+    val showApostropheKey: Boolean = false, // D-515: the apostrophe key on non-English layouts (default off)
+    val showBottomRowEmojiKey: Boolean = true // D-555: the dedicated bottom-row emoji key (default on)
 ) {
     
     companion object {

@@ -161,6 +161,8 @@
     <string name="double_tap_delay_summary">Muda wa juu kati ya miguso miwili ili ihesabiwe kama mguso maradufu, kwa ms - kubadilisha ukubwa wa herufi kwa Shift, kugusa Backspace mara mbili kutengua, na Backspace inayogandana zote hushiriki dirisha hili.</string>
     <string name="d507_combined_key_title">Kitufe cha pamoja (!?#/Emoji)</string>
     <string name="d507_combined_key_summary">Kitufe cha pamoja kwenye safu ya chini kinafanya nini: kwenda ukurasa wa alama maalum (!?#), kufungua paneli ya emoji, au hakuna - kitufe kinatoweka na nafasi yake inabaki wazi (D-507).</string>
+    <string name="d555_emoji_key_title">Kitufe cha emoji</string>
+    <string name="d555_emoji_key_summary">Onyesha kitufe cha emoji (kulia mara moja kwa kitufe cha herufi maalum). Koma na nukta zinatoa upana wao wa ziada zaidi ya upana wa herufi. Zima: safu ya chini kama kawaida.</string>
     <string name="d507_mode_off">Imezimwa</string>
     <string name="d507_mode_symbols">!?# pekee</string>
     <string name="d507_mode_emoji">Emoji pekee</string>
@@ -394,3 +396,4 @@
     <string name="d89_f39_desc">Hiari: chora neno kwa mstari mmoja unaoendelea juu ya herufi - maelezano bora huandikwa kwa niaba yako, pamoja na kamusi, kuunganisha alama za sauti na muktadha wako binafsi. Imezimwa kwa chaguo-msingi.</string>
     <string name="d89_footer_note">Kumbuka: tangu mageuzi ya mgawanyo mbadala wa vitufe, ukurasa wa herufi unatoa vibonyezo vinavyohusika vya kawaida moja kwa moja - vitufe vya kona mbili, safu ya nambari pamoja na ishara zake na vichenjaji vya kubonyeza kwa muda vikiwemo - kuandika ya kila siku hauhitaji kwenda kurasa za vibonyezo maalum kabisa.</string>
 </resources>
+

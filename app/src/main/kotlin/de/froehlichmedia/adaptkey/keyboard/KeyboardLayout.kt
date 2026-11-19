@@ -31,6 +31,9 @@ object KeyboardLayout {
     private const val SYMBOL_KEY_LABEL = "😊"
     private const val SYMBOL_KEY_HINT = "123"
     
+    /** D-555: the dedicated bottom-row emoji key's glyph - the same one the extra-row button and the combined key's emoji mode show. */
+    const val EMOJI_KEY_LABEL = "😊"
+    
     // D-511 (Alt-Belegungs-Reform plan §2.3/§2.4): the reformed number row - every digit carries a RIGHT
     // corner (the US shifted row, each also its digit's release default - "US holy cows stay put" as right
     // corners) and, where the user's assignment table gives one, a LEFT corner: the German-QWERTZ survivors
@@ -249,6 +252,11 @@ object KeyboardLayout {
      *        Defaults to true - the reform's shape - while the app's own user-facing default keeps the key
      *        on the English-style QWERTY arrangement only (the view resolves the setting per layout kind,
      *        so a German/AZERTY middle row keeps its canonical length unless the switch is on).
+     * @param showEmojiKey D-555: whether the dedicated bottom-row emoji key sits right of the combined
+     *        `!?#` key. Defaults to false so every pre-D-555 call site (and test) is unchanged; the
+     *        runtime value is the resolved setting (default ON, hidden while C-27 puts the emoji mode
+     *        in the combined key's own slot), pushed through the view. The key's width is funded from
+     *        the L-02 widening via [KeyProportions.fundedBottomRow] - never from the space bar.
      * @return the keyboard as a list of rows, each a list of [Key] from left to right
      */
     fun rows(
@@ -259,7 +267,8 @@ object KeyboardLayout {
         urlMode: Boolean = false,
         emailMode: Boolean = false,
         locale: Locale = Locale.getDefault(),
-        showApostropheKey: Boolean = true
+        showApostropheKey: Boolean = true,
+        showEmojiKey: Boolean = false
     ): List<List<Key>> {
         val result = ArrayList<List<Key>>()
         
@@ -302,23 +311,64 @@ object KeyboardLayout {
             } else if (emailMode) {
                 emailBottomRow(proportions, locale)
             } else {
-                buildList {
-                    // L-03/D-531: combined special-characters key - drawn `!?#`, tap opens the
-                    // special-characters page (D-507's emoji mode opens the panel instead);
-                    // long-press / swipe-up goes straight to the number layer.
-                    add(Key(label = SYMBOL_KEY_LABEL, code = KeyCode.SYMBOL, hint = SYMBOL_KEY_HINT, weight = proportions.symbolWeight))
-                    // L-02: comma & full stop widened, space narrowed.
-                    // D-22/D-44/D-499: the comma key carries `/ - , : ; _` as its long-press popup.
-                    add(charKey(',', alternatives = COMMA_ALTERNATIVES, weight = proportions.commaWeight))
-                    add(Key(label = "space", code = KeyCode.SPACE, char = ' ', weight = proportions.spaceWeight))
-                    // D-02 / D-22: the full-stop key carries the sentence terminators (. ! ?).
-                    add(charKey('.', alternatives = PERIOD_ALTERNATIVES, weight = proportions.periodWeight))
-                    add(Key(label = "↵", code = KeyCode.ENTER, weight = proportions.enterWeight))
-                }
+                lettersBottomRow(proportions, showEmojiKey)
             }
         )
         
         return result
+    }
+    
+    /**
+     * D-555: the ordinary letters-page bottom row, shared by every letter geometry ([KeyboardLayout],
+     * [AzertyLayout], [GreekLayout], [SerbianLayout], [JcukenLayout], [AzerbaijaniLayout] - their
+     * blocks were byte-identical before this became the one shared builder, mirroring
+     * [urlBottomRow]/[emailBottomRow]). `!?#` (the D-531 combined key), then - while [showEmojiKey]
+     * is on - the dedicated emoji key ([emojiKey]), then the L-02 comma/space/period trio and Enter
+     * exactly as always.
+     *
+     * With the emoji key shown, the comma and full-stop weights come from
+     * [KeyProportions.fundedBottomRow] (variant A: the keys give up exactly their surplus above the
+     * letter width; the space bar is never touched). With it hidden, the weights are the plain,
+     * unfunded C-01 values - the pre-D-555 row, byte-identically.
+     *
+     * @param proportions the key-proportion configuration (C-01)
+     * @param showEmojiKey D-555: whether the dedicated emoji key is shown (the resolved setting;
+     *        the C-27=Emoji suppression is resolved by the service before this flag is built)
+     * @return the row as a list of [Key] from left to right
+     */
+    fun lettersBottomRow(proportions: KeyProportions, showEmojiKey: Boolean): List<Key> {
+        val funded = if (showEmojiKey) proportions.fundedBottomRow() else null
+        return buildList {
+            // L-03/D-531: combined special-characters key - drawn `!?#`, tap opens the
+            // special-characters page (D-507's emoji mode opens the panel instead);
+            // long-press / swipe-up goes straight to the number layer.
+            add(Key(label = SYMBOL_KEY_LABEL, code = KeyCode.SYMBOL, hint = SYMBOL_KEY_HINT, weight = proportions.symbolWeight))
+            if (funded != null) {
+                add(emojiKey(funded.emojiWeight))
+            }
+            // L-02: comma & full stop widened, space narrowed.
+            // D-22/D-44/D-499: the comma key carries `/ - , : ; _` as its long-press popup.
+            add(charKey(',', alternatives = COMMA_ALTERNATIVES, weight = funded?.commaWeight ?: proportions.commaWeight))
+            add(Key(label = "space", code = KeyCode.SPACE, char = ' ', weight = proportions.spaceWeight))
+            // D-02 / D-22: the full-stop key carries the sentence terminators (. ! ?).
+            add(charKey('.', alternatives = PERIOD_ALTERNATIVES, weight = funded?.periodWeight ?: proportions.periodWeight))
+            add(Key(label = "↵", code = KeyCode.ENTER, weight = proportions.enterWeight))
+        }
+    }
+    
+    /**
+     * D-555: the dedicated bottom-row emoji key. A plain tap opens the emoji panel through the
+     * same one choke point as the extra-row button and the combined key's emoji mode; the key
+     * carries no corner hints, no alternatives and no popup - a long-press has no action
+     * ([KeyboardLayout.hasLongPressAction] lists [KeyCode.EMOJI] nowhere), and every gesture
+     * falls through to the generic branches (up = the extra row, horizontal = the D-19 surface
+     * swipe, down = dismiss).
+     *
+     * @param weight the funded weight from [KeyProportions.BOTTOM_ROW_EMOJI_KEY_WEIGHT]
+     * @return the key
+     */
+    fun emojiKey(weight: Float): Key {
+        return Key(label = EMOJI_KEY_LABEL, code = KeyCode.EMOJI, weight = weight)
     }
     
     /**

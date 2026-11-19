@@ -54,6 +54,10 @@ object AzerbaijaniLayout {
      * @param locale D-143 / D-158: the system locale [KeyboardLayout.urlBottomRow]'s/[KeyboardLayout.
      *        emailBottomRow]'s period key resolves its TLD popup from ([UrlLocale]); only meaningful when
      *        [urlMode] or [emailMode] is true.
+     * @param showEmojiKey D-555: whether the dedicated bottom-row emoji key sits right of the combined
+     *        `!?#` key ([KeyboardLayout.lettersBottomRow]; width funded from the L-02 widening). Defaults
+     *        to false - every pre-D-555 call site unchanged; the runtime value is the resolved setting
+     *        (default ON, hidden while C-27 puts the emoji mode in the combined key's own slot).
      * @return the keyboard as a list of rows, each a list of [Key] from left to right
      */
     fun rows(
@@ -62,7 +66,8 @@ object AzerbaijaniLayout {
         letterHints: Map<Char, String> = KeyboardLayout.DEFAULT_LETTER_HINTS,
         urlMode: Boolean = false,
         emailMode: Boolean = false,
-        locale: Locale = Locale.getDefault()
+        locale: Locale = Locale.getDefault(),
+        showEmojiKey: Boolean = false
     ): List<List<Key>> {
         val result = ArrayList<List<Key>>()
         
@@ -87,22 +92,12 @@ object AzerbaijaniLayout {
             } else if (emailMode) {
                 KeyboardLayout.emailBottomRow(proportions, locale)
             } else {
-                buildList {
-                    // L-03: combined emoji / numeric-layer key, identical to the Latin bottom row.
-                    add(Key(label = "😊", code = KeyCode.SYMBOL, hint = "123", weight = proportions.symbolWeight))
-                    // D-22: comma / full-stop carry the same long-press punctuation sets as the Latin layout.
-                    add(charKey(',', alternatives = KeyboardLayout.COMMA_ALTERNATIVES, weight = proportions.commaWeight))
-                    add(Key(label = "space", code = KeyCode.SPACE, char = ' ', weight = proportions.spaceWeight))
-                    add(charKey('.', alternatives = KeyboardLayout.PERIOD_ALTERNATIVES, weight = proportions.periodWeight))
-                    add(Key(label = "↵", code = KeyCode.ENTER, weight = proportions.enterWeight))
-                }
+                // D-555: the shared bottom-row builder - Azerbaijani carries the dedicated emoji
+                // key like every other geometry (universal, never per-layout gated).
+                KeyboardLayout.lettersBottomRow(proportions, showEmojiKey)
             }
         )
         
         return result
-    }
-    
-    private fun charKey(c: Char, hint: String? = null, alternatives: List<String> = emptyList(), weight: Float = 1f): Key {
-        return Key(label = c.toString(), code = KeyCode.CHAR, char = c, hint = hint, alternatives = alternatives, weight = weight)
     }
 }

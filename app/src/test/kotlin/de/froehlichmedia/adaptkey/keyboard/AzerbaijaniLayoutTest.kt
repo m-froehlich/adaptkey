@@ -4,6 +4,7 @@
 package de.froehlichmedia.adaptkey.keyboard
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.util.Locale
 
@@ -100,5 +101,13 @@ class AzerbaijaniLayoutTest {
         val latinRow = KeyboardLayout.rows(emailMode = true, locale = Locale.GERMANY).last()
         
         assertEquals(latinRow, row)
+    }
+    
+    @Test
+    fun `D-555 the emoji key rides the Azerbaijani bottom row when enabled and is absent by default`() {
+        val bottomRow = AzerbaijaniLayout.rows(showEmojiKey = true).last()
+        
+        assertEquals(KeyCode.EMOJI, bottomRow[1].code)
+        assertTrue(AzerbaijaniLayout.rows().last().none { it.code == KeyCode.EMOJI })
     }
 }

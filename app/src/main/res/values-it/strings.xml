@@ -161,6 +161,8 @@
     <string name="double_tap_delay_summary">Tempo massimo tra due tocchi per contare come doppio tocco, in ms - il cambio di maiuscola con Maiusc, il doppio tocco su Backspace per annullare e il Backspace adesivo condividono tutti questa finestra.</string>
     <string name="d507_combined_key_title">Tasto combinato (!?#/Emoji)</string>
     <string name="d507_combined_key_summary">Cosa fa il tasto combinato nella riga inferiore: passare alla pagina dei caratteri speciali (!?#), aprire il pannello delle emoji o niente - il tasto scompare e il suo spazio resta vuoto (D-507).</string>
+    <string name="d555_emoji_key_title">Tasto emoji</string>
+    <string name="d555_emoji_key_summary">Mostra un tasto emoji (subito a destra del tasto dei caratteri speciali). Virgola e punto cedono la loro larghezza extra sopra la larghezza di una lettera. Disattivato: riga inferiore come prima.</string>
     <string name="d507_mode_off">Disattivato</string>
     <string name="d507_mode_symbols">Solo !?#</string>
     <string name="d507_mode_emoji">Solo emoji</string>
@@ -394,3 +396,4 @@
     <string name="d89_f39_desc">Opzionale: disegna una parola con un unico tratto continuo sulle lettere - la corrispondenza migliore viene scritta per te, con dizionario, riporto dei diacritici e contesto personale. Disattivata per impostazione predefinita.</string>
     <string name="d89_footer_note">Nota: dalla riforma dell\'assegnazione alternativa dei tasti, la pagina delle lettere rende praticamente tutti i caratteri rilevanti direttamente disponibili - tasti con doppio angolo, riga delle cifre con i propri simboli e popup di pressione prolungata inclusi - la digitazione quotidiana non ha mai bisogno di un passaggio dalle pagine dei caratteri speciali.</string>
 </resources>
+

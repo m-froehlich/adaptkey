@@ -161,6 +161,8 @@
     <string name="double_tap_delay_summary">Timpul maxim dintre două atingeri ca să conteze drept dublă atingere, în ms - comutarea majusculei cu Shift, dubla atingere pe Backspace pentru anulare și Backspace lipicios folosesc toate această fereastră.</string>
     <string name="d507_combined_key_title">Tastă combinată (!?#/Emoji)</string>
     <string name="d507_combined_key_summary">Ce face tasta combinată din rândul de jos: trecerea la pagina de caractere speciale (!?#), deschiderea panoului de emoji sau nimic - tasta dispare, iar locul ei rămâne gol (D-507).</string>
+    <string name="d555_emoji_key_title">Tastă emoji</string>
+    <string name="d555_emoji_key_summary">Afișează o tastă emoji (imediat la dreapta tastei caracterelor speciale). Virgula și punctul cedează lățimea lor suplimentară peste lățimea unei litere. Dezactivat: rândul de jos ca înainte.</string>
     <string name="d507_mode_off">Dezactivat</string>
     <string name="d507_mode_symbols">Doar !?#</string>
     <string name="d507_mode_emoji">Doar emoji</string>
@@ -394,3 +396,4 @@
     <string name="d89_f39_desc">Opțional: desenează un cuvânt într-o singură linie continuă peste litere - cea mai bună potrivire se scrie pentru tine, cu dicționar, replierea diacriticelor și context personal. Dezactivat în mod implicit.</string>
     <string name="d89_footer_note">Notă: de la reforma atribuirii alternative a tastelor, pagina de litere face practic toate caracterele relevante direct disponibile - taste cu colț dublu, rândul de cifre cu propriile simboluri și ferestrele pop-up de apăsare lungă incluse - tastarea zilnică nu are nevoie niciodată de o vizită la paginile de caractere speciale.</string>
 </resources>
+

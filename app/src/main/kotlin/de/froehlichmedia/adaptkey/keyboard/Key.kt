@@ -26,6 +26,14 @@ enum class KeyCode {
     NUMERIC,
     
     /**
+     * D-555: the dedicated bottom-row emoji key right of the combined `!?#` key (letters surface
+     * only, setting-gated, default on) - a plain tap opens the emoji panel through the same one
+     * choke point the extra-row button and the combined key's emoji mode (C-27) already drive.
+     * No long-press action, no gestures of its own (everything falls through generically).
+     */
+    EMOJI,
+    
+    /**
      * §53 (D-103/D-104): a key whose tap commits a literal multi-character [Key.label] verbatim (e.g. the
      * calculator page's `sin`/`deg` keys) - unlike [CHAR], which is limited to a single [Key.char].
      */

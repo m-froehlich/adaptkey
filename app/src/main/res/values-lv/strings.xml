@@ -161,6 +161,8 @@
     <string name="double_tap_delay_summary">Maksimālais laiks starp diviem pieskārieniem, lai tie skaitītos par dubultpieskārienu, ms - Shift reģistra pārslēgšana, dubultpieskāriens Atpakaļdzēsei atsaukšanai un lipīgā Atpakaļdzēse visi koplieto šo logu.</string>
     <string name="d507_combined_key_title">Apvienotais taustiņš (!?#/Emoji)</string>
     <string name="d507_combined_key_summary">Ko apvienotais taustiņš apakšējā rindā dara: pāreja uz īpašo zīmju lapu (!?#), emocijzīmju paneļa atvēršana vai nekas - taustiņš pazūd un tā vieta paliek tukša (D-507).</string>
+    <string name="d555_emoji_key_title">Emocijzīmju taustiņš</string>
+    <string name="d555_emoji_key_summary">Rādīt emocijzīmju taustiņu (tieši pa labi no īpašo simbolu taustiņa). Komats un punkts tam atdod savu papildu platumu virs burtu platuma. Izslēgts: apakšējā rinda kā iepriekš.</string>
     <string name="d507_mode_off">Izslēgts</string>
     <string name="d507_mode_symbols">Tikai !?#</string>
     <string name="d507_mode_emoji">Tikai emocijzīmes</string>
@@ -394,3 +396,4 @@
     <string name="d89_f39_desc">Neobligāti: zīmē vārdu ar vienu nepārtrauktu līniju pār burtiem - labākā atbilstība tiek uzrakstīta jūsu vietā, ar vārdnīcu, diakritisko zīmju savienošanu un personīgo kontekstu. Pēc noklusējuma izslēgts.</string>
     <string name="d89_footer_note">Piezīme: kopš alternatīvo taustiņu piešķiršanas reformas burtu lapa padara gandrīz visus būtiskos simbolus tieši pieejamus - dubultā stūra taustiņi, ciparu rinda ar savējiem simboliem un ilgas nospiešanas uznirstošie logi ieskaitot - ikdienas rakstīšanai nekad nav vajadzīgs apmeklējums īpašo simbolu lapām.</string>
 </resources>
+

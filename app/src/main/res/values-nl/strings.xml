@@ -161,6 +161,8 @@
     <string name="double_tap_delay_summary">Maximale tijd tussen twee tikken om als dubbeltik te tellen, in ms - het wisselen van hoofdletter met Shift, dubbeltik op Backspace om terug te draaien en klevende Backspace delen allemaal dit venster.</string>
     <string name="d507_combined_key_title">Gecombineerde toets (!?#/Emoji)</string>
     <string name="d507_combined_key_summary">Wat de gecombineerde toets in de onderste rij doet: naar de pagina met speciale tekens gaan (!?#), het emoji-paneel openen of niets - de toets verdwijnt en zijn plek blijft leeg (D-507).</string>
+    <string name="d555_emoji_key_title">Emoji-toets</string>
+    <string name="d555_emoji_key_summary">Toon een emoji-toets (direct rechts van de speciale-tekens-toets). Komma en punt geven hun extra breedte boven de letterbreedte af. Uit: onderste rij als voorheen.</string>
     <string name="d507_mode_off">Uit</string>
     <string name="d507_mode_symbols">Alleen !?#</string>
     <string name="d507_mode_emoji">Alleen emoji</string>
@@ -394,3 +396,4 @@
     <string name="d89_f39_desc">Optioneel: trek een woord in één doorlopende lijn over de letters - de beste match wordt voor je getypt, met woordenboek, diakrieten-samenvoeging en persoonlijke context. Standaard uit.</string>
     <string name="d89_footer_note">Let op: sinds de alternatieve-toetsindelingshervorming biedt de letterspagina vrijwel alle relevante tekens direct - dubbelhoektoetsen, de cijferrij met eigen symbolen en de ingedrukt-houd-popups inbegrepen - alledaags typen heeft nooit een omweg naar de specialetekenspagina\'s nodig.</string>
 </resources>
+

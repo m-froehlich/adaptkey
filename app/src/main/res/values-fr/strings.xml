@@ -161,6 +161,8 @@
     <string name="double_tap_delay_summary">Durée maximale entre deux appuis pour compter comme un double appui, en ms - la bascule de casse avec Maj, le double appui sur Retour arrière pour annuler et le Retour arrière collant partagent tous cette fenêtre.</string>
     <string name="d507_combined_key_title">Touche combinée (!?#/Emoji)</string>
     <string name="d507_combined_key_summary">Ce que fait la touche combinée de la rangée du bas : aller à la page des caractères spéciaux (!?#), ouvrir le panneau d\'émojis, ou rien - la touche disparaît et son emplacement reste vide (D-507).</string>
+    <string name="d555_emoji_key_title">Touche emoji</string>
+    <string name="d555_emoji_key_summary">Afficher une touche emoji (juste à droite de la touche des caractères spéciaux). La virgule et le point cèdent leur largeur supplémentaire au-dessus de la largeur d\'une lettre. Désactivé : rangée du bas comme avant.</string>
     <string name="d507_mode_off">Désactivé</string>
     <string name="d507_mode_symbols">!?# uniquement</string>
     <string name="d507_mode_emoji">Emoji uniquement</string>
@@ -394,3 +396,4 @@
     <string name="d89_f39_desc">Optionnel : tracez un mot en un seul trait continu sur les lettres - la meilleure correspondance est tapée pour vous, avec dictionnaire, repli des diacritiques et contexte personnel. Désactivée par défaut.</string>
     <string name="d89_footer_note">Remarque : depuis la réforme de l\'attribution alternative des touches, la page des lettres rend pratiquement tous les caractères pertinents directement disponibles - touches à double coin, rangée de chiffres avec ses propres symboles et popups d\'appui long compris - la frappe quotidienne n\'a jamais besoin d\'un détour par les pages de caractères spéciaux.</string>
 </resources>
+

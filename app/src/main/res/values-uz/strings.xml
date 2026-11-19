@@ -161,6 +161,8 @@
     <string name="double_tap_delay_summary">Ikki bosish ikkilangan bosish hisoblanishi uchun ular orasidagi maksimal vaqt, ms da - Shift bilan registr almashtirish, bekor qilish uchun Backspace’ni ikki marta bosish va yopishqoq Backspace shu oynani baham ko‘radi.</string>
     <string name="d507_combined_key_title">Birlashtirilgan tugma (!?#/Emoji)</string>
     <string name="d507_combined_key_summary">Pastki qatordagi birlashtirilgan tugma nima qiladi: maxsus belgilar sahifasiga o\'tish (!?#), emoji panelini ochish yoki hech narsa - tugma yo\'qoladi va o\'rni bo\'sh qaladi (D-507).</string>
+    <string name="d555_emoji_key_title">Emoji tugmasi</string>
+    <string name="d555_emoji_key_summary">Emoji tugmasini (maxsus belgilar tugmasidan oʻngda) koʻrsatish. Vergul va nuqta buning uchun harf kengligidan oshiq kengligini beradi. Oʻchirilgan: pastki qator avvalgidek.</string>
     <string name="d507_mode_off">O‘chirilgan</string>
     <string name="d507_mode_symbols">Faqat !?#</string>
     <string name="d507_mode_emoji">Faqat emoji</string>
@@ -394,3 +396,4 @@
     <string name="d89_f39_desc">Ixtiyoriy: so\'zni harflar ustidan uzluksiz bir chiziq bilan chizing - eng yaxshi moslik siz uchun yoziladi; lug\'at, diakritik moslashtirish va shaxsiy kontekst bilan. Standart bo\'yicha o\'chirilgan.</string>
     <string name="d89_footer_note">Eslatma: alternativ tugma taqsimoti islohotidan beri harflar sahifasi deyarli barcha tegishli belgilarni to\'g\'ridan-to\'g\'ri mavjud qiladi - ikki burchakli tugmalar, o\'z belgilari bilan raqamlar qatori va uzoq bosish oynalari ham shu jumladan - kundalik yozish uchun maxsus belgilar sahifalariga murojaat qilish hech qachon kerak emas.</string>
 </resources>
+

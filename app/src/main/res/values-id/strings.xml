@@ -161,6 +161,8 @@
     <string name="double_tap_delay_summary">Waktu maksimum antara dua ketukan agar dihitung sebagai ketuk ganda, dalam md - pengalih huruf besar/kecil Shift, ketuk ganda Backspace untuk membatalkan, dan Backspace lengket semuanya berbagi jendela ini.</string>
     <string name="d507_combined_key_title">Tombol gabungan (!?#/Emoji)</string>
     <string name="d507_combined_key_summary">Apa yang dilakukan tombol gabungan di baris bawah: beralih ke halaman karakter khusus (!?#), membuka panel emoji, atau tidak sama sekali - tombolnya hilang dan tempatnya tetap kosong (D-507).</string>
+    <string name="d555_emoji_key_title">Tombol emoji</string>
+    <string name="d555_emoji_key_summary">Tampilkan tombol emoji (tepat di kanan tombol karakter khusus). Koma dan titik melepaskan lebar ekstra mereka di atas lebar huruf. Mati: baris bawah seperti sebelumnya.</string>
     <string name="d507_mode_off">Nonaktif</string>
     <string name="d507_mode_symbols">Hanya !?#</string>
     <string name="d507_mode_emoji">Hanya emoji</string>
@@ -394,3 +396,4 @@
     <string name="d89_f39_desc">Opsional: gambar sebuah kata dalam satu garisan menerus di atas huruf - padanan terbaik diketik untukmu, dengan kamus, pelipatan diakritik dan konteks pribadi. Dimatikan secara bawaan.</string>
     <string name="d89_footer_note">Catatan: sejak reformasi penugasan tombol alternatif, halaman huruf menyediakan hampir semua karakter relevan secara langsung - tombol sudut ganda, barisan digit dengan simbolnya sendiri, dan jendela pop tekanan panjang termasuk - mengetik sehari-hari tidak pernah perlu mampir ke halaman karakter khusus.</string>
 </resources>
+

@@ -70,6 +70,13 @@ class SettingsMapperTest {
     }
     
     @Test
+    fun `D-555 showBottomRowEmojiKey defaults to on and an explicit value passes through`() {
+        assertTrue(SettingsMapper.toAdaptSettings(RawSettings()).showBottomRowEmojiKey)
+        assertTrue(AdaptSettings().showBottomRowEmojiKey)
+        assertFalse(SettingsMapper.toAdaptSettings(RawSettings(showBottomRowEmojiKey = false)).showBottomRowEmojiKey)
+    }
+    
+    @Test
     fun `maxSuggestions is clamped into the recommended range`() {
         assertEquals(SettingsMapper.MIN_MAX_SUGGESTIONS, SettingsMapper.toSuggestionConfig(RawSettings(maxSuggestions = 0)).maxSuggestions)
         assertEquals(SettingsMapper.MAX_MAX_SUGGESTIONS, SettingsMapper.toSuggestionConfig(RawSettings(maxSuggestions = 99)).maxSuggestions)

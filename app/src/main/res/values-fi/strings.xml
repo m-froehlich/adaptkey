@@ -161,6 +161,8 @@
     <string name="double_tap_delay_summary">Suurin aika kahden napautuksen välillä, jotta ne lasketaan kaksoisnapautukseksi, ms - Shiftin kirjainkoon vaihto, Askelpalauttimen kaksoisnapautus kumoamiseen ja tahmea Askelpalautin jakavat kaikki tämän ikkunan.</string>
     <string name="d507_combined_key_title">Yhdistetty näppäin (!?#/Emoji)</string>
     <string name="d507_combined_key_summary">Mitä alimmalla rivillä oleva yhdistetty näppäin tekee: siirtyminen erikoismerkkien sivulle (!?#), emoji-paneelin avaaminen tai ei mitään - näppäin katoaa ja sen paikka jää tyhjäksi (D-507).</string>
+    <string name="d555_emoji_key_title">Emoji-näppäin</string>
+    <string name="d555_emoji_key_summary">Näytä emoji-näppäin (heti erikoismerkkinäppäimen oikealla puolella). Pilkku ja piste luovuttavat sitä varten ylimääräisen leveytensä kirjaimen leveyden yltä. Pois käytöstä: alarivi kuten ennen.</string>
     <string name="d507_mode_off">Pois</string>
     <string name="d507_mode_symbols">Vain !?#</string>
     <string name="d507_mode_emoji">Vain emojit</string>
@@ -394,3 +396,4 @@
     <string name="d89_f39_desc">Valinnainen: piirrä sana yhtenäisenä viivana kirjainten yli - paras osuma kirjoitetaan puolestasi, sanakirja, diakriittien taitto ja henkilökohtainen konteksti mukaan lukien. Oletuksena pois.</string>
     <string name="d89_footer_note">Huom: vaihtoehtoisen näppäinjärjestelyn uudistuksen jälkeen kirjainsivu tarjoaa lähes kaikki oleelliset merkit suoraan - kaksoiskulmanäppäimet, numerorivi omine symboleineen ja pitkän painalluksen ponnahdusikkunat mukaan lukien - jokapäiväinen kirjoittaminen ei koskaan tarvitse käyntiä erikoismerkkisivuilla.</string>
 </resources>
+

@@ -161,6 +161,8 @@
     <string name="double_tap_delay_summary">Maksimaalne aeg kahe puudutuse vahel, et need loetaks topeltpuudutuseks, ms - Shifti suur-/väiketähe vahetus, tühistav Tagasilüke topeltpuudutus ja kleepuv Tagasilüke jagavad kõik seda akent.</string>
     <string name="d507_combined_key_title">Kombineeritud klahv (!?#/Emoji)</string>
     <string name="d507_combined_key_summary">Mida teeb alumisel real olev kombineeritud klahv: üleminek erimärkide lehele (!?#), emoji-paneeli avamine või mitte midagi - klahv kaob ja selle koht jääb tühjaks (D-507).</string>
+    <string name="d555_emoji_key_title">Emoji-klahv</string>
+    <string name="d555_emoji_key_summary">Kuva emoji-klahv (kohe erisümbolite klahvist paremal). Koma ja punkt annavad selleks oma lisalaiuse tähelaiusest üle. Väljas: alumine rida nagu enne.</string>
     <string name="d507_mode_off">Väljas</string>
     <string name="d507_mode_symbols">Ainult !?#</string>
     <string name="d507_mode_emoji">Ainult emoji</string>
@@ -394,3 +396,4 @@
     <string name="d89_f39_desc">Valikuline: joonista sõna ühe katkematu joonega tähtede peale - parim vaste kirjutatakse sinu eest, koos sõnaraamatu, diakriitika-teisenduse ja isikliku kontekstiga. Vaikimisi väljas.</string>
     <string name="d89_footer_note">Märkus: alternatiivse klahvijaotuse reformi järel pakub tähtede leht peaaegu kõiki olulisi märke otse - topelt-nurgaklahvid, numbrite rida oma sümbolitega ja pikalt vajutamise hüpikaknad kaasa arvatud - igapäevane tippimine ei vaja kunagi külastust erimärkide lehtedele.</string>
 </resources>
+

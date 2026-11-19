@@ -132,4 +132,12 @@ class SerbianLayoutTest {
         
         assertEquals(latinRow, serbianRow)
     }
+    
+    @Test
+    fun `D-555 the emoji key rides the Serbian bottom row when enabled and is absent by default`() {
+        val bottomRow = SerbianLayout.rows(showEmojiKey = true).last()
+        
+        assertEquals(KeyCode.EMOJI, bottomRow[1].code)
+        assertTrue(SerbianLayout.rows().last().none { it.code == KeyCode.EMOJI })
+    }
 }

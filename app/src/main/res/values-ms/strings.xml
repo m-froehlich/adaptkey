@@ -161,6 +161,8 @@
     <string name="double_tap_delay_summary">Masa maksimum antara dua ketikan untuk dikira sebagai ketik dua kali, dalam ms - togol huruf besar/kecil Shift, ketik dua kali Backspace untuk membuat asal, dan Backspace melekit semuanya berkongsi tetingkap ini.</string>
     <string name="d507_combined_key_title">Kekunci gabungan (!?#/Emoji)</string>
     <string name="d507_combined_key_summary">Apa yang kekunci gabungan dalam baris bawah buat: bertukar ke halaman aksara khas (!?#), membuka panel emoji, atau tiada - kekunci itu hilang dan tempatnya kekal kosong (D-507).</string>
+    <string name="d555_emoji_key_title">Kekunci emoji</string>
+    <string name="d555_emoji_key_summary">Paparkan kekunci emoji (terus di kanan kekunci aksara khas). Koma dan titik menyerahkan lebar tambahan mereka melebihi lebar huruf. Mati: baris bawah seperti sebelum.</string>
     <string name="d507_mode_off">Mati</string>
     <string name="d507_mode_symbols">!?# sahaja</string>
     <string name="d507_mode_emoji">Emoji sahaja</string>
@@ -394,3 +396,4 @@
     <string name="d89_f39_desc">Pilihan: lukis satu perkataan dalam satu garisan berterusan merentas huruf - padanan terbaik ditaip untuk anda, dengan kamus, pelipatan diakritik dan konteks peribadi. Dimatikan secara lalai.</string>
     <string name="d89_footer_note">Nota: sejak pembaharuan penugasan kekunci alternatif, halaman huruf menyediakan hampir semua aksara relevan secara terus - kekunci sudut berganda, baris digit dengan simbolnya sendiri dan tetingkap pop tekanan panjang termasuk - menaip harian tidak pernah perlu singgah ke halaman aksara khas.</string>
 </resources>
+

@@ -427,6 +427,59 @@ class KeyboardLayoutTest {
     }
     
     @Test
+    fun `D-555 the default bottom row carries no emoji key`() {
+        val bottomRow = KeyboardLayout.rows().last()
+        
+        assertTrue(bottomRow.none { it.code == KeyCode.EMOJI })
+        assertEquals(5, bottomRow.size)
+    }
+    
+    @Test
+    fun `D-555 the emoji key sits right of the combined key, funded from the L-02 widening`() {
+        val proportions = KeyProportions()
+        val bottomRow = KeyboardLayout.rows(proportions, showEmojiKey = true).last()
+        
+        assertEquals(6, bottomRow.size)
+        assertEquals(KeyCode.SYMBOL, bottomRow[0].code)
+        assertEquals(KeyCode.EMOJI, bottomRow[1].code)
+        assertEquals(KeyboardLayout.EMOJI_KEY_LABEL, bottomRow[1].label)
+        assertEquals(KeyCode.SPACE, bottomRow[3].code)
+        assertEquals(KeyCode.ENTER, bottomRow[5].code)
+        
+        // No long-press machinery at all: no corners, no alternatives.
+        val emojiKey = bottomRow[1]
+        assertNull(emojiKey.hint)
+        assertNull(emojiKey.leftHint)
+        assertTrue(emojiKey.alternatives.isEmpty())
+        assertEquals(KeyProportions.BOTTOM_ROW_EMOJI_KEY_WEIGHT, emojiKey.weight, 1e-4f)
+        
+        // Variant A funding: the defaults give up their surplus above the letter width exactly.
+        val funded = proportions.fundedBottomRow()
+        assertEquals(funded.commaWeight, bottomRow.byChar(',').weight, 1e-4f)
+        assertEquals(funded.periodWeight, bottomRow.byChar('.').weight, 1e-4f)
+        assertEquals(1.1f, funded.commaWeight, 1e-4f)
+        // The funded row's total weight equals the unfunded one (fully funded at defaults).
+        val unfunded = KeyboardLayout.rows(proportions).last()
+        assertEquals(
+            unfunded.sumOf { it.weight.toDouble() },
+            bottomRow.sumOf { it.weight.toDouble() },
+            1e-6
+        )
+    }
+    
+    @Test
+    fun `D-555 url and email modes never carry the emoji key`() {
+        assertTrue(
+            KeyboardLayout.rows(urlMode = true, locale = Locale.GERMANY, showEmojiKey = true)
+                .last().none { it.code == KeyCode.EMOJI }
+        )
+        assertTrue(
+            KeyboardLayout.rows(emailMode = true, locale = Locale.GERMANY, showEmojiKey = true)
+                .last().none { it.code == KeyCode.EMOJI }
+        )
+    }
+    
+    @Test
     fun `key ids distinguish characters from control keys`() {
         val rows = KeyboardLayout.rows()
         
