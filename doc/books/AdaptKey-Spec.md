@@ -152,6 +152,21 @@ the fast path that jumps directly. A long-press or upward swipe on the combined 
 the number layer (the one page no key leads to from letters any more, `PanelNavigation.onSwitchToSymbols`).
 The D-507 mode labels and every string naming the letters page's key were reworded accordingly.
 
+**D-555 addendum - the dedicated bottom-row emoji key.** The letters page's bottom row carries a
+dedicated emoji key directly right of the combined `!?#` key (setting `d555_bottom_row_emoji_key`,
+default **on**; hidden at runtime while C-27 puts the emoji mode in the combined key's own slot - the
+combined key then shows the emoji glyph itself, and no second adjacent 😊 key appears). A tap opens the
+panel through the same one entry choke point as the extra-row button and the C-27 emoji mode, so this
+is the third entry point beside those two and the extra-row button stays un-gated (R-01, D-472's
+return button included). The key carries no long-press action and no gestures of its own - up reveals
+the extra row, horizontal is the ordinary D-19 surface swipe, down dismisses. Its width is funded from
+the L-02 widening, never from the space bar: comma and full stop give up exactly their surplus above
+the letter weight (`KeyProportions.fundedBottomRow`, the plan's variant-A rule - defaults 1.4 -> 1.1,
+deliberately narrow keys are never touched, a key is never widened, and the space bar keeps its exact
+weight), as a pure build-time overlay - the C-01 slider values themselves are never rewritten, so
+switching the key off rebuilds the row byte-identically. The key rides every letter geometry
+(universal like the number row, C-09); URL mode, email mode and the symbol pages never carry it.
+
 A single key in the bottom row switches pages. What the key's slot carries is one three-valued setting
 (D-507's `CombinedKeyMode` - `!?#` / Emoji / Off, default `!?#`; a plain ListPreference per C-27, with
 D-59's former boolean migrated on load). In the Off mode the key is drawn blank and inert while its slot
@@ -2730,6 +2745,11 @@ separate control appearing elsewhere. This replaces the emoji panel's own former
 gone; the panel itself no longer offers a way back on its own. The row is never auto-closed by this (D-187's
 existing rule, unchanged) - it stays open exactly as it was, so the return button stays reachable the whole
 time the panel is shown.
+
+**D-555: the emoji-panel button is one of three entry points now.** The letters page's bottom row
+carries its own dedicated emoji key right of the `!?#` key (L-03's D-555 addendum), and C-27's emoji
+mode keeps its combined-key entry - neither replaces this button, which stays visible and un-gated and
+keeps the D-472 return-button role for exactly as long as the panel shows.
 
 **D-554: the number row rides the letters surface's swipe-up.** When C-09 hides the persistent number row
 (L-06), an upward swipe started on the letters surface reveals it together with the row - the pair opens

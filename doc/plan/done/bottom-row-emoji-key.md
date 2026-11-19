@@ -1,9 +1,10 @@
 ﻿# AdaptKey — Plan: Dedicated Bottom-Row Emoji Key (D-555)
 
-**Status:** PLANNED AND AGREED end to end (2026-11-19), implementation NOT started - "Du sollst
-aber weiterhin nur planen. Noch nicht bauen." The design is fully pinned (§2), including the
-funding rule for already-stored C-01 values (§3.1 variant A, the user's pick). Build starts only
-on a fresh, explicit go.
+**Status:** IMPLEMENTED end to end (2026-11-19; build + all unit tests green, 1,986 total, 0
+failures; `:app:assembleRelease`/`:app:testDebugUnitTest`), shipped as §563 / v1.3.25 (versionCode
+625). **NOT device-confirmed** - §7's checklist needs the device. Identifiers as built: D-555 /
+`d555_bottom_row_emoji_key` / 1.3.25 (625) / History §563 (the parallel-round reservations this
+plan already accounted for in its original planning note).
 
 **Identifiers re-pinned (2026-11-19, same day):** parallel rounds landed while this plan was being
 written - the feature-tips plan (`feature-tips.md`) claims D-546..D-553, and the swipe-up number-row

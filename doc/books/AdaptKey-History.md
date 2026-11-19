@@ -25587,21 +25587,21 @@ DEVICE-CONFIRMED (2026-11-19: "Ole! Das ist behoben. Jetzt ist es wie gewÃ¼nscht
 
 ---
 
-## §562 - D-554: the C-09-off letters surface gets its digits back by gesture - the §48 swipe-up reveals the number row together with the extra row (v1.3.23 -> v1.3.24, versionCode 623 -> 624)
+## ï¿½562 - D-554: the C-09-off letters surface gets its digits back by gesture - the ï¿½48 swipe-up reveals the number row together with the extra row (v1.3.23 -> v1.3.24, versionCode 623 -> 624)
 
 User request (2026-11-19): when the number row is hidden (C-09), the letters surface has no digits at all,
 and the other-keyboards answer (digits as an Alt-Belegung on the top letter row) was rejected by the user
 themselves - it would overload the reform's D-511/L-05 corner-and-hint anatomy, and it costs two
 interactions (long-press + slide) where a row costs one tap. The user's own idea instead, evaluated in
-plan `swipe-up-number-row.md` and decided on its §7 questions the same day (all four on the
-recommendations): when (and only when) C-09 is off, the §48 upward swipe reveals the number row together
+plan `swipe-up-number-row.md` and decided on its ï¿½7 questions the same day (all four on the
+recommendations): when (and only when) C-09 is off, the ï¿½48 upward swipe reveals the number row together
 with the extra row; a downward swipe closes both again.
 
 **D-554 - a transient reveal, not a settings flip.** `AdaptKeyboardView.numberRowRevealed` is the one new
 piece of state: a session flag (never persisted, never in the backup - the gesture's own state, not a
 shadow copy of C-09), consumed through the view's `effectiveShowNumberRow` (`showNumberRow ||
 numberRowRevealed`) by exactly the places that already consumed the setting: `rowsFor()`'s letters branch
-(all six layouts through the shared L-06 number-row builder) and the two §43 D-397 `RowGeometry` call
+(all six layouts through the shared L-06 number-row builder) and the two ï¿½43 D-397 `RowGeometry` call
 sites. The revealed row is therefore, by construction, an ordinary C-09-on row - same keys, same D-55
 spacing (`extraSpacingPx()` reads the built rows, not the flag), same row-crossing caps, same T-03
 geometry to learn digit strikes against; no new geometry class exists.
@@ -25621,7 +25621,7 @@ keeps the reveal (D-187's nothing-closes-by-itself rule): back on the letters su
 again.
 
 Strings: `c09_summary` extended (values/ + values-de/ only - the other locales ride the next translation
-round, decision §7.6 of the plan). Animation deliberately skipped for v1 (decision §7.5): the reveal is
+round, decision ï¿½7.6 of the plan). Animation deliberately skipped for v1 (decision ï¿½7.5): the reveal is
 the same instant-rebuild transition class as a C-09 settings flip and a LETTERS/SYMBOLS row-count change.
 
 Tests: new `NumberRowRevealRoboTest` (5 Robolectric tests: the reveal adds the row to the C-09-off
@@ -25634,3 +25634,58 @@ device-confirmed: with C-09 off, a swipe up on the letters surface must show the
 row together (digits tappable, D-55 gap intact), one downward swipe clears both, a field change closes the
 pair, a swipe up from a symbol page opens only the extra row, and the URL/credential field auto-open must
 NOT show the digit row.
+
+---
+
+## Â§563 - D-555: the dedicated bottom-row emoji key right of the `!?#` key (v1.3.24 -> v1.3.25, versionCode 624 -> 625)
+
+User request (2026-11-19): the long-standing "no space in the row, and not important - the extra row covers
+it" assessment of a bottom-row emoji button is reversed - emojis matter in some situations, and the row does
+have the room when the L-02-widened buttons give something up. Planned end to end in `bottom-row-emoji-key.md`
+(design confirmed by the user the same day, including the funding rule after his existing-installation
+question), implemented on his explicit go.
+
+**The key.** New `KeyCode.EMOJI`, built by the shared `KeyboardLayout.lettersBottomRow` (the six letter
+geometries' byte-identical bottom-row blocks collapsed into it - the `urlBottomRow`/`emailBottomRow` pattern;
+the dead per-layout `charKey` helpers of AZERTY/Azerbaijani removed with it) as
+`Key(label = EMOJI_KEY_LABEL, code = EMOJI, weight = ...)` - no corners, no alternatives, no popup
+(`hasLongPressAction()` lists EMOJI nowhere, so the long-press arm never fires and `handleLongPress()` needs
+no new branch). A tap goes through the one `setSurface(InputSurface.EMOJI)` choke point the extra-row button
+and C-27's emoji mode already drive, so the D-507 rules ride along (the panel always brings the extra row with
+it, D-472's return button stays reachable); no toggle check is needed because the keyboard view is GONE while
+the panel shows. Gestures fall through generically (up = the extra row, horizontal = D-19, down = dismiss) -
+pinned by `KeyGestureTest`, no resolver change. Everything else consumes the key generically: T-03 seeds it as
+the control key "EMOJI", sticky Backspace derives neighbours from the rendered layout, glide never starts on it
+(not a letter key), `labelFor()` needs no branch (the label falls through `else`), and the offset caps are the
+generic ones D-133 never gave comma/period either.
+
+**Visibility (one resolver).** `AdaptSettings.showBottomRowEmojiKey` (default ON) plus the C-27 interplay - the
+service pushes the effective flag `setting && combinedKeyMode != EMOJI` into `view.showEmojiKey`, so the C-27
+emoji mode never grows a second adjacent ðŸ˜Š key (the combined key then shows the emoji glyph itself). The
+layouts never see `CombinedKeyMode`. The extra-row button stays un-gated (it becomes the third entry point and
+keeps the D-472 role); URL/email mode and the symbol pages never carry the key.
+
+**Funding (variant A, the user's confirmed rule).** `KeyProportions.fundedBottomRow()` takes the emoji key's
+0.6 weight from the comma/period surplus above the letter weight (defaults 1.4 -> 1.1 each, row total unchanged;
+deliberate widening partly kept at 1.8 -> 1.5; narrowed keys stop exactly at the floor 1.2 -> 1.0 with the
+residual added to the row's total; slider-minimum 0.5 stays 0.5 untouched; a key is never widened; asymmetric
+configs spend only the wide key's surplus). The originally answered "proportional" rule was replaced during
+planning - at stored 1.2/1.2 it dips below letter width, and at the 0.5 slider minimum it collapses to 0.31 (the
+emoji key would be the row's widest key). Pure build-time overlay: stored C-01 values are never rewritten (the
+D-301 lesson), an off switch rebuilds the row byte-identically, and the new boolean needs no migration (never
+written -> default ON; backup import is the generic type-switching upsert that already applies booleans).
+
+Strings: `d555_emoji_key_title`/`d555_emoji_key_summary` in values/ + all 31 locales
+(`scratchpad/d555_strings.py` inserting after the d507 anchor - EN reference, DE curated, 30 AI drafts per the
+D-478 precedent).
+
+Tests: `KeyProportionsTest` +6 (every row of the plan's funding table, plus never-widens and
+constant-emoji-weight sweeps), `KeyboardLayoutTest` +3 (default row emoji-free; key shape, funding and unchanged
+total weight; url/email never carry it), one emoji test each in the five sibling layout suites, `KeyGestureTest`
++1, `SettingsMapperTest` +1. 1,986 tests total (1,970 + 16), 0 failures; `:app:assembleRelease` green.
+
+`versionCode` 624 -> 625, `versionName` `"1.3.24"` -> `"1.3.25"`. No dictionary data change. NOT yet
+device-confirmed: the plan's Â§7 checklist (ðŸ˜Š right of `!?#` opens the panel with the extra row; comma/period
+visibly narrower but above letter width at defaults and respected when customised; the switch toggles live;
+C-27=Emoji shows exactly one ðŸ˜Š; URL/email/symbol pages unaffected; a pack geometry shows the key too; backup
+carries `d555_bottom_row_emoji_key`).
