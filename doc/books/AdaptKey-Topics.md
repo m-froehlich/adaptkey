@@ -638,7 +638,7 @@ Konventionen:
 | D-554 | Wisch-Hoch: Zahlenreihe + Extra-Reihe | IMPLEMENTED (§562, v1.3.24/624) - NOT yet device-confirmed: the C-09-off letters surface gets its digits back by … |
 | D-555 | Bottom-Row-Emoji-Taste | IMPLEMENTED (§563, v1.3.25/625) - DEVICE-CONFIRMED (2026-11-19: "Perfekt. So läuft das. Verhält sich genau richtig." … |
 | D-556 | Re-Sort-Delay 0 (Key-Rename) | IMPLEMENTED (§564, v1.3.26/626) - DEVICE-CONFIRMED (2026-11-19: "Ja, so passt das."): the C-02 re-sort delay defaults … |
-| D-557 | A-03: Chips bleiben | IMPLEMENTED (§565, v1.3.27/627) - NOT yet device-confirmed: an A-03 foreign verdict no longer empties the suggestion … |
+| D-557 | A-03: Chips bleiben | IMPLEMENTED (§565, v1.3.27/627) - DEVICE-CONFIRMED (2026-11-21): an A-03 foreign verdict no longer empties the suggestion bar … |
 | D-558 | Konkurrenz-Kleinbuchstaben-Gate | IMPLEMENTED (§566, v1.3.28/628) - NOT yet device-confirmed: §6 rule 3 gains a competing- lowercase gate - "dur" no … |
 | D-559 | Feature-Tipp: Auslöser | Trigger definition - what counts as auto-correction | ← Plan `feature-tips.md` |
 | D-560 | Feature-Tipp: Mechanismus/Katalog | Generic FeatureTips mechanism + catalog | ← Plan `feature-tips.md` |

@@ -505,7 +505,8 @@ non-trivial changes).
   deferred pass lands). `DictionarySuggestionProviderTest` +6 (local stores for exact ratios),
   `CapitalisationEngineTest` +4, `PendingPreviewTest` +3; tests green; version bump 1.3.27 -> 1.3.28
   (versionCode 627 -> 628); docs: History section 566, spec section 6 D-558 addendum.
-- **D-557 [A-03: Chips bleiben] - IMPLEMENTED (§565, v1.3.27/627) - NOT yet device-confirmed: an A-03 foreign verdict no
+- **D-557 [A-03: Chips bleiben] - IMPLEMENTED (§565, v1.3.27/627) - DEVICE-CONFIRMED (2026-11-21: "Der Fix
+  ist hiermit bestätigt."): an A-03 foreign verdict no
   longer empties the suggestion bar - chips stay, only autocorrect stays held back.** The user's report
   ("Manchmal bekomme ich gar keine Chips mehr", reproduced in Google Keep: "Brot m" -> nothing, "Teile m" ->
   nothing, "Brot u"/"Brot un" -> chips) decoded with the real bundled profiles on the JVM: the word plus
