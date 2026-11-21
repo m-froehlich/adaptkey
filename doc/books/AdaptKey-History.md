@@ -27070,6 +27070,48 @@ every entry lower-cased); `:app:assembleRelease` green. Docs: spec S-07 D-572 ad
 stub. The EN contrast test itself (after "the" no Wiktionary-noun pins, real continuations stay)
 lands with M9's regression round.
 
+## §573 - D-573: the confusables TODO worked off - 780 rare sides raised to their safe/75 floor, 134 junk pairs sides removed, zero silent-autocorrect pairs remain outside the (minimal) blacklist (data-only, no bump)
+
+The plan's M5, the open `EnglishRules` TODO. The QWERTY-adjacency scan (`confusables_scan.py`,
+scratchpad/d573_m5_analyze.py) over the post-M11 dictionary found 1,026 pairs at or above
+AGGRESSIVE's own auto-apply bar (0.70; 813 even at or above MEDIUM's 0.75) - pairs some autocorrect
+level could silently apply: `ths`->`the`, `wad`->`was`, `fir`->`for`, `tic`->`tis`. The rare side of
+each pair was reviewed word by word (919 distinct words; the full lists are
+scratchpad/d573_m5_rare_words.txt and d573_m5_auto_pairs.tsv) into two cures:
+
+Raise (780 words, the D-330 `dein`/`sein` precedent, bounded): the genuine-English majority - verb
+forms, plurals, real archaic/dialectal words, real jargon and units (abode, balk, cleat, cloze,
+curation, darning, deduces, demote, denier, dour, dorm, eider, elute, fetter, finales, flan, floe,
+footfall, fount, fridge, gorse, gruit, gules, hames, harried, jib, kale, kink, lessee, lewd, lode,
+maim, midden, mire, nigh, nought, oast, orf, pariah, quire, remand, respite, rind, riven, rood,
+rouble, seta, shard, shilling, sloe, sot, stave, stricture, surd, teat, tern, tomes, tryst, tuber,
+veal, vegan, whim, wisely, wad, yea, and hundreds more). Each is raised to at least
+ceil(safeFreq/75), which drops the pair ratio to <= 75 and the known-word-override score to <= 0.695
+- below EVERY level's auto threshold (CAUTIOUS 0.90, MEDIUM 0.75, AGGRESSIVE 0.70 - the thresholds
+read from `AutocorrectAggressiveness`, not guessed). The bump is capped at ~2.1% of the rival's
+corpus presence, so the word stays rare: no ranking distortion beyond suggestion noise, and the
+0.70 chip tier below the bar stays as the documented §457-accepted residual (5,156 pairs at or
+above the 0.30 chip bar remain - an unwanted suggestion is merely ignorable, S-01's own
+philosophy, and healing those fully would have needed ratio <= 6.45 bumps the §457 round already
+measured as grossly disproportionate).
+
+Remove (134 rows, the M2 precedent): the reviewed junk rare sides - corpus/tokeniser fragments and
+2-3-letter noise (`ths`, `eer`, `lll`, `bpy`, `zt`, ...), foreign stray rows (French `acide`/
+`acte`/`aime`/`jour`, Latin `forma`/`gentes`/`statua`, German `ach`), minted junk inflections
+(`booled`, `dormed`, `prebent`, `drossed`, ...), name rows with no generic reading (`Adab`,
+`Pacifica`, `Lindon`, `Mads`, ...) and the `systemd` brand - raising junk would have put it in the
+dictionary's top ranks, so removal is the honest cure. 14 dangling-lemma dependents of the removed
+junk (`oes`, `ogs`, `waws`, `vomming`, ...) dropped transitively.
+
+Skipped deliberately: the EN bundled blacklist words (`ae`, `ij`, `iy`, `iz`, `ne`) - their pairs
+are already cured by the existing Notlösung (a blacklisted typed token is correctable outright),
+and the plan's goal is exactly that the blacklist stays minimal: it does, unchanged at its five
+entries. Post-heal verification: the re-run scan finds ZERO pairs at or above the AGGRESSIVE auto
+bar outside those five blacklist words - no autocorrect level can silently rewrite any typed
+confusable any more; quality gate PASS; the real-data test subset green. M9 pins the headline pairs
+(fir/for, otter/other-class) in the regression round.
+
+
 
 
 
