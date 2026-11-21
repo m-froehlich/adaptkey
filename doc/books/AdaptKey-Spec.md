@@ -1472,6 +1472,20 @@ including the fused contractions ("im"/"am"/"zum"/...) and the conjunctions; per
 "bin/habe" is a genuine signal) and the possessive determiners ("mein Schatz" is personal signal, and
 their continuation counts are far too low to flood) are deliberately not on it.
 
+D-572: English joins the gate - `EnglishRules.pinnedContinuationStopwords()`, the same Variant B
+left-side gate, closing the plan `english-dictionary-quality.md`'s finding that after
+`the`/`of`/`and` the Wiktionary-corpus nouns pinned the EN bar with corpus-generic continuations
+(the German D-503 problem, previously unsolved for English because `EnglishRules` inherited the
+empty default). The list mirrors German's shape - articles, prepositions, conjunctions,
+demonstrative determiners - and deliberately goes one step FURTHER: the pronouns/possessives
+(`it`, `they`, `we`, `you`, `he`, `she`, `their`, ...) and the auxiliary/copula/negation family
+(`is`, `was`, `be`, `have`, `do`, `not`, ...) are on it too, because the English
+Wiktionary-corpus continuations after pronouns are equally corpus-generic ("they have been",
+"it was the") and flood the pinned slots exactly like an article does - unlike German, where the
+pronouns' continuations are a genuine personal signal. The modals (`will`, `would`, `can`,
+`could`, `should`, `may`, `might`, `must`) are deliberately left pinnable on that same
+personal-signal rationale. Unit-pinned in `LanguageRulesTest`.
+
 ### S-08 - Time-Pattern "Uhr" Suggestion
 A typed time in `HH:MM ` form (trailing space required) always suggests the German word "Uhr" as a
 completion, independent of the ordinary dictionary/n-gram ranking - only while German is the active language

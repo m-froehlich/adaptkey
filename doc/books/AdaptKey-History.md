@@ -27037,6 +27037,39 @@ against the real dictionary. The D-106 veto side is untouched: isKnownWord match
 "don't" never blocks a German "don"-typo correction (the veto compares the typed token, not
 prefixes). Quality gate PASS, data-test subset green.
 
+## §572 - D-572: English joins the D-503 pinning gate - `EnglishRules.pinnedContinuationStopwords()`, pronouns and auxiliaries included, modals deliberately pinnable (v1.3.28 -> 1.3.29, versionCode 628 -> 629)
+
+The plan's M6, the one code round. After `the`/`of`/`and`, the Wiktionary-corpus nouns pinned the EN
+bar with corpus-generic continuations - the exact flood the D-503-followup built `GermanRules.
+PINNING_STOPWORDS` for, unsolved for English because `EnglishRules` inherited the empty
+`pinnedContinuationStopwords()` default. The fix is the same Variant B left-side gate with
+English's own curated list: articles (`the`, `a`, `an`), the conjunctions (`and`, `or`, `but`,
+`nor`, `so`, `yet`, `if`, `because`, `while`, `when`, `than`, `that`, `whether`), the prepositions
+(`of`, `in`, `to`, `for`, `with`, `on`, `at`, `by`, `from`, `as`, and the full closed set through
+`lest`), the demonstrative determiners, and - deliberately one step FURTHER than German's own list -
+the pronouns/possessives (`it`, `they`, `we`, `you`, `he`, `she`, `their`, ...) and the auxiliary/
+copula/negation family (`is`, `are`, `was`, `were`, `be`, `been`, `being`, `am`, `has`, `have`,
+`had`, `do`, `does`, `did`, `not`). The plan named the pronouns explicitly, and the rationale is
+the same corpus-realities split: unlike German, where "ich -> bin/habe" is a genuine personal
+signal worth pinning, the English Wiktionary-corpus continuations after pronouns are equally
+corpus-generic ("they have been", "it was the") and flood the pinned slots exactly like an article
+does. The modals (`will`, `would`, `can`, `could`, `should`, `may`, `might`, `must`) are
+deliberately left pinnable on German's own pronoun rationale - "I'll be there"-class continuations
+are personal signal, not flood.
+
+Stored lower-cased; the caller already matches case-insensitively and folds diacritics. The
+continuation data itself is untouched: EN continuations still surface through the ordinary
+frequency ranking (D-366's bigram bonus) and the blank-slate prediction - only the pinning after a
+listed function word is suppressed, so the bar after "the " behaves exactly as it did before
+D-503, while every genuinely attested continuation after a content word keeps its pinned slot.
+
+Version bump 1.3.28 -> 1.3.29 (versionCode 628 -> 629), edited before the build; full suite 2,008
+tests green (+1 `LanguageRulesTest` pin: the plan's explicit list present, the plain-auxiliary
+family present, modals and content/contraction words (`don't`, `it's`, `house`, `walk`) absent,
+every entry lower-cased); `:app:assembleRelease` green. Docs: spec S-07 D-572 addendum, Progress
+stub. The EN contrast test itself (after "the" no Wiktionary-noun pins, real continuations stay)
+lands with M9's regression round.
+
 
 
 

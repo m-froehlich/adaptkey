@@ -7,8 +7,9 @@ import de.froehlichmedia.adaptkey.dictionary.CompoundSplit
 
 /**
  * D-number (this round): the English [LanguageRules] implementation - like
- * [de.froehlichmedia.adaptkey.language.FrenchRules], only [bundledConfusablesBlacklist] is populated for
- * now; the six German-specific compounding/inflection hooks stay the same documented no-op
+ * [de.froehlichmedia.adaptkey.language.FrenchRules], only [bundledConfusablesBlacklist] and, since
+ * the english-dictionary-quality plan's pinning round, [pinnedContinuationStopwords] are populated;
+ * the six German-specific compounding/inflection hooks stay the same documented no-op
  * [NoOpLanguageRules] gives every other language, and [decimalCommaGluesDigits]/[timeSuggestionWord] are
  * plain "does not apply" facts for English (period decimals, no S-08-style trailing time word).
  *
@@ -49,6 +50,54 @@ object EnglishRules : LanguageRules {
     
     /** English writes decimals with a point ("3.14"), not a comma. */
     override fun decimalCommaGluesDigits(): Boolean = false
+    
+    /**
+     * D-572: English's function words after which D-503's n-gram pinning is switched off entirely -
+     * see [LanguageRules.pinnedContinuationStopwords] for the mechanism and the rationale.
+     *
+     * The English shape of the D-503-followup problem the plan (`english-dictionary-quality.md`)
+     * documented: after `the`/`of`/`and`, the Wiktionary-corpus nouns pin the bar with corpus-generic
+     * continuations - the same flood `GermanRules.PINNING_STOPWORDS` was built for, previously
+     * unsolved for English because [EnglishRules] inherited the empty default.
+     *
+     * Scope, mirroring German's Variant B (the left-side gate - only the previous word decides):
+     * articles, prepositions, conjunctions, the demonstrative determiners, and - deliberately
+     * BROADER than German's own list - the pronouns/possessives and the auxiliary/copula/negation
+     * family (`is`, `was`, `be`, `not`, ...). The plan's list names the pronouns explicitly: unlike
+     * German, where "ich -> bin/habe" is a genuine personal signal worth pinning, the English
+     * Wiktionary-corpus continuations after pronouns are equally corpus-generic ("they have been",
+     * "it was the"), and pinning them floods the bar with encyclopedic-register nouns exactly like
+     * an article does. The modals (`will`, `would`, `can`, `could`, `should`, `may`, `might`,
+     * `must`) are deliberately left pinnable - mirroring the German pronoun rationale, their
+     * continuations carry a real personal signal ("I'll be there" vs. the corpus's generic
+     * "will be/have"). Stored lower-cased; the caller matches case-insensitively and folds
+     * diacritics, so only genuinely lowercase English function words belong here.
+     */
+    override fun pinnedContinuationStopwords(): Set<String> = PINNING_CONTINUATION_STOPWORDS
+    
+    /** D-572: see [pinnedContinuationStopwords]. Stored lower-cased. */
+    private val PINNING_CONTINUATION_STOPWORDS = setOf(
+        // Articles.
+        "the", "a", "an",
+        // Coordinating and subordinating conjunctions.
+        "and", "or", "but", "nor", "so", "yet", "if", "because", "while", "when", "than", "that",
+        "whether",
+        // Prepositions.
+        "of", "in", "to", "for", "with", "on", "at", "by", "from", "as", "about", "into", "over",
+        "after", "under", "between", "through", "during", "before", "against", "without", "within",
+        "along", "across", "behind", "beyond", "off", "up", "down", "out", "near", "past", "since",
+        "until", "till", "upon", "among", "around", "toward", "towards", "onto", "per", "via",
+        "beneath", "beside", "besides", "despite", "except", "inside", "outside", "throughout",
+        "underneath", "amid", "aboard", "atop", "lest",
+        // Demonstrative determiners.
+        "this", "that", "these", "those",
+        // Pronouns and possessives (deliberately included, unlike German's own list - see KDoc).
+        "it", "its", "itself", "they", "them", "their", "theirs", "we", "us", "our", "ours",
+        "you", "your", "yours", "he", "him", "his", "himself", "she", "her", "hers", "herself",
+        // Auxiliary / copula / negation family.
+        "is", "are", "was", "were", "be", "been", "being", "am", "has", "have", "had", "does",
+        "do", "did", "not",
+    )
     
     private val BUNDLED_CONFUSABLES_BLACKLIST = setOf("ij", "iz", "iy", "ae", "ne")
 }

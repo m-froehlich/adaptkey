@@ -251,6 +251,31 @@ class LanguageRulesTest {
     }
     
     @Test
+    fun `D-572 English pins nothing after its function words`() {
+        // The articles/conjunctions/prepositions the plan names explicitly, the pronouns/possessives
+        // and the auxiliary/copula/negation family - stored lower-cased, matched by the caller
+        // case-insensitively.
+        val stopwords = EnglishRules.pinnedContinuationStopwords()
+        assertTrue(stopwords.containsAll(setOf("the", "a", "an", "of", "and", "in", "to", "that",
+            "is", "was", "for", "with", "on", "at", "by", "from", "as", "it", "or", "be", "this",
+            "his", "not", "but", "they", "we", "you", "he", "she", "its", "their")))
+        // The plain-auxiliary family the plan adds beyond German's own list.
+        assertTrue(stopwords.containsAll(setOf("are", "were", "been", "have", "has", "had", "do",
+            "does", "did")))
+        // Modals deliberately stay pinnable (the personal-signal rationale German's list applies
+        // to its pronouns), and no content word may sneak in.
+        for (modal in setOf("will", "would", "can", "could", "shall", "should", "may", "might",
+            "must")) {
+            assertFalse(modal in stopwords, "modal $modal must stay pinnable")
+        }
+        for (content in setOf("house", "time", "walk", "beautiful", "don't", "it's")) {
+            assertFalse(content in stopwords, "content/contraction $content must stay pinnable")
+        }
+        // All entries are genuinely lower-cased function words.
+        assertTrue(stopwords.all { it == it.lowercase() })
+    }
+    
+    @Test
     fun `Portuguese glues a decimal comma`() {
         assertTrue(PortugueseRules.decimalCommaGluesDigits())
     }
