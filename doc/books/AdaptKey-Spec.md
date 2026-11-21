@@ -1689,6 +1689,26 @@ scope covering pending capitalisation-only changes - not only pending spelling s
 equivalent pending state to preview any more (D-405) - it is resolved live, before the word is even typed,
 so there is nothing left pending by the time a suggestion could show one.
 
+D-558: rule 3 gains one competitive check - it is the only rule 3 ever got, because the rule is
+deliberately frequency-blind on its own and that blindness showed in the field. Typing "dur" mid-sentence
+force-capitalised to "Dur" (a real, rare noun, frequency 501 in the bundled corpus) although the one
+adjacent-key slip "u"->"i" produces "dir" (frequency 12,713, 25.4x more frequent) - a far more plausible
+reading of what was actually typed, and the wrongly imposed capital then cascaded (delete-to-fix re-arms
+Shift, the retyped word lands as "Dir"). The gate: before rule 3 fires, the suggestion provider looks for
+a competing word within a single adjacent-key edit of the token that (a) carries at least one non-nominal
+reading and (b) clears CorrectionConfidence's A-01 override curve at the current aggressiveness level's
+*chip-offer* bar - the lower of the two bars, deliberately, because wrongly withholding a capital costs
+the user nothing (the word simply stays as typed, the capital chip stays offered) while wrongly imposing
+one rewrites their word. Real-corpus calibration: "dur"/"dir" 25.4x -> 0.52 (gate fires at every level,
+MEDIUM's 0.30 included); "werte"/"werde" 1.3x -> 0.04 and "tag"/"tat" (competitor less frequent than the
+noun) -> 0.0 stay force-capitalised exactly as before; a noun-only neighbour ("bote"/"Note") is no
+lowercase reading at all and never competes. The same verdict drives the bar itself: the canonical capital
+form of the typed token ("Dur" for a typed "dur") loses its cost-0 exact-match rank once a competitor
+exists and is scored one fuzzy-decay step down, so "dir" ranks above "Dur" while both chips stay offered;
+and the S-06 pending pair (the verbatim "keep as typed" chip exists only for a pending replacement) is
+correctly absent, since the commit side now applies no change for such a token. Without a competitor
+nothing changes: "haus" still force-capitalises to "Haus" and the capital chip keeps its exact rank.
+
 D-457: a candidate word that is itself a deliberate all-caps acronym (`Acronym.isAcronym()`, D-403/
 D-404-followup - at least two letters, every one uppercase) is never touched by `capitalise()`'s own "no
 signal, lowercase it" fallback, regardless of what rules 3-5 above conclude for it. That fallback only ever

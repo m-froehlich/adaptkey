@@ -480,6 +480,29 @@ non-trivial changes).
   (field-change close = strict coupling; reveal letters-surface-only; swipe-up on an already-open row
   still reveals; emoji round-trip preserves it); v1 without animation, `c09_summary` extended in values/
   + values-de only. `NumberRowRevealRoboTest` +5; 1,970 tests green.
+- **D-558 - IMPLEMENTED (§566, v1.3.28/628) - NOT yet device-confirmed: §6 rule 3 gains a competing-
+  lowercase gate - "dur" no longer force-capitalises to "Dur" over the 25x more frequent "dir", and the
+  S-06 verbatim/pending pair disappears for exactly those tokens.** The user's two reports decoded as one
+  mechanism: "mut" ranked "Mut" above the far more frequent "mit" and grew a verbatim chip the user
+  "bis heute nicht" understood, and "dur" committed as "Dur" with the delete-to-fix cascade re-arming
+  Shift into "Dir". Neither is autocorrect - bestCorrection never proposes the token's own capital form
+  (candidates whose lowercase equals the token are excluded) and the A-01 ratio bar correctly refuses a
+  silent "dir" - it is §6 rule 3's frequency-blind force-capitalisation at commit, whose D-111 preview
+  ("Mut") is what summons the S-06 pair ahead of every ranked chip. Fix: the provider answers
+  `competingLowercaseWord` (adjacent-key-tier neighbour, at least one non-nominal reading, clearing the
+  A-01 override curve at the chip-offer bar - "dur"/"dir" 25.4x -> 0.52 fires at every level;
+  "werte"/"werde" 1.3x -> 0.04 and "tag"/"tat" -> 0.0 stay capitalised; "bote"/"Note" noun-only rivals
+  never compete), `CapitalisationEngine` rule 3 withholds the capital when one exists, the bar scores the
+  canonical capital form one fuzzy-decay step down in that case ("dir" above "Dur", both chips offered),
+  and the pending preview degrades to null with it (`PendingPreview`). Result: "mit" ranks first for
+  "mut" ("Mut" demoted but still offered as a chip), "dur" commits as typed. Side finding, resolved by
+  the user on-device: the mysterious "Mit" chip was a learned D-264 casing override ("Mit" over bundled
+  "mit") making the merged entry rule-5-ambiguous; forgotten, gone. One-entry token-keyed memo in the
+  provider so the deferred demotion, the deferred preview and the commit gate share one scan; the hot
+  path stays at its zero-added-cost preview (the S-06 pair at most flashes for D-160's ~200 ms until the
+  deferred pass lands). `DictionarySuggestionProviderTest` +6 (local stores for exact ratios),
+  `CapitalisationEngineTest` +4, `PendingPreviewTest` +3; tests green; version bump 1.3.27 -> 1.3.28
+  (versionCode 627 -> 628); docs: History section 566, spec section 6 D-558 addendum.
 - **D-557 - IMPLEMENTED (§565, v1.3.27/627) - NOT yet device-confirmed: an A-03 foreign verdict no
   longer empties the suggestion bar - chips stay, only autocorrect stays held back.** The user's report
   ("Manchmal bekomme ich gar keine Chips mehr", reproduced in Google Keep: "Brot m" -> nothing, "Teile m" ->

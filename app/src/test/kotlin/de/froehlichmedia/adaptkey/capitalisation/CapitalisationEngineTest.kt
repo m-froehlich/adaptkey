@@ -20,6 +20,11 @@ class CapitalisationEngineTest {
         putWord(WordEntry("gegenüber", 10L, setOf(PartOfSpeech.NOUN, PartOfSpeech.PREPOSITION)))
         putWord(WordEntry("Berlin", 10L, setOf(PartOfSpeech.PROPER_NOUN)))
         putWord(WordEntry("gehen", 10L, setOf(PartOfSpeech.VERB)))
+        // D-558: the real-corpus competitor pairs of the user's report.
+        putWord(WordEntry("Dur", 501L, setOf(PartOfSpeech.NOUN)))
+        putWord(WordEntry("dir", 12713L, setOf(PartOfSpeech.OTHER)))
+        putWord(WordEntry("Mut", 179L, setOf(PartOfSpeech.NOUN)))
+        putWord(WordEntry("mit", 233577L, setOf(PartOfSpeech.PREPOSITION)))
     }
     private val engine = CapitalisationEngine(store)
     
@@ -44,6 +49,31 @@ class CapitalisationEngineTest {
     @Test
     fun `pure noun is capitalised mid-sentence`() {
         assertEquals("Haus", engine.capitalise("haus", ctx()))
+    }
+    
+    @Test
+    fun `D-558 a noun-only word with a competing lowercase neighbour is not force-capitalised`() {
+        // The real report: "dur" (rare noun "Dur") was force-capitalised although the one adjacent-key
+        // slip "u"->"i" yields the 25x more frequent "dir". With the competitor reported, rule 3
+        // withholds the capital and the word commits exactly as typed.
+        assertEquals("dur", engine.capitalise("dur", ctx(), lowercaseCompetitor = "dir"))
+        assertEquals("mut", engine.capitalise("mut", ctx(), lowercaseCompetitor = "mit"))
+    }
+    
+    @Test
+    fun `D-558 without a competitor the noun-only rule stays intact`() {
+        assertEquals("Haus", engine.capitalise("haus", ctx()))
+        assertEquals("Dur", engine.capitalise("dur", ctx()))
+    }
+    
+    @Test
+    fun `D-558 rule 2 editor mandate still capitalises despite the competitor`() {
+        assertEquals("Dur", engine.capitalise("dur", ctx(caps = CapsMode.WORDS), lowercaseCompetitor = "dir"))
+    }
+    
+    @Test
+    fun `D-558 rule 1 explicit upper still wins over the competitor gate`() {
+        assertEquals("Dur", engine.capitalise("Dur", ctx(explicit = true), lowercaseCompetitor = "dir"))
     }
     
     @Test

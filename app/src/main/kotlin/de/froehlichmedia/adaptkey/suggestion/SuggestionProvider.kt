@@ -132,6 +132,29 @@ interface SuggestionProvider {
     fun shouldOverrideKnownWord(word: String, candidate: String): Boolean = false
     
     /**
+     * D-558: a competing, far more frequent lowercase reading of a noun-only [input], or null.
+     *
+     * §6 rule 3 force-capitalises a word that exists only as a noun - a rule that is deliberately
+     * frequency-blind on its own: "dur" (the rare noun "Dur", frequency 501 in the bundled corpus) was
+     * force-capitalised at commit even though the one adjacent-key slip "u"->"i" produces "dir"
+     * (frequency 12,713, ratio 25.4x), a far more plausible reading of what was actually typed. This
+     * method is the one competitive check that repairs exactly that: among the token's own
+     * adjacent-key-level (cost 1) neighbours it finds a non-noun-only word that clears
+     * {@link CorrectionConfidence#forKnownWordOverride} at the current aggressiveness level's chip-offer
+     * bar - the same calibrated curve as the A-01 override, deliberately compared against the *lower*
+     * chip threshold, because wrongly withholding a capital costs the user nothing (the word simply stays
+     * as typed) while wrongly imposing one rewrites their word. The result feeds
+     * [de.froehlichmedia.adaptkey.capitalisation.CapitalisationEngine]'s rule-3 gate; it is never a
+     * correction itself and never auto-applied anywhere.
+     *
+     * The default (no frequency/POS data to compare) reports no competitor, leaving rule 3 untouched.
+     *
+     * @param input the current composing token (any case)
+     * @return the highest-frequency competing lowercase word in its canonical case, or null
+     */
+    fun competingLowercaseWord(input: String): String? = null
+
+    /**
      * D-431: whether an ordinary candidate search for [input] already finds something "obvious", without
      * resorting to a last-resort, never-trusted-even-for-a-chip fallback (if the implementation has one at
      * all). Used by [de.froehlichmedia.adaptkey.AdaptKeyService]'s own A-13 gate

@@ -25768,3 +25768,66 @@ replacement-ignore pin, foreign capitalisation preview kept, identical-preview n
 user's explicit call): autocorrect is still randomly held back on such short contexts while the classifier
 pool spans all 30 bundled languages; narrowing the pool to installed languages (measured: 37% -> 6%, the
 residue routing to English instead of wiping anything) stays a possible follow-up. NOT yet device-confirmed.
+
+## §566 - D-558: rule 3 gains a competing-lowercase gate - "dur" stays "dur", "mit" ranks first for "mut", the mystery verbatim pair explained (v1.3.27 -> v1.3.28, versionCode 627 -> 628)
+
+The user's follow-up to the dur/Dur report (2026-11-21), with a precise on-device bar dump for "Ganze
+Teile mut": ["mut", "Mut", "mit", "Mit", "Mute"], plus two questions - why "Mut" outranks the far more
+frequent "mit", and why a "Mit" chip exists at all ("Es gibt kein Nomen 'Mit'"). Three findings, one
+mechanism at the bottom:
+
+"Mit" first: the bundled dictionary has no such entry - the chip came from the user's own learned store.
+A D-264 differently-cased casing override ("Mit" over bundled "mit", born with the D-404 mid-sentence
+NOUN hint) makes the merged entry rule-5-ambiguous via the entryOf tag union, so ambiguousCasingChips
+offered both spellings at the candidate's own ranked slot (D-546). The user forgot the entry on-device;
+the chip is gone. No code change needed or made for that half.
+
+"Mut" before "mit" was never a ranking failure: with the bundled corpus the D-12 fuzzy candidate scores
+2,336 ("mit" 233,577 x 0.01^1, "u"/"i" adjacent) against "Mut"'s 179 and "Mutter"'s 87 - "mit" wins the
+ranked list outright. But the S-06 pair (the verbatim "keep as typed" chip, which only ever exists
+because a pending replacement exists, and the D-111 capitalisation-only preview as that replacement) is
+pinned ahead of every ranked chip, and for a noun-only token that pair appears because rule 3 wants to
+force-capitalise. The verbatim chip the user called a mystery is therefore rule 3's own symptom - and it
+also taught the keyboard lowercase "mut" through its S-06 learning signal (learnWord on every tap),
+which via D-403's learnedCasingOf shield then blocked the mut->mit override forever on the device.
+
+"dur" -> "Dur" was the same rule, never autocorrect: no correction path can propose a token's own
+capital form (candidates whose lowercase equals the token are excluded everywhere), and the silent
+"dur"->"dir" correction correctly fails the A-01 ratio bar (12,713/501 = 25.4x -> confidence 0.52, below
+MEDIUM's 0.75 auto-apply). Rule 3, force-capitalising a noun-only token at commit, is frequency-blind on
+its own - it never compares "Dur" against anything.
+
+The fix makes rule 3 ask one competitive question before imposing a capital. New provider method
+competingLowercaseWord: among the token's adjacent-key-tier (cost 1) neighbours, find a word carrying at
+least one non-nominal reading that clears CorrectionConfidence.forKnownWordOverride at the aggressiveness
+level's chip-offer bar - the A-01 curve compared against the lower of its own two bars, because wrongly
+withholding a capital costs nothing while wrongly imposing one rewrites the user's word. Real-corpus
+calibration: "dur"/"dir" 25.4x -> 0.52, firing at every level (CAUTIOUS 0.40, MEDIUM 0.30, AGGRESSIVE
+0.20); "werte"/"werde" 1.3x -> 0.04 and "tag"/"tat" (competitor 879 below noun 4,879) -> 0.0 stay
+force-capitalised; a noun-only neighbour never competes ("bote"/"Note"); the whole method pre-checks the
+token's own tags, so every non-noun-only token exits after one indexed lookup.
+
+Three consumers, one shared answer: (1) CapitalisationEngine rule 3 withholds the capital when the
+provider reports a competitor (new lowercaseCompetitor parameter, default null, ordinary commit path
+only - chip/preview/split casings untouched, rule 1/rule 2/LLM lift unaffected); (2) the bar scores the
+token's own canonical capital form one FUZZY_COST_DECAY step down once a competitor exists ("dur" ranks
+"durch", "dir", "der", ... above "Dur"; "mit" ranks first for "mut" with "Mut" demoted but still
+offered as a tap-able chip), deferred pass only so the hot path keeps its zero-added-cost ranking;
+(3) the S-06 pending preview degrades to null with the same verdict (PendingPreview.resolve's new
+lowercaseCompetitor parameter, deferred re-entry only), so the verbatim pair - the user's mystery chip -
+disappears for exactly the tokens where it promised a change the commit no longer makes. Without a
+competitor nothing changes: "haus" still capitalises, "Haus" keeps its exact rank.
+
+A one-entry token-keyed memo (@Volatile immutable record) in the provider makes the three legitimate
+callers per token cycle - deferred demotion, deferred preview, commit gate - share one scan; the only
+race consequence is a redundant scan, never a cross-token answer. Net dictionary work: the deferred pass
+gains at most one bounded scan for noun-only tokens (the tier D-208 already sanctions), the commit path
+gains none beyond its own gate call (memo hit), the hot path none.
+
+Tests: DictionarySuggestionProviderTest +6 with local stores for exact ratios (gate positive dur/dir,
+below-bar werte/werde, noun-only rival bote/Note, non-noun token mit, the deferred demotion flip with
+the hot path pinned unchanged, and the no-competitor exact rank); CapitalisationEngineTest +4 (gate
+withholds, no-competitor intact, rule 2 mandate and rule 1 explicit upper still win over the gate);
+PendingPreviewTest +3 (competitor withholds the bare preview, no-competitor unchanged, a real
+replacement's preview not withheld). Version bump 1.3.27 -> 1.3.28 (versionCode 627 -> 628), edited
+before the build. Docs: spec section 6 D-558 addendum, Progress D-558 stub. NOT yet device-confirmed.

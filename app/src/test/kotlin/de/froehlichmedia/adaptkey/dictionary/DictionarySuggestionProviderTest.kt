@@ -643,6 +643,89 @@ class DictionarySuggestionProviderTest {
         assertTrue(words.contains("mit"), "the intended \"mit\" must still be offered for a valid \"mut\"")
     }
     
+    // ------------------------------------------------------------------
+    // D-558: the §6 rule-3 competitor gate (competingLowercaseWord) and its bar-side case-rewrite
+    // demotion. Local stores throughout: the shared store above carries other rounds' fixtures, and
+    // these tests need exact frequency ratios to be meaningful.
+    // ------------------------------------------------------------------
+    
+    private fun localProvider(vararg entries: WordEntry): DictionarySuggestionProvider {
+        val localStore = InMemoryDictionaryStore()
+        entries.forEach { localStore.putWord(it) }
+        return DictionarySuggestionProvider(localStore, diacriticFolding = Umlaut)
+    }
+    
+    @Test
+    fun `D-558 a far more frequent adjacent-key neighbour competes with a rare noun-only token`() {
+        // The real-corpus shape of the user's own report: "Dur" 501 vs "dir" 12,713 (ratio 25.4x,
+        // confidence 0.52 on the override curve), "u"/"i" adjacent keys - one slip apart.
+        val competitorProvider = localProvider(
+            WordEntry("Dur", 10L, setOf(PartOfSpeech.NOUN)),
+            WordEntry("dir", 500L),
+            WordEntry("durch", 5000L)
+        )
+        assertEquals("dir", competitorProvider.competingLowercaseWord("dur"))
+    }
+    
+    @Test
+    fun `D-558 a comparable-frequency neighbour clears no chip bar and is no competitor`() {
+        // The real-corpus "werte"/"werde" shape (2,196 vs 1,691, ratio 1.3x -> confidence 0.04):
+        // "werte" typed mid-sentence stays force-capitalised to "Werte", exactly as before.
+        val comparableProvider = localProvider(
+            WordEntry("Werte", 1000L, setOf(PartOfSpeech.NOUN)),
+            WordEntry("werde", 1300L, setOf(PartOfSpeech.VERB))
+        )
+        assertNull(comparableProvider.competingLowercaseWord("werte"))
+    }
+    
+    @Test
+    fun `D-558 a noun-only neighbour is no lowercase reading at all`() {
+        // The real-corpus "bote"/"Note" shape (both noun-only, "b"/"n" adjacent): whatever its
+        // frequency, a noun-only neighbour offers no alternative reading of what was typed.
+        val nounRivalProvider = localProvider(
+            WordEntry("Bote", 10L, setOf(PartOfSpeech.NOUN)),
+            WordEntry("Note", 5000L, setOf(PartOfSpeech.NOUN))
+        )
+        assertNull(nounRivalProvider.competingLowercaseWord("bote"))
+    }
+    
+    @Test
+    fun `D-558 a token that is not noun-only is never asked to compete`() {
+        val prepositionProvider = localProvider(WordEntry("mit", 233577L, setOf(PartOfSpeech.PREPOSITION)))
+        assertNull(prepositionProvider.competingLowercaseWord("mit"))
+    }
+    
+    @Test
+    fun `D-558 the canonical capital form sinks below its lowercase competitor in the deferred ranking`() {
+        val competitorProvider = localProvider(
+            WordEntry("Dur", 10L, setOf(PartOfSpeech.NOUN)),
+            WordEntry("dir", 500L),
+            WordEntry("durch", 5000L)
+        )
+        // Hot path unchanged: prefix completion only, the capital form keeps its exact-match rank.
+        assertEquals(
+            listOf("durch", "Dur"),
+            competitorProvider.suggestionsFor("dur", null, includeExpensiveFallbacks = false).map { it.word }
+        )
+        // Deferred: once the competitor exists, the case-only rewrite scores one decay step down -
+        // "dir" overtakes "Dur", exactly the user's reported "dur -> dir vor Dur". The capital chip
+        // itself stays offered: a deliberate tap still commits the noun.
+        val words = competitorProvider.suggestionsFor("dur", null, includeExpensiveFallbacks = true).map { it.word }
+        assertEquals("durch", words.first())
+        assertTrue(words.indexOf("dir") < words.indexOf("Dur"), "'dir' must rank above 'Dur': $words")
+        assertTrue(words.contains("Dur"), "the capital chip must stay offered: $words")
+    }
+    
+    @Test
+    fun `D-558 without a competitor the capital canonical keeps its exact-match rank`() {
+        val unrivalledProvider = localProvider(WordEntry("Bote", 10L, setOf(PartOfSpeech.NOUN)))
+        assertNull(unrivalledProvider.competingLowercaseWord("bote"))
+        assertEquals(
+            listOf("Bote"),
+            unrivalledProvider.suggestionsFor("bote", null, includeExpensiveFallbacks = true).map { it.word }
+        )
+    }
+    
     @Test
     fun `D-12 an umlaut variant is offered for a diacritic-less prefix`() {
         store.putWord(WordEntry("grün", 80L))

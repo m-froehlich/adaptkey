@@ -64,6 +64,15 @@ class DictionarySuggestionProvider(
     private val keyboardProximity: KeyboardProximity = KeyboardProximityQwertz
 ) : SuggestionProvider {
     
+    // D-558: the competitor gate's one-entry memo (see competingLowercaseWord()'s own KDoc). The deferred
+    // suggestion executor and the main commit thread both read and write it; a single volatile reference
+    // to an immutable record keeps every read tear-free - a race can only ever cost one redundant scan,
+    // never a token's answer attributed to another token.
+    private data class CompetitorMemo(val token: String, val competitor: String?)
+    
+    @Volatile
+    private var competitorMemo: CompetitorMemo? = null
+    
     override fun suggestionsFor(
         input: String,
         previousWord: String?,
@@ -95,6 +104,13 @@ class DictionarySuggestionProvider(
         // inside score()/scoreWithPrefixDistance() can only ever re-weight candidates that are already
         // in the pool, and the pool comes from a frequency-truncated prefix scan a mid-frequency partner
         // never survives. See pinnedContinuations()'s own KDoc.
+        // D-558: the canonical capital form of the typed token itself ("Dur" for a typed "dur") first
+        // competes with its own lowercase neighbour - see demoteCaseRewriteBelowCompetitor()'s own KDoc.
+        // Deferred-pass only (D-208's tier): the hot path keeps its zero-added-cost prefix ranking, and
+        // the steady-state order the user actually reads comes from this pass anyway.
+        if (includeExpensiveFallbacks) {
+            demoteCaseRewriteBelowCompetitor(token, candidates)
+        }
         val pinned = pinnedContinuations(token, previousWord, previousPreviousWord)
         val pinnedWords = pinned.mapTo(HashSet()) { it.word }
         return (pinned + candidates.values.filter { it.word !in pinnedWords }.sortedByDescending { it.score })
@@ -953,6 +969,109 @@ class DictionarySuggestionProvider(
         val wordFamily = store.entryOf(wordLower)?.let { (it.lemma ?: it.word).lowercase() } ?: return false
         val candidateFamily = store.entryOf(candidateLower)?.let { (it.lemma ?: it.word).lowercase() } ?: return false
         return wordFamily == candidateFamily
+    }
+    
+    /**
+     * D-558: [SuggestionProvider.competingLowercaseWord]'s own implementation, with a one-entry memo.
+     *
+     * The gate question is answered from the same bounded, indexed candidate scan the autocorrect uses,
+     * tightened to the adjacent-key tier ([ADJACENT_SUB_COST] - a competitor the user could have hit by
+     * one neighbouring-key slip), filtered to candidates that offer a genuine *lowercase* reading (never
+     * noun-only: "Note" offers no lowercase alternative to "Bote"), and calibrated on the A-01 override
+     * curve at this level's chip-offer bar - see [SuggestionProvider.competingLowercaseWord]'s own KDoc
+     * for the reasoning and [CapitalisationEngine]'s rule-3 gate for the consumer. Worked real-corpus
+     * numbers (bundled dict_de.tsv): "dur"/"dir" ratio 25.4x -> confidence 0.52, clearing every level's
+     * chip bar (MEDIUM 0.30 included), so "dur" is no longer force-capitalised; "werte"/"werde" ratio
+     * 1.3x -> 0.04 and "tag"/"tat" (competitor less frequent than the noun) -> 0.0, both far below it, so
+     * "werte" and "tag" stay force-capitalised exactly as before.
+     *
+     * Cost discipline: the memo makes the three legitimate callers per token cycle - the deferred pass's
+     * demotion below, the deferred pending preview, and the commit-side gate - share one scan per token
+     * (a single previous-token entry; races between the main thread and the deferred executor are benign,
+     * worst case one redundant scan). The whole method pre-checks the token's own part-of-speech tags
+     * first, so every non-noun-only token ("mit", "teile", an unknown word) exits after one indexed
+     * lookup without ever touching the candidate scan.
+     *
+     * @param input the current composing token (any case)
+     * @return the highest-frequency competing lowercase neighbour in its canonical case, or null
+     */
+    override fun competingLowercaseWord(input: String): String? {
+        val token = input.lowercase()
+        if (token.length < MIN_AUTOCORRECT_LENGTH || Acronym.isAcronym(input)) {
+            return null
+        }
+        competitorMemo?.takeIf { it.token == token }?.let { memo ->
+            return memo.competitor
+        }
+        val result = computeCompetingLowercaseWord(token)
+        competitorMemo = CompetitorMemo(token, result)
+        return result
+    }
+    
+    private fun computeCompetingLowercaseWord(token: String): String? {
+        val pos = store.partsOfSpeech(token)
+        // §6 rule 3 only ever fires for a noun-only token, so nothing else needs the scan (the noun-only
+        // shape inlined here rather than reaching into the capitalisation package for it).
+        if (!(pos.isNotEmpty() && pos.all { it == PartOfSpeech.NOUN || it == PartOfSpeech.PROPER_NOUN })) {
+            return null
+        }
+        val folded = diacriticFolding.fold(token)
+        var best: String? = null
+        var bestFrequency = 0L
+        for (candidate in store.correctionCandidates(token, candidateFirstChars(token))) {
+            val lower = candidate.lowercase()
+            if (lower == token || store.isBlacklisted(candidate)) {
+                continue // A-04
+            }
+            if (correctionCost(folded, lower, ADJACENT_SUB_COST) > ADJACENT_SUB_COST) {
+                continue
+            }
+            val entry = store.entryOf(candidate) ?: continue
+            val candidatePos = entry.partsOfSpeech
+            // A noun-only neighbour ("Note" next to "Bote") is no alternative lowercase reading at all -
+            // only a word with at least one non-nominal reading can be what the user actually meant.
+            if (candidatePos.isNotEmpty() && candidatePos.all { it == PartOfSpeech.NOUN || it == PartOfSpeech.PROPER_NOUN }) {
+                continue
+            }
+            val confidence = CorrectionConfidence.forKnownWordOverride(
+                ADJACENT_SUB_COST,
+                store.frequencyOf(token),
+                entry.frequency,
+                CorrectionConfidence.prefixShiftsAway(token, lower)
+            )
+            if (confidence >= aggressiveness.chipOfferThreshold && entry.frequency > bestFrequency) {
+                best = candidate
+                bestFrequency = entry.frequency
+            }
+        }
+        return best
+    }
+    
+    /**
+     * D-558: the bar-side half of the same gate. When the typed token exactly matches the lowercase form
+     * of a noun-only dictionary word ("dur" -> "Dur"), the prefix scan holds that capital form as an
+     * exact, cost-0 completion - it outranked the far more plausible lowercase neighbour ("dir" scored
+     * 127 against "Dur"'s 501, behind only the unrelated "durch"), reading as the bar agreeing with the
+     * commit-side capitalisation the gate above now withholds. Once a competitor exists, the case-only
+     * rewrite is scored one [FUZZY_COST_DECAY] step down instead - what was literally typed stays the
+     * better-supported reading, the same D-356 principle ("respect the evidence in what was actually
+     * typed") applied to case: "dur" ranks "durch", "dir", "der", ... above "Dur", and "mut" ranks "mit"
+     * first with "Mut" demoted but still offered (a tap commits it, so a deliberate noun keeps its chip).
+     * Without a competitor the capital form keeps its exact rank untouched - "haus" still offers "Haus"
+     * first, exactly as before.
+     *
+     * @param token the lower-cased composing token
+     * @param candidates the merged candidate pool, keyed by canonical word, not yet pinned-merged
+     */
+    private fun demoteCaseRewriteBelowCompetitor(token: String, candidates: LinkedHashMap<String, Suggestion>) {
+        val rewrite = candidates.keys.firstOrNull { it != token && it.lowercase() == token } ?: return
+        val pos = store.partsOfSpeech(token)
+        if (!(pos.isNotEmpty() && pos.all { it == PartOfSpeech.NOUN || it == PartOfSpeech.PROPER_NOUN })) {
+            return
+        }
+        competingLowercaseWord(token) ?: return
+        val demoted = candidates[rewrite] ?: return
+        candidates[rewrite] = demoted.copy(score = demoted.score * FUZZY_COST_DECAY)
     }
     
     /** A correction candidate with its edit cost and n-gram score, for the D-38 cost-first ranking. */

@@ -55,13 +55,26 @@ class CapitalisationEngine(private val store: DictionaryStore, private val casin
      *        explicitly tapped or what their own setting allows, and stay untouched. The editor mandates
      *        (rule 2: `CHARACTERS` / `WORDS`, B-02) and rule 1's symmetric casing protection are
      *        deliberately unaffected - the switch adds no capital anywhere, but removes none either.
+     * @param lowercaseCompetitor D-558: the competing, far more frequent lowercase reading of a noun-only
+     *        [word] (resolved by [de.froehlichmedia.adaptkey.suggestion.SuggestionProvider.competingLowercaseWord],
+     *        or null when none exists). §6 rule 3 is frequency-blind on its own - "dur" was force-
+     *        capitalised to "Dur" even though the one adjacent-key slip "u"->"i" produces the 25x more
+     *        frequent "dir" - so when the provider reports such a competitor, rule 3 withholds the
+     *        capital and the word commits exactly as typed (the bar still offers the capital form as its
+     *        own chip). Deliberately passed in rather than computed here: this class is pure logic over
+     *        the [DictionaryStore] and owns no edit-distance/proximity machinery, and only the ordinary
+     *        commit path computes it - every chip/preview/split call keeps the default (they reproduce
+     *        what the user explicitly tapped). Rule 1 (explicit casing), rule 2 (editor mandates) and the
+     *        LLM lift are unaffected: a competitor only ever *withholds* rule 3's own capital, it never
+     *        adds or lowers one.
      * @return the cased word; an empty input is returned unchanged
      */
     fun capitalise(
         word: String,
         context: CapitalisationContext,
         llmForcesUpper: Boolean = false,
-        autoCapsEnabled: Boolean = true
+        autoCapsEnabled: Boolean = true,
+        lowercaseCompetitor: String? = null
     ): String {
         if (word.isEmpty()) {
             return word
@@ -125,7 +138,11 @@ class CapitalisationEngine(private val store: DictionaryStore, private val casin
             // own - B-02's default after a hyphen is lower-case for an ordinary noun too, so widening this
             // to every noun-only word would capitalise the second half of any plain compound ("Haus-tür").
             context.afterHyphen -> (isProper && isNounOnly) || previousSegmentPropagates(context)
-            autoCapsEnabled && isNounOnly -> true // §6 rules 3+4 (D-461); D-500 gates it behind C-28
+            // §6 rules 3+4 (D-461); D-500 gates it behind C-28. D-558: a competing lowercase reading
+            // withholds the capital - a single adjacent-key slip toward a far more frequent word is the
+            // more plausible reading of what was actually typed, and wrongly withholding a capital costs
+            // nothing while wrongly imposing one rewrites the user's word.
+            autoCapsEnabled && isNounOnly && lowercaseCompetitor == null -> true
             autoCapsEnabled && llmForcesUpper -> true // §6 rule 6: high-certainty LLM nominal exception
             isAmbiguousNoun -> false
             else -> false

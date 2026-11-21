@@ -5837,7 +5837,20 @@ class AdaptKeyService : InputMethodService() {
         val finalWord = if (revertConfirmed) {
             typed
         } else {
-            capitalisation.capitalise(corrected, contextFor(typed), llmForcesUpper, autoCapsEnabled = settings.autoCapitalisation)
+            // D-558: the §6 rule-3 gate's competing lowercase reading, resolved from the same provider
+            // the correction chain above used. Computed only when rule 3 could fire at all (C-28 on) and
+            // never for a revert-confirmed retry (that path bypasses capitalisation entirely, D-359 -
+            // and this branch is not even reached there). The provider itself pre-checks the token's own
+            // part-of-speech tags, so every non-noun-only commit exits after one indexed lookup; for a
+            // noun-only token the memoised gate scan answers (see
+            // DictionarySuggestionProvider.competingLowercaseWord's own cost note).
+            capitalisation.capitalise(
+                corrected,
+                contextFor(typed),
+                llmForcesUpper,
+                autoCapsEnabled = settings.autoCapitalisation,
+                lowercaseCompetitor = if (settings.autoCapitalisation) provider.competingLowercaseWord(corrected) else null
+            )
         }
         // D-139 (temporary diagnostic): the actual permanent write to the field - typed vs. what got
         // committed, so a scramble that only shows up in the final text (not just while composing) is
@@ -7263,7 +7276,17 @@ class AdaptKeyService : InputMethodService() {
             // D-557: under a foreign verdict the background replacement is ignored (see the gate above) -
             // the preview then promises only the capitalisation-only change, the one thing commit still
             // applies unconditionally in that context. Pure policy in suggestion/PendingPreview.
-            PendingPreview.resolve(input, precomputedPendingCandidate, foreignContext) {
+            // D-558: the rule-3 competitor gate is consulted only on the deferred re-entry
+            // (includeExpensiveFallbacks) - the hot path keeps its zero-added-cost preview (D-218/D-111)
+            // and at most shows the S-06 pair for the ~200 ms until this pass lands with the gate's
+            // answer, which is the order the user actually reads. Without a competitor this resolves
+            // exactly as before.
+            PendingPreview.resolve(
+                input,
+                precomputedPendingCandidate,
+                foreignContext,
+                lowercaseCompetitor = if (includeExpensiveFallbacks) provider.competingLowercaseWord(input) else null
+            ) {
                 capitalisation.capitalise(it, contextFor(input))
             }
         }

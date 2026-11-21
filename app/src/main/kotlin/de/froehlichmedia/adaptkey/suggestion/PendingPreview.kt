@@ -31,6 +31,13 @@ object PendingPreview {
      * @param backgroundReplacement the deferred search's own pending autocorrect/diacritic replacement,
      *        or null when none was computed (or none qualified)
      * @param foreignContext true when the A-03 verdict held autocorrect back for this token's context
+     * @param lowercaseCompetitor D-558: the competing lowercase reading the commit side's rule-3 gate
+     *        knows about ([de.froehlichmedia.adaptkey.suggestion.SuggestionProvider.competingLowercaseWord]),
+     *        or null. When one exists, the commit side withholds the noun-only force-capitalisation, so
+     *        the bare token's capitalisation-only preview would promise a "Mut" the commit will never
+     *        apply - and that preview is the entire reason the S-06 verbatim pair exists for such a
+     *        token. Withheld only for the bare token itself: a real background replacement's own preview
+     *        (D-112, "Fur" -> "Für") is a genuine correction the commit will still make, casing included.
      * @param capitalise the §6 capitalisation the commit side will apply (D-111/D-112's preview parity)
      * @return the (already capitalised) preview word, or null when it would not differ from [input] and
      *         so has nothing to preview
@@ -39,9 +46,13 @@ object PendingPreview {
         input: String,
         backgroundReplacement: String?,
         foreignContext: Boolean,
+        lowercaseCompetitor: String? = null,
         capitalise: (String) -> String
     ): String? {
         val candidate = if (foreignContext) input else (backgroundReplacement ?: input)
+        if (candidate == input && lowercaseCompetitor != null) {
+            return null
+        }
         return capitalise(candidate).takeIf { it != input }
     }
 }

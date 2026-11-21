@@ -44,4 +44,36 @@ class PendingPreviewTest {
         assertNull(PendingPreview.resolve("brot", "brot", foreignContext = false, capitalise = identity))
         assertNull(PendingPreview.resolve("brot", null, foreignContext = true, capitalise = identity))
     }
+
+    @Test
+    fun `D-558 a competing lowercase reading withholds the bare token's capitalisation-only preview`() {
+        // The commit side withholds rule 3's capital for such a token (CapitalisationEngine's
+        // lowercaseCompetitor gate), so the S-06 pair - the verbatim chip exists only for a pending
+        // replacement - must not promise a "Mut" the commit will never apply.
+        assertNull(
+            PendingPreview.resolve(
+                "mut", null, foreignContext = false, lowercaseCompetitor = "mit", capitalise = capitaliseFirst
+            )
+        )
+    }
+
+    @Test
+    fun `D-558 without a competitor the bare token's capitalisation-only preview is unchanged`() {
+        assertEquals(
+            "Mut",
+            PendingPreview.resolve("mut", null, foreignContext = false, lowercaseCompetitor = null, capitalise = capitaliseFirst)
+        )
+    }
+
+    @Test
+    fun `D-558 a real replacement's preview is not withheld by the competitor gate`() {
+        // The competitor concerns the bare token's own case-only preview; a genuine correction the
+        // commit will apply is previewed with its casing, exactly as D-112 promises.
+        assertEquals(
+            "Mutter",
+            PendingPreview.resolve(
+                "mutterx", "mutter", foreignContext = false, lowercaseCompetitor = "mit", capitalise = capitaliseFirst
+            )
+        )
+    }
 }
