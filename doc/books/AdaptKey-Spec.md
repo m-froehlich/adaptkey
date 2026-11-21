@@ -9,7 +9,9 @@ The reasoning behind *why* each feature looks the way it does - device-feedback 
 alternatives, bugs traced and fixed - lives separately in [`AdaptKey-History.md`](AdaptKey-History.md),
 an append-only design journal. Requirement IDs (`L-`/`T-`/`G-`/`S-`/`A-`/`B-`/`C-`/`K-`, plus the newer
 `E-`/`U-`/`P-`/`W-`/`R-`/`V-`/`N-`/`X-`/`Y-` domains below) are shared between both documents, so a `D-xx`/`§N`
-citation in the history can always be traced back to the requirement it ultimately shaped.
+citation in the history can always be traced back to the requirement it ultimately shaped. Every `D-xxx`
+topic also carries a Kurzbezeichner (short German label) - the decoder table is
+[`AdaptKey-Topics.md`](AdaptKey-Topics.md); a topic is cited as `D-xxx (Kurzbezeichner)`.
 
 ---
 
@@ -2996,7 +2998,7 @@ place regardless of this setting (P-02).
 
 ---
 
-## 22. Language Pack Update Safety (D-334)
+## 22. Language Pack Update Safety (D-334) [Sprachpaket-Update-Sicherheit]
 
 D-334: installing a newer language-pack archive (§9, D-280) must never destroy the user's own learned data,
 and the "update available" hint must clear once the user has actually checked, even when the hosted archive
@@ -3019,7 +3021,7 @@ turns out to be stale relative to the compiled-in catalog version.
 
 ---
 
-## 23. Backspace-Shift Carry (D-335)
+## 23. Backspace-Shift Carry (D-335) [Backspace-Shift-Übertrag]
 
 D-335: deleting an uppercase character must leave Shift armed so the next keystroke reproduces an uppercase
 character (the G-05 addendum). The reactive `onUpdateSelection`-triggered reclaim path (§58) must not
@@ -3030,7 +3032,7 @@ its own `armShiftForNextWord` derivation; a subsequent genuine caret move re-der
 
 ---
 
-## 24. Extended Letter Long-Press Popups (D-336)
+## 24. Extended Letter Long-Press Popups (D-336) [Erweiterte Buchstaben-Popups]
 
 D-336: the German QWERTZ layout (and AZERTY, which reuses the same letter-key builder) gained additional
 long-press popup alternatives on three letters, appended after each key's existing single secondary hint:
@@ -3056,7 +3058,7 @@ AZERTY top row, `n` is third row, `e` is top row; the popup set never depended o
 
 ---
 
-## 25. Caps-Lock Border Highlight (D-337)
+## 25. Caps-Lock Border Highlight (D-337) [Caps-Lock-Rand-Highlight]
 
 D-337: while Caps Lock is engaged, the Shift key draws a bold stroked border (accent blue `#1565C0`,
 3dp stroke) around itself — visually distinct from the momentary light-blue fill flash of a plain key press
@@ -3067,7 +3069,7 @@ before; the persistent border is the additional Caps-Lock-only cue.
 
 ---
 
-## 26. Backspace Hold — Slide-Off Continuation (D-340)
+## 26. Backspace Hold — Slide-Off Continuation (D-340) [Backspace-Halt: Slide-Off]
 
 D-340: when the user holds backspace and slides their finger off the key without lifting it, the
 accelerating backspace-repeat behaviour continues as long as the finger remains in contact with the
@@ -3081,7 +3083,7 @@ recognition). Refines D-07/D-31/D-56.
 
 ---
 
-## 27. Additional Long-Press `à`/`À` on the 'a' Key (D-341)
+## 27. Additional Long-Press `à`/`À` on the 'a' Key (D-341) [à/À auf der a-Taste]
 
 D-341: the German QWERTZ layout's `a` key has `à` (lowercase) and `À` (uppercase) as an additional
 alternative at the end of its long-press popup, after the existing entries (`ä`, `æ`, `å` and their
@@ -3089,7 +3091,7 @@ upper-case forms). Extends D-336's popup set.
 
 ---
 
-## 28. German Dictionary — NOUN_OR_VERB Rework (D-342)
+## 28. German Dictionary — NOUN_OR_VERB Rework (D-342) [NOUN_OR_VERB-Rework Deutsch]
 
 D-342: the German bundled dictionary must be reworked so that every word that can serve as both a verb
 and a noun is:
@@ -3107,7 +3109,7 @@ extension to recognise the new compound tag. See also the existing §6 rule 5 / 
 
 ---
 
-## 29. Caps Lock Vibration — Direct Vibrator, Subtle Effect (D-343)
+## 29. Caps Lock Vibration — Direct Vibrator, Subtle Effect (D-343) [Caps-Lock-Vibration subtil]
 
 D-343: the short vibration that confirms Caps Lock engagement (G-06/D-337) must use the direct `Vibrator`
 path (bypassing the system's own touch-vibration toggle), so it fires even when system haptics are
@@ -3117,7 +3119,7 @@ being startling. Refines G-06/D-337.
 
 ---
 
-## 30. Download Directory Control for Dictionaries / LLM Model (D-344 / D-386 / D-413)
+## 30. Download Directory Control for Dictionaries / LLM Model (D-344 / D-386 / D-413) [Download-Ordner-Steuerung]
 
 The app has no internet permission, so downloading the language pack / tier-3 model happens in the user's
 own browser; "Import" then needs to get at that downloaded file. Current, crystallised mechanism: a plain
@@ -3177,7 +3179,7 @@ browser saves it, which any picker-based approach already solves regardless of h
 
 ---
 
-## 31. Dictionary Noise — "Bri" Blacklist + Candidate Scan (D-345)
+## 31. Dictionary Noise — "Bri" Blacklist + Candidate Scan (D-345) [Wörterbuch-Rausch-Scan]
 
 D-345: "Bri" must be added to the bundled blacklist or removed from the bundled German dictionary
 outright — it is not a real word and at best an obscure abbreviation, causing only false-positive
@@ -3190,7 +3192,7 @@ data-quality work started in D-306.
 
 ---
 
-## 32. Fuzzy Search Loading Indicator in the Suggestion Bar (D-346)
+## 32. Fuzzy Search Loading Indicator in the Suggestion Bar (D-346) [Fuzzy-Ladeindikator]
 
 D-346: when S-09's neighbour-prefix escalation (D-328) — or any other deferred/background fuzzy search —
 is still running and has not yet returned a result for the current token, and the hot path found
@@ -3210,7 +3212,7 @@ was, in practice, mostly seen frozen at a single lone dot, reading as a renderin
 
 ---
 
-## 33. Gemini App — Cursor Nub Keeps Disappearing (D-347)
+## 33. Gemini App — Cursor Nub Keeps Disappearing (D-347) [Gemini-Cursor-Nub]
 
 D-347: in the Gemini app (Google's own conversational AI app), the cursor-positioning nub (the small
 handle above the insertion caret used to drag the cursor around) flickers briefly and then disappears,
@@ -3252,7 +3254,7 @@ deciding whether anything further is needed.
 
 ---
 
-## 34. Optional Double-Tap Backspace for Autocorrect Revert (D-348)
+## 34. Optional Double-Tap Backspace for Autocorrect Revert (D-348) [Doppel-Backspace-Rückgängig]
 
 D-348: an optional setting (default **on** since D-490 - the revert is the fresh-install default; an
 explicitly stored Off keeps working) changes A-07's post-commit undo trigger from a single Backspace
@@ -3274,7 +3276,7 @@ content and discards the window before a second tap ever gets the chance to reve
 
 ---
 
-## 35. Sentence-Start Capitalisation Is A Live-Only Mechanism, Never A Commit-Time Override (D-405)
+## 35. Sentence-Start Capitalisation Is A Live-Only Mechanism, Never A Commit-Time Override (D-405) [Satzanfang nur live, nie am Commit]
 
 D-405: before this change, §6 hierarchy rule 1 ("explicit user input always wins") only ever protected an
 *uppercase* choice - a token starting a sentence/line was force-capitalised again at commit regardless of
@@ -3306,7 +3308,7 @@ to the "repair the live-arming path, don't reinstate the override" instruction a
 
 ---
 
-## 36. Autocorrect Confidence — A Unified, Graduated Measure Replacing Ad Hoc Gates (D-353/D-354/D-371/D-407)
+## 36. Autocorrect Confidence — A Unified, Graduated Measure Replacing Ad Hoc Gates (D-353/D-354/D-371/D-407) [Autokorrektur-Vertrauen]
 
 D-353: the dictionary autocorrect previously decided whether to trust a candidate through several
 independent, ad hoc gates evolved one at a time over many rounds - D-114/D-227's absolute frequency floor
@@ -3377,7 +3379,7 @@ independent axis that would need its own control.
 
 ---
 
-## 37. Auto-Caps Is A Position Property, Not An Event - Closing D-405's Predicted Live-Arming Gaps (D-406)
+## 37. Auto-Caps Is A Position Property, Not An Event - Closing D-405's Predicted Live-Arming Gaps (D-406) [Auto-Caps: Positions-Eigenschaft]
 
 D-406: a real device repro exposed that Auto-Caps had, in practice, drifted from the model §6/G-05 already
 describe (a position's Shift state is derived fresh every time that position is reached) toward something
@@ -3422,7 +3424,7 @@ should Shift be *at this position*, derived fresh, never carried over from where
 
 ---
 
-## 38. Bundled-Dictionary Lemma Link (D-412)
+## 38. Bundled-Dictionary Lemma Link (D-412) [Lemma-Spalte + Verb-Sweep]
 
 D-412: `WordEntry` gained an optional `lemma` field - for a bundled entry that is itself an inflected
 form of another bundled word (e.g. `ging` of `gehen`), that base form's own key; `null` for a base form
@@ -3491,7 +3493,7 @@ apart - using frequency to force a direction would silently reintroduce exactly 
 
 ---
 
-## 39. Learned-Words Base-Form Consolidation — Tier 3, Non-LLM Path (D-404)
+## 39. Learned-Words Base-Form Consolidation — Tier 3, Non-LLM Path (D-404) [Gelernt-Flut: Drei-Tier-Plan]
 
 D-404's backlog item lists three tiers of inflection-awareness; this is Tier 3, scoped purely to the Learned
 Words list (`TABLE_LEARNED`) and its own editor - not the bundled dictionary's ranking/override logic (Tier
@@ -3605,7 +3607,7 @@ sentence` defaults to empty - acceptable, since the request is really "lemmatise
 
 ---
 
-## 40. Acronym Protection - Never Autocorrected, Learns at the Ordinary Threshold (D-404-followup)
+## 40. Acronym Protection - Never Autocorrected, Learns at the Ordinary Threshold (D-404-followup) [Akronym-Schutz]
 
 A word typed entirely in capitals ("ETF", "AVD" - at least two letters, so a lone capitalised initial does
 not count) is the user's own deliberate, explicit signal for "this is an acronym" - recognised by a small,
@@ -3649,7 +3651,7 @@ alternative (acronyms permanently vulnerable) and preferred it.
 
 ---
 
-## 41. Suggestion-Chip Trailing Space Never Grows Into Adjacent Punctuation or a Hyphen (D-369)
+## 41. Suggestion-Chip Trailing Space Never Grows Into Adjacent Punctuation or a Hyphen (D-369) [Chip-Leerzeichen wächst nicht]
 
 D-369: accepting a suggestion-bar chip (S-01's ordinary word/completion chips, B-03's compound chip, and
 S-11's dual-casing chip alike) mid-text - the composing token sits before real, already-typed text, most
@@ -3670,7 +3672,7 @@ disambiguation was judged not worth the added complexity there) - not reopened h
 
 ---
 
-## 42. Haptic Feedback Respects the OS's Own Intensity Slider (D-396)
+## 42. Haptic Feedback Respects the OS's Own Intensity Slider (D-396) [Haptik folgt OS-Regler]
 
 D-396: the per-key/Caps-Lock vibration (D-06/G-06) previously fired identically regardless of the OS's own
 "Haptic feedback" intensity setting (Settings > Sound & vibration - off/low/medium/high, `Vibrator.
@@ -3783,7 +3785,7 @@ key-touch confirmation, not a setting of its own.
 
 ---
 
-## 43. Generic Row-Crossing Vertical Touch-Drift Cap (D-397)
+## 43. Generic Row-Crossing Vertical Touch-Drift Cap (D-397) [Reihen-Drift-Kappe]
 
 D-397: the T-03 personal offset model's existing tighter direction-specific caps (D-133's bottom-row-into-
 space-bar case, D-231/D-233's Enter/Backspace pair) were each added individually, for one specific
@@ -3837,7 +3839,7 @@ single constant.
 
 ---
 
-## 44. Cross-Word Fusion Across a Spurious Space (D-391)
+## 44. Cross-Word Fusion Across a Spurious Space (D-391) [Kreuz-Wort-Fusion]
 
 D-391: A-06 (§7) only ever repairs a spurious space evidenced by a real T-05 letter-ambiguous tap, and only
 ever by prepending one inferred letter to the *following* word - the *preceding* word is never itself
@@ -3941,7 +3943,7 @@ reason, A-03 verdict) and an `applyFusion: abandoned ...` line make the outcome 
 
 ---
 
-## 45. A Literally-Typed Umlaut Breaks an Autocorrect Tie in Its Own Favour (D-356)
+## 45. A Literally-Typed Umlaut Breaks an Autocorrect Tie in Its Own Favour (D-356) [Umlaut bricht Korrektur-Gleichstand]
 
 D-356: finally got a concrete, real example after being open since §277 with no repro to design against.
 Typing `"gedrücjz"` (intending `"gedrückt"`, a genuine `ü` actually typed, not a lazy `u`) was silently
@@ -3985,7 +3987,7 @@ a genuinely different folded cost, a case the tie-break cannot reach by construc
 
 ---
 
-## 46. Automatic Capitalisation Requires Genuine Unambiguity (D-461)
+## 46. Automatic Capitalisation Requires Genuine Unambiguity (D-461) [Auto-Caps nur eindeutig]
 
 D-461: §6's rules 3 (pure noun) and 4 (proper noun) used to be two independent branches, with the
 proper-noun check ranked *above* the pure-noun one. That ordering meant a `PROPER_NOUN` tag overrode an
@@ -4051,7 +4053,7 @@ intended outcome of this rule, not a gap. W-04 then learns the user's own prefer
 
 ---
 
-## 47. Prefix Lookup Is Index-Backed (D-465)
+## 47. Prefix Lookup Is Index-Backed (D-465) [Präfix-Suche indiziert]
 
 D-465: the suggestion pipeline's own hottest query - "every word starting with this prefix, most frequent
 first" (`SqliteDictionaryStore.queryByPrefix`, behind `unigramsByPrefix`) - was written as
@@ -4087,7 +4089,7 @@ decision about importing more words (see `AdaptKey-Progress.md`'s own D-462) has
 
 ---
 
-## 48. Touch-Zone Learning Can Be Frozen (D-474)
+## 48. Touch-Zone Learning Can Be Frozen (D-474) [Touch-Zonen einfrieren]
 
 T-03's personal offset model learns from every ordinary tap, and its "confirmed key" is simply the key the
 model itself resolved at `ACTION_DOWN` - the learning is unsupervised. Long-term device use showed the cost:
@@ -4117,7 +4119,7 @@ Switched off, `AdaptKeyboardView` simply does not call `OffsetModel.record()` at
 
 ---
 
-## 49. Settings Screens: Launcher Label, Toolbar With Back, Calibration Exit (D-483/D-484/D-485)
+## 49. Settings Screens: Launcher Label, Toolbar With Back, Calibration Exit (D-483/D-484/D-485) [Einstellungs-Bedienbarkeit]
 
 **Launcher label (D-483).** The launcher entry is `SettingsActivity`; its manifest label is the plain app
 name (`@string/app_name`, "AdaptKey"). It used to be the settings screen's own translated title ("AdaptKey
@@ -4142,7 +4144,7 @@ silently replaced the user's chosen style and wiped its learned touch zones.
 
 ---
 
-## 50. Room Below the Keyboard (D-486)
+## 50. Room Below the Keyboard (D-486) [Raum unter der Tastatur]
 
 Android 15 draws the input view edge-to-edge, so the service pads it up by the bottom system-bar/gesture inset
 (D-136, D-260). The original rule - `max(navigation-bar inset, system-gesture inset)`, of which up to a quarter
@@ -4175,7 +4177,7 @@ be understood from a shared log.
 
 ---
 
-## 51. Dark Theme Follows the System (D-501)
+## 51. Dark Theme Follows the System (D-501) [Dark Theme folgt System]
 
 The keyboard's colours follow the system's dark mode: when the system renders dark, every keyboard
 surface renders dark, and there is deliberately no setting of any kind to override that (the

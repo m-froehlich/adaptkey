@@ -4,7 +4,9 @@ Living status of the AdaptKey IME implementation, kept next to
 [`AdaptKey-Spec.md`](AdaptKey-Spec.md) (the current, crystallised feature set) and
 [`AdaptKey-History.md`](AdaptKey-History.md) (the append-only device-feedback/design-decision journal).
 Requirement IDs (`L-`/`T-`/`G-`/`S-`/`A-`/`B-`/`C-`/`K-`, plus the newer `E-`/`U-`/`P-`/`W-`/`R-`/`V-`/`N-`/`X-`
-domains) refer to the spec. Update this file whenever a component lands so it does not have to be restated
+domains) refer to the spec. Every `D-xxx` topic also carries a Kurzbezeichner (short German label) - the
+decoder table is [`AdaptKey-Topics.md`](AdaptKey-Topics.md); a topic is cited as `D-xxx (Kurzbezeichner)`.
+Update this file whenever a component lands so it does not have to be restated
 in every prompt.
 
 ## Project / Stack
@@ -35,7 +37,7 @@ in every prompt.
   ```
 - A post-write hook normalises blank lines / CRLF and may reformat files after edits
   (do not fight it).
-- **D-223: `:app:assembleRelease` is now the default build target** (was `:app:assembleDebug` through D-222) -
+- **D-223 [assembleRelease als Standard]: `:app:assembleRelease` is now the default build target** (was `:app:assembleDebug` through D-222) -
   signed, `debuggable=false`, `isMinifyEnabled=false` (deliberately no code shrinking/obfuscation). Needs
   `keystore.properties` at the project root (gitignored, not checked in - holds
   `storeFile`/`storePassword`/`keyAlias`/`keyPassword` for the equally gitignored `release.keystore`, also at
@@ -465,7 +467,7 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
-- **D-554 - IMPLEMENTED (§562, v1.3.24/624) - NOT yet device-confirmed: the C-09-off letters surface gets
+- **D-554 [Wisch-Hoch: Zahlenreihe + Extra-Reihe] - IMPLEMENTED (§562, v1.3.24/624) - NOT yet device-confirmed: the C-09-off letters surface gets
   its digits back by gesture - the §48 swipe-up reveals the number row together with the extra row.**
   User request (2026-11-19); the digits-as-Alt-Belegung alternative was rejected by the user themselves
   (it would overload the reform's D-511/L-05 top-row anatomy and costs long-press + slide instead of one
@@ -480,7 +482,7 @@ non-trivial changes).
   (field-change close = strict coupling; reveal letters-surface-only; swipe-up on an already-open row
   still reveals; emoji round-trip preserves it); v1 without animation, `c09_summary` extended in values/
   + values-de only. `NumberRowRevealRoboTest` +5; 1,970 tests green.
-- **D-558 - IMPLEMENTED (§566, v1.3.28/628) - NOT yet device-confirmed: §6 rule 3 gains a competing-
+- **D-558 [Konkurrenz-Kleinbuchstaben-Gate] - IMPLEMENTED (§566, v1.3.28/628) - NOT yet device-confirmed: §6 rule 3 gains a competing-
   lowercase gate - "dur" no longer force-capitalises to "Dur" over the 25x more frequent "dir", and the
   S-06 verbatim/pending pair disappears for exactly those tokens.** The user's two reports decoded as one
   mechanism: "mut" ranked "Mut" above the far more frequent "mit" and grew a verbatim chip the user
@@ -503,7 +505,7 @@ non-trivial changes).
   deferred pass lands). `DictionarySuggestionProviderTest` +6 (local stores for exact ratios),
   `CapitalisationEngineTest` +4, `PendingPreviewTest` +3; tests green; version bump 1.3.27 -> 1.3.28
   (versionCode 627 -> 628); docs: History section 566, spec section 6 D-558 addendum.
-- **D-557 - IMPLEMENTED (§565, v1.3.27/627) - NOT yet device-confirmed: an A-03 foreign verdict no
+- **D-557 [A-03: Chips bleiben] - IMPLEMENTED (§565, v1.3.27/627) - NOT yet device-confirmed: an A-03 foreign verdict no
   longer empties the suggestion bar - chips stay, only autocorrect stays held back.** The user's report
   ("Manchmal bekomme ich gar keine Chips mehr", reproduced in Google Keep: "Brot m" -> nothing, "Teile m" ->
   nothing, "Brot u"/"Brot un" -> chips) decoded with the real bundled profiles on the JVM: the word plus
@@ -519,7 +521,7 @@ non-trivial changes).
   randomly held back on such short contexts (the user explicitly accepted this); narrowing the classifier
   pool to installed languages (37% -> 6% measured) remains a possible follow-up. `PendingPreviewTest` +5;
   1,994 tests green; `:app:assembleRelease` green.
-- **D-555 - IMPLEMENTED (§563, v1.3.25/625) - DEVICE-CONFIRMED (2026-11-19: "Perfekt. So läuft
+- **D-555 [Bottom-Row-Emoji-Taste] - IMPLEMENTED (§563, v1.3.25/625) - DEVICE-CONFIRMED (2026-11-19: "Perfekt. So läuft
   das. Verhält sich genau richtig." - the plan's §7 checklist passed): the dedicated bottom-row
   emoji key right of the `!?#` key (setting `d555_bottom_row_emoji_key`, default ON, hidden at
   runtime while C-27 puts the emoji mode in the combined key's own slot; width funded by the
@@ -528,7 +530,7 @@ non-trivial changes).
   taps through the one setSurface(EMOJI) choke point; all six letter geometries share the new
   lettersBottomRow builder (url/email/symbol pages never carry the key). Round closed; plan
   `bottom-row-emoji-key.md` in done/. 1,986 tests green.
-- **D-556 - IMPLEMENTED (§564, v1.3.26/626) - DEVICE-CONFIRMED (2026-11-19: "Ja, so passt das."): the C-02
+- **D-556 [Re-Sort-Delay 0 (Key-Rename)] - IMPLEMENTED (§564, v1.3.26/626) - DEVICE-CONFIRMED (2026-11-19: "Ja, so passt das."): the C-02
   re-sort delay defaults to
   0 ms - the setting key renamed `c02_resort_delay_ms` -> `d556_resort_delay_ms`, deliberately resetting
   existing installations instead of migrating stored values.** The user's request (2026-11-19): the 300 ms
@@ -538,7 +540,7 @@ non-trivial changes).
   backup imports leave no dead integer for the export fallback; the visible `c02_*` strings stay untouched
   (range 0-600 ms unchanged, no default mentioned in the summary). `SettingsStoreRoboTest` +3; 1,989 tests
   green. Round closed - no plan document existed for this single-default change, nothing to move to done/.
-- **D-548 - IMPLEMENTED (§561, v1.3.23/623) - DEVICE-CONFIRMED (2026-11-19: "Ole! Das ist behoben.
+- **D-548 [Gepinnt am Leading-Slot] - IMPLEMENTED (§561, v1.3.23/623) - DEVICE-CONFIRMED (2026-11-19: "Ole! Das ist behoben.
   Jetzt ist es wie gewünscht." - the confirmation rides on 1.3.23 and thereby covers the whole
   D-545..D-548 "jetzt" stack as installed): pinned ambiguous continuations
   expand into their casing pair at their own leading slot.** The follow-up report ("Jetzt" an Position 2
@@ -550,7 +552,7 @@ non-trivial changes).
   `insertInPlace()` drops its pinned-item guard — the pair takes the pinned slot (the bar's front, D-503
   preserved), lower first, twins collapse into one pair. `AmbiguousCasingPlacementTest` rewritten +1 net
   (pinned expansion + the reported collapse shape). 1,965 tests green.
-- **D-547 - IMPLEMENTED (§560, v1.3.22/622) - NOT yet device-confirmed: a freshly learned entry for an
+- **D-547 [Gelerntes mit gebündelter Lesart] - IMPLEMENTED (§560, v1.3.22/622) - NOT yet device-confirmed: a freshly learned entry for an
   already-bundled word is born with the bundled reading(s) plus its hint - the user's own design.** The
   "Jetzt" question ("wieso wird das überhaupt so gelernt?"): the device entry is a pre-D-271 relic
   (sentence-start commits were once learned with their committed casing; today sentence-start never
@@ -562,7 +564,7 @@ non-trivial changes).
   the S-06 verbatim/replacement chips consume the ranked ambiguous candidate, so the casing pair must take
   the replacement's slot (else the slot budget cuts it — the reported "komplett verdrängt" shape).
   1,964 tests green.
-- **D-546 - IMPLEMENTED (§559, v1.3.21/621) - NOT yet device-confirmed: the S-11 dual-casing chips take
+- **D-546 [jetzt-Chips: eigener Ranked-Slot] - IMPLEMENTED (§559, v1.3.21/621) - NOT yet device-confirmed: the S-11 dual-casing chips take
   their candidate's own ranked slot while typing (in place, D-463's prediction shape), and the
   ranked-list exclusion is gone.** Root cause of the follow-up report ("Tatsächlich war 'Jetzt' (groß)
   gelernt. Wieso verdrängt das 'jetzt' (klein) komplett aus den Chips"): the learned override's NOUN
@@ -573,7 +575,7 @@ non-trivial changes).
   call sites (the candidate stays ranked and is replaced wholesale at display time); chip computation,
   commit semantics, D-264/D-439 and the pinned exemption untouched; S-02-removed exact-match alternates
   keep the back-append shape. `AmbiguousCasingPlacementTest` +8. 1,957 tests green.
-- **D-545 - IMPLEMENTED (§558, v1.3.20/620) - NOT yet device-confirmed: the German "jetzt" frequency
+- **D-545 [jetzt-Frequenz + Provider-Nähe] - IMPLEMENTED (§558, v1.3.20/620) - NOT yet device-confirmed: the German "jetzt" frequency
   recalibrated for the conversational register (1,499 -> 15,000, de pack 51 -> 52) after the user's
   "jet"/"jetz" report.** Traced first, not guessed: with the bundled data the provider already ranked
   `jetzt` FIRST for both prefixes (diagnostic over the real dict.tsv + bigram.tsv; the word has been
@@ -587,7 +589,7 @@ non-trivial changes).
   `KeyboardProximity` again (the D-353-era call site predated the parameter and silently used QWERTZ
   for every layout after a settings change). `JetztRankingEvaluationTest` +3 pins the requirement
   ("Spätestens bei 'jetz' MUSS 'jetzt' da stehen") against the real data. 1,949 tests green.
-- **D-540 - IMPLEMENTED (§553, v1.3.14/614), DEVICE-CONFIRMED (2026-11-13: "Es geht endlich
+- **D-540 [Wurzel: beginPress-Return] - IMPLEMENTED (§553, v1.3.14/614), DEVICE-CONFIRMED (2026-11-13: "Es geht endlich
   wieder" - every touch delivered, Space included; the broken round is closed).** THE root cause:
   the 1.3.6-diag experiment proved the same OS delivers UPs to the same view when the DOWN returns
   true - and §546's beginPress extraction had dropped the ACTION_DOWN branch's explicit
@@ -595,7 +597,7 @@ non-trivial changes).
   logs, stranded presses, the Dauer-Backspace wipe). Fixed with the one-line explicit return;
   D-535/D-537/D-538/D-539 stay as inert safety nets. Version note: the diag build used 613, the
   real train skipped to 614 (versionCode keeps counting). Spec §4's D-540 addendum.
-- **D-544 - IMPLEMENTED (§557, v1.3.19/619) - DEVICE-CONFIRMED (2026-11-18: "Gerätebestätigt.
+- **D-544 [Apostroph = Wortzeichen] - IMPLEMENTED (§557, v1.3.19/619) - DEVICE-CONFIRMED (2026-11-18: "Gerätebestätigt.
   Das hat geklappt."): the
   dedicated apostrophe key's character is an ordinary word character.** Never a commit character
   (composes into the token, a leading one too), participates in autocorrection/suggestions like any
@@ -605,14 +607,14 @@ non-trivial changes).
   WordExtent.reclaim, deleteComposingChar and isEditingMidWord, so the five can never drift apart.
   Long-press/symbol-page apostrophes stay delimiters (the genuine quote use). Spec §2's D-544
   addendum.
-- **D-543 - IMPLEMENTED (§556, v1.3.18/618) - DEVICE-CONFIRMED (2026-11-13: "das können wir jetzt
+- **D-543 [Einstellungen: Live-Sync] - IMPLEMENTED (§556, v1.3.18/618) - DEVICE-CONFIRMED (2026-11-13: "das können wir jetzt
   so abschließen. Das hat funktioniert"): the settings screen live-syncs with the keyboard-side
   toggles (SharedPreferences listener in the settings fragment, onResume/onPause), and the stroke
   log lines carry the view's glide state (`glideOn=`/`fieldAllowed=`) for any future "greift mal
   nicht" repro - the paired extraRowToggle + begin/notClaimed lines name the failing hop. Spec §4's
   D-543 addendum.
 
-- **D-542 - IMPLEMENTED (§555, v1.3.17/617) - DEVICE-CONFIRMED (2026-11-13, same session as D-543's
+- **D-542 [Glide: persönliche Geometrie] - IMPLEMENTED (§555, v1.3.17/617) - DEVICE-CONFIRMED (2026-11-13, same session as D-543's
   confirmation): the R3 calibration
   finding - the glide geometry is now PERSONAL.** The extended toggle test proved D-541a works
   (pref/settings/view all flip correctly) and exposed the real glide gate: a genuine 415 px stroke
@@ -623,7 +625,7 @@ non-trivial changes).
   `GlideKeyGeometry` constructor override, `GlideKeyGeometryTest` +3), `begin:` logs
   centers/minPitch. This IS the plan's R3 device calibration. Spec G-09's D-542 addendum.
 
-- **D-541 - IMPLEMENTED (§554, v1.3.15/615) - DEVICE-CONFIRMED via the extended test log (2026-11-13):
+- **D-541 [Glide-Knopf gehärtet + Haptik] - IMPLEMENTED (§554, v1.3.15/615) - DEVICE-CONFIRMED via the extended test log (2026-11-13):
   the extraRowToggle line shows pref/readback/settings/view all flipping correctly in both
   directions, and `playToggleSnapHaptic` fired - the toggle and the snap-in vibration work; the
   reported "Setting nicht gesetzt" was the second toggle's own off-state plus/or a stale settings
@@ -635,7 +637,7 @@ non-trivial changes).
   (`playToggleSnapHaptic`, MODE_SWITCH tier, `capsLockHapticsEnabled` gate); off-snap silent. Spec
   §4's D-539/D-540/D-541 addenda.
 
-- **D-539 - IMPLEMENTED (§552, v1.3.13/613) - SAFETY NET, inert under healthy delivery (the
+- **D-539 [Degraded-Space-Sicherung] - IMPLEMENTED (§552, v1.3.13/613) - SAFETY NET, inert under healthy delivery (the
   D-540/D-543 round confirmed healthy delivery on the affected device): the degraded-mode space
   fix.**
   Per-field `touchUpLossDetected` (set by any recovery, reset per field): while set, the D-401
@@ -645,14 +647,14 @@ non-trivial changes).
   addendum. Plus: glide-logging hypothesis ruled out with evidence (inert when off; zero
   [AdaptKeyGlide] lines in all three broken-state logs).
 
-- **D-538 - IMPLEMENTED (§551, v1.3.12/612) - SAFETY NET, inert under healthy delivery: unbuffered
+- **D-538 [Ungepuffertes Dispatch] - IMPLEMENTED (§551, v1.3.12/612) - SAFETY NET, inert under healthy delivery: unbuffered
   touch dispatch + recovery before cursor routing.** The 1.3.11 log named the pattern: UPs arrive late, paired with the
   next DOWN; a SPACE tap's orphaned press arms D-401 cursor control and the machine eats the next taps
   (Space untypeable). Now: `requestUnbufferedDispatch` per stream (deliver-as-arrived), and
   `recoverStrandedPressIfAny` runs before every routing decision - the next tap commits an orphaned
   space and kills its long-press arm before the ~400-500 ms arm fires. Spec §4's D-538 addendum.
 
-- **D-537 - IMPLEMENTED (§550, v1.3.11/611) - SAFETY NET + OBSERVABILITY (inert under the healthy
+- **D-537 [UPs bergen + loggen] - IMPLEMENTED (§550, v1.3.11/611) - SAFETY NET + OBSERVABILITY (inert under the healthy
   delivery the D-540 fix restored; the instrumentation is what cracked the broken round): the
   lost-touch-UP recovery and
   the touch-delivery instrumentation.** The broken build's logs showed DOWNs processed but no
@@ -664,7 +666,7 @@ non-trivial changes).
   (`touchCancelled:`), recoveries log their facts (`touchRecovered:`). The next repro's log names the
   real delivery pattern. Spec §4's D-537 addendum.
 
-- **D-535/D-536 - IMPLEMENTED (§549, v1.3.10/610) - D-535 IS THE PROVEN MULTI-TOUCH FIX (code-proven,
+- **D-535/D-536 [Multi-Touch-Trennung + Glide-Commit] - IMPLEMENTED (§549, v1.3.10/610) - D-535 IS THE PROVEN MULTI-TOUCH FIX (code-proven,
   device-side overlap repro pending), D-536 DEVICE-CONFIRMED (2026-11-13): the strand-the-active-press
   data-loss fix and the corrected glide commit model.**
   - **D-535:** D-528's rescue stranded the ACTIVE press when its own finger lifted first via
@@ -681,7 +683,7 @@ non-trivial changes).
     (which used to be a no-op). Backspace edits and drops the pending. Spec G-09's rewritten D-536
     addendum.
 
-- **D-531/D-532/D-533/D-534 - IMPLEMENTED (§547+§548, v1.3.8/608 + v1.3.9/609) - D-531
+- **D-531/D-532/D-533/D-534 [Seitennavigation + Glide-Runde] - IMPLEMENTED (§547+§548, v1.3.8/608 + v1.3.9/609) - D-531
   DEVICE-CONFIRMED (2026-11-13: "die neuen Page-Swap-Buttons funktionieren wie gewünscht mit genau
   den Cycle", plus die korrekte Färbung der Währungstaste auf der Special-Keys-Page).** The
   page-navigation reform and the glide round:
@@ -706,7 +708,7 @@ non-trivial changes).
     recognition pass with its candidates, the commit decision; the community repro round (D-518/R3,
     still open) reads these logs. See §548, spec G-09's D-534 addendum.
 
-- **D-519..D-527 - RESOLVED, device-confirmed (§543+§544+§545, v1.3.6; closed 2026-11-12: "Perfekt, so
+- **D-519..D-527 [Layout-Runden (Tilde/Währung/Und/Caret)] - RESOLVED, device-confirmed (§543+§544+§545, v1.3.6; closed 2026-11-12: "Perfekt, so
   können wir das Thema abhaken"): the layout round - the tilde and the currency key on the
   special-characters page (region-resolved symbol, alternating top-10 popup, normal key paint), & on k
   and ^ under the 6, the apostrophe key's double-quote corner, and the confirmed popup placement (corner
@@ -714,7 +716,7 @@ non-trivial changes).
   exhaustion).** 1,926 unit tests, 0 failures; `:app:assembleRelease` green. See §543+§544+§545 and
   spec L-05/L-08's D-519..D-527 addenda.
 
-- **D-516/G-09 glide-typing ("Gesteeneingabe"/Glide-Typing) - R3 (D-518, §542) OPEN as the
+- **D-516/G-09 [Glide-Typing] glide-typing ("Gesteeneingabe"/Glide-Typing) - R3 (D-518, §542) OPEN as the
   community-feedback round since 2026-11-06.** R2 (D-517, §541, v1.2.106) implemented and installed
   by the user; **his own verdict: "komme damit gar nicht klar" - explicitly a no-glide-experience
   verdict, NOT a defect report (nothing concrete named, no code change derived)**; his call: the
@@ -728,7 +730,7 @@ non-trivial changes).
   post-release rounds. R1 (D-516) is §540, R2 (D-517) is §541. Plan: `doc/plan/swipe-typing.md`;
   spec G-09.
 
-- **D-515 - IMPLEMENTED (§539, v1.2.105), NOT yet device-confirmed: the apostrophe key's opt-in for the
+- **D-515 [Apostroph Opt-in] - IMPLEMENTED (§539, v1.2.105), NOT yet device-confirmed: the apostrophe key's opt-in for the
   non-English layouts (default off).** The D-512 apostrophe key right of `l`/`m` would meet resistance in
   the German community on the German QWERTZ (the changed home row is the sore point). New Layout-category
   switch (`d515_apostrophe_key`, default off): the English-style QWERTY arrangement always shows the key;
@@ -739,7 +741,7 @@ non-trivial changes).
   correction of the house build-then-bump order. 1,872 unit tests (1,869 + 3), 0 failures;
   `:app:assembleRelease` green. See §539 and spec L-05's D-515 addendum.
 
-- **D-509..D-514 - the Alt-Belegungs-Reform - RESOLVED, device-confirmed (§538; v1.2.98-v1.2.104,
+- **D-509..D-514 [Alt-Belegungs-Reform] - the Alt-Belegungs-Reform - RESOLVED, device-confirmed (§538; v1.2.98-v1.2.104,
   versionCode 594-600; closed 2026-11-05: "Jetzt ist es perfekt").** Umbrella plan:
   `AdaptKey-Plan-Alt-Belegungen-Reform.md` (CLOSED). One phase per round, own commit + version bump each
   (D-514 is docs-only and rides):
@@ -776,7 +778,7 @@ non-trivial changes).
   and pushed it; the next F-Droid release carries v1.2.104/versionCode 600 per the RELEASE RECIPE when
   asked for.
 
-- **D-508 - RESOLVED (§534, v1.2.94), device-confirmed 2026-10-31: the gesture/long-press calibration for
+- **D-508 [Gesten-Kalibrierung langsam] - RESOLVED (§534, v1.2.94), device-confirmed 2026-10-31: the gesture/long-press calibration for
   slow users - the community report's whole solution.** The D-401 space long-press cancels on motion alone,
   an armed-but-never-moved slow tap commits its space ("empty arm" rescue), the swipe travel is
   user-scalable (`d508_space_swipe_scale` / `d508_field_swipe_scale`, 80-160 %), the backspace repeat
@@ -786,7 +788,7 @@ non-trivial changes).
   `AdaptKey-Plan-Gesture-Calibration.md` is CLOSED. See §534 and spec
   G-01/G-02/G-03/G-08/K-01's D-508 addenda.
 
-- **D-505 - RESOLVED, end-to-end verified (§528, v1.2.91; implemented 2026-10-28, NOT yet device-confirmed):
+- **D-505 [Import-Streaming] - RESOLVED, end-to-end verified (§528, v1.2.91; implemented 2026-10-28, NOT yet device-confirmed):
   the whole language-pack import/seeding pipeline streams.** Community report: importing the Russian pack
   threw `OutOfMemoryError` in `LanguagePackInstaller.parse()` (214 MB unpacked entries held as `ByteArray`s
   against the 256 MiB heap; Serbian's 44.7 MB fit, hence "Serbian works"). Import now stages the picked
@@ -800,7 +802,7 @@ non-trivial changes).
   explicitly declined; shrinking the ru bigram table itself remains a separate content decision. Device
   confirmation (one real ru import + the D-502 reload surviving) closes the round.
 
-- **D-507 - RESOLVED (§531-§532, v1.2.93), device-confirmed 2026-10-29: the bottom-row combined key's slot
+- **D-507 [Combined-Slot dreistufig] - RESOLVED (§531-§532, v1.2.93), device-confirmed 2026-10-29: the bottom-row combined key's slot
   becomes one three-value setting (`CombinedKeyMode`: ?123 / Emoji / Off, default ?123; plain ListPreference,
   D-59's boolean migrated on load) - the emoji mode is the deliberate, redundant second emoji-panel entry
   point beside the extra-row button, and the panel always carries the extra row's return button. User
@@ -808,7 +810,7 @@ non-trivial changes).
   emoji shows the glyph and opens the panel (after §532's isHiddenKey fix, whose first attempt wrongly hid
   the key in the emoji mode too).**
   See §531-§532, spec L-03 and C-27.
-- **D-506 - IMPLEMENTED (2026-10-29, same session as D-504's data half; rides the same 1.2.92/588
+- **D-506 [Basis-Paket-Hinweis] - IMPLEMENTED (2026-10-29, same session as D-504's data half; rides the same 1.2.92/588
   release; a static text, so "device confirmation" is a glance): a "packs are a base" notice on the
   language-packs screen, and the cleanup method moved into the contribution guide.** User request:
   users must understand that missing words, unwanted corrections and glitches usually come from the
@@ -823,14 +825,14 @@ non-trivial changes).
   for native speakers (noun-lemma shield, homograph-checked strays, hand-reviewed band,
   report -> apply -> pack rebuild). No Kotlin code; locale consistency enforced by the existing test.
   History §530.
-- **D-504 - RESOLVED (§529, v1.2.92), device-confirmed 2026-10-29: auto-split tuning - the A-05 split no
+- **D-504 [Auto-Split entschärft] - RESOLVED (§529, v1.2.92), device-confirmed 2026-10-29: auto-split tuning - the A-05 split no
   longer scales with the autocorrect aggressiveness (own 0.90 bar + a 300 half floor make silent
   junk-half splits impossible) and the German dictionary lost its junk (4,033 rows dropped: uncommon
   proper nouns via the Wiktionary-noun + compound shields, fragments like "sch" itself, English
   strays; pack version 49). User device check: removed the learned "schmeißen", retyped it - stays
   whole, no split; the user closed the round on that basis, waiving the remaining §7 checklist items.**
   See §529, spec A-05's D-504 addendum and `AdaptKey-Plan-Auto-Split-Tuning.md`.
-- **D-503 - RESOLVED, device-confirmed (§523-§526, v1.2.83-v1.2.86; fully confirmed 2026-10-27): an n-gram
+- **D-503 [n-gram-Pinning] - RESOLVED, device-confirmed (§523-§526, v1.2.83-v1.2.86; fully confirmed 2026-10-27): an n-gram
   continuation (bigram/trigram partner) that survives into continued typing keeps the first chip slots.**
   Root cause: D-366's bonus re-weights only candidates already in the pool, and the mid-word pool is a
   frequency-truncated prefix scan a mid-frequency partner never survives. Now pinned (strictly, case- and
@@ -847,7 +849,7 @@ non-trivial changes).
   lassen wir das"); the temporary AdaptKeySuggest diagnostic removed in v1.2.87. See §523-§526 and spec
   S-07's D-503 addenda.
 
-- **D-503 follow-up - RESOLVED, device-confirmed (§524, v1.2.84; confirmed 2026-10-27): after a function word there is no**
+- **D-503 follow-up [n-gram-Pinning] - RESOLVED, device-confirmed (§524, v1.2.84; confirmed 2026-10-27): after a function word there is no**
   **pinning at all (Variant B, the left-side gate).** The user's own escalation of the original concern: not
   only the bundled corpus bigrams flood the pinned slots - the *learned* tables accumulate article/function-
   word bigrams without bound during ordinary use (n-grams never decay), so the flood grows with use. The
@@ -859,7 +861,7 @@ non-trivial changes).
   would have left the corpus-generic content words ("Stadt", "Zeit") pinned after articles and needed
   per-source reasoning for the learned share. See §524 and spec S-07's D-503-followup addendum.
 
-- **D-502 - RESOLVED, device-confirmed (§521+§522, v1.2.81/v1.2.82; confirmed 2026-10-26): the G-01
+- **D-502 [Sprachwechsel sichtbar] - RESOLVED, device-confirmed (§521+§522, v1.2.81/v1.2.82; confirmed 2026-10-26): the G-01
   language switch is now discoverable.** Part 1 (§521, v1.2.81): a genuinely fresh language-pack install
   (never an update) selects that language in the keyboard immediately - `LanguagePacksActivity.importPack()`
   persists the switch via `ActiveLanguageStore`, and the resident `AdaptKeyService` adopts it in
@@ -869,9 +871,9 @@ non-trivial changes).
   symbol/URL/email-mode space keys), and a space swipe with a one-language cycle is swallowed silently
   instead of toasting the already-active language.
 
-- **D-501 - RESOLVED as simplified (§527, v1.2.90; closed 2026-10-28 - on-device confirmation deliberately waived by the user): a Dark Theme that simply follows the system - no switch at all.** Originally requested 2026-10-26 as a three-way switch (System Default / Light / Dark); the user simplified before any code - nobody wants dark keys on a light system or vice versa, so the keyboard is dark exactly when the system is dark and there is deliberately no setting. The mode carrier is the plain `values-night/` resource qualifier (no preference key, no strings, no backup mapping): `values-night/colors.xml` overrides the differing tokens, identical-in-both-modes tokens stay absent (the pale-blue press flash, the trash pair, D-247's forget pair, the launcher brand colour). The D-24 overlay's three literals became resources first (`touch_model_fill`/`stroke`/`dot`); D-136's `isAppearanceLightNavigationBars` now derives from the creating configuration's uiMode instead of unconditional `true`; the live flip rides on the framework's input-view recreation on the configuration change, no preemptive machinery. Settings screens were already dark-capable via `Theme.Material3.DayNight`. Plan + palette table + device checklist: `AdaptKey-Plan-Dark-Theme.md`. One version bump for the whole feature (1.2.89 → 1.2.90/versionCode 586). The user waived the on-device check the same day (he did not want to put his system through the day/night flip exercise); the palette is declarative resource data and the only logic change is D-136's one flag line, so the feature is closed as implemented.
+- **D-501 [Dark Theme folgt System] - RESOLVED as simplified (§527, v1.2.90; closed 2026-10-28 - on-device confirmation deliberately waived by the user): a Dark Theme that simply follows the system - no switch at all.** Originally requested 2026-10-26 as a three-way switch (System Default / Light / Dark); the user simplified before any code - nobody wants dark keys on a light system or vice versa, so the keyboard is dark exactly when the system is dark and there is deliberately no setting. The mode carrier is the plain `values-night/` resource qualifier (no preference key, no strings, no backup mapping): `values-night/colors.xml` overrides the differing tokens, identical-in-both-modes tokens stay absent (the pale-blue press flash, the trash pair, D-247's forget pair, the launcher brand colour). The D-24 overlay's three literals became resources first (`touch_model_fill`/`stroke`/`dot`); D-136's `isAppearanceLightNavigationBars` now derives from the creating configuration's uiMode instead of unconditional `true`; the live flip rides on the framework's input-view recreation on the configuration change, no preemptive machinery. Settings screens were already dark-capable via `Theme.Material3.DayNight`. Plan + palette table + device checklist: `AdaptKey-Plan-Dark-Theme.md`. One version bump for the whole feature (1.2.89 → 1.2.90/versionCode 586). The user waived the on-device check the same day (he did not want to put his system through the day/night flip exercise); the palette is declarative resource data and the only logic change is D-136's one flag line, so the feature is closed as implemented.
 
-- **D-500 - RESOLVED (§537, v1.2.97), device-confirmed 2026-10-31 ("funktioniert wunderbar"): the C-28
+- **D-500 [C-28 Auto-Caps-Schalter] - RESOLVED (§537, v1.2.97), device-confirmed 2026-10-31 ("funktioniert wunderbar"): the C-28
   "Auto-capitalisation" switch (default on) directly above C-10 - the coarse, dumb gate mirroring the big
   keyboards' own toggles (Gboard/iOS/Samsung); off = no live Shift-arming anywhere and no linguistic
   force-capitalisation at the ordinary commit ("tisch"/"llm" commit as typed), with editor mandates,
@@ -879,7 +881,7 @@ non-trivial changes).
   `AdaptKey-Plan-D500.md` (CLOSED, device check done); spec's Auto-Capitalisation Switch section; full
   round in History §537.
 
-- **D-19/G-03 gesture toggles (external PR #11) - RESOLVED (§520, v1.2.79/v1.2.80, adopted 2026-10-26).**
+- **D-19/G-03 [Gesten-Schalter (externer PR #11)] gesture toggles (external PR #11) - RESOLVED (§520, v1.2.79/v1.2.80, adopted 2026-10-26).**
   BISCLab's PR imported (cherry-picked, authorship preserved, each commit bumped per convention):
   "Wischen zum Seitenwechsel" (`d19_surface_swipe`) turns the horizontal full-field page swipe off
   (?123/ABC remains the only switch), "Nach unten wischen schließt die Tastatur"
@@ -891,29 +893,29 @@ non-trivial changes).
   added; the D-89 feature catalog deliberately lists neither switch (see §520). Device-confirmed
   2026-10-31 including the off states (on-state is behaviour-identical by construction).
 
-- **D-499 - RESOLVED (§516, v1.2.75).** `/` re-added leftmost into the comma key's popup
+- **D-499 [Slash ins Komma-Popup] - RESOLVED (§516, v1.2.75).** `/` re-added leftmost into the comma key's popup
   (`/ - , : ; _`, comma still pre-selected by value); `URL_SLASH_ALTERNATIVES` deliberately stays
   aliasing the comma list (user decision 2026-10-26 - the D-144 no-duplicate rule is consciously dropped,
   D-44's value pre-selection keeps the straight-up release typing `/`); `EMAIL_AT_ALTERNATIVES` decoupled
   to `- _ +` (user: `,` `:` `;` are outright nonsense in an email address). See §516.
 
-- **D-498 - RESOLVED (§517, v1.2.76).** Backslash (`\`) added next to the slash on every Latin surface:
+- **D-498 [Backslash neben Slash] - RESOLVED (§517, v1.2.76).** Backslash (`\`) added next to the slash on every Latin surface:
   `7`-key popup `/ \ ⁷` on all six layouts (one shared number-row builder now), page 1's `÷` popup
   `/ \ ÷ :`, page 2's primary `/` gains `\` as its single direct-commit hint. `v`'s AltGr hint stays
   `/` (user decision). See §517.
 
-- **D-497-followup - RESOLVED (§519, v1.2.78; confirmed by the user 2026-10-26: "Was ich selbst beurteilen kann, bestätige ich hiermit").** The confirmed proposal table was rolled out to all 15 packs (cs sk hr bs pl et hu ro da nb sv fi pt it fr) plus lt in §518 - pure data changes, every pack `version.txt` +1, zip rebuilt, Catalog Entry +1. The French scatter-workaround hints (t/w/y/z/k) stay as deliberate duplication; freeing them is an unmade UX decision. See §519.
-- **D-497 - RESOLVED (§518, v1.2.77).** Lithuanian `ė`/`ū` reachable: the L-05 pack-hint mechanism now
+- **D-497-followup [Varianten im Pack-Hint] - RESOLVED (§519, v1.2.78; confirmed by the user 2026-10-26: "Was ich selbst beurteilen kann, bestätige ich hiermit").** The confirmed proposal table was rolled out to all 15 packs (cs sk hr bs pl et hu ro da nb sv fi pt it fr) plus lt in §518 - pure data changes, every pack `version.txt` +1, zip rebuilt, Catalog Entry +1. The French scatter-workaround hints (t/w/y/z/k) stay as deliberate duplication; freeing them is an unmade UX decision. See §519.
+- **D-497 [Varianten im Pack-Hint] - RESOLVED (§518, v1.2.77).** Lithuanian `ė`/`ū` reachable: the L-05 pack-hint mechanism now
   accepts comma-separated multi-variant values (`e=ę,ė` → real popup, first variant pre-selected); lt
   `hints.tsv` carries `e=ę,ė` / `u=ų,ū`, pack v3 rebuilt, Catalog Entry 2 → 3. Mechanism general - the
   other diacritic-rich packs' data changes await the user's per-language variant review. See §518.
 
-- **D-494 - RESOLVED, device-confirmed (§513, v1.2.73; confirmed 2026-10-26): foreign-dictionary words (English**
+- **D-494 [Fremdwörter nicht lernen] - RESOLVED, device-confirmed (§513, v1.2.73; confirmed 2026-10-26): foreign-dictionary words (English**
   **above all) no longer enter the active language's learned store - `learnWord()`/`learnWordStrong()`/**
   **`reinforceFromTier3()` now gate on the existing `knownInOtherLanguage()` shield (previously correction-side**
   **only); the unigram is skipped, the n-gram context still learned (D-327 split). Existing polluted entries:**
   **forget once via the editor, they are no longer reinforced. See §513 and spec W-02's D-494 addendum.**
-- **D-493 - RESOLVED (§529, v1.2.92), closed 2026-10-31 without its own code round: the reported
+- **D-493 [schmeißen-Meldung] - RESOLVED (§529, v1.2.92), closed 2026-10-31 without its own code round: the reported
   "schmeißen" -> "sch Meißen" split at Medium was D-504's exact measured shape ("sch" 84 x "Meißen" 352
   = 0.77 >= Medium's old 0.75), now pinned at exactly 0.0 silent confidence by the new split bar (either
   half below frequency 300 -> no silent split; `SplitEvaluationTest`), and device-confirmed by the user
@@ -921,7 +923,7 @@ non-trivial changes).
   no split). The data half resolved alongside: `Meißen` (and `sch`) left `dict.tsv` in §529's cleanup as
   agreed; the schmeißen family itself stays absent - the word is an unknown token (escalation cost
   accepted, no everyday-word data round opened for it). See §529, spec A-05's D-504 addendum.
-- **D-492 - OPEN, reported 2026-10-23, root-caused by code reading (2026-10-23, refined same day with the**
+- **D-492 [Paste-Form (Span-Liveness)] - OPEN, reported 2026-10-23, root-caused by code reading (2026-10-23, refined same day with the**
   **user's observation that it "meistens" fires on system credential-manager fills) - two defect classes; the**
   **primary one is a stale-composing hole in onUpdateSelection's own-edit detection.**
   All `AdaptKeyService.kt` line numbers below are as of v1.2.71 (versionCode 567) - re-locate before trusting.
@@ -1075,21 +1077,21 @@ non-trivial changes).
    code fixes ride with the app update, nothing pack-related here. (5) **On closure, TRIM THIS ENTRY** to the
    standard one-line RESOLVED stub pointing at the round's §-entry - the full analysis moves to
    `AdaptKey-History.md` with that round per the usual pruning convention, so this section does not flood.
-- **D-491 - RESOLVED (§513, v1.2.73), device-confirmed 2026-10-26: a manual Shift press (arm or deliberate**
+- **D-491 [Shift-Arm schützt manuellen Press] - RESOLVED (§513, v1.2.73), device-confirmed 2026-10-26: a manual Shift press (arm or deliberate**
   **disarm) is no longer wiped by the debounced caret re-derivation scheduled by the previous commit's echo -**
   **a Shift tapped inside the ~100 ms post-commit window now capitalises the next letter.** See §513 and spec
   G-05's D-491 addendum.
-- **D-490 - RESOLVED (§536, v1.2.96), device-confirmed 2026-10-31 ("sieht gut aus"): the D-348
+- **D-490 [Doppel-Backspace-Default] - RESOLVED (§536, v1.2.96), device-confirmed 2026-10-31 ("sieht gut aus"): the D-348
   double-tap-Backspace revert is the fresh-install default (on).** User request: "Double Tab Revert sollte
   der Standard sein." Pure default flip at the four default sites (`AdaptSettings`/`RawSettings`/
   `SettingsStore` DEF + the preference XML's `android:defaultValue`) - an explicitly stored Off keeps
   working, backups carry only stored values, so a never-toggled install follows the new default with no
   migration. See §536.
-- **D-489 - RESOLVED (§512, v1.2.72): an intervening keystroke on another key (letter/space/delimiter/backspace/**
+- **D-489 [Doppel-Shift-Brecher] - RESOLVED (§512, v1.2.72): an intervening keystroke on another key (letter/space/delimiter/backspace/**
   **layer switch, a long-press, a popup selection) now breaks G-05's double-tap pair - fast letter-Shift-letter-Shift**
   **typing no longer toggles the word's case; the second Shift acts as the ordinary toggle instead.** See §512 and
   spec G-05's D-489 addendum.
-- **D-487 - WITHDRAWN and closed (2026-09-28, §510; user confirmed the c06 look as final): the inline `DropDownPreference` prototype was rejected on the**
+- **D-487 [Dropdown-Prototyp verworfen] - WITHDRAWN and closed (2026-09-28, §510; user confirmed the c06 look as final): the inline `DropDownPreference` prototype was rejected on the**
   **device; the existing `ListPreference` look (c06) stays the standard, so no other setting is converted.**
   Original entry, kept for the record: convert other pick-one settings to inline dropdowns - the user was still to
   choose which. Background: D-486 is the app's first `DropDownPreference` (a spinner in the row,
@@ -1101,14 +1103,14 @@ non-trivial changes).
   which the user has not asked to change. Standing rules (memory): "none/off/never" always first; a dropdown for
   unordered pick-one, a slider for ordered scales. Nothing to do until the user names the settings.
 
-- **D-486 - RESOLVED and fully closed (§508 - §510, v1.2.70): the keyboard sat a gesture-bar-height too
+- **D-486 [Raum unter der Tastatur] - RESOLVED and fully closed (§508 - §510, v1.2.70): the keyboard sat a gesture-bar-height too
   high on a Chinese phone without gesture navigation - a three-position "room below the keyboard" slider
   (None / Navigation bar / Automatic) as the last Layout entry, an automatic three-button detection, and
   an inset line in the diagnostic log.** The list look was device-confirmed 2026-09-28; the user closed
   the round 2026-10-31 ("bisher keine Klagen") - the phone's inset behaviour is fine in practice, closing
   the only-the-device-can-answer question about Automatic. See §508/§510 and spec §50.
 
-- **D-483 - RESOLVED (§507, v1.2.67; reported 2026-09-28, device-confirmed 2026-09-28): the launcher label "AdaptKey Settings" is truncated and confusable**
+- **D-483 [Launcher-Label] - RESOLVED (§507, v1.2.67; reported 2026-09-28, device-confirmed 2026-09-28): the launcher label "AdaptKey Settings" is truncated and confusable**
   **with the system Settings, reported by the Ukrainian MR tester - check every language, not just Ukrainian.**
   Report: in Ukrainian the label becomes "Налаштування AdaptKey" and is cut to "Налаштуван…" in the app drawer,
   so it looks like the system Settings app; suggestion: just "AdaptKey". Cause (checked in the code): the
@@ -1122,7 +1124,7 @@ non-trivial changes).
   (drop, or keep for the in-screen title only). Small, but touches the manifest and every locale file, so it
   needs the user's go before starting.
 
-- **D-484 - RESOLVED (§507, v1.2.67; reported 2026-09-28, device-confirmed 2026-09-28): Settings sub-screens have no visible Back button.** Reported as
+- **D-484 [Zurück-Pfeil (Einstellungen)] - RESOLVED (§507, v1.2.67; reported 2026-09-28, device-confirmed 2026-09-28): Settings sub-screens have no visible Back button.** Reported as
   generally perceived as odd. There are 9 `AppCompatActivity` sub-screens (`BackupActivity`,
   `BlacklistActivity`, `CalibrationActivity`, `CredentialsActivity`, `DiagnosticLogActivity`,
   `FeatureOverviewActivity`, `LanguagePacksActivity`, `LearnedWordsActivity`, `Tier3ModelActivity`) below
@@ -1135,7 +1137,7 @@ non-trivial changes).
   string for the arrow's content description in every `values-xx` (project rule, see memory). Note that
   D-483's title question overlaps: whatever draws the screen title becomes the toolbar.
 
-- **D-485 - RESOLVED (§507, v1.2.67; reported 2026-09-28, device-confirmed 2026-09-28): the calibration screen has no OK/Done button.** Seen in the
+- **D-485 [Kalibrierung: OK-Knopf] - RESOLVED (§507, v1.2.67; reported 2026-09-28, device-confirmed 2026-09-28): the calibration screen has no OK/Done button.** Seen in the
   onboarding path (`OnboardingStep.CALIBRATION` opens `CalibrationActivity`), but it is the same screen as in
   Settings. Nothing is actually missing functionally - choosing a style already persists immediately
   (`previewAndConfirm` -> `persistPattern`) - it is only reassurance. Today the only way out is "Skip"
@@ -1146,7 +1148,7 @@ non-trivial changes).
   been chosen yet. Probably folds into D-484's Back button for the Settings path, but the onboarding path
   still wants an explicit forward action. New string in every `values-xx`.
 
-- **D-475 - OPEN, not started (2026-09-20): the "clean fix" for the touch-zone learning signal - needs its**
+- **D-475 [Sauberer Lern-Fix (offen)] - OPEN, not started (2026-09-20): the "clean fix" for the touch-zone learning signal - needs its**
   **own design discussion before any code.** Background: D-474 (§497) adds a switch that freezes touch-zone
   learning, because the user found that drifting zones eventually *cause* the mistaps they were meant to
   absorb. Reading the code for that discussion showed why this is plausible (a code-reading hypothesis, not yet
@@ -1171,7 +1173,7 @@ non-trivial changes).
   raw-tap recording or the D-243 `rawTap` diagnostic lines. Until then D-474's switch is the on-device A/B
   tool (Reset calibration, then switch learning off).
 
-- **D-476 - FIXED and device-confirmed (§500, v1.2.60; confirmed 2026-09-24): `Drum` was tagged bare `NOUN` in**
+- **D-476 [Drum-zu-drum-Tag] - FIXED and device-confirmed (§500, v1.2.60; confirmed 2026-09-24): `Drum` was tagged bare `NOUN` in**
   **the German dictionary and therefore auto-capitalised.** `dictionaries/de/dict.tsv` held `Drum 33 NOUN` and
   `Drums 27 NOUN,OTHER` (lemma `Drum`) - both the English word (band/drum kit) from the Wikipedia corpus - and
   no lower-case `drum` row, although German has a real lower-case adverb `drum` (= "darum": "sei's drum",
@@ -1182,7 +1184,7 @@ non-trivial changes).
   strong edit-distance-1 neighbour is `darum` (1023), 31x more frequent, well below A-01's ~106x override ratio
   (the `dich`/`dir` check D-473 did). See §500.
 
-- **D-477 - FIXED and device-tested by the user (§498 v1.2.58 + §499 v1.2.59; confirmed 2026-09-20): the A-06/D-391**
+- **D-477 [Fusions-Metrik: Wortmodell] - FIXED and device-tested by the user (§498 v1.2.58 + §499 v1.2.59; confirmed 2026-09-20): the A-06/D-391**
   **merge did not turn `"Na hbarn"` back into `"Nachbarn"` - four independent obstacles.** User
   report: intending `Nachbarn`, the `c` tap landed as a space, giving `"Na hbarn"` (first reported as `"Nah
   hbarn"`; the logs show `Na` + space + `hbarn`). The user enabled the merge (C-25 defaults to Off) and saw
@@ -1247,7 +1249,7 @@ non-trivial changes).
      not measured or built; the user judged the gap too rarely noticeable to matter. Not adopted: a length-of-fragment bonus (arbitrary - the dropped connector can sit anywhere) and
      the spurious space's tap position (see D-479).
 
-- **D-479 - OPEN, idea only, deliberately not started (2026-09-20): use the spurious space's own tap position**
+- **D-479 [Spurious-Space-Position nutzen (Idee)] - OPEN, idea only, deliberately not started (2026-09-20): use the spurious space's own tap position**
   **as soft evidence for the fusion.** In the user's logs the space tap sits at x = 434-436 while the `c` key's
   centre is ~427 (key pitch ~106 px), i.e. within a tenth of a key - a physical signal for *which* connector
   was meant that the lexical model does not use. It would need new state (the tap's x stored with the
@@ -1257,7 +1259,7 @@ non-trivial changes).
   unnecessary if the class model (§499) works well - revisit only if device use shows the lexical evidence
   is not enough, e.g. ambiguous connectors.
 
-- **D-478 - RESOLVED (§501-§503, 2026-09-20; the recommendation below on (1) was overruled by the user):**
+- **D-478 [UI-Übersetzungen (32 Sprachen)] - RESOLVED (§501-§503, 2026-09-20; the recommendation below on (1) was overruled by the user):**
   **UI-string localisation was still written as "DE/EN/EL" although ~31 languages exist.** Source of the habit: spec N-01 ("localised into English and Greek in
   addition to German") and every §-entry since (`values`/`values-de`/`values-el`, ~334 strings each) - it
   predates D-280's language packs and was never revisited. Two questions: (1) should the UI be translated into
@@ -1320,7 +1322,7 @@ non-trivial changes).
   risk scan) already describes the right shape for a future language's own independent scan - not touched by
   this closure, since it was never about extending the German list either. Nothing left to track here.
 
-- **D-402/D-306-followup/D-345/D-330-followup/D-367 - ALL COMPLETE (§301 v1.0.54 + §302 v1.0.55 + §303**
+- **D-402/D-306-followup/D-345/D-330-followup/D-367 [Wörterbuch-Cleanup-Paket] - ALL COMPLETE (§301 v1.0.54 + §302 v1.0.55 + §303**
   **v1.0.56 + §304 v1.0.57); the entire originally-agreed combined bundle is now closed.** Originally agreed
   to bundle D-402/D-306-followup/D-345/D-330-followup/D-367/D-368 into one combined cleanup round since they
   all touch the same `dict_de.tsv` rebuild/version-bump/pack-republish cycle - D-368 (homograph tagging) was
@@ -1412,7 +1414,7 @@ non-trivial changes).
   convention, just this one round's explicit instruction. Default back to per-candidate confirmation for any
   future round unless told otherwise again.
 
-- **D-306's dictionary cleanup only removed *untagged* entries (missing part-of-speech) - RESOLVED for**
+- **D-306's [Wörterbuch-Tagging-Fix] dictionary cleanup only removed *untagged* entries (missing part-of-speech) - RESOLVED for**
   **German by §301's broader sweep (v1.0.54).** D-306 itself did not attempt a broader sweep of entries that
   carry a valid tag but are still dubious (foreign proper nouns, obscure fragments) the way "til" itself was
   before its manual fix - a narrow probe at the time (short, low-frequency, `OTHER`-tagged German entries)
@@ -1425,7 +1427,7 @@ non-trivial changes).
   false-positive split is reported again (for German or any other bundled language), treat it the same way
   rather than assuming §301 caught everything.
 
-- **D-441 - RESOLVED (§413 + §415, v1.1.54): D-314's AZERTY geometry now has a real `dictionaries/fr/`**
+- **D-441 [Französisch-Pack] - RESOLVED (§413 + §415, v1.1.54): D-314's AZERTY geometry now has a real `dictionaries/fr/`**
   **pack behind it - the full one-shot pipeline from the Language Contribution Guide's own §8, run end to**
   **end on explicit user request to see how well it works, fully autonomously.** §413's first pass (12,000
   words from a small OpenSubtitles-derived list) was explicitly rejected by the user as too thin and not
@@ -1454,7 +1456,7 @@ non-trivial changes).
   208,204 -> 373,700 rows. Still not native-speaker reviewed - this fix is a real quality improvement, not a
   substitute for step 11.
 
-- **D-443 - RESOLVED (§416, v1.1.55): first Spanish `dictionaries/es/` pack, built fully autonomously and**
+- **D-443 [Spanisch-Pack] - RESOLVED (§416, v1.1.55): first Spanish `dictionaries/es/` pack, built fully autonomously and**
   **directly to the real-corpus/real-lexicon method D-441-followup ended up on - no intermediate/heuristic**
   **pass this time, per explicit user instruction.** Spanish needed neither a new keyboard geometry (already
   QWERTY) nor a new trigram profile (already in `language_profiles.tsv` since D-280), so this round is
@@ -1495,7 +1497,7 @@ non-trivial changes).
   neighbour-typo correction signal (D-28/D-38/S-09) now genuinely scores against the layout actually being
   typed on. See §414 for the full mechanism.
 
-- **D-442's own English confusables-scan side-effects - BOTH RESOLVED (§457, v1.2.17).** The
+- **D-442's [Konfusables-Scan Englisch] own English confusables-scan side-effects - BOTH RESOLVED (§457, v1.2.17).** The
   frequency-correction backlog (121 real auto-apply-risk pairs, fixed) and the `en/dict.tsv` noise audit (140
   bogus generator-artifact entries removed, 1 retagged) were both closed in one round - see §457 in Current
   State for the full method, the root-caused generator bug behind the noise, and the real numbers. The
@@ -1503,7 +1505,7 @@ non-trivial changes).
   frequency-bump sizes needed to clear it fully turned out grossly disproportionate to these words' actual
   corpus rarity.
 
-- **D-280/D-281 follow-up - RESOLVED, all four languages now have real, hosted packs.** `SPANISH` moved out
+- **D-280/D-281 [Spracharchitektur] follow-up - RESOLVED, all four languages now have real, hosted packs.** `SPANISH` moved out
   via D-443 (§416); `PORTUGUESE` via D-445 (§418); `ITALIAN` via D-446 (§419); `DUTCH` via D-447 (§420) - see
   those rounds for the real packs now built and hosted, all eight `Language` enum entries other than
   `UNKNOWN` now covered. Separately, the Python script that originally built `language_profiles.tsv` (A-03's
@@ -1535,7 +1537,7 @@ non-trivial changes).
   Modell". Possible optimisation once latency is measured: ABI splits/app bundle so each device only pulls its
   own native lib (~18 MB arm64).
 
-- **D-330-followup - RESOLVED by §304 (v1.0.57).** D-330 itself fixed `deine`/`deiner`/`deinen`/`deinem`/
+- **D-330-followup [deine-Registerkorrektur] - RESOLVED by §304 (v1.0.57).** D-330 itself fixed `deine`/`deiner`/`deinen`/`deinem`/
   `deines` against their `seinX` counterparts; the bare, uninflected `dein` was found showing the identical
   register-skew ratio too late to fold into that round, and was left open pending a full audit. §304 did that
   audit properly: not just `dein`/`sein`, but every declined form of all six German possessive determiners
@@ -1847,13 +1849,13 @@ non-trivial changes).
     casing, confirmed via the existing `"MSCI"`-vs-`"Msci"` regression test), reconfirmed directly with the
     user this round.
 
-- **D-344 (download directory control, spec §30) - RESOLVED, mechanism changed by D-413 (see below).** The
+- **D-344 [Download-Ordner-Steuerung] (download directory control, spec §30) - RESOLVED, mechanism changed by D-413 (see below).** The
   SAF folder-grant approach from §327 (v1.0.79) was reverted; the app is back to a plain `ACTION_OPEN_
   DOCUMENT` single-file picker, the same family of fix D-344 originally chose between (HTTP header control
   and raw-repo-path remain declined for the reasons given in spec §30) - see spec §30 for the current
   mechanism and D-413 for why the folder-grant attempt did not survive real-device testing.
 
-- **D-345 (dictionary noise scan, spec §31) - RESOLVED by §301 (v1.0.54); the "Bri" loose end struck**
+- **D-345 [Wörterbuch-Rausch-Scan] (dictionary noise scan, spec §31) - RESOLVED by §301 (v1.0.54); the "Bri" loose end struck**
   **(2026-08-31, user's own call, no further action).** The broader scan for Wikipedia-extraction-noise
   entries (fragments, obscure acronyms, markup tokens) that §345 called for is exactly what §301's probe did
   (see the D-402/D-306-followup/D-345 bullet above for the full method and results). `"Bri"` itself, the
@@ -1861,7 +1863,7 @@ non-trivial changes).
   found** (case-insensitive) - either already removed in some earlier untracked change, or the original
   report used different casing/context that doesn't match a literal `"Bri"` row. Nothing left to track here.
 
-- **D-404 (inflected forms flooding the Learned Words list, and more broadly the bundled dictionaries too -**
+- **D-404 [Gelernt-Flut: Drei-Tier-Plan] (inflected forms flooding the Learned Words list, and more broadly the bundled dictionaries too -**
   **e.g. "Kugel"/"Kugeln" both present, risking the plural's frequency silently outranking and replacing**
   **the singular) - evaluated and deliberately split into three tiers of very different size, not one task:**
   1. **Full generative morphology** - reduce the dictionary to only irregular forms, generate regular
@@ -1925,7 +1927,7 @@ non-trivial changes).
   languages today, not German alone. This is the schema/data groundwork D-404 Tier 1 consumed (see above,
   RESOLVED) and that §388 (below) is the first real consumer of on the ranking/override side (D-404 Tier 2).
 
-- **D-351-followup - CLOSED AGAIN (2026-09-03, no code change - not reproducible).** Had been reopened
+- **D-351-followup [Nicht reproduzierbar] - CLOSED AGAIN (2026-09-03, no code change - not reproducible).** Had been reopened
   2026-09-01 on a report that Total Commander's "Datei umbenennen" (rename) date field showed the same
   field/editor incompatibility D-351 originally found and worked around for Gemini's search field
   (`reclaimOnCaretMoveSuppressed`, scoped by package name in `AdaptKeyService.onStartInput()` - see
@@ -1936,7 +1938,7 @@ non-trivial changes).
     since this is exactly the class of bug spec §1's guiding principle warns must be re-derived from real
     logs, not guessed.
 
-- **D-414 - RESOLVED (§337, v1.0.89) for the Reclaim half; the Cycle half explicitly shelved, not merely**
+- **D-414 [Manueller Reclaim-Knopf] - RESOLVED (§337, v1.0.89) for the Reclaim half; the Cycle half explicitly shelved, not merely**
   **deferred.** A manual Reclaim button ("🧲") now lives in the extra row (§14, R-01), left side - motivated
   directly by D-351/D-351-followup (Gemini, Total Commander): tapping it fires D-62's reclaim immediately,
   unconditionally ignoring `reclaimOnCaretMoveSuppressed`, enabled only while a reclaim is genuinely possible
@@ -1948,7 +1950,7 @@ non-trivial changes).
   mit einem sauberen Konzept nochmal auf dich zukomme." Not tracked as its own open backlog item any more -
   revisit only if the user brings a genuinely new concept for it.
 
-- **D-415 - WON'T FIX (device-confirmed, 2026-09-01).** A "give up focus as if it had never been set"
+- **D-415 [Fokus-Aufgeben (abgelehnt)] - WON'T FIX (device-confirmed, 2026-09-01).** A "give up focus as if it had never been set"
   button in the extra row, motivated by Google Keep: once a list-item field has been tapped into, focus
   never leaves it, so the keyboard keeps popping back up and the old caret position is hard to relocate
   after dismissing/reopening. §335 (v1.0.87) wired both candidate levers to temporary test buttons
@@ -1961,7 +1963,7 @@ non-trivial changes).
   (e.g. an accessibility service, well outside an IME's own scope and permission model) is ever considered
   worth the added complexity - not currently planned.
 
-- **D-416 - RESOLVED (§333, see History.md for the full account).** A-12's eager auto-space-after-punctuation
+- **D-416 [Auto-Space verzögert] - RESOLVED (§333, see History.md for the full account).** A-12's eager auto-space-after-punctuation
   replaced with the deferred model (space is set only once the next letter is actually typed, not eagerly the
   instant the punctuation mark commits) - planned in `AdaptKey-Plan-D416-Deferred-Space.md`, deleted once
   superseded (2026-09-04, explicit user call: the deferred model "hat sich extrem bewährt und wird bleiben" -
@@ -1974,7 +1976,7 @@ non-trivial changes).
   toggle was ever built, per the user's own explicit call at the time (would not scale across every touch
   point).
 
-- **D-418 - OPEN, low priority, not started (2026-09-01).** A genuine in-text visual cue for D-416's deferred
+- **D-418 [Visueller Hinweis (offen)] - OPEN, low priority, not started (2026-09-01).** A genuine in-text visual cue for D-416's deferred
   space/caps state (as opposed to the space-key dot that shipped) - user's own explicit call: "nicht so
   furchtbar wichtig", worth revisiting later, not now. Two realistic approaches identified, neither a small
   add-on - see the conversation for the full discussion:
@@ -1990,11 +1992,11 @@ non-trivial changes).
      would be this app's first use of a floating IME overlay at all.
   Revisit only when/if the user explicitly wants to pursue one of these as its own dedicated round.
 
-- **D-451 - RESOLVED (§448, v1.2.8).** The L-05 AltGr/long-press popup opening now fires its own haptic
+- **D-451 [AltGr-Popup-Haptik] - RESOLVED (§448, v1.2.8).** The L-05 AltGr/long-press popup opening now fires its own haptic
   confirmation again, reversing D-396-followup (v3)'s earlier removal - see §448 in Current State for the
   mechanism.
 
-- **D-452 - RESOLVED, device-confirmed by the user on 2026-09-08 (§477, v1.2.37) - including the long-token**
+- **D-452 [Gemini-Dauer-Performance-Problem] - RESOLVED, device-confirmed by the user on 2026-09-08 (§477, v1.2.37) - including the long-token**
   **`"hqllervoorden"` case §477 itself had flagged as not yet verified.** Originally closed WON'T FIX as not reproducible; the
   user later sent a real device log describing it as "das immer wiederkehrende Performance-Problem" (the
   recurring performance problem), captured incidentally while typing in Gemini. That specific log showed no
@@ -2050,20 +2052,20 @@ non-trivial changes).
   Diagnostic timers kept in place (cheap, `SystemClock.uptimeMillis()` only) to confirm the fix on the next
   real device log, per this project's own standing convention - build green, 1640 tests green.
 
-- **D-453 - RESOLVED (§448, v1.2.8).** Double-consonant "unfold" for autocorrect/chip suggestion
+- **D-453 [Doppel-Konsonant-Entfaltung] - RESOLVED (§448, v1.2.8).** Double-consonant "unfold" for autocorrect/chip suggestion
   (`"bite"` → `"bitte"`, `"tipen"` → `"tippen"`), implemented exactly as agreed - an extension of S-09's
   existing neighbour-prefix escalation (D-328), not a new fold/unfold table - see §448 in Current State for
   the mechanism.
 
-- **D-454 - RESOLVED (§447, v1.2.7).** Restructured the Language Packs settings screen
+- **D-454 [Sprachpaket-Bildschirm umgebaut] - RESOLVED (§447, v1.2.7).** Restructured the Language Packs settings screen
   (`LanguagePacksActivity`/`activity_language_packs`, D-280) per the user's own six-point list - see §447 in
   Current State for the full implementation.
 
-- **D-455 - RESOLVED, device-confirmed (§450, v1.2.10).** In a `reclaimOnCaretMoveSuppressed` field (Gemini,
+- **D-455 [Reclaim-Sperre (Gemini-Felder)] - RESOLVED, device-confirmed (§450, v1.2.10).** In a `reclaimOnCaretMoveSuppressed` field (Gemini,
   D-351), moving the caret between existing words now correctly re-derives Shift/Caps fresh, independent of
   the composing-region reclaim itself staying suppressed there - see §450 in Current State for the mechanism.
 
-- **D-456 - CLOSED, device-confirmed working (2026-09-08, no code change).** The user confirmed on device
+- **D-456 [Verlernen deckt Fall ab] - CLOSED, device-confirmed working (2026-09-08, no code change).** The user confirmed on device
   that the behaviour is already correct, so the existing D-248/D-140 mechanism
   (`rememberForBackspaceUnlearn`/`recentLearnRecords`/`maybeUnlearnOnBackspaceReturn`) does cover this
   case after all - the analysis below had already concluded it probably did, and the two open questions it
@@ -2090,7 +2092,7 @@ non-trivial changes).
   it. Needs an actual device repro (or a targeted unit test walking both scenarios against the real
   `AdaptKeyService`/`SqliteDictionaryStore` pair) before deciding whether anything needs to change at all.
 
-- **D-457 - RESOLVED, device-confirmed (§450 + §452 followup, v1.2.10/v1.2.12).** A learned all-caps acronym
+- **D-457 [Akronym: Kanon-Restore] - RESOLVED, device-confirmed (§450 + §452 followup, v1.2.10/v1.2.12).** A learned all-caps acronym
   (`"LLM"`) with no noun/proper-noun tag of its own used to come back a mangled `"lLM"` - not literally "no
   chip", but close enough to read as one (§450). §450's own fix only covered *`word` already spelled as the
   acronym itself* (e.g. the ordinary suggestion-list candidate, already correctly cased by
@@ -2099,14 +2101,14 @@ non-trivial changes).
   ever touch a word's own first character, never reconstruct a multi-capital canonical form from scratch. See
   §452 in Current State for that follow-up fix (`store.entryOf()`'s own case-insensitive canonical lookup).
 
-- **D-458 - RESOLVED, device-confirmed (§451, v1.2.11).** "Ab dem zweiten Wort" no suggestion chips appeared at all any more -
+- **D-458 [Ab Wort 2 ohne Chips] - RESOLVED, device-confirmed (§451, v1.2.11).** "Ab dem zweiten Wort" no suggestion chips appeared at all any more -
   root-caused directly from a real device log the user captured (typing "Test llm"), not guessed: a spurious
   double space in the A-03 language-classification context string (`selectActiveDictionary("Test  l")`,
   visible verbatim in the log) confused the classifier into reading the context as foreign, suppressing every
   suggestion from the second word onward. See §451 in Current State for the exact mechanism and fix. Turned
   out unrelated to D-455/D-357 - both real suspects given the timing, neither actually involved.
 
-- **D-459 - WON'T FIX for now, deliberately deferred (2026-09-07, no code change).** While chasing an
+- **D-459 [Backspace-Davor-Löschung (beobachtet)] - WON'T FIX for now, deliberately deferred (2026-09-07, no code change).** While chasing an
   unrelated, still-unreproduced bug (a Backspace positioned right after a letter mid-word deleting the
   letter *before* it too - not caught in this session's own log), the user found and reported a second,
   real effect in the same log: typing `"Wie Abt ist der da?"`, repeatedly editing the word at the "Abt"
@@ -2129,7 +2131,7 @@ non-trivial changes).
   Channels section). Deferred, not abandoned - "vielleicht nutzt es uns später noch einmal" - revisit only
   if the user raises it again, ideally with its own dedicated repro.
 
-- **D-460 - CLOSED, device-confirmed (2026-09-08); no dedicated fix was ever written, so the mechanism**
+- **D-460 [Chip-Verschwinden (Race, erledigt)] - CLOSED, device-confirmed (2026-09-08); no dedicated fix was ever written, so the mechanism**
   **below is inferred rather than proven.** The user confirmed the symptom is gone. Nothing ever targeted
   it directly, so the most plausible explanation is §477's own fix: the chips vanishing was a
   reclaim/render race against a 350 ms guard window, and §477 removed a multi-second main-thread block
@@ -2145,7 +2147,7 @@ non-trivial changes).
   regression of that existing fix or a related race it does not fully cover. Needs a real device log to
   root-cause properly, per this project's own convention - not attempted blind.
 
-- **D-473 - CLOSED IN FULL, all eight reported symptoms device-confirmed fixed (2026-09-17).** Six
+- **D-473 [Acht-Symptome-Runde (dich/dir)] - CLOSED IN FULL, all eight reported symptoms device-confirmed fixed (2026-09-17).** Six
   real-device false-positive-autocorrect reports from the user in one batch, each individually root-caused
   from real code/data before touching anything. Three closed as pure dictionary content - see §488 (v1.2.48)
   for `ek`/`Wert`/`naja`-family and §489 (v1.2.49) for `dich`/`dir` (both, including `dich` itself - see the
@@ -2180,7 +2182,7 @@ non-trivial changes).
       data change had been identified for it (see §490's tail in History). D-473 is closed in full
       including the reverse direction.
 
-- **D-473-followup - RESOLVED, device-confirmed (2026-09-17). Root cause was never the code or the data -**
+- **D-473-followup [Acht-Symptome-Runde (dich/dir)] - RESOLVED, device-confirmed (2026-09-17). Root cause was never the code or the data -**
   **it was a deployment gap this session's own deliberate caution created.** The real, final answer, found from
   a second device log captured on the actual v1.2.51 build: `typedFreq=291` - the live on-device dictionary
   still held `dich`'s original, pre-fix frequency, unchanged. The German language pack is a separate,
@@ -2238,7 +2240,7 @@ non-trivial changes).
   candidates (a caching layer holding a pre-update value, the pack import genuinely not completing for this
   one row, something the code review cannot see) all need the log to distinguish between.
 
-- **D-461 - RESOLVED, device-confirmed (§478, v1.2.38; confirmed 2026-09-09).** Automatic capitalisation now fires only
+- **D-461 [Auto-Caps nur eindeutig] - RESOLVED, device-confirmed (§478, v1.2.38; confirmed 2026-09-09).** Automatic capitalisation now fires only
   for a word with no reading beyond noun/proper noun - §6's rules 3 and 4 collapsed into one `isNounOnly`
   predicate, closing a live bug where a `PROPER_NOUN` tag silently overrode a correctly-detected ambiguity
   and re-broke D-368's own retags (`Weg`, `waren`, `Arbeit`, `Rolle`, `Recht`, `Alter` - 159 German rows).
@@ -2249,7 +2251,7 @@ non-trivial changes).
   **not** fix: a surname that is also an ordinary word (`Ehrlich`, `Jung`, `Kluge`) stays ambiguous by
   design, with W-04 learning the user's own casing from real use.
 
-- **D-462 - RESOLVED for the conservative scope (§483, v1.2.43), device-confirmed (2026-09-24); the wider**
+- **D-462 [Lemma-Reparatur (konservativ)] - RESOLVED for the conservative scope (§483, v1.2.43), device-confirmed (2026-09-24); the wider**
   **import stays open.** 5,591 forms of 1,976 attested verbs added at floor frequency 1 after a real user
   review that turned 70 hand-rejections into a mechanical rule - see §483. What remains open is the ~100,000
   forms of verbs the corpus never attested, including ordinary everyday ones the user named as legitimate
@@ -2319,7 +2321,7 @@ non-trivial changes).
   `composing.isEmpty()` case. This became more valuable with §478 - far more words are now genuinely
   ambiguous, so the chips are the primary way their casing gets chosen at all.
 
-- **D-464 - RESOLVED (§479, v1.2.39).** `quality_gate.py` gained `--capitalises-nouns`; the Language
+- **D-464 [quality_gate: Nomen-Marker] - RESOLVED (§479, v1.2.39).** `quality_gate.py` gained `--capitalises-nouns`; the Language
   Contribution Guide's own now-false `isProper` claim was corrected in the same pass. Original entry: Its "0 bare-NOUN rows" check encodes D-441's convention for languages that
   do *not* capitalise common nouns (English tags them `NOUN,OTHER`). German's bare `NOUN` is exactly what
   drives its own auto-capitalisation, so running the gate the Language Contribution Guide documents against
@@ -2327,12 +2329,12 @@ non-trivial changes).
   correct. The other three checks pass. Needs a per-language flag ("this language capitalises common
   nouns") rather than dropping the check - it is genuinely right for every other language.
 
-- **D-467 - RESOLVED, device-confirmed (§482, v1.2.42; confirmed 2026-09-17).** German's `lemma` column had two wrong
+- **D-467 [Lemma-Fehler Deutsch] - RESOLVED, device-confirmed (§482, v1.2.42; confirmed 2026-09-17).** German's `lemma` column had two wrong
   links plus 223 cyclic and 605 chained rows; all repaired mechanically, the cycle directions decided from
   `wiktionary_verben.tsv` rather than guessed. New `dictionaries/lemma_check.py` guards the three structural
   classes going forward. Data-only, no code touched.
 
-- **D-468 - RESOLVED, device-confirmed (§484, v1.2.44; confirmed 2026-09-17).** The same structural repair as D-467
+- **D-468 [Lemma-Reparatur: 31 Pakete] - RESOLVED, device-confirmed (§484, v1.2.44; confirmed 2026-09-17).** The same structural repair as D-467
   (chain flattening + attested-direction cycle resolution), generalised to all 31 remaining dictionaries
   (30 packs + bundled English) via new `dictionaries/lemma_repair.py`. Doing so found a real limit of the
   method itself that the original scoping got wrong: unlike German, the other packs' own Wiktionary
@@ -2342,459 +2344,10 @@ non-trivial changes).
   volume) is completely unaffected by this and ran exactly as planned. 446,015 lemma-column rows changed
   across the 31 packs; every pack passes `lemma_check.py` and `quality_gate.py`.
 
-- **§519 (v1.2.78): D-497-followup - the confirmed variant table rolled out to all 15 packs in one round.** User confirmation 2026-10-26 ("Was ich selbst beurteilen kann, bestätige ich hiermit") covered the proposed table as proposed: the two marked-optional items (fi `a`→`ä,å`, sk `l`→`ľ,ĺ`) included, the Hungarian and Portuguese lead-variant orders kept exactly as proposed (hu `o`=ó… / `u`=ú…, pt corner glyphs now á/ó - a device look will tell whether ő/ű should lead instead; a flip is a one-character data change), and the French scatter-workaround hints on t/w/y/z/k left untouched as deliberate duplication - freeing them for other symbols is a UX decision nobody has made. Per pack: `hints.tsv` edited (script-verified: every replacement asserted to match exactly once), `version.txt` +1 (cs sk hr bs pl et hu ro da nb sv fi it 2→3, pt fr 3→4), zip rebuilt and verified by reading `hints.tsv`/`version.txt` back out of each archive, Catalog Entry +1 with a one-line D-497-followup comment (15 entries). Verified-complete with no change needed (recorded here because nothing else carries it): **lv** (all 11 special letters already keyed), **tr** (ç ğ ı ö ş ü all present), **az** (the dedicated AzerbaijaniLayout carries ə ı ğ ş ç ö ü as primary keys - hints never needed them), **es** (á é í ó ú ü ñ all present; only oddity: ñ sits on `l` instead of `n` - separate UX question, not a missing variant). New `LanguageLetterHintsDataTest` walk over ALL shipped `hints.tsv` files: every one must parse non-empty with only valid entries, plus the 16 packs' exact variant pairs pinned (catches any future transcription/encoding mistake at build time).
-  Tests: +1 (the all-packs walk; the per-pair assertions live inside it). 1736 tests total (1735 + 1), 0 failures; `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 573 -> 574, `versionName` `"1.2.77"` -> `"1.2.78"`. NOT device-confirmed: popup rendering/pre-select for the new variant cells needs one device look (same D-01 popup the compiled-in cases use; pt/hu corner-glyph lead choices are the two spots worth a deliberate glance). Re-publish = the 16 updated zips ride the push to `origin/main`; installed-pack users get the update prompt via the bumped Catalog Entries.
+## Older Rounds (§1-§519, v0.7.6 through v1.2.78) - Pruned From This File
 
-- **§518 (v1.2.77): D-497 - the L-05 pack-hint mechanism accepts multi-variant values; Lithuanian's `ė`/`ū` are reachable.** Community report (`e` should popup `e, ę, ė`, `u` should popup `u, ū, ų`); root cause re-verified before touching anything: `LetterHints.parse` carried exactly one hint per base letter and `KeyboardLayout.letterKey` attached multi-cell popups only for the five hardcoded German/English default cases, so a pack language's hint could never be a popup. Mechanism (general by design, so every diacritic-rich pack benefits): (1) `LetterHints` gained `VARIANT_SEPARATOR = ','` - a value may be a comma-separated variant list, each variant validated exactly like the old whole-value symbol (empty/too-long/separator-carrying variants rejected); `parse` keeps the value verbatim. (2) `KeyboardLayout.letterKey`'s else branch splits a multi-variant value into `Key.alternatives` with the FIRST variant as `Key.hint` - which D-44's own fallback then pre-selects (the base letter is deliberately not among the variants: a plain tap types it, the popup exists for the variants); single-variant values keep the direct-commit behaviour byte-identical. A local `HINT_VARIANT_SEPARATOR` constant instead of importing settings (the dependency must not run keyboard → settings); a test pins the parse/build round trip. (3) lt data: `hints.tsv` `e=ę,ė`, `u=ų,ū` (previously `e=ę`/`u=ų` only - the catalog comment's "e=ę/ė, u=ų/ū" had overstated the real v2 data), `version.txt` 2 → 3, pack rebuilt and verified by unzipping (`hints.tsv`/`version.txt` read back from the archive), Catalog lt Entry 2 → 3 with the D-497 comment. Re-publish = the zip lands on `origin/main` (the catalog URL is the raw GitHub link - user pushes). (4) Contribution Guide §3 (format + reserved comma) and §8 step 5 (the "pick a single representative" advice replaced by the variant-list shape) rewritten; spec L-05 gained the D-497 note. Per the user's live decision ("Gleich mehrere Packs"), the other diacritic-rich packs' data changes are a follow-up round gated on the user's per-language variant review - proposed list delivered with §518, no pack touched without the go.
-  Tests: LetterHints +2 (per-variant validation matrix, verbatim multi-variant parse), KeyboardLayoutTest +1 (pack-style map builds hint-first popups end to end, single-variant keys untouched), LanguageLetterHintsDataTest +1 (real lt hints.tsv carries both variant pairs). 1735 tests total (1731 + 4), 0 failures; `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 572 -> 573, `versionName` `"1.2.76"` -> `"1.2.77"`. NOT device-confirmed: the popup rendering/pre-select for pack variants needs one real look on the device (mechanism is the same D-01 popup the compiled-in cases use, so risk is low).
+D-497-followup (§519): forty-third pruning pass - §495-§519 removed (twenty-five rounds, the whole remaining working set), cutoff moved from §495 to §520. Backfilled into History.md first, verbatim, reformatted from this file's own bullet shape into History.md's heading+paragraph style, verified by comparing each round's whitespace-token multiset (formatting markers and the §number/version tags aside) between its old Progress.md block and its new History.md section - all twenty-five came back identical, so nothing was summarised or dropped; §513's two Progress bullets (D-494 and D-491) were merged into History's single §513 section and verified as one block. This pass settles the remaining §495-§519 half of §520's noted History-gap debt (the §480-§494 half was settled by the forty-second pass) and it empties this file's round working set by design: since §520 every round is recorded directly in History.md and this file carries only the topic ledger, so the ~25-round working set has no further entries to prune - the rule is honoured by the file staying round-free from here on. History's newest section (§566) had been appended cp1252-encoded; its encoding was repaired to the file's UTF-8 standard in the same pass.
 
-- **§517 (v1.2.76): D-498 - the backslash (`\`) is reachable on every Latin surface, next to the slash.** Community report; verified absent everywhere before touching anything (no `\` in any Latin layout's hints/alternatives/number row - the only backslash in `keyboard/` was Jcuken's own letter arrangement). Two placements per the request, both decided live per the user's answers: (1) **number row** - the `7` key's popup is now `/ \ ⁷` (slash, backslash directly next to it per "next to the slash", superscript last). Scope question resolved as "all layouts": verified first that all six layouts' number rows already share the identical `7`→`/` convention as deliberate design (each carried a byte-identical private copy of NUMBER_HINTS/NUMBER_SUPERSCRIPTS/numberKey), so instead of six synchronized edits the copies are gone - `KeyboardLayout.numberKey` is now the one shared builder every layout delegates to (Greek's local KDoc already claimed "identical treatment"; now it is true by construction). (2) **special-characters pages** - page 1's `÷` popup is `/ \ ÷ :` (`÷` stays pre-selected by value, D-44); page 2's shifted-symbols row has `/` as a primary key, so the backslash lands there as its single direct-commit long-press hint (no popup - a one-cell popup would be dead weight). Explicitly **not** done: the letters page's `v` key (QWERTZ/QWERTY AltGr hint `/`) stays a direct-commit hint without the backslash - the user declined turning it into a popup, keeping the change inside the request's own scope.
-  Tests: new 7-popup assertions in all six layout tests (uniformity pinned per layout), new v-key no-popup guard, ÷-popup and page-2 slash-hint assertions updated (+2 net). 1731 tests total (1729 + 2), 0 failures; `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 571 -> 572, `versionName` `"1.2.75"` -> `"1.2.76"`. NOT device-confirmed (layout-data only: two popups and one hint across the six layouts + both symbol pages; the shared-builder refactor is covered by the existing per-layout row-identity tests, all green unchanged).
-
-- **§516 (v1.2.75): D-499 - `/` re-added leftmost into the comma key's popup; URL/Email popups decoupled from it.** User request ("additional entry, leftmost before the `-`, nothing else in the popup moves, and the comma stays directly above the comma key"). Implementation, with the two coupling decisions taken live per the user's answers: (1) `COMMA_ALTERNATIVES` is now `["/", "-", ",", ":", ";", "_"]` - the deliberate re-redundancy of §39's drop (the slash also sits on the `7` key's hint since D-96); the comma stays pre-selected by value (D-44), so a straight-up release still types `,`. (2) `URL_SLASH_ALTERNATIVES` was originally slated for decoupling (the Open-TODO entry took D-144's no-duplicate rule as fixed), but the user explicitly reversed that: it keeps aliasing the comma list, now including the `/` cell - harmless because D-44 pre-selects the key's own character by value, so the straight-up release still types `/` and the duplicate only shifts the real alternatives one cell right. (3) `EMAIL_AT_ALTERNATIVES` was decoupled for the opposite reason: `,` `:` `;` are "kompletter Quatsch" inside an email address (user's own words), so the @ popup is now its own address-shaped list `["-", "_", "+"]` (`-`/`_` local-part workhorses, `+` plus-addressing; the key's own `@` stays out, D-44's fallback still pre-selects `-`). The stale `// D-22: (; : - _ /)` inline comment fixed, spec L-02 rewritten to the new order, both KeyboardLayoutTest popup tests rewritten for the new invariants plus a new comma-popup content test (+1).
-  1729 tests total (1728 + 1), 0 failures; `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 570 -> 571, `versionName` `"1.2.74"` -> `"1.2.75"`. NOT device-confirmed (pure layout-data change: the three popups' contents; D-44 pre-select behaviour is covered by the existing view contract and needs no new device surface).
-
-- **§515 (rides v1.2.74 / versionCode 570 together with §514): D-496 - review follow-ups to §513: five corrections to the D-489/D-491/D-494 code, found by a six-track review of the uncommitted tree.** Round separation per explicit user decision: these correct §513's code, not §514's D-495 touch fix, so they are documented in their own round. **Timing caveat: §513 was device-confirmed on 2026-10-26 in the shape it had THEN - these corrections postdate that confirmation, so the affected behaviours need a fresh device spot-check alongside §514's own scenarios** (double-tap-Shift breaker, Shift-arm persistence, German/English homograph casing overrides, A-05 split-undo on a foreign word). The five, in the review's order: (1) **D-491's one-shot guard could leak past its own derivation**: `shiftSetByManualPress` was consumed only in its own `else if` branch of `rearmShiftForCaretMove` - when D-406's delete-derived arm (`shiftArmedByDelete`) won the same ~100 ms window (backspace undoes an uppercase, then a manual Shift press lands before the echo), the manual-press guard survived and silently skipped the NEXT genuine, different-position re-derivation, keeping a stale manual Shift arm alive (the exact D-491 bug class, one step later). The guard is now consumed by whichever branch of the derivation runs; spec G-05's D-491 addendum gained the precision. (2) **The D-494 early return in `learnWordStrong()` entangled itself with its caller's record pop**: it returned before the trailing `rememberForBackspaceUnlearn(...)`, yet the undo-relearn caller unconditionally ran `recentLearnRecords.removeLastOrNull()` (D-331 documents it removes exactly the record learnWordStrong just added) - so a gated bail-out deleted an UNRELATED older record and corrupted D-248's `maybeUnlearnOnBackspaceReturn` bookkeeping. `learnWordStrong` now returns whether it actually learned (false on every bail-out, which also exact-ifies the pre-existing bundled-casing gates' same entanglement) and the caller conditions the pop on it. (3) **D-494's shield silently disabled D-439/D-264's casing-override learning for the whole German/English homograph class**: the shield branch sat before `learnedCasingOf`/promotion and matched case-insensitively, so bundled German words whose lowercase form is an English word (hose, Gift, bald, Rat, Hut, Boot, war, hat, ...) could never form - or keep reinforced - a deliberately differently-cased learned override, even though the reported flood was words the active language does NOT have. The shield is now waived for a word the active language's own bundled dictionary knows in some casing (`bundledCasing == null` gate); spec W-02's D-494 addendum states the waiver. (4) **`reinforceFromTier3` re-ran the cross-language scan `learnWord` had just completed** for the same word in the same synchronous commit (~2-3 main-thread SQLite point queries per installed language, doubled exactly in the D-494 scenario - this project's own established cost class, D-194/D-220). `knownInOtherLanguage` now caches its verdict per token and the reinforcement reuses it. (5) **A provably always-true guard in the D-494 branch** (`!isBlacklisted(word)` - `knownInOtherLanguage` already returns false for blacklisted tokens, verified against its implementation) was removed, saving one wasted main-thread blacklist query per gated commit. All five are code-level corrections riding the same build as §514 (1728 tests, 0 failures, rebuilt green); the review's D-495-side finding stayed with §514, and the code comments cite "(review D-496, §515)".
-
-- **§514 (v1.2.74): D-495 - individual taps can never compose into a swipe any more; a swipe is now, by construction, one continuous single-pointer motion.** Community-confirmed bug report, plus the user's own two long-standing observations ("tippe erst a und dann sehr schnell SPACE → die Tastatur swipet auf die Nummern-Page", "die Tastatur verschwindet plötzlich beim sehr schnellen Tippen"). Root cause verified in code before touching anything: every touch handler branches on `actionMasked` only and NOTHING in the codebase handled multi-touch (no `pointerCount` check, no `ACTION_POINTER_DOWN`/`ACTION_POINTER_UP` case anywhere - searched, not assumed). With overlapping taps (the second finger lands before the first lifts - routine in fast rolling/two-thumb typing) the stream's `pressedKey`/`downX`/`downY` recorded at the first finger's ACTION_DOWN survived until the LAST pointer's ACTION_UP, whose coordinates belong to the *other* finger - so `event.x - downX` became the distance between two separate taps (`a` bottom-left vs. SPACE bottom-centre = several hundred pixels), cleared `swipeDirectionIfFarEnough`'s field threshold and classified as a D-19 page swipe; vertically (top-row → bottom-row overlap) it classified UP/DOWN → §48 settings row / L-03 symbol layer or G-03 dismiss. With strictly sequential taps the bug cannot occur, which is why it only ever fired "beim schnellen Tippen". Fix (planned in `AdaptKey-Plan-MultiTouch-Swipe.md`, conservative per user decision - the first tap of an overlapped pair stays uncommitted, exactly as before): new pure `gesture/TouchSequenceTracker` (one pointer per stream; a second pointer kills the sequence; a release may only act when it belongs to the live sequence's own pointer; a live sequence's move-beyond-slop is recorded as the continuity gate) wired into `AdaptKeyboardView.onTouchEvent` (DOWN tracks the pointer first; new ACTION_POINTER_DOWN case cancels the sequence via the extracted `cancelActiveTouchSequence()` - the old ACTION_CANCEL body - which also closes the popup-commit hole; ACTION_UP guards tap/swipe/popup dispatch on ownership and runs `resolveSwipe` only when the sequence was observed moving; stationary releases are taps exactly like the old below-threshold outcome), `handleCursorControlTouch` (a grace re-touch re-tracks the pointer; a second pointer ends the mode outright - previously the DOWN branch would even have adopted the second finger's position as its new origin; MOVE/UP resolve the tracked pointer's coordinates via `findPointerIndex`), `ExtraRowView` (its swipe-down claims arm/fire only for a live single-pointer sequence at the tracked pointer's coordinates) and `SuggestionBarView` (G-04 drag, D-488 reject drag and D-144 swipe-down claims drop when a second pointer lands, and releases act only on ownership). Thresholds, directions and the whole `KeyGesture` policy layer untouched - the fix is purely about *which events* may reach that policy. Spec §4 gained the D-495 addendum stating the invariant.
-  New `TouchSequenceTrackerTest` (+9, including the reported repro as a scenario: `a`-down → second-finger-down → neither pointer may act, motion never observed). 1728 tests total (1719 + 9), 0 failures; `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 569 -> 570, `versionName` `"1.2.73"` -> `"1.2.74"`. NOT device-confirmed: the overlap scenario needs real two-finger/rolling typing on the device - the repro is "a + sehr schnelles SPACE", plus fast vertical typing for the dismiss variant; cursor-control-with-second-finger is worth one deliberate try as well.
-  **Review (same session, six-track over the uncommitted tree):** the D-495 core held - the security and performance tracks came back clean and the logic review found exactly one D-495 gap, fixed in the same pass: `ExtraRowView`'s D-144 fallback `when` lacked the `ACTION_POINTER_DOWN` kill its intercept path (and SuggestionBarView's fallback) already had, so a gap-started swipe-down could still arm/fire across a second finger's overlap. The review's other five findings concerned §513's code and are deliberately NOT part of this round - they are recorded as §515 (D-496) below.
-
-- **§513 (v1.2.73): D-494 - foreign-dictionary words no longer enter the active language's learned store; the**
-  **cross-language shield now covers the learning side too.** Reported 2026-10-25 ("viele englische Begriffe im
-  deutschen Gelernte Wörter", vermutet seit dem letzten Update). Root cause verified in code before touching
-  anything: the remembered rule EXISTS but only on the correction side - `knownInOtherLanguage()` (D-106 stage
-  2: "a known word in some bundled dictionary other than the one currently active", English always consulted,
-  case-insensitive via `entryOf`, active-language-blacklist waiver per D-157) is wired into the autocorrect
-  veto and the D-477 fusion veto only; `learnWord()`/`learnWordStrong()` consulted only the active language's
-  own bundled/learned/blacklist state, so an English bundled word typed twice in a German text passed every
-  guard and was promoted through the ordinary W-02 threshold straight into the German learned store. Not a
-  regression: nothing in v1.2.70/§510 or v1.2.71/§511 touched the plain learn path's guards - the gap is as
-  old as the shield being correction-only. Fix reuses the existing shield, no new state: (1) `learnWord()`
-  gained an `else if (knownInOtherLanguage(word))` branch placed deliberately BETWEEN the bundled-casing
-  branch and the learned-casing branch - before the latter so an entry learned through the old unguarded
-  path is no longer reinforced (forget once via the editor and it stays forgotten), and before
-  `promoteOrCountPending()` so no pending count silently accumulates for a shielded word; the outcome follows
-  the D-327 split (unigram SKIPPED, n-gram context still learned via `learnContext()` unless the word is
-  blacklisted in the active language, mirroring the branch above) so next-word prediction keeps improving
-  without flooding the editor. (2) `learnWordStrong()` (the learn-outright path behind the undo-relearn and
-  fusion-fragment callers) refuses a shielded word outright - it has no threshold to protect, and the
-  commit-time `learnWord()` has already recorded the context. (3) `reinforceFromTier3()` gates its extra
-  reinforcement on the same shield (inert without a tier-3 model installed, but the one path that bypasses
-  `learnWord()` entirely). `dispatchFamilyLearning()` needed no change - it fires only on LEARNED/PROMOTED
-  outcomes, which the gate turns into SKIPPED. Symmetric by construction (German words with English active
-  are shielded the same way). The shield's blacklist-waiver semantics were checked and are already right for
-  learning: a word blacklisted in the ACTIVE language fails the gate and falls through to the blacklist
-  branch, which skips it anyway. Existing polluted entries: manual forget via the Learned Words editor
-  (D-180) - no automatic TABLE_LEARNED sweep (D-404 tier-3 constraint); entries already there stop being
-  reinforced from this build on. The glue (learnWord/learnWordStrong/reinforceFromTier3) stays the accepted
-  untested Android layer; the gate reuses an existing, already-exercised predicate, no new pure decision to
-  extract. No strings, no pack. 1719 unit tests unchanged, 0 failures; `:app:assembleRelease`/
-  `:app:testDebugUnitTest` green. `versionCode` 568 -> 569, `versionName` `"1.2.72"` -> `"1.2.73"`.
-  **Device-confirmed by the user (2026-10-26)**: English terms typed in German texts no longer produce a
-  "Gelernt: X" chip or a Learned Words entry.
-- **§513 (v1.2.73): D-491 - a manual Shift press is no longer wiped by the debounced caret re-derivation;**
-  **the reported "smear onto Shift arms it, the arm is gone moments later" is fixed.** Reported 2026-10-23;
-  root-caused from the user's own captured diagnostic log, not from code reading alone. The failing sequence,
-  read straight off the log: word committed with Space at t=242564217 -> composing empty -> its echo at
-  t=242564352 scheduled the debounced re-derivation at t+100 ms -> the Shift tap (a genuine smear-shaped tap
-  at the key's right edge, x=57.5 against centre 84.3) was processed at t=242564451, arming the one-shot ->
-  the scheduled rearmShiftForCaretMove() fired ~1 ms later, found none of the three existing guard flags set
-  (`shiftArmedByDelete`/`tokenShiftLiveArmed`/`shiftPreservedAfterOpener` - a manual press sets none), and
-  armShiftForNextWord() overwrote view.shifted with the position-derived answer (mid-sentence = lowercase) ->
-  the next letter composed lowercase despite the Shift 400 ms earlier. Two control cases in the same log
-  confirm the window: the same press 260 ms and 378 ms after its commit echo survived and capitalised ("S",
-  "P") - the failure is exactly and only inside the ~100 ms post-commit window, which is also why it reads as
-  intermittent and as smear-caused. The user's own swipe-threshold hypothesis was tested against the same log
-  and ruled out: no gesture event anywhere near the repro, and swipe recognition at ACTION_UP precedes the
-  tap dispatch, so a consumed swipe can never revoke an arm that fired (the field swipe threshold is already
-  max(110 dp, ~3 key widths), D-46 - a "two key-widths" minimum would be a loosening, not a tightening).
-  Fix, the established one-shot-guard pattern (D-335/D-373/D-378's own class): new `shiftSetByManualPress`,
-  set in handleShift()'s ordinary toggle branch in BOTH directions (arm and deliberate disarm - a registered
-  input must never be retroactively undone), consumed by rearmShiftForCaretMove(), which then skips
-  armShiftForNextWord() exactly once; the derivation for any later genuine caret move still runs (D-313
-  preserved), and Shift is a one-shot consumed by the next letter anyway, so the one skipped derivation can
-  never strand a stale arm. Both scheduling paths are covered (reclaimWordAtCaret's and D-455's
-  rearmShiftForCaretMoveWhenReclaimSuppressed share the same rearmShiftForCaretMove core). Safety nets: the
-  flag is cleared at the top of handleKey() next to shiftArmedByDelete's own, and in onStartInput() so a
-  fresh field's initial derivation can never be skipped by a stale flag. Deliberately unchanged:
-  applyShiftAfterDelete's delete-derived Shift rules (D-406, deliberate design), C-07's grace guard, the
-  swipe thresholds. Two cheap permanent diag lines (handleShift's guarded toggle, rearmShiftForCaretMove's
-  skip) for the closure device log; D-150's password guard applies. Spec G-05 gained the D-491 addendum.
-  Service glue per this project's accepted untested Android layer (no pure decision worth extracting); no
-  strings, no pack. versionCode 568 -> 569, versionName "1.2.72" -> "1.2.73". **Device-confirmed by the
-  user on 2026-10-26** (the repro parcours above).
-- **§512 (v1.2.72): D-489 - an intervening keystroke now breaks G-05's double-tap pair; fast letter-Shift-letter-Shift**
-  **typing no longer toggles the word's case.** Reported 2026-10-23, fixed in the same round after a pure code
-  investigation (no device log needed - the mechanism is fully derivable from the source). Root cause verified before
-  touching anything: `handleShift()`'s double-tap window is purely time-based - `lastShiftTime` is written only inside
-  `handleShift()` itself (exactly three occurrences in the whole file: declaration, read, write) - so "two presses
-  within `doubleTapDelayMs`" was met literally even when real keys were tapped between the two Shift presses
-  (letter, Shift, letter, Shift: the second Shift lands within the default 400 ms of the first regardless of the
-  letter between them). The false toggle is worse than a visible flip: `toggleWordStartImmediate()` also case-locks
-  the token, so it commits verbatim, past autocorrect and §6 capitalisation - exactly the reported "flipping the case
-  of the word being typed". Fix per the backlog's stated direction, without new state: `lastShiftTime = 0L` at the
-  top of `handleKey()` for every key code other than SHIFT (a Shift press routes to `handleShift()` below, which
-  re-stamps the timestamp itself), plus the same reset at the top of `handleLongPress()` (a long-press is its own
-  intent - Caps Lock on Shift, a sign flip or symbol commit on a CHAR key, a layer switch on SYMBOL - and must break
-  the pair the same way) and at the top of `handleLongPressAlternative()` (committing a popup alternative is a
-  keystroke on another key). A second Shift after a broken pair falls through the double-tap branch into the
-  ordinary toggle (arm/disarm) - what a typist means by it. Deliberately unchanged: the next Shift directly after a
-  real toggle still toggles again (upper -> lower -> upper ..., G-05's own spec; no key intervenes there); caret
-  taps into the text and suggestion-bar taps do NOT break the pair (not keystrokes on keys; after a chip commit
-  composing is empty and the toggle is a harmless disarm) - minimal scope per the user's own wording, extendable
-  later; D-348's own double-tap window needed no change (its `undoTyped` state is already cleared by every
-  intervening key except the deliberate D-265 Space/Enter carve-out, checked in code - relevant context for D-490's
-  default flip); D-361's sticky window is view-side and untouched; C-07's grace guard sits after the double-tap
-  branch and is unaffected; the three Shift intents stay independent (a Caps Lock release consumes its tap before
-  the double-tap branch is ever reached). Spec G-05 gained the D-489 addendum. The service glue
-  (handleKey/handleShift/handleLongPress) is this project's accepted untested Android layer; the new logic is a
-  one-line reset per site with no pure decision worth extracting (a `ShiftGrace`-style object for
-  `now - last <= window` would be over-engineering). No strings, no pack. 1719 unit tests unchanged, 0 failures;
-  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 567 -> 568, `versionName` `"1.2.71"` ->
-  `"1.2.72"`. Not yet device-confirmed (repro: type a capital-heavy word fast, BuchStabe-style
-  letter-Shift-letter-Shift - the word must stay untouched; control: a genuine double-tap still toggles, a third
-  quick tap toggles again, Caps Lock long-press flows unchanged).
-- **§511 (v1.2.71): D-488 - blacklist confirmation chip + per-entry provenance + the no-mark rule for bundled-casing words; the reported "normal word ends up on the blacklist" class closed at the root.** Planned in `AdaptKey-Plan-Blacklist-Bestaetigung.md` (three discussion rounds, 2026-10-21/22; the plan file's §9 records the implementation snapshot). Root cause verified in code first, not guessed: the D-177 recurrence escalation (`learnWord()`/`learnHyphenCompound()`) wrote a PERMANENT USER blacklist entry with no UI whatsoever when a provisionally-forgotten word was retyped inside the window - reachable not only via G-04's drag but via the Learned Words editor's own "Vergessen" button, which sets the same mark (`LearnedWordsActivity` unconditionally, built on the wrong premise "learnedWords() never returns a bundled one": `isBundledWord()`/`bundledCasingOf()` resolve case-insensitively, so learned casing VARIANTS of bundled words are in that list, and for them the escalation blacklisted the word the user types every day). The A-07/D-348/D-248 revert paths were verified blacklist-free (`unlearnWord` only unlearns/decrements) - the user's autocorrect-revert suspicion did not hold.
-  **R1 - no-mark rule:** the editor's forget now marks pending ONLY when `bundledCasingOf(word) == null` (no bundled entry in ANY casing); a bundled word (or casing variant) is plain-forgotten with the plain toast, a genuinely self-taught one gets the new honest toast (`learned_words_removed_pending`, "if you type it again AdaptKey will ask") - and the wrong D-177 comment is rewritten in place. Existing stale marks expire within the window on their own; no migration.
-  **R2 - provenance:** new `BlacklistOrigin` (GESTURE_G04/ESCALATION/W03_FORBID/EDITOR_MANUAL/BACKUP_IMPORT/BUNDLED_SEED/UNKNOWN) + `BlacklistEntry`; `blacklist()` carries origin+`added_at` (guarded ALTER migration, no backfill - pre-D-488 rows read UNKNOWN/0), and an existing row KEEPS its provenance on re-write (only the category updates - the per-start D-278 seed and repeat writes can never reset an entry's age). Backup format v2 (blacklist entries as {word, origin, addedAtMillis} objects; v1 string arrays still decode -> importer stamps BACKUP_IMPORT + now; `CURRENT_FORMAT_VERSION` 1 -> 2, so an old build rejects a v2 file cleanly). Blacklist editor: every write site records its origin, the entry dialog gains a second square "ⓘ" button beside the copy button (the §496 button bar untouched) opening a provenance popup (origin + when, Copy = word+origin+when as text, Close). `diag("AdaptKeyBlacklist", ...)` at arm/write/reject (D-150's password guard applies).
-  **R3 - the confirmation chip (the standing invariant: no permanent USER entry from the keyboard surface without an explicit chip tap):** new pure `BlacklistConfirmation` state machine; `Kind.BLACKLIST_CONFIRM` ("❗ " + localized "Blacklist: X", dedicated red `suggestion_blacklist_confirm_text`, bold) fully takes over the bar via `setSuggestionBarItems`' pinning - no keystroke refresh can push it off. Three arming sites: G-04 drag of a bundled word (previously immediate write), W-03 "Verbieten" deep zone (previously immediate write), and both escalation branches (previously silent write) - the escalation now leaves the word LEARNED and lets the ordinary learn path run. Tap = the only write (with the arming origin); drag DOWN into the keyboard = reject (own gesture in `SuggestionBarView`, claimed ahead of D-144's swipe-down so a chip-origin down-drag is NEVER a G-03 dismiss - the collision contract as a rule; green "Keep" drop zone at G-04's own threshold); ignore = reject too: a field change (defensive clear in `onStartInput`) or two commits typed on past the chip (`noteCommitForBlacklistConfirm` at learnWord's tail; the arming commit skipped once via `blacklistConfirmArmedDuringCommit`). Reject/ignore clear the D-177 pending mark for the escalation shape, so the chip never re-fires on the word. D-177's window itself is unchanged (chip as an additional layer).
-  Strings: 15 new keys in values + all 31 locales via `scratchpad/d488_add_strings.ps1` (drafts, apostrophes escaped, UTF-8 verified). New pure `BlacklistConfirmationTest` (+7), `InMemoryDictionaryStoreTest` +4 (provenance round-trip/reseed-proof/unblacklist-restart/list), `SqliteDictionaryStoreRoboTest` +2 (provenance survives a re-blacklist; hand-built pre-D-488 DB migrates to UNKNOWN/0 - user_version must be set, else onCreate collides), `BackupJsonCodecRoboTest` +2 (v2 object shape + v1 compat), `BackupExporterImporterRoboTest` extended (provenance survives the round trip). 1719 tests total, 0 failures; `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 566 -> 567, `versionName` `"1.2.70"` -> `"1.2.71"`. NOT device-confirmed (R3's whole surface needs the device: chip takeover look/feel, reject-drag threshold, the two-commit yield, G-04/W-03 confirmation flow). Existing mystery entries: user reviews them once by hand; their provenance shows "unknown".
-- **§510 (v1.2.70): D-486 follow-up - the inline dropdown prototype is rejected; the setting is a plain**
-  **`ListPreference` like the mini-LLM threshold.** After trying §509's `DropDownPreference` on the device the**
-  **user (2026-09-28) found the mini-LLM threshold (`c06_llm_threshold`) looks much better - the current value is**
-  **clearly visible there - and asked for the same here.** `d486_bottom_inset_mode` is now a `ListPreference` with
-  the same entries/values/default (`none` first, enum order unchanged) and the same D-419 "Currently: X" summary
-  helper as the other plain list settings, so it reads exactly like c06. Nothing else changed: enum, pure logic,
-  diagnostic line and all 32 strings stay (the summary wording "choose a smaller amount" fits either widget).
-  `BottomInsetPreferenceRoboTest` rewritten to match (4 tests, was 3: it is a `ListPreference` and not a
-  `DropDownPreference`, `none` first with values in enum order, default `auto`, the row's summary ends with the
-  "Currently: Automatic" line, every value resolves to its enum position). Spec §50 updated. Backlog D-487 (more
-  dropdowns) is withdrawn with the prototype. `versionCode` 565 -> 566, `versionName` `"1.2.69"` -> `"1.2.70"`.
-  1704 tests total, 0 failures; `:app:assembleRelease`/`:app:testDebugUnitTest` green. Device-confirmed by the user on 2026-09-28 ("so ist es perfekt") for the look; the effect on the Chinese
-  phone's actual inset behaviour is not yet reported.
-- **§509 (v1.2.69): D-486 follow-up - the setting becomes an inline dropdown, and "none" comes first.** The user**
-  **(2026-09-28) pointed out two things about §508: "none" must always be first (the enum was declared `AUTO,**
-  **NAV_BAR_ONLY, NONE`, only the slider itself had it leftmost), and a real dropdown - not a slider or a radio/**
-  **dialog list - is the ideal widget for such a pick-one setting; he asked for it here as a prototype.**
-  `BottomInsetMode` is now declared `NONE, NAV_BAR_ONLY, AUTO` (least to most room; `fromKey` matches by name, the
-  stored values are unchanged, so an already-stored slider value still loads). `d486_bottom_inset_mode` is now an
-  `androidx.preference.DropDownPreference` (entries/values from the same arrays, "none" first) - the app's first;
-  a `DropDownPreference` is a `ListPreference`, so D-419's `setupListPreferenceCurrentValueSummary` gives its row
-  the "Currently: X" line, and the slider wiring for it was removed. The summary string's last sentence said
-  "move the slider to the left" - rewritten to "choose a smaller amount" in all 32 `values*` (drafts). New
-  `BottomInsetPreferenceRoboTest` +3 (it is a `DropDownPreference`, "none" first with values in enum order,
-  default `auto`) - 1703 tests total, 0 failures; `:app:assembleRelease`/`:app:testDebugUnitTest` green. The pure
-  logic and the diagnostic log line are untouched. Spec §50 updated to match; the other
-  pick-one settings stay as they are for now - see backlog D-487. `versionCode` 564 -> 565, `versionName`
-  `"1.2.68"` -> `"1.2.69"`. Not device-confirmed: how the dropdown looks and behaves in the row (it is the
-  prototype the user wants to judge visually).
-- **§508 (v1.2.68): D-486 - "room below the keyboard": a three-position slider, an automatic three-button**
-  **detection, and an inset line in the diagnostic log.** Reported 2026-09-28 from a Chinese smartphone without
-  gesture navigation: the keyboard sat a gesture-bar-height too high. Root cause (code reading, not device-
-  verified - the phone's actual inset values are unknown, which is why the log line exists): D-260's rule
-  `max(navigationBars.bottom, systemGestures.bottom)` assumes such a phone reports no gesture inset beyond its
-  bar; a ROM that reports one anyway (or an inflated bar) reserves space for a bar that is not there. Agreed with
-  the user (2026-09-28, one setting + one automatism + logging, done immediately): (1) `BottomInsetMode`
-  (`none` / `nav_bar_only` / `auto`) as a `LabeledSeekBarPreference` (D-407 pattern), the very last entry of the
-  Layout category, stored under `d486_bottom_inset_mode`, wired through `SettingsStore` -> `RawSettings` ->
-  `SettingsMapper` -> `AdaptSettings.bottomInsetMode`, also in the backup key order; 5 new strings in all 32
-  `values*` (drafts, per the standing rule), labels via `@string` arrays like D-353. (2) Pure
-  `BottomInsetPolicy.resolve(mode, navBarPx, gesturePx, navigationMode)`: NONE -> 0; NAV_BAR_ONLY -> bar; AUTO ->
-  unchanged `max(bar, gesture)` (strip beyond the bar reclaimable for D-260) except for an explicit
-  `NavigationMode.THREE_BUTTON`, which drops the strip. Two-button keeps it (it has a swipe-up pill); UNKNOWN
-  behaves like gestural, and Xiaomi's `force_fsg_nav_bar` = 1 forces GESTURAL, so a gesture phone cannot lose its
-  strip through the automatism (the D-259 missed-taps protection stays). `NavigationModeReader` reads
-  `Settings.Secure.navigation_mode` (plain string key) defensively. (3) `AdaptKeyService.applyWindowInsetsPadding`
-  and the recheck runnable now share `resolveBottomInset()`; `applySettings()` re-applies the padding on the
-  window's current insets so the slider takes effect at once; `logBottomInsets()` writes one `insets: ...` line
-  (sdk, vendor, navBar/gestures/mandatory/tappable bottom, navigation_mode, vendor switch, chosen mode, total/
-  reclaimable/extension/padding) to the diagnostic log whenever the values change. Deliberately NOT done: switching
-  the strip to `mandatorySystemGestures` (unverifiable on the user's own gesture phones, where D-260 is tuned).
-  +11 unit tests (`BottomInsetPolicyTest` 10, `SettingsMapperTest` 1) - 1700 total, 0 failures;
-  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 563 -> 564, `versionName` `"1.2.67"` ->
-  `"1.2.68"`. Not device-confirmed: whether Automatic already fixes the Chinese phone (only if its ROM reports
-  `navigation_mode` = 0 and the excess is the gesture inset, not the bar), otherwise the slider is the answer, and
-  the log line then tells what the ROM really reports.
-- **§507 (v1.2.67): D-483/D-484/D-485 - launcher label, a toolbar with a back arrow on every settings screen,**
-  **an OK button on the calibration screen, and the "Skip" trap closed.** Reported 2026-09-28 (the launcher label**
-  **by the Ukrainian F-Droid MR tester); decisions agreed with the user the same day - see spec §49 and K-01.**
-  (1) D-483: the launcher entry is `SettingsActivity`, whose manifest label was `@string/settings_title` - the
-  translated "AdaptKey Settings", truncated to "Налаштуван…" in the Ukrainian app drawer and confusable with the
-  system Settings, in every language. The label is now `@string/app_name`; the in-screen title is set in code.
-  (2) D-484: the theme is `NoActionBar`, so no screen had a title or an up arrow. New abstract
-  `SettingsScreenActivity` wraps the layout passed to `setContentView` in a vertical container with a
-  `MaterialToolbar` (registered via `setSupportActionBar`, so the activity `title` shows and the up arrow carries
-  AppCompat's own localised "Navigate up" description - no new string, no `values-xx` change);
-  `onSupportNavigateUp()` goes through the back dispatcher. All 10 settings activities extend it; only
-  `SettingsActivity` (new `activity_settings.xml` host for the preference fragment) turns the arrow off, since
-  back there leaves the app. The toolbar takes over the top status-bar/cutout inset, so the top part was
-  removed from the 9 screens' own D-80/D-151/D-188 inset listeners (their bottom part is untouched); the insets
-  are forwarded unmodified. Chosen over switching the theme to a real ActionBar because that would have fought
-  those per-screen inset listeners. (3) D-485: `activity_calibration.xml` now has `calibration_done` ("OK" =
-  `android.R.string.ok`, system-localised) next to `calibration_skip`; `updateExitButtons()` shows exactly one:
-  Skip only when `EXTRA_FROM_ONBOARDING` (set by `AdaptKeyService.onOpenCalibration`, nothing else) is true and
-  `OffsetStore.loadDetectedPattern` is still `UNKNOWN`, otherwise OK, which only `finish()`es. The trap found on
-  the way (code reading, agreed as unwanted): the Skip handler called `persistPattern(TWO_THUMBS)`
-  unconditionally, so Skip in the settings replaced a chosen style and wiped its learned zones - the handler now
-  persists only while the style is still `UNKNOWN`, and the button is not shown outside onboarding anyway.
-  Tests (Robolectric, JVM): `CalibrationActivityRoboTest` +5 (no Skip from settings; OK keeps style and learned
-  zones; onboarding Skip -> OK swap after choosing; onboarding Skip applies the default; Skip never overwrites),
-  new `SettingsScreenActivityRoboTest` +3 (title + up arrow that finishes a sub-screen, calibration has the arrow,
-  root has title without arrow). 1689 tests total, 0 failures; `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 562 -> 563, `versionName` `"1.2.66"` ->
-  `"1.2.67"`. Device-confirmed by the user on 2026-09-28 (toolbar height/colour, status-bar area, cutout and
-  gesture-nav handling on Android 15, the settings root list under the toolbar - all looked at on the device,
-  no further action).
-- **§506 (v1.2.66): D-482 - R8 enabled for the release build at F-Droid maintainer linsui's request (MR 44142,**
-  **"Enable r8").** It had been off since D-223. Now `isMinifyEnabled = true` (shrink + optimise; NOT
-  `isShrinkResources`) with `-dontobfuscate` in `app/proguard-rules.pro`, so class/method names stay
-  readable: no JNI/name-lookup breakage possible and the in-app diagnostic log stays legible. Added
-  `-keep class ai.onnxruntime.** { *; }` because the ONNX Runtime AAR ships no consumer rules and its
-  native libs look Java members up by name; Activities/Service stay kept via the manifest plus the two
-  existing keeps, and the Kotlin code uses no reflection. Verified on the real build: R8 emits no warnings,
-  `usage.txt` removes 0 `ai.onnxruntime` classes, both ABI's `libonnxruntime*.so` are present,
-  `apksigner` reports the unchanged certificate `3201509b...ee3666e`; 1681 unit tests, 0 failures. Unit
-  tests run against the debug build, so they do NOT exercise R8 - the minified release APK needs a device
-  check (typing, suggestions, all settings screens, language-pack import, tier 3). `versionCode` 561 -> 562,
-  `versionName` `"1.2.65"` -> `"1.2.66"`. Release-cycle bookkeeping for the F-Droid retarget follows once
-  the user has tested and tagged.
-- **§505 (v1.2.65): D-481 - release APK made acceptable to F-Droid's reproducible-build pipeline: no Google**
-  **"Dependency metadata" signing block, no embedded git revision.** Root cause traced from the MR's real CI
-  logs, not guessed: after the first reproducible-builds run the `fdroid build` comparison found exactly one
-  differing APK entry (`META-INF/version-control-info.textproto`, AGP's embedded git revision), and once that
-  matched, the follow-up `check apk` job rejected the developer APK with `found extra signing block
-  'Dependency metadata'` (AGP's default `dependenciesInfo.includeInApk = true`, a Google-encrypted blob).
-  `app/build.gradle.kts` now sets `dependenciesInfo { includeInApk = false; includeInBundle = false }` and
-  `vcsInfo.include = false` in the release build type. Verified on a real build rather than assumed: the APK
-  has no `version-control-info` entry, its signing block holds only the v2 signature (`0x7109871a`) and the
-  ordinary verity padding block (`0x42726577`) - no `0x504b4453` dependency-metadata pair - and
-  `apksigner verify` still reports the same certificate (`3201509b...ee3666e`). No behaviour change to the
-  app itself. 1681 unit tests, 0 failures (`:app:testDebugUnitTest`). `versionCode` 560 -> 561, `versionName`
-  `"1.2.64"` -> `"1.2.65"`. This is also what makes the F-Droid submission robust for every LATER
-  release, not just one: each GitHub release APK now lacks both. Build each release APK from a real clone,
-  never a `git worktree` (see Release Channels). Not device-relevant.
-- **§504 (v1.2.64): D-480 - `wer` was silently autocorrected to `der`; its German frequency raised (German**
-  **data pack only).** User-reported (2026-09-24): "wer" always became "der". Traced to real data, not guessed:
-  `dictionaries/de/dict.tsv` held `wer 1397 OTHER` against `der 1004234` - a 719x ratio, far past A-01's
-  known-word override bar (`CorrectionConfidence.forKnownWordOverride`, log-scaled, reaching 1.0 at 500x), and
-  `w`/`d` are QWERTZ neighbours (cost 1). The same Wikipedia register skew D-473 fixed for `dir`/`dich`: an
-  encyclopaedia corpus contains few questions, so the interrogative is heavily under-counted. Fixed the same
-  way: `wer` raised to 14,400, which puts the ratio at ~69.7x - the confirmed-bad "Ohren"/"Ihren" floor (70x,
-  score ~0.684, below `AutocorrectAggressiveness.AGGRESSIVE`'s 0.70) that no level may cross - deliberately not
-  the bare mathematical minimum. Every other QWERTZ-adjacent single-substitution rival of `wer` was checked
-  against the live dictionary first: only `der` is a live risk (`Weg` 3,768 is ~2.6x, `ser` 22; the
-  rest of the neighbour set is absent). `dictionaries/de/dict.tsv` unchanged row count (193,814), one value
-  edited; `quality_gate.py --capitalises-nouns` and `lemma_check.py` both PASS. `dictionaries/de/version.txt`
-  47 -> 48, `language-packs/adaptkey-lang-de.zip` rebuilt (same four members, same order) and verified
-  byte-identical after unzip, `LanguagePackCatalog` version 47 -> 48. No logic change, 1681 unit tests
-  unchanged (`AutocorrectAggressivenessTest` already pins the 70x floor against Aggressive).
-  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 559 -> 560, `versionName` `"1.2.63"` ->
-  `"1.2.64"`. Device-confirmed (2026-09-24). Note, per the D-473-followup lesson **the pack is served from
-  `origin/main`: push this round, then re-import the German pack in Settings -> Language Packs before
-  expecting `wer` to stop changing.** Not tagged: F-Droid's MR still targets v1.2.47, and a tag is the user's
-  call (see Release Channels).
-
-- **§503 (v1.2.63): D-478 - draft UI translations for every supported language, plus the contribution path.**
-  **The app's own screens now exist in all 32 languages the keyboard supports (31 `values-xx` directories +**
-  **English).** Agreed with the user (2026-09-20): every language in the `Language` enum gets a `values-xx`
-  translation, written as a draft by Claude (338 strings each); no native-speaker review is requested up
-  front - the user's wife is deliberately not to be involved, and a community that has grown will report
-  wrong wording. New directories: `values-{fr,es,it,pt,nl,pl,tr,sv,nb,da,fi,cs,sk,hu,ro,hr,bs,sr,et,lv,lt,id,ms,
-  sw,fil,ru,uk,az,uz}` (Serbian in Cyrillic, Uzbek in Latin script; Filipino is `values-fil` because Android
-  resolves the system locale `fil`, not the pack code `tl`); German and Greek stay maintainer-owned.
-  Production was mechanical, not free-hand: the English strings were extracted once into a numbered list, each
-  language was drafted as numbered plain text, and a small generator refused to write a file unless every
-  index was present and every format placeholder (`%1$s`, `%2$d`, ...) and every `\n` count equalled the
-  English original, then emitted correctly escaped XML (apostrophes as `\'`); that check caught several
-  draft errors before they reached a resource file. A read-through of the drafts then fixed the typos that
-  had slipped past the mechanical check (Dutch, Polish, Turkish, Hungarian, Serbian, Lithuanian, Ukrainian and
-  Azerbaijani entries - e.g. a Serbian string left in Latin script, a garbled word or phrase in the Polish,
-  Hungarian and Turkish ones).
-  `res/xml/locales_config.xml` now lists English plus all 31 directories, so Android 13+ offers every one in
-  its per-app language picker. `UiLocaleConsistencyTest` gained a fourth check: every `Language` except
-  English/UNKNOWN must have a UI translation (Filipino mapped `tl` -> `fil`), so adding a language to the enum
-  without its `values-xx` now fails the build instead of quietly leaving that language's users on English.
-  Docs: spec N-01 rewritten (localised into every supported language, drafts acceptable, per-app selection,
-  never inside a language pack, enforced by the test); `AdaptKey-Language-Contribution-Guide.md` got a new §9
-  ("Translating the app's own screens") - where the strings live, that the existing translations are AI drafts
-  and corrections are welcome as issues or pull requests, the editing rules (placeholders, `\'`, untranslated
-  names/IDs), and the steps for a brand-new language. D-478 backlog entry marked resolved; the standing rule
-  ("UI strings - which languages") already in "Notes / gotchas" is unchanged. Not verified by a native
-  speaker anywhere except the maintainer's own German/English - expect wording reports once the app is used in
-  those languages. Follow-up: the F-Droid store listing (`fastlane/metadata/android/`) still exists only for
-  en-US/de-DE/el-GR and can now be translated from these drafts (own round). +1 unit test - 1681 total.
-  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 558 -> 559, `versionName`
-  `"1.2.62"` -> `"1.2.63"`. Not device-confirmed (per-app language screen needs Android 13+; a spot check of a
-  non-Latin script such as Russian/Greek/Serbian on a device would be worthwhile for glyph/wrapping problems).
-
-- **§502 (v1.2.62): D-478 - UI-localisation infrastructure: the two missing German/Greek strings, an "App**
-  **language" entry, the per-app language list, and a test that keeps every translation in sync.** Agreed with
-  the user (2026-09-20) after the D-478 discussion: UI strings stay in the APK as `values-xx` (never in the
-  language packs - the packs' own download screen is UI, and `@string` references in preference screens are
-  resolved from APK resources); every language the app supports gets a translation, written as a draft by
-  Claude; the standing rule is recorded under "Notes / gotchas" and in the assistant's memory so it outweighs
-  the old DE/EN/EL habit. This round: (1) `d280_builtin` and `d280_remove_confirm_title` (used by
-  `LanguagePacksActivity`) were missing from `values-de` and `values-el`, so German and Greek users saw
-  English there - added ("Integriert" / "%1$s entfernen?", "Ενσωματωμένο" / "Αφαίρεση %1$s;"); (2) new
-  `res/xml/locales_config.xml` + `android:localeConfig` on `<application>`, which makes Android 13+ offer a
-  per-app language in the system settings; (3) a new Info-category preference "App language" that opens that
-  system screen (`android.settings.APP_LOCALE_SETTINGS`), hidden below API 33 in `SettingsFragment`; (4) new
-  `UiLocaleConsistencyTest`: every `values-xx` must define exactly English's string names with the same format
-  placeholders, and `locales_config.xml` must list English plus exactly the translation directories - the
-  check that would have caught the two missing strings. The draft translations themselves follow in §503.
-  +3 unit tests - 1680 total. `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 557 -> 558,
-  `versionName` `"1.2.61"` -> `"1.2.62"`. Not yet device-confirmed (the system language screen needs Android 13+).
-
-- **§501 (v1.2.61): D-478 (found while reviewing the UI) - the "Learn more" feature overview slid under the**
-  **status bar / display cutout.** User-reported (2026-09-20): the screen behind Settings -> "Learn more"
-  ("Was AdaptKey alles kann", `FeatureOverviewActivity`, D-89) extends into the notch. Cause: it was the one
-  sub-screen without any window-inset handling, and targetSdk 35 enforces edge-to-edge, so its heading was
-  drawn under the status bar. Fixed exactly like `LanguagePacksActivity`'s own D-188 fix: the layout's root
-  `ScrollView` now carries the 16 dp padding and an id (`feature_overview_root`), and the activity adds the
-  larger of the status-bar/cutout inset on top and the larger of the navigation-bar/gesture inset at the
-  bottom to that base padding. Audited the other sub-screens - Backup, Blacklist, Calibration, Credentials,
-  DiagnosticLog, LanguagePacks, LearnedWords and Tier3Model all already do this. **`SettingsActivity` (the main
-  preference screen) has no inset code either** - not reported and not touched here, since a PreferenceFragment
-  hosted directly in `android.R.id.content` may already look right on the user's device and a second guess at
-  it could double the gap; verify on a device and say so if it shows the same problem. Layout/window glue:
-  no unit test possible (this project's accepted untested Android layer), 1677 tests unchanged.
-  `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode` 556 -> 557, `versionName` `"1.2.60"` ->
-  `"1.2.61"`. Device-confirmed (2026-09-24); the `SettingsActivity` inset check (the main preference screen has no inset code of its own) was confirmed in the same pass, nothing to fix.
-
-- **§500 (v1.2.60): D-476 - `Drum` re-cast as the lower-case German adverb `drum`, `Drums` removed (German data**
-  **pack only).** User-reported: `Drum` auto-capitalised because `Drum 33 NOUN` (the English word, from the
-  Wikipedia corpus) is a bare noun, which §6's `isNounOnly` rule forces to a capital. Agreed: no re-tag of the
-  capitalised row (it would still have been the canonical spelling offered as a chip) but a lower-case `drum
-  33 OTHER` like `drin`/`drauf`/`drüber` - German `drum` is a real everyday word ("sei's drum") that had no row
-  at all - and the English plural `Drums` (27, lemma `Drum`) dropped entirely, per the user. `dictionaries/de/
-  dict.tsv` 193,815 -> 193,814 rows; `quality_gate.py --capitalises-nouns` and `lemma_check.py` both PASS;
-  `dictionaries/de/version.txt` 46 -> 47, `language-packs/adaptkey-lang-de.zip` rebuilt (same four members, same
-  order) and verified byte-identical after unzip, `LanguagePackCatalog` version 46 -> 47. No code change beyond
-  that version and its comment; 1677 unit tests unchanged (none references the touched words).
-  `:app:assembleRelease`/`:app:testDebugUnitTest` green, APK confirmed via `output-metadata.json`.
-  `versionCode` 555 -> 556, `versionName` `"1.2.59"` -> `"1.2.60"`. Device-confirmed (2026-09-24). Note, per the
-  D-473-followup lesson, **the pack is served from `origin/main`: push this round, then re-import the German pack
-  in Settings -> Language Packs before expecting `drum` to stop capitalising.**
-
-- **§499 (v1.2.59): D-477 - the cross-word fusion's metric replaced by the user's "which of the two tokens are**
-  **words" model, tuned and pinned against the real dictionary.** Request (2026-09-20): drop the fused word's
-  frequency as the deciding score - "die Länge des zweiten Teils ... erscheint mir willkürlich" (rightly: it
-  would have scored `au h` -> `auch` worst; that C1-C3 recommendation was withdrawn) - and instead: check the
-  merge when at least one of the last two tokens is not a word, raise confidence when both are unknown, make
-  that a hard requirement at "Niedrig" and merely a boost at "Mittel", let "Aggressiv" also consider two known
-  words, and let frequency contribute degressively with the level. Design refined by measurement (all in the
-  D-477 entry): usage-weighted class shares, coincidence rates per class, the danger of two-real-word fusions
-  (0.1-0.2 % of real phrases such as `der er`), the extra risk of single-letter fragments (~1 %), and the
-  finding that unweighted-by-usage recall had exaggerated how badly the old metric did (53 / 67 / 83 % once
-  weighted, not 5 / 10 / 26 %). Code: new `FusionClass` and evidence-carrying `FusionCandidate`;
-  `TokenRepair.tryFuseAcrossSpace` no longer refuses a real right token, also accepts an unrecognised left one,
-  and requires letters-only tokens; `AutoMergeAggressiveness` now holds `allowedClasses` + per-level frequency
-  floors and exposes `rejection()`/`accepts()` (rewritten, thresholds removed); `MergeConfidence` and its test
-  deleted. The service call site logs the class, frequency, level and the rejection reason per candidate.
-  Setting summary rewritten in EN/DE/EL to explain the three levels. New permanent `FusionEvaluationTest`
-  (real `dictionaries/de`, skipped when not reachable): pins recall growth per level, "no level fuses a real
-  attested phrase or random common pair", and coincidence-rate ceilings. Spec §44 rewritten. Position of the
-  spurious space's tap recorded as backlog D-479 rather than built (user's call). Still first-run on a device:
-  `applyFusion`'s glue (§498) plus the new candidate classes. +14 net unit tests (`AutoMergeAggressivenessTest`
-  rewritten, seven new `TokenRepairTest` cases, six evaluation tests, `MergeConfidenceTest` removed) - 1677
-  total. `:app:assembleRelease`/`:app:testDebugUnitTest` green, APK confirmed via `output-metadata.json`.
-  `versionCode` 554 -> 555, `versionName` `"1.2.58"` -> `"1.2.59"`. Device-tested by the user (2026-09-20).
-
-- **§498 (v1.2.58): D-477 - two defects that made the cross-word fusion (D-391) dead code on a real device,**
-  **found by chasing "Na hbarn" -> "Nachbarn" through two user-supplied Diagnostics logs.** User request
-  (2026-09-20): fix obstacles 1 and 3 of the D-477 analysis together, "frequency may simply not be a good
-  contributor to the metric". Log 2 (captured after the user forgot the learned `hbarn`) showed
-  `suppressAutocorrect=false` yet no merge - which the first analysis had not predicted - and reading
-  `applyFusion` explained it: its pre-deletion check `getTextBeforeCursor(previousWord.length + 1) ==
-  "$previousWord "` ran while the current token was still composing, so it compared the last three characters
-  of `hbarn` with `"Na "`; unlike `applyMerge` (A-06), which removes the composing text first, it could never
-  match, and every fusion was silently abandoned. Fixed by verifying the whole span via new
-  `TokenRepair.fusionSpan(previousWord, typed)`. Obstacle 1 (A-03's foreign verdict for the two-word context
-  `"Na hbarn"`, confirmed on the real profiles) fixed by gating the fusion on `knownElsewhere`, the autocorrect
-  toggle and the revert guard only - see the comment at the call site. New diagnostics: `finalizeAndCommit: fusion
-  candidate ...` (previous, token, fused, confidence, threshold, level, A-03 verdict) and `applyFusion:
-  abandoned ...`, so the next log is conclusive. **Not done:** the confidence metric (obstacle 4 in D-477) - the
-  real-data measurements and a recommendation are recorded there, awaiting the user's go on the formula.
-  Until then `nachbarn` (0.672) merges at Aggressive only. Honest caveat: this is the first real execution of
-  `applyFusion`'s batch-edit and undo glue, so device confirmation covers more than the check itself. +1 unit
-  test (`TokenRepairTest`, `fusionSpan`) - 1663 total; the service glue stays this project's accepted untested
-  Android layer. `:app:assembleRelease`/`:app:testDebugUnitTest` green, APK confirmed via
-  `output-metadata.json`. `versionCode` 553 -> 554, `versionName` `"1.2.57"` -> `"1.2.58"`. Device-tested by the
-  user together with §499 (2026-09-20). Spec §44 got a D-477 addendum.
-
-- **§497 (v1.2.57): D-474 - a switch to freeze touch-zone learning, requested after the user found that**
-  **learned zones eventually bleed into neighbouring keys and cause the very mistaps they were meant to absorb.**
-  Requested 2026-09-20 with the reasoning attached: over time mistaps drag the learned zones out of their own
-  keys into the neighbours, which then produces more mistaps; the T-04 seed may already be good enough that
-  further learning only hurts, with learning perhaps worthwhile only for Both Thumbs (whose seed is flat, i.e.
-  "always the centre"). The user's own proposal, agreed after reading the code: a boolean directly below the
-  typing style in the Calibration category, **default on** ("AdaptKey should not ship its core feature
-  disabled"), and switching it off discards nothing - learning just stops. The code reading behind that
-  agreement (self-training loop, mean-only caps, no forgetting, a 25-sample seed) is recorded as backlog item
-  D-475 together with the candidate root-cause fixes, deliberately kept out of this round.
-  Implementation: `d474_touch_learning` (`SwitchPreferenceCompat`, default `true`) sits right under
-  `k01_calibration` in `cat_calibration_group`; plumbed `SettingsStore` -> `RawSettings` -> `SettingsMapper` ->
-  `AdaptSettings.touchLearningEnabled` -> `AdaptKeyService`'s view-settings block ->
-  `AdaptKeyboardView.touchLearningEnabled`, which gates the single `OffsetModel.record()` call at
-  `ACTION_DOWN`. Everything else is untouched: `resolve()` keeps using the seed plus whatever was learned, the
-  zone overview still renders it, choosing a style still re-seeds (D-68), "Reset calibration" (D-237) still
-  resets to the current seed. Backup export needs no change (`exportableSettings` is generic over the stored
-  prefs; the key was added to its display-order list). One trap found on the way and closed: A-07's undo of a
-  raw-coordinate correction (D-140) calls `OffsetModel.unrecord()` with the tap's retained weight, and a tap
-  recorded while learning is off would have carried the old fallback `1.0` - subtracting a sample that was
-  never added, corrupting the mean/variance and even dropping a key's whole entry when it held a single
-  sample. New `OffsetModel.NOT_RECORDED_WEIGHT = 0.0` (`record()` floors real weights at 0.1, so it cannot
-  collide) is now what `pendingRecordWeight` carries for any tap that was not recorded, and `unrecord()`
-  returns early on it. This also fixes a latent, pre-existing instance of the same shape: a T-05-ambiguous tap
-  was never recorded either but carried `1.0`. Still open in that respect: the long-press-letter path's
-  `TapPoint` default weight of `1.0` (documented in `TapPoint`'s own KDoc as a known gap) - untouched.
-  Strings in EN/DE/EL only (the established locale set; see backlog D-478 for whether that set should
-  change). Four backlog items (D-475 clean fix, D-476 `Drum`, D-477 `"Nah hbarn"` merge bug, D-478 UI-string
-  policy) were recorded in the same session, see "Open TODOs" above. +3 unit tests (two `OffsetModelTest`
-  cases for the sentinel no-op incl. the single-sample key, one `SettingsMapperTest` default/pass-through) -
-  1662 total; the view gate and the preference wiring are this project's own accepted untested Android-glue
-  layer. `:app:assembleRelease`/`:app:testDebugUnitTest` green, APK confirmed via `output-metadata.json`.
-  `versionCode` 552 -> 553, `versionName` `"1.2.56"` -> `"1.2.57"`. Device-confirmed (2026-09-24).
-
-- **§496 (v1.2.56): D-473-followup - §495's own omitted positive button let Cancel slide into the now-vacant**
-  **rightmost slot instead of staying in its usual middle position, caught on first real device use.**
-  `AlertDialog`'s own button bar only reserves layout space for the buttons it actually knows about - with no
-  positive button set at all, only two slots existed, and Cancel (negative) moved into the rightmost one
-  rather than leaving it empty the way the user actually wanted ("der Platz ganz rechts bleibt leer und
-  Abbrechen steht links daneben"). Fixed by adding a real (blank-text) positive button back - so the layout
-  reserves all three slots exactly as the Learned Words dialog's own Save/Cancel/Forget always has - then
-  hiding it (`View.INVISIBLE`, `isEnabled = false`) once the dialog is actually showing: invisible so the
-  slot renders empty, disabled so a stray tap there does nothing, and reserving its layout space either way
-  so Cancel lands back in the middle. No dictionary/pack change; code only. 1659 unit tests unchanged (still
-  the same untested Android-glue layer). `:app:assembleRelease`/`:app:testDebugUnitTest` green. `versionCode`
-  551 -> 552, `versionName` `"1.2.55"` -> `"1.2.56"`. **Device-confirmed (2026-09-17)** - "Perfekt! So sieht
-  es gut aus." §495's own dialog-shape work is confirmed correct by the same sign-off, now that this round's
-  button-position fix is what made the layout actually match Learned Words on screen.
-
-- **§495 (v1.2.55): D-473-followup - Blacklist editor's per-entry dialog realigned to match the Learned**
-  **Words editor's own dialog shape, per explicit user request** ("Ich möchte es gerne in der Bedienbarkeit
-  angleichen"). `BlacklistActivity.confirmRemove()` rebuilt from a plain three-button `AlertDialog` into a
-  custom-view dialog matching `LearnedWordsActivity.showEntryDialog()`'s own layout: a neutral title
-  (`R.string.blacklist_entry_title`, new string, all three locales - no longer repeats the tapped word,
-  unlike Learned Words' own word-as-title, which stays as it was) over a word row showing the entry next to
-  the same copy-to-clipboard button - here a plain, non-editable `TextView` rather than Learned Words' own
-  casing-edit `EditText`, since there is nothing to save. No positive button at all (that slot simply stays
-  empty), "Entfernen" moved into the neutral slot - the exact position "Vergessen" occupies in the Learned
-  Words dialog - and Cancel (negative) untouched. `dp()`/`squareIconButton()` (previously private to
-  `LearnedWordsActivity`) extracted into new shared `settings/DialogUiHelpers.kt` (`Context` extensions) once
-  a second activity needed the identical word+copy-button shape, rather than duplicated; `LearnedWordsActivity`
-  itself updated to use the shared versions, dropping its own now-redundant copies. The stale, now-unused
-  `blacklist_remove_confirm_title` string (the old templated "Remove '%1$s'?" title) removed from all three
-  locale files. Spec (A-04/W-01 area) corrected in the same round - it still described the old, now-removed
-  pre-1996-spelling-reform bundled-blacklist set (`daß`/`muß`/`Rußland`) from before this session's own
-  D-473-followup dictionary-removal round; rewritten to describe the current mechanism and to add this
-  round's own dialog-alignment addendum. No dictionary/pack change this round - code and strings only. 1659
-  unit tests unchanged (this project's own accepted untested Android-glue layer - Activity/dialog code has no
-  unit coverage, per the Testing Gaps section). `:app:assembleRelease`/`:app:testDebugUnitTest` green.
-  `versionCode` 550 -> 551, `versionName` `"1.2.54"` -> `"1.2.55"`. First real device look found the Cancel-
-  button-position gap §496 fixed; device-confirmed correct as a whole once that landed - see §496.
-
-## Older Rounds (§1-§494, v0.7.6 through v1.2.54) - Pruned From This File
 D-503 (§526): forty-second pruning pass - §480-§494 removed (fifteen rounds), cutoff moved from §480 to §495, keeping the working set at 25 rounds (§495-§519). Backfilled into History.md first with the same token-multiset check (per-entry delta 0 apart from each section's own heading tokens), nothing summarised or dropped; the backfill also settles the §480-§494 half of §520's noted History-gap debt (§495-§519 remain Progress-only until their own passes), and §520's double-encoded heading was repaired in passing.
 
 D-480 (§504): forty-first pruning pass - §479 removed, cutoff moved from §478 to §479, keeping the working
@@ -3004,13 +2557,13 @@ since the project has no convention of retroactively clearing it once a round is
 - **Only §15 item left: D-39** (raw-coordinate per-character correction) — a larger architectural piece.
 
 ### §15 D-36 direct paste + D-40 digit-in-word (v0.7.19)
-- **D-36 direct paste:** when a field opens and the clipboard holds text, a 📋 chip appears in the suggestion
+- **D-36 [Paste-Chip (direktes Einfügen)] direct paste:** when a field opens and the clipboard holds text, a 📋 chip appears in the suggestion
   bar (`SuggestionController.Kind.CLIPBOARD`); tapping it runs the **exact system paste**
   (`ic.performContextMenuAction(android.R.id.paste)`), then **clears the clipboard** (esp. passwords). Sensitive
   content is masked (`ClipDescription.EXTRA_IS_SENSITIVE`, API 33+) — shown as bullets, never revealed. Pure
   `suggestion/ClipboardPreview` (mask/truncate/collapse, unit-tested); typing replaces the chip with normal
   suggestions.
-- **D-40 digit-in-word:** a digit typed between letters (composing non-empty) now stays in the token instead
+- **D-40 [Ziffer im Wort behalten] digit-in-word:** a digit typed between letters (composing non-empty) now stays in the token instead
   of delimiting, so existing correction fixes it — `W8rt` → `Wort` (the digit is one substitution from the
   neighbouring letter). A leading/standalone digit keeps its normal behaviour.
 - **Rescoped from D-38 note:** the user pushed back — `W8rt` IS handled now (D-40), and `Stabdsrx` (multi-typo)
@@ -3030,22 +2583,22 @@ since the project has no convention of retroactively clearing it once a round is
   issue) remain beyond the current budget/scope — noted.
 
 ### §15 round-4 bugs: D-30…D-35 (v0.7.17)
-- **D-30 (critical bug) keyboard freeze after held backspace:** `backspaceRepeated` was only reset on a
+- **D-30 [Einfrieren nach Backspace-Halten] (critical bug) keyboard freeze after held backspace:** `backspaceRepeated` was only reset on a
   DELETE press, so after a hold it stayed true and the ACTION_UP tap-guard (`!backspaceRepeated`) swallowed
   **every** subsequent tap (incl. backspace). Fixed by resetting it on every ACTION_DOWN. (This was the real
   cause of the earlier "last word of the line" report — the whole keyboard was frozen.)
-- **D-31 backspace-hold speed:** `BackspaceRepeat` reworked — char-wise now starts at 190 ms and accelerates
+- **D-31 [Backspace-Halt-Tempo] backspace-hold speed:** `BackspaceRepeat` reworked — char-wise now starts at 190 ms and accelerates
   only **moderately** (factor 0.90) to a 65 ms floor; word-wise runs at a clearly **slower** fixed 330 ms.
   The service drives the cadence: `onBackspaceRepeat(step)` now returns the next delay, computed from the
   running deletion count, so the char→word transition is a visible slow-down.
-- **D-32 long-press delay + setting:** the view's `longPressDelayMs` is settable (default 80 % of the system
+- **D-32 [Langdruck-Verzögerung + Einstellung] long-press delay + setting:** the view's `longPressDelayMs` is settable (default 80 % of the system
   timeout = ~20 % shorter). New `d32_longpress_delay_ms` slider (150–600, default 320) through the settings
   pipeline + strings ×3.
-- **D-33 popup primary bottom-aligned:** the offset primary cell now sits level with the bottom of the
+- **D-33 [Popup-Grundtaste unten ausgerichtet] popup primary bottom-aligned:** the offset primary cell now sits level with the bottom of the
   secondary column (near the finger) instead of top-left.
-- **D-34 vibration:** the haptic pulse was 18 ms (imperceptible) → 40 ms; VIBRATE is a normal auto-granted
+- **D-34 [Vibrationsdauer] vibration:** the haptic pulse was 18 ms (imperceptible) → 40 ms; VIBRATE is a normal auto-granted
   permission (no runtime step). Now actually felt.
-- **D-35 swipe thresholds:** raised markedly — field gestures (dismiss-down / page swipe / word-delete)
+- **D-35 [Wisch-Schwellenwerte] swipe thresholds:** raised markedly — field gestures (dismiss-down / page swipe / word-delete)
   64→**110 dp**, space-bar language swipe 28→**44 dp**, so a faint motion no longer triggers them.
 
 ### Nice-to-haves: persist language / Greek diaeresis / language-aware blacklist (v0.7.16)
@@ -3061,18 +2614,18 @@ since the project has no convention of retroactively clearing it once a round is
   blacklist is edited in the store the keyboard reads.
 
 ### §13 finish: D-13 / D-18 / D-17 / D-16 (v0.7.15)
-- **D-13 user word training:** undoing a wrong A-05 split (the A-07 backspace) now **learns** the rejoined
+- **D-13 [Nutzer-Worttraining] user word training:** undoing a wrong A-05 split (the A-07 backspace) now **learns** the rejoined
   word (`undoWasSplit` flag → `learnWord` in `performAutocorrectUndo`), so a real word the splitter mangled
   (e.g. "Backspace" → "Back Space") is trained and never split/autocorrected again (A-01). Discoverable via
   the existing backspace-undo flow; typing + one undo teaches the word.
-- **D-18 emoji panel toggle:** setting `d18_emoji_panel` (default on) through the settings pipeline + a
+- **D-18 [Emoji-Panel-Schalter] emoji panel toggle:** setting `d18_emoji_panel` (default on) through the settings pipeline + a
   Layout-category switch. When off, `PanelNavigation.onCombinedKeyTap(current, emojiEnabled=false)` makes the
   combined key a pure ?123 toggle (letters ↔ symbols), no emoji panel.
-- **D-17 onboarding USP text:** expanded the welcome body (all 3 locales) with the strongest USPs — provably
+- **D-17 [Onboarding-USP-Text] onboarding USP text:** expanded the welcome body (all 3 locales) with the strongest USPs — provably
   offline / no-internet-permission, per-finger adaptation + calibration, smart neighbour-key/umlaut correction
   (komplezz→komplett) + space repair, learns-as-you-go, DE/EN/EL dictionaries, optional on-device mini-AI,
   GPLv3 no-ads-no-accounts.
-- **D-16 pattern-driven key enlargement:** `KeyProportions` gained `shiftBaseWeight` + `shiftExtra` (computed
+- **D-16 [Musterbasierte Tastenvergrößerung] pattern-driven key enlargement:** `KeyProportions` gained `shiftBaseWeight` + `shiftExtra` (computed
   `shiftWeight`, mirroring backspace); `thirdRowLetterWeight` now takes both surcharges from the letters so
   the row width is preserved. New `c01_shift_extra` slider (settings pipeline + pref + strings ×3). After a
   calibration, `SettingsStore.applyPatternEnlargement` presets the enlargement from the detected hand:
@@ -3095,17 +2648,17 @@ since the project has no convention of retroactively clearing it once a round is
   only by `CalibrationActivity.detectPattern`; live info-only detection stays conservative. Also lengthened
   `CalibrationSentences` 3→5 (more taps → stabler bias). Result is stated plainly via the existing
   pattern-specific feedback strings.
-- **D-24 touch-model visualisation:** pure `OffsetModel.spreadFor(id)` (mean offset + per-axis std dev);
+- **D-24 [Touch-Modell-Visualisierung] touch-model visualisation:** pure `OffsetModel.spreadFor(id)` (mean offset + per-axis std dev);
   `AdaptKeyboardView.showTouchModel` overlay draws a translucent spread ellipse + a strike-point dot over
   each trained char key. New `TouchModelActivity` (+ layout, manifest, strings) hosts a keyboard with the
   overlay over the persisted model; reachable from a new settings entry (Kalibrierung category) and as the
   calibration result (the feedback dialog's neutral button → visualisation, or → D-09 export when recording).
 
 ### Round-3 popup rework: D-22 punctuation split + D-23 vertical popup (v0.7.11)
-- **D-22:** the full-stop key now carries only the sentence terminators (`KeyboardLayout.PERIOD_ALTERNATIVES`
+- **D-22 [Komma-Popup: Satzzeichen-Satz]:** the full-stop key now carries only the sentence terminators (`KeyboardLayout.PERIOD_ALTERNATIVES`
   = `. ! ?`); the comma key carries the clause punctuation (`COMMA_ALTERNATIVES` = `, ; : - _ /`). Index 0 of
   each is the key's own char (the primary). Both Latin and Greek layouts.
-- **D-23 vertical popup:** replaced the horizontal `LongPressPopup` with pure `VerticalLongPressPopup`
+- **D-23 [Vertikales Popup] vertical popup:** replaced the horizontal `LongPressPopup` with pure `VerticalLongPressPopup`
   (y→index). The popup now draws the primary (index 0) as a cell offset at the top-left (pre-selected) and
   the secondaries stacked in a column directly above the finger, bottom-to-top (so on the period key `!` is
   directly above the finger and `?` above it; on the comma key `,` is the top-left default and `; : - _ /`
@@ -3113,21 +2666,21 @@ since the project has no convention of retroactively clearing it once a round is
   single-alternative key (umlaut/AltGr) shows one preview cell above the key. Cells are clamped into the view.
 
 ### Round-3 bugs + quality: D-27 / D-05-06 / D-25-26 / D-29 / D-28 (v0.7.10)
-- **D-27 space-bar top edge (bug):** `resolveKey` now short-circuits to SPACE when the raw point is inside
+- **D-27 [Leertasten-Oberkante (Bug)] space-bar top edge (bug):** `resolveKey` now short-circuits to SPACE when the raw point is inside
   the space-bar rect, so the offset model can't pull a clear space tap up to c/v. T-05 flagging unchanged.
-- **D-05/D-06 sound + haptics (bug):** the toggles were silenced by the system touch-sound/vibration
+- **D-05/D-06 [Tastenton + Haptik] sound + haptics (bug):** the toggles were silenced by the system touch-sound/vibration
   settings. Now authoritative: sound via a short `ToneGenerator` click, haptic via the `Vibrator` directly
   (added the `VIBRATE` permission — normal, non-privacy; the no-INTERNET/no-storage guarantee is unchanged).
   ToneGenerator released in `onDetachedFromWindow`.
-- **D-25 text colour / D-26 mid-word bug:** the recognised-word highlight is now a `ForegroundColorSpan`
+- **D-25 [Textfarben-Bug] text colour / D-26 mid-word bug:** the recognised-word highlight is now a `ForegroundColorSpan`
   (colours the text, not the background); default colour reverted to a readable medium green `#2E7D32`.
   `shouldHighlightComposing` skips the colour when a letter follows the cursor (mid-word edit), so the two
   correction characters are no longer coloured.
-- **D-29 punctuation eats accepted-suggestion space:** accepting a suggestion arms `pendingSuggestionSpace`;
+- **D-29 [Satzzeichen frisst Vorschlags-Leerzeichen] punctuation eats accepted-suggestion space:** accepting a suggestion arms `pendingSuggestionSpace`;
   the immediately following sentence/clause punctuation (`SPACE_EATING_PUNCTUATION` = `.,!?;:)`) deletes the
   auto-added trailing space. One-shot — cleared as soon as a letter is typed or on a new field; spaces
   before typed punctuation are never stripped in general.
-- **D-28 proximity + distance-2 correction:** new pure `suggestion/KeyboardProximity` (QWERTZ adjacency map)
+- **D-28 [Nachbar-+Distanz-2-Korrektur] proximity + distance-2 correction:** new pure `suggestion/KeyboardProximity` (QWERTZ adjacency map)
   + `EditDistance.weightedDistance` (weighted Levenshtein). The provider's fuzzy/autocorrect matching now
   accepts a candidate up to a total cost of 2, where a neighbouring-key substitution costs 1 and any other
   sub / indel costs 2 — so `komplezz`→`komplett` (two adjacent z→t slips) is caught, while two unrelated
@@ -3135,9 +2688,9 @@ since the project has no convention of retroactively clearing it once a round is
   question: tier-3 adds context prediction on top, but typo correction must and does work offline).
 
 ### Round-2 slice 2: D-04 / D-14 / C-04 / D-21 / D-07 / A-07 (v0.7.9)
-- **D-04 flash (shortened again):** `flashDurationMs` 80→45→**28 ms** (Gboard-like; §14 D-28 still flagged
+- **D-04 [Tasten-Press-Feedback (Aufblitzen)] flash (shortened again):** `flashDurationMs` 80→45→**28 ms** (Gboard-like; §14 D-28 still flagged
   it as too slow after 45, so this round goes to 28 — device-tune further if needed).
-- **D-14 in-keyboard long-press feedback:** the long-press popup now shows for **single-alternative** keys
+- **D-14 [In-Tastatur-Langdruck-Feedback] in-keyboard long-press feedback:** the long-press popup now shows for **single-alternative** keys
   too (umlauts, ß, AltGr, Greek tonos) — a one-cell preview bubble that confirms the press and commits on
   release, Gboard-style. `AdaptKeyboardView.popupAlternativesFor(key)` = `key.alternatives` else the single
   `key.hint`; `openPopup(key, alternatives)`; only a key with no secondary (the ?123 key) falls back to the
@@ -3146,8 +2699,8 @@ since the project has no convention of retroactively clearing it once a round is
   `c04_highlight_enabled` true), default colour a lighter green `#FF81C784` (`SuggestionConfig.DEFAULT_
   HIGHLIGHT_COLOR`, arrays green preset, pref default). NB §14 D-25 supersedes this to colour the *text*
   not the background — next round.
-- **D-21 key cell padding:** `gapPx` 3→**5 dp** between keys.
-- **D-07 faster backspace hold:** `BackspaceRepeat` tuned — INITIAL 400→260, START 200→120, MIN 45→28,
+- **D-21 [Tasten-Zellenabstand] key cell padding:** `gapPx` 3→**5 dp** between keys.
+- **D-07 [Beschleunigendes Backspace-Halten] faster backspace hold:** `BackspaceRepeat` tuned — INITIAL 400→260, START 200→120, MIN 45→28,
   ACCEL 0.82→0.78. (The word-mode "stops before the line's last word" report still needs device repro.)
 - **A-07 split-undo:** a backspace immediately after an A-05 retroactive split now rejoins the two words
   into the originally typed token — `applySplit` takes the typed token and arms the existing
@@ -3159,18 +2712,18 @@ since the project has no convention of retroactively clearing it once a round is
   navigation/gesture inset to its root (`ViewCompat.setOnApplyWindowInsetsListener`, bottom only — the
   AppCompat ActionBar handles the top), so the embedded keyboard sits above the gesture pill and
   calibration is usable. Layout root got an id (`calibration_root`).
-- **D-11/D-12 earlier + fuzzy suggestions:** `DictionarySuggestionProvider.suggestionsFor` now merges
+- **D-11/D-12 [Frühere + Fuzzy-Vorschläge] earlier + fuzzy suggestions:** `DictionarySuggestionProvider.suggestionsFor` now merges
   prefix completions (shown from the 1st letter) with **fuzzy neighbours** (from the 3rd letter): single
   edit / umlaut-folded matches via the new pure `suggestion/Umlaut.fold` (ä→a, ö→o, ü→u, ß→ss) + the
   existing bounded `correctionCandidates`. So a valid-but-wrong "mut" still offers "mit", "grun"→"grün",
   "defaukt"→"Default". `autocorrectFor` is likewise umlaut-aware now. (Note: a junk-in-dict word being
   highlighted as "known" — the "Defaukt was green" report — is a data issue tied to C-04, not fixed here;
   the constructive part, offering "Default", is.)
-- **D-15 Caps Lock:** double-tap Shift (within `DOUBLE_TAP_SHIFT_MS`=300) engages a persistent
+- **D-15 [Feststell-Taste (Caps Lock)] Caps Lock:** double-tap Shift (within `DOUBLE_TAP_SHIFT_MS`=300) engages a persistent
   `AdaptKeyboardView.capsLock`; a further Shift press releases it. The Shift key shows "⇪" while locked,
   letters render/commit uppercase (`isUpperArmed()` = shifted || capsLock), `consumeShift` leaves capsLock
   intact, and a new field resets it.
-- **D-19/D-20 swipes:** a full-field horizontal swipe now cycles the surface/page
+- **D-19/D-20 [Seitenwechsel-Wisch] swipes:** a full-field horizontal swipe now cycles the surface/page
   (letters → symbols-1 → symbols-2, wrapping) via new `GestureAction.SWITCH_SURFACE_NEXT/PREV`,
   `KeyGesture.surfaceSwipe`, pure `PanelNavigation.swipePage`, and service `applySwipePage` — separate from
   the space-bar language swipe (G-01) and the backspace word-delete (G-02). D-20: the view now uses
@@ -3179,7 +2732,7 @@ since the project has no convention of retroactively clearing it once a round is
   a faint down-swipe no longer hides the keyboard.
 
 ### Device-feedback batch D-01 / D-02 / D-05 / D-06 / D-09 (v0.7.7)
-- **D-01/D-02 multi-alternative long-press popup:** `Key` gained `alternatives: List<String>`; a key with
+- **D-01/D-02 [Langdruck-Popup mit Alternativen] multi-alternative long-press popup:** `Key` gained `alternatives: List<String>`; a key with
   **≥2** alternatives opens a Gboard-style popup on long-press (finger slides to select, release commits),
   while ≤1 keeps the immediate-apply behaviour (umlauts, ß, Greek tonos). The full-stop key carries
   `KeyboardLayout.PERIOD_ALTERNATIVES` = `. ! ? , ; : - _ /` (D-02, full stop pre-selected = index 0),
@@ -3191,14 +2744,14 @@ since the project has no convention of retroactively clearing it once a round is
   `handleLongPressAlternative` → shared `commitLongPressSymbol` (letter → append into word, else
   finalise+commit like a delimiter) — the old single-secondary `handleLongPress` CHAR path was refactored
   to reuse it.
-- **D-05/D-06 optional key sound + haptics (default off):** two settings (`d05_key_sound`, `d06_key_haptics`)
+- **D-05/D-06 [Tastenton + Haptik] optional key sound + haptics (default off):** two settings (`d05_key_sound`, `d06_key_haptics`)
   through `RawSettings`/`AdaptSettings`/`SettingsMapper`/`SettingsStore` + a new "Tasten-Rückmeldung"
   preference category (two switches). The view holds `soundEnabled`/`hapticsEnabled` (pushed in
   `applySettings`) and fires on ACTION_DOWN: `AudioManager.playSoundEffect(FX_KEYPRESS_STANDARD)` (lazy
   AudioManager) and `performHapticFeedback(KEYBOARD_TAP)`. **No VIBRATE permission** — `performHapticFeedback`
   routes through the window system, preserving the minimal-permission stance (dropped the deprecated
   `FLAG_IGNORE_GLOBAL_SETTING` to stay warning-free).
-- **D-09 raw-tap recording (opt-in diagnostic):** setting `d09_record_raw_taps` (default off, in the
+- **D-09 [Roh-Tipp-Aufzeichnung (Diagnose)] raw-tap recording (opt-in diagnostic):** setting `d09_record_raw_taps` (default off, in the
   Kalibrierung category). Pure `touch/RawTapRecorder` + `RawTap` (unit-tested): collects
   expected-char/resolved-key/key-centre/contact-point per tap, exposes per-axis deviation, serialises to a
   TSV table (locale-independent 2-decimal coords). New view `OnRawTapListener` fires at ACTION_DOWN with the
@@ -3211,20 +2764,20 @@ since the project has no convention of retroactively clearing it once a round is
   `RawTapRecorder`, the settings mapping) are JVM-unit-tested; the view/activity glue is Android-only.
 
 ### Device-feedback batch D-03 / D-04 / D-07 / D-10 (v0.7.6)
-- **D-03 space bar shows the language:** `AdaptKeyboardView.spaceLabel` (a view property, drawn for
+- **D-03 [Leertaste zeigt die Sprache] space bar shows the language:** `AdaptKeyboardView.spaceLabel` (a view property, drawn for
   `KeyCode.SPACE` in `labelFor`, so it survives layout rebuilds); the service pushes the current input
   language's label via `updateSpaceLabel()` → `languageLabel(activeLanguage)` ("Deutsch" / "Ελληνικά";
   "English" mapped for completeness but never the active alphabet — English is only auto-detected for
   autocorrect). Called from `onCreateInputView`, `onStartInputView` and `toggleLanguage` (G-01), so the
   label tracks the space-swipe switch. The G-01 toast now reuses `languageLabel`.
-- **D-04 space bar (and every special key) flashes on press:** root cause was `pressedKeyPaint` using
+- **D-04 [Tasten-Press-Feedback (Aufblitzen)] space bar (and every special key) flashes on press:** root cause was `pressedKeyPaint` using
   `key_background_special` — the *same* colour the special keys already draw at rest, so space/shift/enter
   showed no change when pressed. Added a distinct `key_background_pressed` (#A6C8FF) colour for the pressed
   paint. Plus a **post-release flash** (`flash(key)` / `flashKey` held for `flashDurationMs` = 80 ms via
   the existing handler) so even a sub-frame quick tap is visibly acknowledged; `onDraw` highlights
   `pressedKey || flashKey`; `cancelFlash()` on the next ACTION_DOWN. Flash fires on the tap-emit path only
   (not on swipe/long-press).
-- **D-07 accelerating backspace-on-hold:** pure `keyboard/BackspaceRepeat` (unit-tested, 6 tests):
+- **D-07 [Beschleunigendes Backspace-Halten] accelerating backspace-on-hold:** pure `keyboard/BackspaceRepeat` (unit-tested, 6 tests):
   `INITIAL_DELAY_MS` = 400 before the first repeat, `nextDelayMs(step)` geometric decay from
   `START_DELAY_MS` 200 → floor `MIN_DELAY_MS` 45 (factor 0.82), and `deletesWord(charsDeleted)` switches to
   word-wise once `WORD_MODE_AFTER_CHARS` = 18 chars (~3 words) have gone. The view owns the timer
@@ -3234,7 +2787,7 @@ since the project has no convention of retroactively clearing it once a round is
   The service's `handleBackspaceRepeat(step)` resets on step 0, deletes composing chars first, then
   committed text char-wise (via the shared `deleteOneBefore`) and word-wise (via `WordBoundary`) past the
   threshold; `backspaceHeldChars` tracks the count.
-- **D-10 backspace at start of entry:** the single-char delete path is now `deleteOneBefore(ic)` — when
+- **D-10 [Backspace am Eintragsanfang] backspace at start of entry:** the single-char delete path is now `deleteOneBefore(ic)` — when
   `getTextBeforeCursor(1)` is empty (cursor at the very start of the editable) it sends a real DEL key
   event (`sendDownUpKeyEvents(KeyEvent.KEYCODE_DEL)`) so the editor can join with the previous line/entry
   (Google-Keep-style), instead of the old no-op `deleteSurroundingText(1,0)`. Used by both the normal

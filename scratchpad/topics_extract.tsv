@@ -1,0 +1,552 @@
+num	source	title
+1	DEF	D-02 multi-alternative long-press popup
+2	DEF	Full-Stop Long-Press Punctuation List
+3	DEF	D-03 space bar shows the language
+4	DEF	D-04 space bar (and every special key) flashes on press
+5	DEF	D-06 optional key sound + haptics (default off)
+6	DEF	Optional Haptic Feedback *(configurable, default off)*
+7	DEF	D-07 accelerating backspace-on-hold
+8	DEF	Backspace Shift-Restore Refinement (extends the G-05 addendum)
+9	DEF	D-09 raw-tap recording (opt-in diagnostic)
+10	DEF	D-10 backspace at start of entry
+11	DEF	D-12 earlier + fuzzy suggestions
+12	DEF	Fuzzy, Umlaut-Aware Correction Candidates
+13	DEF	D-13 user word training
+14	DEF	D-14 in-keyboard long-press feedback
+15	DEF	D-15 Caps Lock
+16	DEF	D-16 pattern-driven key enlargement
+17	DEF	D-17 onboarding USP text
+18	DEF	D-18 emoji panel toggle
+19	DEF	G-03 gesture toggles (external PR #11) - RESOLVED (§520, v1.2.79/v1.2.80, adopted 2026-10-26)
+20	DEF	Larger Gesture Thresholds
+21	DEF	D-21 key cell padding
+22	DEF	D-22
+23	DEF	D-23 vertical popup
+24	DEF	D-24 touch-model visualisation
+25	DEF	D-25 text colour / D-26 mid-word bug
+26	DEF	D-25 text colour / D-26 mid-word bug
+27	DEF	D-27 space-bar top edge (bug)
+28	DEF	D-28 proximity + distance-2 correction
+29	DEF	D-29 punctuation eats accepted-suggestion space
+30	DEF	D-30 (critical bug) keyboard freeze after held backspace
+31	DEF	D-31 backspace-hold speed
+32	DEF	D-32 long-press delay + setting
+33	DEF	D-33 popup primary bottom-aligned
+34	DEF	D-34 vibration
+35	DEF	D-35 swipe thresholds
+36	DEF	D-36 direct paste
+37	DEF	D-37 (dictionary, `learnWord`)
+38	DEF	Correction Quality: First-Char, Umlaut-Initial, Cost-Ranked
+39	DEF	Raw-Coordinate Per-Character Correction
+40	DEF	D-40 digit-in-word
+41	DEF	Digits Are Ordinary Neighbour Characters in Correction
+42	DEF	Number-Row Hit Zone Too Tall *(bug)*
+43	DEF	Next-Word Prediction in the Suggestion Bar
+44	DEF	Alt-Key Popups: Horizontal, Centred, Finger-Below Selection
+45	DEF	Restore Auto-Capitalisation After Deleting a Punctuation at Line Start *(bug)*
+46	DEF	Swipe Length Still Too Short
+47	DEF	Combined Key Must Not Show the Emoji Glyph When the Panel Is Off *(bug)*
+48	DEF	Umlaut Words Are First-Class; a Fold Match Beats a Split
+49	DEF	Raw Touch-Recording as a Headline Onboarding USP
+50	DEF	Suggestion Bar Stays Permanently Visible
+51	DEF	Period Long-Press Order Is `! . ?`
+52	DEF	The Number Row Is a Full-Height Key Row Again
+53	DEF	The Number Row Long-Presses Like Every Other Key
+54	DEF	Single-Alternative Popups Are Nudged Toward the Keyboard Centre
+55	DEF	Two New Spacing Settings: Below the Number Row and Above the Space Row
+56	DEF	Backspace Hold: Single-Character Phase Slightly Faster
+57	DEF	Page-Swipe Width Retune (Space Bar Gets More)
+58	DEF	Page-Change Animation
+59	DEF	Optional `?123` Key (Default On)
+60	DEF	Quick Paste Does Nothing (Bug)
+61	DEF	Enter Does Not Submit in Browser Address Bars / Search Fields (Bug)
+62	DEF	Mid-Word Editing Produces Live Suggestions
+63	DEF	Missing Umlauts / ß: Suggest-Up-Front, Auto-Correct When Unambiguous
+64	DEF	Suggestion-Bar Word Cannot Be Dragged to Trash (Bug)
+65	DEF	`konnen` Auto-Corrects to `kannen` (Bug, HIGH)
+66	DEF	Key Vibration Does Not Fire At All (Bug)
+67	DEF	Word Splitting Fires Too Eagerly; Must Require High Confidence (Bug)
+68	DEF	Rethink Calibration: Ask the Typing Pattern Directly, Refine Only Slowly Over Time (Big Idea, Deferred)
+69	DEF	Word Split Wins Merely By Being Found First, Not By Being the Best Match (Bug)
+70	DEF	Key-Press Sound Should Read as a Typewriter, Not a Digital Beep
+71	DEF	Pattern Seeding Must Also Predefine the Systematic Offset *Direction*, Not Just the Spread
+72	DEF	The Number Row Is Missing From Calibration Seeding (Bug)
+73	DEF	Reorder the Typing Patterns by Real-World Prevalence; Skip Also Applies a Sensible Default
+74	DEF	Resolved (Unconfirmed Cause)
+75	DEF	Key-Press Vibration Still Does Not Fire (Bug, D-66 Follow-Up)
+76	DEF	Page-Slide Animation Runs Backwards and Resizes Mid-Slide (Bug)
+77	DEF	Remove the "(Recommended)" Label From the Two-Thumbs Button
+78	DEF	Dead Duplicate "Typing Pattern" Settings Row (Cleanup, Found During D-74 Follow-Up Investigation)
+79	DEF	Rename "Typing Pattern" to "Typing Style"
+80	DEF	"Show Touch Zones" Intro Text Sits Under the Front-Camera Cutout
+81	DEF	The Onboarding Panel Has the Same Cutout Gap
+82	DEF	Confirmed: No More Bleed
+83	DEF	Key-Click Sound: Too Loud and Slightly Delayed
+84	DEF	Mid-Word Editing (D-62) Produces No Suggestions At All (Bug)
+85	DEF	Key-Click Sound: Halved Again
+86	DEF	Page-Slide: Resize Before Growing, After Shrinking; Bottom-Aligned Rows
+87	DEF	D-87 Root-Cause Fixes: Mid-Word Correction
+88	DEF	D-88 Refined: Sound Sharpened/Louder, Flash Replaced with a Flying Word, Settings Rename
+89	DEF	D-89-followup - the in-app feature-overview catalog (`FeatureCatalog`, D-89, Settings → Info & Privacy) refreshed for the first time since D-316/v1.0.0. User's own direct request: "das
+90	DEF	Implemented: New Alt-Key Hints P → π, B → ×, V → ÷ (v0.7.44)
+91	DEF	Implemented: Reversed the D-19 Swipe Direction (v0.7.45)
+92	DEF	D-92 addendum, raised by the user while resolving the space-key question
+93	DEF	Symbol Pages Drop `1/2` and `ABC` When the Combined `?123` Key Is Disabled *(implemented, v0.7.42)*
+94	DEF	Implemented: Fixed the Slide-Animation Direction After D-91 (v0.7.52)
+95	DEF	Idea, Parked: a Settings-Shortcut Key Somewhere on the Keyboard
+96	DEF	Implemented: Reorganised the v / b / x / c Alt-Hints (v0.7.48)
+97	DEF	Implemented: Symbol Pages' Space Key No Longer Shows the Language Label (v0.7.49)
+98	DEF	Implemented: Currency Popup Order + "More Alternatives" Corner Indicator (v0.7.50)
+99	DEF	Implemented: Greek-Letter Popup on the π Key (v0.7.48)
+100	DEF	Also: Swapped `ABC` and `=`
+101	DEF	Corrected: `(` and `)` Stay Two Separate Keys
+102	DEF	Corrected/Extended: Bracket, Currency and Underscore Alts on Page 2
+103	DEF	D-103 / D-104: Trig-Function and Angle-Unit Keys on the Calculator Page
+104	DEF	D-103 / D-104: Trig-Function and Angle-Unit Keys on the Calculator Page
+105	DEF	Every Main-Page Digit Key Gets a Superscript Second Alternative
+106	DEF	D-106 Stages 1+2 Implemented: English as an Explicit Language, Cross-Dictionary Loanword Protection
+107	DEF	D-107 Closed: S-05 Highlight Semantics Confirmed as Settled, No Reversal
+108	DEF	Long-Press Popup Now Tolerates a Small In-Key Smear
+109	DEF	T-03 Learning Now Has Bounds
+110	DEF	D-110, D-141, D-129 Confirmed Working on Device (No Code Change)
+111	DEF	Not a Preview Bug: "stelle"/"Stelle" Is D-115's Exact Mechanism, Confirmed
+112	CTX	- **D-112**: a correction whose own case must follow the sentence/field context ("Fur" at a sentence start) now
+113	DEF	§44's Ratio-Override Restricted to Genuine Cost-1 Typos
+114	DEF	A Low-Confidence Autocorrect Candidate Is Never Silently Applied + the Missing Word Added
+115	DEF	Two Different Root Causes, Not One: a Ranking Bug vs. a True Data Gap
+116	DEF	D-116 CONFIRMED WORKING on device
+117	DEF	A Multi-Typo Word Beyond D-28's Budget Still Surfaces as a Suggestion
+118	DEF	D-118 struck outright
+119	DEF	SPACE Mid-Word Now Inserts a Literal Space Instead of Finalising the Whole Token
+120	DEF	Mid-Word Punctuation Now Lands at the Caret, Not Always at the Token's End
+121	DEF	`handleShift()` Now Checks Caps-Lock-Off First and Requires the Caret to Genuinely Be at the Word's End
+122	DEF	D-261 - the German feminine-agent-noun suffix `-in` must never be split off by A-05/D-122, mirroring
+123	DEF	Suggestion-Bar-Tap's Trailing Space Now Survives the Punctuation Check
+124	DEF	D-124 Closed (Not a MIME Bug), D-116 Implemented: Unhyphenated-Compound Recognition
+125	DEF	An Unknown Inflected Verb Form Must Not Be Silently "Corrected" to the Dictionary's Base Form
+126	DEF	Tier-3 Independent Enable Toggle (the Uninstall Action Already Existed)
+127	DEF	D-127 - internal reference, consolidated here for future sessions
+128	DEF	D-128 - user-facing summary
+129	DEF	D-110, D-141, D-129 Confirmed Working on Device (No Code Change)
+130	DEF	Sustained-English Real Language Switch + Space-Bar Change Animation
+131	DEF	Raw-Coordinate Correction (D-39) Now Live While Composing
+132	DEF	D-132 and D-137 Follow-Up Fixes: Neither Original Fix Actually Worked
+133	DEF	Bottom-Row Touch Zones: a Hard, Direction-Specific Downward Bound
+134	DEF	SPACE Sometimes Seems to Get Swallowed After a Full Stop (Unconfirmed Pattern)
+135	DEF	D-135 Struck From the Backlog
+136	DEF	D-136 reworked
+137	DEF	D-132 and D-137 Follow-Up Fixes: Neither Original Fix Actually Worked
+138	DEF	Backspace-Hold Jerkiness: Traced (Not Guessed) to This Session's Own Added Per-Keystroke Lookups
+139	DEF	D-139, Second Half: Truth Verification Replaces Positional Equality in `onUpdateSelection`
+140	DEF	D-140 Implemented: Un-Learn on A-07 Undo (T-03 + Dictionary); D-141: "Uhr" Timing Fixed
+141	DEF	D-110, D-141, D-129 Confirmed Working on Device (No Code Change)
+142	DEF	D-142 Follow-Up: Weak-Signal Detection Now Also Covers Email, Not Just Username
+143	DEF	D-143 Implemented: a Dedicated URL-Mode Bottom Row
+144	DEF	D-387 - Extend the umlaut/diacritic unfold mechanism (D-144/D-204) to other languages
+145	DEF	D-144 Actually Fixed, D-145 Corrected Again: the Popup's Centre Position, Not List Order
+146	DEF	Applying a Suggestion Mid-Text No Longer Creates a Double Space
+147	DEF	Umlaut/ß-Aware Prefix Completion for Suggestions
+148	DEF	D-148 withdrawn
+149	DEF	D-149: a D-62 Mid-Word Reclaim's Backspace Could Wipe the Whole Word Instead of One Character; Nine New Backlog Items Captured
+150	DEF	diagnostic log window shortened to 1 minute; password fields never logged, in code and in the Settings text
+151	DEF	the log viewer's Share/Copy/Clear row was unreachable under the display notch
+152	DEF	D-152 (regression)
+153	DEF	D-153 (regression)
+154	CTX	- **D-154**: `uber` should autocorrect to `über` once the word is *finished* (a delimiter typed) - ambiguous
+155	CTX	- **D-155**: `fur` colours green (recognised as a correction target, i.e. `shouldHighlightComposing`/S-05 or
+156	DEF	a live touch-zone-visualisation toggle in the settings row
+157	DEF	"due" no longer protected from autocorrecting to "die" in German mode
+158	DEF	D-158: Dedicated Email-Mode Keyboard Layout
+159	DEF	D-159: Robust (Huber-Style) Downweighting for the Touch-Zone Learning Model
+160	DEF	D-160 Implemented: the Expensive Suggestion Fallbacks Are Debounced Off the Hot Path
+161	DEF	D-250 - retune D-161's WindowInsets recheck from a single one-shot check to five checks, 500ms apart
+162	DEF	fixed: the suggestion bar could not be scrolled to reach overflowing suggestions
+163	DEF	fixed: no auto-capitalisation inside a recognised email field
+164	DEF	fixed: "sue" too often replaced a typed "die" and never got corrected back
+165	DEF	D-165 - mid-word split can destroy deliberately-typed capitalisation
+166	DEF	D-166 withdrawn
+167	CTX	…re-applying case. Not yet fixed - see D-167.
+168	DEF	D-168 - in Caps Lock / Shift, the umlaut alternatives in a key's long-press popup stay lower-case
+169	CTX	- **D-169 - entering a recognised email field should also open the settings row and flash the credential
+170	DEF	D-166 Withdrawn; D-170 Fixed (Real Device Log); D-175 Diagnostic Added for Never-Saved Credentials
+171	DEF	D-171/D-176: "ddr" and D-164's Cross-Language Shield Redesigned onto a Real, Data-Driven Blacklist
+172	DEF	D-172 - why doesn't "aks" autocorrect to "als"?
+173	DEF	design question, answered directly: should a lone/near-lone recognised word take suggestion slot 1?
+174	DEF	D-174 Closed: a Fast-Tearing-Down `InputConnection` Beat `onFinishInput`'s Own Read of It
+175	CTX	…`AdaptKey` channel - to be removed once D-175 is actually closed. Not yet fixed - waiting on the next
+176	DEF	D-171/D-176: "ddr" and D-164's Cross-Language Shield Redesigned onto a Real, Data-Driven Blacklist
+177	DEF	D-177: Learned Words Moved to a Separate Store; Two-Stage Unlearn-Then-Provisional-Blacklist; a New Learned-Words Editor
+178	DEF	D-178/D-179: One-Time Bundled-Dictionary Reimport to Flush Pre-D-177 Contamination; Clearer Remove-Confirmation Dialogs
+179	DEF	D-178/D-179: One-Time Bundled-Dictionary Reimport to Flush Pre-D-177 Contamination; Clearer Remove-Confirmation Dialogs
+180	DEF	D-180: Saved Credentials Get Their Own Reviewable List; a Shared "Copy" Option on Every Remove Dialog
+181	DEF	D-181 side item (no code change)
+182	DEF	D-182: `reclaimSurroundingWord()` Stops Deleting Text It Only Needs to Recolour
+183	DEF	D-183: Fixed - a Mid-Word Reclaim Leaves the Real Cursor Inside the Token, Not at Its End
+184	DEF	D-184 device feedback (2026-07-19): no visible effect yet
+185	DEF	D-172/D-181 Device-Confirmed; D-184/D-185 Implemented
+186	DEF	D-186/D-187/D-188: Learned-Overlay Flooding, Settings-Row Auto-Close, List-Activity Insets
+187	DEF	D-186/D-187/D-188: Learned-Overlay Flooding, Settings-Row Auto-Close, List-Activity Insets
+188	DEF	D-186/D-187/D-188: Learned-Overlay Flooding, Settings-Row Auto-Close, List-Activity Insets
+189	DEF	D-189: `SettingsRowView` Renamed to `ExtraRowView`; Credential-Mode Reveal + Delayed Flash
+190	DEF	D-190: "Never Save Credentials" Setting
+191	DEF	D-191: Opt-In Contact-Derived Email Suggestions
+192	DEF	D-192: Feature Catalog Refreshed; "Learn More" Hint; D-191 Summary Trimmed
+193	DEF	D-193: Diagnostic Logging for the Still-Never-Working Key Vibration
+194	DEF	D-194: Typing/Backspace-Hold Sluggishness Traced to Three Unthrottled Per-Keystroke Lookups
+195	CTX	…ith no behavioural change either way. **D-195** (a fourth idea, raised and shelved, not
+196	DEF	D-196 - suggestion-chip case mismatch
+197	DEF	D-197 - "Gruße" never restored to "Grüße"; wrong suggestion "Große" instead
+198	DEF	D-198 - email keyboard's period-key popup pre-selects `.net` instead of the locale's own `.de`
+199	CTX	**D-199** (strategy proposal, explicitly requested, not implemented): autocorrect silently reapplying a
+200	CTX	**B-03 / D-200** (spec-documented design intent since the original spec, never implemented; revisited with
+201	DEF	D-201 - fixed
+202	DEF	D-202 - captured as a design discussion, not implemented
+203	DEF	D-203: The MIN_SPLIT_BIGRAM Gate Replaced After a Live Design Discussion
+204	DEF	D-387 - Extend the umlaut/diacritic unfold mechanism (D-144/D-204) to other languages
+205	DEF	D-205 Designed and Implemented: Suggestion-Bar Ranking Now Discounts by Edit Cost
+206	DEF	D-206 Designed and Implemented: Archaic-Spelling Relics Blacklisted, Not Purged
+207	DEF	D-207 - the commit-time double search
+208	DEF	D-208 - live per-keystroke fuzzy search scaling with token length
+209	DEF	D-209 - the "Kita" bucket-cap starvation, found independently while discussing the felt lag
+210	CTX	half addressed. D-210 (the A-05 split regression) remains its own, separately deferred item.
+211	DEF	D-211: The Expensive Suggestion Search Moves Off the Main Thread Entirely
+212	DEF	D-212: WAL Enabled - D-211 Alone Showed No Improvement, Root-Caused to Connection-Level Locking
+213	DEF	D-213: The Real Dominant Cost Found - trySplit()'s Own Main-Thread Dictionary Reads
+214	DEF	D-214/D-215/D-216: The Real Cost Was O(n×m) Computation, Not Stale Requests - Redundant Queries
+215	DEF	D-214/D-215/D-216: The Real Cost Was O(n×m) Computation, Not Stale Requests - Redundant Queries
+216	DEF	D-214/D-215/D-216: The Real Cost Was O(n×m) Computation, Not Stale Requests - Redundant Queries
+217	DEF	D-217: Diagnostics Now Show Actual Processing Time and Actual Flash-Paint Latency, Not Just Typing
+218	DEF	D-218: The Real Remaining Cost Found - the Impending-Autocorrect/Diacritic Preview Ran Unconditionally
+219	DEF	D-219: the Flash Effect Decoupled from Key Processing and Shortened, at the User's Own Explicit
+220	DEF	D-220 Device-Confirmed, D-221 Fixed: diacriticRestoration() Uncapped Every Bucket, Not Just the Ones
+221	DEF	D-207-D-221 Sluggishness Investigation Device-Confirmed Closed (No Code Change - Confirmation Only)
+222	DEF	D-222: the URL-Mode Protocol and www Keys Merged, Restoring the Space Key to Full Width
+223	DEF	D-223: `:app:assembleRelease` is now the default build target
+224	DEF	D-224: the Inverted "Never Save Credentials" Toggle Flipped to a Positively-Phrased "Save Credentials"
+225	DEF	D-225: `_` is Now Word-Extending and a Token Containing It Is Fully Shielded From
+226	DEF	D-226: trySplit() Never Respected suppressAutocorrect/knownInOtherLanguage - "commits" Torn Into
+227	DEF	D-227: the D-114 Frequency Floor Was Cost-Blind - Fixed by Also Consulting Part-of-Speech, not Cost
+228	DEF	D-228 and D-230 are both reopened
+229	DEF	D-229 confirmed working on device
+230	DEF	D-228 and D-230 are both reopened
+231	DEF	D-231: Enter's Learned Touch Zone Capped Against Drifting Into Backspace, Mirroring D-109/D-133's
+232	DEF	D-232: D-230's "darfst"-Class Regression and D-228's IT-Vocabulary Gap Closed via Dictionary Data,
+233	DEF	D-233: `m`'s Learned Touch Zone Capped Against Drifting Into Backspace (Horizontal Axis); D-234
+234	CTX	**D-234**: user asked for a settings toggle disabling autocorrect generally (default on) - with the S-05
+235	DEF	D-235: Seeded Touch-Zone Spread No Longer Scales Against a Widened Key's Own Size; D-236: T-06
+236	CTX	**D-236**: while investigating the above, found (via a dedicated Explore pass) that the T-06 visualisation
+237	DEF	D-237: `CalibrationActivity` and `TouchModelActivity` Merged Into One Screen; the Reset Action No
+238	DEF	D-238: a Position-1 Suggestion Chip Closes D-234's Own Disclosed Gap - A-05 Split/A-06 Merge Now
+239	DEF	D-239: a Touch-Calibration Reset From `CalibrationActivity` Never Reliably Reached the Already-
+240	DEF	D-240: the S-05 Highlight Colour Moved From a Dark, Muted Tone to a Brighter, More Saturated One
+241	DEF	D-241: Confirmed the Brighter Green, Settled on a More Subdued Shade; D-242: the S-05 Highlight No
+242	CTX	**D-242**: the brighter colour made a second, pre-existing bug newly obvious - typing "Test" slowly, the
+243	DEF	D-243: Raw Touch Coordinates Now Feed the X-01 Diagnostic Log; D-244: "Ohren" -> "Ihren" Root-Caused
+244	CTX	for `## §142` or a `D-244` reference). History.md is explicitly append-only and never rewritten, so nothing
+245	DEF	D-245: A Mid-Word D-122 Split Chip's Own Trailing Space Silently Escaped D-29's Punctuation-Eating
+246	DEF	D-246: S-07 Next-Word Prediction Elevated by a Personal, Self-Growing Trigram Table
+247	DEF	D-247: A "Gelernt: X" Promotion Confirmation With Its Own Two-Zone Drag, Closing the Silent-Learning
+248	DEF	D-248: Backspacing Back Into a Recently-Learned Word Un-Teaches It
+249	DEF	D-249: Inseparable German Verb/Negation Prefixes Protected From A-05/D-122 Splitting
+250	DEF	D-250 - retune D-161's WindowInsets recheck from a single one-shot check to five checks, 500ms apart
+251	CTX	**D-251 - a rough, not-yet-refined plan: a word-end reclaim should not reopen the full suggestion/autocorrect
+252	DEF	D-252: "zuversichtlicher" -> "zuversichtlich er" Closed via Comparative/Superlative Recognition,
+253	DEF	D-253: A Blacklisted Word Could Silently Get Re-Learned by Ordinary Retyping
+254	DEF	D-254: The "Gelernt: X" Chip's "Vergessen" Zone No Longer Marks Pending-Blacklist
+255	DEF	D-255 Fixed; D-256/D-257/D-258/D-259 Captured: Five Real Device Logs Triaged
+256	DEF	D-255 Fixed; D-256/D-257/D-258/D-259 Captured: Five Real Device Logs Triaged
+257	DEF	D-255 Fixed; D-256/D-257/D-258/D-259 Captured: Five Real Device Logs Triaged
+258	DEF	D-255 Fixed; D-256/D-257/D-258/D-259 Captured: Five Real Device Logs Triaged
+259	DEF	D-255 Fixed; D-256/D-257/D-258/D-259 Captured: Five Real Device Logs Triaged
+260	DEF	D-260: The Space Key's Own Touch Zone Now Extends Into the Reclaimable Part of the Gesture Inset
+261	DEF	D-261 - the German feminine-agent-noun suffix `-in` must never be split off by A-05/D-122, mirroring
+262	DEF	D-262 - automatic space insertion after sentence punctuation, with a punctuation-run mode that lets
+263	DEF	D-263 - a real timing race in the A-05 retroactive-split pipeline
+264	DEF	D-264 remains open, explicitly deferred at the user's own request
+265	DEF	D-265 - A-07's post-commit undo window is destroyed by an accidental Enter (or any keystroke) instead of
+266	DEF	D-266 - two new clipboard-paste chip kinds, "Erste Zeile" and "Erster Code", alongside V-01's existing
+267	DEF	D-267: The Clear-Clipboard Button Moves From The Extra Row Into The Suggestion Bar
+268	DEF	D-268: A-05 Split Now Commits The Umlaut/ß-Restored Spelling, Not The Literal Typed One
+269	DEF	D-269: A Genuine Selection Now Overrides Every Special Mechanism; D-262's Punctuation-Run Fixed
+270	DEF	D-270: Three More A-12 Bugs Found From A Real Device Log - §188's Fix Was Incomplete
+271	DEF	D-271: a sentence-start-capitalised ordinary word was being learned in that capitalised spelling
+272	DEF	D-272: "natürlich" ranked behind "natürliche"/"natürlicher" in suggestions
+273	DEF	D-271/D-272/D-273: Three More Bugs From The §190 Device Test
+274	DEF	D-274: The D-161 Window-Insets Self-Heal Has Permanently Disagreed With D-260's Own Padding Split Since D-260 Shipped, Causing Sporadic Post-Open Jitter/Grow
+275	DEF	D-275: The D-161 Retry Chain Was Silently Dying On Its First Attempt, Explaining Why The Self-Heal Never Actually Caught Anything
+276	DEF	D-276: A-07's Undo Redesigned - Whitespace Consumed Before The Revert Fires, A Fixed Deletion Range Instead Of A Counter, And A Genuine Caret Move Now Discards The Window
+277	DEF	D-277: §195's Caret-Move Guard (suppressNextUndoClear) Broke A-07 Outright - Replaced With Ground-Truth Verification At The Point Of Use
+278	DEF	D-278: Export / Import Backup, Designed With The User First Then Built In Full
+279	DEF	D-279 device-confirmed
+280	DEF	D-281 follow-up - RESOLVED, all four languages now have real, hosted packs
+281	DEF	D-281 device-confirmed
+282	DEF	D-282 device-confirmed
+283	DEF	D-283: Minor Version Bump To 0.9.0, No Code Change
+284	DEF	D-284: A Key's Static Corner Hint Glyph Now Uppercases Under Shift/Caps Lock Too, Matching The Popup
+285	DEF	D-285: D-284 Follow-Up - ß No Longer Shows "SS", And ƒ (Like π) Stays Lower-Case Under Shift
+286	DEF	D-286: A-07's Own Revert Silently Broken For Every Ordinary Space-Delimited Commit, Traced From The "wird" Split Report's Second Half
+287	DEF	D-287: A-05/A-06/A-10 Silently Checked Every Token Against The English Dictionary Regardless Of The Active Language
+288	DEF	D-288: URL-Field Auto-Capitalisation At Field Entry, A Narrower Guard Than Its Own Established Sibling Condition
+289	DEF	D-289: B-03 Built - Proactive Hyphen-Compound Completion With Its Own Dedicated Undo
+291	DEF	D-291 - the hyphen-compound promotion threshold is too high
+292	DEF	D-292 - the Learned Words editor's per-entry dialog should allow fixing a casing mistake
+293	DEF	D-293/D-294: Learned Words Edit Dialog Redesigned Around The Casing Field, Plus A Real Gap It Surfaced
+294	DEF	D-293/D-294: Learned Words Edit Dialog Redesigned Around The Casing Field, Plus A Real Gap It Surfaced
+295	DEF	D-295: Learned Words / Blacklist Language Selector Now Defaults To The Keyboard's Own Active Language
+296	DEF	D-296: D-295 Confirmed; Learned Words' Copy/Save Buttons Made Square, Not Wide
+297	DEF	D-297 - "Mini KI aktivieren" (`d126_tier3_enabled`) removed entirely, folded into a new "Disabled" entry on
+298	DEF	D-298 - "Highlighting" (`c04_highlight_enabled`) removed entirely, folded into a new "No highlighting"
+299	DEF	D-299 - the rest, mechanical
+300	DEF	D-300: Two Further Settings Reorder Requests From §219's Own Round
+301	DEF	D-301: C-08 Per-Key Corner-Symbol Override Removed Entirely - Only The Per-Language Default Remains
+302	DEF	D-302: C-04 Highlight-Colour Preference Now Previews Each Choice As Its Own Text Colour
+303	DEF	D-303 Confirmed; D-304: Backup Export Now Follows The Settings Screen's Own Order And Never Carries The Diagnostics Toggle
+304	DEF	D-303 Confirmed; D-304: Backup Export Now Follows The Settings Screen's Own Order And Never Carries The Diagnostics Toggle
+305	DEF	D-305: The Flagged `k01_calibration_offered` TODO From §224 Actioned The Same Way As The Diagnostics Toggle
+306	DEF	D-402/D-306-followup/D-345: Dictionary Garbage Cleanup - 348 Noise Entries Removed
+307	DEF	D-307: Language-Pack Update Mechanism
+308	DEF	D-308: Language-Pack Updates Now Authoritatively Detected From The Archive Itself, Not Just This App's Own Compiled-In Hint
+309	DEF	D-309: The D-308 Version File Renamed `version.txt`, Dropping The Redundant `<code>` Suffix
+310	DEF	D-310: Every Language-Pack File Now Uses A Fixed Name In Its Own Per-Language Folder, Not A `_<code>` Suffix In One Shared Directory
+311	DEF	D-311: D-310's Legacy-Flat-File Cleanup Removed - No Longer Needed
+312	DEF	D-312/D-313: Two Shift-State Bugs - Rapid Double-Tap Losing To G-05, And A Caret Tap Into Existing Text Not Re-Deriving Shift
+313	DEF	D-312/D-313: Two Shift-State Bugs - Rapid Double-Tap Losing To G-05, And A Caret Tap Into Existing Text Not Re-Deriving Shift
+314	DEF	D-441 - RESOLVED (§413 + §415, v1.1.54): D-314's AZERTY geometry now has a real `dictionaries/fr/`
+315	DEF	D-315: Version Bumped To 1.0.0, A Milestone Marker - No Code Change
+316	DEF	D-316 Confirmed: Feature-Overview Screen Checked On Device
+317	DEF	D-317: Emoji Search, SwiftKey-Style ("poop" Finds 💩)
+318	DEF	D-318 Confirmed: Framed Action Icons + Query Chip Checked On Device
+319	DEF	D-319: Fixed a Real Regression - Suggestion Bar "Doubled" Whenever Autofill Inline Suggestions Were Left Over From a Previous Field
+320	DEF	D-320 Confirmed: Comma Parity and the Digit-Glue Decimal Case Both Checked On Device
+321	DEF	D-321: Real App Icon + F-Droid Store-Listing Icon - an "A" Keycap With the T-06 Touch-Zone Visualisation, Replacing the Placeholder Glyph
+322	DEF	D-322: Card Size Reverted 66x66 -> 46x46 - Real-Device Evidence Beat the Documented Safe Zone
+323	DEF	D-323: The D-319 "Doubled Bar" Bug Had a Second Half - suggestionRow Itself Never Collapsed When Autofill Took Over the Slot
+324	DEF	D-324/D-325: Root Cause Confirmed From a Real Log (an Unstable Autofill Responder in Signal), Debounced Instead of Content-Inspected
+325	DEF	D-324/D-325: Root Cause Confirmed From a Real Log (an Unstable Autofill Responder in Signal), Debounced Instead of Content-Inspected
+326	DEF	D-326 Confirmed: Signal's Clipboard Chip Now Stays Put, Closing the D-323..D-326 Suggestion-Bar/Autofill Saga
+327	DEF	D-327 Bigram/Trigram Context Learning Was Silently Skipped for Every Bundled Word in Canonical Casing; "mein kampf" Bundled Bigram Purged
+328	DEF	D-328 Early Typo Recovery: Neighbour-Substituted Prefix Completion Escalation
+329	DEF	D-329 German Language Pack Rebuilt and Version-Bumped - D-327's Fix Had Only Reached the Repo Source and the Runtime Purge, Not the Hosted Archive
+330	DEF	D-330-followup - RESOLVED by §304 (v1.0.57)
+331	DEF	D-331 Reverted Word Was Immediately Unlearned by the Next Backspace - maybeUnlearnOnBackspaceReturn (D-248) Fired on a Word Just Learned by performAutocorrectUndo
+332	DEF	D-332 "x" Was Not Treated as a Possible Unintended Separator - Both Over-Space Sets Hardcoded `c v b n m` Only
+333	DEF	D-333 Double-Tap Shift for Caps Lock Did Not Engage at a Sentence Start (Auto-Capitalisation Active)
+334	DEF	Language Pack Update Safety (D-334)
+335	DEF	Backspace-Shift Carry (D-335)
+336	DEF	Extended Letter Long-Press Popups (D-336)
+337	DEF	Caps-Lock Border Highlight (D-337)
+338	CTX	The double-tap word-start toggle (§264/D-338) worked for the first toggle but not for a repeated one: a
+339	DEF	D-339 Double-Tap Word Toggle: Repeated Toggle Did Not Work (composing Emptied After First Toggle)
+340	DEF	Backspace Hold — Slide-Off Continuation (D-340)
+341	DEF	Additional Long-Press `à`/`À` on the 'a' Key (D-341)
+342	DEF	German Dictionary — NOUN_OR_VERB Rework (D-342)
+343	DEF	Caps Lock Vibration — Direct Vibrator, Subtle Effect (D-343)
+344	DEF	D-344 (download directory control, spec §30) - RESOLVED, mechanism changed by D-413 (see below)
+345	DEF	D-345 (dictionary noise scan, spec §31) - RESOLVED by §301 (v1.0.54); the "Bri" loose end struck
+346	DEF	Fuzzy Search Loading Indicator in the Suggestion Bar (D-346)
+347	DEF	Gemini App — Cursor Nub Keeps Disappearing (D-347)
+348	DEF	Optional Double-Tap Backspace for Autocorrect Revert (D-348)
+350	DEF	D-350: The Nub-Drag Corruption Is Fixed - But Reactively Reclaiming Every Intermediate Drag Position Stalls the Gemini Field's Own Handle Tracking
+351	DEF	D-351-followup - CLOSED AGAIN (2026-09-03, no code change - not reproducible)
+352	DEF	D-352 - RESOLVED (§280 v1.0.37, §285 v1.0.41)
+353	DEF	D-353 - RESOLVED (§281 v1.0.38, §284 v1.0.40, part of §280 v1.0.37)
+354	DEF	D-354 - RESOLVED (§281 v1.0.38)
+355	DEF	D-355 - RESOLVED (2026-09-01, no code change - user confirmation)
+356	DEF	D-356 - RESOLVED, device-confirmed (§456, v1.2.16)
+357	DEF	D-357 - REOPENED then RESOLVED for real, device-confirmed (§449, v1.2.9)
+358	DEF	D-358 - RESOLVED (§289 v1.0.44)
+359	DEF	D-359 - RESOLVED (§289 v1.0.44)
+360	DEF	D-360 - WON'T FIX (2026-09-04, no code change - discussed and declined)
+361	DEF	D-361 - RESOLVED and device-confirmed (§391-§399, v1.1.30-v1.1.38); the retroactive-reinterpretation
+362	DEF	D-362 - RESOLVED (§338, v1.0.90)
+363	DEF	D-363 - WON'T FIX (2026-08-31, no code change - discussed and declined)
+364	DEF	D-364 - RESOLVED (§339, v1.0.91)
+365	DEF	D-365 - RESOLVED (§340, v1.0.92)
+366	DEF	D-366 - RESOLVED (§340, v1.0.92)
+367	DEF	D-367 - `"natu"` prefix-completion ranking needs several corrections
+368	DEF	D-368 (case-neutral homograph tagging) - COMPLETE, eight rounds done
+369	DEF	D-369 - RESOLVED (§374, v1.1.13)
+370	DEF	D-370 - RESOLVED for the actually-wanted core (§359, v1.0.111); the "more ambitious" half explicitly
+371	DEF	D-371 - RESOLVED (§351, v1.0.103)
+372	DEF	D-372 - RESOLVED (2026-09-01, no code change - already implemented)
+373	DEF	D-373 - RESOLVED (§356, v1.0.108)
+374	DEF	D-374 - RESOLVED by D-416 (§333)
+375	DEF	D-375 - RESOLVED (2026-08-31, no dedicated fix identified)
+376	DEF	D-376 - RESOLVED (§366, v1.1.5)
+377	DEF	D-377 - RESOLVED (§367, v1.1.6)
+378	DEF	D-378 - RESOLVED (§357, v1.0.109)
+379	DEF	D-379 - RESOLVED (§330, v1.0.82)
+380	DEF	D-380 - RESOLVED and device-confirmed (§403, v1.1.42)
+381	DEF	D-381 - RESOLVED, device-confirmed (2026-08-31, no code change)
+382	DEF	D-382 - RESOLVED (§330, v1.0.82)
+383	DEF	D-383 - RESOLVED (§389, v1.1.28)
+384	DEF	D-384 - WON'T FIX (2026-09-01, no code change - discussed and declined)
+385	DEF	D-385 - RESOLVED (2026-08-31 decision + §458/v1.2.18 implementation)
+386	DEF	D-386 - SUPERSEDED BY D-413 (2026-08-31, no version bump - a decision, not new code)
+387	DEF	D-387 - RESOLVED (§401 architecture + §402 data mechanism, v1.1.40 + v1.1.41)
+388	DEF	D-388 - RESOLVED (§291 v1.0.45)
+389	DEF	D-389 - RESOLVED (§344 v1.0.96 + §345 v1.0.97 + §347 v1.0.99 + §348 v1.0.100 + §349 v1.0.101)
+390	DEF	D-390 - WON'T FIX (2026-09-01, no code change - discussed and dropped)
+391	DEF	D-391 - RESOLVED (§454, v1.2.14)
+392	DEF	D-392 - RESOLVED (§353, v1.0.105)
+393	DEF	D-393 - RESOLVED (§390, v1.1.29)
+394	DEF	D-394 - RESOLVED, digit-mirror only (§330, v1.0.82)
+395	DEF	D-395 - WON'T FIX (2026-09-03, no code change - user's own root-cause correction)
+396	DEF	D-396 - RESOLVED and device-confirmed (§405-§409, v1.1.44-v1.1.48)
+397	DEF	D-397 - RESOLVED (§453, v1.2.13)
+398	DEF	D-398 - RESOLVED (§330, v1.0.82)
+399	DEF	D-399 - RESOLVED (§330, v1.0.82)
+400	DEF	D-400 - RESOLVED (§331, v1.0.83)
+401	DEF	D-401 - RESOLVED, implemented (§460, v1.2.20)
+402	DEF	D-306-followup/D-345/D-330-followup/D-367 - ALL COMPLETE (§301 v1.0.54 + §302 v1.0.55 + §303
+403	DEF	D-403 - RESOLVED (§280 v1.0.37, §289 v1.0.44, §325 v1.0.78)
+404	DEF	D-404 is now fully closed, all three tiers (§388 closed tier 2, the last one open)
+405	DEF	Auto-Caps Is A Position Property, Not An Event - Closing D-405's Predicted Live-Arming Gaps (D-406)
+406	DEF	Auto-Caps Is A Position Property, Not An Event - Closing D-405's Predicted Live-Arming Gaps (D-406)
+407	DEF	Autocorrect Confidence — A Unified, Graduated Measure Replacing Ad Hoc Gates (D-353/D-354/D-371/D-407)
+408	DEF	D-407/D-408/D-409 Device-Confirmed (No Code Change)
+409	DEF	D-407/D-408/D-409 Device-Confirmed (No Code Change)
+410	DEF	D-404-followup / D-410: German compound-forming-particle veto against a false split (A-05)
+411	DEF	D-411 Implemented: A Log-Scaled, Recency-Aware Boost For Learned Words' Live Suggestion Ranking
+412	DEF	D-412 - RESOLVED, fully closed (§305 schema, §306-§315 verb-tagging sweep, §320-§322 lemma
+413	DEF	D-344 (download directory control, spec §30) - RESOLVED, mechanism changed by D-413 (see below)
+414	DEF	RESOLVED (§337, v1.0.89) for the Reclaim half; the Cycle half explicitly shelved, not merely
+415	DEF	WON'T FIX (device-confirmed, 2026-09-01)
+416	DEF	RESOLVED (§333, see History.md for the full account)
+417	DEF	D-417: reorder the `2` key's popup - apostrophe ahead of the superscript
+418	DEF	OPEN, low priority, not started (2026-09-01)
+419	DEF	D-419 - RESOLVED (§346 v1.0.98 + §349 v1.0.101)
+420	DEF	D-420: an A-05 split at a sentence start now keeps its own capital
+421	DEF	D-421-followup
+422	DEF	D-422 - English "Wortfamilien" parity project - real POS tags, Wiktionary-sourced inflection forms, lemma-linking, for `app/src/main/assets/en/dict.tsv`
+423	DEF	D-423 - "daß" and the Swiss ss-spelling "Strasse" removed outright from `dict_de.tsv`, never blacklisted
+424	DEF	D-424 - Greek "Wortfamilien" parity project - real POS tags, Wiktionary-sourced inflection forms, lemma-linking, for `dictionaries/el/dict.tsv`
+425	DEF	D-425 - the 5,359 empty-POS `dict_el.tsv` rows flagged in §370 fixed, on explicit user request the same day
+426	DEF	D-426 - a real bug in §370/D-424's own Greek extraction, found via a follow-up "check for markup/noise like the German cleanup found" request, fixed at the root
+427	DEF	D-427 - `en/dict.tsv` LaTeX-markup noise cleanup, the same D-402-style follow-up that also surfaced §372/D-426's Greek bug
+428	DEF	D-428 - the V-04 clipboard-peek button flashed back visible for one render right after its own V-03 clear button emptied the clipboard
+429	DEF	D-429 - learned bigrams and trigrams now carry their own `last_touched` timestamp, and the recency boost D-411 already gives individual learned words now applies to them too
+430	DEF	D-430 - the Learned Words editor's per-entry dialog swaps its Save/Forget button roles
+431	DEF	D-431-followup closed - real device log confirmed the gate fix works, found a genuinely structural (non-bug) limitation, and caught a real performance regression the diagnostic round itself had introduced
+432	DEF	D-432 - applied D-431's same `hasObviousCandidate()` gate to `rawCoordinateSuggestion` (T-02/D-39's own live preview chip), for consistency
+433	DEF	D-433-followup (v5) - the last remaining gap: "Mehr erfahren" still sat flush left, not indented with the title/summary column above it
+434	CTX	D-434: the known-abbreviation list itself is the active language's own - not, as before this fix, always
+435	CTX	…enuine bug it was resting on first (D-435, §401): the umlaut/diacritic mechanism
+436	CTX	…ack (base letter -> known variants, D-436), loaded exactly like `hints.tsv`/
+437	CTX	pressed key's own bounds; D-380/D-437: a smear that *does* leave the key's own bounds (e.g. into the inter-
+438	CTX	D-438: recording a learned bigram (D-327) is not by itself enough to ever *see* it suggested - the candidate
+439	CTX	D-439) stay. Existing rows deliberately NOT migrated (display-only difference; W-01 fixes on demand).
+440	DEF	D-440 - RESOLVED and device-confirmed (2026-09-04, §411 display fix v1.1.50 + §412 commit fix
+441	DEF	RESOLVED (§413 + §415, v1.1.54): D-314's AZERTY geometry now has a real `dictionaries/fr/`
+442	DEF	D-442's own two-item backlog (frequency-correction + noise audit for `en/dict.tsv`, both named-but-not-started in Progress.md) - both closed in one round, data-only, no code change
+443	DEF	RESOLVED (§416, v1.1.55): first Spanish `dictionaries/es/` pack, built fully autonomously and
+444	DEF	D-444 (§417, v1.1.56): the POS-tagging source above (kaikki.org's Spanish
+445	DEF	D-445-followup: a conservative, rule-based Portuguese noun/adjective plural generator, plus a preposition-tagging audit across every non-German pack (clean) and a new mandatory Guide step for it
+446	DEF	D-446: first Italian language pack, second of the three-language (pt/it/nl) overnight one-shot round - full noun/verb/adjective Wortfamilien parity, unlike Portuguese's own verb-only scope
+447	DEF	D-447: first Dutch language pack, third and final of the pt/it/nl overnight one-shot round - a real, serious calibration bug found and fixed, the identical symptom-class French's own D-444-followup already taught this project to watch for
+448	DEF	D-448: first Polish language pack, first of a second two-language (pl/tr) autonomous round, requested only after checking every prerequisite was actually in place
+449	DEF	D-449-followup - Turkish's dotted/dotless İ/I capitalisation, closing the "still-open design question" named at the end of D-449 (§423/v1.1.62)
+450	DEF	D-450-followup - Cyrillic-vs-Cyrillic auto-detection, closing the Open TODO §441 first flagged
+451	DEF	RESOLVED (§448, v1.2.8)
+452	DEF	RESOLVED, device-confirmed by the user on 2026-09-08 (§477, v1.2.37) - including the long-token
+453	DEF	RESOLVED (§448, v1.2.8)
+454	DEF	RESOLVED (§447, v1.2.7)
+455	DEF	RESOLVED, device-confirmed (§450, v1.2.10)
+456	DEF	CLOSED, device-confirmed working (2026-09-08, no code change)
+457	DEF	RESOLVED, device-confirmed (§450 + §452 followup, v1.2.10/v1.2.12)
+458	DEF	RESOLVED, device-confirmed (§451, v1.2.11)
+459	DEF	WON'T FIX for now, deliberately deferred (2026-09-07, no code change)
+460	DEF	CLOSED, device-confirmed (2026-09-08); no dedicated fix was ever written, so the mechanism
+461	DEF	RESOLVED, device-confirmed (§478, v1.2.38; confirmed 2026-09-09)
+462	DEF	RESOLVED for the conservative scope (§483, v1.2.43), device-confirmed (2026-09-24); the wider
+463	DEF	D-463 device-confirmed (2026-09-09)
+464	DEF	RESOLVED (§479, v1.2.39)
+465	DEF	Prefix Lookup Is Index-Backed (D-465)
+466	DEF	D-466 - "zum gluck" autocorrected to "Gluck" instead of "Glück"; root-caused to a single bogus dictionary row, fixed by removing it, the correction mechanism itself left untouched
+467	DEF	RESOLVED, device-confirmed (§482, v1.2.42; confirmed 2026-09-17)
+468	DEF	RESOLVED, device-confirmed (§484, v1.2.44; confirmed 2026-09-17)
+469	DEF	D-469 device-confirmed (2026-09-12)
+470	DEF	D-469/D-470 - two independently-reported bugs closed in one round. D-469 (dictionary)
+471	DEF	D-471 - WON'T FIX, analysed and explicitly declined (2026-09-12), not guessed at
+472	DEF	D-472 - the emoji panel's own "return to keyboard" tab moved into the extra row, replacing the emoji button's own slot with it while the panel is showing. User's own explicit
+473	DEF	CLOSED IN FULL, all eight reported symptoms device-confirmed fixed (2026-09-17)
+474	DEF	Touch-Zone Learning Can Be Frozen (D-474)
+475	DEF	OPEN, not started (2026-09-20): the "clean fix" for the touch-zone learning signal - needs its
+476	DEF	FIXED and device-confirmed (§500, v1.2.60; confirmed 2026-09-24): `Drum` was tagged bare `NOUN` in
+477	DEF	FIXED and device-tested by the user (§498 v1.2.58 + §499 v1.2.59; confirmed 2026-09-20): the A-06/D-391
+478	DEF	RESOLVED (§501-§503, 2026-09-20; the recommendation below on (1) was overruled by the user)
+479	DEF	OPEN, idea only, deliberately not started (2026-09-20): use the spurious space's own tap position
+480	DEF	D-480 - `wer` was silently autocorrected to `der`; its German frequency raised (German data pack only)
+481	DEF	D-481 - release APK made acceptable to F-Droid's reproducible-build pipeline: no Google "Dependency metadata" signing block, no embedded git revision
+482	DEF	D-482 - R8 enabled for the release build at F-Droid maintainer linsui's request (MR 44142, "Enable r8")
+483	DEF	RESOLVED (§507, v1.2.67; reported 2026-09-28, device-confirmed 2026-09-28): the launcher label "AdaptKey Settings" is truncated and confusable
+484	DEF	RESOLVED (§507, v1.2.67; reported 2026-09-28, device-confirmed 2026-09-28): Settings sub-screens have no visible Back button
+485	DEF	RESOLVED (§507, v1.2.67; reported 2026-09-28, device-confirmed 2026-09-28): the calibration screen has no OK/Done button
+486	DEF	RESOLVED and fully closed (§508 - §510, v1.2.70): the keyboard sat a gesture-bar-height too high on a Chinese phone without gesture navigation - a three-position "room below the keyboard" slider (None / Navigation bar / Automatic) as the last Layout entry, an automatic three-button detection, and an inset line in the diagnostic log
+487	DEF	WITHDRAWN and closed (2026-09-28, §510; user confirmed the c06 look as final): the inline `DropDownPreference` prototype was rejected on the
+488	DEF	D-488 - blacklist confirmation chip + per-entry provenance + the no-mark rule for bundled-casing words; the reported "normal word ends up on the blacklist" class closed at the root
+489	DEF	RESOLVED (§512, v1.2.72): an intervening keystroke on another key (letter/space/delimiter/backspace/
+490	DEF	RESOLVED (§536, v1.2.96), device-confirmed 2026-10-31 ("sieht gut aus"): the D-348 double-tap-Backspace revert is the fresh-install default (on)
+491	DEF	RESOLVED (§513, v1.2.73), device-confirmed 2026-10-26: a manual Shift press (arm or deliberate
+492	DEF	D-492 - OPEN, reported 2026-10-23, root-caused by code reading (2026-10-23, refined same day with the
+493	DEF	RESOLVED (§529, v1.2.92), closed 2026-10-31 without its own code round: the reported "schmeißen" -> "sch Meißen" split at Medium was D-504's exact measured shape ("sch" 84 x "Meißen" 352 = 0.77 >= Medium's old 0.75), now pinned at exactly 0.0 silent confidence by the new split bar (either half below frequency 300 -> no silent split; `SplitEvaluationTest`), and device-confirmed by the user 2026-10-29 with this very word (the learned "schmeißen" entry forgotten first, retyped - stays whole, no split). The data half resolved alongside: `Meißen` (and `sch`) left `dict.tsv` in §529's cleanup as agreed; the schmeißen family itself stays absent - the word is an unknown token (escalation cost accepted, no everyday-word data round opened for it). See §529, spec A-05's D-504 addendum. -
+494	DEF	RESOLVED, device-confirmed (§513, v1.2.73; confirmed 2026-10-26): foreign-dictionary words (English
+495	DEF	D-495 - individual taps can never compose into a swipe any more; a swipe is now, by construction, one continuous single-pointer motion
+496	DEF	D-496 - review follow-ups to §513: five corrections to the D-489/D-491/D-494 code, found by a six-track review of the uncommitted tree
+497	DEF	RESOLVED (§518, v1.2.77)
+498	DEF	RESOLVED (§517, v1.2.76)
+499	DEF	RESOLVED (§516, v1.2.75)
+500	DEF	RESOLVED (§537, v1.2.97), device-confirmed 2026-10-31 ("funktioniert wunderbar"): the C-28 "Auto-capitalisation" switch (default on) directly above C-10 - the coarse, dumb gate mirroring the big keyboards' own toggles (Gboard/iOS/Samsung); off = no live Shift-arming anywhere and no linguistic force-capitalisation at the ordinary commit ("tisch"/"llm" commit as typed), with editor mandates, chips, split/merge/fusion, autocorrect (C-22) and all guards untouched
+501	DEF	RESOLVED as simplified (§527, v1.2.90; closed 2026-10-28 - on-device confirmation deliberately waived by the user): a Dark Theme that simply follows the system - no switch at all
+502	DEF	RESOLVED, device-confirmed (§521+§522, v1.2.81/v1.2.82; confirmed 2026-10-26): the G-01 language switch is now discoverable
+503	DEF	RESOLVED, device-confirmed (§524, v1.2.84; confirmed 2026-10-27): after a function word there is no
+504	DEF	RESOLVED (§529, v1.2.92), device-confirmed 2026-10-29: auto-split tuning - the A-05 split no longer scales with the autocorrect aggressiveness (own 0.90 bar + a 300 half floor make silent junk-half splits impossible) and the German dictionary lost its junk (4,033 rows dropped: uncommon proper nouns via the Wiktionary-noun + compound shields, fragments like "sch" itself, English strays; pack version 49). User device check: removed the learned "schmeißen", retyped it - stays whole, no split; the user closed the round on that basis, waiving the remaining §7 checklist items
+505	DEF	RESOLVED, end-to-end verified (§528, v1.2.91; implemented 2026-10-28, NOT yet device-confirmed): the whole language-pack import/seeding pipeline streams
+506	DEF	IMPLEMENTED (2026-10-29, same session as D-504's data half; rides the same 1.2.92/588 release; a static text, so "device confirmation" is a glance): a "packs are a base" notice on the language-packs screen, and the cleanup method moved into the contribution guide
+507	DEF	RESOLVED (§531-§532, v1.2.93), device-confirmed 2026-10-29: the bottom-row combined key's slot becomes one three-value setting (`CombinedKeyMode`: ?123 / Emoji / Off, default ?123; plain ListPreference, D-59's boolean migrated on load) - the emoji mode is the deliberate, redundant second emoji-panel entry point beside the extra-row button, and the panel always carries the extra row's return button. User device check: the setting renders correctly and all three modes behave - off hides the key, ?123 toggles, emoji shows the glyph and opens the panel (after §532's isHiddenKey fix, whose first attempt wrongly hid the key in the emoji mode too)
+508	DEF	RESOLVED (§534, v1.2.94), device-confirmed 2026-10-31: the gesture/long-press calibration for slow users - the community report's whole solution
+509	DEF	D-514 - the Alt-Belegungs-Reform - RESOLVED, device-confirmed (§538; v1.2.98-v1.2.104, versionCode 594-600; closed 2026-11-05: "Jetzt ist es perfekt")
+510	DEF	D-510 (v1.2.99, placement corrected v1.2.103/v1.2.104) - the popup geometry
+511	DEF	D-511 (v1.2.100) - the number row
+512	DEF	D-512 (v1.2.101) - the letters page
+513	DEF	D-513 (v1.2.102) - the hints data
+514	DEF	D-514 (rides v1.2.102, docs-only, no bump)
+515	DEF	IMPLEMENTED (§539, v1.2.105), NOT yet device-confirmed: the apostrophe key's opt-in for the non-English layouts (default off)
+516	DEF	G-09 glide-typing ("Gesteeneingabe"/Glide-Typing) - R3 (D-518, §542) OPEN as the community-feedback round since 2026-11-06
+517	DEF	D-517, R2: glide typing's complete first release - switch, stroke classification, commit path, live preview, pinned chip, trail
+518	DEF	D-518, R3 opened: the user's own verdict hands glide typing to the community; version scheme switches to 1.3.3+; the feature-overview page gains its afterword
+519	DEF	RESOLVED, device-confirmed (§543+§544+§545, v1.3.6; closed 2026-11-12: "Perfekt, so können wir das Thema abhaken"): the layout round - the tilde and the currency key on the special-characters page (region-resolved symbol, alternating top-10 popup, normal key paint), & on k and ^ under the 6, the apostrophe key's double-quote corner, and the confirmed popup placement (corner pair always centred over the host key, extras queueing outward right-first, one-sided on space exhaustion)
+520	DEF	RESOLVED, device-confirmed (§543+§544+§545, v1.3.6; closed 2026-11-12: "Perfekt, so können wir das Thema abhaken"): the layout round - the tilde and the currency key on the special-characters page (region-resolved symbol, alternating top-10 popup, normal key paint), & on k and ^ under the 6, the apostrophe key's double-quote corner, and the confirmed popup placement (corner pair always centred over the host key, extras queueing outward right-first, one-sided on space exhaustion)
+521	DEF	RESOLVED, device-confirmed (§543+§544+§545, v1.3.6; closed 2026-11-12: "Perfekt, so können wir das Thema abhaken"): the layout round - the tilde and the currency key on the special-characters page (region-resolved symbol, alternating top-10 popup, normal key paint), & on k and ^ under the 6, the apostrophe key's double-quote corner, and the confirmed popup placement (corner pair always centred over the host key, extras queueing outward right-first, one-sided on space exhaustion)
+522	DEF	RESOLVED, device-confirmed (§543+§544+§545, v1.3.6; closed 2026-11-12: "Perfekt, so können wir das Thema abhaken"): the layout round - the tilde and the currency key on the special-characters page (region-resolved symbol, alternating top-10 popup, normal key paint), & on k and ^ under the 6, the apostrophe key's double-quote corner, and the confirmed popup placement (corner pair always centred over the host key, extras queueing outward right-first, one-sided on space exhaustion)
+523	DEF	RESOLVED, device-confirmed (§543+§544+§545, v1.3.6; closed 2026-11-12: "Perfekt, so können wir das Thema abhaken"): the layout round - the tilde and the currency key on the special-characters page (region-resolved symbol, alternating top-10 popup, normal key paint), & on k and ^ under the 6, the apostrophe key's double-quote corner, and the confirmed popup placement (corner pair always centred over the host key, extras queueing outward right-first, one-sided on space exhaustion)
+524	DEF	RESOLVED, device-confirmed (§543+§544+§545, v1.3.6; closed 2026-11-12: "Perfekt, so können wir das Thema abhaken"): the layout round - the tilde and the currency key on the special-characters page (region-resolved symbol, alternating top-10 popup, normal key paint), & on k and ^ under the 6, the apostrophe key's double-quote corner, and the confirmed popup placement (corner pair always centred over the host key, extras queueing outward right-first, one-sided on space exhaustion)
+525	DEF	RESOLVED, device-confirmed (§543+§544+§545, v1.3.6; closed 2026-11-12: "Perfekt, so können wir das Thema abhaken"): the layout round - the tilde and the currency key on the special-characters page (region-resolved symbol, alternating top-10 popup, normal key paint), & on k and ^ under the 6, the apostrophe key's double-quote corner, and the confirmed popup placement (corner pair always centred over the host key, extras queueing outward right-first, one-sided on space exhaustion)
+526	DEF	RESOLVED, device-confirmed (§543+§544+§545, v1.3.6; closed 2026-11-12: "Perfekt, so können wir das Thema abhaken"): the layout round - the tilde and the currency key on the special-characters page (region-resolved symbol, alternating top-10 popup, normal key paint), & on k and ^ under the 6, the apostrophe key's double-quote corner, and the confirmed popup placement (corner pair always centred over the host key, extras queueing outward right-first, one-sided on space exhaustion)
+527	DEF	RESOLVED, device-confirmed (§543+§544+§545, v1.3.6; closed 2026-11-12: "Perfekt, so können wir das Thema abhaken"): the layout round - the tilde and the currency key on the special-characters page (region-resolved symbol, alternating top-10 popup, normal key paint), & on k and ^ under the 6, the apostrophe key's double-quote corner, and the confirmed popup placement (corner pair always centred over the host key, extras queueing outward right-first, one-sided on space exhaustion)
+528	DEF	D-528 - the rescue (gated parked press) + full drop diagnostics
+529	DEF	D-529 - identical suggestion-bar pushes skipped
+530	DEF	D-530 - one shared lookback read for the time/speed-unit triggers
+531	DEF	D-532/D-533/D-534 - IMPLEMENTED (§547+§548, v1.3.8/608 + v1.3.9/609) - D-531 DEVICE-CONFIRMED (2026-11-13: "die neuen Page-Swap-Buttons funktionieren wie gewünscht mit genau den Cycle", plus die korrekte Färbung der Währungstaste auf der Special-Keys-Page)
+532	DEF	D-532 (v1.3.9)
+533	DEF	D-533 (v1.3.9)
+534	DEF	D-534 (v1.3.9)
+535	DEF	D-536 - IMPLEMENTED (§549, v1.3.10/610) - D-535 IS THE PROVEN MULTI-TOUCH FIX (code-proven, device-side overlap repro pending), D-536 DEVICE-CONFIRMED (2026-11-13): the strand-the-active-press data-loss fix and the corrected glide commit model
+536	DEF	D-536 - the glide commit model, corrected as the user specified
+537	DEF	IMPLEMENTED (§550, v1.3.11/611) - SAFETY NET + OBSERVABILITY (inert under the healthy delivery the D-540 fix restored; the instrumentation is what cracked the broken round): the lost-touch-UP recovery and the touch-delivery instrumentation
+538	DEF	IMPLEMENTED (§551, v1.3.12/612) - SAFETY NET, inert under healthy delivery: unbuffered touch dispatch + recovery before cursor routing
+539	DEF	IMPLEMENTED (§552, v1.3.13/613) - SAFETY NET, inert under healthy delivery (the D-540/D-543 round confirmed healthy delivery on the affected device): the degraded-mode space fix
+540	DEF	IMPLEMENTED (§553, v1.3.14/614), DEVICE-CONFIRMED (2026-11-13: "Es geht endlich wieder" - every touch delivered, Space included; the broken round is closed)
+541	DEF	IMPLEMENTED (§554, v1.3.15/615) - DEVICE-CONFIRMED via the extended test log (2026-11-13): the extraRowToggle line shows pref/readback/settings/view all flipping correctly in both directions, and `playToggleSnapHaptic` fired - the toggle and the snap-in vibration work; the reported "Setting nicht gesetzt" was the second toggle's own off-state plus/or a stale settings screen (the androidx preference fragment does not re-read on resume). Glide typing DECLARED USABLE by the user ("hervorragend, erstmalig benutzbar") - word-boundary commit (D-536) confirmed working
+542	DEF	D-542: the R3 calibration finding from the first real glide log - the claim's passing radius was the gate, and the geometry is now personal (offset-compensated centres, geometric pitch scale)
+543	DEF	IMPLEMENTED (§556, v1.3.18/618) - DEVICE-CONFIRMED (2026-11-13: "das können wir jetzt so abschließen. Das hat funktioniert"): the settings screen live-syncs with the keyboard-side toggles (SharedPreferences listener in the settings fragment, onResume/onPause), and the stroke log lines carry the view's glide state (`glideOn=`/`fieldAllowed=`) for any future "greift mal nicht" repro - the paired extraRowToggle + begin/notClaimed lines name the failing hop. Spec §4's D-543 addendum. -
+544	DEF	IMPLEMENTED (§557, v1.3.19/619) - DEVICE-CONFIRMED (2026-11-18: "Gerätebestätigt. Das hat geklappt."): the dedicated apostrophe key's character is an ordinary word character
+545	DEF	IMPLEMENTED (§558, v1.3.20/620) - NOT yet device-confirmed: the German "jetzt" frequency recalibrated for the conversational register (1,499 -> 15,000, de pack 51 -> 52) after the user's "jet"/"jetz" report
+546	DEF	IMPLEMENTED (§559, v1.3.21/621) - NOT yet device-confirmed: the S-11 dual-casing chips take their candidate's own ranked slot while typing (in place, D-463's prediction shape), and the ranked-list exclusion is gone
+547	DEF	IMPLEMENTED (§560, v1.3.22/622) - NOT yet device-confirmed: a freshly learned entry for an already-bundled word is born with the bundled reading(s) plus its hint - the user's own design
+548	DEF	IMPLEMENTED (§561, v1.3.23/623) - DEVICE-CONFIRMED (2026-11-19: "Ole! Das ist behoben. Jetzt ist es wie gewünscht." - the confirmation rides on 1.3.23 and thereby covers the whole D-545..D-548 "jetzt" stack as installed): pinned ambiguous continuations expand into their casing pair at their own leading slot
+554	DEF	IMPLEMENTED (§562, v1.3.24/624) - NOT yet device-confirmed: the C-09-off letters surface gets its digits back by gesture - the §48 swipe-up reveals the number row together with the extra row
+555	DEF	IMPLEMENTED (§563, v1.3.25/625) - DEVICE-CONFIRMED (2026-11-19: "Perfekt. So läuft das. Verhält sich genau richtig." - the plan's §7 checklist passed): the dedicated bottom-row emoji key right of the `!?#` key (setting `d555_bottom_row_emoji_key`, default ON, hidden at runtime while C-27 puts the emoji mode in the combined key's own slot; width funded by the user's confirmed variant-A surplus rule - comma/period give up exactly their width above the letter floor, stored C-01 values never rewritten, the space bar untouched)
+556	DEF	IMPLEMENTED (§564, v1.3.26/626) - DEVICE-CONFIRMED (2026-11-19: "Ja, so passt das."): the C-02 re-sort delay defaults to 0 ms - the setting key renamed `c02_resort_delay_ms` -> `d556_resort_delay_ms`, deliberately resetting existing installations instead of migrating stored values
+557	DEF	IMPLEMENTED (§565, v1.3.27/627) - NOT yet device-confirmed: an A-03 foreign verdict no longer empties the suggestion bar - chips stay, only autocorrect stays held back
+558	DEF	IMPLEMENTED (§566, v1.3.28/628) - NOT yet device-confirmed: §6 rule 3 gains a competing- lowercase gate - "dur" no longer force-capitalises to "Dur" over the 25x more frequent "dir", and the S-06 verbatim/pending pair disappears for exactly those tokens

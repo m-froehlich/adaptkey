@@ -8,6 +8,7 @@ Guide to the subfolders of this directory. Detailed rules for a subfolder live i
 | `doc/arch/`     | Technical architecture documentation of the project (descriptive, current state). See the English-language convention below. |
 | `doc/recipes/` | Reusable recipes with a reference implementation ("convert X the way Y was converted"): steps, checklist, framework facts needed on the way, pitfalls. Not a description of the current system (that is `doc/arch/`) and no status tracking (that belongs in a plan in `doc/plan/`). A recipe can be removed once the work it describes is done everywhere. |
 | `doc/plan/`     | Design/implementation plans. Rules for filing, lifecycle and referencing: see `doc/plan/README.md`. (Medium-term, plan management is expected to move from this file-based folder to an MCP server; until then, the file-based convention applies.) |
+| `doc/books/`    | The three project books: `AdaptKey-Spec.md` (current feature set), `AdaptKey-Progress.md` (running status), `AdaptKey-History.md` (append-only decision journal) — plus `AdaptKey-Topics.md`, the `D-xxx` ↔ Kurzbezeichner decoder table. |
 | `doc/analysis/` | Analyses of concrete problems/proposals, sometimes with an implementation plan attached.     |
 | `doc/g2k/`      | "Good to know" — preserved debugging/research findings, not actively maintained, kept so the next investigation into the same area doesn't have to reconstruct them from scratch. |
 
