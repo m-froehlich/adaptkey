@@ -7,6 +7,12 @@ Originaltitel aus den Büchern (gekürzt) — sie führt per Strg+F zur vollstä
 
 Konventionen:
 
+- **Fehlentscheidung 2026-11-21, bewusst so belassen:** Die Erstbelegung der Kurzbezeichner geschah auf
+  Deutsch, obwohl die Bücher durchgängig Englisch sind — das war falsch. Aus Token-Budget-Gründen bleiben
+  die bestehenden deutschen Labels zunächst stehen; **neue Kurzbezeichner kommen ab sofort auf Englisch
+  hinzu** (wie die übrigen Bücher), und in Chat/Zitaten kann die deutsche Übersetzung mitgeliefert werden.
+  Eine spätere Durchziehung aller Labels auf Englisch ist dem Nutzer bekannt und geplant, wenn wieder
+  Token-Reserve da ist. Diese Zeile ist der Verweis für diese Fehlentscheidung.
 - Jede **neue** D-Nummer bekommt sofort hier eine Zeile mit Kurzbezeichner (gleicher Commit wie die
   Docs-Runde). Die nächstfreie Nummer steht am Dateiende.
 - Zeilen mit ↳ sind benannte Nachfolger-Themen (`D-xxx-followup` und Freunde), die in den Büchern
