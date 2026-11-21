@@ -26821,3 +26821,43 @@ withholds, no-competitor intact, rule 2 mandate and rule 1 explicit upper still 
 PendingPreviewTest +3 (competitor withholds the bare preview, no-competitor unchanged, a real
 replacement's preview not withheld). Version bump 1.3.27 -> 1.3.28 (versionCode 627 -> 628), edited
 before the build. Docs: spec section 6 D-558 addendum, Progress D-558 stub. NOT yet device-confirmed.
+
+## §567 - D-567: the English dictionary's two D-106 veto blockers removed - "mut"->"mit" and "dur"->"dir" can finally fire (data-only, de pack 52 -> 53, no app bump)
+
+Origin: the D-558 device test (2026-11-21). Its behavioural goals were green on the JVM and in the bar
+("mit" ranked first for "mut", "dur" stayed "dur" under the new competing-lowercase gate), but the two
+SILENT corrections "mut"->"mit" and "dur"->"dir" still never fired on the device. Root cause, traced not
+guessed: the D-106 foreign-language veto (`knownInOtherLanguage` -> `suppressAutocorrect`,
+AdaptKeyService) blocks both tokens, because the ENGLISH bundled dictionary knows the Rausch artefacts
+`mut` (frequency 4) and `Dur` (frequency 11, case-insensitively the same lock as the typed "dur") - the
+user's request to take the English dictionary "mal genauer unter die Lupe genommen" and widen the view
+beyond the noise words became plan `english-dictionary-quality.md`; this round is its M1 (the
+decided "M1 sofort einzeln" ship path).
+
+Data fix, nothing else: `app/src/main/assets/en/dict.tsv` lost the two artefact rows (`mut 4
+NOUN,OTHER`, `Dur 11 PROPER_NOUN`) - and, a find the first cut alone would have smuggled in as a
+quality-gate FAIL, the generated flexion `muts 2 NOUN,OTHER lemma=mut` (the merge_wiktionary.py
+Median-ratio plural step had minted it from the same artefact headword), which the removal orphaned;
+`dictionaries/quality_gate.py`'s orphaned-lemma check caught it immediately, so `muts` went too -
+116,248 -> 116,245 EN rows. On the German side the real noun `Dur` is recalibrated 501 -> 100 (below
+the 300 trustworthy floor, the D-504 convention), so its rule-3 capital form stops beating the
+adjacent-key reading "dir" 12,713 in confidence terms; `dictionaries/de/version.txt` 52 -> 53 and
+`language-packs/adaptkey-lang-de.zip` rebuilt, dict.tsv inside verified byte-identical to the repo
+source (build_zip.py-Präzedenz). German "dur" itself stays absent from de/dict.tsv (only `durs 10`), so
+the typed token remains an unknown one and the correction runs the forUnknownToken curve.
+
+Expected effect, measured over the real bundled data (the plan's own numbers, unchanged by this
+round's only further edits): at MEDIUM, "mut"->"mit" fires silently at 1,304x -> confidence 1.0, and
+"dur"->"dir" at 127x -> 0.78 >= 0.75 - while the D-558 competing-lowercase gate stays exactly as sharp
+as the device test calibrated it (0.78 also clears the 0.30 chip-offer bar, so a capital is withheld,
+not imposed; the Ohren-floored, `komplezz` and `ddr` calibration cases are untouched - neither consults
+these rows).
+
+Checks: quality gates on both cuts PASS (EN: 0 duplicates / 0 non-positive / 0 orphaned lemmas / 0
+bare-NOUN; DE: the same under `--capitalises-nouns`); the EN bundled confusables blacklist
+(`EnglishRules`: `ij iz iy ae ne`) anchors neither `mut` nor `Dur` - verified directly, so no
+blacklist-Notlösung dependency remains; the full suite is green with the new data (2,007 tests,
+0 failures). The DE gate's 479 pre-existing orphaned lemma links (`Jehovas`->`Jehova` and friends) are
+unchanged by this round and are the known D-504-era purge residue, not new debt. Device test pending
+(1.3.29 or the follow-up build, per the plan's ship path). Next: the plan's pruning core M2/M3/M11.
+

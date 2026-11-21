@@ -467,6 +467,16 @@ Confirmed real, deliberately not fixed yet - flagged here so a future session do
 them, and does not fix them silently without the user's own go-ahead first (this project's own rule for
 non-trivial changes).
 
+- **D-567 [EN-Veto-Blocker entfernt] - IMPLEMENTED (§567, data-only, de pack 52 -> 53, no app bump) - NOT yet device-confirmed: the
+  D-106 foreign-language veto no longer blocks the silent corrections "mut"->"mit" and "dur"->"dir" - the D-558 device test's missing
+  half.** Root cause: the ENGLISH bundled dictionary knew the Rausch artefacts `mut` (4) and `Dur` (11), so German-mode typing of
+  either token was `knownInOtherLanguage` -> `suppressAutocorrect` (AdaptKeyService) before any correction search. Data fix only:
+  `mut`/`Dur` removed from `app/src/main/assets/en/dict.tsv` plus the generated flexion `muts` (2, orphaned by the removal - caught by
+  `dictionaries/quality_gate.py`'s orphan check), 116,248 -> 116,245 rows; de `Dur` 501 -> 100 (below the 300 floor), de pack
+  `version.txt` 52 -> 53, `adaptkey-lang-de.zip` rebuilt and byte-verified. Effect at MEDIUM: "mut"->"mit" 1,304x -> 1.0 silent,
+  "dur"->"dir" 127x -> 0.78 >= 0.75 silent, and the D-558 gate keeps withholding a capital (0.78 >= 0.30 chip bar) exactly as the
+  device test calibrated it. Gates PASS on both cuts, EN confusables blacklist anchors neither token (checked), 2,007 tests green.
+  Plan `english-dictionary-quality.md`, round M1; the plan's pruning core (M2/M3/M11) follows.
 - **D-554 [Wisch-Hoch: Zahlenreihe + Extra-Reihe] - IMPLEMENTED (§562, v1.3.24/624) - NOT yet device-confirmed: the C-09-off letters surface gets
   its digits back by gesture - the §48 swipe-up reveals the number row together with the extra row.**
   User request (2026-11-19); the digits-as-Alt-Belegung alternative was rejected by the user themselves

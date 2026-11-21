@@ -53124,7 +53124,6 @@ overwrite	11	NOUN,VERB
 workarounds	11	NOUN,OTHER	workaround
 Besançon	11	PROPER_NOUN
 Mursili	11	PROPER_NOUN
-Dur	11	PROPER_NOUN
 apraxia	11	NOUN,OTHER
 trachea	11	NOUN,OTHER
 pseudorandom	11	OTHER
@@ -89825,7 +89824,6 @@ menaces	4	OTHER
 reloader	4	NOUN,OTHER
 Shaver	4	OTHER
 Teed	4	OTHER
-mut	4	NOUN,OTHER
 adventurism	4	NOUN,OTHER
 vindicating	4	VERB	vindicate
 Exilarch	4	OTHER
@@ -100983,7 +100981,6 @@ musts	2510	NOUN,OTHER	must
 mustaches	11	NOUN,OTHER	mustache
 musterings	2	NOUN,OTHER	muster
 musths	4	NOUN,OTHER	musth
-muts	2	NOUN,OTHER	mut
 mutables	7	NOUN,OTHER	mutable
 mutageneses	3	NOUN,OTHER	mutagenesis
 mutagenicities	2	NOUN,OTHER	mutagenicity
