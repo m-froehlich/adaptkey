@@ -480,6 +480,22 @@ non-trivial changes).
   (field-change close = strict coupling; reveal letters-surface-only; swipe-up on an already-open row
   still reveals; emoji round-trip preserves it); v1 without animation, `c09_summary` extended in values/
   + values-de only. `NumberRowRevealRoboTest` +5; 1,970 tests green.
+- **D-557 - IMPLEMENTED (§565, v1.3.27/627) - NOT yet device-confirmed: an A-03 foreign verdict no
+  longer empties the suggestion bar - chips stay, only autocorrect stays held back.** The user's report
+  ("Manchmal bekomme ich gar keine Chips mehr", reproduced in Google Keep: "Brot m" -> nothing, "Teile m" ->
+  nothing, "Brot u"/"Brot un" -> chips) decoded with the real bundled profiles on the JVM: the word plus
+  the next word's first letter is a two-"word" context the 30-profile classifier misreads as foreign for
+  37% of all first-letter combinations ("Brot m" as Czech, "Teile m" as Romanian, `Kaffee `/`Problem ` with
+  every letter), and `refreshSuggestions()` answered that verdict with `clearSuggestions()` - the sharpest
+  form of D-458's own "suppressing every suggestion" report. Fix per the user's direction (2026-11-21):
+  the verdict keeps doing A-03's actual job (autocorrect held back at commit, `finalizeAndCommit()`
+  untouched) and nothing else - the bar flows normally (completions, pinned continuations, repair chips);
+  the S-06 pending preview is the one chip that stays gated, degrading to the capitalisation-only preview
+  (`suggestion/PendingPreview`, the AmbiguousCasingPlacement precedent) so it never promises a rewrite the
+  commit side will not make. Known accepted trade-off: with the 30-profile pool, autocorrect is still
+  randomly held back on such short contexts (the user explicitly accepted this); narrowing the classifier
+  pool to installed languages (37% -> 6% measured) remains a possible follow-up. `PendingPreviewTest` +5;
+  1,994 tests green; `:app:assembleRelease` green.
 - **D-555 - IMPLEMENTED (§563, v1.3.25/625) - DEVICE-CONFIRMED (2026-11-19: "Perfekt. So läuft
   das. Verhält sich genau richtig." - the plan's §7 checklist passed): the dedicated bottom-row
   emoji key right of the `!?#` key (setting `d555_bottom_row_emoji_key`, default ON, hidden at

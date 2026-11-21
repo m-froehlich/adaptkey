@@ -1888,6 +1888,18 @@ field onward. A real device log confirmed this genuinely confuses the classifier
 an otherwise perfectly ordinary short second word as foreign, suppressing every suggestion for it - fixed at
 both call sites that build this string.
 
+D-557: the verdict's reach is narrowed to what A-03 always meant. Holding autocorrect back at commit time
+stays (that is "leave the text as typed"); emptying the suggestion bar on the same verdict is gone - chips
+are display-only and can never rewrite text, so a foreign context now shows the ordinary completions, pinned
+continuations and repair chips as usual (the user's decision: it does not matter if autocorrect misses in
+such a context, but the chips must be unimpressed by it). The one chip that promises a rewrite stays gated:
+the S-06 pending preview degrades to the capitalisation-only preview under a foreign verdict, so the bar
+never promises a correction the commit side will not make. The narrowing also closes the sharpest form of
+the D-458 report: the verdict itself is noisy on short samples - a word plus the next word's first letter is
+already a two-"word" context the 30-profile bundle misreads as foreign for 37% of all letter combinations
+(measured: "Brot m" as Czech, "Teile m" as Romanian, `Kaffee `/`Problem ` with every first letter) - and
+that used to read as "sometimes no chips at all".
+
 ### A-04 - Blacklist for Unwanted Words
 Words can be permanently excluded from suggestions and autocorrect. The blacklist is persisted in SQLite and
 survives app updates, with a category distinction between a bundled entry and a user-added one. A small

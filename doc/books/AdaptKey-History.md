@@ -25734,3 +25734,37 @@ and survives the scrub), `SuggestionConfigTest`'s default assertion 300 -> 0. 1,
 DEVICE-CONFIRMED (2026-11-19: "Ja, so passt das."): the immediate re-sort behaves as the user expects on the
 device - the previous late jump is gone, and the round is closed as implemented. No plan document existed for
 this single-default change; nothing to move to done/.
+
+## §565 - D-557: an A-03 foreign verdict no longer empties the suggestion bar - chips stay, only autocorrect stays held back (v1.3.26 -> v1.3.27, versionCode 626 -> 627)
+
+The user's report (2026-11-21): "Manchmal bekomme ich gar keine Chips mehr" - reproduced in Google Keep with
+"Brot m" (nothing) and "Teile m" (nothing) against "Brot u"/"Brot un" (chips). Root-caused on the JVM with the
+real bundled profiles and classifier: typing a word plus the next word's first letter turns the A-03 context
+into a two-"word" sample (minWords=2 satisfied) of ~6 letters, and the 30-profile out-of-place classification
+fires foreign for 37% of all first-letter combinations across 20 everyday words x 26 letters ("Brot m" won by
+Czech, "Teile m" by Romanian, Kaffee /Problem  with every single letter; 56% at two letters). The verdict
+itself is statistical noise on samples that short - and efreshSuggestions() answered it with
+clearSuggestions(), wiping the whole bar: the sharpest form of D-458's own "suppressing every suggestion"
+report, which that round had fixed at the input-string level without touching the consequence. The
+false-fire rate also explains "manchmal ... mehr": the D-450-followup profile expansion (8 -> 25/30 languages,
+isForeign = "the best of N-1 non-German profiles beats German by >= 15%") made every added profile another
+lottery ticket - the same sweep measures 25% with the old 8-profile bundle.
+
+The fix follows the user's direction (2026-11-21: "die Chips duerfen doch trotzdem kommen ... es stoert mich
+gar nicht, wenn mal aus solchen Gruenden keine Auto-Korrektur anschlaegt"): A-03's verdict keeps its actual
+job - holding autocorrect back at commit time, inalizeAndCommit()'s own gate untouched - and nothing else.
+The gate in efreshSuggestions() no longer clears the bar; completions, pinned continuations and repair
+chips flow normally in a foreign context. The S-06 pending preview is the one chip that promises a rewrite,
+so it stays gated: under a foreign verdict it degrades to the capitalisation-only preview (the one change
+commit still applies unconditionally there - A-03 never gated section-6 capitalisation), never to the
+background search's autocorrect replacement. That rule lives in the new pure suggestion/PendingPreview
+(the AmbiguousCasingPlacement precedent); the deferred pass is unchanged and keeps supplying the expanded
+chip list, whose pendingCorrectionCandidate half is simply never shown in that context (the same background
+cost every ordinary token already pays).
+
+Tests: PendingPreviewTest +5 (ordinary replacement preview, capitalisation-only fallback, the foreign
+replacement-ignore pin, foreign capitalisation preview kept, identical-preview null). 1,994 tests total
+(1,989 + 5), 0 failures; :app:assembleRelease green. No dictionary data change. Accepted residual (the
+user's explicit call): autocorrect is still randomly held back on such short contexts while the classifier
+pool spans all 30 bundled languages; narrowing the pool to installed languages (measured: 37% -> 6%, the
+residue routing to English instead of wiping anything) stays a possible follow-up. NOT yet device-confirmed.

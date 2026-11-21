@@ -155,6 +155,7 @@ import de.froehlichmedia.adaptkey.suggestion.ClipboardExtraction
 import de.froehlichmedia.adaptkey.suggestion.ClipboardPreview
 import de.froehlichmedia.adaptkey.suggestion.KeyboardProximityRegistry
 import de.froehlichmedia.adaptkey.suggestion.MissedBackspaceRecovery
+import de.froehlichmedia.adaptkey.suggestion.PendingPreview
 import de.froehlichmedia.adaptkey.suggestion.RawCoordinateCorrection
 import de.froehlichmedia.adaptkey.suggestion.SuggestionBarView
 import de.froehlichmedia.adaptkey.suggestion.SuggestionConfig
@@ -7049,15 +7050,27 @@ class AdaptKeyService : InputMethodService() {
             clearSuggestions()
             return
         }
-        // A-03: pick the dictionary for the recent context; an unsupported foreign context shows nothing.
-        // D-458: tokenContextBefore is real document text, already ending in whatever real whitespace
-        // precedes the caret - concatenated with no separator of its own added (see finalizeAndCommit()'s
-        // own identical call site for the full history of why an extra space here was a real, confirmed bug).
+        // A-03: pick the dictionary for the recent context; a confidently foreign context holds autocorrect
+        // back - and, since D-557, nothing else. D-458: tokenContextBefore is real document text, already
+        // ending in whatever real whitespace precedes the caret - concatenated with no separator of its own
+        // added (see finalizeAndCommit()'s own identical call site for the full history of why an extra
+        // space here was a real, confirmed bug).
         val activeDict = selectActiveDictionary("$tokenContextBefore$input")
-        if (activeDict.suppressAutocorrect) {
-            clearSuggestions()
-            return
-        }
+        // D-557: the foreign verdict no longer empties the suggestion bar. Chips are display-only - they
+        // can never rewrite text - so A-03's own purpose ("leave the text as typed") is fully served by
+        // holding autocorrect back at commit time (finalizeAndCommit()'s own gate, untouched), and the old
+        // clearSuggestions() here was a disproportionate consequence of the same verdict. The verdict is
+        // also statistically noisy on short contexts: a word plus one or two typed letters is a
+        // two-"word" sample the classifier can misread as foreign (measured with the 30-profile bundle
+        // across 20 everyday words x 26 first letters: 37% of word+first-letter contexts fire, e.g.
+        // "Brot m" as Czech, "Teile m" as Romanian - D-458's own "suppressing every suggestion" report in
+        // its sharpest form: the user typed a word, then the next word's first letter, and got an empty
+        // bar). The one chip that DOES promise a rewrite is the S-06 pending preview below, which stays
+        // gated on [foreignContext]: it may only ever show what commit will actually apply, and commit
+        // holds autocorrect back in exactly this context. The deferred pass still runs (its expanded chip
+        // list is wanted here too); its own pendingCorrectionCandidate result simply never reaches the
+        // preview - the same background cost every ordinary token already pays.
+        val foreignContext = activeDict.suppressAutocorrect
         // D-153: provider.suggestionsFor() runs several uncached dictionary lookups per call (a prefix
         // scan, fuzzy-neighbour edit-distance search, and conditionally a compound-split attempt - see its
         // own KDoc, which already names D-138's exact lesson) and grew heavier still after D-138 shipped
@@ -7247,8 +7260,12 @@ class AdaptKeyService : InputMethodService() {
             // only the autocorrectFor/diacritic-fold path (cost-0 within it, so already covered) and not the
             // rarer raw-coordinate-correction fallback, which needs the real composing taps/geometry and
             // isn't worth computing on every keystroke just for this preview.
-            val capitalizedPreview = capitalisation.capitalise(precomputedPendingCandidate ?: input, contextFor(input))
-            capitalizedPreview.takeIf { it != input }
+            // D-557: under a foreign verdict the background replacement is ignored (see the gate above) -
+            // the preview then promises only the capitalisation-only change, the one thing commit still
+            // applies unconditionally in that context. Pure policy in suggestion/PendingPreview.
+            PendingPreview.resolve(input, precomputedPendingCandidate, foreignContext) {
+                capitalisation.capitalise(it, contextFor(input))
+            }
         }
         val pendingMs = SystemClock.uptimeMillis() - pendingStartedAt
         diag(
