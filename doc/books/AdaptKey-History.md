@@ -26895,4 +26895,53 @@ JetztRankingEvaluationTest). The EN top-25 is now a pure function-word list: the
 as, was, for, by, that, with, on, from, his, are, it, an, at, he, or, which, be, were, this. M9's
 regression test will pin that shape.
 
+## §569 - D-569: the DE<->EN overlap sweep - 346 German-corpus rows leave the English dictionary, the D-106 veto's victim census drops from 380 to the reviewed 57-word whitelist (data-only, no bump)
+
+The plan's M3, the largest veto-victim cure: every English dictionary entry with EN frequency <= 20
+whose lowercased surface is a real, frequent German word (de frequency >= 300, the decided §4-2
+thresholds) kills the silent autocorrect path for that exact token in German texts
+(`knownInOtherLanguage` -> `suppressAutocorrect`). The generator (`scratchpad/d569_m3_review.py`,
+census retained in `scratchpad/d569_m3_candidates.txt`) found 380 victims on the post-M2 state - the
+plan's own §1.3 estimate was 381 on the pre-M2 one; `eine` (de 171,332 / EN 12), `ist` (169,180/16),
+`Sich` (159,213/10), `nach` (113,028/14), `bei` (98,600/17), `durch` (94,303/6), `nicht` (88,147/16),
+`dir` (12,713/14, the D-558 companion), `Stadt`, `Kann`, `sein`, `Zeit`, `Drei`, `Ende`, `Dort`,
+`OHNE` and 350 more.
+
+Review, word by word, per the whitelist discipline. Kept (57): genuine English words, for which the
+veto's suppression is its CORRECT behaviour whenever an English loanword is typed inside German text -
+`spiel` (11), `mutter` (6, the English verb!), `gab` (7), `sag` (20), `rad` (20), `bier` (13, the
+English coffin stand), `krone` (18, the Danish currency), `zar`, `alb`, `ort`, `Hanse`, `Koran`,
+`Casanova`, `Lieder` (the English music term), `Sten` (the gun), `Praxis`/`Grad`/`Grads`/`Ersatz`
+(each the dictionary's only representation of a real borrowed English word), the English inflections
+`bares`/`barer`/`golds`/`autos`/`hamburgers`/`Frankfurters`/`Henrys`, the English acronyms
+`MFs`/`EPOs`/`GG`/`JH`/`SEP`/`KAP`/`BIP`/`HSV`/`Apr`/`Wm`, the English terms `orf` (sheep disease)
+and `Gar` (the fish), and the English-verbatim German place names English texts themselves use
+(`Zug`, `Saarland`, `Saale`, `Neckar`, `Lippe`, `Minden`, `Fulda`, `Duisburg`, `Koblenz`,
+`Bielefeld`, `Schwerin`, `Siegen`, `Erlangen`, `Schweinfurt`, `Konstanz`, `Altenburg`, `Tempelhof`,
+`Neustadt`, `Taunus`) - the M11 keep-class cities/regions, consistent. Removed (323): everything else
+- the German function words, the German-only proper spellings (Schweiz, Kuba, Italien, Kanada,
+Amerika, Donau, Athen, Hessen, Westfalen, Niedersachsen, Vorpommern, Franken, Krim, Schwarzwald),
+the German admin/common compounds (Landkreis, Regierungsbezirk, Bahnhof, Altstadt, Innenstadt,
+Kaserne, Marktplatz, Bundeswehr, Bundesstrasse(n), Bundesautobahn, Gouverneur, ...), and all 34
+encoding-damaged mojibake rows of the same leakage (Gro▀e, M³nchen, Lõnder, R÷mer, Gr³nen, ─mter,
+Beitrõge, km▓, m▓, ...) - the plan's mojibake class, caught here wholesale.
+
+Two mechanical guards did real work: per-line uniqueness before every cut, and a dangling-lemma check
+that converted into a transitive rule - 23 generated dependents of removed rows (`ists`, `seins`,
+`dirs`, `sied`/`sies`/`sying`, `mussed`/`musses`/`mussing`, `Abiturs`, `Nordens`, `Zuckers`, and the
+mojibake genitives/plurals) joined the removal, since a survivor lemma-linking into a removed row
+would be a fresh quality-gate FAIL. The marginal real-English forms among them (`mussed`/`musses`/
+`mussing` of the English verb "muss", whose base row died with the German homograph; the neopronoun
+"sie" family) are accepted losses, documented here. Above-threshold leakage stays by the decided
+threshold: `und` (217), `Das` (151), `Dar` (127), `der` (778) are EN-freq > 20 and out of this
+sweep's scope - a named, accepted residual, revisit only if a future threshold decision widens it.
+
+Result: `app/src/main/assets/en/dict.tsv` 116,192 -> 115,846 rows; the victim census re-run returns
+exactly the 57 whitelist words (the "0" of the plan's success metric is reached in its meaningful
+reading: no EN Rauschen remains - every surviving victim is a genuine English word the veto is
+supposed to protect in German text); quality gate PASS; the real-data test subset green
+(BundledDictionaryDataTest, FusionEvaluationTest, SplitEvaluationTest, JetztRankingEvaluationTest).
+The full veto-victim cure for other installed languages' typing inherits this automatically - every
+G-01 language vetoes against this same English dictionary.
+
 

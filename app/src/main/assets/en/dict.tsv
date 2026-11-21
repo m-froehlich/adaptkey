@@ -38118,7 +38118,6 @@ cafeteria	20	NOUN,OTHER
 appreciating	20	NOUN,VERB	appreciate
 palaeontology	20	OTHER
 pragmatics	20	NOUN,OTHER	pragmatic
-Kunst	20	PROPER_NOUN
 Negara	20	PROPER_NOUN
 counterinsurgency	20	NOUN,OTHER
 Oldowan	20	NOUN,PROPER_NOUN
@@ -38343,7 +38342,6 @@ mummies	20	NOUN,VERB	mummy
 curative	20	NOUN,OTHER
 Agnetha	20	PROPER_NOUN
 synthesisers	20	NOUN,OTHER	synthesiser
-Zeit	20	PROPER_NOUN
 Pia	20	PROPER_NOUN
 Kristen	20	PROPER_NOUN
 unsurpassed	20	OTHER
@@ -38406,7 +38404,6 @@ Abercrombie	20	PROPER_NOUN
 Whitehaven	20	PROPER_NOUN
 Geraldine	20	PROPER_NOUN
 senatus	20	OTHER
-Römer	20	PROPER_NOUN
 Poussin	20	PROPER_NOUN
 Poudre	20	PROPER_NOUN
 glosses	20	NOUN,VERB	gloss
@@ -39020,7 +39017,6 @@ Scholasticus	20	PROPER_NOUN
 Bagpuss	20	PROPER_NOUN
 Zaporozhian	20	NOUN,PROPER_NOUN
 kamikazes	20	NOUN,VERB	kamikaze
-MRD	20	NOUN,PROPER_NOUN
 Enda	20	PROPER_NOUN
 Chaney	20	PROPER_NOUN
 fasts	20	NOUN,VERB	fast
@@ -39143,7 +39139,6 @@ attentions	19	NOUN,OTHER	attention
 unhindered	19	OTHER
 dearest	19	NOUN,ADJECTIVE	dear
 drifts	19	NOUN,VERB	drift
-Staatliche	19	PROPER_NOUN
 stelae	19	OTHER
 obliquely	19	OTHER
 Fabre	19	PROPER_NOUN
@@ -39405,7 +39400,6 @@ wiping	19	NOUN,VERB	wipe
 waterfowl	19	NOUN,OTHER
 wadis	19	OTHER
 pylon	19	NOUN,OTHER
-Projekt	19	PROPER_NOUN
 belatedly	19	OTHER
 Ealing	19	PROPER_NOUN
 Shriver	19	PROPER_NOUN
@@ -39744,7 +39738,6 @@ thruster	19	NOUN,OTHER
 septic	19	NOUN,OTHER
 Hideki	19	PROPER_NOUN
 captors	19	NOUN,OTHER	captor
-Frei	19	PROPER_NOUN
 recommenced	19	OTHER
 Lokasenna	19	PROPER_NOUN
 Danorum	19	PROPER_NOUN
@@ -39833,7 +39826,6 @@ outpouring	19	NOUN,OTHER
 laborious	19	OTHER
 Meyerhold	19	PROPER_NOUN
 savagery	19	NOUN,OTHER
-Mitte	19	OTHER
 heralding	19	NOUN,OTHER
 Glaser	19	PROPER_NOUN
 Raitt	19	PROPER_NOUN
@@ -39915,7 +39907,6 @@ Stroll	19	OTHER
 Godavari	19	PROPER_NOUN
 Cybercrime	19	OTHER
 GER	19	OTHER
-Stadt	19	PROPER_NOUN
 asylums	19	NOUN,VERB	asylum
 Gracchus	19	PROPER_NOUN
 eject	19	NOUN,VERB
@@ -39930,12 +39921,10 @@ Grosse	19	PROPER_NOUN
 shawl	19	NOUN,VERB
 Kedah	19	PROPER_NOUN
 matchlock	19	NOUN,OTHER
-Länder	19	PROPER_NOUN
 nematode	19	NOUN,OTHER
 AIF	19	PROPER_NOUN
 stirrup	19	NOUN,OTHER
 Moche	19	NOUN,PROPER_NOUN
-zum	19	OTHER
 halter	19	NOUN,VERB
 QWSTION	19	PROPER_NOUN
 Aboukir	19	PROPER_NOUN
@@ -40158,7 +40147,6 @@ BRP	19	NOUN,PROPER_NOUN
 Braden	19	PROPER_NOUN
 Balsall	19	PROPER_NOUN
 Hankel	19	PROPER_NOUN
-Strom	19	PROPER_NOUN
 Thurmond	19	PROPER_NOUN
 putty	19	NOUN,VERB
 Borzoi	19	OTHER
@@ -40240,7 +40228,6 @@ Toyotomi	19	PROPER_NOUN
 Taishō	19	PROPER_NOUN
 Maududi	19	PROPER_NOUN
 Murmansk	19	PROPER_NOUN
-Licht	19	PROPER_NOUN
 crannogs	19	NOUN,OTHER	crannog
 Kittyhawk	19	PROPER_NOUN
 RNZAF	19	PROPER_NOUN
@@ -40577,8 +40564,6 @@ Marv	18	PROPER_NOUN
 esque	18	OTHER
 Texan	18	NOUN,PROPER_NOUN
 abated	18	VERB	abate
-München	18	PROPER_NOUN
-Heer	18	PROPER_NOUN
 Xaver	18	PROPER_NOUN
 alibi	18	NOUN,VERB
 fennel	18	NOUN,OTHER
@@ -40612,7 +40597,6 @@ tumours	18	NOUN,OTHER	tumour
 volition	18	NOUN,OTHER
 Schütz	18	PROPER_NOUN
 Marxian	18	NOUN,PROPER_NOUN
-Sankt	18	PROPER_NOUN
 Korn	18	PROPER_NOUN
 insemination	18	NOUN,OTHER
 anoint	18	VERB
@@ -40733,7 +40717,6 @@ Gebhard	18	PROPER_NOUN
 Carmelite	18	NOUN,PROPER_NOUN
 Remonstrants	18	NOUN,PROPER_NOUN	Remonstrant
 Dordrecht	18	PROPER_NOUN
-Dort	18	OTHER
 semicircular	18	OTHER
 Cassino	18	PROPER_NOUN
 oblong	18	NOUN,VERB
@@ -40812,8 +40795,6 @@ blurry	18	ADJECTIVE
 stoning	18	NOUN,VERB	stone
 proverbial	18	NOUN,OTHER
 Gundobad	18	PROPER_NOUN
-studium	18	OTHER
-Große	18	OTHER
 Managua	18	PROPER_NOUN
 impostor	18	NOUN,OTHER
 atone	18	VERB
@@ -40875,7 +40856,6 @@ fivefold	18	OTHER
 pyrophosphate	18	NOUN,OTHER
 anthracis	18	OTHER
 cephalosporins	18	OTHER
-Farben	18	PROPER_NOUN
 antisense	18	NOUN,OTHER
 motility	18	NOUN,OTHER
 falsify	18	VERB
@@ -40991,7 +40971,6 @@ Chainmail	18	OTHER
 bayonets	18	NOUN,VERB	bayonet
 zither	18	NOUN,VERB
 outperforming	18	VERB	outperform
-nie	18	OTHER
 Wm	18	OTHER
 Bournemouth	18	PROPER_NOUN
 Ashburton	18	PROPER_NOUN
@@ -41105,7 +41084,6 @@ ossification	18	NOUN,OTHER
 extremophile	18	NOUN,OTHER
 Donner	18	PROPER_NOUN
 flutter	18	NOUN,VERB
-Brücke	18	PROPER_NOUN
 clump	18	NOUN,VERB
 priors	18	NOUN,OTHER	prior
 Prout	18	PROPER_NOUN
@@ -41173,7 +41151,6 @@ dharmas	18	NOUN,OTHER	dharma
 Shakyamuni	18	PROPER_NOUN
 Agata	18	PROPER_NOUN
 mandala	18	NOUN,OTHER
-Maler	18	PROPER_NOUN
 Erica	18	PROPER_NOUN
 immanence	18	NOUN,OTHER
 Tufts	18	OTHER
@@ -41288,7 +41265,6 @@ Jiangxi	18	PROPER_NOUN
 Gedi	18	PROPER_NOUN
 Maul	18	OTHER
 contagion	18	NOUN,OTHER
-Leipziger	18	NOUN,PROPER_NOUN
 SLD	18	NOUN,PROPER_NOUN
 Sadr	18	PROPER_NOUN
 Madrasa	18	OTHER
@@ -41372,7 +41348,6 @@ kluge	18	NOUN,VERB
 endpin	18	NOUN,OTHER
 Kol	18	NOUN,OTHER
 Aruch	18	PROPER_NOUN
-Kaufmann	18	PROPER_NOUN
 Leibnizian	18	PROPER_NOUN
 Feller	18	PROPER_NOUN
 Pappas	18	PROPER_NOUN
@@ -41622,7 +41597,6 @@ bobcats	17	NOUN,OTHER	bobcat
 Lethbridge	17	PROPER_NOUN
 burnings	17	NOUN,OTHER	burn
 Szilárd	17	PROPER_NOUN
-Bund	17	OTHER
 Nana	17	PROPER_NOUN
 Babrak	17	PROPER_NOUN
 surpasses	17	VERB	surpass
@@ -41671,13 +41645,11 @@ crayon	17	NOUN,VERB
 Fumio	17	PROPER_NOUN
 poppies	17	NOUN,OTHER	poppy
 Naughty	17	OTHER
-Tod	17	PROPER_NOUN
 Wyman	17	PROPER_NOUN
 Rainier	17	NOUN,OTHER
 Dern	17	PROPER_NOUN
 Llanos	17	OTHER
 Unger	17	PROPER_NOUN
-Verlag	17	PROPER_NOUN
 Nepomuk	17	PROPER_NOUN
 Aëtius	17	PROPER_NOUN
 choked	17	VERB	choke
@@ -41700,7 +41672,6 @@ partnering	17	NOUN,VERB	partner
 unpowered	17	OTHER
 displaces	17	VERB	displace
 nobelium	17	OTHER
-bei	17	OTHER
 onlookers	17	OTHER
 Brantford	17	PROPER_NOUN
 hyphenated	17	OTHER
@@ -41963,7 +41934,6 @@ prelate	17	NOUN,VERB
 thenceforth	17	OTHER
 Yeomen	17	OTHER
 instructive	17	NOUN,OTHER
-Vogel	17	PROPER_NOUN
 Ralston	17	PROPER_NOUN
 rove	17	NOUN,VERB
 supremely	17	OTHER
@@ -42206,7 +42176,6 @@ pheasant	17	NOUN,OTHER
 earthenware	17	NOUN,OTHER
 Colby	17	NOUN,PROPER_NOUN
 Ina	17	OTHER
-Garten	17	PROPER_NOUN
 guerre	17	OTHER
 Sylvain	17	PROPER_NOUN
 Fryer	17	OTHER
@@ -42480,7 +42449,6 @@ finesse	17	NOUN,VERB
 Cochran	17	PROPER_NOUN
 PDS	17	PROPER_NOUN
 Mavis	17	PROPER_NOUN
-Abwehr	17	PROPER_NOUN
 Germanus	17	PROPER_NOUN
 ramming	17	NOUN,OTHER
 Moltke	17	PROPER_NOUN
@@ -42584,7 +42552,6 @@ culpable	17	OTHER
 Karlheinz	17	PROPER_NOUN
 Kling	17	NOUN,PROPER_NOUN
 Visegrád	17	PROPER_NOUN
-Mitteleuropa	17	PROPER_NOUN
 Laurier	17	PROPER_NOUN
 GoldenEye	17	OTHER
 Tammy	17	PROPER_NOUN
@@ -42738,7 +42705,6 @@ greases	17	NOUN,VERB	grease
 Clokey	17	PROPER_NOUN
 Bhagirathi	17	PROPER_NOUN
 Sethianism	17	PROPER_NOUN
-KPD	17	NOUN,PROPER_NOUN
 pretopology	17	NOUN,OTHER
 Elkhart	17	PROPER_NOUN
 Sealy	17	PROPER_NOUN
@@ -42910,7 +42876,6 @@ incineration	16	NOUN,OTHER
 socialized	16	VERB	socialize
 polygyny	16	NOUN,OTHER
 stillborn	16	NOUN,OTHER
-ist	16	NOUN,OTHER
 motivates	16	VERB	motivate
 deplorable	16	NOUN,OTHER
 woe	16	NOUN,OTHER
@@ -43011,7 +42976,6 @@ repudiate	16	NOUN,VERB
 inhumane	16	OTHER
 garages	16	NOUN,VERB	garage
 voor	16	OTHER
-Markt	16	PROPER_NOUN
 adorn	16	VERB
 interlinked	16	OTHER
 badged	16	VERB	badge
@@ -43150,7 +43114,6 @@ lepers	16	NOUN,OTHER	leper
 combed	16	VERB	comb
 Ulema	16	OTHER
 Meyerbeer	16	PROPER_NOUN
-Kampf	16	PROPER_NOUN
 stereotyping	16	NOUN,VERB	stereotype
 Coughlin	16	PROPER_NOUN
 lobbyists	16	NOUN,OTHER	lobbyist
@@ -43335,7 +43298,6 @@ Dunham	16	PROPER_NOUN
 swarming	16	NOUN,VERB	swarm
 subcategories	16	NOUN,OTHER	subcategory
 azo	16	OTHER
-chr	16	OTHER
 Linde	16	PROPER_NOUN
 perturbative	16	OTHER
 shamanism	16	NOUN,OTHER
@@ -43473,7 +43435,6 @@ Simek	16	PROPER_NOUN
 Lae	16	PROPER_NOUN
 disinfectants	16	NOUN,OTHER	disinfectant
 endlessly	16	OTHER
-Aktion	16	PROPER_NOUN
 diffuses	16	VERB	diffuse
 Heriot	16	PROPER_NOUN
 OUs	16	OTHER
@@ -43609,7 +43570,6 @@ paprika	16	NOUN,OTHER
 Chez	16	OTHER
 counterterrorism	16	OTHER
 Egon	16	PROPER_NOUN
-Freund	16	PROPER_NOUN
 Margery	16	PROPER_NOUN
 Ghassanids	16	NOUN,PROPER_NOUN	Ghassanid
 Masudi	16	PROPER_NOUN
@@ -43689,7 +43649,6 @@ infidels	16	NOUN,OTHER	infidel
 descents	16	NOUN,OTHER	descent
 mrad	16	OTHER
 harbored	16	OTHER
-Deutschen	16	OTHER
 Askanier	16	PROPER_NOUN
 Turgenev	16	PROPER_NOUN
 Heaney	16	PROPER_NOUN
@@ -43710,7 +43669,6 @@ underwing	16	NOUN,OTHER
 diem	16	OTHER
 Bien	16	OTHER
 Bong	16	NOUN,OTHER
-Hin	16	OTHER
 realigned	16	VERB	realign
 OpenVMS	16	PROPER_NOUN
 edu	16	OTHER
@@ -43834,7 +43792,6 @@ condone	16	VERB
 promo	16	NOUN,VERB
 gizzard	16	NOUN,OTHER
 Echomail	16	OTHER
-nicht	16	OTHER
 Bahamians	16	NOUN,PROPER_NOUN	Bahamian
 IAAF	16	PROPER_NOUN
 rounders	16	NOUN,OTHER	round
@@ -43994,7 +43951,6 @@ PRP	16	PROPER_NOUN
 airworthiness	16	OTHER
 Maryam	16	PROPER_NOUN
 Huawei	16	NOUN,PROPER_NOUN
-EG	16	NOUN,OTHER
 accreting	16	VERB	accrete
 Reichswehr	16	PROPER_NOUN
 pollinated	16	VERB	pollinate
@@ -44096,7 +44052,6 @@ nondegenerate	16	NOUN,OTHER
 Disquisitiones	16	PROPER_NOUN
 Charybdis	16	PROPER_NOUN
 Thalberg	16	PROPER_NOUN
-Bundesautobahn	16	PROPER_NOUN
 Seconda	16	OTHER
 nucleosomes	16	NOUN,OTHER	nucleosome
 GTPases	16	NOUN,PROPER_NOUN	GTPase
@@ -44186,7 +44141,6 @@ imina	16	OTHER
 stompboxes	16	NOUN,OTHER	stompbox
 Machi	16	OTHER
 GAF	16	PROPER_NOUN
-Solange	16	PROPER_NOUN
 Havant	16	PROPER_NOUN
 Rée	16	PROPER_NOUN
 Carnarvon	16	PROPER_NOUN
@@ -44279,7 +44233,6 @@ beekeepers	15	OTHER
 mimetic	15	NOUN,OTHER
 Ptolemies	15	PROPER_NOUN
 Ribera	15	PROPER_NOUN
-Foto	15	OTHER
 Herrick	15	PROPER_NOUN
 deontological	15	OTHER
 Granth	15	PROPER_NOUN
@@ -44405,7 +44358,6 @@ Kura	15	OTHER
 Belo	15	OTHER
 Niña	15	PROPER_NOUN
 reassure	15	VERB
-Gouverneur	15	PROPER_NOUN
 Pinckney	15	PROPER_NOUN
 scrip	15	NOUN,OTHER
 siliceous	15	OTHER
@@ -44527,7 +44479,6 @@ hagiographic	15	OTHER
 Marcian	15	PROPER_NOUN
 Anastasia	15	PROPER_NOUN
 defenceless	15	OTHER
-Meer	15	PROPER_NOUN
 Euronext	15	PROPER_NOUN
 Kazimir	15	PROPER_NOUN
 bathhouse	15	NOUN,OTHER
@@ -44609,7 +44560,6 @@ Barbudan	15	NOUN,PROPER_NOUN
 coolest	15	ADJECTIVE	cool
 Patois	15	OTHER
 Carib	15	NOUN,PROPER_NOUN
-Milch	15	PROPER_NOUN
 supposing	15	NOUN,VERB	suppose
 cumin	15	NOUN,OTHER
 Ammi	15	OTHER
@@ -44623,7 +44573,6 @@ standardise	15	VERB
 gloom	15	NOUN,VERB
 Netherlandish	15	PROPER_NOUN
 Époque	15	PROPER_NOUN
-Philosophie	15	OTHER
 Éditions	15	OTHER
 foreknowledge	15	NOUN,OTHER
 Vicarage	15	OTHER
@@ -44649,8 +44598,6 @@ Dragster	15	OTHER
 Hoppe	15	PROPER_NOUN
 domineering	15	NOUN,OTHER
 Quintilian	15	PROPER_NOUN
-Abitur	15	NOUN,PROPER_NOUN
-Schwarzwald	15	PROPER_NOUN
 microeconomic	15	OTHER
 follicles	15	NOUN,OTHER	follicle
 appendicitis	15	NOUN,OTHER
@@ -44759,7 +44706,6 @@ tasking	15	NOUN,VERB	task
 Brahmanical	15	PROPER_NOUN
 Bimbisara	15	PROPER_NOUN
 Shakya	15	PROPER_NOUN
-Eng	15	OTHER
 innovated	15	VERB	innovate
 Paltrow	15	PROPER_NOUN
 Samosata	15	PROPER_NOUN
@@ -44789,7 +44735,6 @@ entrails	15	OTHER
 erodes	15	VERB	erode
 Quedlinburg	15	PROPER_NOUN
 Neustadt	15	PROPER_NOUN
-Bahnhof	15	PROPER_NOUN
 Remonstrance	15	OTHER
 Grantham	15	PROPER_NOUN
 Grotius	15	PROPER_NOUN
@@ -44871,7 +44816,6 @@ irreparable	15	OTHER
 Chifley	15	PROPER_NOUN
 guilders	15	NOUN,OTHER	guilder
 simony	15	NOUN,OTHER
-Schule	15	PROPER_NOUN
 Jagiełło	15	PROPER_NOUN
 gingerbread	15	NOUN,VERB
 DHL	15	NOUN,PROPER_NOUN
@@ -45192,7 +45136,6 @@ Sensi	15	PROPER_NOUN
 midfielders	15	NOUN,OTHER	midfielder
 ultras	15	NOUN,OTHER	ultra
 glycosylation	15	NOUN,OTHER
-Bau	15	OTHER
 Halford	15	PROPER_NOUN
 Volante	15	PROPER_NOUN
 Valkyrie	15	NOUN,OTHER
@@ -45202,7 +45145,6 @@ sanctum	15	NOUN,OTHER
 Bara	15	OTHER
 CBI	15	PROPER_NOUN
 Wasseralfingen	15	PROPER_NOUN
-Landkreis	15	PROPER_NOUN
 Fiorello	15	PROPER_NOUN
 fluoxetine	15	NOUN,OTHER
 nervosa	15	OTHER
@@ -45285,7 +45227,6 @@ Andaluz	15	OTHER
 Mundo	15	PROPER_NOUN
 Charterhouse	15	PROPER_NOUN
 Machado	15	PROPER_NOUN
-Sind	15	OTHER
 apomixis	15	NOUN,OTHER
 olefins	15	NOUN,OTHER	olefin
 diene	15	NOUN,OTHER
@@ -45408,7 +45349,6 @@ Hedda	15	PROPER_NOUN
 conservatorship	15	NOUN,OTHER
 airwaves	15	OTHER
 accrue	15	VERB
-sein	15	NOUN,OTHER
 diatom	15	NOUN,OTHER
 refrains	15	NOUN,VERB	refrain
 nationhood	15	NOUN,OTHER
@@ -45722,7 +45662,6 @@ Hoek	15	NOUN,PROPER_NOUN
 millisecond	15	NOUN,OTHER
 Garp	15	PROPER_NOUN
 Baptistery	15	OTHER
-Sprachen	15	PROPER_NOUN
 chorded	15	VERB	chord
 TSH	15	PROPER_NOUN
 daimyo	15	NOUN,OTHER
@@ -45843,7 +45782,6 @@ Radbruch	15	PROPER_NOUN
 GIMPS	15	PROPER_NOUN
 Busseto	15	PROPER_NOUN
 Gutrune	15	PROPER_NOUN
-Zucker	15	NOUN,PROPER_NOUN
 Transdanubia	15	PROPER_NOUN
 Bashō	15	PROPER_NOUN
 honeys	15	NOUN,VERB	honey
@@ -46084,7 +46022,6 @@ McMurray	14	PROPER_NOUN
 mountaineer	14	NOUN,VERB
 Maja	14	OTHER
 Leopoldo	14	PROPER_NOUN
-Zeitschrift	14	PROPER_NOUN
 Margot	14	PROPER_NOUN
 quickest	14	ADJECTIVE	quick
 Ariana	14	PROPER_NOUN
@@ -46191,7 +46128,6 @@ Armin	14	PROPER_NOUN
 Loveland	14	PROPER_NOUN
 Draghi	14	PROPER_NOUN
 hitman	14	NOUN,OTHER
-Prinz	14	PROPER_NOUN
 TDI	14	NOUN,PROPER_NOUN
 pollute	14	VERB
 vipers	14	OTHER
@@ -46353,7 +46289,6 @@ communally	14	OTHER
 Kalam	14	OTHER
 Beauvais	14	PROPER_NOUN
 apologise	14	VERB
-Langer	14	PROPER_NOUN
 Swann	14	PROPER_NOUN
 reflexivity	14	NOUN,OTHER
 forensics	14	OTHER
@@ -46553,8 +46488,6 @@ Blyth	14	PROPER_NOUN
 ordinated	14	VERB	ordinate
 Celia	14	PROPER_NOUN
 Latham	14	PROPER_NOUN
-Blau	14	OTHER
-Neues	14	PROPER_NOUN
 Breathless	14	OTHER
 prostaglandins	14	NOUN,OTHER	prostaglandin
 insensitivity	14	NOUN,OTHER
@@ -46687,7 +46620,6 @@ fluoroquinolones	14	NOUN,OTHER	fluoroquinolone
 carbapenems	14	NOUN,OTHER	carbapenem
 comically	14	OTHER
 teapot	14	NOUN,OTHER
-Kapital	14	PROPER_NOUN
 Peart	14	PROPER_NOUN
 watertight	14	OTHER
 bulking	14	NOUN,VERB	bulk
@@ -46834,7 +46766,6 @@ dubstep	14	OTHER
 minimising	14	VERB	minimise
 Marder	14	PROPER_NOUN
 autocannon	14	NOUN,OTHER
-Bundeswehr	14	PROPER_NOUN
 enunciated	14	OTHER
 distressing	14	VERB	distress
 egocentric	14	NOUN,OTHER
@@ -46905,7 +46836,6 @@ Tonopah	14	PROPER_NOUN
 shamanic	14	OTHER
 criminalizing	14	VERB	criminalize
 chromaticity	14	NOUN,OTHER
-Hauptmann	14	PROPER_NOUN
 Benares	14	PROPER_NOUN
 risqué	14	OTHER
 theobromine	14	NOUN,OTHER
@@ -46945,7 +46875,6 @@ DMS	14	NOUN,PROPER_NOUN
 Godot	14	PROPER_NOUN
 homophonic	14	OTHER
 Boyce	14	PROPER_NOUN
-dir	14	NOUN,OTHER
 Nhadau	14	PROPER_NOUN
 Altdorfer	14	PROPER_NOUN
 steed	14	NOUN,OTHER
@@ -47004,7 +46933,6 @@ benzo	14	NOUN,OTHER
 FDD	14	NOUN,PROPER_NOUN
 TIA	14	NOUN,PROPER_NOUN
 biosignatures	14	OTHER
-Dicke	14	PROPER_NOUN
 Bainbridge	14	PROPER_NOUN
 Gediminas	14	PROPER_NOUN
 eavesdropping	14	NOUN,VERB	eavesdrop
@@ -47111,7 +47039,6 @@ Cortlandt	14	PROPER_NOUN
 ethnomusicologist	14	NOUN,OTHER
 Bluesbreakers	14	PROPER_NOUN
 Lotta	14	OTHER
-Buch	14	PROPER_NOUN
 Imperii	14	OTHER
 Leavitt	14	PROPER_NOUN
 Martelly	14	PROPER_NOUN
@@ -47353,7 +47280,6 @@ Layard	14	PROPER_NOUN
 Bewick	14	PROPER_NOUN
 Teotihuacan	14	PROPER_NOUN
 subsidize	14	VERB
-Bord	14	OTHER
 ideographic	14	OTHER
 Caan	14	PROPER_NOUN
 delusional	14	NOUN,OTHER
@@ -47361,7 +47287,6 @@ Mazzucchelli	14	PROPER_NOUN
 Miura	14	PROPER_NOUN
 Rostam	14	PROPER_NOUN
 monetarist	14	NOUN,OTHER
-nach	14	OTHER
 horsehair	14	NOUN,OTHER
 Pettigrew	14	PROPER_NOUN
 Melcher	14	PROPER_NOUN
@@ -47430,7 +47355,6 @@ Chora	14	OTHER
 lutenist	14	NOUN,OTHER
 fencers	14	NOUN,OTHER	fencer
 Goonhilly	14	PROPER_NOUN
-Kreuz	14	PROPER_NOUN
 stripper	14	NOUN,OTHER
 Zhuangzi	14	PROPER_NOUN
 coauthored	14	VERB	coauthor
@@ -47567,7 +47491,6 @@ Tano	14	PROPER_NOUN
 INTA	14	PROPER_NOUN
 Ondekoza	14	PROPER_NOUN
 Cassie	14	PROPER_NOUN
-Kreis	14	PROPER_NOUN
 Sullavan	14	PROPER_NOUN
 Gude	14	PROPER_NOUN
 Eadwig	14	PROPER_NOUN
@@ -47795,7 +47718,6 @@ turnips	13	NOUN,VERB	turnip
 farmworkers	13	OTHER
 glyphosate	13	NOUN,OTHER
 treadmill	13	NOUN,VERB
-Mond	13	PROPER_NOUN
 Krishnamurti	13	PROPER_NOUN
 Llano	13	PROPER_NOUN
 PST	13	NOUN,PROPER_NOUN
@@ -47883,7 +47805,6 @@ unsurprisingly	13	OTHER
 Tyrrell	13	PROPER_NOUN
 teleosts	13	NOUN,OTHER	teleost
 bulkier	13	ADJECTIVE	bulky
-Kleiner	13	PROPER_NOUN
 intellectualism	13	NOUN,OTHER
 wormhole	13	NOUN,VERB
 Bergmann	13	PROPER_NOUN
@@ -47971,7 +47892,6 @@ Adair	13	PROPER_NOUN
 outbid	13	VERB
 spate	13	NOUN,VERB
 blackboard	13	NOUN,VERB
-Wörterbuch	13	PROPER_NOUN
 counterintuitive	13	OTHER
 Catalaunian	13	PROPER_NOUN
 Gepid	13	NOUN,PROPER_NOUN
@@ -47997,7 +47917,6 @@ Michèle	13	PROPER_NOUN
 GTO	13	NOUN,PROPER_NOUN
 hrs	13	OTHER
 discordant	13	NOUN,OTHER
-Nürnberg	13	PROPER_NOUN
 Vuitton	13	PROPER_NOUN
 sponsorships	13	NOUN,OTHER	sponsorship
 Blackbird	13	OTHER
@@ -48099,7 +48018,6 @@ encephalomyelitis	13	NOUN,OTHER
 predominating	13	VERB	predominate
 malformation	13	NOUN,OTHER
 maths	13	NOUN,VERB	math
-Kopf	13	PROPER_NOUN
 Maddalena	13	PROPER_NOUN
 microclimates	13	NOUN,OTHER	microclimate
 antelopes	13	OTHER
@@ -48124,7 +48042,6 @@ torts	13	NOUN,OTHER	tort
 populists	13	NOUN,OTHER	populist
 operettas	13	NOUN,OTHER	operetta
 Neuf	13	PROPER_NOUN
-Geschichte	13	PROPER_NOUN
 Hellenism	13	NOUN,PROPER_NOUN
 Ogooué	13	PROPER_NOUN
 Drs	13	NOUN,OTHER	Dr
@@ -48348,7 +48265,6 @@ articulates	13	NOUN,VERB	articulate
 Aotearoa	13	PROPER_NOUN
 enchantment	13	NOUN,OTHER
 Italiano	13	OTHER
-Akademie	13	PROPER_NOUN
 Aare	13	PROPER_NOUN
 Dumfries	13	PROPER_NOUN
 covenantal	13	OTHER
@@ -48582,7 +48498,6 @@ labialized	13	OTHER
 protruded	13	VERB	protrude
 takeovers	13	NOUN,OTHER	takeover
 Bourget	13	PROPER_NOUN
-Luft	13	PROPER_NOUN
 Soriano	13	PROPER_NOUN
 FINA	13	PROPER_NOUN
 Lees	13	PROPER_NOUN
@@ -48719,7 +48634,6 @@ Sunnyvale	13	PROPER_NOUN
 Dabney	13	PROPER_NOUN
 Kee	13	PROPER_NOUN
 undeniably	13	OTHER
-alle	13	OTHER
 mondo	13	NOUN,OTHER
 Wheelock	13	PROPER_NOUN
 Redford	13	PROPER_NOUN
@@ -48738,7 +48652,6 @@ MAOI	13	NOUN,PROPER_NOUN
 glaucoma	13	NOUN,OTHER
 opiate	13	NOUN,VERB
 Ashland	13	PROPER_NOUN
-Nacht	13	PROPER_NOUN
 ephedrine	13	NOUN,OTHER
 Millerite	13	NOUN,OTHER
 Namath	13	PROPER_NOUN
@@ -48781,7 +48694,6 @@ Chaser	13	OTHER
 firework	13	NOUN,OTHER
 HLA	13	NOUN,OTHER
 Jodhpur	13	PROPER_NOUN
-Frau	13	NOUN,PROPER_NOUN
 resistive	13	OTHER
 nonlinearity	13	NOUN,OTHER
 Biennale	13	PROPER_NOUN
@@ -48997,7 +48909,6 @@ Baekeland	13	PROPER_NOUN
 subdominant	13	NOUN,OTHER
 Tull	13	PROPER_NOUN
 Kreuzberg	13	PROPER_NOUN
-Tempel	13	PROPER_NOUN
 obscures	13	VERB	obscure
 Fodor	13	PROPER_NOUN
 tireless	13	OTHER
@@ -49088,7 +48999,6 @@ organobromine	13	NOUN,OTHER
 disinfectant	13	NOUN,OTHER
 Marcomannic	13	PROPER_NOUN
 orchestrate	13	VERB
-Bayerische	13	PROPER_NOUN
 KTM	13	PROPER_NOUN
 Rauschenberg	13	PROPER_NOUN
 Staley	13	PROPER_NOUN
@@ -49389,7 +49299,6 @@ Delaney	13	PROPER_NOUN
 Newlyn	13	PROPER_NOUN
 shingle	13	NOUN,VERB
 CEC	13	NOUN,PROPER_NOUN
-wie	13	OTHER
 CDO	13	NOUN,PROPER_NOUN
 Ginn	13	OTHER
 Rubik	13	PROPER_NOUN
@@ -49442,7 +49351,6 @@ lispm	13	OTHER
 Sussman	13	PROPER_NOUN
 Maskhadov	13	PROPER_NOUN
 dielectrics	13	NOUN,OTHER	dielectric
-Nachlass	13	NOUN,PROPER_NOUN
 intension	13	NOUN,OTHER
 Farkas	13	PROPER_NOUN
 Bolyai	13	PROPER_NOUN
@@ -49714,7 +49622,6 @@ snowstorm	12	NOUN,OTHER
 invulnerable	12	OTHER
 tricking	12	NOUN,VERB	trick
 Vicenza	12	PROPER_NOUN
-Altes	12	PROPER_NOUN
 Olbia	12	PROPER_NOUN
 dedicatory	12	NOUN,OTHER
 Chersonese	12	PROPER_NOUN
@@ -49856,7 +49763,6 @@ HOL	12	PROPER_NOUN
 Sejong	12	PROPER_NOUN
 Hanyu	12	PROPER_NOUN
 umlauts	12	NOUN,VERB	umlaut
-Jäger	12	NOUN,PROPER_NOUN
 daltons	12	OTHER
 endoderm	12	NOUN,OTHER
 reticular	12	OTHER
@@ -49911,7 +49817,6 @@ policed	12	VERB	police
 Wainwright	12	NOUN,PROPER_NOUN
 Nath	12	PROPER_NOUN
 congenial	12	OTHER
-Eine	12	PROPER_NOUN
 Hebraic	12	PROPER_NOUN
 litigated	12	VERB	litigate
 Saffarids	12	NOUN,PROPER_NOUN	Saffarid
@@ -50012,7 +49917,6 @@ Bosley	12	PROPER_NOUN
 Uris	12	PROPER_NOUN
 Breen	12	PROPER_NOUN
 Rivas	12	PROPER_NOUN
-Volk	12	PROPER_NOUN
 nasalized	12	OTHER
 uncountably	12	OTHER
 cardinalities	12	NOUN,OTHER	cardinality
@@ -50107,13 +50011,11 @@ racehorse	12	NOUN,OTHER
 oxidizers	12	NOUN,OTHER	oxidizer
 coenzyme	12	NOUN,OTHER
 Lippmann	12	PROPER_NOUN
-Neu	12	OTHER
 BTP	12	PROPER_NOUN
 tennessine	12	OTHER
 iodides	12	NOUN,OTHER	iodide
 repels	12	VERB	repel
 Héroult	12	PROPER_NOUN
-Industrie	12	OTHER
 erythropoietin	12	NOUN,OTHER
 hemolymph	12	NOUN,OTHER
 GAFCON	12	PROPER_NOUN
@@ -50187,7 +50089,6 @@ Supercars	12	OTHER
 entrust	12	VERB
 harmoniously	12	OTHER
 Alsatian	12	NOUN,PROPER_NOUN
-Leben	12	PROPER_NOUN
 Rodan	12	PROPER_NOUN
 Århus	12	PROPER_NOUN
 Holger	12	PROPER_NOUN
@@ -50524,7 +50425,6 @@ Jimena	12	PROPER_NOUN
 Maghrebi	12	NOUN,PROPER_NOUN
 arabesque	12	NOUN,VERB
 arsenals	12	OTHER
-Reine	12	PROPER_NOUN
 Saracens	12	NOUN,PROPER_NOUN	Saracen
 Bianco	12	OTHER
 Vasconcelos	12	PROPER_NOUN
@@ -50547,7 +50447,6 @@ Solimões	12	PROPER_NOUN
 Symeon	12	PROPER_NOUN
 Autpert	12	PROPER_NOUN
 Catharine	12	PROPER_NOUN
-Wert	12	OTHER
 Holies	12	OTHER
 tidings	12	OTHER
 Theopompus	12	PROPER_NOUN
@@ -50895,7 +50794,6 @@ Ascanians	12	PROPER_NOUN
 escutcheon	12	NOUN,OTHER
 lymphoid	12	OTHER
 adenovirus	12	NOUN,OTHER
-Freie	12	PROPER_NOUN
 Abad	12	PROPER_NOUN
 Thoroughbreds	12	NOUN,OTHER	Thoroughbred
 sheaths	12	NOUN,VERB	sheath
@@ -51089,7 +50987,6 @@ constrains	12	VERB	constrain
 subplot	12	NOUN,VERB
 lipstick	12	NOUN,VERB
 gongs	12	OTHER
-Sieg	12	PROPER_NOUN
 dancesport	12	OTHER
 Corliss	12	PROPER_NOUN
 Biograph	12	PROPER_NOUN
@@ -51104,7 +51001,6 @@ shimmering	12	NOUN,OTHER
 rarities	12	NOUN,OTHER	rarity
 Lusatian	12	NOUN,PROPER_NOUN
 Nationalgalerie	12	PROPER_NOUN
-ZDF	12	PROPER_NOUN
 Doughty	12	PROPER_NOUN
 tweets	12	NOUN,VERB	tweet
 maligned	12	VERB	malign
@@ -51208,7 +51104,6 @@ origami	12	NOUN,VERB
 fintech	12	NOUN,OTHER
 polyesters	12	NOUN,OTHER	polyester
 manorial	12	OTHER
-Vorpommern	12	PROPER_NOUN
 skid	12	NOUN,VERB
 Klemens	12	PROPER_NOUN
 Vajpayee	12	PROPER_NOUN
@@ -51277,7 +51172,6 @@ meek	12	VERB,ADJECTIVE
 patiently	12	OTHER
 minefield	12	NOUN,OTHER
 Mers	12	NOUN,PROPER_NOUN	Mer
-Ende	12	OTHER
 autres	12	OTHER
 Sodor	12	PROPER_NOUN
 communions	12	NOUN,OTHER	communion
@@ -51336,7 +51230,6 @@ Niki	12	PROPER_NOUN
 Suebian	12	NOUN,PROPER_NOUN
 Gundahar	12	PROPER_NOUN
 Sidonius	12	PROPER_NOUN
-Alles	12	OTHER
 Manstein	12	PROPER_NOUN
 takeoffs	12	NOUN,OTHER	takeoff
 Laṅkāvatāra	12	PROPER_NOUN
@@ -51603,7 +51496,6 @@ Levan	12	PROPER_NOUN
 topsy	12	OTHER
 snubbed	12	VERB	snub
 infantile	12	OTHER
-Rundfunk	12	PROPER_NOUN
 Sumitomo	12	PROPER_NOUN
 GEF	12	PROPER_NOUN
 parses	12	NOUN,VERB	parse
@@ -51978,7 +51870,6 @@ Foner	11	PROPER_NOUN
 Melvyn	11	PROPER_NOUN
 teleology	11	NOUN,OTHER
 exoteric	11	NOUN,OTHER
-eis	11	OTHER
 Shumway	11	PROPER_NOUN
 corroboration	11	NOUN,OTHER
 Memoriam	11	OTHER
@@ -52386,7 +52277,6 @@ derivable	11	OTHER
 phonemically	11	OTHER
 NYPD	11	PROPER_NOUN
 potted	11	VERB	pot
-Wein	11	PROPER_NOUN
 Owsley	11	PROPER_NOUN
 Waid	11	PROPER_NOUN
 legalise	11	VERB
@@ -52481,7 +52371,6 @@ Isidor	11	PROPER_NOUN
 sores	11	NOUN,VERB	sore
 rebut	11	VERB
 midwifery	11	NOUN,OTHER
-Wald	11	PROPER_NOUN
 cyst	11	NOUN,OTHER
 methicillin	11	NOUN,OTHER
 Baltics	11	PROPER_NOUN
@@ -52557,7 +52446,6 @@ cyborgs	11	NOUN,VERB	cyborg
 raves	11	NOUN,VERB	rave
 Rigvedic	11	PROPER_NOUN
 formless	11	OTHER
-Aller	11	OTHER
 Komsomol	11	PROPER_NOUN
 delicately	11	OTHER
 saltire	11	NOUN,OTHER
@@ -52777,7 +52665,6 @@ interceded	11	VERB	intercede
 Shermer	11	PROPER_NOUN
 anthropocentric	11	OTHER
 Evatt	11	PROPER_NOUN
-Sommer	11	PROPER_NOUN
 Passau	11	PROPER_NOUN
 Pforzheim	11	PROPER_NOUN
 Udo	11	PROPER_NOUN
@@ -52954,7 +52841,6 @@ Eunice	11	PROPER_NOUN
 Walras	11	PROPER_NOUN
 Méthode	11	PROPER_NOUN
 capstone	11	NOUN,VERB
-Chemie	11	PROPER_NOUN
 Loew	11	PROPER_NOUN
 Sadi	11	PROPER_NOUN
 Deewaar	11	PROPER_NOUN
@@ -52984,7 +52870,6 @@ objets	11	NOUN,OTHER	objet
 friezes	11	NOUN,VERB	frieze
 printemps	11	OTHER
 Benigni	11	PROPER_NOUN
-papier	11	OTHER
 Lawrie	11	PROPER_NOUN
 Bazar	11	PROPER_NOUN
 Alexey	11	PROPER_NOUN
@@ -53076,7 +52961,6 @@ Reichsführer	11	PROPER_NOUN
 Ersatz	11	OTHER
 Witold	11	PROPER_NOUN
 Longerich	11	PROPER_NOUN
-Heide	11	PROPER_NOUN
 Perse	11	PROPER_NOUN
 flirtation	11	NOUN,OTHER
 fletching	11	NOUN,VERB	fletch
@@ -53290,7 +53174,6 @@ Friel	11	PROPER_NOUN
 CPLDs	11	PROPER_NOUN
 tweaks	11	NOUN,VERB	tweak
 PLL	11	NOUN,PROPER_NOUN
-Christus	11	PROPER_NOUN
 lyricism	11	NOUN,OTHER
 Krauss	11	PROPER_NOUN
 isotopically	11	OTHER
@@ -53453,7 +53336,6 @@ callsign	11	NOUN,OTHER
 Michell	11	PROPER_NOUN
 cosmologies	11	NOUN,OTHER	cosmology
 Chichen	11	PROPER_NOUN
-Reuter	11	PROPER_NOUN
 minions	11	OTHER
 Laine	11	PROPER_NOUN
 Holdsworth	11	PROPER_NOUN
@@ -53975,7 +53857,6 @@ Siodmak	11	PROPER_NOUN
 nanometres	11	NOUN,OTHER	nanometre
 subpixels	11	NOUN,OTHER	subpixel
 holography	11	NOUN,OTHER
-Blaue	11	PROPER_NOUN
 Hyacinthe	11	PROPER_NOUN
 Ebing	11	PROPER_NOUN
 fetishes	11	NOUN,OTHER	fetish
@@ -54221,7 +54102,6 @@ undertakers	11	NOUN,OTHER	undertaker
 Selva	11	OTHER
 Pastrana	11	PROPER_NOUN
 forfeiture	11	NOUN,OTHER
-Geist	11	PROPER_NOUN
 Fairclough	11	PROPER_NOUN
 endocytic	11	OTHER
 rectifiers	11	NOUN,OTHER	rectifier
@@ -54463,7 +54343,6 @@ Maximilians	11	PROPER_NOUN
 Ryans	11	PROPER_NOUN
 EtherType	11	PROPER_NOUN
 subnetwork	11	NOUN,OTHER
-Ideen	11	PROPER_NOUN
 IEE	11	PROPER_NOUN
 Opticks	11	PROPER_NOUN
 Stubb	11	PROPER_NOUN
@@ -54535,7 +54414,6 @@ Panormus	11	PROPER_NOUN
 heteronyms	11	NOUN,OTHER	heteronym
 Trabajadores	11	PROPER_NOUN
 alegrías	11	OTHER
-Logik	11	PROPER_NOUN
 preppy	11	NOUN,ADJECTIVE
 firebombing	11	NOUN,OTHER
 Simonson	11	PROPER_NOUN
@@ -54640,7 +54518,6 @@ KAB	11	NOUN,PROPER_NOUN
 Kop	11	NOUN,PROPER_NOUN
 Yuon	11	PROPER_NOUN
 Mescalero	11	NOUN,PROPER_NOUN
-Gruppen	11	PROPER_NOUN
 Dikwa	11	PROPER_NOUN
 Khunjerab	11	PROPER_NOUN
 foldboat	11	NOUN,VERB
@@ -54901,7 +54778,6 @@ Philosophicus	10	PROPER_NOUN
 indentations	10	NOUN,OTHER	indentation
 Aérea	10	PROPER_NOUN
 PricewaterhouseCoopers	10	PROPER_NOUN
-kz	10	OTHER
 favouritism	10	NOUN,OTHER
 TotalEnergies	10	PROPER_NOUN
 detentions	10	NOUN,OTHER	detention
@@ -55037,7 +54913,6 @@ belied	10	OTHER
 Supercar	10	OTHER
 WRC	10	NOUN,PROPER_NOUN
 Abt	10	PROPER_NOUN
-Borussia	10	PROPER_NOUN
 carmaker	10	NOUN,OTHER
 Antonov	10	PROPER_NOUN
 elocution	10	NOUN,OTHER
@@ -55321,7 +55196,6 @@ Urbe	10	OTHER
 Loon	10	OTHER
 scrambling	10	NOUN,OTHER
 Czarist	10	OTHER
-Kann	10	PROPER_NOUN
 degaussing	10	NOUN,OTHER
 Mulliken	10	PROPER_NOUN
 zwitterionic	10	OTHER
@@ -55384,7 +55258,6 @@ Brookside	10	PROPER_NOUN
 spermatozoa	10	OTHER
 hoe	10	NOUN,VERB
 confessors	10	OTHER
-Bundesstraße	10	PROPER_NOUN
 predestined	10	OTHER
 butadiene	10	NOUN,OTHER
 Cîteaux	10	PROPER_NOUN
@@ -55723,7 +55596,6 @@ subscribes	10	VERB	subscribe
 Brindisi	10	PROPER_NOUN
 unmixed	10	OTHER
 Russes	10	PROPER_NOUN
-Kirche	10	PROPER_NOUN
 Rimsky	10	PROPER_NOUN
 Korsakov	10	PROPER_NOUN
 ziggurat	10	NOUN,OTHER
@@ -55925,7 +55797,6 @@ Borden	10	NOUN,PROPER_NOUN
 Tatra	10	PROPER_NOUN
 DAP	10	NOUN,PROPER_NOUN
 unexpurgated	10	OTHER
-Leer	10	PROPER_NOUN
 Duisburg	10	PROPER_NOUN
 sequitur	10	NOUN,OTHER
 Armistead	10	PROPER_NOUN
@@ -56065,7 +55936,6 @@ Gaydon	10	PROPER_NOUN
 Gauntlett	10	PROPER_NOUN
 baryte	10	NOUN,OTHER
 Terminalia	10	PROPER_NOUN
-Bürgermeister	10	PROPER_NOUN
 RBS	10	PROPER_NOUN
 Román	10	PROPER_NOUN
 bulimia	10	NOUN,OTHER
@@ -56156,7 +56026,6 @@ JOVIAL	10	OTHER
 infuse	10	VERB
 Atholl	10	PROPER_NOUN
 landward	10	OTHER
-Glas	10	OTHER
 Logie	10	PROPER_NOUN
 Lawler	10	PROPER_NOUN
 DiBiase	10	PROPER_NOUN
@@ -56388,13 +56257,9 @@ Neuhaus	10	PROPER_NOUN
 Vinson	10	PROPER_NOUN
 Weldon	10	PROPER_NOUN
 overdriven	10	VERB	overdrive
-Republik	10	PROPER_NOUN
 Tempelhof	10	PROPER_NOUN
-Großer	10	PROPER_NOUN
 MSU	10	NOUN,OTHER
-Linke	10	PROPER_NOUN
 Charité	10	PROPER_NOUN
-Künste	10	PROPER_NOUN
 Tiergarten	10	PROPER_NOUN
 Berlinale	10	PROPER_NOUN
 Yucatec	10	NOUN,PROPER_NOUN
@@ -56402,7 +56267,6 @@ Bakhtin	10	PROPER_NOUN
 Tohono	10	PROPER_NOUN
 Zoë	10	PROPER_NOUN
 Wolfson	10	PROPER_NOUN
-Gramm	10	PROPER_NOUN
 Cisneros	10	PROPER_NOUN
 Tutsis	10	NOUN,PROPER_NOUN	Tutsi
 blackletter	10	NOUN,OTHER
@@ -56456,7 +56320,6 @@ Bulgar	10	NOUN,PROPER_NOUN
 Bogdan	10	PROPER_NOUN
 Lauri	10	PROPER_NOUN
 squeezing	10	NOUN,VERB	squeeze
-Freude	10	PROPER_NOUN
 Mieczysław	10	PROPER_NOUN
 grooved	10	VERB	groove
 plaited	10	VERB	plait
@@ -56525,7 +56388,6 @@ opportunism	10	NOUN,OTHER
 proteasome	10	NOUN,OTHER
 Tassilo	10	PROPER_NOUN
 Karlovy	10	PROPER_NOUN
-Allianz	10	PROPER_NOUN
 Ratzinger	10	PROPER_NOUN
 Oflag	10	PROPER_NOUN
 Incheon	10	PROPER_NOUN
@@ -56604,7 +56466,6 @@ winglets	10	OTHER
 handlebars	10	NOUN,OTHER	handlebar
 biopolymer	10	NOUN,OTHER
 nonwhite	10	NOUN,OTHER
-Christen	10	NOUN,OTHER
 popularizer	10	NOUN,OTHER
 WHA	10	PROPER_NOUN
 Genesee	10	PROPER_NOUN
@@ -56693,13 +56554,11 @@ Pegg	10	PROPER_NOUN
 Beckenbauer	10	PROPER_NOUN
 Borehamwood	10	PROPER_NOUN
 embryogenesis	10	NOUN,OTHER
-wir	10	OTHER
 cradles	10	NOUN,VERB	cradle
 WBA	10	PROPER_NOUN
 Nairn	10	PROPER_NOUN
 Bábís	10	NOUN,PROPER_NOUN	Bábí
 Rugii	10	PROPER_NOUN
-Schwäbisch	10	PROPER_NOUN
 freeborn	10	OTHER
 Lubin	10	PROPER_NOUN
 Harford	10	PROPER_NOUN
@@ -56809,7 +56668,6 @@ mournful	10	ADJECTIVE
 Boadicea	10	PROPER_NOUN
 Iceni	10	PROPER_NOUN
 onomatopoeic	10	OTHER
-Strauß	10	PROPER_NOUN
 hairdresser	10	NOUN,OTHER
 overdosed	10	VERB	overdose
 Latgalians	10	NOUN,PROPER_NOUN	Latgalian
@@ -56870,7 +56728,6 @@ Walad	10	OTHER
 Karenga	10	PROPER_NOUN
 autopsies	10	NOUN,VERB	autopsy
 ELDO	10	PROPER_NOUN
-Dien	10	PROPER_NOUN
 Wechsler	10	PROPER_NOUN
 showrunners	10	NOUN,OTHER	showrunner
 vacuole	10	NOUN,OTHER
@@ -56909,7 +56766,6 @@ shinai	10	NOUN,OTHER
 Shackleton	10	PROPER_NOUN
 Leftarrow	10	OTHER
 Désiré	10	PROPER_NOUN
-Sich	10	OTHER
 maggots	10	OTHER
 facetiously	10	OTHER
 Dubček	10	PROPER_NOUN
@@ -57153,7 +57009,6 @@ Nance	10	NOUN,VERB,PROPER_NOUN
 Chaerea	10	PROPER_NOUN
 Mika	10	PROPER_NOUN
 Volterra	10	PROPER_NOUN
-Grundlagen	10	PROPER_NOUN
 Suan	10	OTHER
 Cosmo	10	PROPER_NOUN
 IFS	10	NOUN,PROPER_NOUN
@@ -57439,7 +57294,6 @@ Buxtehude	10	PROPER_NOUN
 Breakin	10	PROPER_NOUN
 Bundesbank	10	PROPER_NOUN
 panics	10	NOUN,VERB	panic
-Allgemeine	10	PROPER_NOUN
 Westphal	10	PROPER_NOUN
 Rauff	10	PROPER_NOUN
 intersubjectivity	10	NOUN,OTHER
@@ -57814,7 +57668,6 @@ Wrangell	9	PROPER_NOUN
 Skagway	9	PROPER_NOUN
 Denali	9	PROPER_NOUN
 Alaskans	9	NOUN,PROPER_NOUN	Alaskan
-Eben	9	PROPER_NOUN
 Dene	9	PROPER_NOUN
 disqualifying	9	VERB	disqualify
 USPS	9	PROPER_NOUN
@@ -58638,7 +58491,6 @@ Cölln	9	PROPER_NOUN
 channelled	9	OTHER
 Burtscheid	9	PROPER_NOUN
 guidebooks	9	NOUN,OTHER	guidebook
-Vereinigung	9	PROPER_NOUN
 diclofenac	9	OTHER
 PGI	9	NOUN,PROPER_NOUN
 Reye	9	PROPER_NOUN
@@ -58674,7 +58526,6 @@ watchful	9	OTHER
 suey	9	NOUN,OTHER
 gai	9	OTHER
 blogger	9	NOUN,OTHER
-Adel	9	OTHER
 Ganda	9	NOUN,OTHER
 Qamar	9	OTHER
 Pasand	9	PROPER_NOUN
@@ -58843,7 +58694,6 @@ goatskin	9	NOUN,OTHER
 premièred	9	VERB	première
 dividers	9	NOUN,OTHER	divider
 kiloton	9	NOUN,OTHER
-Morgen	9	OTHER
 ribose	9	NOUN,OTHER
 cleaving	9	NOUN,VERB	cleave
 phosphoglycerate	9	NOUN,OTHER
@@ -58876,7 +58726,6 @@ overwritten	9	VERB	overwrite
 Thābit	9	PROPER_NOUN
 biomedicine	9	NOUN,OTHER
 exacerbates	9	VERB	exacerbate
-Synagoge	9	PROPER_NOUN
 proportione	9	OTHER
 Arbutus	9	OTHER
 Kilimanjaro	9	PROPER_NOUN
@@ -59616,7 +59465,6 @@ Maeterlinck	9	PROPER_NOUN
 plumed	9	VERB	plume
 raspy	9	ADJECTIVE
 Waylon	9	PROPER_NOUN
-Amerika	9	PROPER_NOUN
 Swadesh	9	PROPER_NOUN
 Boasians	9	PROPER_NOUN
 odham	9	OTHER
@@ -59648,9 +59496,6 @@ Gutach	9	PROPER_NOUN
 Metzler	9	OTHER
 beeches	9	NOUN,OTHER	beech
 Kehl	9	PROPER_NOUN
-heilige	9	OTHER
-Drei	9	OTHER
-Altstadt	9	PROPER_NOUN
 Kerch	9	PROPER_NOUN
 Dimitrov	9	PROPER_NOUN
 Wycliffite	9	NOUN,PROPER_NOUN
@@ -59690,7 +59535,6 @@ furthers	9	VERB	further
 CBBS	9	NOUN,PROPER_NOUN
 SSH	9	OTHER
 foreshadows	9	NOUN,VERB	foreshadow
-Söhne	9	PROPER_NOUN
 blacked	9	VERB	black
 barratry	9	NOUN,OTHER
 Sayle	9	PROPER_NOUN
@@ -60001,7 +59845,6 @@ Learjet	9	PROPER_NOUN
 beachhead	9	NOUN,OTHER
 Bartov	9	PROPER_NOUN
 Tanlin	9	PROPER_NOUN
-Dazu	9	PROPER_NOUN
 abides	9	VERB	abide
 Tsutomu	9	PROPER_NOUN
 absurdities	9	NOUN,OTHER	absurdity
@@ -60539,8 +60382,6 @@ nought	9	NOUN,VERB
 Sayre	9	PROPER_NOUN
 auteurs	9	NOUN,VERB	auteur
 congee	9	NOUN,OTHER
-Süd	9	PROPER_NOUN
-Kölner	9	PROPER_NOUN
 Kölsch	9	NOUN,PROPER_NOUN
 Allis	9	OTHER
 Hbf	9	PROPER_NOUN
@@ -60578,7 +60419,6 @@ photodiode	9	NOUN,OTHER
 HMG	9	NOUN,PROPER_NOUN
 LH	9	NOUN,PROPER_NOUN
 Nettie	9	NOUN,PROPER_NOUN
-Raum	9	PROPER_NOUN
 trichomes	9	OTHER
 Saybrook	9	PROPER_NOUN
 Norwalk	9	PROPER_NOUN
@@ -60838,7 +60678,6 @@ Citybus	9	PROPER_NOUN
 Vieri	9	PROPER_NOUN
 Matsumoto	9	PROPER_NOUN
 tetrachord	9	NOUN,OTHER
-Herz	9	PROPER_NOUN
 Lahaina	9	PROPER_NOUN
 Chibnall	9	PROPER_NOUN
 Kaleds	9	PROPER_NOUN
@@ -60898,7 +60737,6 @@ McQuaid	9	PROPER_NOUN
 inapplicable	9	OTHER
 ADV	9	NOUN,PROPER_NOUN
 Küstrin	9	PROPER_NOUN
-Franken	9	PROPER_NOUN
 tryptamine	9	NOUN,OTHER
 dulcimers	9	NOUN,OTHER	dulcimer
 Loango	9	PROPER_NOUN
@@ -61049,7 +60887,6 @@ Kuno	9	PROPER_NOUN
 Polygala	9	PROPER_NOUN
 WisCon	9	PROPER_NOUN
 Eysturoy	9	PROPER_NOUN
-Jägers	9	NOUN,PROPER_NOUN	Jäger
 Cinerama	9	PROPER_NOUN
 Telefoni	9	PROPER_NOUN
 Giulietta	9	PROPER_NOUN
@@ -61118,7 +60955,6 @@ Burnette	9	PROPER_NOUN
 temp	9	NOUN,VERB
 MHG	9	PROPER_NOUN
 golems	9	NOUN,OTHER	golem
-Niedersachsen	9	PROPER_NOUN
 immaterialism	9	NOUN,OTHER
 Hylas	9	PROPER_NOUN
 Chamorros	9	NOUN,PROPER_NOUN	Chamorro
@@ -61606,7 +61442,6 @@ Rattray	8	PROPER_NOUN
 Khaliq	8	PROPER_NOUN
 Guterres	8	PROPER_NOUN
 Nuristani	8	NOUN,PROPER_NOUN
-Welle	8	PROPER_NOUN
 Faryab	8	PROPER_NOUN
 Fitr	8	PROPER_NOUN
 Ardiaei	8	PROPER_NOUN
@@ -61729,7 +61564,6 @@ polders	8	NOUN,VERB	polder
 suburbanization	8	NOUN,OTHER
 trippers	8	OTHER
 Bartholomeus	8	PROPER_NOUN
-Hals	8	OTHER
 TROPENMUSEUM	8	PROPER_NOUN
 cosy	8	NOUN,VERB,ADJECTIVE
 Nieuw	8	PROPER_NOUN
@@ -61739,7 +61573,6 @@ escapee	8	NOUN,OTHER
 Motorenwerke	8	PROPER_NOUN
 CTS	8	OTHER
 WEC	8	PROPER_NOUN
-Technik	8	PROPER_NOUN
 QX	8	PROPER_NOUN
 Chanute	8	PROPER_NOUN
 steerable	8	OTHER
@@ -61877,7 +61710,6 @@ mildew	8	NOUN,VERB
 afferent	8	NOUN,OTHER
 Ranvier	8	PROPER_NOUN
 neurotrophic	8	OTHER
-Gelb	8	PROPER_NOUN
 MOG	8	PROPER_NOUN
 flexion	8	NOUN,OTHER
 thiamine	8	NOUN,OTHER
@@ -61963,7 +61795,6 @@ Teater	8	OTHER
 educations	8	NOUN,OTHER	education
 Billund	8	PROPER_NOUN
 centralising	8	VERB	centralise
-Posten	8	PROPER_NOUN
 cavefish	8	NOUN,OTHER
 Pétain	8	PROPER_NOUN
 ecclesiastically	8	OTHER
@@ -61982,7 +61813,6 @@ hazing	8	NOUN,VERB	haze
 Popov	8	PROPER_NOUN
 refurbish	8	NOUN,VERB
 motorboats	8	NOUN,VERB	motorboat
-km²	8	OTHER
 Sargsyan	8	PROPER_NOUN
 mln	8	OTHER
 curtailment	8	NOUN,OTHER
@@ -62654,7 +62484,6 @@ colloquialisms	8	NOUN,OTHER	colloquialism
 foothill	8	NOUN,OTHER
 makeover	8	NOUN,OTHER
 disfavored	8	VERB	disfavor
-Citys	8	PROPER_NOUN
 watercourse	8	NOUN,OTHER
 Scrubs	8	OTHER
 flashlight	8	NOUN,VERB
@@ -62721,7 +62550,6 @@ Narragansett	8	NOUN,PROPER_NOUN
 smug	8	VERB,ADJECTIVE
 vagaries	8	OTHER
 Howes	8	OTHER
-Hessen	8	PROPER_NOUN
 Attucks	8	PROPER_NOUN
 Pye	8	OTHER
 FPUs	8	NOUN,PROPER_NOUN	FPU
@@ -62913,7 +62741,6 @@ isopsephy	8	OTHER
 Aḥmad	8	PROPER_NOUN
 Burne	8	PROPER_NOUN
 categorizations	8	NOUN,OTHER	categorization
-Bibel	8	PROPER_NOUN
 Barras	8	PROPER_NOUN
 vasodilation	8	NOUN,OTHER
 Rete	8	OTHER
@@ -63033,7 +62860,6 @@ clocking	8	NOUN,VERB	clock
 escarpments	8	NOUN,OTHER	escarpment
 ensigns	8	NOUN,VERB	ensign
 Ulmer	8	PROPER_NOUN
-Tage	8	PROPER_NOUN
 Sande	8	PROPER_NOUN
 quaestors	8	NOUN,OTHER	quaestor
 Saguntum	8	PROPER_NOUN
@@ -63073,7 +62899,6 @@ Gabrieli	8	PROPER_NOUN
 Rachmaninoff	8	PROPER_NOUN
 persuasions	8	NOUN,OTHER	persuasion
 RPI	8	PROPER_NOUN
-Feld	8	PROPER_NOUN
 Thad	8	PROPER_NOUN
 Barco	8	PROPER_NOUN
 Daman	8	PROPER_NOUN
@@ -63094,11 +62919,9 @@ Pera	8	PROPER_NOUN
 Gagosian	8	PROPER_NOUN
 Marcha	8	OTHER
 Glinka	8	PROPER_NOUN
-Residenz	8	PROPER_NOUN
 outshone	8	OTHER
 Esico	8	PROPER_NOUN
 Beccaria	8	PROPER_NOUN
-Museen	8	PROPER_NOUN
 Fogg	8	PROPER_NOUN
 interventive	8	OTHER
 fatherless	8	OTHER
@@ -63280,7 +63103,6 @@ Coren	8	PROPER_NOUN
 bitches	8	NOUN,VERB	bitch
 tints	8	NOUN,VERB	tint
 fulminate	8	NOUN,VERB
-Wissenschaft	8	PROPER_NOUN
 ineffable	8	OTHER
 Camelus	8	PROPER_NOUN
 denotative	8	OTHER
@@ -63339,7 +63161,6 @@ Isonzo	8	PROPER_NOUN
 Pelješac	8	PROPER_NOUN
 Korčula	8	PROPER_NOUN
 Helmer	8	OTHER
-Zweig	8	PROPER_NOUN
 Sandys	8	PROPER_NOUN
 frostbite	8	NOUN,VERB
 mangled	8	VERB	mangle
@@ -63577,7 +63398,6 @@ fortuitous	8	OTHER
 jubilant	8	OTHER
 Breitkopf	8	PROPER_NOUN
 scherzi	8	OTHER
-uns	8	OTHER
 Ozawa	8	PROPER_NOUN
 Albatros	8	PROPER_NOUN
 UBP	8	PROPER_NOUN
@@ -63654,7 +63474,6 @@ chipped	8	VERB	chip
 bloodily	8	OTHER
 Helmstedt	8	PROPER_NOUN
 raked	8	VERB	rake
-Mauer	8	PROPER_NOUN
 aficionados	8	NOUN,OTHER	aficionado
 veena	8	NOUN,OTHER
 perc	8	NOUN,OTHER
@@ -64231,7 +64050,6 @@ nepheline	8	NOUN,OTHER
 assonance	8	NOUN,OTHER
 Homburg	8	NOUN,OTHER
 EVP	8	NOUN,PROPER_NOUN
-Verein	8	PROPER_NOUN
 Nott	8	PROPER_NOUN
 Hatuey	8	PROPER_NOUN
 Fulgencio	8	PROPER_NOUN
@@ -64479,7 +64297,6 @@ raving	8	NOUN,VERB	rave
 Cullinan	8	PROPER_NOUN
 psychosexual	8	OTHER
 sceptics	8	NOUN,OTHER	sceptic
-Aufbau	8	PROPER_NOUN
 metacognitive	8	OTHER
 homunculus	8	NOUN,OTHER
 oxhide	8	NOUN,OTHER
@@ -64541,7 +64358,6 @@ Movimiento	8	PROPER_NOUN
 ERM	8	NOUN,PROPER_NOUN
 Karo	8	PROPER_NOUN
 NPP	8	NOUN,PROPER_NOUN
-Wallenstein	8	PROPER_NOUN
 Síochána	8	PROPER_NOUN
 Craigavon	8	PROPER_NOUN
 Rosenfeld	8	PROPER_NOUN
@@ -64607,7 +64423,6 @@ orthographically	8	OTHER
 whereof	8	OTHER
 Psych	8	OTHER
 Nymphomaniac	8	OTHER
-Beiträge	8	PROPER_NOUN
 Zukor	8	PROPER_NOUN
 Eyman	8	PROPER_NOUN
 Wellman	8	PROPER_NOUN
@@ -64615,7 +64430,6 @@ Chuang	8	NOUN,PROPER_NOUN
 NACA	8	PROPER_NOUN
 Glennis	8	PROPER_NOUN
 Ingraham	8	PROPER_NOUN
-Groß	8	PROPER_NOUN
 Judson	8	PROPER_NOUN
 ENMOD	8	PROPER_NOUN
 arithmetically	8	OTHER
@@ -64750,7 +64564,6 @@ plush	8	NOUN,VERB,ADJECTIVE
 Nirosta	8	PROPER_NOUN
 Sammet	8	PROPER_NOUN
 renames	8	NOUN,VERB	rename
-ihr	8	OTHER
 Yavanas	8	PROPER_NOUN
 angiogenesis	8	NOUN,OTHER
 Pedrell	8	PROPER_NOUN
@@ -64785,7 +64598,6 @@ onside	8	NOUN,OTHER
 Siebel	8	PROPER_NOUN
 CSIRAC	8	PROPER_NOUN
 Hagel	8	PROPER_NOUN
-Breit	8	PROPER_NOUN
 vulgarity	8	NOUN,OTHER
 artichoke	8	NOUN,OTHER
 freezer	8	NOUN,OTHER
@@ -64831,7 +64643,6 @@ Tetragrammaton	8	NOUN,OTHER
 Klara	8	PROPER_NOUN
 Tevet	8	PROPER_NOUN
 shammash	8	NOUN,OTHER
-Leber	8	PROPER_NOUN
 sildenafil	8	NOUN,OTHER
 Nantwich	8	PROPER_NOUN
 Northwich	8	PROPER_NOUN
@@ -65075,7 +64886,6 @@ Totentanz	8	PROPER_NOUN
 semidirect	8	OTHER
 Banister	8	OTHER
 Deanna	8	PROPER_NOUN
-Orgel	8	PROPER_NOUN
 DIMM	8	NOUN,PROPER_NOUN
 LPDDR	8	NOUN,PROPER_NOUN
 Kallela	8	PROPER_NOUN
@@ -65143,7 +64953,6 @@ Esperantujo	8	PROPER_NOUN
 isms	8	OTHER
 delimiter	8	NOUN,OTHER
 Hymnen	8	PROPER_NOUN
-Gesang	8	PROPER_NOUN
 Newson	8	PROPER_NOUN
 Stülpnagel	8	PROPER_NOUN
 upswing	8	NOUN,VERB
@@ -65235,8 +65044,6 @@ Denisova	8	PROPER_NOUN
 supervolcano	8	NOUN,OTHER
 Koptos	8	PROPER_NOUN
 Yuezhi	8	PROPER_NOUN
-Machen	8	OTHER
-Langen	8	PROPER_NOUN
 indeclinable	8	NOUN,OTHER
 Iname	8	PROPER_NOUN
 Yuge	8	PROPER_NOUN
@@ -66053,7 +65860,6 @@ regurgitated	7	VERB	regurgitate
 tickle	7	NOUN,VERB
 replicable	7	OTHER
 Clauson	7	PROPER_NOUN
-Jugend	7	PROPER_NOUN
 dialectology	7	NOUN,OTHER
 intangibles	7	OTHER
 extensionality	7	NOUN,OTHER
@@ -66324,7 +66130,6 @@ Randers	7	PROPER_NOUN
 Venner	7	PROPER_NOUN
 MEK	7	PROPER_NOUN
 Silkeborg	7	PROPER_NOUN
-Kaserne	7	NOUN,PROPER_NOUN
 Lav	7	OTHER
 homely	7	ADJECTIVE
 Steffen	7	PROPER_NOUN
@@ -66582,7 +66387,6 @@ pry	7	NOUN,VERB
 Parva	7	OTHER
 resection	7	NOUN,VERB
 castrum	7	NOUN,OTHER
-Donau	7	PROPER_NOUN
 Dollinger	7	PROPER_NOUN
 Oden	7	OTHER
 libelous	7	OTHER
@@ -66669,7 +66473,6 @@ Chowdhury	7	PROPER_NOUN
 Martyrium	7	PROPER_NOUN
 Deira	7	PROPER_NOUN
 Gallican	7	NOUN,PROPER_NOUN
-Schriften	7	PROPER_NOUN
 acetonitrile	7	NOUN,OTHER
 sulfonamides	7	OTHER
 NCH	7	PROPER_NOUN
@@ -67106,7 +66909,6 @@ parigi	7	OTHER
 Villon	7	PROPER_NOUN
 Guimard	7	PROPER_NOUN
 Yaxchilan	7	OTHER
-Kuba	7	PROPER_NOUN
 mâché	7	OTHER
 quartiers	7	OTHER
 Tamara	7	PROPER_NOUN
@@ -67134,7 +66936,6 @@ Cian	7	OTHER
 skillet	7	NOUN,VERB
 Francophile	7	NOUN,OTHER
 Sackson	7	PROPER_NOUN
-Jahres	7	PROPER_NOUN
 ethnocultural	7	OTHER
 expletive	7	NOUN,OTHER
 Lindgren	7	PROPER_NOUN
@@ -67227,7 +67028,6 @@ tolled	7	VERB	toll
 machete	7	NOUN,VERB
 Xpress	7	PROPER_NOUN
 Everitt	7	PROPER_NOUN
-Grünen	7	PROPER_NOUN
 asocial	7	NOUN,OTHER
 vagrants	7	NOUN,OTHER	vagrant
 bandages	7	NOUN,VERB	bandage
@@ -67444,7 +67244,6 @@ capuchin	7	NOUN,OTHER
 sterilizing	7	VERB	sterilize
 Hizbullah	7	PROPER_NOUN
 Broadacre	7	PROPER_NOUN
-Zentrum	7	PROPER_NOUN
 mispronounced	7	OTHER
 bestial	7	OTHER
 Petites	7	OTHER
@@ -67545,7 +67344,6 @@ Mainas	7	PROPER_NOUN
 Castaneda	7	PROPER_NOUN
 Cultura	7	PROPER_NOUN
 allative	7	NOUN,OTHER
-Oper	7	PROPER_NOUN
 Ridder	7	OTHER
 atropine	7	NOUN,OTHER
 thebaine	7	OTHER
@@ -67603,7 +67401,6 @@ Winton	7	PROPER_NOUN
 rapt	7	ADJECTIVE
 Caerphilly	7	PROPER_NOUN
 Asperger	7	NOUN,PROPER_NOUN
-Litt	7	OTHER
 Lawlor	7	PROPER_NOUN
 NexGen	7	PROPER_NOUN
 northbridge	7	NOUN,OTHER
@@ -67614,12 +67411,10 @@ Schongauer	7	PROPER_NOUN
 Stabius	7	PROPER_NOUN
 Raimondi	7	PROPER_NOUN
 Germanisches	7	PROPER_NOUN
-einer	7	OTHER
 footy	7	NOUN,OTHER
 stoppages	7	NOUN,OTHER	stoppage
 Cosgrove	7	PROPER_NOUN
 Zemirot	7	OTHER
-Schutz	7	PROPER_NOUN
 Schatz	7	PROPER_NOUN
 sweepstakes	7	NOUN,OTHER
 Cocker	7	PROPER_NOUN
@@ -67887,7 +67682,6 @@ pouncing	7	NOUN,OTHER
 planespotters	7	OTHER
 Jinan	7	PROPER_NOUN
 Barratt	7	PROPER_NOUN
-Presse	7	OTHER
 sublimated	7	VERB	sublimate
 BTL	7	PROPER_NOUN
 Islay	7	PROPER_NOUN
@@ -68227,7 +68021,6 @@ wampum	7	NOUN,OTHER
 Noster	7	OTHER
 frosted	7	NOUN,VERB	frost
 messianism	7	NOUN,OTHER
-Enden	7	PROPER_NOUN
 pantheist	7	NOUN,OTHER
 Bashevis	7	PROPER_NOUN
 preceptor	7	NOUN,OTHER
@@ -68393,7 +68186,6 @@ hepatocellular	7	OTHER
 organochlorine	7	NOUN,OTHER
 stabiliser	7	NOUN,OTHER
 HFIR	7	PROPER_NOUN
-Motoren	7	PROPER_NOUN
 NISO	7	PROPER_NOUN
 Radomir	7	PROPER_NOUN
 tera	7	OTHER
@@ -68847,7 +68639,6 @@ brickmaking	7	OTHER
 Oxbridge	7	PROPER_NOUN
 unreinforced	7	OTHER
 Tommasini	7	PROPER_NOUN
-Sprach	7	OTHER
 Ditta	7	PROPER_NOUN
 Balázs	7	PROPER_NOUN
 Rusyns	7	NOUN,PROPER_NOUN	Rusyn
@@ -69017,7 +68808,6 @@ fomenting	7	VERB	foment
 Isagoras	7	PROPER_NOUN
 overdraft	7	NOUN,VERB
 LJ	7	NOUN,PROPER_NOUN
-Osten	7	PROPER_NOUN
 RoHS	7	PROPER_NOUN
 Karađorđe	7	PROPER_NOUN
 keyloggers	7	OTHER
@@ -69321,7 +69111,6 @@ Columb	7	PROPER_NOUN
 germane	7	NOUN,OTHER
 Gassner	7	PROPER_NOUN
 infinities	7	NOUN,OTHER	infinity
-bildenden	7	OTHER
 Erlandson	7	PROPER_NOUN
 Flynt	7	PROPER_NOUN
 Corgan	7	PROPER_NOUN
@@ -69368,7 +69157,6 @@ Repsol	7	PROPER_NOUN
 chough	7	NOUN,OTHER
 grunt	7	NOUN,VERB
 Jardín	7	OTHER
-Griff	7	OTHER
 microcontinent	7	NOUN,OTHER
 Kuttner	7	PROPER_NOUN
 disapproves	7	VERB	disapprove
@@ -69519,7 +69307,6 @@ demean	7	NOUN,VERB
 bittersweet	7	NOUN,OTHER
 Antiqua	7	NOUN,OTHER
 Axa	7	OTHER
-Werk	7	PROPER_NOUN
 peculiarly	7	OTHER
 cameramen	7	NOUN,OTHER	cameraman
 historiographer	7	NOUN,OTHER
@@ -69949,7 +69736,6 @@ CBG	7	NOUN,PROPER_NOUN
 Fiorentini	7	OTHER
 Pistoia	7	PROPER_NOUN
 waterwheels	7	NOUN,OTHER	waterwheel
-Sonne	7	PROPER_NOUN
 CNI	7	PROPER_NOUN
 entrainment	7	NOUN,OTHER
 overpressure	7	NOUN,VERB
@@ -70040,7 +69826,6 @@ Moonstone	7	OTHER
 Worshipful	7	OTHER
 Escalier	7	OTHER
 Mixolydian	7	OTHER
-Freiheit	7	PROPER_NOUN
 Showa	7	PROPER_NOUN
 curette	7	NOUN,VERB
 Capaldi	7	PROPER_NOUN
@@ -70205,7 +69990,6 @@ securitization	7	NOUN,OTHER
 Tuol	7	PROPER_NOUN
 Grappelli	7	PROPER_NOUN
 gentleness	7	NOUN,OTHER
-Hoch	7	OTHER
 Autonav	7	PROPER_NOUN
 climaxes	7	NOUN,VERB	climax
 Blakey	7	NOUN,PROPER_NOUN
@@ -70267,7 +70051,6 @@ TPI	7	PROPER_NOUN
 dermatology	7	NOUN,OTHER
 oxalates	7	NOUN,VERB	oxalate
 Joschka	7	PROPER_NOUN
-Autobahnen	7	PROPER_NOUN
 Dickins	7	PROPER_NOUN
 ppg	7	OTHER
 Inuvialuit	7	PROPER_NOUN
@@ -70333,7 +70116,6 @@ Stanwood	7	PROPER_NOUN
 perennialism	7	OTHER
 Nagle	7	PROPER_NOUN
 discerns	7	VERB	discern
-FPÖ	7	PROPER_NOUN
 Ryszard	7	PROPER_NOUN
 Emerita	7	OTHER
 gangue	7	NOUN,OTHER
@@ -70454,10 +70236,8 @@ FAQs	7	NOUN,PROPER_NOUN	FAQ
 Polikarpov	7	PROPER_NOUN
 Fabula	7	OTHER
 Bockenheim	7	PROPER_NOUN
-Innenstadt	7	PROPER_NOUN
 Nordend	7	PROPER_NOUN
 Eschborn	7	PROPER_NOUN
-Turm	7	PROPER_NOUN
 Näsström	7	PROPER_NOUN
 Nibelungen	7	PROPER_NOUN
 Hammam	7	PROPER_NOUN
@@ -70750,7 +70530,6 @@ Soaemias	7	PROPER_NOUN
 Haave	7	PROPER_NOUN
 HHDC	7	PROPER_NOUN
 FTIR	7	NOUN,PROPER_NOUN
-Hob	7	PROPER_NOUN
 hesychasts	7	NOUN,OTHER	hesychast
 Vigilius	7	PROPER_NOUN
 hypnotists	7	NOUN,OTHER	hypnotist
@@ -70991,7 +70770,6 @@ Syphax	6	PROPER_NOUN
 Gelimer	6	PROPER_NOUN
 Sulaym	6	PROPER_NOUN
 Qal	6	PROPER_NOUN
-Krim	6	PROPER_NOUN
 Larbi	6	PROPER_NOUN
 Ait	6	PROPER_NOUN
 Rabah	6	PROPER_NOUN
@@ -71071,7 +70849,6 @@ Midianites	6	NOUN,PROPER_NOUN	Midianite
 Consell	6	PROPER_NOUN
 Catalana	6	PROPER_NOUN
 Andorrans	6	NOUN,PROPER_NOUN	Andorran
-Kurz	6	PROPER_NOUN
 Villefranche	6	PROPER_NOUN
 Perpignan	6	PROPER_NOUN
 rôle	6	NOUN,OTHER
@@ -71167,7 +70944,6 @@ pseudohalides	6	OTHER
 zh	6	OTHER
 Zed	6	NOUN,OTHER
 apostrophes	6	NOUN,OTHER	apostrophe
-Zahl	6	PROPER_NOUN
 contractility	6	NOUN,OTHER
 intervertebral	6	OTHER
 copulatory	6	OTHER
@@ -71422,7 +71198,6 @@ hydraulically	6	OTHER
 turbocharger	6	NOUN,OTHER
 Joest	6	PROPER_NOUN
 ACO	6	PROPER_NOUN
-durch	6	OTHER
 Bartle	6	PROPER_NOUN
 Schäfer	6	PROPER_NOUN
 impersonator	6	NOUN,OTHER
@@ -71560,8 +71335,6 @@ AlCl	6	PROPER_NOUN
 bipyramidal	6	OTHER
 colluded	6	VERB	collude
 alumen	6	OTHER
-Vier	6	OTHER
-eigenen	6	OTHER
 takings	6	NOUN,OTHER	take
 nonbeing	6	NOUN,OTHER
 outgroup	6	NOUN,VERB
@@ -71686,7 +71459,6 @@ intransigence	6	NOUN,OTHER
 Adèle	6	PROPER_NOUN
 Sulpice	6	PROPER_NOUN
 Català	6	OTHER
-Forschung	6	PROPER_NOUN
 Mithras	6	PROPER_NOUN
 leavening	6	NOUN,VERB	leaven
 emended	6	OTHER
@@ -71817,7 +71589,6 @@ envisage	6	VERB
 Taygetus	6	PROPER_NOUN
 specialisations	6	NOUN,OTHER	specialisation
 Imperiale	6	PROPER_NOUN
-Zeiten	6	PROPER_NOUN
 Fondo	6	PROPER_NOUN
 mytheme	6	NOUN,OTHER
 Hammarström	6	PROPER_NOUN
@@ -71835,7 +71606,6 @@ Aiwass	6	PROPER_NOUN
 Beachy	6	PROPER_NOUN
 Pollitt	6	PROPER_NOUN
 Jacot	6	PROPER_NOUN
-Paar	6	PROPER_NOUN
 preternatural	6	OTHER
 MMM	6	OTHER
 Evangeline	6	PROPER_NOUN
@@ -72148,7 +71918,6 @@ Chur	6	PROPER_NOUN
 Raurica	6	PROPER_NOUN
 Alternext	6	PROPER_NOUN
 ETFs	6	PROPER_NOUN
-Mitten	6	OTHER
 priestcraft	6	NOUN,OTHER
 Purbeck	6	PROPER_NOUN
 Darwinists	6	NOUN,PROPER_NOUN	Darwinist
@@ -72550,7 +72319,6 @@ Querfurt	6	PROPER_NOUN
 brusquely	6	OTHER
 Eskil	6	PROPER_NOUN
 Saintonge	6	PROPER_NOUN
-Österreichische	6	PROPER_NOUN
 décoratif	6	OTHER
 Dufrêne	6	PROPER_NOUN
 Redon	6	PROPER_NOUN
@@ -72705,7 +72473,6 @@ gassings	6	NOUN,OTHER	gas
 sadists	6	NOUN,OTHER	sadist
 Mengele	6	PROPER_NOUN
 Natzweiler	6	PROPER_NOUN
-Kanada	6	PROPER_NOUN
 braids	6	OTHER
 shovels	6	NOUN,VERB	shovel
 Witchery	6	OTHER
@@ -72736,7 +72503,6 @@ Strix	6	OTHER
 Mende	6	PROPER_NOUN
 Ruelle	6	PROPER_NOUN
 Marthe	6	PROPER_NOUN
-Mathematische	6	PROPER_NOUN
 Rockland	6	PROPER_NOUN
 Vaillant	6	PROPER_NOUN
 Karla	6	PROPER_NOUN
@@ -73123,7 +72889,6 @@ Aalenian	6	PROPER_NOUN
 Ellwangen	6	PROPER_NOUN
 gasworks	6	NOUN,OTHER
 Waldhausen	6	PROPER_NOUN
-Bundesstraßen	6	PROPER_NOUN
 Heidenheim	6	PROPER_NOUN
 Amtsgericht	6	PROPER_NOUN
 neuropathologist	6	NOUN,OTHER
@@ -73162,7 +72927,6 @@ Broadcom	6	PROPER_NOUN
 DVI	6	NOUN,PROPER_NOUN
 Pirckheimer	6	PROPER_NOUN
 Lochner	6	PROPER_NOUN
-jungen	6	OTHER
 mutter	6	NOUN,VERB
 Kupferstichkabinett	6	PROPER_NOUN
 Eggleston	6	PROPER_NOUN
@@ -73170,7 +72934,6 @@ Yarra	6	PROPER_NOUN
 Burleigh	6	PROPER_NOUN
 Beresford	6	PROPER_NOUN
 Howden	6	PROPER_NOUN
-sieben	6	OTHER
 LOD	6	NOUN,PROPER_NOUN
 instrumentally	6	OTHER
 Chodesh	6	OTHER
@@ -73179,7 +72942,6 @@ SATB	6	PROPER_NOUN
 Gymnopédies	6	PROPER_NOUN
 Mussorgsky	6	PROPER_NOUN
 orchestrates	6	VERB	orchestrate
-eines	6	OTHER
 combos	6	NOUN,VERB	combo
 Tarraconensis	6	PROPER_NOUN
 Bárbara	6	PROPER_NOUN
@@ -73223,7 +72985,6 @@ sphincter	6	NOUN,OTHER
 sphincters	6	NOUN,OTHER	sphincter
 orgasms	6	NOUN,VERB	orgasm
 Kyburg	6	PROPER_NOUN
-Ämter	6	PROPER_NOUN
 CVP	6	NOUN,PROPER_NOUN
 studbook	6	NOUN,OTHER
 acuminata	6	OTHER
@@ -73340,10 +73101,8 @@ Cwmaman	6	PROPER_NOUN
 suppositions	6	NOUN,OTHER	supposition
 saunas	6	NOUN,VERB	sauna
 CRJ	6	PROPER_NOUN
-aber	6	OTHER
 Wester	6	OTHER
 archaically	6	OTHER
-Fach	6	NOUN,PROPER_NOUN
 survivorship	6	NOUN,OTHER
 Auctioneers	6	OTHER
 cull	6	NOUN,VERB
@@ -73489,7 +73248,6 @@ familiarly	6	OTHER
 blah	6	NOUN,VERB
 archiver	6	NOUN,OTHER
 Kalliste	6	PROPER_NOUN
-firma	6	OTHER
 Calydonian	6	PROPER_NOUN
 Amphion	6	OTHER
 billowing	6	NOUN,OTHER
@@ -73552,7 +73310,6 @@ Brünn	6	PROPER_NOUN
 Veszprém	6	PROPER_NOUN
 Loránd	6	PROPER_NOUN
 Napoca	6	PROPER_NOUN
-Börse	6	PROPER_NOUN
 Honvéd	6	PROPER_NOUN
 Kneller	6	PROPER_NOUN
 amputating	6	OTHER
@@ -73592,7 +73349,6 @@ Eysenck	6	PROPER_NOUN
 rebuttals	6	NOUN,OTHER	rebuttal
 Kwai	6	PROPER_NOUN
 Tsing	6	OTHER
-Mais	6	OTHER
 endonyms	6	NOUN,OTHER	endonym
 Pribilof	6	PROPER_NOUN
 snugly	6	OTHER
@@ -73783,7 +73539,6 @@ Dang	6	PROPER_NOUN
 remastering	6	NOUN,VERB	remaster
 shacks	6	NOUN,VERB	shack
 Marzahn	6	PROPER_NOUN
-Palast	6	PROPER_NOUN
 Philharmonie	6	OTHER
 Kurfürstendamm	6	PROPER_NOUN
 livability	6	NOUN,OTHER
@@ -74130,7 +73885,6 @@ scorers	6	NOUN,OTHER	scorer
 nibbles	6	NOUN,VERB	nibble
 Camberwell	6	PROPER_NOUN
 Zaporizhzhia	6	PROPER_NOUN
-Archiv	6	PROPER_NOUN
 Molitor	6	OTHER
 Raffel	6	PROPER_NOUN
 Liuzza	6	PROPER_NOUN
@@ -74285,7 +74039,6 @@ proprietorship	6	NOUN,OTHER
 electrotherapy	6	NOUN,OTHER
 oceanographer	6	NOUN,OTHER
 decisional	6	OTHER
-OHNE	6	OTHER
 Schur	6	PROPER_NOUN
 Odell	6	PROPER_NOUN
 Cruden	6	PROPER_NOUN
@@ -74569,12 +74322,10 @@ pullover	6	NOUN,OTHER
 mongrel	6	NOUN,OTHER
 Iazyges	6	PROPER_NOUN
 Lukashevka	6	PROPER_NOUN
-Lebensraum	6	OTHER
 Hybrida	6	PROPER_NOUN
 Lidice	6	PROPER_NOUN
 teatime	6	NOUN,OTHER
 Egton	6	PROPER_NOUN
-Dann	6	PROPER_NOUN
 Moyles	6	PROPER_NOUN
 Amfo	6	PROPER_NOUN
 Arielle	6	PROPER_NOUN
@@ -74585,7 +74336,6 @@ Vandeleur	6	PROPER_NOUN
 heavies	6	NOUN,VERB	heavy
 carabiniers	6	OTHER
 Haie	6	PROPER_NOUN
-alten	6	OTHER
 stencils	6	NOUN,VERB	stencil
 Fridolin	6	PROPER_NOUN
 overtraining	6	OTHER
@@ -74643,7 +74393,6 @@ roundworms	6	OTHER
 ultracold	6	OTHER
 Blinder	6	OTHER
 Bopper	6	PROPER_NOUN
-Darin	6	PROPER_NOUN
 schooldays	6	OTHER
 rimmed	6	VERB	rim
 jaunty	6	NOUN,ADJECTIVE
@@ -74824,7 +74573,6 @@ bluer	6	NOUN,ADJECTIVE	blue
 Joliot	6	PROPER_NOUN
 Shiung	6	PROPER_NOUN
 Halder	6	PROPER_NOUN
-Schwerpunkt	6	NOUN,PROPER_NOUN
 Bagration	6	PROPER_NOUN
 obviated	6	OTHER
 pranking	6	VERB	prank
@@ -74989,7 +74737,6 @@ Thun	6	OTHER
 Orients	6	NOUN,OTHER	Orient
 Fachhochschule	6	PROPER_NOUN
 Pertini	6	PROPER_NOUN
-Gutes	6	OTHER
 flavorful	6	OTHER
 Gutierrez	6	OTHER
 cantilevered	6	VERB	cantilever
@@ -75042,7 +74789,6 @@ Mitscher	6	PROPER_NOUN
 Surtees	6	PROPER_NOUN
 DFV	6	PROPER_NOUN
 Patrese	6	PROPER_NOUN
-Norden	6	NOUN,PROPER_NOUN
 hoppers	6	OTHER
 paddies	6	OTHER
 GloFish	6	NOUN,PROPER_NOUN
@@ -75091,7 +74837,6 @@ Helga	6	OTHER
 CTAOP	6	PROPER_NOUN
 castling	6	NOUN,OTHER
 middlegame	6	NOUN,OTHER
-Boden	6	PROPER_NOUN
 tablebases	6	OTHER
 mumming	6	NOUN,VERB	mum
 IRD	6	PROPER_NOUN
@@ -75587,7 +75332,6 @@ jambalaya	6	NOUN,OTHER
 Dagobert	6	PROPER_NOUN
 Böll	6	PROPER_NOUN
 cutlet	6	NOUN,OTHER
-m²	6	OTHER
 dashi	6	NOUN,OTHER
 selectmen	6	OTHER
 Elías	6	PROPER_NOUN
@@ -75668,7 +75412,6 @@ custos	6	NOUN,OTHER
 Adhara	6	PROPER_NOUN
 Herbig	6	PROPER_NOUN
 brightens	6	VERB	brighten
-Lage	6	OTHER
 Pilkington	6	PROPER_NOUN
 Batts	6	PROPER_NOUN
 sheared	6	VERB	shear
@@ -75767,7 +75510,6 @@ Nuxhall	6	PROPER_NOUN
 entrusting	6	VERB	entrust
 Shinzō	6	PROPER_NOUN
 Myung	6	PROPER_NOUN
-Jünger	6	PROPER_NOUN
 Stauffenberg	6	PROPER_NOUN
 Europeanism	6	NOUN,PROPER_NOUN
 SDO	6	NOUN,PROPER_NOUN
@@ -75918,7 +75660,6 @@ Makea	6	PROPER_NOUN
 pinpointed	6	VERB	pinpoint
 conching	6	VERB	conch
 NIB	6	NOUN,OTHER
-Italien	6	PROPER_NOUN
 banged	6	OTHER
 Sjögren	6	PROPER_NOUN
 deferral	6	NOUN,OTHER
@@ -76093,7 +75834,6 @@ Skaff	6	PROPER_NOUN
 Kaiko	6	PROPER_NOUN
 Echeverría	6	PROPER_NOUN
 despatches	6	NOUN,VERB	despatch
-Psychologie	6	PROPER_NOUN
 Athanasios	6	PROPER_NOUN
 rubberized	6	OTHER
 laminal	6	NOUN,OTHER
@@ -76201,8 +75941,6 @@ prophetically	6	OTHER
 Iemitsu	6	PROPER_NOUN
 Opperhoofd	6	OTHER
 tetrachords	6	NOUN,OTHER	tetrachord
-Recht	6	OTHER
-Frauen	6	NOUN,PROPER_NOUN	Frau
 meted	6	OTHER
 HMP	6	NOUN,PROPER_NOUN
 manacles	6	OTHER
@@ -76505,7 +76243,6 @@ misjudged	6	OTHER
 Holon	6	OTHER
 triboelectric	6	OTHER
 Monika	6	PROPER_NOUN
-Thüringer	6	PROPER_NOUN
 Bhraonáin	6	PROPER_NOUN
 Heta	6	OTHER
 Nunatsiavut	6	PROPER_NOUN
@@ -76514,11 +76251,8 @@ ALOHAnet	6	PROPER_NOUN
 memoirist	6	NOUN,OTHER
 Smellie	6	PROPER_NOUN
 Luening	6	PROPER_NOUN
-Fünf	6	OTHER
 Kawai	6	PROPER_NOUN
 slighting	6	NOUN,VERB	slight
-Logische	6	OTHER
-Untersuchungen	6	PROPER_NOUN
 Misawa	6	PROPER_NOUN
 magnetohydrodynamics	6	OTHER
 nullary	6	OTHER
@@ -76714,7 +76448,6 @@ cloze	6	NOUN,OTHER
 Fryslân	6	PROPER_NOUN
 hypnotist	6	NOUN,OTHER
 Spartacist	6	NOUN,PROPER_NOUN
-Mensch	6	PROPER_NOUN
 Fassbinder	6	PROPER_NOUN
 zouk	6	NOUN,VERB
 Osawa	6	PROPER_NOUN
@@ -76731,7 +76464,6 @@ Bleecker	6	PROPER_NOUN
 filking	6	VERB	filk
 Chalfont	6	PROPER_NOUN
 YPF	6	PROPER_NOUN
-Staats	6	PROPER_NOUN
 Burdwood	6	PROPER_NOUN
 Grímr	6	PROPER_NOUN
 honeymoons	6	NOUN,VERB	honeymoon
@@ -76822,7 +76554,6 @@ FWA	6	PROPER_NOUN
 farting	6	NOUN,VERB	fart
 Burge	6	PROPER_NOUN
 Rutstein	6	PROPER_NOUN
-Tote	6	OTHER
 Chimenti	6	PROPER_NOUN
 Herne	6	PROPER_NOUN
 Nayland	6	PROPER_NOUN
@@ -76887,7 +76618,6 @@ Mishkan	6	PROPER_NOUN
 Latinas	6	NOUN,PROPER_NOUN	Latina
 propagators	6	NOUN,OTHER	propagator
 Petrashevsky	6	PROPER_NOUN
-Herzen	6	PROPER_NOUN
 Agoncillo	6	PROPER_NOUN
 Seldon	6	PROPER_NOUN
 Pelerin	6	PROPER_NOUN
@@ -77400,7 +77130,6 @@ Kantipur	6	PROPER_NOUN
 Kirtipur	6	PROPER_NOUN
 Tribhuvan	6	PROPER_NOUN
 Kafue	6	PROPER_NOUN
-Punkte	6	PROPER_NOUN
 Zeitmaße	6	PROPER_NOUN
 Bornuan	6	PROPER_NOUN
 Hausaland	6	PROPER_NOUN
@@ -77425,7 +77154,6 @@ Heijenoort	6	PROPER_NOUN
 Alstroemeriaceae	6	PROPER_NOUN
 Laurales	6	PROPER_NOUN
 Lietuva	6	OTHER
-Boten	6	PROPER_NOUN
 Champasak	6	PROPER_NOUN
 LPAF	6	PROPER_NOUN
 Xieng	6	PROPER_NOUN
@@ -77807,7 +77535,6 @@ rudely	5	OTHER
 musing	5	NOUN,OTHER
 Erdmann	5	PROPER_NOUN
 invalids	5	NOUN,VERB	invalid
-meine	5	OTHER
 directionless	5	OTHER
 voluntarism	5	NOUN,OTHER
 altruist	5	NOUN,OTHER
@@ -78008,8 +77735,6 @@ macrofamily	5	NOUN,OTHER
 Juha	5	PROPER_NOUN
 Siegmund	5	PROPER_NOUN
 Hochdeutsch	5	PROPER_NOUN
-Österreich	5	PROPER_NOUN
-Schweizer	5	OTHER
 determinacy	5	NOUN,OTHER
 Jeong	5	PROPER_NOUN
 Viminacium	5	PROPER_NOUN
@@ -78034,7 +77759,6 @@ Houten	5	PROPER_NOUN
 Straatjes	5	PROPER_NOUN
 Visser	5	PROPER_NOUN
 Molenaar	5	PROPER_NOUN
-Winkel	5	PROPER_NOUN
 maar	5	NOUN,OTHER
 Zaal	5	OTHER
 awakenings	5	NOUN,OTHER	awaken
@@ -78169,7 +77893,6 @@ degradable	5	NOUN,OTHER
 nonmagnetic	5	OTHER
 hexa	5	OTHER
 diaspore	5	NOUN,OTHER
-Physik	5	PROPER_NOUN
 Fremd	5	OTHER
 soundscape	5	NOUN,VERB
 Germanness	5	PROPER_NOUN
@@ -78501,7 +78224,6 @@ Mathison	5	PROPER_NOUN
 Tenney	5	PROPER_NOUN
 Besicovitch	5	PROPER_NOUN
 decidability	5	NOUN,OTHER
-Schweiz	5	PROPER_NOUN
 Alick	5	OTHER
 tetrad	5	NOUN,OTHER
 Landesmuseum	5	PROPER_NOUN
@@ -78515,7 +78237,6 @@ plainsong	5	NOUN,OTHER
 archdeaconry	5	NOUN,OTHER
 liberalising	5	VERB	liberalise
 Ordinariate	5	OTHER
-Athen	5	OTHER
 Faliro	5	PROPER_NOUN
 Parnitha	5	PROPER_NOUN
 Glyfada	5	PROPER_NOUN
@@ -78810,10 +78531,7 @@ Vanquisher	5	OTHER
 encyclopedist	5	NOUN,OTHER
 bathhouses	5	NOUN,OTHER	bathhouse
 saintliness	5	NOUN,OTHER
-Regierungsbezirk	5	PROPER_NOUN
 Forst	5	OTHER
-Nordrhein	5	PROPER_NOUN
-Westfalen	5	PROPER_NOUN
 Roermond	5	PROPER_NOUN
 Commun	5	OTHER
 duller	5	NOUN,ADJECTIVE	dull
@@ -78838,7 +78556,6 @@ calligraphers	5	NOUN,OTHER	calligrapher
 Üsküdar	5	PROPER_NOUN
 Langa	5	PROPER_NOUN
 Nibutani	5	PROPER_NOUN
-Deren	5	PROPER_NOUN
 Hidaka	5	PROPER_NOUN
 Satō	5	PROPER_NOUN
 Tahara	5	OTHER
@@ -79092,7 +78809,6 @@ royally	5	OTHER
 scolds	5	OTHER
 Ajātasattu	5	PROPER_NOUN
 Hirakawa	5	PROPER_NOUN
-Sieger	5	PROPER_NOUN
 Bactra	5	PROPER_NOUN
 forewings	5	OTHER
 implausibly	5	OTHER
@@ -79392,7 +79108,6 @@ birationally	5	OTHER
 Yoneda	5	PROPER_NOUN
 presheaves	5	NOUN,OTHER	presheaf
 ordinates	5	NOUN,VERB	ordinate
-Umlauf	5	PROPER_NOUN
 NXP	5	PROPER_NOUN
 Mopac	5	PROPER_NOUN
 solvency	5	NOUN,OTHER
@@ -79596,7 +79311,6 @@ maximising	5	VERB	maximise
 machineguns	5	OTHER
 Bovington	5	PROPER_NOUN
 cwt	5	NOUN,OTHER
-Kfz	5	PROPER_NOUN
 Giffard	5	PROPER_NOUN
 ISV	5	NOUN,PROPER_NOUN
 debilitated	5	OTHER
@@ -79861,7 +79575,6 @@ GeForce	5	PROPER_NOUN
 Oberkochen	5	PROPER_NOUN
 REMS	5	OTHER
 Gmünd	5	PROPER_NOUN
-Marktplatz	5	PROPER_NOUN
 Wehrkreis	5	PROPER_NOUN
 Schubart	5	PROPER_NOUN
 Spion	5	PROPER_NOUN
@@ -79899,7 +79612,6 @@ Steamroller	5	OTHER
 ultrathin	5	OTHER
 shaders	5	NOUN,OTHER	shader
 drypoint	5	NOUN,VERB
-Geb	5	OTHER
 macadam	5	NOUN,VERB
 scrimmages	5	NOUN,VERB	scrimmage
 Coulthard	5	PROPER_NOUN
@@ -80148,7 +79860,6 @@ Fenni	5	PROPER_NOUN
 Coxe	5	PROPER_NOUN
 Bluebirds	5	NOUN,OTHER	Bluebird
 Groundlings	5	PROPER_NOUN
-Prager	5	PROPER_NOUN
 Lynette	5	PROPER_NOUN
 EMAS	5	NOUN,PROPER_NOUN
 Histórica	5	OTHER
@@ -80381,12 +80092,10 @@ Huss	5	PROPER_NOUN
 craved	5	OTHER
 Sylow	5	PROPER_NOUN
 TMD	5	NOUN,PROPER_NOUN
-kommen	5	OTHER
 defeatist	5	NOUN,OTHER
 Lemberg	5	PROPER_NOUN
 Gorlice	5	PROPER_NOUN
 Caporetto	5	PROPER_NOUN
-Grün	5	OTHER
 trialist	5	NOUN,OTHER
 Neolog	5	NOUN,PROPER_NOUN
 professorial	5	OTHER
@@ -80694,9 +80403,7 @@ syncline	5	NOUN,OTHER
 hipped	5	VERB	hip
 Hasemann	5	PROPER_NOUN
 Todtnau	5	PROPER_NOUN
-Lassen	5	OTHER
 Donaueschingen	5	PROPER_NOUN
-Glück	5	PROPER_NOUN
 depositional	5	OTHER
 Albian	5	PROPER_NOUN
 Barremian	5	PROPER_NOUN
@@ -80927,7 +80634,6 @@ inattentive	5	OTHER
 putamen	5	NOUN,OTHER
 neuroanatomy	5	NOUN,OTHER
 unfortified	5	OTHER
-Fernsehen	5	PROPER_NOUN
 Schabowski	5	PROPER_NOUN
 juxtapose	5	VERB
 Rosner	5	PROPER_NOUN
@@ -80952,7 +80658,6 @@ laundered	5	VERB	launder
 Gösta	5	PROPER_NOUN
 Valente	5	PROPER_NOUN
 Brightman	5	PROPER_NOUN
-Klassik	5	PROPER_NOUN
 Amini	5	PROPER_NOUN
 isochronous	5	OTHER
 CeBIT	5	PROPER_NOUN
@@ -81180,7 +80885,6 @@ notrump	5	NOUN,OTHER
 Stayman	5	PROPER_NOUN
 dugouts	5	NOUN,OTHER	dugout
 stanchions	5	OTHER
-Blut	5	PROPER_NOUN
 rejoins	5	VERB	rejoin
 Dreamtime	5	OTHER
 Scientifique	5	OTHER
@@ -81608,7 +81312,6 @@ saccharification	5	NOUN,OTHER
 lauter	5	VERB
 hopback	5	NOUN,OTHER
 Orval	5	PROPER_NOUN
-saison	5	NOUN,OTHER
 stabilises	5	VERB	stabilise
 rippling	5	NOUN,VERB	ripple
 perforator	5	NOUN,OTHER
@@ -81695,9 +81398,7 @@ Elgon	5	PROPER_NOUN
 Buwayhids	5	NOUN,PROPER_NOUN	Buwayhid
 Barquq	5	PROPER_NOUN
 Amarah	5	PROPER_NOUN
-Bremer	5	NOUN,PROPER_NOUN
 Oxnard	5	PROPER_NOUN
-Dauer	5	OTHER
 Achim	5	PROPER_NOUN
 buboes	5	OTHER
 septicemic	5	OTHER
@@ -81940,7 +81641,6 @@ trainable	5	NOUN,OTHER
 sedated	5	VERB	sedate
 priah	5	OTHER
 metzitza	5	OTHER
-Frieden	5	PROPER_NOUN
 Shammai	5	PROPER_NOUN
 humanely	5	OTHER
 IPR	5	NOUN,PROPER_NOUN
@@ -82286,7 +81986,6 @@ coasters	5	NOUN,OTHER	coaster
 Minders	5	OTHER
 monetize	5	VERB
 modding	5	NOUN,VERB	mod
-eXistenZ	5	OTHER
 Frisco	5	PROPER_NOUN
 Treptichnus	5	PROPER_NOUN
 Thirdness	5	OTHER
@@ -82812,8 +82511,6 @@ untidy	5	VERB,ADJECTIVE
 smacking	5	NOUN,VERB	smack
 filé	5	OTHER
 Gürzenich	5	OTHER
-Wasser	5	PROPER_NOUN
-Himmel	5	PROPER_NOUN
 Hansik	5	OTHER
 origine	5	OTHER
 Wilsonian	5	PROPER_NOUN
@@ -83409,7 +83106,6 @@ beautify	5	VERB
 treasons	5	NOUN,OTHER	treason
 appertaining	5	OTHER
 Rawson	5	PROPER_NOUN
-Krieg	5	PROPER_NOUN
 Paysage	5	PROPER_NOUN
 humourist	5	NOUN,OTHER
 Koshi	5	PROPER_NOUN
@@ -83530,7 +83226,6 @@ Hydrographers	5	OTHER
 profiler	5	NOUN,OTHER
 Ortúzar	5	PROPER_NOUN
 Laue	5	PROPER_NOUN
-Sah	5	OTHER
 Symbionese	5	PROPER_NOUN
 whine	5	NOUN,VERB
 Souq	5	OTHER
@@ -83717,7 +83412,6 @@ steatite	5	NOUN,OTHER
 Stillwater	5	PROPER_NOUN
 Fairborn	5	PROPER_NOUN
 PHC	5	NOUN,PROPER_NOUN
-Theorie	5	PROPER_NOUN
 exponentiating	5	OTHER
 Poiseuille	5	PROPER_NOUN
 VIF	5	NOUN,OTHER
@@ -84159,7 +83853,6 @@ ironing	5	NOUN,VERB	iron
 Binoche	5	PROPER_NOUN
 Capitanian	5	PROPER_NOUN
 understudied	5	VERB	understudy
-Urteil	5	PROPER_NOUN
 Sunak	5	PROPER_NOUN
 Scobie	5	PROPER_NOUN
 Nickle	5	OTHER
@@ -84352,7 +84045,6 @@ Kunta	5	OTHER
 avifauna	5	NOUN,OTHER
 Skladanowsky	5	PROPER_NOUN
 Pommer	5	PROPER_NOUN
-Wende	5	PROPER_NOUN
 Helma	5	PROPER_NOUN
 valveless	5	OTHER
 Ritschl	5	PROPER_NOUN
@@ -84463,7 +84155,6 @@ semidecidable	5	OTHER
 Cesàro	5	PROPER_NOUN
 Commerzbank	5	PROPER_NOUN
 Riedberg	5	PROPER_NOUN
-Höchst	5	PROPER_NOUN
 Oberursel	5	PROPER_NOUN
 Rheingau	5	PROPER_NOUN
 Omid	5	PROPER_NOUN
@@ -84585,7 +84276,6 @@ kanbun	5	OTHER
 stilbene	5	NOUN,OTHER
 cantiñas	5	OTHER
 Morente	5	PROPER_NOUN
-Reihe	5	PROPER_NOUN
 likelihoods	5	NOUN,OTHER	likelihood
 faring	5	NOUN,VERB	fare
 sloka	5	NOUN,OTHER
@@ -84794,7 +84484,6 @@ Vidyapati	5	PROPER_NOUN
 Tikkun	5	OTHER
 Oels	5	PROPER_NOUN
 preferment	5	NOUN,OTHER
-Ausgabe	5	PROPER_NOUN
 Amersham	5	PROPER_NOUN
 Bettany	5	PROPER_NOUN
 Vyrubova	5	PROPER_NOUN
@@ -84950,7 +84639,6 @@ Finnis	5	PROPER_NOUN
 Hechingen	5	PROPER_NOUN
 Zollern	5	PROPER_NOUN
 Cecilienhof	5	PROPER_NOUN
-Wappen	5	PROPER_NOUN
 variometer	5	NOUN,OTHER
 Bouldnor	5	PROPER_NOUN
 crimp	5	NOUN,VERB
@@ -85848,7 +85536,6 @@ Magnes	4	OTHER
 niceties	4	OTHER
 similes	4	NOUN,OTHER	simile
 paramour	4	NOUN,VERB
-Jesu	4	OTHER
 Hellenist	4	NOUN,OTHER
 pessimist	4	NOUN,OTHER
 renews	4	NOUN,VERB	renew
@@ -86147,7 +85834,6 @@ preselected	4	OTHER
 sneeze	4	NOUN,VERB
 propitiate	4	VERB
 villae	4	OTHER
-Gemeinde	4	OTHER
 Concours	4	OTHER
 cinchona	4	NOUN,OTHER
 sequelae	4	OTHER
@@ -86969,7 +86655,6 @@ heists	4	NOUN,VERB	heist
 bioscience	4	NOUN,OTHER
 unimaginably	4	OTHER
 Korona	4	OTHER
-muss	4	NOUN,VERB
 gleefully	4	OTHER
 hoes	4	NOUN,VERB	hoe
 Demy	4	OTHER
@@ -87230,7 +86915,6 @@ wettability	4	NOUN,OTHER
 inkling	4	NOUN,OTHER
 Tweedle	4	OTHER
 bevy	4	NOUN,OTHER
-Bester	4	OTHER
 dunked	4	VERB	dunk
 leeching	4	NOUN,OTHER
 jackrabbit	4	NOUN,VERB
@@ -88153,7 +87837,6 @@ Avast	4	OTHER
 bartered	4	VERB	barter
 tanna	4	NOUN,OTHER
 Lisette	4	OTHER
-Kette	4	OTHER
 skirmished	4	VERB	skirmish
 Serval	4	OTHER
 Moyen	4	OTHER
@@ -89169,7 +88852,6 @@ inoffensive	4	OTHER
 persecutory	4	OTHER
 exhort	4	VERB
 morass	4	NOUN,OTHER
-sie	4	NOUN,VERB
 downtowns	4	NOUN,OTHER	downtown
 diffract	4	VERB
 Ashram	4	OTHER
@@ -90108,7 +89790,6 @@ Aberdeens	207	NOUN,OTHER	Aberdeen
 Abernethies	7	NOUN,OTHER	Abernethy
 Abilenes	4	NOUN,OTHER	Abilene
 Abitibis	8	NOUN,OTHER	Abitibi
-Abiturs	6	NOUN,OTHER	Abitur
 Abkhazians	4	NOUN,OTHER	Abkhazian
 Abrahamics	35	NOUN,OTHER	Abrahamic
 Achaemenians	2	NOUN,OTHER	Achaemenian
@@ -90448,7 +90129,6 @@ Braillers	4	NOUN,OTHER	Brailler
 Bramleys	2	NOUN,OTHER	Bramley
 Brandenburgs	152	NOUN,OTHER	Brandenburg
 Brandywines	4	NOUN,OTHER	Brandywine
-Bremers	2	NOUN,OTHER	Bremer
 Brens	2	NOUN,OTHER	Bren
 Bribris	2	NOUN,OTHER	Bribri
 Bridgets	14	NOUN,OTHER	Bridget
@@ -90691,7 +90371,6 @@ Chishtis	2	NOUN,OTHER	Chishti
 Chontals	2	NOUN,OTHER	Chontal
 Chows	12	NOUN,OTHER	Chow
 Christs	855	NOUN,OTHER	Christ
-Christens	4	NOUN,OTHER	Christen
 Christendoms	52	NOUN,OTHER	Christendom
 Christianisations	11	NOUN,OTHER	Christianisation
 Christianizations	26	NOUN,OTHER	Christianization
@@ -90947,7 +90626,6 @@ EEZs	11	NOUN,OTHER	EEZ
 EFs	12	NOUN,OTHER	EF
 EFAs	23	NOUN,OTHER	EFA
 EFPs	2	NOUN,OTHER	EFP
-EGs	7	NOUN,OTHER	EG
 EIBs	5	NOUN,OTHER	EIB
 EICs	3	NOUN,OTHER	EIC
 EITs	3	NOUN,OTHER	EIT
@@ -91087,7 +90765,6 @@ FVs	9	NOUN,OTHER	FV
 FYs	27	NOUN,OTHER	FY
 Fabs	18	NOUN,OTHER	Fab
 Facebooks	60	NOUN,VERB	Facebook
-Fächer	2	NOUN,OTHER	Fach
 Fagins	2	NOUN,OTHER	Fagin
 Faliscans	2	NOUN,OTHER	Faliscan
 Falstaffs	41	NOUN,OTHER	Falstaff
@@ -91205,7 +90882,6 @@ Geordies	2	NOUN,OTHER	Geordie
 Germanisms	4	NOUN,OTHER	Germanism
 Germanists	2	NOUN,OTHER	Germanist
 Germanizations	6	NOUN,OTHER	Germanization
-Gesellschaften	15	NOUN,OTHER	Gesellschaft
 Ghegs	5	NOUN,OTHER	Gheg
 Ghiljis	3	NOUN,OTHER	Ghilji
 Gibraltars	179	NOUN,OTHER	Gibraltar
@@ -91345,7 +91021,6 @@ Hermanns	130	NOUN,OTHER	Hermann
 Hermae	116	NOUN,OTHER	Hermes
 Hermitians	16	NOUN,OTHER	Hermitian
 Herodians	8	NOUN,OTHER	Herodian
-Herren	12	NOUN,OTHER	Herr
 Herschels	29	NOUN,OTHER	Herschel
 Hersheys	11	NOUN,OTHER	Hershey
 Herzegovinians	3	NOUN,OTHER	Herzegovinian
@@ -91579,7 +91254,6 @@ KHs	9	NOUN,OTHER	KH
 KHVs	2	NOUN,OTHER	KHV
 KIAs	11	NOUN,OTHER	KIA
 KPs	7	NOUN,OTHER	KP
-KPDs	7	NOUN,OTHER	KPD
 KSCs	30	NOUN,OTHER	KSC
 KTVs	3	NOUN,OTHER	KTV
 Kabulis	2	NOUN,OTHER	Kabuli
@@ -91596,7 +91270,6 @@ Kapus	2	NOUN,OTHER	Kapu
 Karels	14	NOUN,OTHER	Karel
 Karens	33	NOUN,OTHER	Karen
 Kartvelians	2	NOUN,OTHER	Kartvelian
-Kasernes	3	NOUN,OTHER	Kaserne
 Kashans	2	NOUN,OTHER	Kashan
 Kashmirs	132	NOUN,OTHER	Kashmir
 Katangans	2	NOUN,OTHER	Katangan
@@ -91742,7 +91415,6 @@ Lazaruses	20	NOUN,VERB	Lazarus
 Legas	11	NOUN,OTHER	Lega
 Legolands	3	NOUN,OTHER	Legoland
 Leicesters	67	NOUN,OTHER	Leicester
-Leipzigers	7	NOUN,OTHER	Leipziger
 Lemmons	29	NOUN,OTHER	Lemmon
 Lemnians	3	NOUN,OTHER	Lemnian
 Lenapes	8	NOUN,OTHER	Lenape
@@ -91844,7 +91516,6 @@ MPVs	2	NOUN,OTHER	MPV
 MRAs	2	NOUN,OTHER	MRA
 MRAPs	5	NOUN,OTHER	MRAP
 MRCs	4	NOUN,OTHER	MRC
-MRDs	8	NOUN,OTHER	MRD
 MRIs	30	NOUN,OTHER	MRI
 MRPs	5	NOUN,OTHER	MRP
 MRSAs	2	NOUN,OTHER	MRSA
@@ -91953,7 +91624,6 @@ Masovians	2	NOUN,OTHER	Masovian
 Mastercards	36	NOUN,OTHER	Mastercard
 Masurians	2	NOUN,OTHER	Masurian
 Matildas	50	NOUN,OTHER	Matilda
-Maus	16	NOUN,OTHER	Mau
 Mauritanians	2	NOUN,OTHER	Mauritanian
 Mauritians	10	NOUN,OTHER	Mauritian
 Mausers	11	NOUN,OTHER	Mauser
@@ -92104,7 +91774,6 @@ NTPs	4	NOUN,OTHER	NTP
 NVs	4	NOUN,OTHER	NV
 NWs	14	NOUN,OTHER	NW
 Nabateans	2	NOUN,OTHER	Nabatean
-Nachlässe	5	NOUN,OTHER	Nachlass
 Nagas	8	NOUN,OTHER	Naga
 Nahuas	6	NOUN,OTHER	Nahuatl
 Nairs	2	NOUN,OTHER	Nair
@@ -92172,7 +91841,6 @@ Nobels	409	NOUN,OTHER	Nobel
 Nohs	8	NOUN,OTHER	Noh
 Nokias	29	NOUN,OTHER	Nokia
 Nootkas	9	NOUN,OTHER	Nootka
-Nordens	2	NOUN,OTHER	Norden
 Norfolks	57	NOUN,OTHER	Norfolk
 Normands	4	NOUN,OTHER	Normand
 Norns	2	NOUN,OTHER	Norn
@@ -92769,7 +92437,6 @@ Schnabels	2	NOUN,OTHER	Schnabel
 Schutzstaffeln	4	NOUN,OTHER	Schutzstaffel
 Schwarzeneggers	107	NOUN,OTHER	Schwarzenegger
 Schwenkfelders	3	NOUN,OTHER	Schwenkfelder
-Schwerpunkts	2	NOUN,OTHER	Schwerpunkt
 Scoobies	3	NOUN,OTHER	Scooby
 Scorpios	3	NOUN,OTHER	Scorpio
 Scotches	22	NOUN,OTHER	Scotch
@@ -93272,7 +92939,6 @@ Zooms	17	NOUN,VERB	Zoom
 Zoques	2	NOUN,OTHER	Zoque
 Zorros	4	NOUN,OTHER	Zorro
 Zouaves	2	NOUN,OTHER	Zouave
-Zuckers	6	NOUN,OTHER	Zucker
 Zunis	2	NOUN,OTHER	Zuni
 Zwinglians	2	NOUN,OTHER	Zwinglian
 abacas	7	NOUN,OTHER	abaca
@@ -96630,7 +96296,6 @@ diploids	25	NOUN,OTHER	diploid
 diplomacies	108	NOUN,OTHER	diplomacy
 dippings	18	NOUN,OTHER	dip
 dipsticks	2	NOUN,VERB	dipstick
-dirs	6	NOUN,OTHER	dir
 directionals	70	NOUN,OTHER	directional
 directionalities	5	NOUN,OTHER	directionality
 directnesses	3	NOUN,OTHER	directness
@@ -99611,7 +99276,6 @@ isotopies	2	NOUN,OTHER	isotopy
 isotropies	9	NOUN,OTHER	isotropy
 issuances	31	NOUN,OTHER	issuance
 issuings	96	NOUN,OTHER	issue
-ists	7	NOUN,OTHER	ist
 itches	2	NOUN,VERB	itch
 itchings	6	NOUN,OTHER	itch
 iteratives	26	NOUN,OTHER	iterative
@@ -100958,7 +100622,6 @@ musketries	2	NOUN,OTHER	musketry
 muskrats	2	NOUN,OTHER	muskrat
 muskies	2	NOUN,OTHER	musky
 muslins	7	NOUN,OTHER	muslin
-musses	2	NOUN,VERB	muss
 mustaches	11	NOUN,OTHER	mustache
 musterings	2	NOUN,OTHER	muster
 musths	4	NOUN,OTHER	musth
@@ -103571,7 +103234,6 @@ rots	24	NOUN,VERB	rot
 rotaries	46	NOUN,OTHER	rotary
 rotationals	68	NOUN,OTHER	rotational
 rotaviruses	2	NOUN,OTHER	rotavirus
-rotes	10	NOUN,VERB	rote
 rotis	3	NOUN,OTHER	roti
 rotisseries	5	NOUN,VERB	rotisserie
 rotorcrafts	12	NOUN,OTHER	rotorcraft
@@ -103668,7 +103330,6 @@ sailcloths	2	NOUN,OTHER	sailcloth
 sailfishes	3	NOUN,OTHER	sailfish
 sainthoods	3	NOUN,OTHER	sainthood
 saintlinesses	2	NOUN,OTHER	saintliness
-saisons	2	NOUN,OTHER	saison
 saiths	4	NOUN,OTHER	saith
 sakes	97	NOUN,OTHER	sake
 sakers	2	NOUN,OTHER	saker
@@ -103921,7 +103582,6 @@ segregationists	7	NOUN,OTHER	segregationist
 seis	9	NOUN,OTHER	sei
 seiches	2	NOUN,OTHER	seiche
 seigniorages	2	NOUN,OTHER	seigniorage
-seins	6	NOUN,OTHER	sein
 seismicities	2	NOUN,OTHER	seismicity
 seizings	40	NOUN,OTHER	seize
 selectables	7	NOUN,OTHER	selectable
@@ -104148,7 +103808,6 @@ sidelinings	2	NOUN,OTHER	sideline
 siderites	2	NOUN,OTHER	siderite
 sidesteps	2	NOUN,VERB	sidestep
 sidesteppings	2	NOUN,OTHER	sidestep
-sies	2	NOUN,VERB	sie
 sievings	5	NOUN,OTHER	sieve
 sifts	4	NOUN,VERB	sift
 siftings	3	NOUN,OTHER	sift
@@ -111285,8 +110944,6 @@ mushing	4	VERB	mush
 mushed	4	VERB	mush
 musicking	4787	VERB	music
 musicked	4787	VERB	music
-mussing	2	VERB	muss
-mussed	2	VERB	muss
 mutinying	57	VERB	mutiny
 muttering	3	VERB	mutter
 muxing	2	VERB	mux
@@ -113059,8 +112716,6 @@ sickling	29	VERB	sickle
 sickled	29	VERB	sickle
 sidearming	5	VERB	sidearm
 sidearmed	5	VERB	sidearm
-sying	2	VERB	sie
-sied	2	VERB	sie
 sieging	463	VERB	siege
 sifted	4	VERB	sift
 sighing	6	VERB	sigh
@@ -115874,7 +115529,6 @@ staler	2	ADJECTIVE	stale
 stalest	2	ADJECTIVE	stale
 starchier	1	ADJECTIVE	starchy
 starchiest	1	ADJECTIVE	starchy
-starker	10	ADJECTIVE	stark
 starkest	10	ADJECTIVE	stark
 statelier	2	ADJECTIVE	stately
 stateliest	2	ADJECTIVE	stately

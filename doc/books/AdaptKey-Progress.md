@@ -484,6 +484,15 @@ non-trivial changes).
   candidates -> 53 removed (116,245 -> 116,192), every genuine word kept (bees/beings/toes/mining/near-verb-family/acronyms; `ins` goes - it deadens
   the D-106 veto for a top German contraction; `ups`/`outs`/`pasts`/`haves`/`overs` stay as real secondary readings). No survivor lemma-links into
   the set, bigram.tsv mentions none of them, quality gate PASS, data-test subset green.
+- **D-569 [DE↔EN-Überschneidungs-Sweep] - IMPLEMENTED (§569, data-only, no bump) - NOT yet device-confirmed: 346 German-corpus rows leave
+  `app/src/main/assets/en/dict.tsv` (116,192 -> 115,846) and the D-106 veto's victim census drops from 380 to the reviewed 57-word whitelist.** The plan's M3
+  with the decided thresholds (EN freq <= 20, de freq >= 300): removed all German function/common words with no English reading (`eine`, `ist`, `Sich`,
+  `nach`, `dir`, `Stadt`, `sein`, ... incl. 34 mojibake rows of the same leakage), German-only proper spellings and admin compounds; kept 57 reviewed
+  genuine English words/inflections/acronyms and English-verbatim place names (`spiel`, `mutter` the English verb, `bier`, `krone`, `Praxis`, `Grad`,
+  `Lieder`, `Koran`, `Zug`, `Minden`, ... - for these the veto's suppression is its correct behaviour for English loans inside German text). A
+  dangling-lemma guard removed 23 generated dependents transitively (`ists`, `seins`, `dirs`, ...). Above-threshold leakage (`und` 217, `Das` 151,
+  `Dar` 127, `der` 778) is the named accepted residual per the decided EN<=20 threshold. Census file `scratchpad/d569_m3_candidates.txt`; gate PASS,
+  data-test subset green.
 - **D-554 [Wisch-Hoch: Zahlenreihe + Extra-Reihe] - IMPLEMENTED (§562, v1.3.24/624) - NOT yet device-confirmed: the C-09-off letters surface gets
   its digits back by gesture - the §48 swipe-up reveals the number row together with the extra row.**
   User request (2026-11-19); the digits-as-Alt-Belegung alternative was rejected by the user themselves
