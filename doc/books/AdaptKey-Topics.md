@@ -658,8 +658,9 @@ Konventionen:
 | D-568 | EN-Funktionswort-Flexions-Sweep | EN function-word flexion artefacts swept - `ands` (292,861, rank 6) and 52 siblings out, top-25 clean | ← Plan `english-dictionary-quality.md` |
 | D-569 | DE↔EN-Überschneidungs-Sweep | EN dictionary loses 346 German-corpus rows (incl. 34 mojibake); D-106 veto victim census 380 -> reviewed 57-word whitelist | ← Plan `english-dictionary-quality.md` |
 | D-570 | EN-Namen-Sweep | EN proper-name sweep - 26,897 rows out (115,846 -> 88,958), persons incl. John 10,247, occupation twins lowercase in | ← Plan `english-dictionary-quality.md` |
+| D-571 | EN-Kontraktionen | 43 contraction rows enter en/dict.tsv - don't 62,000 ... ma'am 1,000, fixed documented rank list | ← Plan `english-dictionary-quality.md` |
 
 ---
 
 
-**Nächste freie Nummer: D-571.** (Höchste vergebene: D-570.)
+**Nächste freie Nummer: D-572.** (Höchste vergebene: D-571.)

@@ -503,6 +503,7 @@ non-trivial changes).
   out - "a john" is slang; Christian/Jack/Frank/Ford/Kaiser stay). Class 3: the occupation twins enter lowercase with the surname's corpus frequency
   (smith 2068, cook? no - OTHER-tagged trade rows stay; smith/miller/cooper/wright/baker/potter/mason/chandler/fletcher in, Masons/Chandlers
   retargeted to lowercase plurals). Gate PASS, data-test subset green.
+- **D-571 [EN-Kontraktionen] - IMPLEMENTED (§571, data-only, no bump) - NOT yet device-confirmed: 43 apostrophe rows enter `app/src/main/assets/en/dict.tsv` - don't 62,000, it's 55,000, I'm 46,000 ... ma'am 1,000.** The dictionary had ZERO apostrophe entries (verified) - D-544 built the word-character mechanics and the corpus tokenisation meant contractions never existed to count. Fixed documented rank list per §4-3 (no corpus calibration pattern exists), scaled to this dictionary's range so don't sits between not/have. Unlocks: "dont" -> "don't" cost-1 at saturation confidence, "don" prefix completion, sentence-start "Don't"; veto untouched (exact-token match). Gate PASS, data-test subset green; M9 pins the D-544 path end to end.
 - **D-554 [Wisch-Hoch: Zahlenreihe + Extra-Reihe] - IMPLEMENTED (§562, v1.3.24/624) - NOT yet device-confirmed: the C-09-off letters surface gets
   its digits back by gesture - the §48 swipe-up reveals the number row together with the extra row.**
   User request (2026-11-19); the digits-as-Alt-Belegung alternative was rejected by the user themselves

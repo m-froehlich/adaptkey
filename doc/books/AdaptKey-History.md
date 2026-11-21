@@ -27008,5 +27008,35 @@ demonyms/religions/mythology still capitalise correctly; no person name force-ca
 A-03 classifier and every G-01 language's veto lose the whole biography-tail noise class. Not yet
 device-confirmed; M7's NOUN-only re-tagging audit runs on the shrunk noun-only population next.
 
+## §571 - D-571: the English contractions land - 43 apostrophe rows from don't 62,000 to ma'am 1,000 (data-only, no bump)
+
+The plan's M4. Verified immediately before the run: the dictionary contained ZERO apostrophe entries
+- D-544 made the apostrophe an ordinary word character and gave the whole correction/suggestion
+pipeline the ability to handle it, and the dictionary had literally nothing to offer it ("ist's"/
+"sieht's" German shapes were learning-only, per that round's own note). The cause is structural:
+the Wikipedia corpus tokenisation split contractions away from their parts, so "don't" never
+existed as a type to count - while in real typed English it ranks around the top 40 words, ahead of
+"have", "their", "its" and "one", all of which the corpus did count.
+
+Frequencies are the plan's decided §4-3 fixed documented rank list (no corpus-equivalent
+calibration pattern exists for contractions), scaled to this dictionary's own range so the entries
+compete where typed-English rank actually puts them: don't 62,000 (between "not" 61,552 and "have"
+60,958), it's 55,000 (beside "their"), I'm 46,000 (beside "its"), didn't 38,000, can't 36,000,
+that's 33,000, isn't 29,000, won't 27,000, I'll 26,000, let's 21,000, doesn't 20,000, couldn't
+17,000, wasn't 16,500, wouldn't 16,000, I'd 13,500, shouldn't 12,000, they're/we're/you're/I've/
+he's/she's/we'll/what's/aren't/who's/haven't/there's/hasn't/here's/you'll/you've/we've/they'll/
+they've/she'll/he'll/it'll/hadn't descending 11,500 -> 2,600, o'clock 2,200, ain't 1,800, mustn't
+1,200, ma'am 1,000. 43 rows, tags OTHER throughout (function-ish, no noun reading anywhere),
+appended - never re-sorted (§322 convention), each asserted absent (case-insensitively) first.
+
+Behaviour this unlocks on paths that were already built: typed "dont" reaches "don't" as a
+cost-1-insertion candidate at saturation confidence (the D-544 word-character mechanics), "don"
+completes to "don't" as a plain high-frequency prefix, sentence-start "Don't" capitalises through
+the ordinary first-character rule, and the M9 regression test pins the whole D-544 path end to end
+against the real dictionary. The D-106 veto side is untouched: isKnownWord matches exact tokens, so
+"don't" never blocks a German "don"-typo correction (the veto compares the typed token, not
+prefixes). Quality gate PASS, data-test subset green.
+
+
 
 

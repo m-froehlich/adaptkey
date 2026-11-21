@@ -1,8 +1,8 @@
 # AdaptKey — Plan: Englisch-Wörterbuch-Qualität (Pruning, Kontraktionen, Veto-Sweep, EN-Politik)
 
 **Status: IN ARBEIT — Nutzer-Go 2026-11-21 ("Ziehe ihn komplett durch, committe nach jeder Phase").
-M1 (D-567), M2 (D-568), M3 (D-569) und M11 (D-570) sind umgesetzt und gecommitted; die übrigen
-Runden folgen in der Vorgeschlagenen Reihenfolge (§5).**
+M1 (D-567), M2 (D-568), M3 (D-569), M11 (D-570) und M4 (D-571) sind umgesetzt und gecommitted; die
+übrigen Runden folgen in der Vorgeschlagenen Reihenfolge (§5).**
 Identifier-Zeiger: die ursprüngliche Reservierung D-559..D-566 ist hinfällig — D-559..D-566 gehören
 inzwischen zum Plan `feature-tips.md` (Themenliste `doc/books/AdaptKey-Topics.md`). Dieser Plan läuft
 auf **D-567 ff.**: M1=D-567 (erledigt), M2=D-568, M3=D-569, M11=D-570, M4=D-571, M6=D-572, M5=D-573,
