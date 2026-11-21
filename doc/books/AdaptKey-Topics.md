@@ -655,8 +655,9 @@ Konventionen:
 | D-565 | Feature-Tipp: Reset-Knopf | Reset button on the feature-overview page | ← Plan `feature-tips.md` |
 | D-566 | Feature-Tipp: Texte (32 Sprachen) | Tip strings (32 locales) | ← Plan `feature-tips.md` |
 | D-567 | EN-Veto-Blocker-Datenfix | the English dictionary's two D-106 veto blockers removed - en/dict.tsv loses `mut`/`Dur`/`muts`, de `Dur` 501 -> 100 (pack 53) | ← Plan `english-dictionary-quality.md` |
+| D-568 | EN-Funktionswort-Flexions-Sweep | EN function-word flexion artefacts swept - `ands` (292,861, rank 6) and 52 siblings out, top-25 clean | ← Plan `english-dictionary-quality.md` |
 
 ---
 
 
-**Nächste freie Nummer: D-568.** (Höchste vergebene: D-567.)
+**Nächste freie Nummer: D-569.** (Höchste vergebene: D-568.)

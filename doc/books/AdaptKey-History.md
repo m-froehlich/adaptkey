@@ -26861,3 +26861,38 @@ blacklist-Notlösung dependency remains; the full suite is green with the new da
 unchanged by this round and are the known D-504-era purge residue, not new debt. Device test pending
 (1.3.29 or the follow-up build, per the plan's ship path). Next: the plan's pruning core M2/M3/M11.
 
+## §568 - D-568: the English function-word flexion artefacts swept - "ands" (frequency 292,861, rank 5) and 52 siblings removed, the EN top-25 is a clean function-word list now (data-only, no bump)
+
+The plan's M2, on the state after D-567. `dictionaries/en/merge_wiktionary.py`'s inflection-completion
+step (the §322 Median-ratio mint, over Wiktionary noun/verb headwords that should never have carried
+paradigms) had given English's closed class its own fake paradigms, and the corpus frequencies dutifully
+ranked the results at the very top of the dictionary: `ands` 292,861 (rank 6, ahead of `to`, `is`,
+`was`), `thats` 74,937 (27), `withs` 71,518 (28), `atting`/`atted` 46,763 (39), `thises` 31,280 (61),
+`weres` (56), `theys`/`theying`/`theyed`, `buts`, `whos`, `betweens`, the `while`/`about`/`up`/`off`
+minted-verb families and more - every one a row that exists only as a mechanical flexion of a word with
+no flexions.
+
+Method, per the plan's review-list discipline: a deliberately broad generator (`scratchpad/
+d568_m2_review.py` - R1 rows whose lemma is a closed-class word, R2 rows shaped function-word+s/es/ed/
+d/ing/'s) produced 164 candidates; the review kept every genuine word the shape rules only over-matched
+(`bees`, `beings`, `toes`, `theses`, `mining` (lemma "mine" the noun), `near`'s real verb family,
+`till`'s real farming verb family, `able`/`abler`/`ablest` themselves - only their minted VERB-of-can
+forms fly - plus every acronym and proper noun the shape rule touched: Ford, AMD, DOS, Andes, ISS,
+Ising, Hering, ...) and removed exactly 53 rows - 116,245 -> 116,192. Notable review calls: `ins` (119,
+lemma in) goes despite being attested in the idiom "the ins and outs" - it is the plan's named second
+example, and while the row lives, the D-106 veto keeps suppressing autocorrect for one of German's most
+common contractions ("ins Haus"); `ups`/`outs`/`pasts`/`haves`/`ones`/`doings`/`overs` stay (genuine
+secondary noun readings of function words, tiny frequencies); `thees`/`theed`/`yous`/`oughts`/`Nots`/
+`alongs`/`Hading`/`bes`/`besses` go as non-standard or non-word mintings; `offing`/`offed` (identical
+2,974 mint signature) go despite the real nautical noun - the inflated rank distorted every "offi"
+prefix.
+
+Checks: each removed line asserted unique before the cut, no surviving row lemma-links into the
+removal set, `en/bigram.tsv` mentions none of the removed words (0 matching rows - nothing inert left
+behind), quality gate PASS (0 duplicates / 0 non-positive / 0 orphaned lemmas / 0 bare-NOUN), the
+real-data test subset green (BundledDictionaryDataTest, FusionEvaluationTest, SplitEvaluationTest,
+JetztRankingEvaluationTest). The EN top-25 is now a pure function-word list: the, of, and, in, to, is,
+as, was, for, by, that, with, on, from, his, are, it, an, at, he, or, which, be, were, this. M9's
+regression test will pin that shape.
+
+

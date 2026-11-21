@@ -477,6 +477,13 @@ non-trivial changes).
   "dur"->"dir" 127x -> 0.78 >= 0.75 silent, and the D-558 gate keeps withholding a capital (0.78 >= 0.30 chip bar) exactly as the
   device test calibrated it. Gates PASS on both cuts, EN confusables blacklist anchors neither token (checked), 2,007 tests green.
   Plan `english-dictionary-quality.md`, round M1; the plan's pruning core (M2/M3/M11) follows.
+- **D-568 [EN-Funktionswort-Flexionen gefegt] - IMPLEMENTED (§568, data-only, no bump) - NOT yet device-confirmed: `ands` (292,861, rank 6) and 52 sibling
+  artefacts removed from `app/src/main/assets/en/dict.tsv` - the EN top-25 is a clean function-word list now.** The plan's M2. merge_wiktionary.py's
+  Median-ratio mint had given the closed class fake paradigms, ranked at the very top (`thats` 27, `withs` 28, `atting`/`atted` 39, `thises` 61,
+  `weres` 56, minted verb families of while/about/up/off/can/...). Review-list method: broad generator (lemma-of-function-word + shape rules) -> 164
+  candidates -> 53 removed (116,245 -> 116,192), every genuine word kept (bees/beings/toes/mining/near-verb-family/acronyms; `ins` goes - it deadens
+  the D-106 veto for a top German contraction; `ups`/`outs`/`pasts`/`haves`/`overs` stay as real secondary readings). No survivor lemma-links into
+  the set, bigram.tsv mentions none of them, quality gate PASS, data-test subset green.
 - **D-554 [Wisch-Hoch: Zahlenreihe + Extra-Reihe] - IMPLEMENTED (§562, v1.3.24/624) - NOT yet device-confirmed: the C-09-off letters surface gets
   its digits back by gesture - the §48 swipe-up reveals the number row together with the extra row.**
   User request (2026-11-19); the digits-as-Alt-Belegung alternative was rejected by the user themselves

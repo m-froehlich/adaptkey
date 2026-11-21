@@ -13804,7 +13804,6 @@ Ashcroft	119	PROPER_NOUN
 renal	119	OTHER
 nuns	119	NOUN,OTHER	nun
 solos	119	NOUN,VERB	solo
-ins	119	NOUN,OTHER	in
 Absalom	119	PROPER_NOUN
 León	119	PROPER_NOUN
 Burundi	119	PROPER_NOUN
@@ -33202,7 +33201,6 @@ skeptic	26	NOUN,OTHER
 colonnade	26	NOUN,OTHER
 imitates	26	VERB	imitate
 breathed	26	VERB	breathe
-bes	26	NOUN,OTHER	be
 ticker	26	NOUN,OTHER
 alliterative	26	OTHER
 NBS	26	PROPER_NOUN
@@ -73577,7 +73575,6 @@ Kurtzman	6	PROPER_NOUN
 Hatt	6	PROPER_NOUN
 undesirables	6	NOUN,OTHER	undesirable
 dummies	6	NOUN,VERB	dummy
-Nots	6	OTHER
 jubilation	6	NOUN,OTHER
 beatnik	6	NOUN,OTHER
 murmurs	6	NOUN,VERB	murmur
@@ -77262,7 +77259,6 @@ Deemster	6	PROPER_NOUN
 defenceman	6	NOUN,OTHER
 blueline	6	NOUN,VERB
 Nasī	6	PROPER_NOUN
-alongs	6	OTHER
 gotra	6	NOUN,OTHER
 Cosmicomics	6	PROPER_NOUN
 IGFs	6	NOUN,PROPER_NOUN	IGF
@@ -89738,7 +89734,6 @@ complainant	4	NOUN,OTHER
 Riprap	4	OTHER
 glissandi	4	NOUN,OTHER	glissando
 strep	4	NOUN,OTHER
-Hading	4	OTHER
 implacably	4	OTHER
 Mythus	4	OTHER
 rashly	4	OTHER
@@ -93388,7 +93383,6 @@ acrimonies	2	NOUN,OTHER	acrimony
 acros	2	NOUN,OTHER	acro
 acrocentrics	6	NOUN,OTHER	acrocentric
 acrophonies	3	NOUN,OTHER	acrophony
-acrosses	2211	NOUN,OTHER	across
 acrylonitriles	4	NOUN,OTHER	acrylonitrile
 actins	10	NOUN,OTHER	actin
 actings	590	NOUN,OTHER	acting
@@ -93500,7 +93494,6 @@ affronts	4	NOUN,VERB	affront
 affusions	4	NOUN,OTHER	affusion
 aflatoxins	3	NOUN,OTHER	aflatoxin
 afts	39	NOUN,OTHER	aft
-afters	16482	NOUN,OTHER	after
 afterglows	9	NOUN,OTHER	afterglow
 afterlives	103	NOUN,OTHER	afterlife
 afterloads	2	NOUN,OTHER	afterload
@@ -93709,7 +93702,6 @@ anarchies	46	NOUN,OTHER	anarchy
 ancestrals	147	NOUN,OTHER	ancestral
 anchorings	13	NOUN,OTHER	anchor
 ancorae	2	NOUN,OTHER	ancora
-ands	292861	NOUN,OTHER	and
 andesites	3	NOUN,OTHER	andesite
 andouilles	3	NOUN,OTHER	andouille
 androgeneses	4	NOUN,OTHER	androgenesis
@@ -94310,7 +94302,6 @@ beeps	2	NOUN,VERB	beep
 beeswaxes	8	NOUN,VERB	beeswax
 beetroots	2	NOUN,VERB	beetroot
 befalls	4	NOUN,VERB	befall
-befores	6216	NOUN,OTHER	before
 befriendings	5	NOUN,OTHER	befriend
 begettings	2	NOUN,OTHER	beget
 beggings	20	NOUN,OTHER	begging
@@ -94354,7 +94345,6 @@ berthings	4	NOUN,OTHER	berth
 beryls	35	NOUN,OTHER	beryl
 beryllioses	2	NOUN,OTHER	berylliosis
 berylliums	90	NOUN,OTHER	beryllium
-besses	11	NOUN,OTHER	be
 besiegings	15	NOUN,OTHER	besiege
 besoms	2	NOUN,OTHER	besom
 bestialities	2	NOUN,OTHER	bestiality
@@ -94369,12 +94359,10 @@ betters	1206	NOUN,VERB	good
 betterments	7	NOUN,OTHER	betterment
 bettings	36	NOUN,OTHER	bet
 bettors	2	NOUN,OTHER	bettor
-betweens	12169	NOUN,OTHER	between
 bevels	2	NOUN,VERB	bevel
 bevies	2	NOUN,OTHER	bevy
 bewilderings	3	NOUN,OTHER	bewildering
 bewilderments	3	NOUN,OTHER	bewilderment
-beyonds	944	NOUN,OTHER	beyond
 bezants	2	NOUN,OTHER	bezant
 bezels	3	NOUN,OTHER	bezel
 bhangras	22	NOUN,OTHER	bhangra
@@ -94846,7 +94834,6 @@ bustards	2	NOUN,OTHER	bustard
 bustings	5	NOUN,OTHER	bust
 bustlings	7	NOUN,OTHER	bustling
 busies	89	NOUN,VERB	busy
-buts	21176	NOUN,OTHER	but
 butadienes	4	NOUN,OTHER	butadiene
 butanes	11	NOUN,OTHER	butane
 butanediols	3	NOUN,OTHER	butanediol
@@ -95905,7 +95892,6 @@ cottons	282	NOUN,VERB	cotton
 cottontails	3	NOUN,OTHER	cottontail
 cottonwoods	2	NOUN,OTHER	cottonwood
 coughings	11	NOUN,OTHER	cough
-coulds	5740	NOUN,OTHER	can
 couleurs	7	NOUN,OTHER	couleur
 counselings	23	NOUN,OTHER	counsel
 counsellings	9	NOUN,OTHER	counselling
@@ -96494,7 +96480,6 @@ despairings	5	NOUN,OTHER	despair
 desperates	68	NOUN,OTHER	desperate
 desperations	18	NOUN,OTHER	desperation
 despicables	7	NOUN,OTHER	despicable
-despites	2241	NOUN,OTHER	despite
 despondencies	2	NOUN,OTHER	despondency
 despots	9	NOUN,OTHER	despot
 despotisms	13	NOUN,OTHER	despotism
@@ -98651,7 +98636,6 @@ hauberks	4	NOUN,OTHER	hauberk
 haughtinesses	2	NOUN,OTHER	haughtiness
 haulages	5	NOUN,OTHER	haulage
 haulings	9	NOUN,OTHER	haul
-havings	2861	NOUN,OTHER	have
 havocs	18	NOUN,VERB	havoc
 hawalas	9	NOUN,OTHER	hawala
 hawksbills	5	NOUN,OTHER	hawksbill
@@ -98779,7 +98763,6 @@ hijacks	7	NOUN,VERB	hijack
 hikings	31	NOUN,OTHER	hike
 hillocks	2	NOUN,OTHER	hillock
 hilts	18	NOUN,VERB	hilt
-hims	7882	NOUN,OTHER	him
 hindbrains	2	NOUN,OTHER	hindbrain
 hindguts	4	NOUN,OTHER	hindgut
 hindsights	8	NOUN,OTHER	hindsight
@@ -100649,7 +100632,6 @@ midways	61	NOUN,OTHER	midway
 midweeks	4	NOUN,OTHER	midweek
 midwiferies	4	NOUN,OTHER	midwifery
 midwinters	7	NOUN,OTHER	midwinter
-mights	1543	NOUN,OTHER	may
 migratories	35	NOUN,OTHER	migratory
 mikvehs	4	NOUN,OTHER	mikveh
 milds	195	NOUN,OTHER	mild
@@ -100977,7 +100959,6 @@ muskrats	2	NOUN,OTHER	muskrat
 muskies	2	NOUN,OTHER	musky
 muslins	7	NOUN,OTHER	muslin
 musses	2	NOUN,VERB	muss
-musts	2510	NOUN,OTHER	must
 mustaches	11	NOUN,OTHER	mustache
 musterings	2	NOUN,OTHER	muster
 musths	4	NOUN,OTHER	musth
@@ -101507,7 +101488,6 @@ otherworlds	9	NOUN,OTHER	otherworld
 otitides	3	NOUN,OTHER	otitis
 ottavas	2	NOUN,OTHER	ottava
 ouds	8	NOUN,OTHER	oud
-oughts	93	NOUN,OTHER	ought
 ouroboroi	4	NOUN,OTHER	ouroboros
 ousters	7	NOUN,VERB	ouster
 oustings	17	NOUN,OTHER	oust
@@ -104078,7 +104058,6 @@ sharpnesses	11	NOUN,OTHER	sharpness
 sharpshooters	3	NOUN,OTHER	sharpshooter
 shatterings	11	NOUN,OTHER	shatter
 shaves	10	NOUN,VERB	shave
-shes	5366	NOUN,OTHER	she
 shearings	10	NOUN,OTHER	shear
 sheathings	2	NOUN,OTHER	sheath
 sheddings	22	NOUN,OTHER	shed
@@ -104130,7 +104109,6 @@ shortlists	8	NOUN,VERB	shortlist
 shortnesses	12	NOUN,OTHER	shortness
 shortstops	27	NOUN,VERB	shortstop
 shortwaves	16	NOUN,OTHER	shortwave
-shoulds	2505	NOUN,OTHER	shall
 shoutings	23	NOUN,OTHER	shout
 shoves	2	NOUN,VERB	shove
 shovings	2	NOUN,OTHER	shove
@@ -105391,13 +105369,10 @@ thalassocracies	2	NOUN,OTHER	thalassocracy
 thalidomides	2	NOUN,OTHER	thalidomide
 thalliums	15	NOUN,OTHER	thallium
 thankings	10	NOUN,OTHER	thank
-thats	74937	NOUN,OTHER	that
 thatches	7	NOUN,VERB	thatch
 thawings	4	NOUN,OTHER	thaw
 theatricalities	4	NOUN,OTHER	theatricality
-thees	28	NOUN,VERB	thee
 theisms	20	NOUN,OTHER	theism
-thems	7247	NOUN,OTHER	them
 thematics	46	NOUN,OTHER	thematic
 theobromines	6	NOUN,OTHER	theobromine
 theocracies	8	NOUN,OTHER	theocracy
@@ -105421,7 +105396,6 @@ thermosets	2	NOUN,OTHER	thermoset
 thermospheres	2	NOUN,OTHER	thermosphere
 thetas	370	NOUN,OTHER	theta
 theurgies	7	NOUN,OTHER	theurgy
-theys	17968	NOUN,VERB	they
 thiamines	3	NOUN,OTHER	thiamine
 thicks	192	NOUN,OTHER	thick
 thickeners	3	NOUN,OTHER	thickener
@@ -105441,7 +105415,6 @@ thirsties	7	NOUN,OTHER	thirsty
 thirteens	178	NOUN,OTHER	thirteen
 thirteenths	79	NOUN,OTHER	thirteenth
 thirtieths	9	NOUN,OTHER	thirtieth
-thises	31280	NOUN,OTHER	this
 tholoi	2	NOUN,OTHER	tholos
 thoracics	17	NOUN,OTHER	thoracic
 thoraces	8	NOUN,OTHER	thorax
@@ -105994,7 +105967,6 @@ undecanes	2	NOUN,OTHER	undecane
 undecideds	9	NOUN,OTHER	undecided
 undefinables	2	NOUN,OTHER	undefinable
 undefineds	37	NOUN,OTHER	undefined
-unders	8122	NOUN,OTHER	under
 underages	19	NOUN,OTHER	underage
 underarms	4	NOUN,VERB	underarm
 underbellies	6	NOUN,OTHER	underbelly
@@ -106326,7 +106298,6 @@ vestings	4	NOUN,OTHER	vest
 vestries	2	NOUN,OTHER	vestry
 veterinaries	44	NOUN,OTHER	veterinary
 vettings	4	NOUN,OTHER	vet
-vias	1437	NOUN,OTHER	via
 viabilities	33	NOUN,OTHER	viability
 viables	126	NOUN,OTHER	viable
 vibrants	45	NOUN,OTHER	vibrant
@@ -106530,14 +106501,12 @@ wellbeings	13	NOUN,OTHER	wellbeing
 wellings	2	NOUN,OTHER	well
 wellnesses	12	NOUN,OTHER	wellness
 welterweights	2	NOUN,OTHER	welterweight
-weres	33695	NOUN,OTHER	were
 wets	178	NOUN,VERB	wet
 wettabilities	2	NOUN,OTHER	wettability
 wetters	22	NOUN,OTHER	wet
 wettings	4	NOUN,OTHER	wet
 whalebones	2	NOUN,OTHER	whalebone
 whalings	57	NOUN,OTHER	whale
-whats	4012	NOUN,OTHER	what
 whatevers	185	NOUN,OTHER	whatever
 wheats	164	NOUN,OTHER	wheat
 wheatens	3	NOUN,OTHER	wheaten
@@ -106569,7 +106538,6 @@ whitetails	2	NOUN,OTHER	whitetail
 whitewashes	4	NOUN,VERB	whitewash
 whitewashings	2	NOUN,OTHER	whitewash
 whithers	2	NOUN,VERB	whither
-whos	15845	NOUN,OTHER	who
 wholes	1140	NOUN,OTHER	whole
 wholenesses	8	NOUN,OTHER	wholeness
 wholesales	51	NOUN,VERB	wholesale
@@ -106612,7 +106580,6 @@ wisents	3	NOUN,OTHER	wisent
 wishbones	10	NOUN,VERB	wishbone
 wishings	57	NOUN,OTHER	wish
 witchcrafts	60	NOUN,OTHER	witchcraft
-withs	71518	NOUN,OTHER	with
 withdrawings	44	NOUN,OTHER	withdraw
 witherings	6	NOUN,OTHER	wither
 withholdings	20	NOUN,OTHER	withhold
@@ -106659,7 +106626,6 @@ worsteds	4	NOUN,OTHER	bad
 worths	348	NOUN,OTHER	worth
 worthinesses	2	NOUN,OTHER	worthiness
 worthlessnesses	2	NOUN,OTHER	worthlessness
-woulds	11364	NOUN,OTHER	will
 woundings	20	NOUN,OTHER	wound
 wovens	57	NOUN,OTHER	weave
 wranglings	5	NOUN,OTHER	wrangling
@@ -106720,7 +106686,6 @@ yoghurts	2	NOUN,OTHER	yoghurt
 yogurts	21	NOUN,OTHER	yogurt
 yokes	25	NOUN,VERB	yoke
 yonders	2	NOUN,OTHER	yonder
-yous	1921	NOUN,VERB	you
 youngers	620	NOUN,OTHER	young
 youngests	183	NOUN,OTHER	young
 youthfulnesses	3	NOUN,OTHER	youthfulness
@@ -107219,12 +107184,6 @@ abjures	3	VERB	abjure
 abjuring	3	VERB	abjure
 ablauting	7	VERB	ablaut
 ablauted	7	VERB	ablaut
-ables	1923	VERB	can
-abling	1923	VERB	can
-abled	1923	VERB	can
-abouts	10807	VERB,PREPOSITION	about
-abouting	10807	VERB	about
-abouted	10807	VERB	about
 abrogates	5	VERB	abrogate
 abrupting	52	VERB	abrupt
 abrupted	52	VERB	abrupt
@@ -107470,8 +107429,6 @@ asyluming	136	VERB	asylum
 asylumed	136	VERB	asylum
 asymptoting	37	VERB	asymptote
 asymptoted	37	VERB	asymptote
-atting	46763	VERB	at
-atted	46763	VERB	at
 atones	9	VERB	atone
 atoning	9	VERB	atone
 atrophying	18	VERB	atrophy
@@ -111483,8 +111440,6 @@ octaved	98	VERB	octave
 octopusses	27	VERB	octopus
 octopussing	27	VERB	octopus
 octopussed	27	VERB	octopus
-offing	2974	VERB	off
-offed	2974	VERB	off
 offgassing	3	VERB	offgas
 offgassed	3	VERB	offgas
 officing	2398	VERB	office
@@ -113897,14 +113852,11 @@ texted	2924	VERB	text
 texturing	102	VERB	texture
 thatching	8	VERB	thatch
 theeing	33	VERB	thee
-theed	33	VERB	thee
 theming	573	VERB	theme
 theoreming	864	VERB	theorem
 theoremed	864	VERB	theorem
 thermaling	368	VERB	thermal
 thermaled	368	VERB	thermal
-theying	21364	VERB	they
-theyed	21364	VERB	they
 thickens	6	VERB	thicken
 thicknessing	93	VERB	thickness
 thicknessed	93	VERB	thickness
@@ -114313,8 +114265,6 @@ untwisting	2	VERB	untwist
 untwisted	2	VERB	untwist
 unveils	4	VERB	unveil
 unwedding	3	VERB	unwed
-upping	8876	VERB	up
-upped	8876	VERB	up
 upfronting	3	VERB	upfront
 upfronted	3	VERB	upfront
 uphilling	13	VERB	uphill
@@ -114554,9 +114504,6 @@ wheelbarrowing	2	VERB	wheelbarrow
 wheelbarrowed	2	VERB	wheelbarrow
 wheelchairing	43	VERB	wheelchair
 wheelchaired	43	VERB	wheelchair
-whiles	12134	VERB	while
-whiling	12134	VERB	while
-whiled	12134	VERB	while
 whimsying	2	VERB	whimsy
 whimsied	2	VERB	whimsy
 whined	2	VERB	whine
