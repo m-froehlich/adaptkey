@@ -26944,4 +26944,69 @@ supposed to protect in German text); quality gate PASS; the real-data test subse
 The full veto-victim cure for other installed languages' typing inherits this automatically - every
 G-01 language vetoes against this same English dictionary.
 
+## §570 - D-570: the EN proper-name sweep - 26,897 rows leave the dictionary (115,846 -> 88,958), the Mueller/Schuster lesson lands in English with its occupation twins (data-only, no bump)
+
+The plan's M11, the largest round. The review generator (`scratchpad/d570_m11_review.py`) classed all
+29,180 PROPER_NOUN-only entries: 1,881 all-caps acronym surfaces (II, BC, SSL, HDMI - keep class 2),
+10 months (May is absent by tag shape - NOUN,VERB, and rightly so), curated demonyms/language/
+nationality/religious adjectives, curated countries/regions/major cities, the reviewed splitters
+(`Los`, `Angeles`, `San`, `Francisco`, `York`), and the rest by frequency band. The plan's §1.5
+random sample held: the <=200 band (25,966 rows, spot-checked again at 45 random rows) is near-fully
+Wikipedia biography names, small places and mojibake - all removed. The >200 band (658 rows) was
+reviewed word by word: US states, oceans/rivers, ancient places, mythology (always capital in
+English usage), universities, brands/tech terms (Disney, Intel, Linux, Unicode, Fortran, Lisp, Ada,
+Hz), landmarks (Louvre, Broadway, Westminster, Eiffel), religions (Christianity/Islam/Judaism/
+Hinduism/Quran/Talmud), geologic periods (Jurassic, Cretaceous, Pleistocene), languages (Esperanto,
+Sanskrit, Hindi, Gaelic) and the city-name collisions Madison/Charlotte/Victoria/Austin/Jackson/
+Hamilton/Berkeley/Concord kept - their capitalisation is correct in BOTH the city and the person
+readings. Removed from the band: every famous person (Francis, Khan, Newton, Kennedy, Roosevelt,
+Darwin, Aristotle, Churchill, Obama, ...), franchise/team fragments (Sox, Reds, Cowboys, Braves,
+Juventus, Serie, Airways, Billboard), corporate/name suffixes (Inc, Ltd, Jr, Sr, Bros), compound
+fragments (Abu, Din, Abd, Qaeda, Lanka-side fragments, Moines, Rouge, Santo, Arbor, Prix, Deco,
+Greco, Austro, Cola, Milky, Centauri, Peters-burg fragment), terror/paramilitary orgs (Qaeda, Hamas,
+Hezbollah, Irgun, Klan, Gestapo, Luftwaffe), fictional names (Poirot, Luthor, Galactus, Gotham,
+Dracula) and - the force-cap class M7 names for NOUN-only rows, found here in PROPER_NOUN-only
+shape - capital-only rows of words whose genuine English reading is lowercase and has no lowercase
+row of its own: `United` (18,662! the largest proper-noun row in the dictionary - "we are united"
+force-capped), `Gulf`, `Bureau`, `Testament`, `Marvel`, `Trinity`, `Enigma`, `Commons`, `Isle`,
+`Isles`, `Milky`. The keep-list fragment cleanup matters too: Sri/Rican/South/Aviv/Ababa/Cape/Town/
+Hong/Kong/Kuala/Lumpur/Tel/La/Rio/Janeiro/Ivory/Sierra/Guinea/Baja/Yankee/Dixie never enter the
+keep classes (fragments or common-noun collisions whose capital row would force-cap wrongly -
+"the ivory" -> "Ivory").
+
+Result of the PROPER_NOUN-only pass: 26,822 rows removed (26,185 tail<=200, 550 tail>200, 87
+splitters/force-cap-only/curated), 2,363 kept, two junk minted dependents caught transitively
+(`Mussolinier`/`Mussoliniest`).
+
+The NOUN,PROPER_NOUN class (4,548 rows) is the plan's "with a generic reading" half: the generic
+readings are real (American "an American", Christian "a Christian" - and that whole demonym class is
+M7's re-tagging territory), so the sweep stays out of it EXCEPT for the explicitly-reviewed 48
+person-list rows: 40 removed (`John` 10,247 - "a john" is slang for toilet/client, the plan's named
+top; `David`/`George`/`Henry` (the SI-unit sense is an accepted loss)/`Thomas`/`Louis`/`Alexander`/
+`Richard`/`Joseph`/`Edward`/`Albert`/`Joe`/`Leo`/`Hans`/`Benjamin`/`Gregory`/`Simon`/`Hermann`/
+`Jesse`/`Schmidt`/`Hitler`/`Stalin`/`Johnson`/`Scott`/`Adams`/`Campbell`/`Allen`/`Thompson`/
+`Collins`/`Parker`/`Morgan`/`Walker`/`Turner`/`Gibson`/`Phillips`/`Edwards`/`Bailey`/`Jenkins`/
+`Mozart`/`York` - the reviewed splitter), 8 kept (`Christian` the believer, `Jack` the car jack,
+`Frank` frank, `Ford` the brand, `Kaiser` the title, `Washington`/`Hamilton` cities, `Casanova`),
+with 35 minted surname-plural dependents (`Johns`, `Henries`, `Thomases`, `Adamses`, `Collinses`,
+...) removed transitively. 75 rows net.
+
+Class 3, the Mueller/Schuster lesson: the corpus stored the occupations ONLY as their surname
+surfaces (`Smith 2068`, `Miller 650`, `Cook 880`, ...) with no lowercase twin at all - the §1.5
+finding ("0 Berufswort-Zwillinge"). The force-capping ones are fixed as case replacements: the
+capital surname rows for `Smith`/`Miller`/`Cooper`/`Wright`/`Baker`/`Potter`/`Mason`/`Chandler`/
+`Fletcher` fly and lowercase `smith`...`fletcher` enter as NOUN,OTHER with the surname's own corpus
+frequency (the honest, attested magnitude for the same surface family). The OTHER-tagged trade rows
+(Cook, Butler, Carpenter, Shepherd, Porter, Weaver, Tanner, Warden) force-cap nothing and stay as
+they are; `hunter`/`brewer`/`tailor` already existed lowercase. The real trade plurals `Masons`/
+`Chandlers` were retargeted to lowercase surfaces with lemmas onto the incoming twins instead of
+dying as dangling links.
+
+Total: `app/src/main/assets/en/dict.tsv` 115,846 -> 88,958 rows (-26,888 net; -23.2%), quality gate
+PASS, the real-data test subset green. Autocap semantics after the sweep: months/countries/cities/
+demonyms/religions/mythology still capitalise correctly; no person name force-caps any more; the
+A-03 classifier and every G-01 language's veto lose the whole biography-tail noise class. Not yet
+device-confirmed; M7's NOUN-only re-tagging audit runs on the shrunk noun-only population next.
+
+
 

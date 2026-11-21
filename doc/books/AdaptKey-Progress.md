@@ -493,6 +493,16 @@ non-trivial changes).
   dangling-lemma guard removed 23 generated dependents transitively (`ists`, `seins`, `dirs`, ...). Above-threshold leakage (`und` 217, `Das` 151,
   `Dar` 127, `der` 778) is the named accepted residual per the decided EN<=20 threshold. Census file `scratchpad/d569_m3_candidates.txt`; gate PASS,
   data-test subset green.
+- **D-570 [EN-Namen-Sweep] - IMPLEMENTED (§570, data-only, no bump) - NOT yet device-confirmed: 26,897 rows leave `app/src/main/assets/en/dict.tsv`
+  (115,846 -> 88,958) - the Mueller/Schuster lesson lands in English.** All 29,180 PROPER_NOUN-only rows classed: keeps (months, 1,881 all-caps
+  acronyms, demonyms, countries/regions/major cities, the reviewed >200 band keeps - US states, mythology, universities, brands/tech, religions,
+  geologic periods, languages, the city-name collisions Madison/Charlotte/Victoria/Austin/Jackson/Hamilton), removals (the <=200 biography/place
+  tail 25,966, all reviewed >200 persons, splitters Los/Angeles/San/Francisco/York, mojibake, terror orgs, franchise/corporate fragments, and the
+  force-cap-only class - `United` 18,662! `Gulf`, `Bureau`, `Testament`, ... whose genuine English reading is lowercase with no lowercase row). The
+  NOUN,PROPER_NOUN class keeps its real generic readings (demonyms -> M7) and loses 40 reviewed top persons + 35 minted surname plurals (John 10,247
+  out - "a john" is slang; Christian/Jack/Frank/Ford/Kaiser stay). Class 3: the occupation twins enter lowercase with the surname's corpus frequency
+  (smith 2068, cook? no - OTHER-tagged trade rows stay; smith/miller/cooper/wright/baker/potter/mason/chandler/fletcher in, Masons/Chandlers
+  retargeted to lowercase plurals). Gate PASS, data-test subset green.
 - **D-554 [Wisch-Hoch: Zahlenreihe + Extra-Reihe] - IMPLEMENTED (§562, v1.3.24/624) - NOT yet device-confirmed: the C-09-off letters surface gets
   its digits back by gesture - the §48 swipe-up reveals the number row together with the extra row.**
   User request (2026-11-19); the digits-as-Alt-Belegung alternative was rejected by the user themselves
