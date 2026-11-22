@@ -1484,7 +1484,6 @@ display	1794	NOUN,VERB
 Bible	1794	NOUN,PROPER_NOUN
 something	1794	NOUN,VERB
 mixed	1790	VERB	mix
-Le	1789	OTHER
 operated	1789	VERB	operate
 require	1788	VERB
 widespread	1787	OTHER
@@ -2080,7 +2079,6 @@ Jackson	1291	NOUN,OTHER
 membership	1291	NOUN,VERB
 diplomatic	1291	OTHER
 trees	1290	NOUN,VERB	tree
-Bush	1289	OTHER
 join	1288	NOUN,VERB
 continues	1287	NOUN,VERB	continue
 assigned	1287	VERB	assign
@@ -2122,7 +2120,7 @@ IMPORT	1261	OTHER
 twelve	1261	NOUN,OTHER
 vast	1260	NOUN,ADJECTIVE
 beliefs	1258	NOUN,OTHER	belief
-Turkey	1258	PROPER_NOUN
+Turkey	1258	NOUN,OTHER
 proteins	1258	NOUN,OTHER	protein
 hence	1256	VERB
 storage	1256	NOUN,VERB
@@ -2171,7 +2169,6 @@ facilities	1233	NOUN,OTHER	facility
 titles	1233	NOUN,VERB	title
 reality	1233	NOUN,OTHER
 magnitude	1232	NOUN,OTHER
-ibn	1232	OTHER
 engines	1232	NOUN,VERB	engine
 bands	1231	NOUN,VERB	band
 destruction	1231	NOUN,OTHER
@@ -2397,9 +2394,7 @@ Georgia	1112	PROPER_NOUN
 locations	1112	NOUN,OTHER	location
 lies	1111	OTHER
 goes	1111	NOUN,VERB	go
-des	1111	NOUN,OTHER	de
 depression	1111	NOUN,OTHER
-et	1110	OTHER
 personnel	1110	NOUN,OTHER
 strategic	1109	OTHER
 mechanism	1109	NOUN,OTHER
@@ -2836,7 +2831,6 @@ aged	921	VERB	age
 procedure	921	NOUN,OTHER
 molecular	920	NOUN,OTHER
 indicated	919	VERB	indicate
-Donald	919	NOUN,OTHER
 males	919	NOUN,OTHER	male
 Iranian	919	NOUN,OTHER
 insurance	918	NOUN,OTHER
@@ -2903,7 +2897,6 @@ independently	894	OTHER
 clock	894	NOUN,VERB
 genes	894	NOUN,OTHER	gene
 Norway	894	NOUN,OTHER
-Napoleon	894	NOUN,OTHER
 wine	894	NOUN,VERB
 Portugal	894	PROPER_NOUN
 myth	893	NOUN,OTHER
@@ -2997,7 +2990,6 @@ revival	864	NOUN,OTHER
 Santa	864	NOUN,OTHER
 suicide	864	NOUN,VERB
 feet	864	NOUN,OTHER	foot
-Franklin	864	NOUN,OTHER
 Mr	864	NOUN,OTHER
 wider	863	ADJECTIVE	wide
 exclusively	863	OTHER
@@ -3281,8 +3273,6 @@ CD	780	NOUN,VERB,PROPER_NOUN
 supplies	780	NOUN,VERB	supply
 counties	779	OTHER
 simultaneously	778	OTHER
-di	778	OTHER
-der	778	OTHER
 possession	778	NOUN,OTHER
 else	777	OTHER
 romantic	777	NOUN,OTHER
@@ -3449,7 +3439,6 @@ bits	734	NOUN,VERB	bite
 consensus	733	NOUN,VERB
 lot	733	NOUN,VERB
 VI	733	NOUN,OTHER
-du	733	OTHER
 initiative	732	NOUN,OTHER
 lyrics	732	NOUN,OTHER	lyric
 Albanian	732	NOUN,PROPER_NOUN
@@ -3460,7 +3449,6 @@ shorter	731	NOUN,ADJECTIVE	short
 door	730	NOUN,VERB
 difficulty	730	NOUN,OTHER
 overseas	730	OTHER
-Jacob	730	NOUN,OTHER
 sovereignty	729	NOUN,OTHER
 imposed	728	VERB	impose
 intermediate	728	NOUN,VERB
@@ -3585,7 +3573,6 @@ horizontal	699	NOUN,OTHER
 centered	699	VERB	center
 supposed	699	VERB	suppose
 extensively	699	OTHER
-Franco	699	NOUN,OTHER
 facing	699	NOUN,VERB	face
 blocks	699	NOUN,VERB	block
 epic	698	NOUN,OTHER
@@ -3666,7 +3653,6 @@ considering	682	NOUN,VERB,PREPOSITION	consider
 compatible	682	NOUN,OTHER
 girls	682	NOUN,VERB	girl
 laser	682	NOUN,VERB
-Einstein	682	NOUN,OTHER
 situated	681	VERB	situate
 milk	681	NOUN,VERB
 Jamaica	681	PROPER_NOUN
@@ -4536,7 +4522,6 @@ sizes	522	NOUN,VERB	size
 harbour	522	NOUN,VERB
 dam	522	NOUN,VERB
 Adelaide	522	PROPER_NOUN
-facto	521	OTHER
 Manhattan	521	NOUN,OTHER
 vocabulary	521	NOUN,OTHER
 similarities	521	NOUN,OTHER	similarity
@@ -4565,7 +4550,6 @@ Sam	518	NOUN,OTHER
 everyday	517	OTHER
 happy	517	VERB,ADJECTIVE
 sessions	517	NOUN,VERB	session
-Victor	517	OTHER
 introduce	517	VERB
 nobility	517	NOUN,OTHER
 phi	517	NOUN,OTHER
@@ -4662,7 +4646,6 @@ Cuban	504	NOUN,PROPER_NOUN
 com	504	NOUN,OTHER
 severely	503	OTHER
 Forum	503	OTHER
-Les	503	OTHER
 cloud	503	NOUN,VERB
 warning	503	NOUN,VERB	warn
 finals	503	NOUN,VERB	final
@@ -5338,7 +5321,6 @@ conversely	426	OTHER
 boron	426	NOUN,OTHER
 Serbian	426	NOUN,PROPER_NOUN
 ETA	426	NOUN,OTHER
-tfrac	426	OTHER
 scandal	425	NOUN,OTHER
 beneath	425	PREPOSITION
 promise	425	NOUN,VERB
@@ -5458,7 +5440,6 @@ chronic	413	NOUN,OTHER
 rubber	413	NOUN,VERB
 visits	413	NOUN,VERB	visit
 demonstration	413	NOUN,OTHER
-Lucas	413	NOUN,VERB,PROPER_NOUN	Luca
 conscious	413	NOUN,OTHER
 advised	413	VERB	advise
 complexes	413	NOUN,VERB	complex
@@ -6111,7 +6092,6 @@ Joshua	356	NOUN,OTHER
 releasing	356	NOUN,VERB	release
 chemist	356	NOUN,OTHER
 servants	356	NOUN,OTHER	servant
-Il	356	OTHER
 numerals	356	NOUN,OTHER	numeral
 Broncos	356	NOUN,OTHER	Bronco
 breed	356	NOUN,VERB
@@ -6439,7 +6419,6 @@ ensuring	330	VERB	ensure
 peers	330	NOUN,VERB	peer
 transcription	330	NOUN,OTHER
 Paradise	330	OTHER
-Erasmus	330	NOUN,OTHER
 apparatus	329	NOUN,OTHER
 ATP	329	NOUN,OTHER
 throwing	329	NOUN,VERB	throw
@@ -6574,7 +6553,6 @@ portable	321	NOUN,OTHER
 Venezuela	321	PROPER_NOUN
 Aegean	321	NOUN,OTHER
 Flanders	321	PROPER_NOUN
-vec	321	OTHER
 freed	320	VERB	free
 whites	320	NOUN,VERB	white
 Democrat	320	NOUN,OTHER
@@ -7551,7 +7529,6 @@ exercises	262	NOUN,VERB	exercise
 patriotic	262	NOUN,OTHER
 rounded	262	VERB	round
 soluble	262	OTHER
-sur	262	OTHER
 transfers	262	NOUN,VERB	transfer
 classics	262	NOUN,OTHER	classic
 journalism	262	NOUN,OTHER
@@ -7690,7 +7667,6 @@ indication	256	NOUN,OTHER
 positioned	256	VERB	position
 continuum	256	NOUN,OTHER
 Herald	256	OTHER
-dt	256	OTHER
 cholesterol	256	NOUN,OTHER
 Bordeaux	256	NOUN,OTHER
 BDSM	256	PROPER_NOUN
@@ -7955,7 +7931,6 @@ Punjab	244	PROPER_NOUN
 vernacular	244	NOUN,OTHER
 void	244	NOUN,VERB
 Nero	244	NOUN,OTHER
-FDP	244	PROPER_NOUN
 Lesotho	244	PROPER_NOUN
 sixty	243	NOUN,OTHER
 shores	243	NOUN,VERB	shore
@@ -8323,7 +8298,6 @@ scalar	228	NOUN,OTHER
 patch	228	NOUN,VERB
 mansion	228	NOUN,OTHER
 monoxide	228	NOUN,OTHER
-Lang	228	OTHER
 bicycles	228	NOUN,VERB	bicycle
 infants	228	NOUN,OTHER	infant
 Tibet	228	PROPER_NOUN
@@ -8585,7 +8559,6 @@ protector	217	NOUN,OTHER
 modernization	217	NOUN,OTHER
 distinguishes	217	VERB	distinguish
 possesses	217	VERB	possess
-und	217	NOUN,OTHER
 Concerto	217	OTHER
 hatred	217	NOUN,OTHER
 manages	217	VERB	manage
@@ -8727,7 +8700,6 @@ statutory	212	OTHER
 maize	212	NOUN,OTHER
 biographical	212	OTHER
 Kazakh	212	NOUN,PROPER_NOUN
-Mann	212	NOUN,OTHER
 ascension	212	NOUN,OTHER
 renewal	212	NOUN,OTHER
 strengthening	212	NOUN,VERB	strengthen
@@ -8905,7 +8877,6 @@ Hood	205	OTHER
 classify	205	VERB
 marginal	205	NOUN,OTHER
 persona	205	NOUN,OTHER
-Stern	205	OTHER
 Cottage	205	OTHER
 waterways	205	NOUN,OTHER	waterway
 dictionaries	205	OTHER
@@ -9014,7 +8985,6 @@ Ethernet	202	NOUN,OTHER
 LGBTQ	202	NOUN,OTHER
 Latino	202	NOUN,OTHER
 bodhisattva	202	NOUN,OTHER
-CDU	202	NOUN,OTHER
 proponent	201	NOUN,OTHER
 stretches	201	NOUN,VERB	stretch
 monumental	201	OTHER
@@ -9131,7 +9101,6 @@ CDC	197	NOUN,OTHER
 floppy	197	NOUN,ADJECTIVE
 Chicano	197	NOUN,OTHER
 humidity	197	NOUN,OTHER
-te	1198	NOUN,OTHER
 ECB	197	PROPER_NOUN
 IRC	197	NOUN,VERB,PROPER_NOUN
 Liberian	197	NOUN,OTHER
@@ -9189,7 +9158,6 @@ fortifications	195	NOUN,OTHER	fortification
 packed	195	VERB	pack
 commutative	195	OTHER
 Slovenia	195	PROPER_NOUN
-fontsize	195	OTHER
 averages	194	NOUN,VERB	average
 trauma	194	NOUN,OTHER
 arrives	194	VERB	arrive
@@ -9301,7 +9269,6 @@ uncovered	191	VERB	uncover
 Crane	191	OTHER
 samurai	191	NOUN,OTHER
 thickness	191	NOUN,VERB
-Fritz	191	NOUN,OTHER
 tributaries	191	NOUN,OTHER	tributary
 aromatic	191	NOUN,OTHER
 medications	191	NOUN,OTHER	medication
@@ -9409,7 +9376,6 @@ flank	188	NOUN,VERB
 Rob	188	OTHER
 relics	188	NOUN,VERB	relic
 finances	188	NOUN,VERB	finance
-Bismarck	188	NOUN,OTHER
 font	187	NOUN,VERB
 Grove	187	OTHER
 mysteries	187	NOUN,OTHER	mystery
@@ -9989,7 +9955,6 @@ barons	171	OTHER
 computable	171	OTHER
 tan	171	NOUN,VERB,ADJECTIVE
 IETF	171	PROPER_NOUN
-CSU	171	PROPER_NOUN
 imagine	170	NOUN,VERB
 atheist	170	NOUN,OTHER
 screenwriter	170	NOUN,OTHER
@@ -10787,7 +10752,6 @@ populist	151	NOUN,OTHER
 Danes	151	NOUN,OTHER	Dane
 defences	151	NOUN,OTHER	defence
 equiv	151	OTHER
-Das	151	OTHER
 antigen	151	NOUN,OTHER
 Benin	151	PROPER_NOUN
 Salvadoran	151	NOUN,OTHER
@@ -11078,7 +11042,6 @@ touching	145	NOUN,VERB,PREPOSITION	touch
 takeoff	145	NOUN,OTHER
 lending	145	NOUN,VERB	lend
 spirituality	145	NOUN,OTHER
-Tu	145	OTHER
 cappella	145	OTHER
 doctrinal	145	NOUN,OTHER
 sacraments	145	NOUN,VERB	sacrament
@@ -11741,7 +11704,6 @@ airspace	132	NOUN,OTHER
 ers	132	OTHER
 fasces	132	NOUN,OTHER
 pedestrian	132	NOUN,OTHER
-mai	132	OTHER
 DECT	132	PROPER_NOUN
 trim	131	NOUN,VERB,ADJECTIVE
 juries	131	NOUN,VERB	jury
@@ -11779,7 +11741,6 @@ Jehovah	131	NOUN,OTHER
 Porter	131	OTHER
 blowing	131	NOUN,VERB	blow
 carp	131	NOUN,VERB
-Yorker	131	NOUN,OTHER
 milestone	131	NOUN,VERB
 dysfunction	131	NOUN,OTHER
 prefect	131	NOUN,OTHER
@@ -11837,7 +11798,6 @@ congregational	130	OTHER
 turbines	130	NOUN,OTHER	turbine
 mammal	129	NOUN,OTHER
 caliber	129	NOUN,OTHER
-Ki	129	OTHER
 feud	129	NOUN,VERB
 candidacy	129	NOUN,OTHER
 partnered	129	VERB	partner
@@ -11990,7 +11950,6 @@ algebraically	127	OTHER
 decorations	127	NOUN,OTHER	decoration
 chimpanzee	127	NOUN,OTHER
 concubines	127	NOUN,OTHER	concubine
-Dar	127	OTHER
 sleeve	127	NOUN,VERB
 catcher	127	NOUN,OTHER
 disappearance	126	NOUN,OTHER
@@ -12676,7 +12635,6 @@ vulgar	115	NOUN,ADJECTIVE
 garage	115	NOUN,VERB
 recycling	115	NOUN,VERB	recycle
 mat	390	NOUN,VERB
-dei	115	OTHER
 thou	115	NOUN,VERB
 naturalist	115	NOUN,OTHER
 barium	115	NOUN,OTHER
@@ -13859,7 +13817,6 @@ dimensionless	98	OTHER
 kurtosis	98	NOUN,OTHER
 signatories	98	NOUN,OTHER	signatory
 ISM	98	NOUN,OTHER
-für	98	OTHER
 Greyhound	98	NOUN,OTHER
 Norton	98	NOUN,OTHER
 furnace	98	NOUN,VERB
@@ -14940,7 +14897,6 @@ sour	85	NOUN,VERB,ADJECTIVE
 NH	85	NOUN,VERB,PROPER_NOUN
 deploying	85	VERB	deploy
 rendezvous	85	NOUN,VERB
-NS	85	OTHER
 gastrointestinal	85	OTHER
 grinding	85	NOUN,VERB	grind
 einsteinium	85	OTHER
@@ -15061,7 +15017,6 @@ ionized	84	VERB	ionize
 Gauls	84	NOUN,OTHER	Gaul
 drier	84	NOUN,ADJECTIVE	dry
 AFI	84	NOUN,OTHER
-Ein	84	OTHER
 prostitution	84	NOUN,OTHER
 inline	84	NOUN,VERB
 cylinders	84	NOUN,VERB	cylinder
@@ -15075,7 +15030,6 @@ catalyzed	84	VERB	catalyze
 intoxication	84	NOUN,OTHER
 electrochemical	84	NOUN,OTHER
 smelting	84	NOUN,VERB	smelt
-Mythos	84	OTHER
 defamation	84	NOUN,OTHER
 blog	84	NOUN,VERB
 geodetic	84	OTHER
@@ -15835,7 +15789,6 @@ crystallography	77	OTHER
 hue	77	NOUN,OTHER
 Cha	77	OTHER
 cubes	77	NOUN,VERB	cube
-Oder	77	OTHER
 timely	77	ADJECTIVE
 Pomerania	77	PROPER_NOUN
 NKVD	77	PROPER_NOUN
@@ -16296,7 +16249,6 @@ hinted	73	VERB	hint
 paperback	73	NOUN,VERB
 glove	73	NOUN,VERB
 bis	1449	NOUN,OTHER	bi
-Jacobs	73	NOUN,OTHER	Jacob
 Petit	73	OTHER
 forbid	73	VERB
 sonatas	73	OTHER
@@ -16543,7 +16495,6 @@ animosity	71	NOUN,OTHER
 strive	71	VERB
 endogenous	71	OTHER
 restricts	71	VERB	restrict
-zu	71	OTHER
 preeminent	71	OTHER
 cosine	71	NOUN,OTHER
 convicts	71	NOUN,VERB	convict
@@ -17034,7 +16985,6 @@ insulators	67	NOUN,OTHER	insulator
 parable	67	NOUN,VERB
 sagas	67	NOUN,OTHER	saga
 humiliating	67	NOUN,VERB	humiliate
-SED	67	NOUN,OTHER
 piloted	67	VERB	pilot
 restrained	67	VERB	restrain
 remission	67	NOUN,VERB
@@ -17875,7 +17825,6 @@ Ostrogoths	61	NOUN,OTHER	Ostrogoth
 unopposed	61	OTHER
 sacking	61	NOUN,VERB	sac
 tabloid	61	NOUN,VERB
-Moderne	61	OTHER
 Gamble	61	OTHER
 transposition	61	NOUN,VERB
 vases	61	NOUN,VERB	vase
@@ -20082,7 +20031,6 @@ browsing	49	NOUN,VERB	browse
 bagpipe	49	NOUN,VERB
 illustrious	49	OTHER
 badges	49	NOUN,VERB	badge
-Mal	49	OTHER
 XT	49	NOUN,OTHER
 stallion	49	NOUN,OTHER
 Roaring	49	OTHER
@@ -20167,7 +20115,6 @@ uniformed	48	VERB	uniform
 roast	48	NOUN,VERB
 persuading	48	NOUN,VERB	persuade
 commandment	48	NOUN,OTHER
-Deutscher	48	OTHER
 spines	48	NOUN,OTHER	spine
 opportunistic	48	OTHER
 accumulates	48	VERB	accumulate
@@ -20544,7 +20491,6 @@ lubricant	47	NOUN,OTHER
 pestis	47	OTHER
 dioxin	47	OTHER
 baleen	47	NOUN,OTHER
-Je	47	OTHER
 Rohingya	47	NOUN,OTHER
 ICQ	47	NOUN,VERB,PROPER_NOUN
 textbf	47	OTHER
@@ -21517,7 +21463,6 @@ precipitating	43	VERB	precipitate
 div	148	NOUN,OTHER
 depository	43	NOUN,OTHER
 Haredi	43	NOUN,OTHER
-Landtag	43	NOUN,OTHER
 bottlenose	43	NOUN,OTHER
 halftime	43	NOUN,OTHER
 bouncing	43	NOUN,VERB	bounce
@@ -21704,7 +21649,6 @@ modifier	42	NOUN,OTHER
 accompanies	42	VERB	accompany
 gloss	42	NOUN,VERB
 retinal	42	NOUN,OTHER
-Ich	42	OTHER
 Sámi	42	NOUN,OTHER
 primogeniture	42	NOUN,OTHER
 threaded	42	VERB	thread
@@ -22244,7 +22188,6 @@ ADHD	40	VERB,PROPER_NOUN
 rehabilitated	40	VERB	rehabilitate
 modernizing	40	VERB	modernize
 salvage	40	NOUN,VERB
-oft	81	OTHER
 bogs	40	NOUN,VERB	bog
 impede	40	VERB
 intoxicated	40	OTHER
@@ -22481,7 +22424,6 @@ pursues	39	VERB	pursue
 enlistment	39	NOUN,OTHER
 demoted	39	VERB	demote
 ghettos	39	OTHER
-Mein	39	OTHER
 Cobra	39	OTHER
 repatriation	39	NOUN,OTHER
 fuses	39	NOUN,VERB	fuse
@@ -22503,7 +22445,6 @@ progressives	39	NOUN,OTHER	progressive
 transducers	39	NOUN,OTHER	transducer
 pK	39	OTHER
 legates	39	NOUN,VERB	legate
-Lat	39	OTHER
 autism	39	NOUN,OTHER
 materialized	39	VERB	materialize
 linearity	39	NOUN,OTHER
@@ -22840,7 +22781,6 @@ shoals	38	NOUN,VERB	shoal
 carriageway	38	NOUN,OTHER
 moduli	38	NOUN,OTHER	modulus
 scooters	38	NOUN,VERB	scooter
-Führer	38	NOUN,OTHER
 alignments	38	NOUN,OTHER	alignment
 gauges	38	NOUN,VERB	gauge
 scrolling	38	NOUN,VERB	scroll
@@ -23126,7 +23066,6 @@ germs	72	NOUN,VERB	germ
 supergiant	37	NOUN,OTHER
 coda	37	NOUN,OTHER
 JFK	37	NOUN,VERB,PROPER_NOUN
-zur	37	OTHER
 stoves	37	NOUN,VERB	stove
 vulva	37	NOUN,OTHER
 unproven	37	OTHER
@@ -23140,7 +23079,6 @@ propelling	37	NOUN,VERB	propel
 goalscorer	37	NOUN,OTHER
 winger	37	NOUN,OTHER
 cadre	37	NOUN,OTHER
-Gesellschaft	37	NOUN,OTHER
 distort	37	VERB
 sweetened	37	VERB	sweeten
 carbamazepine	37	NOUN,OTHER
@@ -23438,7 +23376,6 @@ payable	36	NOUN,OTHER
 TTL	36	NOUN,OTHER
 Hawthorn	36	OTHER
 GPCR	36	NOUN,OTHER
-auf	36	OTHER
 computability	36	NOUN,OTHER
 repositories	36	NOUN,OTHER	repository
 interlude	36	NOUN,VERB
@@ -23667,7 +23604,6 @@ miraculously	35	OTHER
 defection	35	NOUN,OTHER
 centimetres	35	NOUN,OTHER	centimetre
 cancelling	35	OTHER
-Zimmer	35	NOUN,OTHER
 stool	35	NOUN,VERB
 convents	35	NOUN,OTHER	convent
 prepositional	35	NOUN,OTHER
@@ -23917,7 +23853,6 @@ rentals	34	NOUN,OTHER	rental
 infiltrate	34	NOUN,VERB
 Sphinx	34	NOUN,OTHER
 labors	34	NOUN,VERB	labor
-aus	34	OTHER
 Magdalene	34	NOUN,OTHER
 collectible	34	NOUN,OTHER
 pawns	34	NOUN,VERB	pawn
@@ -24060,7 +23995,6 @@ creditor	34	NOUN,OTHER
 transcriptional	34	OTHER
 Ghats	34	OTHER
 Bridget	34	NOUN,OTHER
-Über	34	OTHER
 gunnery	34	NOUN,OTHER
 Abaddon	34	OTHER
 fuzes	34	NOUN,VERB	fuze
@@ -24206,7 +24140,6 @@ pessimism	33	NOUN,OTHER
 philological	33	OTHER
 quarrels	33	NOUN,VERB	quarrel
 despotism	33	NOUN,OTHER
-Tat	33	NOUN,OTHER
 IBRD	33	PROPER_NOUN
 ascertained	33	VERB	ascertain
 robberies	33	NOUN,OTHER	robbery
@@ -24627,7 +24560,6 @@ polytheism	32	NOUN,OTHER
 justifications	32	NOUN,OTHER	justification
 calorimetry	32	NOUN,OTHER
 Leach	32	OTHER
-Kohl	32	OTHER
 synthetically	32	OTHER
 repelling	32	NOUN,VERB	repel
 carat	32	NOUN,OTHER
@@ -24642,7 +24574,6 @@ plenipotentiary	32	NOUN,OTHER
 transcript	32	NOUN,OTHER
 resonate	32	VERB
 propagates	32	VERB	propagate
-NSDAP	32	PROPER_NOUN
 antidote	32	NOUN,VERB
 mousetrap	32	NOUN,VERB
 casuistry	32	NOUN,OTHER
@@ -25359,7 +25290,6 @@ rescheduled	30	VERB	reschedule
 IFAD	30	PROPER_NOUN
 peril	30	NOUN,VERB
 inept	30	OTHER
-Herr	30	NOUN,OTHER
 lensing	30	NOUN,VERB	lens
 aspire	30	VERB
 cavalrymen	30	NOUN,OTHER	cavalryman
@@ -25798,7 +25728,6 @@ spleen	29	NOUN,VERB
 ripples	29	NOUN,VERB	ripple
 Hotak	29	NOUN,OTHER
 SAARC	29	PROPER_NOUN
-KAM	29	NOUN,OTHER
 Montenegrin	29	NOUN,PROPER_NOUN
 pelican	29	NOUN,OTHER
 merciful	29	OTHER
@@ -26981,7 +26910,6 @@ eyewitnesses	27	NOUN,VERB	eyewitness
 printings	27	NOUN,OTHER	print
 topologically	27	OTHER
 cryptozoologists	27	NOUN,OTHER	cryptozoologist
-Gare	27	OTHER
 gluon	27	NOUN,OTHER
 sticking	27	NOUN,VERB	stick
 chipmunks	27	NOUN,VERB	chipmunk
@@ -27483,12 +27411,10 @@ instantiated	25	VERB	instantiate
 Neoplatonist	25	NOUN,OTHER
 grievance	25	NOUN,OTHER
 distorts	25	VERB	distort
-kinder	25	NOUN,ADJECTIVE	kind
 Sahib	25	NOUN,OTHER
 appropriateness	25	OTHER
 unattractive	25	NOUN,OTHER
 heroines	25	NOUN,OTHER	heroine
-Normale	25	OTHER
 privateering	25	NOUN,VERB	privateer
 mobs	25	NOUN,VERB	mob
 eucalyptus	25	NOUN,OTHER
@@ -27838,7 +27764,6 @@ satisfactorily	25	OTHER
 turboprop	25	NOUN,OTHER
 tweet	25	NOUN,VERB
 NDA	25	NOUN,OTHER
-Gestalt	25	OTHER
 Hone	25	OTHER
 rationalists	25	NOUN,OTHER	rationalist
 seventies	25	OTHER
@@ -28514,7 +28439,6 @@ dictation	24	NOUN,OTHER
 Ding	24	OTHER
 cordite	24	NOUN,OTHER
 hydrodynamics	24	OTHER
-Ost	24	OTHER
 hump	24	NOUN,VERB
 derision	24	NOUN,OTHER
 unresponsive	24	OTHER
@@ -28702,7 +28626,6 @@ gallows	23	NOUN,OTHER
 pacemaker	23	NOUN,OTHER
 sock	23	NOUN,VERB
 nap	23	NOUN,VERB
-Kleine	23	OTHER
 precautionary	23	OTHER
 circling	23	NOUN,VERB	circle
 ramjet	23	NOUN,OTHER
@@ -28864,7 +28787,6 @@ affray	23	NOUN,OTHER
 adornment	23	NOUN,OTHER
 disembarked	23	VERB	disembark
 centralisation	23	NOUN,OTHER
-Messe	23	OTHER
 fluoresce	23	VERB
 Manchus	23	NOUN,OTHER	Manchu
 nutritious	23	OTHER
@@ -29220,7 +29142,6 @@ frustrations	22	NOUN,OTHER	frustration
 sills	22	NOUN,OTHER	sill
 SST	22	NOUN,OTHER
 burdensome	22	OTHER
-Hof	22	OTHER
 envious	22	OTHER
 democratisation	22	NOUN,OTHER
 hemorrhagic	22	OTHER
@@ -29357,7 +29278,6 @@ pluck	22	NOUN,VERB
 keenly	22	OTHER
 disparaged	22	VERB	disparage
 debunked	22	VERB	debunk
-Yorkers	22	NOUN,OTHER	Yorker
 starlight	22	NOUN,OTHER
 inconvenient	22	OTHER
 mitre	22	NOUN,VERB
@@ -29529,7 +29449,6 @@ clutter	22	NOUN,VERB
 archiving	22	NOUN,VERB	archive
 smoothbore	22	NOUN,OTHER
 FV	22	NOUN,OTHER
-Unter	22	OTHER
 causally	22	OTHER
 custodians	22	NOUN,OTHER	custodian
 credo	22	NOUN,OTHER
@@ -29608,7 +29527,6 @@ benthic	22	NOUN,OTHER
 girders	22	NOUN,OTHER	girder
 Ludo	22	OTHER
 woolly	22	NOUN,ADJECTIVE
-DASS	22	OTHER
 bryozoan	22	NOUN,OTHER
 funicular	22	NOUN,OTHER
 uncensored	22	OTHER
@@ -30081,7 +29999,6 @@ landholders	21	NOUN,OTHER	landholder
 Nagar	21	OTHER
 potters	21	OTHER
 rulership	21	NOUN,OTHER
-sei	21	NOUN,OTHER
 Gur	21	OTHER
 Intrepid	21	OTHER
 foederati	21	OTHER
@@ -30144,7 +30061,6 @@ NPC	21	NOUN,OTHER
 depreciation	21	NOUN,OTHER
 unregistered	21	OTHER
 Gareth	21	NOUN,OTHER
-Potsdamer	21	NOUN,OTHER
 photographing	21	NOUN,VERB	photograph
 shredded	21	VERB	shred
 reconfigured	21	VERB	reconfigure
@@ -31205,7 +31121,6 @@ Pisces	19	NOUN,OTHER
 storytellers	19	NOUN,OTHER	storyteller
 jujutsu	19	OTHER
 VCD	19	NOUN,OTHER
-Türk	19	NOUN,OTHER
 docile	19	OTHER
 phobia	19	NOUN,OTHER
 Limehouse	19	VERB,PROPER_NOUN
@@ -47283,7 +47198,6 @@ SAA	7	NOUN,OTHER
 leafed	7	VERB	leaf
 Pite	7	OTHER
 footstool	7	NOUN,OTHER
-Tats	7	NOUN,OTHER	Tat
 Alim	7	OTHER
 nationalizing	7	VERB	nationalize
 marjoram	7	NOUN,OTHER
@@ -63111,7 +63025,6 @@ Benzes	84	NOUN,OTHER	Benz
 Bereans	2	NOUN,OTHER	Berean
 Berettas	6	NOUN,OTHER	Beretta
 Berkshires	22	NOUN,OTHER	Berkshire
-Berlins	873	NOUN,OTHER	Berlin
 Bernds	6	NOUN,OTHER	Bernd
 Berneses	7	NOUN,OTHER	Bernese
 Bernies	32	NOUN,OTHER	Bernie
@@ -63122,7 +63035,6 @@ Betties	43	NOUN,OTHER	Betty
 Bhopals	4	NOUN,OTHER	Bhopal
 Bibbs	2	NOUN,OTHER	Bibb
 Biscayans	4	NOUN,OTHER	Biscayan
-Bismarcks	77	NOUN,OTHER	Bismarck
 Bitcoins	20	NOUN,OTHER	Bitcoin
 Bithynians	3	NOUN,OTHER	Bithynian
 BlackBerrys	10	NOUN,OTHER	BlackBerry
@@ -63230,7 +63142,6 @@ CDEs	23	NOUN,OTHER	CDE
 CDFs	10	NOUN,OTHER	CDF
 CDMs	14	NOUN,OTHER	CDM
 CDPs	7	NOUN,OTHER	CDP
-CDUs	82	NOUN,OTHER	CDU
 CDWs	4	NOUN,OTHER	CDW
 CECs	5	NOUN,OTHER	CEC
 CEPs	3	NOUN,OTHER	CEP
@@ -63618,7 +63529,6 @@ Dogras	4	NOUN,OTHER	Dogra
 Dolans	5	NOUN,OTHER	Dolan
 Dollies	62	NOUN,OTHER	Dolly
 Dominiques	18	NOUN,OTHER	Dominique
-Donalds	374	NOUN,OTHER	Donald
 Donegals	36	NOUN,OTHER	Donegal
 Donskoys	2	NOUN,OTHER	Donskoy
 Dorises	34	NOUN,OTHER	Doris
@@ -63721,7 +63631,6 @@ Edwardians	12	NOUN,OTHER	Edwardian
 Egyptologies	6	NOUN,OTHER	Egyptology
 Eichmanns	9	NOUN,OTHER	Eichmann
 Eids	11	NOUN,OTHER	Eid
-Einsteins	278	NOUN,OTHER	Einstein
 Elephantas	2	NOUN,OTHER	Elephanta
 Elmos	6	NOUN,OTHER	Elmo
 Elohists	3	NOUN,OTHER	Elohist
@@ -63743,7 +63652,6 @@ Epiphanies	16	NOUN,OTHER	Epiphany
 Epiphones	3	NOUN,OTHER	Epiphone
 Epirotes	2	NOUN,OTHER	Epirote
 Erasmians	2	NOUN,OTHER	Erasmian
-Erasmuses	134	NOUN,OTHER	Erasmus
 Erythraeans	5	NOUN,OTHER	Erythraean
 Ethernets	82	NOUN,OTHER	Ethernet
 Etonians	2	NOUN,OTHER	Etonian
@@ -63825,25 +63733,21 @@ Fokkers	10	NOUN,OTHER	Fokker
 Foxhounds	2	NOUN,OTHER	Foxhound
 Fras	31	NOUN,OTHER	Fra
 Frakturs	5	NOUN,OTHER	Fraktur
-Francos	285	NOUN,OTHER	Franco
 Francoists	22	NOUN,OTHER	Francoist
 Francophiles	3	NOUN,OTHER	Francophile
 Frankensteins	54	NOUN,VERB	Frankenstein
 Frankfurters	12	NOUN,OTHER	Frankfurter
 Frankies	36	NOUN,OTHER	Frankie
-Franklins	352	NOUN,OTHER	Franklin
 Frascatis	4	NOUN,OTHER	Frascati
 Freds	135	NOUN,OTHER	Fred
 Freddies	18	NOUN,OTHER	Freddie
 Frenchies	4	NOUN,OTHER	Frenchy
 Freudians	14	NOUN,OTHER	Freudian
 Fritos	2	NOUN,OTHER	Frito
-Fritzes	78	NOUN,OTHER	Fritz
 Friulians	2	NOUN,OTHER	Friulian
 Fujis	13	NOUN,OTHER	Fuji
 Fulas	10	NOUN,OTHER	Fula
 Fulanis	14	NOUN,OTHER	Fulani
-Führers	15	NOUN,OTHER	Führer
 GAMs	4	NOUN,OTHER	GAM
 GBs	70	NOUN,OTHER	GB
 GBAs	9	NOUN,OTHER	GBA
@@ -64274,7 +64178,6 @@ Judases	26	NOUN,OTHER	Judas
 Judies	35	NOUN,OTHER	Judy
 Jungians	7	NOUN,OTHER	Jungian
 KABs	4	NOUN,OTHER	KAB
-KAMs	12	NOUN,OTHER	KAM
 KAPs	2	NOUN,OTHER	KAP
 KDs	3	NOUN,OTHER	KD
 KDFs	5	NOUN,OTHER	KDF
@@ -64430,7 +64333,6 @@ Lanchesters	6	NOUN,OTHER	Lanchester
 Lancias	4	NOUN,OTHER	Lancia
 Landsats	7	NOUN,OTHER	Landsat
 Landseers	2	NOUN,OTHER	Landseer
-Landtage	18	NOUN,OTHER	Landtag
 Landwehrs	5	NOUN,OTHER	Landwehr
 Lankans	49	NOUN,OTHER	Lankan
 Laotians	12	NOUN,OTHER	Laotian
@@ -64617,7 +64519,6 @@ Manhattans	212	NOUN,OTHER	Manhattan
 Manilas	50	NOUN,OTHER	Manila
 Manipuris	3	NOUN,OTHER	Manipuri
 Manitobans	2	NOUN,OTHER	Manitoban
-Manns	86	NOUN,OTHER	Mann
 Mannerists	4	NOUN,OTHER	Mannerist
 Mansis	3	NOUN,OTHER	Mansi
 Mantuans	3	NOUN,OTHER	Mantuan
@@ -64808,7 +64709,6 @@ Nances	4	NOUN,VERB	Nance
 Nancies	73	NOUN,OTHER	Nancy
 Nandis	12	NOUN,OTHER	Nandi
 Nanticokes	4	NOUN,OTHER	Nanticoke
-Napoleons	364	NOUN,OTHER	Napoleon
 Napsters	7	NOUN,VERB	Napster
 Naqshbandis	2	NOUN,OTHER	Naqshbandi
 Narodniks	2	NOUN,OTHER	Narodnik
@@ -65129,7 +65029,6 @@ Ponzis	4	NOUN,OTHER	Ponzi
 Porsches	18	NOUN,OTHER	Porsche
 Portos	38	NOUN,OTHER	Porto
 Potawatomis	7	NOUN,OTHER	Potawatomi
-Potsdamers	9	NOUN,OTHER	Potsdamer
 PowerPoints	2	NOUN,VERB	PowerPoint
 Powhatans	3	NOUN,OTHER	Powhatan
 Pradeshes	100	NOUN,OTHER	Pradesh
@@ -65321,7 +65220,6 @@ SDRs	4	NOUN,OTHER	SDR
 SDSs	11	NOUN,OTHER	SDS
 SECs	64	NOUN,OTHER	SEC
 SECDEFs	2	NOUN,OTHER	SECDEF
-SEDs	27	NOUN,OTHER	SED
 SEMs	7	NOUN,OTHER	SEM
 SEPs	6	NOUN,OTHER	SEP
 SERTs	6	NOUN,OTHER	SERT
@@ -65730,7 +65628,6 @@ Tyroleses	2	NOUN,OTHER	Tyrolese
 Tyrones	13	NOUN,OTHER	Tyrone
 Tyrrhenians	7	NOUN,OTHER	Tyrrhenian
 Tzotzils	3	NOUN,OTHER	Tzotzil
-Türks	8	NOUN,OTHER	Türk
 UAs	12	NOUN,OTHER	UA
 UACs	2	NOUN,OTHER	UAC
 UARTs	4	NOUN,OTHER	UART
@@ -65952,7 +65849,6 @@ Zazas	4	NOUN,OTHER	Zaza
 Zeds	2	NOUN,OTHER	Zed
 Zees	9	NOUN,OTHER	Zee
 Zhuangs	4	NOUN,OTHER	Zhuang
-Zimmers	14	NOUN,OTHER	Zimmer
 Zionisms	44	NOUN,OTHER	Zionism
 Zollvereins	4	NOUN,OTHER	Zollverein
 Zooms	17	NOUN,VERB	Zoom
@@ -76572,7 +76468,6 @@ segmentations	16	NOUN,OTHER	segmentation
 segregates	7	NOUN,VERB	segregate
 segregations	83	NOUN,OTHER	segregation
 segregationists	7	NOUN,OTHER	segregationist
-seis	9	NOUN,OTHER	sei
 seiches	2	NOUN,OTHER	seiche
 seigniorages	2	NOUN,OTHER	seigniorage
 seismicities	2	NOUN,OTHER	seismicity
@@ -78574,7 +78469,6 @@ ultrashorts	2	NOUN,OTHER	ultrashort
 ultrasonographies	4	NOUN,OTHER	ultrasonography
 ultrasounds	29	NOUN,VERB	ultrasound
 ultraviolets	86	NOUN,OTHER	ultraviolet
-ums	27	NOUN,VERB	um
 umbers	2	NOUN,VERB	umber
 umbilicals	5	NOUN,OTHER	umbilical
 umbras	7	NOUN,OTHER	umbra
@@ -78611,7 +78505,6 @@ unconstitutionalities	3	NOUN,OTHER	unconstitutionality
 unconventionals	44	NOUN,OTHER	unconventional
 uncountables	20	NOUN,OTHER	uncountable
 uncoverings	14	NOUN,OTHER	uncover
-unds	88	NOUN,OTHER	und
 undecanes	2	NOUN,OTHER	undecane
 undecideds	9	NOUN,OTHER	undecided
 undefinables	2	NOUN,OTHER	undefinable
@@ -88054,7 +87947,6 @@ minuter	60	ADJECTIVE	minute
 minutest	60	ADJECTIVE	minute
 modder	9	ADJECTIVE	mod
 moddest	9	ADJECTIVE	mod
-moderner	772	ADJECTIVE	modern
 modernest	772	ADJECTIVE	modern
 modester	26	ADJECTIVE	modest
 modestest	26	ADJECTIVE	modest

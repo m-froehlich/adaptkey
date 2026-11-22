@@ -27141,6 +27141,9 @@ rule 5, where the S-11 dual-casing chips serve the capital), and the `PROPER_NOU
 whose lowercase reading is a real common noun (`Turkey` the bird 1,258, plus `hamlet`/`general`-
 class rows) still force-cap - the same wrongness shape, discoverable only word by word.
 
+Quality gate PASS, real-data test subset green. NOT yet device-confirmed; M9's regression round
+pins the china case.
+
 ## §575 - D-575: the pipeline firmed and the regression net cast - `EnglishDictionaryQualityEvaluationTest` (7 pins over the real data), `build_en_dict.py` verify with version stamp, `quality_gate --lang en` (M8+M9, test/script-only, no bump)
 
 The plan's closing round. **M9's regression net**: the new `EnglishDictionaryQualityEvaluationTest`
@@ -27194,12 +27197,43 @@ Test/script/docs-only - no app behaviour change, no version bump (D-372 preceden
 2,015 tests green (+7); `build_en_dict.py` BUILD VERIFY: PASS. The plan
 `english-dictionary-quality.md` is complete; moved to done/ in the closing docs commit.
 
+## §576 - D-576: the EN named residuals swept - the above-threshold German leakage (der 778, und 217, Das 151, ... 108 rows), Turkey re-tagged for the bird reading; Tower/Golden/Bay-class force-cap worry disproven (data-only, no bump)
 
-Quality gate PASS, real-data test subset green. NOT yet device-confirmed; M9's regression round
-pins the china case.
+The two EN residuals History §569/§574 named, closed as the follow-up the user requested before the
+device test. (1) The above-threshold leakage: widening the D-569 census to EN freq <= 2000 (de freq
+>= 300, scratchpad/d576_leakage_review.py) found 619 rows - but the overwhelming majority are REAL
+English words sharing Germanic spelling (hat, fast, gut, bald, rat, boot, sand, arm, hell, golf,
+link, wolf, rose, wider, die 11,779, den, stand, pro, meter, dollar, organisation, theatre -
+removing those would destroy English vocabulary, and they are D-106 homographs by design). Removed
+are only the German weak forms and stray rows with NO English reading - `der` 778, `und` 217,
+`des` 1,111, `Das` 151, `zu`, `auf`, `für`, `Ein`, `aus`, `Oder`, `zur`, `DASS`, `Über`, `Unter`,
+`KAM`, `sei`, `oft`, `mai`, `Je`, `Ich`, `Gesellschaft`, `Dar`, `Mal`, `kinder`, `Kleine`, `Mann`,
+`Lang`, `Deutscher`, `Moderne`, `du`, `Ost`, `Hof`, the party acronyms CDU/FDP/NSDAP/CSU/SED,
+`Mythos`, `Führer`, `Landtag`, `Gestalt`, `Messe`, `Potsdamer`, the Latin/French connector
+fragments `et`/`di`/`Le`/`vec`/`ibn`/`Mein`/`ums`/`sur`/`Il`/`te`/`Tu`/`facto`/`Normale`/`dei`,
+LaTeX junk (`tfrac`, `fontsize`), and the person names the M11 follow-up's tag-shape cut had missed
+(`Fritz`, `Stern`, `Napoleon`, `Bismarck`, `Bush`, `Jacob`, `Les`, `Lucas`, `Franklin`, `Kohl`,
+`Victor`, `Yorker`, `Erasmus`, `Donald`, `Zimmer`, `Franco`, `Einstein`, plus `Moderner`,
+`Berlins`, `Lat`, `dt`, `Ki`, `Türk`) - 108 rows net with 34 minted dependents (`Jacobs`,
+`Napoleons`, `unds`, `Landtage`, ...). Deliberately kept: the German-city/region rows (Hamburg,
+Frankfurt, Leipzig, Baden, Weimar, Oldenburg, Brandenburg, Holstein, ...), the real English
+homographs, the party-adjacent English acronyms (SPD, DB, DDR - DDR5 RAM is typed in English),
+`am` (I am), `um`, `es`->removed but `Oder`-river gone while `Mir` (the station), `Kaiser`,
+`Autobahn`, `Fest`, `Burg`, `wort`, `gilt`, `stark`, `nun`, `dies`, `Gymnasium`, `lied` (he lied!),
+`bot`, `sender`, `rand`, `muster`, `laden`, `rein`, `rote`, `gilt` all stay - each with a real
+English reading.
 
+(2) The force-cap worry for the Tower/Golden/Bay-class polysemes DISPROVEN: the conditional re-tag
+report shows `Tower`, `Golden`, `Mount`, `Villa`, `Forum`, `Delta`, `Atlas`, `Metro`, `Arena`,
+`Bay`, `Regiment`, `Corps`, `Hill`, `Bell`, `Watt`, `Shuttle`, `Trek`, `Corporation`, `Dame`,
+`Loch`, `Royals`, `Oblast`, `Laden`, `Fest`, `Autobahn` all already carry OTHER or NOUN,OTHER
+tags - the corpus had them right, rule 5 applies, no force-cap exists to fix. The class narrows to
+exactly ONE row: `Turkey` (1,258, PROPER_NOUN) - typed "turkey sandwich"/"a turkey" force-capped to
+the country. Re-tagged `PROPER_NOUN -> NOUN,OTHER` (the M7 china treatment, surface kept): typed
+"turkey" stays lowercase, typed "Turkey" is preserved by rule 1. French/Greek stay as documented
+(NOUN,VERB,ADJECTIVE,PROPER_NOUN - already rule-5 ambiguous, S-11 dual chips serve the capital;
+their verb/adjective senses are real Wiktionary data).
 
-
-
-
+Quality gate PASS (`--lang en`), `build_en_dict.py` BUILD VERIFY PASS, full suite green at the
+round's close.
 
