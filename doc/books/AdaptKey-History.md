@@ -27295,5 +27295,56 @@ the same legitimate-homograph class as the D-569 whitelist.
 Full suite green (2,015 tests); fresh 1.3.29/629 APK built and hash-recorded. The de pack rides
 its own hosted update path at version 54 (push pending, the user's step).
 
+## §580 - D-580: the dur->dir device bug stays OPEN - the repro log confirms the gate closed at Dur=501-level confidence, and the hosted pack is still the un-pushed version 52; parked per the user's instruction with the exact re-test protocol (device repro session, no code change)
+
+The user installed the fresh build and re-tested: "Ganze Teile mut" now fires silently to "mit"
+(that CONFIRMS the EN side is live - the D-106 veto blockers mut/Dur/muts are gone from the
+device's EN store, i.e. the D-578 reseed v3 fired), but "Mit dur" still commits as typed, "dur"
+not learned (user-checked). The X-01 log for the repro names the state exactly:
+
+    finalizeAndCommit: tokenContextBefore="Ganze Teile mit \nMit dur\nMit "
+    dictChoice.suppressAutocorrect=false knownInOtherLanguage=false
+    finalizeAndCommit: dict=GERMAN suppressAutocorrect=false diacriticWord=null
+    autocorrected=null rawCorrected=null
+    finalizeAndCommit: typed="dur" -> finalWord="dur" delimiter=" "
+
+suppressAutocorrect=false eliminates the A-03 verdict AND the D-106 veto for this repro
+(knownInOtherLanguage=false - the EN store lacks dur); the user confirmed C-22=Mittel and no
+learned Dur/Dir; the Greek pack knows neither token (checked against dictionaries/el/dict.tsv);
+C-22 as the sole cause is eliminated. The confidence math with the device's data: Dur=**501** ->
+dur/Dir ratio 25.4x -> forKnownWordOverride = 0.52 < 0.75 → chip-only - EXACTLY the logged
+autocorrected=null (the D-558-era value; at the D-567-fixed Dur=100 the ratio is 127x -> 0.78 and
+the M9/JVM probes fire dur->dir in every context). Benign side observation: the preceding `Mit`
+commit carried knownInOtherLanguage=true - the EN acronym row `MIT` (331) vetoes German "mit"
+permanently; benign (correct word, commits verbatim), legitimate-homograph class like the D-569
+whitelist. The user's ranking question (für above dir in the bar) was answered with the same
+data: chip order = S-01's frequency ranking within the equal folded-cost tier (d↔f adjacent +
+ü-fold, für 158,762 vs dir 12,713), while the silent path provably picks dir via D-356's
+literal-distance tie-break (typed real u; dir literal distance 1 beats für's 2) - dir wins where
+it matters.
+
+Why the device still has Dur=501: the Dur=100 fix lives in de pack 54, which is committed locally
+(D-577) but **not pushed** - the user's own step per convention, pending through this session. The
+hosted URL therefore still serves version 52 (Dur=501), so the user's fresh re-download importing
+with "bereits aktuell" is EXACTLY the un-pushed state's prediction (hosted 52 vs installed 52 =
+ALREADY_CURRENT, D-386-followup's own three-way compare doing its job) - the observation
+contradicts nothing and confirms the chain. D-579's catalog bump (52 -> 54) remains correct and
+necessary: only a build carrying it can show the German "Update verfügbar" hint at all.
+
+**Parked here per the user's instruction (F-Droid release this week takes priority). Re-test
+protocol for the follow-up session, cheapest first:**
+1. Sideload the LOCAL `language-packs/adaptkey-lang-de.zip` (committed, verified version 54 /
+   Dur=100 - byte-identical round-trip checked) into the device's Downloads and Import it
+   (compareVersions(54 vs 52) = INSTALL - bypasses the push entirely). Retype "Mit dur " ->
+   expect silent "dir" at Mittel (0.78 >= 0.75). This alone decides data-vs-code.
+2. If it fires: push origin/main (hosted zip becomes 54) and close the round; the catalog hint
+   (D-579) then serves every other install.
+3. If it does NOT fire even with verified pack 54 on the device: the next-level probe is a JVM
+   provider built on a **SqliteDictionaryStore** seeded from pack 54 (all previous probes used
+   InMemoryDictionaryStore - the one untested delta is the SQLite learned-overlay merge semantics
+   in entryOf/frequencyOf for the typed and candidate sides), plus the D-172 diagnostic line from
+   the same repro (autocorrected=null at verified Dur=100 would name it directly).
+
+
 
 
