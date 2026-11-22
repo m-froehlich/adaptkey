@@ -27259,4 +27259,41 @@ install.
 Full suite green (2,015 tests); the plan `english-dictionary-quality.md` (done/) plus its
 residuals rounds D-576/D-577 are now fully shippable in one 1.3.29/629 build.
 
+## §579 - D-579: the deployment gap caught by the device repro - the compiled-in catalog had been left at 52 through both German pack rebuilds, so no install was ever offered D-567's Dur fix (catalog 52 -> 54, one-line code round, no app version bump)
+
+The device repro delivered the log and closed the "Mit dur bleibt" mystery: dict=GERMAN,
+suppressAutocorrect=false, diacriticWord=null, rawCorrected=null, **autocorrected=null** - the
+confidence gate closed inside bestCorrection. The math with the device's data: Dur = **501** (the
+D-558-era value) → dur/Dir ratio 25.4x → forKnownWordOverride = 0.52 < MEDIUM's 0.75 → chip-only,
+exactly what the user saw, while mut→mit (ratio 1305x → confidence 1.0) fired - both observations
+one state. The Dur=100 fix (D-567, M1) and the lemma cleanup (D-577) live in de pack 54 - and the
+reason the device never saw them: the compiled-in `LanguagePackCatalog` German entry had been left
+at `version = 52` through BOTH rebuilds (D-567 bumped version.txt+zip to 53, D-577 to 54 - the
+D-497 convention "version.txt/zip/catalog +1" was executed only two-thirds; my miss). The device's
+Sprachpakete screen compares installed (52) vs catalog (52) → "Installiert", no update hint - the
+user's "laut meiner Anzeige nicht veraltet" was a correct reading of an indicator that could not
+see the new pack. (The Greek pack, installed alongside, knows neither dur nor mut - verified
+against `dictionaries/el/dict.tsv` - and was never a factor; the C-22 level was confirmed Mittel
+by the user, eliminating the last alternative.)
+
+Fix: catalog German `version = 52 -> 54` (one comment + one constant; covers both rebuilds). After
+the next build's update install, Sprachpakete shows "Update verfügbar" for German; importing pack
+54 reseeds Dur=100 and the silent dur→dir fires at Mittel (0.78 ≥ 0.75). Until then the bar still
+offers `dir` as the tap-able chip (D-558's slot, position 4 in the repro's own bar dump).
+
+The repro also answered the user's ranking question with device data: the bar for "Mit dur"
+(`durch für der dir die dürfen dürfe durchschnittlich`) matches the JVM probe exactly, and the
+silent path provably picks `dir`, never `für` - D-356's literal-distance tie-break: the typed real
+`u` makes `dir` (literal distance 1) beat `für` (literal distance 2, the ü was never typed) inside
+the same folded-cost tier (d↔f adjacent + ü-fold). The chip order (für above dir) is S-01's
+frequency-honest completion ranking within that tier (für 158,762 vs dir 12,713) - a display
+ordering, not the correction's choice. Benign side observation from the same log: the preceding
+`Mit` commit carried `knownInOtherLanguage=true` - the EN acronym row `MIT` (331) vetoes German
+"mit" permanently; benign for correctness (mit was correct as typed and commits verbatim), and of
+the same legitimate-homograph class as the D-569 whitelist.
+
+Full suite green (2,015 tests); fresh 1.3.29/629 APK built and hash-recorded. The de pack rides
+its own hosted update path at version 54 (push pending, the user's step).
+
+
 

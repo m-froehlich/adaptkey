@@ -666,8 +666,9 @@ Konventionen:
 | D-576 | EN-Reste: Leakage + Turkey | above-threshold German leakage swept (108 rows), Turkey re-tagged for the bird reading; Tower/Golden/Bay worry disproven | ← Nachfolge Plan `english-dictionary-quality.md` |
 | D-577 | DE: verwaiste Lemma-Links | all 479 orphaned lemma links cleared, DE gate passes clean, pack 53 -> 54 | ← Nachfolge Plan `english-dictionary-quality.md` |
 | D-578 | EN-Reseed erzwungen | BUNDLED_DICTIONARY_VERSION 2 -> 3 - existing installs finally see the plan's bundled-EN data on update | ← Nachfolge Plan `english-dictionary-quality.md` |
+| D-579 | Catalog-Versäumnis: Dur-Fix | LanguagePackCatalog German 52 -> 54 - "Update verfügbar" hint restored; Dur 100 reaches installs | ← Nachfolge Plan `english-dictionary-quality.md` |
 
 ---
 
 
-**Nächste freie Nummer: D-579.** (Höchste vergebene: D-578.)
+**Nächste freie Nummer: D-580.** (Höchste vergebene: D-579.)

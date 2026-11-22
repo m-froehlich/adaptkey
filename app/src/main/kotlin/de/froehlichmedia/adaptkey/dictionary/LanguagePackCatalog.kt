@@ -540,7 +540,16 @@ object LanguagePackCatalog {
             // ("hetzt"/"ketzt" are not in the dictionary) to endanger through A-01's override. Pinned by
             // the new JetztRankingEvaluationTest. `dictionaries/de/version.txt` 51 -> 52, pack rebuilt and
             // verified byte-identical after unzip, `LanguagePackCatalog` version 51 -> 52.
-            version = 52
+            // D-545: "jetzt" recalibrated for the conversational register (1,499 -> 15,000) after the
+            // user's "jet"/"jetz" report - see the JetztRankingEvaluationTest pin below.
+            // D-567: Dur 501 -> 100 - the D-106 veto blockers round (the english-dictionary-quality
+            // plan's M1); the D-558 competing-lowercase gate needs the silent "dur" -> "dir" correction
+            // (adjacent-key "dir" 12,713, confidence 0.78 >= MEDIUM's 0.75) to be able to fire, and at
+            // Dur=501 the ratio is only 25.4x -> 0.52 - exactly the device report that caught the
+            // deployment gap: the catalog had been left at 52 through the D-567 (53) and D-577 (54)
+            // pack rebuilds, so no install was ever offered the update. D-577: the 479 orphaned lemma
+            // links cleared. Catalog 52 -> 54 covers both rebuilds.
+            version = 54
         ),
         Entry(
             Language.GREEK,
