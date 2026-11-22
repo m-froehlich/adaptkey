@@ -297,6 +297,47 @@ a from-scratch, careful exercise if you take it on, not a quick copy-paste.
 
 ---
 
+## 7b. The bundled-English pipeline (`dictionaries/en/`, D-575)
+
+English is not a language pack - its dictionary ships inside the APK
+(`app/src/main/assets/en/{dict,bigram,hints}.tsv`), so it has no zip, no hosted download and no
+update path of its own; its updates ride the app version. Its data pipeline is nonetheless fully
+committed, and `dictionaries/en/build_en_dict.py` is its verify step:
+
+```
+python dictionaries/en/build_en_dict.py
+```
+
+runs every invariant the pipeline rounds established against the shipped asset - the quality gate
+(`quality_gate.py --lang en`: the base four checks plus the D-575 known-artefact denylist and the
+D-571 apostrophe-coverage floor), the confusables scan (zero pairs at or above AGGRESSIVE's own
+auto-apply bar 0.70 outside the bundled blacklist, D-573), the D-571 contraction coverage, the
+D-569 veto-victim census (must stay inside `dictionaries/en/veto_victims_whitelist.txt` - the
+single source of truth, also consumed by `EnglishDictionaryQualityEvaluationTest`), and prints the
+asset's sha256 as the byte-stable record for release notes. `dictionaries/en/version.txt` is the
+source-side stamp (the pack two-line convention: version + declared language; English bundles
+carry no runtime version - there is no pack download to compare against).
+
+The canonical chain, each stage's script committed (see `build_en_dict.py`'s own header for the
+full list): `extract_wiktionary.py` (manual, the 22.9GB kaikki.org raw-wiktextract dump) ->
+`merge_wiktionary.py` (tagging + Median-ratio inflection mint, §322 convention) ->
+`fix_bare_noun.py` (D-441 safety) -> the english-dictionary-quality rounds in the scratchpad
+(D-568 function-word flexion sweep, D-569 DE<->EN veto-victim sweep, D-570 proper-name sweep,
+D-571 contractions, D-573 confusables heal, D-574 noun-only re-tagging). The pre-D-422 base
+dictionary no longer exists, so the chain is not re-runnable from scratch against the original
+sources - it is deterministic on its inputs (every stage asserts its edits), and the verify step
+is what guarantees the shipped bytes.
+
+**The EN bigram source**: `app/src/main/assets/en/bigram.tsv` (80,000 rows) was built from the
+same English Wikipedia dump corpus the original unigram frequencies came from (the same
+throwaway `build_dict.py`-family builder the German dictionary's first build used - not committed,
+like its German sibling; §3's builder describes the same method). It has never been refreshed;
+refreshing it means a new dump run through that builder, exactly like a new language's step 0 -
+until then the bundled bigrams age in place, and the D-366/D-503 ranking machinery treats them as
+the static corpus prior they are.
+
+---
+
 ## 8. A "pretty good" one-shot pipeline (LLM-assisted, not a substitute for a native speaker)
 
 §§3-6 above describe *what* files a language pack needs and *how* to package/host them, once you already

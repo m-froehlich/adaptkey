@@ -27141,6 +27141,60 @@ rule 5, where the S-11 dual-casing chips serve the capital), and the `PROPER_NOU
 whose lowercase reading is a real common noun (`Turkey` the bird 1,258, plus `hamlet`/`general`-
 class rows) still force-cap - the same wrongness shape, discoverable only word by word.
 
+## §575 - D-575: the pipeline firmed and the regression net cast - `EnglishDictionaryQualityEvaluationTest` (7 pins over the real data), `build_en_dict.py` verify with version stamp, `quality_gate --lang en` (M8+M9, test/script-only, no bump)
+
+The plan's closing round. **M9's regression net**: the new `EnglishDictionaryQualityEvaluationTest`
+(the `JetztRankingEvaluationTest` evaluation pattern over the real bundled data, skipped when the
+trees are not reachable) pins seven outcomes a future data edit could silently undo: the D-567
+veto blockers stay gone (`mut`/`dur`/`muts` unknown to the EN store) AND the silent corrections
+fire on the German side (`autocorrectFor("mut") == "mit"`, `autocorrectFor("dur") == "dir"`);
+the D-568 top-25 pinned exactly (`the, of, and, in, to, is, as, was, for, by, that, with, on,
+from, his, are, it, an, at, he, or, which, be, were, this`); the D-569 veto-victim census stays
+inside the reviewed whitelist (see below); the D-571 contractions reach the bar; the D-573
+headline pairs stay healed (`fir`/`for`, `tic`/`tis`, `wad`/`was` ratios <= 75); the D-574
+calibration cases (`china`/`ottoman`/`sir` stay lowercase, `american`/`germans` force-cap).
+
+Two test-driven findings fixed on the spot. (1) `fir` sat at 2,495 - a §457-era raise - giving
+fir/for ratio 77.46 and override score 0.69986: technically below AGGRESSIVE's 0.70, but with
+ZERO margin and in violation of the D-573 rule as documented ("raised to at least
+ceil(safeFreq/75)" = 2,577); raised to 2,577 in this round. (2) The M4 expectation "dont -> don't
+at Cost-2 with confidence over MEDIUM's auto bar" does NOT hold in the silent path: the apostrophe
+insertion is an INDEL (cost 2), and `autocorrectFor("dont")` returns null - the cost model keeps
+the silent rewrite closed. What D-544 actually promised is the SUGGESTION path, and that works:
+`suggestionsFor("dont")` offers "don't" as the bar's FIRST chip, and "don" prefix-completes to it
+- the test pins exactly that, and the M4 correction is recorded here (chip-only, safer than the
+plan's guess; the plan's own §1.3 wording "Cost-2" contained the answer).
+
+The D-569 whitelist moved to its own committed file, `dictionaries/en/
+veto_victims_whitelist.txt` (the 57 reviewed words, single source of truth shared by the test and
+the verify tool) - and the census assertion is deliberately "inside the whitelist", not equality:
+D-573's raises have meanwhile lifted 23 whitelist members above the <= 20 victim band entirely
+(gab, sag, golds, orf, the German-city names ...), which is BETTER than whitelist-equality - they
+are no longer victims at all, and German typing of them autocorrects freely again.
+
+**M8's pipeline firming**: `dictionaries/en/build_en_dict.py` is the build/verify tool
+(build_zip.py-Präzedenz): it validates the new source-side version stamp
+(`dictionaries/en/version.txt`, "1" + "en" - the pack two-line convention; English bundles carry
+no runtime version, there is no pack download to compare against), runs `quality_gate --lang en`,
+re-runs the confusables invariant (0 pairs at/above AGGRESSIVE auto outside the blacklist), the
+contraction coverage and the veto-victim census, and prints the asset's sha256 as the byte-stable
+record. Its header documents the canonical chain (extract [manual] -> merge -> fix_bare_noun ->
+D-568 -> D-569 -> D-570 -> D-571 -> D-573 -> D-574 -> verify); the pre-D-422 base dictionary no
+longer exists, so the chain is not re-runnable from scratch - it is deterministic on its inputs
+(every stage asserts its edits), and the verify is what guarantees the shipped bytes.
+`quality_gate.py` gained `--lang en` (mutually exclusive with `--capitalises-nouns`): the
+known-artefact denylist (the headline removals of D-567/568/569/570 must stay gone) and the
+apostrophe-coverage floor (the core contractions present at >= 1000). The EN bigram source is
+documented in the Language Contribution Guide's new §7b (same Wikipedia-dump corpus as the
+original unigrams, built by the same uncommitted throwaway builder family as German's first
+build; refreshing means a new dump run). Guide §7b documents the whole pipeline for future
+maintainers.
+
+Test/script/docs-only - no app behaviour change, no version bump (D-372 precedent). Full suite
+2,015 tests green (+7); `build_en_dict.py` BUILD VERIFY: PASS. The plan
+`english-dictionary-quality.md` is complete; moved to done/ in the closing docs commit.
+
+
 Quality gate PASS, real-data test subset green. NOT yet device-confirmed; M9's regression round
 pins the china case.
 

@@ -662,8 +662,9 @@ Konventionen:
 | D-572 | EN-Pinning-Stoppwörter | EnglishRules.pinnedContinuationStopwords populated - no Wiktionary-noun pins after the/of/and; v1.3.29/629 | ← Plan `english-dictionary-quality.md` |
 | D-573 | EN-Konfusables geheilt | 780 rare sides raised to safe/75, 134 junk pairs sides removed - zero silent-autocorrect confusables left outside the blacklist | ← Plan `english-dictionary-quality.md` |
 | D-574 | EN-Großschreibung: Re-Tagging | 4,286 NOUN,PROPER_NOUN rows -> NOUN,OTHER (D-441); china/ottoman/sir stay small, 214 always-capital exceptions keep their capital | ← Plan `english-dictionary-quality.md` |
+| D-575 | EN-Pipeline + Regression | build_en_dict.py verify + version stamp, quality_gate --lang en, EnglishDictionaryQualityEvaluationTest +7 | ← Plan `english-dictionary-quality.md` |
 
 ---
 
 
-**Nächste freie Nummer: D-575.** (Höchste vergebene: D-574.)
+**Nächste freie Nummer: D-576.** (Höchste vergebene: D-575.)
