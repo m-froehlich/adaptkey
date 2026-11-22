@@ -45,8 +45,14 @@ object DictionaryLoader {
      * D-232: bumped again - German gained 24 missing irregular/ablaut-verb conjugated forms (D-230's
      * "darfst"-class split regression) plus 14 IT/programming terms; English gained 5 IT/programming terms
      * German was missing (D-228's "Docker"-class regression, plus terms the user expects to type often).
+     * D-578: bumped again - the english-dictionary-quality plan's bundled-EN data rounds (D-567 the
+     * D-106 veto blockers mut/Dur/muts removed, D-568 the function-word flexion sweep incl. ands,
+     * D-569 the DE<->EN veto-victim sweep, D-570 the proper-name sweep, D-571 the contractions,
+     * D-573 the confusables heal, D-574 the noun-only re-tagging, D-576 the above-threshold
+     * leakage sweep + Turkey) shipped as pure asset changes; without this bump no existing
+     * install would ever see them (the D-473-followup deployment-gap lesson, bundled-data shape).
      */
-    private const val BUNDLED_DICTIONARY_VERSION = 2
+    private const val BUNDLED_DICTIONARY_VERSION = 3
     
     /**
      * D-186: bump to force a one-time [SqliteDictionaryStore.purgeBundledDuplicatesFromLearned] on every

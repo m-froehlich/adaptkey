@@ -27242,3 +27242,21 @@ round's close.
 
 the follow-up build; the de pack rides its own hosted update path at version 54).
 
+## §578 - D-578: the bundled-EN reseed forced - BUNDLED_DICTIONARY_VERSION 2 -> 3, so existing installs actually see the plan's data (one-constant code round, no app version bump - the data rides 1.3.29/629)
+
+The deployment-gap catch before the device test: yesterday's 1.3.29/629 build carried the data as
+of D-572, and worse - `DictionaryLoader.BUNDLED_DICTIONARY_VERSION` was still 2, meaning even a
+FRESH 1.3.29 build would not have reseeded the bundled EN tables on any existing install: the
+D-178 mechanism reseeds exactly once per constant bump, so the plan's pure-asset rounds (D-567
+veto blockers, D-568 function-word sweep, D-569 veto-victim sweep, D-570 name sweep, D-571
+contractions, D-573 confusables heal, D-574 re-tagging, D-576 leakage + Turkey) would have sat in
+the APK forever while every device kept typing against its old SQLite seed - the D-473-followup
+deployment-gap lesson in its bundled-data shape. Bumped 2 -> 3 with the round list in the
+constant's own comment; the reseed wipes only the bundled tables (learned overlay, blacklist and
+pending-blacklist marks untouched, D-178's contract). The device test can now be a plain update
+install.
+
+Full suite green (2,015 tests); the plan `english-dictionary-quality.md` (done/) plus its
+residuals rounds D-576/D-577 are now fully shippable in one 1.3.29/629 build.
+
+
