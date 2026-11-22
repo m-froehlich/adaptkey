@@ -27111,6 +27111,40 @@ bar outside those five blacklist words - no autocorrect level can silently rewri
 confusable any more; quality gate PASS; the real-data test subset green. M9 pins the headline pairs
 (fir/for, otter/other-class) in the regression round.
 
+## §574 - D-574: the EN capitalisation policy lands - 4,286 noun-only force-cap rows re-tagged to D-441's NOUN,OTHER, the 214 always-capital exceptions (demonyms, holy books, Nazi) keep their capital (data-only, no bump)
+
+The plan's M7, on the decided policy (a): Re-Tagging nach D-441 with a small explicit exception
+list, scope-held to the audited class. The noun-only force-cap class after M11 is the rows tagged
+exactly `NOUN,PROPER_NOUN` (4,500; no bare-NOUN rows exist - the gate) - every one force-
+capitalises its typed lowercase form via section-6 rules 3/4, mixing the demonyms whose capital is
+CORRECT English with the polysemes and proper-noun leaks whose capital is the reported wrongness
+("china vase" -> "China vase").
+
+The cut (scratchpad/d574_m7_review.py, full census in d574_m7_review.tsv): 214 exception rows stay
+UNTOUCHED - they already force-cap via rule 4, which is exactly the desired behaviour for them:
+the demonyms/language/nationality/religious adjectives and their plural forms (American 15,027,
+English, German, European, Christian, Muslims, Americans, Catholics, ...), the holy books and
+religious names (Bible, Quran, Talmud, Yahweh, Christ, Koran, Hebrew), and `Nazi` (the accepted
+English convention for the historical party member). Deliberately NOT on the list, because a real
+lowercase reading exists or the lowercase form is standard: `Ottoman` (the furniture), `Sir`
+("Dear sir"), `China` (the porcelain - the plan's own calibration case), plus every proper-noun
+leak row. The other 4,286 rows are re-tagged `NOUN,PROPER_NOUN` -> `NOUN,OTHER`: isNounOnly falls
+through to rule 5 ("ambiguous, no automatic correction") - typed lowercase stays lowercase, typed
+capital is preserved by rule 1 - while the NOUN signal for A-05's split-safety gate survives
+(contains(NOUN) still true), exactly D-441's convention. Verified against the plan's calibration
+cases: `china` stays small, `ottoman`/`sir` stay small, `american south` -> `American`,
+`germans` -> `Germans`.
+
+Two named residuals, both outside the audited class and left for a future content round:
+`French`/`Greek` carry `NOUN,VERB,ADJECTIVE,PROPER_NOUN` (not noun-only - they already fall to
+rule 5, where the S-11 dual-casing chips serve the capital), and the `PROPER_NOUN`-only polysemes
+whose lowercase reading is a real common noun (`Turkey` the bird 1,258, plus `hamlet`/`general`-
+class rows) still force-cap - the same wrongness shape, discoverable only word by word.
+
+Quality gate PASS, real-data test subset green. NOT yet device-confirmed; M9's regression round
+pins the china case.
+
+
 
 
 
