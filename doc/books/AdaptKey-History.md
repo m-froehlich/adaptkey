@@ -27237,3 +27237,8 @@ their verb/adjective senses are real Wiktionary data).
 Quality gate PASS (`--lang en`), `build_en_dict.py` BUILD VERIFY PASS, full suite green at the
 round's close.
 
+
+## §577 - D-577: the DE gate passes clean for the first time since D-504 - all 479 orphaned lemma links cleared, pack 53 -> 54 (data-only, de pack bump)
+
+the follow-up build; the de pack rides its own hosted update path at version 54).
+
