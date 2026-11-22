@@ -402,6 +402,19 @@ in every prompt.
   block, v2-only signing block. GitHub release `v1.3.18` live with the asset exactly `AdaptKey.apk`
   (re-downloaded and sha256-verified byte-identical to the local build). F-Droid's bot is expected to
   pick the tag up automatically (`AutoUpdateMode: Version`).
+- **2026-11-22: v1.3.29 (`versionCode` 629) released by RELEASE RECIPE** - the english-dictionary-quality
+  plan (§557+, D-567..D-575, one bump) plus its data riders D-576..D-579 (EN named residuals, DE pack 53
+  -> 54, BUNDLED_DICTIONARY_VERSION 2 -> 3, catalogue 52 -> 54) and the D-580 docs park; versions
+  1.3.19-1.3.28 ride along untagged, untagged-intermediate precedent. Tag `v1.3.29` (annotated, "AdaptKey
+  1.3.29") on `0d8bd52d`, the round's closing docs commit (D-580 parked per user instruction). Fresh
+  origin clone at the tag (`build/release-v1.3.29/`, keystore copied in and removed afterwards),
+  `--no-build-cache --no-configuration-cache`; APK sha256 88bf9652...c92f, 37,138,656 bytes, versionCode
+  629/versionName 1.3.29 (aapt2-verified), cert `3201509b...ee3666e` unchanged (apksigner-verified), 910
+  zip entries (entry names identical to v1.3.18's), no vcs/dependency-metadata block, v2-only signing
+  block. GitHub release `v1.3.29` live with the asset exactly `AdaptKey.apk` (re-downloaded and
+  sha256-verified byte-identical to the local build); the `gh` keyring token had gone stale, the release
+  went out via the REST API with the credential-manager token instead. F-Droid's bot is expected to pick
+  the tag up automatically (`AutoUpdateMode: Version`).
 - **Still open:**
   - The next release: tag it and follow the RELEASE RECIPE above - F-Droid picks up new tags automatically
     (`AutoUpdateMode: Version`, `UpdateCheckMode: Tags`), no new MR needed.
