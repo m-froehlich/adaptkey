@@ -5,11 +5,12 @@ M3=D-569, M11=D-570, M4=D-571, M6=D-572 (Bump 1.3.29/629), M5=D-573, M7=D-574, M
 die benannten Reste folgen als D-576 (Above-Threshold-Leakage + Turkey), D-577 (DE: 479
 verwaiste Lemma-Links, Pack 54), D-578 (EN-Reseed) und D-579 (Catalog 54) — siehe History
 §576–§579.
-GERÄTETEST TEIL-CONFIRMED (2026-11-22): mut->mit feuert still auf dem Gerät (EN-Seite komplett
-live, D-578-Reseed bestätigt); **OFFEN: dur->dir feuert am Gerät noch nicht** — D-580, Repro-Log
-+ Re-test-Protokoll in History §580 (Verdacht: de Pack 54 noch nicht auf dem Gerät/importiert;
-Push steht aus). Identifikatoren wie im Plan-Kopf korrigiert (D-567 ff. statt der ursprünglichen
-D-559..D-566-Reservierung, die an Plan `feature-tips.md` ging); History §567–§580.**
+GERÄTETEST ABGESCHLOSSEN (2026-11-22): mut->mit feuert still auf dem Gerät (EN-Seite komplett
+live, D-578-Reseed bestätigt); dur->dir ebenfalls gerätebestätigt (D-580: die Ursache war der
+ausstehende Push — das gehostete Pack war noch Version 52 mit Dur=501; nach Push + Import des
+Packs 54 feuert es still). Der Gerätetest des Plans ist damit abgeschlossen. Identifikatoren
+wie im Plan-Kopf korrigiert (D-567 ff. statt der ursprünglichen D-559..D-566-Reservierung, die
+an Plan `feature-tips.md` ging); History §567–§580.**
 Identifier-Zeiger: die ursprüngliche Reservierung D-559..D-566 ist hinfällig — D-559..D-566 gehören
 inzwischen zum Plan `feature-tips.md` (Themenliste `doc/books/AdaptKey-Topics.md`). Dieser Plan läuft
 auf **D-567 ff.**: M1=D-567 (erledigt), M2=D-568, M3=D-569, M11=D-570, M4=D-571, M6=D-572, M5=D-573,

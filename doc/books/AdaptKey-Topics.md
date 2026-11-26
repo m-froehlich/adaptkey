@@ -667,7 +667,7 @@ Konventionen:
 | D-577 | DE: verwaiste Lemma-Links | all 479 orphaned lemma links cleared, DE gate passes clean, pack 53 -> 54 | ← Nachfolge Plan `english-dictionary-quality.md` |
 | D-578 | EN-Reseed erzwungen | BUNDLED_DICTIONARY_VERSION 2 -> 3 - existing installs finally see the plan's bundled-EN data on update | ← Nachfolge Plan `english-dictionary-quality.md` |
 | D-579 | Catalog-Versäumnis: Dur-Fix | LanguagePackCatalog German 52 -> 54 - "Update verfügbar" hint restored; Dur 100 reaches installs | ← Nachfolge Plan `english-dictionary-quality.md` |
-| D-580 | dur->dir am Gerät: OFFEN | device repro logged (gate closed at Dur=501 confidence; EN side live); parked - re-test protocol in History §580 | ← Nachfolge Plan `english-dictionary-quality.md` |
+| D-580 | dur->dir am Gerät bestätigt | device-confirmed: root cause was the un-pushed hosted pack (52); after push + pack-54 import dur->dir fires silently | ← Nachfolge Plan `english-dictionary-quality.md` |
 
 ---
 

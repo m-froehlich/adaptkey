@@ -27345,6 +27345,13 @@ protocol for the follow-up session, cheapest first:**
    in entryOf/frequencyOf for the typed and candidate sides), plus the D-172 diagnostic line from
    the same repro (autocorrected=null at verified Dur=100 would name it directly).
 
+CLOSED ON DEVICE (2026-11-22, user-confirmed): the root cause was exactly the pending push - main
+had not been pushed, so the hosted pack was still version 52 (Dur=501). After the push and the
+pack-54 import, dur->dir fires silently on the device (user-confirmed). D-579's catalog hint and
+D-578's reseed did their parts (the EN side had already been confirmed live via mut->mit). The
+english-dictionary-quality plan's device test is now complete: mut->mit AND dur->dir both fire
+silently at Mittel.
+
 
 
 
