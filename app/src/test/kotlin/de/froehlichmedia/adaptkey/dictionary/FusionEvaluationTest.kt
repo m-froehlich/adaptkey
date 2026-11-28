@@ -38,6 +38,17 @@ class FusionEvaluationTest {
         private lateinit var common: List<String>
         private lateinit var foreign: List<String>
         private lateinit var realPhrases: List<Pair<String, String>>
+
+        /**
+         * D-581: the approved keep-lowered markup fragments (frequency <= ~200, OTHER - users really do
+         * type "de"/"jpg"/"www"/"http") are not common words, but they sit in the dictionary's top-300
+         * rows by file position and would otherwise enter [common]. With `de` at 200 the AGGRESSIVE
+         * both-parts-known safeguard (fused word >= rarer part) accepts "so de"->"sonde"-class fusions
+         * of fragment+word pairs - a direct, understood consequence of the D-581 data decision, not a
+         * level-safety regression; D-477's population below is real common words, so the fragment class
+         * is excluded here (documented in scratchpad/d581_review.md).
+         */
+        private val keepLoweredMarkupFragments = setOf("de", "jpg", "www", "http", "https")
         
         private fun find(vararg candidates: String): File? = candidates.map { File(it) }.firstOrNull { it.exists() }
         
@@ -53,7 +64,10 @@ class FusionEvaluationTest {
             val bigrams = DictionaryAssetParser.parseBigrams(bigram!!.readText(Charsets.UTF_8))
             bigrams.forEach { store.putBigram(it.previousWord, it.word, it.count) }
             repair = TokenRepair(store, GermanRules, Umlaut)
-            common = words.filter { it.word.length >= 2 && it.word.all { c -> c.isLetter() } }.take(300).map { it.word.lowercase() }
+            common = words.filter { it.word.length >= 2 && it.word.all { c -> c.isLetter() } }
+                .map { it.word.lowercase() }
+                .filter { it !in keepLoweredMarkupFragments }
+                .take(300)
             val collected = ArrayList<String>()
             for (path in listOf("../dictionaries/fr/dict.tsv", "../dictionaries/es/dict.tsv", "src/main/assets/en/dict.tsv")) {
                 val file = find(path, path.removePrefix("../")) ?: continue

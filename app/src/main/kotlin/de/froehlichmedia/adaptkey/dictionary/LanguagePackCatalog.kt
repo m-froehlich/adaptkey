@@ -548,8 +548,10 @@ object LanguagePackCatalog {
             // Dur=501 the ratio is only 25.4x -> 0.52 - exactly the device report that caught the
             // deployment gap: the catalog had been left at 52 through the D-567 (53) and D-577 (54)
             // pack rebuilds, so no install was ever offered the update. D-577: the 479 orphaned lemma
-            // links cleared. Catalog 52 -> 54 covers both rebuilds.
-            version = 54
+            // links cleared. Catalog 52 -> 54 covers both rebuilds. D-581: the markup-artefact sweep
+            // (nbsp rank 21/75, entity fragments, the 333 non-typable rows, typeability + denylist
+            // gate checks) - pack 54 -> 55, pushed this time as part of the round (D-580 lesson).
+            version = 55
         ),
         Entry(
             Language.GREEK,

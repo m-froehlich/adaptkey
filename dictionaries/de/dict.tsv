@@ -18,7 +18,6 @@ sich	159213	OTHER
 für	158762	PREPOSITION,OTHER
 ein	145126	ADJECTIVE,OTHER
 auch	137365	OTHER
-nbsp	134624	OTHER
 wurde	130899	OTHER
 er	120975	OTHER
 nach	113028	PREPOSITION,OTHER
@@ -111,7 +110,7 @@ sehr	15635	OTHER
 dann	15406	OTHER
 beim	14993	OTHER
 seinem	14970	OTHER
-jpg	14825	OTHER
+jpg	200	OTHER
 bzw	14776	OTHER
 ihm	14716	OTHER
 sondern	14681	OTHER
@@ -122,7 +121,7 @@ was	14104	OTHER
 viele	14091	OTHER
 selbst	14039	OTHER
 deren	13964	OTHER
-de	13799	OTHER
+de	200	OTHER
 erst	13765	OTHER
 bezeichnet	13760	OTHER
 dort	13499	OTHER
@@ -351,7 +350,7 @@ Familie	5149	NOUN
 Frauen	5140	NOUN	Frau
 gegründet	5099	OTHER
 Partei	5098	NOUN
-text	5076	NOUN
+Text	5076	NOUN
 eigene	5028	OTHER
 Seite	5010	NOUN
 französischen	5004	NOUN,OTHER	Französisch
@@ -9754,7 +9753,6 @@ Universitätsbibliothek	197	NOUN
 abgestimmt	197	OTHER
 Panorama	197	NOUN
 Regionalliga	197	NOUN
-Trade	197	NOUN
 Lüneburger	197	NOUN
 Milchstraße	197	NOUN
 Schreibweisen	196	NOUN	Schreibweise
@@ -10558,7 +10556,6 @@ Off	179	NOUN,OTHER
 Herzogtümer	179	NOUN	Herzogtum
 NDR	179	NOUN
 rückten	179	VERB
-thinsp	179	OTHER
 Mitteldeutschland	179	NOUN
 Style	179	NOUN,OTHER
 Semester	179	NOUN
@@ -10720,7 +10717,6 @@ dominante	175	OTHER
 womöglich	175	OTHER
 abgenommen	175	VERB
 plant	175	OTHER
-lt	175	OTHER
 Krater	175	NOUN
 überschritt	175	OTHER
 Befehlshaber	175	NOUN
@@ -11782,7 +11778,6 @@ Induktion	157	NOUN
 Infrarot	157	NOUN
 wirklichen	157	OTHER
 Rica	157	NOUN
-Bull	157	NOUN
 tschechisch	157	NOUN,ADJECTIVE,OTHER
 Urlaub	157	NOUN
 Bundeskanzlers	157	NOUN	Bundeskanzler
@@ -12999,7 +12994,7 @@ Impressionismus	140	NOUN
 Kubismus	140	NOUN
 Oberschlesien	140	NOUN
 Orchideen	140	NOUN	Orchidee
-HTTP	140	NOUN
+http	140	OTHER
 DRM	140	NOUN
 Oscars	139	NOUN	Oscar
 algebraischen	139	OTHER
@@ -13687,7 +13682,6 @@ Verkehrsknotenpunkt	131	NOUN
 Perleberg	131	NOUN
 Integrität	131	NOUN
 Bundesverfassungsgerichts	131	NOUN	Bundesverfassungsgericht
-reg	131	OTHER
 erwogen	131	OTHER
 Fachleute	131	NOUN
 etlichen	131	OTHER
@@ -23982,7 +23976,6 @@ Königswürde	65	NOUN
 verwüstete	65	OTHER
 Johannesevangelium	65	NOUN
 Weierstraß	65	NOUN
-amp	65	NOUN,OTHER
 Gedenkstätten	65	NOUN	Gedenkstätte
 Bushs	65	NOUN	Bush
 Civilization	65	NOUN
@@ -25353,7 +25346,6 @@ Gouverneurs	60	NOUN	Gouverneur
 afroasiatischen	60	NOUN,OTHER
 Morpheme	60	NOUN	Morphem
 prominentesten	60	OTHER
-para	60	OTHER
 Musikstile	60	NOUN	Musikstil
 González	60	NOUN
 verarbeitenden	60	OTHER
@@ -32933,7 +32925,7 @@ Schutzmacht	43	NOUN
 Kneipe	43	NOUN
 spitzer	50	NOUN,ADJECTIVE,OTHER	spitz
 Sicherheitslücke	43	NOUN
-HTTPS	43	NOUN
+https	43	OTHER
 Wrocław	43	NOUN
 Wasserspiele	43	NOUN	Wasserspiel
 Virchows	43	NOUN	Virchow
@@ -38144,7 +38136,6 @@ Lokalisation	35	NOUN
 begehbar	35	ADJECTIVE,OTHER
 Phonemen	35	NOUN	Phonem
 nominal	35	ADJECTIVE,OTHER
-copy	35	NOUN,OTHER
 Affixe	35	NOUN	Affix
 Fight	35	NOUN
 Blutbahn	35	NOUN
@@ -47801,7 +47792,6 @@ Inhibitoren	26	NOUN	Inhibitor
 Datendurchsatz	26	NOUN
 Binärbaum	26	NOUN
 Vermietung	26	NOUN
-til	26	NOUN
 angehenden	26	OTHER
 monetären	26	OTHER
 Reichsbank	26	NOUN
@@ -48995,7 +48985,7 @@ BNP	25	NOUN
 Ypern	25	NOUN
 Meeresarm	25	NOUN
 Kohlevorkommen	25	NOUN
-teleskopmasten	25	NOUN
+Teleskopmasten	25	NOUN
 CTIF	25	NOUN
 Primarschule	25	NOUN
 Adriaküste	25	NOUN
@@ -60943,7 +60933,6 @@ echtem	19	OTHER
 Karavellen	19	NOUN
 Frühdatierung	19	NOUN
 Mönchsrobbe	19	NOUN
-Divide	19	NOUN,OTHER
 Ustascha	19	NOUN
 Führungspersönlichkeiten	19	NOUN
 Gespanschaft	19	NOUN
@@ -62712,7 +62701,6 @@ Behaim	18	NOUN
 Sportereignisse	18	NOUN
 Eigenbetrieb	18	NOUN
 Einsatzkräften	18	NOUN	Einsatzkräfte
-dagger	18	OTHER
 halbstündlich	18	ADJECTIVE,OTHER
 Busverbindung	18	NOUN
 gesunkene	18	OTHER
@@ -75265,7 +75253,6 @@ sympathische	14	OTHER
 gärtnerischen	14	OTHER
 Krupps	14	NOUN	Krupp
 Ortskerne	14	NOUN	Ortskern
-deg	14	NOUN,OTHER
 Beratungsunternehmen	14	NOUN
 Enso	14	NOUN
 Colt	14	NOUN
@@ -88667,7 +88654,6 @@ Season	11	NOUN
 Paralympischen	11	NOUN
 Hörverlust	11	NOUN
 Finals	11	NOUN	Final
-Bulls	11	NOUN	Bull
 Entscheidungsorgan	11	NOUN
 BPB	11	NOUN,OTHER
 Chevreul	11	NOUN
@@ -115676,7 +115662,6 @@ Wests	1105	NOUN	West
 Unionen	1048	NOUN	Union
 GG.	986	NOUN	Gesetz
 GG.n	986	NOUN	Gesetz
-des Nord	916	NOUN	Nord
 Norde	916	NOUN	Nord
 Johannesse	897	NOUN	Johannes
 Johannessen	897	NOUN	Johannes
@@ -115694,7 +115679,6 @@ Gottesen	816	NOUN	Gottes
 Bundesrepubliken	810	NOUN	Bundesrepublik
 Schutzen	805	NOUN	Schutz
 Lüften	791	NOUN	Luft
-des Ost	782	NOUN	Ost
 Altstädten	741	NOUN	Altstadt
 Softwares	735	NOUN	Software
 Wieners	733	NOUN	Wiener
@@ -115750,7 +115734,6 @@ Golde	479	NOUN	Gold
 Physiken	478	NOUN	Physik
 Bewohners	475	NOUN	Bewohner
 Medizinen	469	NOUN	Medizin
-(des) Französisch	463	NOUN	Französisch
 Zukünfte	462	NOUN	Zukunft
 Zukünften	462	NOUN	Zukunft
 Schritts	460	NOUN	Schritt
@@ -115838,7 +115821,6 @@ Wikipedien	338	NOUN	Wikipedia
 Militäre	335	NOUN	Militär
 Militären	335	NOUN	Militär
 Staren	335	NOUN	Star
-(des) Russisch	332	NOUN	Russisch
 Royals	332	NOUN	Royal
 Regien	329	NOUN	Regie
 Reihenfolgen	328	NOUN	Reihenfolge
@@ -115966,7 +115948,6 @@ Siedlers	212	NOUN	Siedler
 Singlen	209	NOUN	Single
 Popularitäten	209	NOUN	Popularität
 Abschaffungen	209	NOUN	Abschaffung
-der Venus	208	NOUN	Venus
 Venusen	208	NOUN	Venus
 Befreiungen	207	NOUN	Befreiung
 Psychologien	206	NOUN	Psychologie
@@ -115976,7 +115957,6 @@ Widerspruches	204	NOUN	Widerspruch
 Thronen	204	NOUN	Thron
 Towern	204	NOUN	Tower
 Ären	203	NOUN	Ära
-des Khmer	203	NOUN	Khmer
 Khmern	203	NOUN	Khmer
 Durchbruchs	202	NOUN	Durchbruch
 Durchbrüchen	202	NOUN	Durchbruch
@@ -116053,7 +116033,6 @@ Gleichgewichte	182	NOUN	Gleichgewicht
 Gleichgewichten	182	NOUN	Gleichgewicht
 Dresdners	182	NOUN	Dresdner
 Dresdnern	182	NOUN	Dresdner
-des Latein	182	NOUN	Latein
 Lateine	182	NOUN	Latein
 Lateinen	182	NOUN	Latein
 Kapitalismen	181	NOUN	Kapitalismus
@@ -116084,7 +116063,6 @@ Niedergänge	176	NOUN	Niedergang
 Niedergängen	176	NOUN	Niedergang
 Lebenserwartungen	176	NOUN	Lebenserwartung
 Dreieckes	176	NOUN	Dreieck
-(des) Spanisch	175	NOUN	Spanisch
 Bords	175	NOUN	Bord
 Borde	175	NOUN	Bord
 Borden	175	NOUN	Bord
@@ -116141,12 +116119,10 @@ Einzüge	159	NOUN	Einzug
 Einzügen	159	NOUN	Einzug
 Erwärmungen	159	NOUN	Erwärmung
 Überwachungen	159	NOUN	Überwachung
-des Sanskrit	159	NOUN	Sanskrit
 Sanskrite	159	NOUN	Sanskrit
 Sanskriten	159	NOUN	Sanskrit
 Kilogramme	158	NOUN	Kilogramm
 Kilogrammen	158	NOUN	Kilogramm
-des Zeus	157	NOUN	Zeus
 Zeuse	157	NOUN	Zeus
 Zeusen	157	NOUN	Zeus
 Mords	157	NOUN	Mord
@@ -116188,7 +116164,6 @@ Pfunden	151	NOUN	Pfund
 Dietriche	150	NOUN	Dietrich
 Dietrichen	150	NOUN	Dietrich
 Ausländers	150	NOUN	Ausländer
-(des) Italienisch	150	NOUN	Italienisch
 Erdgase	149	NOUN	Erdgas
 Erdgasen	149	NOUN	Erdgas
 Gramms	149	NOUN	Gramm
@@ -116207,7 +116182,6 @@ Vernichtungen	146	NOUN	Vernichtung
 Helien	146	NOUN	Helium
 Kreisgebiete	146	NOUN	Kreisgebiet
 Kreisgebieten	146	NOUN	Kreisgebiet
-(des) Arabisch	146	NOUN	Arabisch
 Molle	146	NOUN	Moll
 Mollen	146	NOUN	Moll
 Komplexitäten	146	NOUN	Komplexität
@@ -116243,9 +116217,6 @@ Magien	141	NOUN	Magie
 Überblicks	141	NOUN	Überblick
 Überblicke	141	NOUN	Überblick
 Phis	141	NOUN	Phi
-des Michel	140	NOUN	Michel
-die Michel	140	NOUN	Michel
-die Micheln	140	NOUN	Michel
 Maßstabes	140	NOUN	Maßstab
 Rugbys	140	NOUN	Rugby
 Abiture	140	NOUN	Abitur
@@ -116376,7 +116347,6 @@ Saturnen	121	NOUN	Saturn
 Stadtrechtes	121	NOUN	Stadtrecht
 Exportes	121	NOUN	Export
 Unterdrückungen	121	NOUN	Unterdrückung
-des Versailles	121	NOUN	Versailles
 Versaillese	121	NOUN	Versailles
 Versaillesen	121	NOUN	Versailles
 Rassismen	120	NOUN	Rassismus
@@ -116414,7 +116384,6 @@ Staatsgebieten	117	NOUN	Staatsgebiet
 Quecksilbern	116	NOUN	Quecksilber
 Gefangenschaften	116	NOUN	Gefangenschaft
 Bachelors	116	NOUN	Bachelor
-(des) Schwäbisch	116	NOUN	Schwäbisch
 Mys	116	NOUN	My
 Generalsekretären	115	NOUN	Generalsekretär
 Einwanderers	115	NOUN	Einwanderer
@@ -116497,7 +116466,6 @@ Astrologien	108	NOUN	Astrologie
 Welträume	108	NOUN	Weltraum
 Welträumen	108	NOUN	Weltraum
 Operan	108	NOUN	Opus
-des Thai	108	NOUN	Thai
 Thais	108	NOUN	Thai
 Stocks	107	NOUN	Stock
 Zeugnisses	107	NOUN	Zeugnis
@@ -116598,7 +116566,6 @@ Düsseldorfers	99	NOUN	Düsseldorfer
 Düsseldorfern	99	NOUN	Düsseldorfer
 Septuagintas	98	NOUN	Septuaginta
 Strands	98	NOUN	Strand
-des Tamil	98	NOUN	Tamil
 Tamile	98	NOUN	Tamil
 Audios	98	NOUN	Audio
 Supers	98	NOUN	Super
@@ -116636,7 +116603,6 @@ Boarde	96	NOUN	Board
 Boarden	96	NOUN	Board
 Benze	96	NOUN	Benz
 Benzen	96	NOUN	Benz
-(des) Hebräisch	95	NOUN	Hebräisch
 Sachses	95	NOUN	Sachs
 Kleruse	95	NOUN	Klerus
 Klerusen	95	NOUN	Klerus
@@ -116693,7 +116659,6 @@ Kubikmeters	92	NOUN	Kubikmeter
 Erfassungen	92	NOUN	Erfassung
 Majore	92	NOUN	Major
 Majoren	92	NOUN	Major
-(des) Schwedisch	92	NOUN	Schwedisch
 Hospitälern	92	NOUN	Hospital
 Satzeses	91	NOUN	Satzes
 Satzese	91	NOUN	Satzes
@@ -116728,7 +116693,6 @@ Heidelbergern	89	NOUN	Heidelberger
 Jänners	89	NOUN	Jänner
 Jännern	89	NOUN	Jänner
 Gesetzgebern	89	NOUN	Gesetzgeber
-(des) Niederländisch	89	NOUN	Niederländisch
 Einmärsche	89	NOUN	Einmarsch
 Einmärschen	89	NOUN	Einmarsch
 Dampfs	89	NOUN	Dampf
@@ -116755,7 +116719,6 @@ Honigen	87	NOUN	Honig
 Obsts	87	NOUN	Obst
 Obste	87	NOUN	Obst
 Obsten	87	NOUN	Obst
-des Nordwest	87	NOUN	Nordwest
 Nordweste	87	NOUN	Nordwest
 Lexikan	87	NOUN	Lexikon
 Marketinge	87	NOUN	Marketing
@@ -116841,7 +116804,6 @@ Nahverkehres	84	NOUN	Nahverkehr
 Nahverkehre	84	NOUN	Nahverkehr
 Nahverkehren	84	NOUN	Nahverkehr
 Prostitutionen	84	NOUN	Prostitution
-des Hindi	84	NOUN	Hindi
 Hindis	84	NOUN	Hindi
 Stabilisierungen	83	NOUN	Stabilisierung
 Wolgas	83	NOUN	Wolga
@@ -116863,7 +116825,6 @@ Därmen	83	NOUN	Darm
 Unterwerfungen	83	NOUN	Unterwerfung
 Louvren	83	NOUN	Louvre
 Vitaen	83	NOUN	Vita
-(des) Portugiesisch	83	NOUN	Portugiesisch
 Dezes	83	NOUN	Dez
 Deze	83	NOUN	Dez
 Dezen	83	NOUN	Dez
@@ -117074,7 +117035,6 @@ Erosionen	73	NOUN	Erosion
 Königtümer	72	NOUN	Königtum
 Königtümern	72	NOUN	Königtum
 Wiederwahlen	72	NOUN	Wiederwahl
-des Südwest	72	NOUN	Südwest
 Südweste	72	NOUN	Südwest
 Gastgebern	72	NOUN	Gastgeber
 Umweltschutze	72	NOUN	Umweltschutz
@@ -117261,7 +117221,6 @@ Völkermorden	65	NOUN	Völkermord
 Wirtschaftszweiges	65	NOUN	Wirtschaftszweig
 Protos	65	NOUN	Proto
 Choleras	65	NOUN	Cholera
-(des) Japanisch	65	NOUN	Japanisch
 Sonnensysteme	65	NOUN	Sonnensystem
 Sonnensystemen	65	NOUN	Sonnensystem
 Entropien	65	NOUN	Entropie
@@ -117408,7 +117367,6 @@ Gegenreformationen	61	NOUN	Gegenreformation
 Wortlaute	61	NOUN	Wortlaut
 Wortlauten	61	NOUN	Wortlaut
 Bausubstanzen	61	NOUN	Bausubstanz
-(des) Chinesisch	61	NOUN	Chinesisch
 Frankenreiche	61	NOUN	Frankenreich
 Frankenreichen	61	NOUN	Frankenreich
 Avantgarden	61	NOUN	Avantgarde
@@ -117424,7 +117382,6 @@ Lebensqualitäten	61	NOUN	Lebensqualität
 ?n	61	NOUN	Kamerun
 Käses	61	NOUN	Käse
 Käsen	61	NOUN	Käse
-des Nordost	61	NOUN	Nordost
 Nordoste	61	NOUN	Nordost
 Haffes	61	NOUN	Haff
 Hauptdarstellers	61	NOUN	Hauptdarsteller
@@ -117451,10 +117408,8 @@ Eids	60	NOUN	Eid
 Eiden	60	NOUN	Eid
 Zusammenflüsse	60	NOUN	Zusammenfluss
 Zusammenflüssen	60	NOUN	Zusammenfluss
-des Thor	60	NOUN	Thor
 Thore	60	NOUN	Thor
 Thoren	60	NOUN	Thor
-des Corona	60	NOUN	Corona
 Coronas	60	NOUN	Corona
 Hörfunke	60	NOUN	Hörfunk
 Hörfunken	60	NOUN	Hörfunk
@@ -117604,11 +117559,9 @@ Strafrechte	56	NOUN	Strafrecht
 Strafrechten	56	NOUN	Strafrecht
 Thronfolgen	56	NOUN	Thronfolge
 Kavallerien	56	NOUN	Kavallerie
-(des) Ukrainisch	56	NOUN	Ukrainisch
 Bereitstellungen	56	NOUN	Bereitstellung
 Joints	56	NOUN	Joint
 Lehrbuchs	56	NOUN	Lehrbuch
-des Swahili	56	NOUN	Swahili
 Swahilis	56	NOUN	Swahili
 Wiederaufnahmen	56	NOUN	Wiederaufnahme
 Wertschätzungen	56	NOUN	Wertschätzung
@@ -117618,7 +117571,6 @@ Urlaubes	56	NOUN	Urlaub
 Urlaube	56	NOUN	Urlaub
 Urlauben	56	NOUN	Urlaub
 Pfeffern	56	NOUN	Pfeffer
-des Scots	56	NOUN	Scots
 Scotse	56	NOUN	Scots
 Scotsen	56	NOUN	Scots
 Treibstoffes	55	NOUN	Treibstoff
@@ -117644,7 +117596,6 @@ Regierungssitze	55	NOUN	Regierungssitz
 Regierungssitzen	55	NOUN	Regierungssitz
 Tennisse	55	NOUN	Tennis
 Tennissen	55	NOUN	Tennis
-(des) Niederdeutsch	55	NOUN	Niederdeutsch
 Xenons	55	NOUN	Xenon
 Xenone	55	NOUN	Xenon
 Xenonen	55	NOUN	Xenon
@@ -117767,7 +117718,6 @@ Duellen	53	NOUN	Duell
 Beins	53	NOUN	Bein
 Summern	53	NOUN	Summer
 Assimilationen	53	NOUN	Assimilation
-des Ra	53	NOUN	Ra
 Gürteln	53	NOUN	Gürtel
 Bordeauxn	53	NOUN	Bordeaux
 Potenzialen	53	NOUN	Potenzial
@@ -117835,7 +117785,6 @@ Mediationen	51	NOUN	Mediation
 Salzsäuren	51	NOUN	Salzsäure
 Einfachheiten	51	NOUN	Einfachheit
 Filmindustrien	51	NOUN	Filmindustrie
-(des) Hochdeutsch	51	NOUN	Hochdeutsch
 Kriegsbeginns	51	NOUN	Kriegsbeginn
 Kriegsbeginne	51	NOUN	Kriegsbeginn
 Kriegsbeginnen	51	NOUN	Kriegsbeginn
@@ -117907,8 +117856,6 @@ Dopplern	50	NOUN	Doppler
 Porzellans	50	NOUN	Porzellan
 Porzellane	50	NOUN	Porzellan
 Porzellanen	50	NOUN	Porzellan
-des Classic	50	NOUN	Classic
-die Classics	50	NOUN	Classic
 Streuungen	50	NOUN	Streuung
 Reichsbahnen	50	NOUN	Reichsbahn
 Kolonialismuse	50	NOUN	Kolonialismus
@@ -117929,7 +117876,6 @@ Kurien	50	NOUN	Kurie
 Kompatibilitäten	50	NOUN	Kompatibilität
 Nervensysteme	50	NOUN	Nervensystem
 Nervensystemen	50	NOUN	Nervensystem
-des Südost	50	NOUN	Südost
 Südoste	50	NOUN	Südost
 Ausfalles	50	NOUN	Ausfall
 Eurovisionen	50	NOUN	Eurovision
@@ -117946,7 +117892,6 @@ Wettbewerbsfähigkeiten	49	NOUN	Wettbewerbsfähigkeit
 Lyrikern	49	NOUN	Lyriker
 Völkerbunde	49	NOUN	Völkerbund
 Völkerbunden	49	NOUN	Völkerbund
-des Odin	49	NOUN	Odin
 Odine	49	NOUN	Odin
 Odinen	49	NOUN	Odin
 Weltbühnen	49	NOUN	Weltbühne
@@ -118034,7 +117979,6 @@ Fischfanges	48	NOUN	Fischfang
 Fischfänge	48	NOUN	Fischfang
 Fischfängen	48	NOUN	Fischfang
 Waten	48	NOUN	Wat
-des Pali	48	NOUN	Pali
 Palis	48	NOUN	Pali
 Filmregisseuren	48	NOUN	Filmregisseur
 Achtungen	48	NOUN	Achtung
@@ -118248,10 +118192,8 @@ Rostockern	45	NOUN	Rostocker
 Luftverkehres	45	NOUN	Luftverkehr
 Luftverkehre	45	NOUN	Luftverkehr
 Luftverkehren	45	NOUN	Luftverkehr
-des Mari	45	NOUN	Mari
 Großfürstentümer	45	NOUN	Großfürstentum
 Großfürstentümern	45	NOUN	Großfürstentum
-des Fidschi	45	NOUN	Fidschi
 Abtrennungen	44	NOUN	Abtrennung
 Ostseiten	44	NOUN	Ostseite
 Bergstraßen	44	NOUN	Bergstraße
@@ -118477,7 +118419,6 @@ Seelsorgen	42	NOUN	Seelsorge
 Achen	42	NOUN	Ach
 Wärmestrahlungen	42	NOUN	Wärmestrahlung
 Zwingern	42	NOUN	Zwinger
-des Komi	42	NOUN	Komi
 Komis	42	NOUN	Komi
 Prologes	42	NOUN	Prolog
 Prologe	42	NOUN	Prolog
@@ -118503,7 +118444,6 @@ Zufuhren	42	NOUN	Zufuhr
 Zwergs	42	NOUN	Zwerg
 Friedensnobelpreise	42	NOUN	Friedensnobelpreis
 Friedensnobelpreisen	42	NOUN	Friedensnobelpreis
-der Hera	42	NOUN	Hera
 Heras	42	NOUN	Hera
 Dirken	42	NOUN	Dirk
 Fruchtbarkeiten	42	NOUN	Fruchtbarkeit
@@ -118547,7 +118487,6 @@ Rationalismuse	41	NOUN	Rationalismus
 Rationalismusen	41	NOUN	Rationalismus
 Genders	41	NOUN	Gender
 Gendern	41	NOUN	Gender
-des Poseidon	41	NOUN	Poseidon
 Poseidone	41	NOUN	Poseidon
 Poseidonen	41	NOUN	Poseidon
 Brüdergemeinen	41	NOUN	Brüdergemeine
@@ -118562,7 +118501,6 @@ Mete	41	NOUN	Met
 Meten	41	NOUN	Met
 Bundestagsfraktionen	41	NOUN	Bundestagsfraktion
 Anklangs	41	NOUN	Anklang
-des Urdu	41	NOUN	Urdu
 Urdus	41	NOUN	Urdu
 Sintfluten	41	NOUN	Sintflut
 Gegengewichtes	41	NOUN	Gegengewicht
@@ -118580,7 +118518,6 @@ Wartungen	41	NOUN	Wartung
 Verschuldungen	41	NOUN	Verschuldung
 Pergamente	41	NOUN	Pergament
 Pergamenten	41	NOUN	Pergament
-des Herero	41	NOUN	Herero
 Hereros	41	NOUN	Herero
 Arnisse	41	NOUN	Arnis
 Arnissen	41	NOUN	Arnis
@@ -118651,7 +118588,6 @@ Unmute	40	NOUN	Unmut
 Unmuten	40	NOUN	Unmut
 Behälters	40	NOUN	Behälter
 Lebensführungen	40	NOUN	Lebensführung
-(des) Persisch	40	NOUN	Persisch
 Zuwanderers	40	NOUN	Zuwanderer
 Rückblicks	40	NOUN	Rückblick
 Rückblicke	40	NOUN	Rückblick
@@ -118672,7 +118608,6 @@ Vorarlbergern	40	NOUN	Vorarlberger
 Kaplans	40	NOUN	Kaplan
 Kapläne	40	NOUN	Kaplan
 Kaplänen	40	NOUN	Kaplan
-des Deuteronomium	40	NOUN	Deuteronomium
 Deuteronomien	40	NOUN	Deuteronomium
 Stirnen	40	NOUN	Stirn
 Mittelzentrume	40	NOUN	Mittelzentrum
@@ -118696,7 +118631,6 @@ Vulkanismuse	39	NOUN	Vulkanismus
 Vulkanismusen	39	NOUN	Vulkanismus
 Adrenaline	39	NOUN	Adrenalin
 Adrenalinen	39	NOUN	Adrenalin
-des Afrikaans	39	NOUN	Afrikaans
 Afrikaanse	39	NOUN	Afrikaans
 Afrikaansen	39	NOUN	Afrikaans
 Ruders	39	NOUN	Ruder
@@ -118724,7 +118658,6 @@ Blutdruckes	39	NOUN	Blutdruck
 Blutdrücke	39	NOUN	Blutdruck
 Blutdrücken	39	NOUN	Blutdruck
 Umgehungen	39	NOUN	Umgehung
-des Helios	39	NOUN	Helios
 Heliose	39	NOUN	Helios
 Heliosen	39	NOUN	Helios
 Schienenverkehre	39	NOUN	Schienenverkehr
@@ -118738,7 +118671,6 @@ Augenmerke	39	NOUN	Augenmerk
 Augenmerken	39	NOUN	Augenmerk
 Spielfelder	39	NOUN	Spielfeld
 Xboxen	39	NOUN	Xbox
-des Kronos	39	NOUN	Kronos
 Kronose	39	NOUN	Kronos
 Kronosen	39	NOUN	Kronos
 Staatsopern	39	NOUN	Staatsoper
@@ -118817,7 +118749,6 @@ Wittenbergern	38	NOUN	Wittenberger
 Heimatmuseums	38	NOUN	Heimatmuseum
 Pythagoreers	38	NOUN	Pythagoreer
 Lemmatan	38	NOUN	Lemma
-(des) Jiddisch	38	NOUN	Jiddisch
 Ententen	38	NOUN	Entente
 Tonträgers	38	NOUN	Tonträger
 Broms	38	NOUN	Brom
@@ -118840,7 +118771,6 @@ Militärputschen	38	NOUN	Militärputsch
 Geschicks	38	NOUN	Geschick
 Geschicken	38	NOUN	Geschick
 Zählers	38	NOUN	Zähler
-(des) Kroatisch	38	NOUN	Kroatisch
 Mandelbrots	38	NOUN	Mandelbrot
 Mandelbrote	38	NOUN	Mandelbrot
 Mandelbroten	38	NOUN	Mandelbrot
@@ -118918,7 +118848,6 @@ Multimedias	37	NOUN	Multimedia
 Ultraschalles	37	NOUN	Ultraschall
 Ultraschalle	37	NOUN	Ultraschall
 Ultraschallen	37	NOUN	Ultraschall
-des Alabama	37	NOUN	Alabama
 Alabamas	37	NOUN	Alabama
 Aufbrüche	37	NOUN	Aufbruch
 Aufbrüchen	37	NOUN	Aufbruch
@@ -118964,7 +118893,6 @@ Heilmittels	36	NOUN	Heilmittel
 Heilmitteln	36	NOUN	Heilmittel
 Zersetzungen	36	NOUN	Zersetzung
 Einwilligungen	36	NOUN	Einwilligung
-(des) Aramäisch	36	NOUN	Aramäisch
 Übergewichtes	36	NOUN	Übergewicht
 Übergewichte	36	NOUN	Übergewicht
 Übergewichten	36	NOUN	Übergewicht
@@ -118976,7 +118904,6 @@ Bundesverbände	36	NOUN	Bundesverband
 Bundesverbänden	36	NOUN	Bundesverband
 Taubers	36	NOUN	Tauber
 Taubern	36	NOUN	Tauber
-(des) Syrisch	36	NOUN	Syrisch
 Zollvereines	36	NOUN	Zollverein
 Zollvereine	36	NOUN	Zollverein
 Zollvereinen	36	NOUN	Zollverein
@@ -119060,7 +118987,6 @@ Anästhesien	36	NOUN	Anästhesie
 Zurückhaltungen	36	NOUN	Zurückhaltung
 Temporan	36	NOUN	Tempus
 Quadrigen	36	NOUN	Quadriga
-(des) Finnisch	36	NOUN	Finnisch
 Endspieles	36	NOUN	Endspiel
 Endspiele	36	NOUN	Endspiel
 Endspielen	36	NOUN	Endspiel
@@ -119084,7 +119010,6 @@ Erdgeschichten	35	NOUN	Erdgeschichte
 Luxuse	35	NOUN	Luxus
 Luxusen	35	NOUN	Luxus
 Muttersprachlers	35	NOUN	Muttersprachler
-der Athene	35	NOUN	Athene
 Athenen	35	NOUN	Athene
 Individualitäten	35	NOUN	Individualität
 Stadtarchive	35	NOUN	Stadtarchiv
@@ -119104,7 +119029,6 @@ Lehnworts	35	NOUN	Lehnwort
 Lineals	35	NOUN	Lineal
 Linealen	35	NOUN	Lineal
 Einkommensteuern	35	NOUN	Einkommensteuer
-der Aphrodite	35	NOUN	Aphrodite
 Aphroditen	35	NOUN	Aphrodite
 Christenheiten	35	NOUN	Christenheit
 Wiccas	35	NOUN	Wicca
@@ -119113,7 +119037,6 @@ Seeschlachten	35	NOUN	Seeschlacht
 Kompassen	35	NOUN	Kompass
 Hauptzieles	35	NOUN	Hauptziel
 Hauptzielen	35	NOUN	Hauptziel
-des Calais	35	NOUN	Calais
 Calaise	35	NOUN	Calais
 Calaisen	35	NOUN	Calais
 Bindegliedes	35	NOUN	Bindeglied
@@ -119134,9 +119057,7 @@ Märzrevolutionen	35	NOUN	Märzrevolution
 Sommersemesters	35	NOUN	Sommersemester
 Sommersemestern	35	NOUN	Sommersemester
 Litauers	35	NOUN	Litauer
-der Ceres	34	NOUN	Ceres
 Ceresen	34	NOUN	Ceres
-des Sol	34	NOUN	Sol
 Amateurs	34	NOUN	Amateur
 Glorias	34	NOUN	Gloria
 Aussichtsturmes	34	NOUN	Aussichtsturm
@@ -119215,7 +119136,6 @@ Privateigenten	34	NOUN	Privateigentum
 Sophienkirchen	34	NOUN	Sophienkirche
 Konstrukten	34	NOUN	Konstrukt
 Nests	34	NOUN	Nest
-(des) Plattdeutsch	34	NOUN	Plattdeutsch
 Anthroposophien	34	NOUN	Anthroposophie
 Glycerins	34	NOUN	Glycerin
 Glycerine	34	NOUN	Glycerin
@@ -119275,7 +119195,6 @@ Völkerschlachten	34	NOUN	Völkerschlacht
 Stereos	34	NOUN	Stereo
 Schalken	34	NOUN	Schalke
 Alstern	34	NOUN	Alster
-der Artemis	33	NOUN	Artemis
 Artemisen	33	NOUN	Artemis
 Schrifttümer	33	NOUN	Schrifttum
 Schrifttümern	33	NOUN	Schrifttum
@@ -119371,7 +119290,6 @@ Teletexten	33	NOUN	Teletext
 Kunsthandwerke	33	NOUN	Kunsthandwerk
 Kunsthandwerken	33	NOUN	Kunsthandwerk
 Vorbehalts	33	NOUN	Vorbehalt
-des Lisp	33	NOUN	Lisp
 Lispe	33	NOUN	Lisp
 Lispen	33	NOUN	Lisp
 Zenits	33	NOUN	Zenit
@@ -119380,7 +119298,6 @@ Zeniten	33	NOUN	Zenit
 Körperbaues	33	NOUN	Körperbau
 Körperbaue	33	NOUN	Körperbau
 Körperbauen	33	NOUN	Körperbau
-des Nynorsk	33	NOUN	Nynorsk
 Nynorske	33	NOUN	Nynorsk
 Nynorsken	33	NOUN	Nynorsk
 Rotverschiebungen	33	NOUN	Rotverschiebung
@@ -119515,7 +119432,6 @@ Einzugsbereichen	32	NOUN	Einzugsbereich
 Luxemburgers	32	NOUN	Luxemburger
 Leibeigenschaften	32	NOUN	Leibeigenschaft
 Elektrifizierungen	32	NOUN	Elektrifizierung
-des Baal	32	NOUN	Baal
 Baale	32	NOUN	Baal
 Baalen	32	NOUN	Baal
 Preisgelds	32	NOUN	Preisgeld
@@ -119561,7 +119477,6 @@ Provinzhauptstädten	32	NOUN	Provinzhauptstadt
 Schismen	32	NOUN	Schisma
 Reservoire	32	NOUN	Reservoir
 Reservoiren	32	NOUN	Reservoir
-der Esther	32	NOUN	Esther
 Esthern	32	NOUN	Esther
 Farbfotografien	32	NOUN	Farbfotografie
 Waldensers	32	NOUN	Waldenser
@@ -119600,16 +119515,13 @@ Nordufern	31	NOUN	Nordufer
 Stollens	31	NOUN	Stollen
 Sicherheitspolitiken	31	NOUN	Sicherheitspolitik
 Apostrophen	31	NOUN	Apostroph
-(des) Bulgarisch	31	NOUN	Bulgarisch
 Narkosen	31	NOUN	Narkose
 Leitbildes	31	NOUN	Leitbild
 Leitbildern	31	NOUN	Leitbild
-des Olmütz	31	NOUN	Olmütz
 Olmütze	31	NOUN	Olmütz
 Olmützen	31	NOUN	Olmütz
 Vatikanstädte	31	NOUN	Vatikanstadt
 Vatikanstädten	31	NOUN	Vatikanstadt
-des Rama	31	NOUN	Rama
 Ramas	31	NOUN	Rama
 Braunschweigers	31	NOUN	Braunschweiger
 Braunschweigern	31	NOUN	Braunschweiger
@@ -119653,7 +119565,6 @@ Infinitiven	31	NOUN	Infinitiv
 Osmiums	31	NOUN	Osmium
 Osmien	31	NOUN	Osmium
 Graphentheorien	31	NOUN	Graphentheorie
-des Dionysos	31	NOUN	Dionysos
 Dionysose	31	NOUN	Dionysos
 Dionysosen	31	NOUN	Dionysos
 Biennalen	31	NOUN	Biennale
@@ -119699,7 +119610,6 @@ Barockzeiten	31	NOUN	Barockzeit
 Vizekönigen	31	NOUN	Vizekönig
 Entwässerungen	31	NOUN	Entwässerung
 Endphasen	31	NOUN	Endphase
-(des) Katalanisch	31	NOUN	Katalanisch
 Ostseeraums	31	NOUN	Ostseeraum
 Ostseeräume	31	NOUN	Ostseeraum
 Ostseeräumen	31	NOUN	Ostseeraum
@@ -119733,7 +119643,6 @@ Herausforderern	30	NOUN	Herausforderer
 Weltsichten	30	NOUN	Weltsicht
 Betrügers	30	NOUN	Betrüger
 Betrügern	30	NOUN	Betrüger
-des Seth	30	NOUN	Seth
 Sethen	30	NOUN	Seth
 Inselstaats	30	NOUN	Inselstaat
 Marktführers	30	NOUN	Marktführer
@@ -119863,7 +119772,6 @@ Mobilisierungen	29	NOUN	Mobilisierung
 Erschaffungen	29	NOUN	Erschaffung
 Rechtssystemen	29	NOUN	Rechtssystem
 Darlehens	29	NOUN	Darlehen
-(des) Litauisch	29	NOUN	Litauisch
 Sinfonieorchestern	29	NOUN	Sinfonieorchester
 Schlamms	29	NOUN	Schlamm
 Schlämmen	29	NOUN	Schlamm
@@ -119949,7 +119857,6 @@ Examens	29	NOUN	Examen
 Examinan	29	NOUN	Examen
 Schuhs	29	NOUN	Schuh
 Krankenpflegen	29	NOUN	Krankenpflege
-des Bokmål	29	NOUN	Bokmål
 Bokmåle	29	NOUN	Bokmål
 Bokmålen	29	NOUN	Bokmål
 Literaturkritiken	29	NOUN	Literaturkritik
@@ -120061,7 +119968,6 @@ Replikationen	28	NOUN	Replikation
 Feuerwerks	28	NOUN	Feuerwerk
 Exodusse	28	NOUN	Exodus
 Exodussen	28	NOUN	Exodus
-des Wu	28	NOUN	Wu
 Wus	28	NOUN	Wu
 Dienstsitzes	28	NOUN	Dienstsitz
 Dienstsitze	28	NOUN	Dienstsitz
@@ -120779,7 +120685,6 @@ Intellekte	25	NOUN	Intellekt
 Intellekten	25	NOUN	Intellekt
 Musikindustrien	25	NOUN	Musikindustrie
 Volksgemeinschaften	25	NOUN	Volksgemeinschaft
-des Zion	25	NOUN	Zion
 Zione	25	NOUN	Zion
 Zionen	25	NOUN	Zion
 Mitstreiters	25	NOUN	Mitstreiter
@@ -120874,7 +120779,6 @@ Maskulinan	24	NOUN	Maskulinum
 Westufers	24	NOUN	Westufer
 Westufern	24	NOUN	Westufer
 Austrocknungen	24	NOUN	Austrocknung
-des Hephaistos	24	NOUN	Hephaistos
 Hephaistose	24	NOUN	Hephaistos
 Hephaistosen	24	NOUN	Hephaistos
 Symptoms	24	NOUN	Symptom
@@ -120978,7 +120882,6 @@ Zellstoffe	24	NOUN	Zellstoff
 Zellstoffen	24	NOUN	Zellstoff
 Safetys	24	NOUN	Safety
 Deutschschweizen	24	NOUN	Deutschschweiz
-(des) Bosnisch	24	NOUN	Bosnisch
 Wochenblatts	24	NOUN	Wochenblatt
 Wochenblättern	24	NOUN	Wochenblatt
 Mäzenen	24	NOUN	Mäzen
@@ -121214,7 +121117,6 @@ Einstürze	23	NOUN	Einsturz
 Generalstäbe	23	NOUN	Generalstab
 Generalstäben	23	NOUN	Generalstab
 Medizintechniken	23	NOUN	Medizintechnik
-des Somali	23	NOUN	Somali
 Somalis	23	NOUN	Somali
 Plattentektoniken	23	NOUN	Plattentektonik
 Internetzuganges	23	NOUN	Internetzugang
@@ -121240,7 +121142,6 @@ Halbtönen	23	NOUN	Halbton
 Cyberpunks	23	NOUN	Cyberpunk
 Cyberpunke	23	NOUN	Cyberpunk
 Cyberpunken	23	NOUN	Cyberpunk
-der Minerva	23	NOUN	Minerva
 Minervas	23	NOUN	Minerva
 Johannesevangelien	23	NOUN	Johannesevangelium
 Forschungsgebietes	23	NOUN	Forschungsgebiet
@@ -121259,7 +121160,6 @@ Calvinismusen	23	NOUN	Calvinismus
 Kinderarbeiten	23	NOUN	Kinderarbeit
 Schiefers	23	NOUN	schief
 Phänotyps	23	NOUN	Phänotyp
-(des) Slowakisch	23	NOUN	Slowakisch
 Bundestagswahlkreises	23	NOUN	Bundestagswahlkreis
 Bundestagswahlkreise	23	NOUN	Bundestagswahlkreis
 Bundestagswahlkreisen	23	NOUN	Bundestagswahlkreis
@@ -121288,7 +121188,6 @@ Spannungsfeldern	23	NOUN	Spannungsfeld
 Helvetiers	23	NOUN	Helvetier
 Ausflugszieles	23	NOUN	Ausflugsziel
 Ausflugszielen	23	NOUN	Ausflugsziel
-des Quechua	23	NOUN	Quechua
 Quechuas	23	NOUN	Quechua
 Bindegeweben	23	NOUN	Bindegewebe
 Guanins	23	NOUN	Guanin
@@ -121436,7 +121335,6 @@ Sopranen	22	NOUN	Sopran
 Alpenraums	22	NOUN	Alpenraum
 Alpenräume	22	NOUN	Alpenraum
 Alpenräumen	22	NOUN	Alpenraum
-des Wolof	22	NOUN	Wolof
 Wolofe	22	NOUN	Wolof
 Wolofen	22	NOUN	Wolof
 Cellulosen	22	NOUN	Cellulose
@@ -121651,14 +121549,12 @@ Robotiken	22	NOUN	Robotik
 Kirchenjahre	22	NOUN	Kirchenjahr
 Kirchenjahren	22	NOUN	Kirchenjahr
 Aufzugs	22	NOUN	Aufzug
-(des) Färöisch	22	NOUN	Färöisch
 Zipfels	22	NOUN	Zipfel
 Friedenskirchen	22	NOUN	Friedenskirche
 Würsten	22	NOUN	Wurst
 Laubs	22	NOUN	Laub
 Städtebünde	22	NOUN	Städtebund
 Städtebünden	22	NOUN	Städtebund
-der Interlingua	22	NOUN	Interlingua
 Interlinguas	22	NOUN	Interlingua
 Cellers	22	NOUN	Celler
 Cellern	22	NOUN	Celler
@@ -121726,7 +121622,6 @@ Datenaustauschen	21	NOUN	Datenaustausch
 Maschinensprachen	21	NOUN	Maschinensprache
 Namenswahlen	21	NOUN	Namenswahl
 Inzidenzen	21	NOUN	Inzidenz
-(des) Koreanisch	21	NOUN	Koreanisch
 Rentenversicherungen	21	NOUN	Rentenversicherung
 Haupteinganges	21	NOUN	Haupteingang
 Haupteingänge	21	NOUN	Haupteingang
@@ -122033,7 +121928,6 @@ Staudammes	21	NOUN	Staudamm
 Radfernwegs	21	NOUN	Radfernweg
 Radfernwegen	21	NOUN	Radfernweg
 Parlamentariers	21	NOUN	Parlamentarier
-(des) Albanisch	21	NOUN	Albanisch
 Zündungen	21	NOUN	Zündung
 Reuen	21	NOUN	Reue
 Imamen	21	NOUN	Imam
@@ -122044,7 +121938,6 @@ Schlossgartens	21	NOUN	Schlossgarten
 Schlossgärten	21	NOUN	Schlossgarten
 Axolotls	21	NOUN	Axolotl
 Axolotln	21	NOUN	Axolotl
-des Aton	21	NOUN	Aton
 Atöne	21	NOUN	Aton
 Atönen	21	NOUN	Aton
 Döners	21	NOUN	Döner
@@ -122078,7 +121971,6 @@ Bobbies	20	NOUN	Bobby
 Lenkungen	20	NOUN	Lenkung
 Hochverrate	20	NOUN	Hochverrat
 Hochverraten	20	NOUN	Hochverrat
-des Kontinentaleuropa	20	NOUN	Kontinentaleuropa
 Viehhaltungen	20	NOUN	Viehhaltung
 Rangierbahnhofs	20	NOUN	Rangierbahnhof
 Rangierbahnhöfe	20	NOUN	Rangierbahnhof
@@ -122156,7 +122048,6 @@ Manichäismusen	20	NOUN	Manichäismus
 Mystikern	20	NOUN	Mystiker
 Vegetarismuse	20	NOUN	Vegetarismus
 Vegetarismusen	20	NOUN	Vegetarismus
-des Loki	20	NOUN	Loki
 Lokis	20	NOUN	Loki
 Gons	20	NOUN	Gon
 Gonen	20	NOUN	Gon
@@ -122635,7 +122526,6 @@ Cytosine	19	NOUN	Cytosin
 Cytosinen	19	NOUN	Cytosin
 Gelen	19	NOUN	Gel
 Schwägerinnen	19	NOUN	Schwägerin
-(des) Rheinisch	19	NOUN	Rheinisch
 Katers	19	NOUN	Kater
 Mehrheitswahlrechte	19	NOUN	Mehrheitswahlrecht
 Mehrheitswahlrechten	19	NOUN	Mehrheitswahlrecht
@@ -122683,7 +122573,6 @@ Trägheitsmomente	19	NOUN	Trägheitsmoment
 Trägheitsmomenten	19	NOUN	Trägheitsmoment
 Bergungen	19	NOUN	Bergung
 Friedenskonferenzen	19	NOUN	Friedenskonferenz
-des Krishna	19	NOUN	Krishna
 Krishnas	19	NOUN	Krishna
 Unternehmensführungen	19	NOUN	Unternehmensführung
 Lammes	19	NOUN	Lamm
@@ -122693,7 +122582,6 @@ Marställe	19	NOUN	Marstall
 Marställen	19	NOUN	Marstall
 Downtowns	19	NOUN	Downtown
 Winzers	19	NOUN	Winzer
-des Cree	19	NOUN	Cree
 Creen	19	NOUN	Cree
 Diversitäten	18	NOUN	Diversität
 Rationalisierungen	18	NOUN	Rationalisierung
@@ -122775,14 +122663,12 @@ Freundschaftsverträgen	18	NOUN	Freundschaftsvertrag
 Morgenposten	18	NOUN	Morgenpost
 Mitspielers	18	NOUN	Mitspieler
 Solidin	18	NOUN	Solidus
-des Utopia	18	NOUN	Utopia
 Utopias	18	NOUN	Utopia
 Schnauzen	18	NOUN	Schnauze
 Meterspuren	18	NOUN	Meterspur
 Paritäten	18	NOUN	Parität
 Neutronensternes	18	NOUN	Neutronenstern
 Skylines	18	NOUN	Skyline
-des Modena	18	NOUN	Modena
 Modenas	18	NOUN	Modena
 Mittelschiffes	18	NOUN	Mittelschiff
 Mittelschiffe	18	NOUN	Mittelschiff
@@ -122835,7 +122721,6 @@ Knappheiten	18	NOUN	Knappheit
 Stadtverkehres	18	NOUN	Stadtverkehr
 Stadtverkehre	18	NOUN	Stadtverkehr
 Stadtverkehren	18	NOUN	Stadtverkehr
-(des) Friesisch	18	NOUN	Friesisch
 Betazerfalles	18	NOUN	Betazerfall
 Betazerfälle	18	NOUN	Betazerfall
 Betazerfällen	18	NOUN	Betazerfall
@@ -122895,7 +122780,6 @@ Rückfalles	18	NOUN	Rückfall
 Rückfälle	18	NOUN	Rückfall
 Rückfällen	18	NOUN	Rückfall
 Quäkers	18	NOUN	Quäker
-des Thot	18	NOUN	Thot
 Thote	18	NOUN	Thot
 Thoten	18	NOUN	Thot
 Asthmas	18	NOUN	Asthma
@@ -122933,7 +122817,6 @@ Forschungsprojektes	18	NOUN	Forschungsprojekt
 Froschs	18	NOUN	Frosch
 Segregationen	18	NOUN	Segregation
 Priesterschaften	18	NOUN	Priesterschaft
-(des) Isländisch	18	NOUN	Isländisch
 Grammophons	18	NOUN	Grammophon
 Grammophonen	18	NOUN	Grammophon
 Verhörs	18	NOUN	Verhör
@@ -123092,7 +122975,6 @@ Epidemiologien	18	NOUN	Epidemiologie
 Mitgefühls	18	NOUN	Mitgefühl
 Mitgefühle	18	NOUN	Mitgefühl
 Mitgefühlen	18	NOUN	Mitgefühl
-(des) Serbokroatisch	18	NOUN	Serbokroatisch
 Spions	18	NOUN	Spion
 Stadtflaggen	18	NOUN	Stadtflagge
 Keiles	18	NOUN	Keil
@@ -123132,7 +123014,6 @@ Anglikaners	18	NOUN	Anglikaner
 Crossovers	18	NOUN	Crossover
 Kartäusers	18	NOUN	Kartäuser
 Kartäusern	18	NOUN	Kartäuser
-(des) Galicisch	18	NOUN	Galicisch
 Festsetzungen	17	NOUN	Festsetzung
 Agoras	17	NOUN	Agora
 Versteigerungen	17	NOUN	Versteigerung
@@ -123193,7 +123074,6 @@ Gütertransporte	17	NOUN	Gütertransport
 Gütertransporten	17	NOUN	Gütertransport
 Strahlenbelastungen	17	NOUN	Strahlenbelastung
 Allgemeinanästhesien	17	NOUN	Allgemeinanästhesie
-des Jin	17	NOUN	Jin
 Jine	17	NOUN	Jin
 Jinen	17	NOUN	Jin
 Volksstammes	17	NOUN	Volksstamm
@@ -123234,7 +123114,6 @@ Mehrheitsbevölkerungen	17	NOUN	Mehrheitsbevölkerung
 Schwarzmarktes	17	NOUN	Schwarzmarkt
 Schwarzmärkte	17	NOUN	Schwarzmarkt
 Schwarzmärkten	17	NOUN	Schwarzmarkt
-(des) Mazedonisch	17	NOUN	Mazedonisch
 Privatwirtschaften	17	NOUN	Privatwirtschaft
 Gesellschaftsverträge	17	NOUN	Gesellschaftsvertrag
 Gesellschaftsverträgen	17	NOUN	Gesellschaftsvertrag
@@ -123302,7 +123181,6 @@ Anhaltspunkts	17	NOUN	Anhaltspunkt
 Anhaltspunkten	17	NOUN	Anhaltspunkt
 Puppentheaters	17	NOUN	Puppentheater
 Puppentheatern	17	NOUN	Puppentheater
-des Guaraní	17	NOUN	Guaraní
 Guaraníe	17	NOUN	Guaraní
 Guaraníen	17	NOUN	Guaraní
 Rentners	17	NOUN	Rentner
@@ -123374,7 +123252,6 @@ Postwertzeichens	17	NOUN	Postwertzeichen
 Leviathans	17	NOUN	Leviathan
 Leviathane	17	NOUN	Leviathan
 Leviathanen	17	NOUN	Leviathan
-des Yi	17	NOUN	Yi
 Yis	17	NOUN	Yi
 Kloaken	17	NOUN	Kloake
 Sportplatzes	17	NOUN	Sportplatz
@@ -123497,7 +123374,6 @@ Polizeipräsidien	17	NOUN	Polizeipräsidium
 Rückspieles	17	NOUN	Rückspiel
 Rückspiele	17	NOUN	Rückspiel
 Rückspielen	17	NOUN	Rückspiel
-(des) Baskisch	17	NOUN	Baskisch
 Hermeneutiken	17	NOUN	Hermeneutik
 Zentralismuse	17	NOUN	Zentralismus
 Zentralismusen	17	NOUN	Zentralismus
@@ -123538,7 +123414,6 @@ Gewerkschaftsbunds	17	NOUN	Gewerkschaftsbund
 Gewerkschaftsbünde	17	NOUN	Gewerkschaftsbund
 Gewerkschaftsbünden	17	NOUN	Gewerkschaftsbund
 Liaisons	17	NOUN	Liaison
-(des) Lettisch	17	NOUN	Lettisch
 Eisbrechers	17	NOUN	Eisbrecher
 Eisbrechern	17	NOUN	Eisbrecher
 Grundversorgungen	17	NOUN	Grundversorgung
@@ -123587,8 +123462,6 @@ Schauspielereien	16	NOUN	Schauspielerei
 Kinostarts	16	NOUN	Kinostart
 Topoin	16	NOUN	Topos
 Industriestaates	16	NOUN	Industriestaat
-(des) Sorbisch	16	NOUN	Sorbisch
-(des) Estnisch	16	NOUN	Estnisch
 Novellierungen	16	NOUN	Novellierung
 Artilleriebeschusses	16	NOUN	Artilleriebeschuss
 Artilleriebeschüsse	16	NOUN	Artilleriebeschuss
@@ -123602,7 +123475,6 @@ Eigennamens	16	NOUN	Eigenname
 Abgeschiedenheiten	16	NOUN	Abgeschiedenheit
 Mondkalenders	16	NOUN	Mondkalender
 Mondkalendern	16	NOUN	Mondkalender
-der Lilith	16	NOUN	Lilith
 Lilithen	16	NOUN	Lilith
 Erkennungszeichens	16	NOUN	Erkennungszeichen
 Italienreisen	16	NOUN	Italienreise
@@ -123782,7 +123654,6 @@ Machtfaktoren	16	NOUN	Machtfaktor
 Atemlüfte	16	NOUN	Atemluft
 Atemlüften	16	NOUN	Atemluft
 Bauernhofs	16	NOUN	Bauernhof
-des Pik	16	NOUN	Pik
 Piken	16	NOUN	Pik
 Beagles	16	NOUN	Beagle
 Beaglen	16	NOUN	Beagle
@@ -123971,7 +123842,6 @@ Brigadegeneralen	16	NOUN	Brigadegeneral
 Flohmarktes	16	NOUN	Flohmarkt
 Igels	16	NOUN	Igel
 Igeln	16	NOUN	Igel
-des Marduk	16	NOUN	Marduk
 Marduke	16	NOUN	Marduk
 Marduken	16	NOUN	Marduk
 Skas	16	NOUN	Ska
@@ -124358,7 +124228,6 @@ Hohensteine	15	NOUN	Hohenstein
 Hohensteinen	15	NOUN	Hohenstein
 Myopien	15	NOUN	Myopie
 Vampiren	15	NOUN	Vampir
-(des) Gälisch	15	NOUN	Gälisch
 Eingangsbereiches	15	NOUN	Eingangsbereich
 Eingangsbereiche	15	NOUN	Eingangsbereich
 Eingangsbereichen	15	NOUN	Eingangsbereich
@@ -124482,7 +124351,6 @@ Aushängeschildes	15	NOUN	Aushängeschild
 Aushängeschilder	15	NOUN	Aushängeschild
 Aushängeschildern	15	NOUN	Aushängeschild
 Frauenmannschaften	15	NOUN	Frauenmannschaft
-des Altair	15	NOUN	Altair
 Altaire	15	NOUN	Altair
 Altairen	15	NOUN	Altair
 Schwermetalles	15	NOUN	Schwermetall
@@ -124504,13 +124372,11 @@ Bevölkerungsstrukturen	15	NOUN	Bevölkerungsstruktur
 Dinars	15	NOUN	Dinar
 Dinare	15	NOUN	Dinar
 Dinaren	15	NOUN	Dinar
-des Zulu	15	NOUN	Zulu
 Zulus	15	NOUN	Zulu
 Elsässers	15	NOUN	Elsässer
 Elsässern	15	NOUN	Elsässer
 Beschleunigers	15	NOUN	Beschleuniger
 Beschleunigern	15	NOUN	Beschleuniger
-(des) Schweizerdeutsch	15	NOUN	Schweizerdeutsch
 Kulturrevolutionen	15	NOUN	Kulturrevolution
 Abwurfs	15	NOUN	Abwurf
 Abwürfe	15	NOUN	Abwurf
@@ -124614,7 +124480,6 @@ Kations	14	NOUN	Kation
 Betastrahlungen	14	NOUN	Betastrahlung
 Aufgebotes	14	NOUN	Aufgebot
 Aufgebote	14	NOUN	Aufgebot
-(des) Koptisch	14	NOUN	Koptisch
 Spätphasen	14	NOUN	Spätphase
 Unzuchten	14	NOUN	Unzucht
 Peches	14	NOUN	Pech
@@ -124624,7 +124489,6 @@ Klugheiten	14	NOUN	Klugheit
 Widerhalles	14	NOUN	Widerhall
 Widerhalle	14	NOUN	Widerhall
 Widerhallen	14	NOUN	Widerhall
-des Cheyenne	14	NOUN	Cheyenne
 Cheyennen	14	NOUN	Cheyenne
 Drehkreuzes	14	NOUN	Drehkreuz
 Drehkreuzen	14	NOUN	Drehkreuz
@@ -124681,7 +124545,6 @@ Goldstandards	14	NOUN	Goldstandard
 Goldstandarde	14	NOUN	Goldstandard
 Goldstandarden	14	NOUN	Goldstandard
 Energieeffizienzen	14	NOUN	Energieeffizienz
-(des) Walisisch	14	NOUN	Walisisch
 Bahnverkehres	14	NOUN	Bahnverkehr
 Bahnverkehre	14	NOUN	Bahnverkehr
 Bahnverkehren	14	NOUN	Bahnverkehr
@@ -124967,7 +124830,6 @@ Elektromagnetismuse	14	NOUN	Elektromagnetismus
 Elektromagnetismusen	14	NOUN	Elektromagnetismus
 Umverteilungen	14	NOUN	Umverteilung
 Jesuitenkirchen	14	NOUN	Jesuitenkirche
-des Manx	14	NOUN	Manx
 Manxe	14	NOUN	Manx
 Manxen	14	NOUN	Manx
 Weltmarktführers	14	NOUN	Weltmarktführer
@@ -124992,7 +124854,6 @@ Aufsehers	14	NOUN	Aufseher
 Aufsehern	14	NOUN	Aufseher
 Mysteriums	14	NOUN	Mysterium
 Plastizitäten	14	NOUN	Plastizität
-(des) Plautdietsch	14	NOUN	Plautdietsch
 Plautdietsche	14	NOUN	Plautdietsch
 Plautdietschen	14	NOUN	Plautdietsch
 Grungen	14	NOUN	Grunge
@@ -125003,7 +124864,6 @@ Paderbornern	14	NOUN	Paderborner
 Kietzes	14	NOUN	Kietz
 Kietze	14	NOUN	Kietz
 Kietzen	14	NOUN	Kietz
-(des) Kurdisch	14	NOUN	Kurdisch
 Erzherzoginnen	14	NOUN	Erzherzogin
 Lehrlings	14	NOUN	Lehrling
 Nachbarstaates	14	NOUN	Nachbarstaat
@@ -125073,7 +124933,6 @@ Diktaten	13	NOUN	Diktat
 Kalis	13	NOUN	Kali
 Kontaktaufnahmen	13	NOUN	Kontaktaufnahme
 Verschleierungen	13	NOUN	Verschleierung
-des Shiva	13	NOUN	Shiva
 Shivas	13	NOUN	Shiva
 Gedankenwelten	13	NOUN	Gedankenwelt
 Dogmatismuse	13	NOUN	Dogmatismus
@@ -125394,7 +125253,6 @@ Regelbetrieben	13	NOUN	Regelbetrieb
 Zyklons	13	NOUN	Zyklon
 Zyklonen	13	NOUN	Zyklon
 Romanisierungen	13	NOUN	Romanisierung
-des Bengali	13	NOUN	Bengali
 Bengalis	13	NOUN	Bengali
 Militärgouverneurs	13	NOUN	Militärgouverneur
 Militärgouverneuren	13	NOUN	Militärgouverneur
@@ -125478,7 +125336,6 @@ Unordnungen	13	NOUN	Unordnung
 Prädestinationen	13	NOUN	Prädestination
 Anteilseigners	13	NOUN	Anteilseigner
 Anteilseignern	13	NOUN	Anteilseigner
-des Nepali	13	NOUN	Nepali
 Nepalis	13	NOUN	Nepali
 Waale	13	NOUN	Waal
 Waalen	13	NOUN	Waal
@@ -125786,7 +125643,6 @@ Isländers	13	NOUN	Isländer
 Isländern	13	NOUN	Isländer
 Luven	13	NOUN	Luv
 Kuomintangen	13	NOUN	Kuomintang
-(des) Rätoromanisch	13	NOUN	Rätoromanisch
 Flutkatastrophen	13	NOUN	Flutkatastrophe
 Beweismittels	13	NOUN	Beweismittel
 Beweismitteln	13	NOUN	Beweismittel
@@ -125798,9 +125654,7 @@ Kreuzrittern	13	NOUN	Kreuzritter
 Paintbälle	13	NOUN	Paintball
 Paintbällen	13	NOUN	Paintball
 Liberas	13	NOUN	Libera
-des Marathi	13	NOUN	Marathi
 Marathis	13	NOUN	Marathi
-des Telugu	13	NOUN	Telugu
 Telugus	13	NOUN	Telugu
 Bruttowertschöpfungen	13	NOUN	Bruttowertschöpfung
 Neujahrsfests	13	NOUN	Neujahrsfest
@@ -126008,7 +125862,6 @@ Escapes	12	NOUN	Escape
 Grafikerinnen	12	NOUN	Grafikerin
 Ausweises	12	NOUN	Ausweis
 Keuschheiten	12	NOUN	Keuschheit
-des Nachkriegsdeutschland	12	NOUN	Nachkriegsdeutschland
 Nachkriegsdeutschländer	12	NOUN	Nachkriegsdeutschland
 Nachkriegsdeutschländern	12	NOUN	Nachkriegsdeutschland
 Klane	12	NOUN	Klan
@@ -126412,7 +126265,6 @@ Peterskirchen	12	NOUN	Peterskirche
 Scandiums	12	NOUN	Scandium
 Scandien	12	NOUN	Scandium
 Beams	12	NOUN	Beam
-des Cherokee	12	NOUN	Cherokee
 Cherokeen	12	NOUN	Cherokee
 Bergfrieds	12	NOUN	Bergfried
 Bergfriede	12	NOUN	Bergfried
@@ -126581,7 +126433,6 @@ Hochsommern	12	NOUN	Hochsommer
 Kunstpreises	12	NOUN	Kunstpreis
 Kunstpreise	12	NOUN	Kunstpreis
 Kunstpreisen	12	NOUN	Kunstpreis
-der Nike	12	NOUN	Nike
 Niken	12	NOUN	Nike
 Mikroklimas	12	NOUN	Mikroklima
 Wahrscheinlichkeitsverteilungen	12	NOUN	Wahrscheinlichkeitsverteilung
@@ -126657,7 +126508,6 @@ Auditoriums	12	NOUN	Auditorium
 Auditorien	12	NOUN	Auditorium
 Geständnisses	12	NOUN	Geständnis
 Geständnissen	12	NOUN	Geständnis
-(des) Maltesisch	12	NOUN	Maltesisch
 Bürgerschulen	12	NOUN	Bürgerschule
 Allesfressers	12	NOUN	Allesfresser
 Allesfressern	12	NOUN	Allesfresser
@@ -126676,7 +126526,6 @@ Startplatzes	12	NOUN	Startplatz
 Startplätzen	12	NOUN	Startplatz
 Flößereien	12	NOUN	Flößerei
 Küstenwachen	12	NOUN	Küstenwache
-(des) Kastilisch	12	NOUN	Kastilisch
 Holzverarbeitungen	12	NOUN	Holzverarbeitung
 Kernschattens	12	NOUN	Kernschatten
 Launen	12	NOUN	Laune
@@ -126860,7 +126709,6 @@ Orgelmusiken	11	NOUN	Orgelmusik
 Bravos	11	NOUN	Bravo
 Mittellinien	11	NOUN	Mittellinie
 Demografien	11	NOUN	Demografie
-(des) Tibetisch	11	NOUN	Tibetisch
 Urchristenten	11	NOUN	Urchristentum
 Hörbuches	11	NOUN	Hörbuch
 Hörbüchern	11	NOUN	Hörbuch
@@ -126965,7 +126813,6 @@ Originalzuständen	11	NOUN	Originalzustand
 Asylrechtes	11	NOUN	Asylrecht
 Asylrechte	11	NOUN	Asylrecht
 Asylrechten	11	NOUN	Asylrecht
-des Afar	11	NOUN	Afar
 Afare	11	NOUN	Afar
 Afaren	11	NOUN	Afar
 Bundesverdienstkreuzes	11	NOUN	Bundesverdienstkreuz
@@ -127017,7 +126864,6 @@ Promethiums	11	NOUN	Promethium
 Promethien	11	NOUN	Promethium
 Heraldikers	11	NOUN	Heraldiker
 Heraldikern	11	NOUN	Heraldiker
-des Panjabi	11	NOUN	Panjabi
 Panjabis	11	NOUN	Panjabi
 Krankenpflegers	11	NOUN	Krankenpfleger
 Krankenpflegern	11	NOUN	Krankenpfleger
@@ -127150,7 +126996,6 @@ Ingenieurwesens	11	NOUN	Ingenieurwesen
 Bühnenstücks	11	NOUN	Bühnenstück
 Umrisses	11	NOUN	Umriss
 Yoruban	11	NOUN	Yoruba
-des Bambara	11	NOUN	Bambara
 Bambaras	11	NOUN	Bambara
 Dachses	11	NOUN	Dachs
 Dachsen	11	NOUN	Dachs
@@ -127248,7 +127093,6 @@ Rundganges	11	NOUN	Rundgang
 Rundgänge	11	NOUN	Rundgang
 Rundgängen	11	NOUN	Rundgang
 Rückbildungen	11	NOUN	Rückbildung
-des Ebola	11	NOUN	Ebola
 Ebolas	11	NOUN	Ebola
 Weihers	11	NOUN	Weiher
 Gaswerkes	11	NOUN	Gaswerk
@@ -127287,7 +127131,6 @@ Zielpunkte	11	NOUN	Zielpunkt
 Zielpunkten	11	NOUN	Zielpunkt
 Krans	11	NOUN	Kran
 Fjordes	11	NOUN	Fjord
-des Rapanui	11	NOUN	Rapanui
 Rapanuis	11	NOUN	Rapanui
 Synchrotrons	11	NOUN	Synchrotron
 Synchrotrone	11	NOUN	Synchrotron
@@ -127352,7 +127195,6 @@ Sketchs	11	NOUN	Sketch
 Aufmarschs	11	NOUN	Aufmarsch
 Durchgangslagers	11	NOUN	Durchgangslager
 Durchgangslagern	11	NOUN	Durchgangslager
-(des) Kreolisch	11	NOUN	Kreolisch
 Domplatzes	11	NOUN	Domplatz
 Domplätze	11	NOUN	Domplatz
 Domplätzen	11	NOUN	Domplatz
@@ -127392,7 +127234,6 @@ Abschiebungen	11	NOUN	Abschiebung
 Nationaldenkmals	11	NOUN	Nationaldenkmal
 Nationaldenkmale	11	NOUN	Nationaldenkmal
 Nationaldenkmalen	11	NOUN	Nationaldenkmal
-des Sami	11	NOUN	Sami
 Samis	11	NOUN	Sami
 Polytheismuse	11	NOUN	Polytheismus
 Polytheismusen	11	NOUN	Polytheismus
@@ -127427,7 +127268,6 @@ Rechtsschutzen	11	NOUN	Rechtsschutz
 Hauptgegners	11	NOUN	Hauptgegner
 Hauptgegnern	11	NOUN	Hauptgegner
 Zangen	11	NOUN	Zange
-(des) Hocharabisch	11	NOUN	Hocharabisch
 Gewächshauses	11	NOUN	Gewächshaus
 Auftriebskräfte	11	NOUN	Auftriebskraft
 Auftriebskräften	11	NOUN	Auftriebskraft
@@ -127618,7 +127458,6 @@ Hebräerbriefe	11	NOUN	Hebräerbrief
 Hebräerbriefen	11	NOUN	Hebräerbrief
 Jurastudiums	11	NOUN	Jurastudium
 Jurastudien	11	NOUN	Jurastudium
-des Dogon	11	NOUN	Dogon
 Dogone	11	NOUN	Dogon
 Dogonen	11	NOUN	Dogon
 Heidenten	11	NOUN	Heidentum
@@ -127737,7 +127576,6 @@ Kirchenpolitiken	10	NOUN	Kirchenpolitik
 Patts	10	NOUN	Patt
 Heilsarmeen	10	NOUN	Heilsarmee
 Inspektors	10	NOUN	Inspektor
-des Luzifer	10	NOUN	Luzifer
 Luzifern	10	NOUN	Luzifer
 Klimaerwärmungen	10	NOUN	Klimaerwärmung
 Umweltministers	10	NOUN	Umweltminister
@@ -127817,7 +127655,6 @@ Heizkraftwerke	10	NOUN	Heizkraftwerk
 Heizkraftwerken	10	NOUN	Heizkraftwerk
 Pitchers	10	NOUN	Pitcher
 Pitchern	10	NOUN	Pitcher
-des Crow	10	NOUN	Crow
 Crowen	10	NOUN	Crow
 Scheitelpunktes	10	NOUN	Scheitelpunkt
 Scheitelpunkte	10	NOUN	Scheitelpunkt
@@ -127941,7 +127778,6 @@ Spannungsquellen	10	NOUN	Spannungsquelle
 Somata	10	NOUN	Soma
 Somatan	10	NOUN	Soma
 Inkommensurabilitäten	10	NOUN	Inkommensurabilität
-der Astarte	10	NOUN	Astarte
 Astarten	10	NOUN	Astarte
 Höflichkeiten	10	NOUN	Höflichkeit
 Ostschweizen	10	NOUN	Ostschweiz
@@ -128027,12 +127863,10 @@ Nussbäume	10	NOUN	Nussbaum
 Nussbäumen	10	NOUN	Nussbaum
 Kitharen	10	NOUN	Kithara
 Watergates	10	NOUN	Watergate
-(des) Niedersorbisch	10	NOUN	Niedersorbisch
 Annihilationen	10	NOUN	Annihilation
 Ekklesiologien	10	NOUN	Ekklesiologie
 Wegenetze	10	NOUN	Wegenetz
 Wegenetzen	10	NOUN	Wegenetz
-(des) Ladinisch	10	NOUN	Ladinisch
 Schweifes	10	NOUN	Schweif
 Schweife	10	NOUN	Schweif
 Aargauers	10	NOUN	Aargauer
@@ -128092,7 +127926,6 @@ Berufstätigkeiten	10	NOUN	Berufstätigkeit
 Entbindungen	10	NOUN	Entbindung
 Atonalitäten	10	NOUN	Atonalität
 Veruntreuungen	10	NOUN	Veruntreuung
-des Vishnu	10	NOUN	Vishnu
 Vishnus	10	NOUN	Vishnu
 Vajrayanas	10	NOUN	Vajrayana
 Finanzsektoren	10	NOUN	Finanzsektor
@@ -128132,7 +127965,6 @@ Hofmeisters	10	NOUN	Hofmeister
 Hofmeistern	10	NOUN	Hofmeister
 Gastfreundschaften	10	NOUN	Gastfreundschaft
 Sterblichkeitsraten	10	NOUN	Sterblichkeitsrate
-des Bacchus	10	NOUN	Bacchus
 Bacchuse	10	NOUN	Bacchus
 Bacchusen	10	NOUN	Bacchus
 Rohkosten	10	NOUN	Rohkost
@@ -128185,7 +128017,6 @@ Primern	10	NOUN	Primer
 Atomkriege	10	NOUN	Atomkrieg
 Atomkriegen	10	NOUN	Atomkrieg
 Hisbollahs	10	NOUN	Hisbollah
-(des) Standarddeutsch	10	NOUN	Standarddeutsch
 Gebäckes	10	NOUN	Gebäck
 Gebäcke	10	NOUN	Gebäck
 Gebäcken	10	NOUN	Gebäck
@@ -128337,7 +128168,6 @@ Druckwerks	10	NOUN	Druckwerk
 Palmsonntags	10	NOUN	Palmsonntag
 Palmsonntage	10	NOUN	Palmsonntag
 Palmsonntagen	10	NOUN	Palmsonntag
-(des) Malaiisch	10	NOUN	Malaiisch
 Lactats	10	NOUN	Lactat
 Lactate	10	NOUN	Lactat
 Lactaten	10	NOUN	Lactat
@@ -128358,7 +128188,6 @@ Renommees	10	NOUN	Renommee
 Inlandeise	10	NOUN	Inlandeis
 Inlandeisen	10	NOUN	Inlandeis
 Verfassungsmäßigkeiten	10	NOUN	Verfassungsmäßigkeit
-(des) Niedersächsisch	10	NOUN	Niedersächsisch
 Begehungen	10	NOUN	Begehung
 Renderings	10	NOUN	Rendering
 Häuschens	10	NOUN	Häuschen
@@ -128370,7 +128199,6 @@ Katastrophenhilfen	10	NOUN	Katastrophenhilfe
 Regionalparlaments	10	NOUN	Regionalparlament
 Regionalparlamente	10	NOUN	Regionalparlament
 Regionalparlamenten	10	NOUN	Regionalparlament
-des Kannada	10	NOUN	Kannada
 Kannadas	10	NOUN	Kannada
 Drivern	10	NOUN	Driver
 Goldsteines	10	NOUN	Goldstein
@@ -128393,7 +128221,6 @@ Bauernparteien	10	NOUN	Bauernpartei
 Werksgeländes	10	NOUN	Werksgelände
 Werksgeländen	10	NOUN	Werksgelände
 Ordensritters	10	NOUN	Ordensritter
-des Banda	10	NOUN	Banda
 Bandas	10	NOUN	Banda
 Brackwassers	10	NOUN	Brackwasser
 Brackwassern	10	NOUN	Brackwasser
@@ -128403,7 +128230,6 @@ Projektilen	10	NOUN	Projektil
 Infraschalls	10	NOUN	Infraschall
 Infraschalle	10	NOUN	Infraschall
 Infraschallen	10	NOUN	Infraschall
-(des) Kaschubisch	10	NOUN	Kaschubisch
 Fahrweges	10	NOUN	Fahrweg
 Fahrwege	10	NOUN	Fahrweg
 Fahrwegen	10	NOUN	Fahrweg
@@ -128817,7 +128643,6 @@ Augustinerklöster	10	NOUN	Augustinerkloster
 Augustinerklöstern	10	NOUN	Augustinerkloster
 Spindeln	10	NOUN	Spindel
 Augenheilkunden	10	NOUN	Augenheilkunde
-des Volapük	10	NOUN	Volapük
 Volapüke	10	NOUN	Volapük
 Volapüken	10	NOUN	Volapük
 Droserae	10	NOUN	Drosera
@@ -128955,7 +128780,6 @@ Superstars	9	NOUN	Superstar
 Länderspieles	9	NOUN	Länderspiel
 Klebers	9	NOUN	Kleber
 Klebern	9	NOUN	Kleber
-(des) Amharisch	9	NOUN	Amharisch
 Amharische	9	NOUN	Amharisch
 Amharischen	9	NOUN	Amharisch
 Rückschritts	9	NOUN	Rückschritt
@@ -129038,7 +128862,6 @@ Champagners	9	NOUN	Champagner
 Champagnern	9	NOUN	Champagner
 Deutschschweizers	9	NOUN	Deutschschweizer
 Deutschschweizern	9	NOUN	Deutschschweizer
-(des) Bengalisch	9	NOUN	Bengalisch
 Oppositionsbewegungen	9	NOUN	Oppositionsbewegung
 Saiteninstrumentes	9	NOUN	Saiteninstrument
 Volkskulturen	9	NOUN	Volkskultur
@@ -129048,7 +128871,6 @@ Rädelsführers	9	NOUN	Rädelsführer
 Rädelsführern	9	NOUN	Rädelsführer
 Nazismuse	9	NOUN	Nazismus
 Nazismusen	9	NOUN	Nazismus
-des Prakrit	9	NOUN	Prakrit
 Prakrite	9	NOUN	Prakrit
 Prakriten	9	NOUN	Prakrit
 Kurbetriebs	9	NOUN	Kurbetrieb
@@ -129201,8 +129023,6 @@ Zwerchfelles	9	NOUN	Zwerchfell
 Zwerchfelle	9	NOUN	Zwerchfell
 Zwerchfellen	9	NOUN	Zwerchfell
 Systolen	9	NOUN	Systole
-(des) Hessisch	9	NOUN	Hessisch
-des Gujarati	9	NOUN	Gujarati
 Gujaratis	9	NOUN	Gujarati
 Anrufungen	9	NOUN	Anrufung
 Orkans	9	NOUN	Orkan
@@ -129736,7 +129556,6 @@ Hypertonien	9	NOUN	Hypertonie
 Brühen	9	NOUN	Brühe
 Grenzmarken	9	NOUN	Grenzmark
 Ethens	9	NOUN	Ethen
-(des) Obersorbisch	9	NOUN	Obersorbisch
 Völkerschlachtdenkmale	9	NOUN	Völkerschlachtdenkmal
 Völkerschlachtdenkmalen	9	NOUN	Völkerschlachtdenkmal
 Myons	9	NOUN	Myon
@@ -129908,7 +129727,6 @@ Stickstoffmonoxiden	9	NOUN	Stickstoffmonoxid
 Äußenluften	9	NOUN	Außenluft
 Selectionen	9	NOUN	Selection
 Familienlebens	9	NOUN	Familienleben
-des Tyr	9	NOUN	Tyr
 Tyre	9	NOUN	Tyr
 Tyren	9	NOUN	Tyr
 Pelzhandels	9	NOUN	Pelzhandel
@@ -130019,7 +129837,6 @@ Gastmahls	9	NOUN	Gastmahl
 Gastmähler	9	NOUN	Gastmahl
 Gastmählern	9	NOUN	Gastmahl
 Hardcovers	9	NOUN	Hardcover
-des Oberägypten	9	NOUN	Oberägypten
 Europakarten	9	NOUN	Europakarte
 Tonqualitäten	9	NOUN	Tonqualität
 Akzentuierungen	9	NOUN	Akzentuierung
@@ -130120,7 +129937,6 @@ Hasels	9	NOUN	Hasel
 Haseln	9	NOUN	Hasel
 Währungseinheiten	9	NOUN	Währungseinheit
 Kleinwagens	9	NOUN	Kleinwagen
-des Tagalog	9	NOUN	Tagalog
 Tagaloge	9	NOUN	Tagalog
 Tagalogen	9	NOUN	Tagalog
 Stadtverfassungen	9	NOUN	Stadtverfassung
@@ -130214,7 +130030,6 @@ Kolosse	9	NOUN	Koloss
 Kolossen	9	NOUN	Koloss
 Kursivschriften	9	NOUN	Kursivschrift
 Abwasserentsorgungen	9	NOUN	Abwasserentsorgung
-des Konkani	9	NOUN	Konkani
 Konkanis	9	NOUN	Konkani
 Callcenters	9	NOUN	Callcenter
 Callcentern	9	NOUN	Callcenter
@@ -130291,7 +130106,6 @@ Schachbretter	9	NOUN	Schachbrett
 Schachbrettern	9	NOUN	Schachbrett
 Schwyzers	9	NOUN	Schwyzer
 Schwyzern	9	NOUN	Schwyzer
-der Persephone	9	NOUN	Persephone
 Persephonen	9	NOUN	Persephone
 Ordensburgen	9	NOUN	Ordensburg
 Blödsinnes	9	NOUN	Blödsinn
@@ -130317,7 +130131,6 @@ Keilern	9	NOUN	Keiler
 Auswärtssieges	9	NOUN	Auswärtssieg
 Auswärtssiege	9	NOUN	Auswärtssieg
 Auswärtssiegen	9	NOUN	Auswärtssieg
-(des) Sardisch	9	NOUN	Sardisch
 Pilotfilms	8	NOUN	Pilotfilm
 Pilotfilme	8	NOUN	Pilotfilm
 Pilotfilmen	8	NOUN	Pilotfilm
@@ -130626,7 +130439,6 @@ Xenotims	8	NOUN	Xenotim
 Xenotime	8	NOUN	Xenotim
 Xenotimen	8	NOUN	Xenotim
 Herbeiführungen	8	NOUN	Herbeiführung
-(des) Okzitanisch	8	NOUN	Okzitanisch
 Okzitanische	8	NOUN	Okzitanisch
 Verharmlosungen	8	NOUN	Verharmlosung
 Lyrikerinnen	8	NOUN	Lyrikerin
@@ -130668,7 +130480,6 @@ Telekommunikationsunternehmens	8	NOUN	Telekommunikationsunternehmen
 Mastdarms	8	NOUN	Mastdarm
 Mastdärme	8	NOUN	Mastdarm
 Mastdärmen	8	NOUN	Mastdarm
-(des) Nordfriesisch	8	NOUN	Nordfriesisch
 Kohlekraftwerks	8	NOUN	Kohlekraftwerk
 Neuverschuldungen	8	NOUN	Neuverschuldung
 Teddys	8	NOUN	Teddy
@@ -130801,7 +130612,6 @@ Buchbindereien	8	NOUN	Buchbinderei
 Saalkirchen	8	NOUN	Saalkirche
 Fischzuchten	8	NOUN	Fischzucht
 Kündigungsfristen	8	NOUN	Kündigungsfrist
-(des) Indonesisch	8	NOUN	Indonesisch
 Oreganos	8	NOUN	Oregano
 Veganers	8	NOUN	vegan
 Veganern	8	NOUN	vegan
@@ -130862,7 +130672,6 @@ Ameisenigels	8	NOUN	Ameisenigel
 Sommernachtstraumes	8	NOUN	Sommernachtstraum
 Sommernachtsträume	8	NOUN	Sommernachtstraum
 Sommernachtsträumen	8	NOUN	Sommernachtstraum
-(des) Aserbaidschanisch	8	NOUN	Aserbaidschanisch
 Kambodschaners	8	NOUN	Kambodschaner
 Epiphaniasen	8	NOUN	Epiphanias
 Schnürsenkels	8	NOUN	Schnürsenkel
@@ -130875,7 +130684,6 @@ Euphonien	8	NOUN	Euphonium
 Transsiben	8	NOUN	Transsib
 Testbildes	8	NOUN	Testbild
 Testbildern	8	NOUN	Testbild
-des Sesotho	8	NOUN	Sesotho
 Sesothos	8	NOUN	Sesotho
 Zielfernrohrs	8	NOUN	Zielfernrohr
 Argwohns	8	NOUN	Argwohn
@@ -131149,7 +130957,6 @@ Leitungsnetzen	8	NOUN	Leitungsnetz
 Webdesigns	8	NOUN	Webdesign
 Produktqualitäten	8	NOUN	Produktqualität
 Bronchitiden	8	NOUN	Bronchitis
-(des) Mongolisch	8	NOUN	Mongolisch
 Weihnachtsgeschichten	8	NOUN	Weihnachtsgeschichte
 Heimkehrers	8	NOUN	Heimkehrer
 Heimkehrern	8	NOUN	Heimkehrer
@@ -131270,7 +131077,6 @@ Steigers	8	NOUN	steigern
 Theologiestudiums	8	NOUN	Theologiestudium
 Theologiestudien	8	NOUN	Theologiestudium
 Banalitäten	8	NOUN	Banalität
-(des) Elsässisch	8	NOUN	Elsässisch
 Verteidigungsreden	8	NOUN	Verteidigungsrede
 Borkenkäfers	8	NOUN	Borkenkäfer
 Borkenkäfern	8	NOUN	Borkenkäfer
@@ -131308,7 +131114,6 @@ Eiszeitaltern	8	NOUN	Eiszeitalter
 Dusts	8	NOUN	Dust
 Duste	8	NOUN	Dust
 Dusten	8	NOUN	Dust
-des Ainu	8	NOUN	Ainu
 Ainus	8	NOUN	Ainu
 Bleisatzes	8	NOUN	Bleisatz
 Bleisätze	8	NOUN	Bleisatz
@@ -131316,7 +131121,6 @@ Bleisätzen	8	NOUN	Bleisatz
 Mungos	8	NOUN	Mungo
 Überbauungen	8	NOUN	Überbauung
 Sorghums	8	NOUN	Sorghum
-des Inuktitut	8	NOUN	Inuktitut
 Inuktitute	8	NOUN	Inuktitut
 Inuktituten	8	NOUN	Inuktitut
 Bedecktsamers	8	NOUN	Bedecktsamer
@@ -131452,7 +131256,6 @@ Kunstwelten	8	NOUN	Kunstwelt
 Scheidenvorhofs	8	NOUN	Scheidenvorhof
 Scheidenvorhöfe	8	NOUN	Scheidenvorhof
 Scheidenvorhöfen	8	NOUN	Scheidenvorhof
-des Kurmandschi	8	NOUN	Kurmandschi
 Kurmandschis	8	NOUN	Kurmandschi
 Querbalkens	8	NOUN	Querbalken
 Ossis	8	NOUN	Ossi
@@ -131774,7 +131577,6 @@ Konkurrenzkämpfe	7	NOUN	Konkurrenzkampf
 Konkurrenzkämpfen	7	NOUN	Konkurrenzkampf
 Streitgespräches	7	NOUN	Streitgespräch
 Streitgesprächen	7	NOUN	Streitgespräch
-des Yue	7	NOUN	Yue
 Yuen	7	NOUN	Yue
 Farcen	7	NOUN	Farce
 Einsatzortes	7	NOUN	Einsatzort
@@ -132024,7 +131826,6 @@ Vicomtes	7	NOUN	Vicomte
 Schwemmlandes	7	NOUN	Schwemmland
 Schwemmländer	7	NOUN	Schwemmland
 Schwemmländern	7	NOUN	Schwemmland
-(des) Moldauisch	7	NOUN	Moldauisch
 Stammesgebietes	7	NOUN	Stammesgebiet
 Stammesgebieten	7	NOUN	Stammesgebiet
 Titularnationen	7	NOUN	Titularnation
@@ -132115,7 +131916,6 @@ Graupapageis	7	NOUN	Graupapagei
 Würstchens	7	NOUN	Würstchen
 Waggonbaus	7	NOUN	Waggonbau
 Waggonbauten	7	NOUN	Waggonbau
-des Weißwasser	7	NOUN	Weißwasser
 Weißwassern	7	NOUN	Weißwasser
 Oberbaues	7	NOUN	Oberbau
 Oberbauten	7	NOUN	Oberbau
@@ -132176,7 +131976,6 @@ Briefverkehren	7	NOUN	Briefverkehr
 Strahlungsdrucks	7	NOUN	Strahlungsdruck
 Strahlungsdrücke	7	NOUN	Strahlungsdruck
 Strahlungsdrücken	7	NOUN	Strahlungsdruck
-des Dari	7	NOUN	Dari
 Daris	7	NOUN	Dari
 Aufstockungen	7	NOUN	Aufstockung
 Vorgängerregierungen	7	NOUN	Vorgängerregierung
@@ -132284,7 +132083,6 @@ Bitterkeiten	7	NOUN	Bitterkeit
 Hauptinteresses	7	NOUN	Hauptinteresse
 Hauptinteressen	7	NOUN	Hauptinteresse
 Autorennens	7	NOUN	Autorennen
-des Obergermanien	7	NOUN	Obergermanien
 Schrägbalkens	7	NOUN	Schrägbalken
 Kartenlesers	7	NOUN	Kartenleser
 Kartenlesern	7	NOUN	Kartenleser
@@ -132349,7 +132147,6 @@ Artenreichtums	7	NOUN	Artenreichtum
 Artenreichtümer	7	NOUN	Artenreichtum
 Artenreichtümern	7	NOUN	Artenreichtum
 Internationalitäten	7	NOUN	Internationalität
-des Adad	7	NOUN	Adad
 Adade	7	NOUN	Adad
 Adaden	7	NOUN	Adad
 Grabenbruches	7	NOUN	Grabenbruch
@@ -132367,14 +132164,12 @@ Arbeitsgängen	7	NOUN	Arbeitsgang
 Flaniermeilen	7	NOUN	Flaniermeile
 Acetylsalicylsäuren	7	NOUN	Acetylsalicylsäure
 Erfolgsgeschichten	7	NOUN	Erfolgsgeschichte
-(des) Vietnamesisch	7	NOUN	Vietnamesisch
 Profanbaus	7	NOUN	Profanbau
 Kunsthandwerkers	7	NOUN	Kunsthandwerker
 Kunsthandwerkern	7	NOUN	Kunsthandwerker
 Landesbischöfe	7	NOUN	Landesbischof
 Landesbischöfen	7	NOUN	Landesbischof
 Nationalliteraturen	7	NOUN	Nationalliteratur
-des Taíno	7	NOUN	Taíno
 Taínos	7	NOUN	Taíno
 Tragblattes	7	NOUN	Tragblatt
 Tragblättern	7	NOUN	Tragblatt
@@ -132538,7 +132333,6 @@ Zifferblättern	7	NOUN	Zifferblatt
 Packeises	7	NOUN	Packeis
 Packeise	7	NOUN	Packeis
 Packeisen	7	NOUN	Packeis
-(des) Grönländisch	7	NOUN	Grönländisch
 Brillenträgers	7	NOUN	Brillenträger
 Brillenträgern	7	NOUN	Brillenträger
 Schifffahrtswegs	7	NOUN	Schifffahrtsweg
@@ -132589,8 +132383,6 @@ Gesindes	7	NOUN	Gesinde
 Gesinden	7	NOUN	Gesinde
 Parterres	7	NOUN	Parterre
 Interpolen	7	NOUN	Interpol
-des Patois	7	NOUN	Patois
-die Patois	7	NOUN	Patois
 Vorherbestimmungen	7	NOUN	Vorherbestimmung
 Holodomors	7	NOUN	Holodomor
 Siegessäulen	7	NOUN	Siegessäule
@@ -132687,7 +132479,6 @@ Slawistiken	7	NOUN	Slawistik
 Gespanns	7	NOUN	Gespann
 Gespanne	7	NOUN	Gespann
 Gespannen	7	NOUN	Gespann
-(des) Klingonisch	7	NOUN	Klingonisch
 Lactosen	7	NOUN	Lactose
 Buttermilchen	7	NOUN	Buttermilch
 Luftreinhaltungen	7	NOUN	Luftreinhaltung
@@ -132746,7 +132537,6 @@ Whistlern	7	NOUN	Whistler
 Edelweißes	7	NOUN	Edelweiß
 Edelweiße	7	NOUN	Edelweiß
 Edelweißen	7	NOUN	Edelweiß
-des Shoshone	7	NOUN	Shoshone
 Shoshonen	7	NOUN	Shoshone
 Venusfliegenfallen	7	NOUN	Venusfliegenfalle
 Verwaltungsaktes	7	NOUN	Verwaltungsakt
@@ -132924,7 +132714,6 @@ Liturgiesprachen	7	NOUN	Liturgiesprache
 Artikulationsortes	7	NOUN	Artikulationsort
 Artikulationsorte	7	NOUN	Artikulationsort
 Artikulationsorten	7	NOUN	Artikulationsort
-des Igbo	7	NOUN	Igbo
 Igbos	7	NOUN	Igbo
 Weinsäuren	7	NOUN	Weinsäure
 Lobbyarbeiten	7	NOUN	Lobbyarbeit
@@ -132942,7 +132731,6 @@ Clementinen	7	NOUN	Clementine
 Korbblütlers	7	NOUN	Korbblütler
 Korbblütlern	7	NOUN	Korbblütler
 Ragnaröken	7	NOUN	Ragnarök
-des Kon	7	NOUN	Kon
 Kone	7	NOUN	Kon
 Konen	7	NOUN	Kon
 Kuppelbauten	7	NOUN	Kuppelbau
@@ -133046,7 +132834,6 @@ Handelsnetzes	7	NOUN	Handelsnetz
 Handelsnetze	7	NOUN	Handelsnetz
 Handelsnetzen	7	NOUN	Handelsnetz
 Inländers	7	NOUN	Inländer
-des Ostpakistan	7	NOUN	Ostpakistan
 Ostpakistane	7	NOUN	Ostpakistan
 Ostpakistanen	7	NOUN	Ostpakistan
 Parteikongresses	7	NOUN	Parteikongress
@@ -133262,7 +133049,6 @@ Seebebens	7	NOUN	Seebeben
 Mondlichts	7	NOUN	Mondlicht
 Mondlichter	7	NOUN	Mondlicht
 Mondlichtern	7	NOUN	Mondlicht
-des Akan	7	NOUN	Akan
 Akane	7	NOUN	Akan
 Akanen	7	NOUN	Akan
 Gastlands	7	NOUN	Gastland
@@ -133352,7 +133138,6 @@ Bypässe	7	NOUN	Bypass
 Bypässen	7	NOUN	Bypass
 Ordoviziums	7	NOUN	Ordovizium
 Ordovizien	7	NOUN	Ordovizium
-des Okeanos	7	NOUN	Okeanos
 Okeanose	7	NOUN	Okeanos
 Okeanosen	7	NOUN	Okeanos
 Weltmeisterinnen	7	NOUN	Weltmeisterin
@@ -133398,7 +133183,6 @@ Kanzleisprachen	7	NOUN	Kanzleisprache
 Wortgebrauchs	7	NOUN	Wortgebrauch
 Wortgebräuche	7	NOUN	Wortgebrauch
 Wortgebräuchen	7	NOUN	Wortgebrauch
-des Mizo	7	NOUN	Mizo
 Mizos	7	NOUN	Mizo
 Zungenspitzen	7	NOUN	Zungenspitze
 Kinderkliniken	7	NOUN	Kinderklinik
@@ -133831,10 +133615,8 @@ Bioethanols	6	NOUN	Bioethanol
 Bioethanole	6	NOUN	Bioethanol
 Bioethanolen	6	NOUN	Bioethanol
 Karnevalszeiten	6	NOUN	Karnevalszeit
-des Nahuatl	6	NOUN	Nahuatl
 Nahuatle	6	NOUN	Nahuatl
 Nahuatlen	6	NOUN	Nahuatl
-des Oriya	6	NOUN	Oriya
 Oriyas	6	NOUN	Oriya
 Flugunfalles	6	NOUN	Flugunfall
 Flugunfälle	6	NOUN	Flugunfall
@@ -134045,7 +133827,6 @@ Handelsvertrages	6	NOUN	Handelsvertrag
 Handelsverträgen	6	NOUN	Handelsvertrag
 Sonnentages	6	NOUN	Sonnentag
 Sonnentagen	6	NOUN	Sonnentag
-der Selene	6	NOUN	Selene
 Selenen	6	NOUN	Selene
 Wanderarbeiters	6	NOUN	Wanderarbeiter
 Wanderarbeitern	6	NOUN	Wanderarbeiter
@@ -134172,7 +133953,6 @@ Rangplatzes	6	NOUN	Rangplatz
 Rangplätze	6	NOUN	Rangplatz
 Rangplätzen	6	NOUN	Rangplatz
 Publizistinnen	6	NOUN	Publizistin
-des Rif	6	NOUN	Rif
 Rife	6	NOUN	Rif
 Rifen	6	NOUN	Rif
 Stadtrichters	6	NOUN	Stadtrichter
@@ -134341,7 +134121,6 @@ Lebenssinnen	6	NOUN	Lebenssinn
 Spieltisches	6	NOUN	Spieltisch
 Spieltische	6	NOUN	Spieltisch
 Spieltischen	6	NOUN	Spieltisch
-(des) Asturisch	6	NOUN	Asturisch
 Asturische	6	NOUN	Asturisch
 Gradualien	6	NOUN	Graduale
 Origamis	6	NOUN	Origami
@@ -134497,7 +134276,6 @@ Feuerstürmen	6	NOUN	Feuersturm
 Saluts	6	NOUN	Salut
 Saluten	6	NOUN	Salut
 Kolonialregierungen	6	NOUN	Kolonialregierung
-(des) Berberisch	6	NOUN	Berberisch
 Passagierflugzeuges	6	NOUN	Passagierflugzeug
 Passagierflugzeugen	6	NOUN	Passagierflugzeug
 Falkners	6	NOUN	Falkner
@@ -134555,7 +134333,6 @@ Spracherwerbe	6	NOUN	Spracherwerb
 Spracherwerben	6	NOUN	Spracherwerb
 Konnektivitäten	6	NOUN	Konnektivität
 Zurückgezogenheiten	6	NOUN	Zurückgezogenheit
-des Austrasien	6	NOUN	Austrasien
 Elektrikers	6	NOUN	Elektriker
 Elektrikern	6	NOUN	Elektriker
 Spezifizierungen	6	NOUN	Spezifizierung
@@ -134634,8 +134411,6 @@ Aufgabenverteilungen	6	NOUN	Aufgabenverteilung
 Despotats	6	NOUN	Despotat
 Despotate	6	NOUN	Despotat
 Despotaten	6	NOUN	Despotat
-(des) Wallonisch	6	NOUN	Wallonisch
-(des) Luxemburgisch	6	NOUN	Luxemburgisch
 Karnevalsumzuges	6	NOUN	Karnevalsumzug
 Karnevalsumzüge	6	NOUN	Karnevalsumzug
 Karnevalsumzügen	6	NOUN	Karnevalsumzug
@@ -134840,7 +134615,6 @@ Informationsbeschaffungen	6	NOUN	Informationsbeschaffung
 Sandbergs	6	NOUN	Sandberg
 Sandberge	6	NOUN	Sandberg
 Sandbergen	6	NOUN	Sandberg
-(des) Niederfränkisch	6	NOUN	Niederfränkisch
 Boxkampfes	6	NOUN	Boxkampf
 Boxkämpfe	6	NOUN	Boxkampf
 Boxkämpfen	6	NOUN	Boxkampf
@@ -134973,7 +134747,6 @@ Kreuzgratgewölben	6	NOUN	Kreuzgratgewölbe
 Metrologien	6	NOUN	Metrologie
 Schlägels	6	NOUN	Schlägel
 Schlägeln	6	NOUN	Schlägel
-des Mandinka	6	NOUN	Mandinka
 Mandinkas	6	NOUN	Mandinka
 Lebensadern	6	NOUN	Lebensader
 Pican	6	NOUN	Pica
@@ -135037,7 +134810,6 @@ Abhangs	6	NOUN	Abhang
 Sündenbocks	6	NOUN	Sündenbock
 Sündenböcke	6	NOUN	Sündenbock
 Sündenböcken	6	NOUN	Sündenbock
-des Comanche	6	NOUN	Comanche
 Comanchen	6	NOUN	Comanche
 Erklärungsversuches	6	NOUN	Erklärungsversuch
 Erklärungsversuchen	6	NOUN	Erklärungsversuch
@@ -135054,7 +134826,6 @@ Landsturmes	6	NOUN	Landsturm
 Landstürme	6	NOUN	Landsturm
 Landstürmen	6	NOUN	Landsturm
 Lais	6	NOUN	Lai
-des Malayalam	6	NOUN	Malayalam
 Malayalame	6	NOUN	Malayalam
 Malayalamen	6	NOUN	Malayalam
 Oberrabbiners	6	NOUN	Oberrabbiner
@@ -135067,7 +134838,6 @@ Blindwiderständen	6	NOUN	Blindwiderstand
 Laubfrosches	6	NOUN	Laubfrosch
 Laubfrösche	6	NOUN	Laubfrosch
 Laubfröschen	6	NOUN	Laubfrosch
-des Sindhi	6	NOUN	Sindhi
 Sindhis	6	NOUN	Sindhi
 Einwanderungspolitiken	6	NOUN	Einwanderungspolitik
 Rechtsgutachtens	6	NOUN	Rechtsgutachten
@@ -135177,7 +134947,6 @@ Polyurethanen	6	NOUN	Polyurethan
 Trendwenden	6	NOUN	Trendwende
 Dämonologien	6	NOUN	Dämonologie
 Clauses	6	NOUN	Clause
-des Tetum	6	NOUN	Tetum
 Teten	6	NOUN	Tetum
 Uferbereichs	6	NOUN	Uferbereich
 Uferbereichen	6	NOUN	Uferbereich
@@ -135298,7 +135067,6 @@ Botschafterinnen	6	NOUN	Botschafterin
 Niederlassungsfreiheiten	6	NOUN	Niederlassungsfreiheit
 Forensiken	6	NOUN	Forensik
 Interdisziplinaritäten	6	NOUN	Interdisziplinarität
-(des) Makedonisch	6	NOUN	Makedonisch
 Generalitäten	6	NOUN	Generalität
 Wesirs	6	NOUN	Wesir
 Wesire	6	NOUN	Wesir
@@ -135341,7 +135109,6 @@ Whistleblowers	6	NOUN	Whistleblower
 Whistleblowern	6	NOUN	Whistleblower
 Schusswechsels	6	NOUN	Schusswechsel
 Schusswechseln	6	NOUN	Schusswechsel
-(des) Kasachisch	6	NOUN	Kasachisch
 Eishockeymannschaften	6	NOUN	Eishockeymannschaft
 Schlüsselstellungen	6	NOUN	Schlüsselstellung
 Machterhalts	6	NOUN	Machterhalt
@@ -135354,7 +135121,6 @@ Fernsehansprachen	6	NOUN	Fernsehansprache
 Korrektivs	6	NOUN	Korrektiv
 Korrektive	6	NOUN	Korrektiv
 Korrektiven	6	NOUN	Korrektiv
-der Kybele	6	NOUN	Kybele
 Kybelen	6	NOUN	Kybele
 Landesbezeichnungen	6	NOUN	Landesbezeichnung
 Cyclonen	6	NOUN	Cyclone
@@ -135452,7 +135218,6 @@ Frontispize	6	NOUN	Frontispiz
 Frontispizen	6	NOUN	Frontispiz
 Sympathizi	6	NOUN	Sympathikus
 Sympathizin	6	NOUN	Sympathikus
-des Gan	6	NOUN	Gan
 Gane	6	NOUN	Gan
 Ganen	6	NOUN	Gan
 Stellvertreterinnen	6	NOUN	Stellvertreterin
@@ -135858,7 +135623,6 @@ Schüttgütern	6	NOUN	Schüttgut
 Sanitäters	6	NOUN	Sanitäter
 Sanitätern	6	NOUN	Sanitäter
 Sechseckes	6	NOUN	Sechseck
-(des) Korsisch	6	NOUN	Korsisch
 Biens	6	NOUN	bi
 Geheimreden	6	NOUN	Geheimrede
 Handelsbilanzdefizits	6	NOUN	Handelsbilanzdefizit
@@ -136029,7 +135793,6 @@ Gedränges	6	NOUN	Gedränge
 Gedrängen	6	NOUN	Gedränge
 Musiklehrers	6	NOUN	Musiklehrer
 Musiklehrern	6	NOUN	Musiklehrer
-des Gottvater	6	NOUN	Gottvater
 Gottväter	6	NOUN	Gottvater
 Gottvätern	6	NOUN	Gottvater
 Bioethiken	6	NOUN	Bioethik
@@ -136141,7 +135904,6 @@ Vatikanums	6	NOUN	Vatikanum
 Vatikanen	6	NOUN	Vatikanum
 Vieleckes	6	NOUN	Vieleck
 Vielecken	6	NOUN	Vieleck
-(des) Tatarisch	6	NOUN	Tatarisch
 Skispringers	6	NOUN	Skispringer
 Skispringern	6	NOUN	Skispringer
 Zügels	6	NOUN	Zügel
@@ -136156,7 +135918,6 @@ Bergmassivs	6	NOUN	Bergmassiv
 Bergmassive	6	NOUN	Bergmassiv
 Bergmassiven	6	NOUN	Bergmassiv
 Verkehrsbelastungen	6	NOUN	Verkehrsbelastung
-des Ahriman	6	NOUN	Ahriman
 Ahrimane	6	NOUN	Ahriman
 Ahrimanen	6	NOUN	Ahriman
 Fahrgeschwindigkeiten	6	NOUN	Fahrgeschwindigkeit
@@ -136226,7 +135987,6 @@ Jahresüberschusses	6	NOUN	Jahresüberschuss
 Jahresüberschüsse	6	NOUN	Jahresüberschuss
 Jahresüberschüssen	6	NOUN	Jahresüberschuss
 Eisenverarbeitungen	6	NOUN	Eisenverarbeitung
-des Chamorro	6	NOUN	Chamorro
 Chamorros	6	NOUN	Chamorro
 Bescherungen	6	NOUN	Bescherung
 Belfrieds	6	NOUN	Belfried
@@ -136243,7 +136003,6 @@ Kindertages	6	NOUN	Kindertag
 Kindertage	6	NOUN	Kindertag
 Aquaristiken	6	NOUN	Aquaristik
 Verletzungsgefahren	6	NOUN	Verletzungsgefahr
-des Venda	6	NOUN	Venda
 Vendas	6	NOUN	Venda
 Telophasen	6	NOUN	Telophase
 Bassposaunen	6	NOUN	Bassposaune
@@ -136429,7 +136188,6 @@ Atemzügen	5	NOUN	Atemzug
 Veneters	5	NOUN	Veneter
 Venetern	5	NOUN	Veneter
 Handlungsunfähigkeiten	5	NOUN	Handlungsunfähigkeit
-des Mohawk	5	NOUN	Mohawk
 Mohawke	5	NOUN	Mohawk
 Mohawken	5	NOUN	Mohawk
 Warenangebots	5	NOUN	Warenangebot
@@ -136486,9 +136244,7 @@ Pflegepersonals	5	NOUN	Pflegepersonal
 Pflegepersonale	5	NOUN	Pflegepersonal
 Pflegepersonalen	5	NOUN	Pflegepersonal
 Gegenlieben	5	NOUN	Gegenliebe
-des Ovambo	5	NOUN	Ovambo
 Ovambos	5	NOUN	Ovambo
-des Lingala	5	NOUN	Lingala
 Lingalas	5	NOUN	Lingala
 Trisomien	5	NOUN	Trisomie
 Metasprachen	5	NOUN	Metasprache
@@ -136604,7 +136360,6 @@ Bangladeschern	5	NOUN	Bangladescher
 Bazars	5	NOUN	Bazar
 Bazare	5	NOUN	Bazar
 Bazaren	5	NOUN	Bazar
-des Bihari	5	NOUN	Bihari
 Biharis	5	NOUN	Bihari
 Vielehen	5	NOUN	Vielehe
 Ausgangssperren	5	NOUN	Ausgangssperre
@@ -136797,7 +136552,6 @@ Einparteienstaaten	5	NOUN	Einparteienstaat
 Vorderkanten	5	NOUN	Vorderkante
 Bilharziosen	5	NOUN	Bilharziose
 Hermetiken	5	NOUN	Hermetik
-des Sodom	5	NOUN	Sodom
 Sodome	5	NOUN	Sodom
 Sodomen	5	NOUN	Sodom
 Hämatits	5	NOUN	Hämatit
@@ -136821,7 +136575,6 @@ Sittengesetzen	5	NOUN	Sittengesetz
 Diskursethiken	5	NOUN	Diskursethik
 Diagonalmatrizen	5	NOUN	Diagonalmatrix
 Warenproduktionen	5	NOUN	Warenproduktion
-des Tigrinya	5	NOUN	Tigrinya
 Tigrinyas	5	NOUN	Tigrinya
 Straßenrennens	5	NOUN	Straßenrennen
 Guerillabewegungen	5	NOUN	Guerillabewegung
@@ -136833,7 +136586,6 @@ Chaldäers	5	NOUN	Chaldäer
 Chaldäern	5	NOUN	Chaldäer
 Librationen	5	NOUN	Libration
 Bühnenmusiken	5	NOUN	Bühnenmusik
-(des) Südjütisch	5	NOUN	Südjütisch
 Südjütische	5	NOUN	Südjütisch
 Südjütischen	5	NOUN	Südjütisch
 Schlusspunktes	5	NOUN	Schlusspunkt
@@ -136847,8 +136599,6 @@ Walrosses	5	NOUN	Walross
 Schwunds	5	NOUN	Schwund
 Schwunde	5	NOUN	Schwund
 Schwunden	5	NOUN	Schwund
-des Pidgin	5	NOUN	Pidgin
-die Pidgins	5	NOUN	Pidgin
 Amtsverzichtes	5	NOUN	Amtsverzicht
 Amtsverzichte	5	NOUN	Amtsverzicht
 Amtsverzichten	5	NOUN	Amtsverzicht
@@ -136951,7 +136701,6 @@ Waffengänge	5	NOUN	Waffengang
 Waffengängen	5	NOUN	Waffengang
 Sizilianers	5	NOUN	Sizilianer
 Sizilianern	5	NOUN	Sizilianer
-der Urd	5	NOUN	Urd
 Urden	5	NOUN	Urd
 Darstellbarkeiten	5	NOUN	Darstellbarkeit
 Modellprojekts	5	NOUN	Modellprojekt
@@ -137083,7 +136832,6 @@ Phosphorsäureestern	5	NOUN	Phosphorsäureester
 Stadtkapellen	5	NOUN	Stadtkapelle
 Treppengiebels	5	NOUN	Treppengiebel
 Treppengiebeln	5	NOUN	Treppengiebel
-des Arkadien	5	NOUN	Arkadien
 Belchens	5	NOUN	Belchen
 Gletscherzungen	5	NOUN	Gletscherzunge
 Aufenthaltstitels	5	NOUN	Aufenthaltstitel
@@ -137095,7 +136843,6 @@ Skelettmuskulaturen	5	NOUN	Skelettmuskulatur
 Sehsinns	5	NOUN	Sehsinn
 Sehsinne	5	NOUN	Sehsinn
 Sehsinnen	5	NOUN	Sehsinn
-des Wotan	5	NOUN	Wotan
 Wotane	5	NOUN	Wotan
 Wotanen	5	NOUN	Wotan
 Abwärtstrends	5	NOUN	Abwärtstrend
@@ -137220,14 +136967,12 @@ Diskantes	5	NOUN	Diskant
 Diskante	5	NOUN	Diskant
 Diskanten	5	NOUN	Diskant
 Notaufnahmen	5	NOUN	Notaufnahme
-des Navajo	5	NOUN	Navajo
 Navajos	5	NOUN	Navajo
 Sterndeuters	5	NOUN	Sterndeuter
 Sterndeutern	5	NOUN	Sterndeuter
 Adventssonntags	5	NOUN	Adventssonntag
 Adventssonntagen	5	NOUN	Adventssonntag
 Werkstoffprüfungen	5	NOUN	Werkstoffprüfung
-des Sorani	5	NOUN	Sorani
 Soranis	5	NOUN	Sorani
 Architekturpreises	5	NOUN	Architekturpreis
 Architekturpreise	5	NOUN	Architekturpreis
@@ -137310,7 +137055,6 @@ Beschlags	5	NOUN	Beschlag
 Beschlägen	5	NOUN	Beschlag
 Söldnerführers	5	NOUN	Söldnerführer
 Söldnerführern	5	NOUN	Söldnerführer
-der Ischtar	5	NOUN	Ischtar
 Ischtaren	5	NOUN	Ischtar
 Reittieres	5	NOUN	Reittier
 Reittiere	5	NOUN	Reittier
@@ -137373,7 +137117,6 @@ Gottesbeweises	5	NOUN	Gottesbeweis
 Gottesbeweisen	5	NOUN	Gottesbeweis
 Harders	5	NOUN	Harder
 Hardern	5	NOUN	Harder
-des Paschto	5	NOUN	Paschto
 Paschtos	5	NOUN	Paschto
 Stellvertreterkrieges	5	NOUN	Stellvertreterkrieg
 Stellvertreterkriege	5	NOUN	Stellvertreterkrieg
@@ -137421,7 +137164,6 @@ Sprengsätzen	5	NOUN	Sprengsatz
 Schändungen	5	NOUN	Schändung
 Schlussphasen	5	NOUN	Schlussphase
 Gesundheitspolitiken	5	NOUN	Gesundheitspolitik
-des Tamazight	5	NOUN	Tamazight
 Tamazighte	5	NOUN	Tamazight
 Tamazighten	5	NOUN	Tamazight
 Megabyten	5	NOUN	Megabyte
@@ -137452,7 +137194,6 @@ Oxidasen	5	NOUN	Oxidase
 Konservierungsmittels	5	NOUN	Konservierungsmittel
 Konservierungsmitteln	5	NOUN	Konservierungsmittel
 Afrikanistiken	5	NOUN	Afrikanistik
-des Fulfulde	5	NOUN	Fulfulde
 Fulfulden	5	NOUN	Fulfulde
 Hauptschlagadern	5	NOUN	Hauptschlagader
 Auszeiten	5	NOUN	Auszeit
@@ -137596,7 +137337,6 @@ Zweitwohnsitze	5	NOUN	Zweitwohnsitz
 Zweitwohnsitzen	5	NOUN	Zweitwohnsitz
 Kultursprachen	5	NOUN	Kultursprache
 Hypotheken	5	NOUN	Hypothek
-(des) Venezianisch	5	NOUN	Venezianisch
 Leitwährungen	5	NOUN	Leitwährung
 Neubelebungen	5	NOUN	Neubelebung
 Protektors	5	NOUN	Protektor
@@ -137731,7 +137471,6 @@ Briefpartnern	5	NOUN	Briefpartner
 Jakobskirchen	5	NOUN	Jakobskirche
 Testfluges	5	NOUN	Testflug
 Testflügen	5	NOUN	Testflug
-(des) Hochchinesisch	5	NOUN	Hochchinesisch
 Satzanfangs	5	NOUN	Satzanfang
 Satzanfänge	5	NOUN	Satzanfang
 Satzanfängen	5	NOUN	Satzanfang
@@ -137822,7 +137561,6 @@ Duodezimalsystemen	5	NOUN	Duodezimalsystem
 Neuzuganges	5	NOUN	Neuzugang
 Manien	5	NOUN	Manie
 Züchters	5	NOUN	Züchter
-des Ido	5	NOUN	Ido
 Idos	5	NOUN	Ido
 Wehes	5	NOUN	Wehe
 Vorkriegsniveaus	5	NOUN	Vorkriegsniveau
@@ -137843,7 +137581,6 @@ Hochwasserkatastrophen	5	NOUN	Hochwasserkatastrophe
 Publikationsverbotes	5	NOUN	Publikationsverbot
 Publikationsverbote	5	NOUN	Publikationsverbot
 Publikationsverboten	5	NOUN	Publikationsverbot
-der Interlingue	5	NOUN	Interlingue
 Interlinguen	5	NOUN	Interlingue
 Übergangsmetalles	5	NOUN	Übergangsmetall
 Übergangsmetalle	5	NOUN	Übergangsmetall
@@ -137979,12 +137716,10 @@ Pilzbefälle	5	NOUN	Pilzbefall
 Pilzbefällen	5	NOUN	Pilzbefall
 Umfangsgeschwindigkeiten	5	NOUN	Umfangsgeschwindigkeit
 Bonmots	5	NOUN	Bonmot
-der Inanna	5	NOUN	Inanna
 Inannas	5	NOUN	Inanna
 Militärangehöriger	5	NOUN	Militärangehörige
 Brandungen	5	NOUN	Brandung
 Teilchenstrahlungen	5	NOUN	Teilchenstrahlung
-der Themis	5	NOUN	Themis
 Themisen	5	NOUN	Themis
 Thalli	5	NOUN	Thallus
 Thallin	5	NOUN	Thallus
@@ -138013,7 +137748,6 @@ Fanatikern	5	NOUN	Fanatiker
 Friseurs	5	NOUN	Friseur
 Friseure	5	NOUN	Friseur
 Friseuren	5	NOUN	Friseur
-(des) Altpersisch	5	NOUN	Altpersisch
 Widerstandskämpferinnen	5	NOUN	Widerstandskämpferin
 Rückhaltebeckens	5	NOUN	Rückhaltebecken
 Kontors	5	NOUN	Kontor
@@ -138048,9 +137782,7 @@ Felsendoms	5	NOUN	Felsendom
 Felsendome	5	NOUN	Felsendom
 Felsendomen	5	NOUN	Felsendom
 Krankenwagens	5	NOUN	Krankenwagen
-des Hindustani	5	NOUN	Hindustani
 Hindustanis	5	NOUN	Hindustani
-des Ojibwe	5	NOUN	Ojibwe
 Ojibwen	5	NOUN	Ojibwe
 Medizingeschichten	5	NOUN	Medizingeschichte
 Namenforschungen	5	NOUN	Namenforschung
@@ -138103,7 +137835,6 @@ Kyrillizas	5	NOUN	Kyrilliza
 Vulkaninseln	5	NOUN	Vulkaninsel
 Vaterstädte	5	NOUN	Vaterstadt
 Vaterstädten	5	NOUN	Vaterstadt
-(des) Montenegrinisch	5	NOUN	Montenegrinisch
 Baumarktes	5	NOUN	Baumarkt
 Baumärkte	5	NOUN	Baumarkt
 Baumärkten	5	NOUN	Baumarkt
@@ -138567,7 +138298,6 @@ Kommutativgesetze	5	NOUN	Kommutativgesetz
 Kommutativgesetzen	5	NOUN	Kommutativgesetz
 Glücksbringers	5	NOUN	Glücksbringer
 Glücksbringern	5	NOUN	Glücksbringer
-des Oromo	5	NOUN	Oromo
 Oromos	5	NOUN	Oromo
 Elektronenhüllen	5	NOUN	Elektronenhülle
 Focken	5	NOUN	Fock
@@ -138706,7 +138436,6 @@ Ikonoklasmen	5	NOUN	Ikonoklasmus
 Schutzschildes	5	NOUN	Schutzschild
 Schutzschilde	5	NOUN	Schutzschild
 Schutzschilden	5	NOUN	Schutzschild
-(des) Ripuarisch	5	NOUN	Ripuarisch
 Lakens	5	NOUN	Laken
 Vermengungen	5	NOUN	Vermengung
 Halbkantons	5	NOUN	Halbkanton
@@ -138728,7 +138457,6 @@ Rechtswegen	5	NOUN	Rechtsweg
 Strafandrohungen	5	NOUN	Strafandrohung
 Fernsehkanals	5	NOUN	Fernsehkanal
 Fernsehkanälen	5	NOUN	Fernsehkanal
-(des) Kirchenslawisch	5	NOUN	Kirchenslawisch
 Fruchtschalen	5	NOUN	Fruchtschale
 Speisekarten	5	NOUN	Speisekarte
 Hubschrauberlandeplatzes	5	NOUN	Hubschrauberlandeplatz
@@ -138840,7 +138568,6 @@ Sanctusen	5	NOUN	Sanctus
 Unruhestifters	5	NOUN	Unruhestifter
 Unruhestiftern	5	NOUN	Unruhestifter
 Notdurften	5	NOUN	Notdurft
-des Enki	5	NOUN	Enki
 Enkis	5	NOUN	Enki
 Doldenblütlers	5	NOUN	Doldenblütler
 Doldenblütlern	5	NOUN	Doldenblütler
@@ -139039,7 +138766,6 @@ Heroismusen	5	NOUN	Heroismus
 Blitzableiters	5	NOUN	Blitzableiter
 Blitzableitern	5	NOUN	Blitzableiter
 Pflanzendecken	5	NOUN	Pflanzendecke
-der Hekate	5	NOUN	Hekate
 Hekaten	5	NOUN	Hekate
 Heimatdorfes	5	NOUN	Heimatdorf
 Heimatdörfer	5	NOUN	Heimatdorf
@@ -139110,7 +138836,6 @@ Effizienzsteigerungen	5	NOUN	Effizienzsteigerung
 Wissenstransfers	5	NOUN	Wissenstransfer
 Steuerknüppels	5	NOUN	Steuerknüppel
 Steuerknüppeln	5	NOUN	Steuerknüppel
-(des) Udmurtisch	5	NOUN	Udmurtisch
 Udmurtischen	5	NOUN	Udmurtisch
 Fundgruben	5	NOUN	Fundgrube
 Käsereien	5	NOUN	Käserei
@@ -139188,7 +138913,6 @@ Staatsfeinden	5	NOUN	Staatsfeind
 Urenkelinnen	5	NOUN	Urenkelin
 Henotheismuse	5	NOUN	Henotheismus
 Henotheismusen	5	NOUN	Henotheismus
-der Neith	5	NOUN	Neith
 Neithen	5	NOUN	Neith
 Emanationen	5	NOUN	Emanation
 Schlüsselromans	5	NOUN	Schlüsselroman
@@ -139291,7 +139015,6 @@ Fischreichtums	5	NOUN	Fischreichtum
 Fischreichtümer	5	NOUN	Fischreichtum
 Fischreichtümern	5	NOUN	Fischreichtum
 Verkehrsdichten	5	NOUN	Verkehrsdichte
-des Mithras	5	NOUN	Mithras
 Mithrase	5	NOUN	Mithras
 Mithrasen	5	NOUN	Mithras
 Nachrichtenübermittlungen	5	NOUN	Nachrichtenübermittlung
@@ -139360,7 +139083,6 @@ Kreuzfahrerheeren	5	NOUN	Kreuzfahrerheer
 Heliumkernes	5	NOUN	Heliumkern
 Heliumkerne	5	NOUN	Heliumkern
 Heliumkernen	5	NOUN	Heliumkern
-(des) Uigurisch	5	NOUN	Uigurisch
 Leitideen	5	NOUN	Leitidee
 Chorleiters	5	NOUN	Chorleiter
 Chorleitern	5	NOUN	Chorleiter
@@ -139379,7 +139101,6 @@ Skifahrern	5	NOUN	Skifahrer
 Blasenkrebses	5	NOUN	Blasenkrebs
 Blasenkrebse	5	NOUN	Blasenkrebs
 Blasenkrebsen	5	NOUN	Blasenkrebs
-der Tanit	5	NOUN	Tanit
 Taniten	5	NOUN	Tanit
 Polysaccharids	5	NOUN	Polysaccharid
 Hausangestellter	5	NOUN	Hausangestellte
@@ -139558,7 +139279,6 @@ Lustgewinnes	5	NOUN	Lustgewinn
 Lustgewinne	5	NOUN	Lustgewinn
 Lustgewinnen	5	NOUN	Lustgewinn
 Apostasien	5	NOUN	Apostasie
-des Azande	5	NOUN	Azande
 Azanden	5	NOUN	Azande
 Volumenstromes	5	NOUN	Volumenstrom
 Volumenströme	5	NOUN	Volumenstrom
@@ -139614,7 +139334,6 @@ Deutschnamibiern	5	NOUN	Deutschnamibier
 Mähnen	5	NOUN	Mähne
 Seehundes	5	NOUN	Seehund
 Abendmahlsfeiern	5	NOUN	Abendmahlsfeier
-(des) Singhalesisch	5	NOUN	Singhalesisch
 Lubrikationen	5	NOUN	Lubrikation
 Freifrauen	5	NOUN	Freifrau
 Sechsfüßers	5	NOUN	Sechsfüßer
@@ -139686,7 +139405,6 @@ Abstiegsplätzen	5	NOUN	Abstiegsplatz
 Liverollenspiels	5	NOUN	Liverollenspiel
 Liverollenspiele	5	NOUN	Liverollenspiel
 Liverollenspielen	5	NOUN	Liverollenspiel
-des Gorani	5	NOUN	Gorani
 Goranis	5	NOUN	Gorani
 Brustvergrößerungen	5	NOUN	Brustvergrößerung
 Mamertiners	5	NOUN	Mamertiner
@@ -139891,7 +139609,6 @@ Titrationen	4	NOUN	Titration
 Assoziativitäten	4	NOUN	Assoziativität
 Rundungsfehlers	4	NOUN	Rundungsfehler
 Rundungsfehlern	4	NOUN	Rundungsfehler
-des Zakynthos	4	NOUN	Zakynthos
 Zakynthose	4	NOUN	Zakynthos
 Zakynthosen	4	NOUN	Zakynthos
 Leibrenten	4	NOUN	Leibrente
@@ -140860,7 +140577,6 @@ Bestecke	4	NOUN	Besteck
 Bestecken	4	NOUN	Besteck
 Atomzeitalters	4	NOUN	Atomzeitalter
 Atomzeitaltern	4	NOUN	Atomzeitalter
-(des) Birmanisch	4	NOUN	Birmanisch
 Verborgenheiten	4	NOUN	Verborgenheit
 Dunkelkammern	4	NOUN	Dunkelkammer
 Eggen	4	NOUN	Egge
@@ -141109,7 +140825,6 @@ Zofen	4	NOUN	Zofe
 Sehwinkels	4	NOUN	Sehwinkel
 Sehwinkeln	4	NOUN	Sehwinkel
 Bergwelten	4	NOUN	Bergwelt
-des Goldap	4	NOUN	Goldap
 Goldape	4	NOUN	Goldap
 Goldapen	4	NOUN	Goldap
 Fallsuchten	4	NOUN	Fallsucht
@@ -141120,7 +140835,6 @@ Notarztes	4	NOUN	Notarzt
 Notärzte	4	NOUN	Notarzt
 Notärzten	4	NOUN	Notarzt
 Meliorationen	4	NOUN	Melioration
-des Chipewyan	4	NOUN	Chipewyan
 Chipewyane	4	NOUN	Chipewyan
 Chipewyanen	4	NOUN	Chipewyan
 Sonntagsfragen	4	NOUN	Sonntagsfrage
@@ -141137,7 +140851,6 @@ Panikräume	4	NOUN	Panikraum
 Panikräumen	4	NOUN	Panikraum
 Nauruers	4	NOUN	Nauruer
 Nauruern	4	NOUN	Nauruer
-des Zhuang	4	NOUN	Zhuang
 Zhuange	4	NOUN	Zhuang
 Zhuangen	4	NOUN	Zhuang
 Illuminatenordens	4	NOUN	Illuminatenorden
@@ -141247,7 +140960,6 @@ Konvolute	4	NOUN	Konvolut
 Konvoluten	4	NOUN	Konvolut
 Menschenrechtlers	4	NOUN	Menschenrechtler
 Menschenrechtlern	4	NOUN	Menschenrechtler
-(des) Turkmenisch	4	NOUN	Turkmenisch
 Durranis	4	NOUN	Durrani
 Durranin	4	NOUN	Durrani
 Kommandostrukturen	4	NOUN	Kommandostruktur
@@ -141341,12 +141053,10 @@ Absolutivs	4	NOUN	Absolutiv
 Absolutive	4	NOUN	Absolutiv
 Absolutiven	4	NOUN	Absolutiv
 Geminationen	4	NOUN	Gemination
-des Malagasy	4	NOUN	Malagasy
 Malagasys	4	NOUN	Malagasy
 Sprachbunds	4	NOUN	Sprachbund
 Sprachbünde	4	NOUN	Sprachbund
 Sprachbünden	4	NOUN	Sprachbund
-des Sango	4	NOUN	Sango
 Sangos	4	NOUN	Sango
 Sprachenvielfalten	4	NOUN	Sprachenvielfalt
 Rauminhalts	4	NOUN	Rauminhalt
@@ -141655,7 +141365,6 @@ Zeitverschwendungen	4	NOUN	Zeitverschwendung
 Überschallfluges	4	NOUN	Überschallflug
 Überschallflüge	4	NOUN	Überschallflug
 Überschallflügen	4	NOUN	Überschallflug
-(des) Kantonesisch	4	NOUN	Kantonesisch
 Kantonesischen	4	NOUN	Kantonesisch
 Tickes	4	NOUN	Tick
 Ticks	4	NOUN	Tick
@@ -141901,7 +141610,6 @@ Samenmäntel	4	NOUN	Samenmantel
 Samenmänteln	4	NOUN	Samenmantel
 Wasserstrahles	4	NOUN	Wasserstrahl
 Wasserstrahlen	4	NOUN	Wasserstrahl
-der Nyx	4	NOUN	Nyx
 Nyxen	4	NOUN	Nyx
 Mikrofilms	4	NOUN	Mikrofilm
 Mikrofilme	4	NOUN	Mikrofilm
@@ -142109,16 +141817,13 @@ Repatriierungen	4	NOUN	Repatriierung
 Unterlängen	4	NOUN	Unterlänge
 Mitzwoth	4	NOUN	Mitzwa
 Mitzwothn	4	NOUN	Mitzwa
-der Proserpina	4	NOUN	Proserpina
 Proserpinas	4	NOUN	Proserpina
 Mäzeninnen	4	NOUN	Mäzenin
 Absolutheitsanspruches	4	NOUN	Absolutheitsanspruch
 Absolutheitsansprüche	4	NOUN	Absolutheitsanspruch
 Absolutheitsansprüchen	4	NOUN	Absolutheitsanspruch
-(des) Assamesisch	4	NOUN	Assamesisch
 Assamesische	4	NOUN	Assamesisch
 Assamesischen	4	NOUN	Assamesisch
-(des) Tamilisch	4	NOUN	Tamilisch
 Aussteuern	4	NOUN	Aussteuer
 Wikiwörterbuchs	4	NOUN	Wikiwörterbuch
 Wikiwörterbücher	4	NOUN	Wikiwörterbuch
@@ -142260,7 +141965,6 @@ Rapporte	4	NOUN	Rapport
 Rapporten	4	NOUN	Rapport
 Pflegerinnen	4	NOUN	Pflegerin
 Sprachregelungen	4	NOUN	Sprachregelung
-(des) Avestisch	4	NOUN	Avestisch
 Avestische	4	NOUN	Avestisch
 Avestischen	4	NOUN	Avestisch
 Lebensleistungen	4	NOUN	Lebensleistung
@@ -142372,7 +142076,6 @@ Leinewebers	4	NOUN	Leineweber
 Leinewebern	4	NOUN	Leineweber
 Apartheidpolitiken	4	NOUN	Apartheidpolitik
 Richtstätten	4	NOUN	Richtstätte
-des Papiamentu	4	NOUN	Papiamentu
 Papiamentus	4	NOUN	Papiamentu
 Knochenbruches	4	NOUN	Knochenbruch
 Spitzensteuersatzes	4	NOUN	Spitzensteuersatz
@@ -142621,7 +142324,6 @@ Satellitenempfanges	4	NOUN	Satellitenempfang
 Satellitenempfänge	4	NOUN	Satellitenempfang
 Satellitenempfängen	4	NOUN	Satellitenempfang
 Identitätspolitiken	4	NOUN	Identitätspolitik
-(des) Altpreußisch	4	NOUN	Altpreußisch
 Mundschleimhäute	4	NOUN	Mundschleimhaut
 Mundschleimhäuten	4	NOUN	Mundschleimhaut
 Sakramentshauses	4	NOUN	Sakramentshaus
@@ -142720,7 +142422,6 @@ Spermatogenesen	4	NOUN	Spermatogenese
 Recyclingpapieres	4	NOUN	Recyclingpapier
 Recyclingpapiere	4	NOUN	Recyclingpapier
 Recyclingpapieren	4	NOUN	Recyclingpapier
-des Blackfoot	4	NOUN	Blackfoot
 Blackfoote	4	NOUN	Blackfoot
 Blackfooten	4	NOUN	Blackfoot
 Glaubersalzes	4	NOUN	Glaubersalz
@@ -142750,7 +142451,6 @@ Pettings	4	NOUN	Petting
 Freilaufs	4	NOUN	Freilauf
 Freiläufe	4	NOUN	Freilauf
 Freiläufen	4	NOUN	Freilauf
-des Qigong	4	NOUN	Qigong
 Qigonge	4	NOUN	Qigong
 Qigongen	4	NOUN	Qigong
 Sütterlinschriften	4	NOUN	Sütterlinschrift
@@ -142920,7 +142620,6 @@ Radierern	4	NOUN	Radierer
 Nationaluniversitäten	4	NOUN	Nationaluniversität
 Burkas	4	NOUN	Burka
 Hofsprachen	4	NOUN	Hofsprache
-(des) Tadschikisch	4	NOUN	Tadschikisch
 Steingartens	4	NOUN	Steingarten
 Steingärten	4	NOUN	Steingarten
 Maharadschas	4	NOUN	Maharadscha
@@ -143070,19 +142769,15 @@ Radioansprachen	4	NOUN	Radioansprache
 Versionsgeschichten	4	NOUN	Versionsgeschichte
 Wildheiten	4	NOUN	Wildheit
 Frauenordens	4	NOUN	Frauenorden
-des Chewa	4	NOUN	Chewa
 Chewas	4	NOUN	Chewa
 Kapitells	4	NOUN	Kapitell
 Aktmalereien	4	NOUN	Aktmalerei
 Polizeichefs	4	NOUN	Polizeichef
-der Sedna	4	NOUN	Sedna
 Sednas	4	NOUN	Sedna
 Totenbuchs	4	NOUN	Totenbuch
 Totenbücher	4	NOUN	Totenbuch
 Totenbüchern	4	NOUN	Totenbuch
-des Xetra	4	NOUN	Xetra
 Xetras	4	NOUN	Xetra
-des Enlil	4	NOUN	Enlil
 Enlile	4	NOUN	Enlil
 Enlilen	4	NOUN	Enlil
 Bedienungsanleitungen	4	NOUN	Bedienungsanleitung
@@ -143293,7 +142988,6 @@ Sauerstoffbedarfen	4	NOUN	Sauerstoffbedarf
 Forderungskataloges	4	NOUN	Forderungskatalog
 Forderungskataloge	4	NOUN	Forderungskatalog
 Forderungskatalogen	4	NOUN	Forderungskatalog
-(des) Oberdeutsch	4	NOUN	Oberdeutsch
 Mikrobioms	4	NOUN	Mikrobiom
 Mikrobiome	4	NOUN	Mikrobiom
 Mikrobiomen	4	NOUN	Mikrobiom
@@ -143419,8 +143113,6 @@ Chemiekonzerne	4	NOUN	Chemiekonzern
 Chemiekonzernen	4	NOUN	Chemiekonzern
 Dachgesellschaften	4	NOUN	Dachgesellschaft
 Roadmovies	4	NOUN	Roadmovie
-der Undine	4	NOUN	Undine
-die Undinen	4	NOUN	Undine
 Tontechnikers	4	NOUN	Tontechniker
 Tontechnikern	4	NOUN	Tontechniker
 Primärliteraturen	4	NOUN	Primärliteratur
@@ -143464,7 +143156,6 @@ Pflasterungen	4	NOUN	Pflasterung
 Rotationsbewegungen	4	NOUN	Rotationsbewegung
 Passers	4	NOUN	Passer
 Passern	4	NOUN	Passer
-(des) Reichsdänisch	4	NOUN	Reichsdänisch
 Reichsdänische	4	NOUN	Reichsdänisch
 Reichsdänischen	4	NOUN	Reichsdänisch
 Gobelins	4	NOUN	Gobelin
@@ -143727,13 +143418,9 @@ Felsblöcke	4	NOUN	Felsblock
 Felsblöcken	4	NOUN	Felsblock
 Gletscherschmelzen	4	NOUN	Gletscherschmelze
 Höllenfahrten	4	NOUN	Höllenfahrt
-der Amaterasu	4	NOUN	Amaterasu
 Amaterasus	4	NOUN	Amaterasu
-des Ndebele	4	NOUN	Ndebele
 Ndebelen	4	NOUN	Ndebele
-des Varuna	4	NOUN	Varuna
 Varunas	4	NOUN	Varuna
-des Agni	4	NOUN	Agni
 Agnis	4	NOUN	Agni
 Himmelsköniginnen	4	NOUN	Himmelskönigin
 Lehrwerks	4	NOUN	Lehrwerk
@@ -143915,7 +143602,6 @@ Dreiviertelmehrheiten	4	NOUN	Dreiviertelmehrheit
 Lateinunterrichtes	4	NOUN	Lateinunterricht
 Lateinunterrichte	4	NOUN	Lateinunterricht
 Lateinunterrichten	4	NOUN	Lateinunterricht
-des Kashmiri	4	NOUN	Kashmiri
 Kashmiris	4	NOUN	Kashmiri
 Schuldknechtschaften	4	NOUN	Schuldknechtschaft
 Sesams	4	NOUN	Sesam
@@ -144013,7 +143699,6 @@ Liebeskummern	4	NOUN	Liebeskummer
 Wrestlers	4	NOUN	Wrestler
 Wrestlern	4	NOUN	Wrestler
 Schneiderinnen	4	NOUN	Schneiderin
-des Ful	4	NOUN	Ful
 Fule	4	NOUN	Ful
 Fulen	4	NOUN	Ful
 Europabrücken	4	NOUN	Europabrücke
@@ -144425,7 +144110,6 @@ Planks	4	NOUN	Plank
 Bollerwagens	4	NOUN	Bollerwagen
 Bootstyps	4	NOUN	Bootstyp
 Bootstypen	4	NOUN	Bootstyp
-(des) Gagausisch	4	NOUN	Gagausisch
 Höhlenklosters	4	NOUN	Höhlenkloster
 Höhlenklöster	4	NOUN	Höhlenkloster
 Höhlenklöstern	4	NOUN	Höhlenkloster
@@ -144463,7 +144147,6 @@ Sternenkinder	4	NOUN	Sternenkind
 Sternenkindern	4	NOUN	Sternenkind
 Filmhandlungen	4	NOUN	Filmhandlung
 Polygynien	4	NOUN	Polygynie
-des Tsonga	4	NOUN	Tsonga
 Tsongas	4	NOUN	Tsonga
 Raise	4	NOUN	Rais
 Raisen	4	NOUN	Rais
@@ -144479,7 +144162,6 @@ Kryptonite	4	NOUN	Kryptonit
 Kryptoniten	4	NOUN	Kryptonit
 Landstreichers	4	NOUN	Landstreicher
 Landstreichern	4	NOUN	Landstreicher
-des Arma	4	NOUN	Arma
 Nebenbuhlers	4	NOUN	Nebenbuhler
 Nebenbuhlern	4	NOUN	Nebenbuhler
 Kumpels	4	NOUN	Kumpel
@@ -144528,7 +144210,6 @@ Temperaturgefälles	4	NOUN	Temperaturgefälle
 Temperaturgefällen	4	NOUN	Temperaturgefälle
 Heteros	4	NOUN	Hetero
 Brikettes	4	NOUN	Brikett
-(des) Jakutisch	4	NOUN	Jakutisch
 Jakutische	4	NOUN	Jakutisch
 Christmetten	4	NOUN	Christmette
 Episteln	4	NOUN	Epistel
@@ -144722,7 +144403,6 @@ Sparkurse	3	NOUN	Sparkurs
 Sparkursen	3	NOUN	Sparkurs
 Anwältinnen	3	NOUN	Anwältin
 Baustopps	3	NOUN	Baustopp
-des Serapis	3	NOUN	Serapis
 Serapise	3	NOUN	Serapis
 Serapisen	3	NOUN	Serapis
 Ausbeuters	3	NOUN	Ausbeuter
@@ -144750,7 +144430,6 @@ Emporkömmlinge	3	NOUN	Emporkömmling
 Emporkömmlingen	3	NOUN	Emporkömmling
 Diarrhoen	3	NOUN	Diarrhoe
 Lebenshälften	3	NOUN	Lebenshälfte
-(des) Jenisch	3	NOUN	Jenisch
 Vitalismuse	3	NOUN	Vitalismus
 Vitalismusen	3	NOUN	Vitalismus
 Stammbuchs	3	NOUN	Stammbuch
@@ -144852,7 +144531,6 @@ Bürgerkönigs	3	NOUN	Bürgerkönig
 Bürgerkönige	3	NOUN	Bürgerkönig
 Bürgerkönigen	3	NOUN	Bürgerkönig
 Prisen	3	NOUN	Prise
-des Kanuri	3	NOUN	Kanuri
 Kanuris	3	NOUN	Kanuri
 Flüssigkeitsverlustes	3	NOUN	Flüssigkeitsverlust
 Flüssigkeitsverluste	3	NOUN	Flüssigkeitsverlust
@@ -145233,7 +144911,6 @@ Größenwahne	3	NOUN	Größenwahn
 Größenwahnen	3	NOUN	Größenwahn
 Wagenlenkers	3	NOUN	Wagenlenker
 Wagenlenkern	3	NOUN	Wagenlenker
-des Elagabal	3	NOUN	Elagabal
 Elagabale	3	NOUN	Elagabal
 Elagabalen	3	NOUN	Elagabal
 Mordtaten	3	NOUN	Mordtat
@@ -145587,7 +145264,6 @@ Publikumsverkehre	3	NOUN	Publikumsverkehr
 Publikumsverkehren	3	NOUN	Publikumsverkehr
 Eheversprechens	3	NOUN	Eheversprechen
 Bekundungen	3	NOUN	Bekundung
-(des) Saterfriesisch	3	NOUN	Saterfriesisch
 Saterfriesische	3	NOUN	Saterfriesisch
 Saterfriesischen	3	NOUN	Saterfriesisch
 Gratwanderungen	3	NOUN	Gratwanderung
@@ -145656,7 +145332,6 @@ Sterbejahren	3	NOUN	Sterbejahr
 Rhapsodien	3	NOUN	Rhapsodie
 Liveübertragungen	3	NOUN	Liveübertragung
 Psychophysiken	3	NOUN	Psychophysik
-des Ghadames	3	NOUN	Ghadames
 Ghadamese	3	NOUN	Ghadames
 Ghadamesen	3	NOUN	Ghadames
 Monosaccharids	3	NOUN	Monosaccharid
@@ -145704,7 +145379,6 @@ Kerkerhaften	3	NOUN	Kerkerhaft
 Maltesen	3	NOUN	Maltese
 Völkerkundlers	3	NOUN	Völkerkundler
 Völkerkundlern	3	NOUN	Völkerkundler
-der Aschera	3	NOUN	Aschera
 Ascheras	3	NOUN	Aschera
 Wildtyps	3	NOUN	Wildtyp
 Wildtypen	3	NOUN	Wildtyp
@@ -145720,7 +145394,6 @@ Grußworten	3	NOUN	Grußwort
 Baumwollindustrien	3	NOUN	Baumwollindustrie
 Buschfeuers	3	NOUN	Buschfeuer
 Buschfeuern	3	NOUN	Buschfeuer
-des Soninke	3	NOUN	Soninke
 Soninken	3	NOUN	Soninke
 Affenbrotbaums	3	NOUN	Affenbrotbaum
 Affenbrotbäume	3	NOUN	Affenbrotbaum
@@ -145748,7 +145421,6 @@ Trockenfleischen	3	NOUN	Trockenfleisch
 Winterweizens	3	NOUN	Winterweizen
 Ballonhüllen	3	NOUN	Ballonhülle
 Bodentemperaturen	3	NOUN	Bodentemperatur
-des Ziusudra	3	NOUN	Ziusudra
 Ziusudras	3	NOUN	Ziusudra
 Popularitätsschubs	3	NOUN	Popularitätsschub
 Popularitätsschübe	3	NOUN	Popularitätsschub
@@ -146176,9 +145848,7 @@ Seitenkapellen	3	NOUN	Seitenkapelle
 Dentins	3	NOUN	Dentin
 Dentine	3	NOUN	Dentin
 Dentinen	3	NOUN	Dentin
-des Kinyarwanda	3	NOUN	Kinyarwanda
 Kinyarwandas	3	NOUN	Kinyarwanda
-des Luganda	3	NOUN	Luganda
 Lugandas	3	NOUN	Luganda
 Teufelspaktes	3	NOUN	Teufelspakt
 Teufelspakte	3	NOUN	Teufelspakt
@@ -146293,7 +145963,6 @@ Mansarddaches	3	NOUN	Mansarddach
 Mansarddächer	3	NOUN	Mansarddach
 Mansarddächern	3	NOUN	Mansarddach
 Pietäten	3	NOUN	Pietät
-(des) Samisch	3	NOUN	Samisch
 Medaillenspiegels	3	NOUN	Medaillenspiegel
 Medaillenspiegeln	3	NOUN	Medaillenspiegel
 Klarissenklosters	3	NOUN	Klarissenkloster
@@ -146430,7 +146099,6 @@ Atlatln	3	NOUN	Atlatl
 Pfingstrosen	3	NOUN	Pfingstrose
 Wärmeversorgungen	3	NOUN	Wärmeversorgung
 Drehleiern	3	NOUN	Drehleier
-des Morpheus	3	NOUN	Morpheus
 Morpheuse	3	NOUN	Morpheus
 Morpheusen	3	NOUN	Morpheus
 Postverkehres	3	NOUN	Postverkehr
@@ -146752,7 +146420,6 @@ Aktivitasen	3	NOUN	Aktivitas
 Hofberges	3	NOUN	Hofberg
 Hofberge	3	NOUN	Hofberg
 Hofbergen	3	NOUN	Hofberg
-(des) Altjapanisch	3	NOUN	Altjapanisch
 Altjapanische	3	NOUN	Altjapanisch
 Altjapanischen	3	NOUN	Altjapanisch
 Sportvorstandes	3	NOUN	Sportvorstand
@@ -146763,14 +146430,12 @@ Papierbogens	3	NOUN	Papierbogen
 Gummituches	3	NOUN	Gummituch
 Gummitücher	3	NOUN	Gummituch
 Gummitüchern	3	NOUN	Gummituch
-des Zarma	3	NOUN	Zarma
 Zarmas	3	NOUN	Zarma
 Inhalationsanästhesien	3	NOUN	Inhalationsanästhesie
 Schneeschuhes	3	NOUN	Schneeschuh
 Schneeschuhen	3	NOUN	Schneeschuh
 Aaskäfers	3	NOUN	Aaskäfer
 Aaskäfern	3	NOUN	Aaskäfer
-des Zazaki	3	NOUN	Zazaki
 Zazakis	3	NOUN	Zazaki
 Festkomitees	3	NOUN	Festkomitee
 Beckenendlagen	3	NOUN	Beckenendlage
@@ -147010,7 +146675,6 @@ Pluralisierungen	3	NOUN	Pluralisierung
 Opferrituals	3	NOUN	Opferritual
 Opferrituale	3	NOUN	Opferritual
 Opferritualen	3	NOUN	Opferritual
-der Anat	3	NOUN	Anat
 Anaten	3	NOUN	Anat
 Kunstaktionen	3	NOUN	Kunstaktion
 Wohlklanges	3	NOUN	Wohlklang
@@ -147023,7 +146687,6 @@ Schmerzschwellen	3	NOUN	Schmerzschwelle
 Genussystems	3	NOUN	Genussystem
 Genussysteme	3	NOUN	Genussystem
 Genussystemen	3	NOUN	Genussystem
-des Kikongo	3	NOUN	Kikongo
 Kikongos	3	NOUN	Kikongo
 Atomradien	3	NOUN	Atomradius
 Kieferklauenträgers	3	NOUN	Kieferklauenträger
@@ -147256,7 +146919,6 @@ Titelträgern	3	NOUN	Titelträger
 Pumpspeicherkraftwerks	3	NOUN	Pumpspeicherkraftwerk
 Pumpspeicherkraftwerke	3	NOUN	Pumpspeicherkraftwerk
 Pumpspeicherkraftwerken	3	NOUN	Pumpspeicherkraftwerk
-(des) Limburgisch	3	NOUN	Limburgisch
 Limburgische	3	NOUN	Limburgisch
 Austeritätspolitiken	3	NOUN	Austeritätspolitik
 Crémants	3	NOUN	Crémant
@@ -147497,7 +147159,6 @@ Flugdauern	3	NOUN	Flugdauer
 Bremsschirmes	3	NOUN	Bremsschirm
 Bremsschirme	3	NOUN	Bremsschirm
 Bremsschirmen	3	NOUN	Bremsschirm
-des Xiang	3	NOUN	Xiang
 Xiange	3	NOUN	Xiang
 Xiangen	3	NOUN	Xiang
 Singularformen	3	NOUN	Singularform
@@ -147679,7 +147340,6 @@ Neuanlagen	3	NOUN	Neuanlage
 Behelfsbrücken	3	NOUN	Behelfsbrücke
 Wolfsmilche	3	NOUN	Wolfsmilch
 Wolfsmilchen	3	NOUN	Wolfsmilch
-des Bemba	3	NOUN	Bemba
 Bembas	3	NOUN	Bemba
 Internetnutzungen	3	NOUN	Internetnutzung
 Handwerkszeuges	3	NOUN	Handwerkszeug
@@ -147708,7 +147368,6 @@ Menschengeschlechtern	3	NOUN	Menschengeschlecht
 Kasslers	3	NOUN	Kassler
 Kasslern	3	NOUN	Kassler
 Storyboards	3	NOUN	Storyboard
-(des) Westfriesisch	3	NOUN	Westfriesisch
 Westfriesische	3	NOUN	Westfriesisch
 Eisengehaltes	3	NOUN	Eisengehalt
 Eisengehalte	3	NOUN	Eisengehalt
@@ -147860,7 +147519,6 @@ Dienstpersonale	3	NOUN	Dienstpersonal
 Dienstpersonalen	3	NOUN	Dienstpersonal
 Liebeslebens	3	NOUN	Liebesleben
 Krankenbehandlungen	3	NOUN	Krankenbehandlung
-(des) Ostfriesisch	3	NOUN	Ostfriesisch
 Hausordnungen	3	NOUN	Hausordnung
 Ehegattinnen	3	NOUN	Ehegattin
 Dreifelderwirtschaften	3	NOUN	Dreifelderwirtschaft
@@ -147934,7 +147592,6 @@ Südstrands	3	NOUN	Südstrand
 Südstranden	3	NOUN	Südstrand
 Südstrände	3	NOUN	Südstrand
 Südstränden	3	NOUN	Südstrand
-(des) Rheinfränkisch	3	NOUN	Rheinfränkisch
 Rheinfränkische	3	NOUN	Rheinfränkisch
 Patronyms	3	NOUN	Patronym
 Patronyme	3	NOUN	Patronym
@@ -148150,7 +147807,6 @@ Ochsenkarrens	3	NOUN	Ochsenkarren
 Helikons	3	NOUN	Helikon
 Notfallsanitäters	3	NOUN	Notfallsanitäter
 Notfallsanitätern	3	NOUN	Notfallsanitäter
-(des) Nordsamisch	3	NOUN	Nordsamisch
 Nordsamische	3	NOUN	Nordsamisch
 Nordsamischen	3	NOUN	Nordsamisch
 Universitätsleitungen	3	NOUN	Universitätsleitung
@@ -148320,13 +147976,11 @@ Gemengelagen	3	NOUN	Gemengelage
 Langdistanzen	3	NOUN	Langdistanz
 Nachzüglers	3	NOUN	Nachzügler
 Nachzüglern	3	NOUN	Nachzügler
-(des) Aragonesisch	3	NOUN	Aragonesisch
 Aragonesische	3	NOUN	Aragonesisch
 Zurufes	3	NOUN	Zuruf
 Zurufe	3	NOUN	Zuruf
 Zurufen	3	NOUN	Zuruf
 Fusionsreaktors	3	NOUN	Fusionsreaktor
-(des) Kirgisisch	3	NOUN	Kirgisisch
 Marionettenstaates	3	NOUN	Marionettenstaat
 Marionettenstaaten	3	NOUN	Marionettenstaat
 Lapidariums	3	NOUN	Lapidarium
@@ -148373,7 +148027,6 @@ Spathen	3	NOUN	Spatha
 Erdferkels	3	NOUN	Erdferkel
 Erdferkeln	3	NOUN	Erdferkel
 Laubblatts	3	NOUN	Laubblatt
-des Sobek	3	NOUN	Sobek
 Sobeke	3	NOUN	Sobek
 Sobeken	3	NOUN	Sobek
 Kalksteinbruches	3	NOUN	Kalksteinbruch
@@ -184341,7 +183994,6 @@ ausgesteuert	1	VERB
 ausgestochen	1	VERB	ausstechen
 ausspioniert	1	VERB	ausspionieren
 aßest	1	VERB	essen
-aßt	1	VERB	essen
 backe	1	VERB	backen
 backt	1	VERB	backen
 badest	1	VERB	baden
@@ -185021,7 +184673,6 @@ buchstabiertest	1	VERB	buchstabieren
 buchstabiertet	1	VERB	buchstabieren
 buchtest	1	VERB	buchen
 buchtet	1	VERB	buchen
-buk	1	VERB	backen
 buken	1	VERB	backen
 bukst	1	VERB	backen
 bukt	1	VERB	backen
@@ -186399,7 +186050,6 @@ glühte	1	VERB	glühen
 glühten	1	VERB	glühen
 glühtest	1	VERB	glühen
 glühtet	1	VERB	glühen
-gor	1	VERB	gären
 gorst	1	VERB	gären
 gort	1	VERB	gären
 gossest	1	VERB	gießen
@@ -189327,7 +188977,6 @@ wirtschaftetest	1	VERB
 wirtschaftetet	1	VERB
 wisset	1	VERB	wissen
 wisst	1	VERB	wissen
-wob	1	VERB	weben
 woben	1	VERB	weben
 wobst	1	VERB	weben
 wobt	1	VERB	weben

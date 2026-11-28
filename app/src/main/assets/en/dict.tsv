@@ -63,7 +63,6 @@ th	27788	OTHER
 world	26321	NOUN,VERB
 over	25831	NOUN,PREPOSITION
 while	25049	VERB,PREPOSITION
-nbsp	23034	NOUN,OTHER
 known	22880	NOUN,VERB	know
 century	22690	NOUN,OTHER
 years	22591	NOUN,OTHER	year
@@ -6271,7 +6270,6 @@ talking	341	NOUN,VERB	talk
 Johnny	341	NOUN,OTHER
 formulation	341	NOUN,OTHER
 singers	341	NOUN,OTHER	singer
-ndash	341	OTHER
 skull	341	NOUN,VERB
 proceeded	341	VERB	proceed
 dictatorship	340	NOUN,OTHER
@@ -7443,7 +7441,6 @@ Nicaragua	266	PROPER_NOUN
 abelian	266	OTHER
 contradiction	265	NOUN,OTHER
 disagreement	265	NOUN,OTHER
-GT	265	NOUN,OTHER
 impose	265	VERB
 weaker	265	ADJECTIVE	weak
 deny	265	VERB
@@ -9435,7 +9432,6 @@ recruitment	186	NOUN,OTHER
 ingredient	186	NOUN,OTHER
 nurse	186	NOUN,VERB
 voyages	186	NOUN,VERB	voyage
-Lt	186	OTHER
 wonderful	186	ADJECTIVE
 exemplified	185	VERB	exemplify
 literate	185	NOUN,OTHER
@@ -9629,7 +9625,6 @@ lifting	180	NOUN,VERB	lift
 ft	180	NOUN,OTHER
 flowering	180	NOUN,VERB	flower
 Pike	180	NOUN,OTHER
-mdash	180	OTHER
 Eurostar	180	NOUN,OTHER
 acknowledge	180	VERB
 superhero	180	NOUN,OTHER
@@ -17837,7 +17832,6 @@ excessively	61	OTHER
 Blanc	61	OTHER
 deserve	61	VERB
 townspeople	61	OTHER
-thinsp	61	OTHER
 fashions	61	NOUN,VERB	fashion
 attachments	61	NOUN,OTHER	attachment
 intersecting	61	VERB	intersect
@@ -23332,7 +23326,6 @@ expended	36	VERB	expend
 lire	161	NOUN,OTHER	lira
 ambivalence	36	NOUN,OTHER
 bequest	36	NOUN,VERB
-Reg	36	OTHER
 masts	36	NOUN,VERB	mast
 yyyy	36	OTHER
 fend	36	VERB
@@ -33210,7 +33203,6 @@ PDS	17	PROPER_NOUN
 ramming	17	NOUN,OTHER
 giga	17	OTHER
 pinnipeds	17	NOUN,OTHER	pinniped
-deg	17	NOUN,OTHER
 Anak	17	OTHER
 pluperfect	17	NOUN,OTHER
 disorientation	17	NOUN,OTHER
@@ -57893,7 +57885,6 @@ variometer	5	NOUN,OTHER
 crimp	5	NOUN,VERB
 Walser	5	NOUN,OTHER
 effluence	5	NOUN,OTHER
-middot	5	NOUN,OTHER
 hudna	5	NOUN,OTHER
 hyaena	5	NOUN,OTHER
 Milkmaids	5	OTHER
@@ -66404,7 +66395,6 @@ aphasics	2	NOUN,OTHER	aphasic
 aphelia	5	NOUN,OTHER	aphelion
 apicals	15	NOUN,OTHER	apical
 apneas	5	NOUN,OTHER	apnea
-apos	2	NOUN,OTHER	apo
 apocalyptics	59	NOUN,OTHER	apocalyptic
 apocalypticisms	3	NOUN,OTHER	apocalypticism
 apodoses	2	NOUN,OTHER	apodosis
@@ -68898,7 +68888,6 @@ deflations	16	NOUN,OTHER	deflation
 defoliations	2	NOUN,OTHER	defoliation
 deforestations	128	NOUN,OTHER	deforestation
 defraudings	2	NOUN,OTHER	defraud
-degs	7	NOUN,OTHER	deg
 degaussings	4	NOUN,OTHER	degaussing
 degeneracies	18	NOUN,OTHER	degeneracy
 degenerations	20	NOUN,OTHER	degeneration
@@ -73174,7 +73163,6 @@ middlegames	2	NOUN,OTHER	middlegame
 middlewares	3	NOUN,OTHER	middleware
 middleweights	6	NOUN,OTHER	middleweight
 middlings	7	NOUN,OTHER	middling
-middots	2	NOUN,OTHER	middot
 midfields	11	NOUN,OTHER	midfield
 midgets	5	NOUN,OTHER	midget
 midguts	2	NOUN,OTHER	midgut
@@ -73619,7 +73607,6 @@ navigabilities	2	NOUN,OTHER	navigability
 navigations	269	NOUN,OTHER	navigation
 nays	7	NOUN,OTHER	nay
 naïves	21	NOUN,OTHER	naïve
-nbsps	9384	NOUN,OTHER	nbsp
 nearbys	591	NOUN,OTHER	nearby
 nearnesses	2	NOUN,OTHER	nearness
 nearshores	2	NOUN,VERB	nearshore

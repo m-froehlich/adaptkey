@@ -51,8 +51,12 @@ object DictionaryLoader {
      * D-573 the confusables heal, D-574 the noun-only re-tagging, D-576 the above-threshold
      * leakage sweep + Turkey) shipped as pure asset changes; without this bump no existing
      * install would ever see them (the D-473-followup deployment-gap lesson, bundled-data shape).
+     * D-581: bumped again - the markup-artefact sweep (nbsp 23,034/rank 75, nbsps, GT/Lt/Reg,
+     * ndash/mdash/thinsp/deg(s)/middot(s)/apos removed; jpg/de/HTTP/HTTPS kept but lowered to
+     * <= 200, OTHER) plus the matching bigram rows; without the bump no existing install would
+     * see it (D-578's shape).
      */
-    private const val BUNDLED_DICTIONARY_VERSION = 3
+    private const val BUNDLED_DICTIONARY_VERSION = 4
     
     /**
      * D-186: bump to force a one-time [SqliteDictionaryStore.purgeBundledDuplicatesFromLearned] on every

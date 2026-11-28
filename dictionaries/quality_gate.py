@@ -22,6 +22,27 @@
 #   - APOSTROPHE COVERAGE: the core contraction forms (D-571's fixed documented rank list, floor
 #     frequencies >= 1000) must be present - D-544 made the apostrophe a word character and the
 #     dictionary has to feed it.
+#
+# D-581 (the dictionary-quality-next-level plan's M1 gate extension): the markup-artefact class that
+# D-575's EN-only denylist could not see is now anchored language-neutrally, plus two checks every
+# capitalisation language runs:
+#   - TYPEABILITY (base check, always on): a surface containing a space, a parenthesis or U+00A0 can
+#     never be typed (the space finalises the token) - DE's 333 genitive-splitter rows ("des Nord")
+#     and any future equivalent fail the gate instead of silently occupying prefix buckets and
+#     correction scans. The apostrophe is explicitly allowed (D-571/D-544).
+#   - MARKUP-ARTEFACT DENYLIST (base check, always on, case-exact): the unambiguous entity/markup
+#     tokens (nbsp family, dash/quote entities, deg/GT/Lt/Trade/Divide ...) fail the gate in EVERY
+#     language. Tokens that are real words in some served language (EN copy/para/dagger/divide/shy/
+#     trade/bull/times, amp + amping/amped as a real verb family) are deliberately NOT in this set -
+#     each language's own sweep lists its genuine markup readings separately.
+#   - LOWERCASE BARE-NOUN (under --capitalises-nouns): a common noun is capitalised in these
+#     languages, so a lowercase surface carrying bare NOUN is a casing violation (D-581's "text" ->
+#     "Text" class). Same flag-keying precedent as D-464's bare-NOUN check.
+#   - GERMAN-ARTEFACT DENYLIST (under --capitalises-nouns, the capitalising languages today being
+#     German): the markup tokens that are real English words (lt/amp/reg/copy/para/dagger) plus the
+#     archaic rest aßt/buk/wob/gor. For the archaic four the D-206 blacklist mechanism itself was
+#     superseded by the D-473-followup (archaic spellings should not exist in the dictionary at all),
+#     so this denylist IS the modern "blacklist": removal + re-introduction fails the gate.
 
 import sys
 from collections import Counter
@@ -52,6 +73,22 @@ CORE_CONTRACTIONS = {
     "doesn't",
 }
 
+# D-581: markup/entity tokens that are words in NO served language - base denylist, always on.
+MARKUP_ARTEFACTS = {
+    "nbsp", "nbsps", "NBSP", "thinsp", "ensp", "emsp", "zwnj", "zwj",
+    "ndash", "mdash", "hellip", "quot", "apos", "laquo", "raquo",
+    "ldquo", "rdquo", "lsquo", "rsquo", "sbquo", "bdquo",
+    "middot", "middots", "deg", "degs", "GT", "Lt", "Trade", "Divide",
+}
+
+# D-581: German-language artefacts, checked under --capitalises-nouns (the capitalising languages
+# today are German). lt/amp/reg/copy/para/dagger are genuine English words, so they cannot ride the
+# neutral base list; the archaic four encode the D-473-followup policy (see header comment).
+GERMAN_ARTEFACTS = {
+    "lt", "amp", "reg", "copy", "para", "dagger",
+    "aßt", "buk", "wob", "gor",
+}
+
 
 def main(path, capitalises_nouns=False, lang_en=False):
     rows = []
@@ -78,6 +115,17 @@ def main(path, capitalises_nouns=False, lang_en=False):
     bare_noun = [] if capitalises_nouns else [r for r in rows if r[2] == {"NOUN"}]
 
     artefacts = [r for r in rows if lang_en and r[0] in KNOWN_ARTEFACTS]
+
+    # D-581 base checks (language-neutral)
+    markup_artefacts = [r for r in rows if r[0] in MARKUP_ARTEFACTS]
+    nontypable = [r for r in rows
+                  if " " in r[0] or "(" in r[0] or ")" in r[0] or "\u00a0" in r[0]]
+    # D-581 capitalisation-language checks (--capitalises-nouns)
+    german_artefacts = [r for r in rows
+                        if capitalises_nouns and r[0] in GERMAN_ARTEFACTS]
+    lowercase_bare_noun = [r for r in rows
+                           if capitalises_nouns and r[2] == {"NOUN"}
+                           and r[0] and r[0][0].islower()]
 
     contraction_holes = []
     if lang_en:
@@ -111,9 +159,24 @@ def main(path, capitalises_nouns=False, lang_en=False):
               f"{len(contraction_holes)}")
         if contraction_holes:
             print("  sample:", contraction_holes[:10])
+    print(f"Markup-artefact rows (must be 0, D-581 base denylist): {len(markup_artefacts)}")
+    if markup_artefacts:
+        print("  sample:", markup_artefacts[:10])
+    print(f"Non-typable rows (must be 0, D-581 typeability): {len(nontypable)}")
+    if nontypable:
+        print("  sample:", nontypable[:10])
+    if capitalises_nouns:
+        print(f"German-artefact rows (must be 0, D-581 denylist): {len(german_artefacts)}")
+        if german_artefacts:
+            print("  sample:", german_artefacts[:10])
+        print(f"Lowercase bare-NOUN rows (must be 0, D-581): {len(lowercase_bare_noun)}")
+        if lowercase_bare_noun:
+            print("  sample:", lowercase_bare_noun[:10])
 
     ok = (not dupes and not non_positive and not orphaned_lemma and not bare_noun
-          and not artefacts and not contraction_holes)
+          and not artefacts and not contraction_holes
+          and not markup_artefacts and not nontypable
+          and not german_artefacts and not lowercase_bare_noun)
     print("QUALITY GATE:", "PASS" if ok else "FAIL")
     return 0 if ok else 1
 
