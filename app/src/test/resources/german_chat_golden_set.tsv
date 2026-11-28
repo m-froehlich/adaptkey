@@ -1,0 +1,225 @@
+# D-582: German chat golden set - one curated chat case per line, TAB-separated.
+#
+# Columns:
+#   1 category   grouping for the per-category metrics (see the harness KDoc)
+#   2 mode       chip     - composing token, suggestionsFor() ranking (the bar while typing)
+#                  silent   - the silent-correction decision path at commit
+#                  nextword - blank-slate prediction after the committed context (no token typed)
+#   3 typed      the composing token exactly as typed (for nextword: '-')
+#   4 previous   most recently committed word (lowercase, '-' when none)
+#   5 previous2  the word before that ('-' when none)
+#   6 expected   the word the case wants, lowercase (canonical store form compared
+#                case-insensitively; '-' when none for no_silent cases)
+#   7 kind       hit      - the case wants `expected` (chip slot / silent replacement /
+#                  next-word slot; the harness measures hit@1/@3/@12 or the silent replacement)
+#                no_silent - safety class: the path must NOT silently correct the token
+#                  (typed word is correct, rare-but-real, or deliberately left alone)
+#
+# Gap categories (gap_lexicon, contraction, and the explicitly-listed nextword_chat gaps) are
+# measured and printed for the D-582 baseline but carry no floor yet - M3 (D-583) must lift the
+# lexicon/contraction gaps, M4 (D-584) the next-word chat contexts; each round pins its own
+# Vorher/Nachher numbers in the History.
+# category	mode	typed	previous	previous2	expected	kind
+greeting	chip	dank	-	-	danke	hit
+greeting	chip	danke	-	-	danke	hit
+greeting	chip	bitte	-	-	bitte	hit
+greeting	chip	bitt	-	-	bitte	hit
+greeting	chip	bitt	danke	-	bitte	hit
+greeting	chip	bitte	danke	-	bitte	hit
+greeting	chip	hal	-	-	hallo	hit
+greeting	chip	hall	-	-	hallo	hit
+greeting	chip	hallo	-	-	hallo	hit
+greeting	chip	moin	-	-	moin	hit
+greeting	chip	hey	-	-	hey	hit
+greeting	chip	supe	-	-	super	hit
+greeting	chip	super	-	-	super	hit
+greeting	chip	coo	-	-	cool	hit
+greeting	chip	cool	-	-	cool	hit
+greeting	chip	toll	-	-	toll	hit
+greeting	chip	ger	-	-	gerne	hit
+greeting	chip	gerne	danke	-	gerne	hit
+greeting	chip	grü	-	-	grüße	hit
+greeting	chip	grüße	-	-	grüße	hit
+greeting	chip	gru	-	-	gruß	hit
+greeting	chip	ok	-	-	ok	hit
+greeting	chip	schönen	-	-	schönen	hit
+greeting	chip	gute	-	-	gute	hit
+greeting	chip	guten	-	-	guten	hit
+greeting	chip	bald	bis	-	bald	hit
+greeting	chip	später	bis	-	später	hit
+greeting	chip	bis	-	-	bis	hit
+greeting	chip	doch	-	-	doch	hit
+greeting	chip	denn	-	-	denn	hit
+gap_lexicon	chip	tschüss	-	-	tschüss	hit
+gap_lexicon	chip	tschüs	-	-	tschüss	hit
+gap_lexicon	chip	ciao	-	-	ciao	hit
+gap_lexicon	chip	okay	-	-	okay	hit
+gap_lexicon	chip	haha	-	-	haha	hit
+gap_lexicon	chip	krass	-	-	krass	hit
+gap_lexicon	chip	deins	-	-	deins	hit
+particle	chip	jetz	-	-	jetzt	hit
+particle	chip	jetzt	-	-	jetzt	hit
+particle	chip	mal	-	-	mal	hit
+particle	chip	halt	-	-	halt	hit
+particle	chip	wirklic	-	-	wirklich	hit
+particle	chip	wirklich	-	-	wirklich	hit
+particle	chip	vielleic	-	-	vielleicht	hit
+particle	chip	vielleicht	-	-	vielleicht	hit
+particle	chip	eigentl	-	-	eigentlich	hit
+particle	chip	eigentlich	-	-	eigentlich	hit
+particle	chip	irgendwi	-	-	irgendwie	hit
+particle	chip	irgendwie	-	-	irgendwie	hit
+particle	chip	geste	-	-	gestern	hit
+particle	chip	gestern	-	-	gestern	hit
+particle	chip	gestern	war	-	gestern	hit
+particle	chip	gleic	-	-	gleich	hit
+particle	chip	gleich	-	-	gleich	hit
+particle	chip	moment	-	-	moment	hit
+particle	chip	heute	-	-	heute	hit
+particle	chip	heute	bis	-	heute	hit
+particle	chip	nix	-	-	nix	hit
+particle	chip	eh	-	-	eh	hit
+particle	chip	grad	-	-	grad	hit
+particle	chip	wohl	-	-	wohl	hit
+particle	chip	eben	-	-	eben	hit
+particle	chip	schon	-	-	schon	hit
+particle	chip	ruhig	-	-	ruhig	hit
+particle	chip	muss	ich	-	muss	hit
+particle	chip	muss	-	-	muss	hit
+particle	chip	bin	ich	-	bin	hit
+particle	chip	habe	ich	-	habe	hit
+particle	chip	geht	das	-	geht	hit
+typo_chat	silent	dankw	-	-	danke	hit
+typo_chat	silent	hallp	-	-	hallo	hit
+typo_chat	silent	bittn	-	-	bitte	hit
+typo_chat	silent	danne	-	-	danke	hit
+typo_chat	silent	wirklih	-	-	wirklich	hit
+typo_chat	silent	vileleicht	-	-	vielleicht	hit
+typo_chat	silent	gester	-	-	gestern	hit
+typo_chat	silent	jezt	-	-	jetzt	hit
+typo_chat	silent	nich	-	-	nicht	hit
+typo_chat	silent	moinn	-	-	moin	hit
+typo_chat	silent	gestem	-	-	gestern	hit
+typo_chat	silent	heutw	-	-	heute	hit
+typo_chat	silent	gleiich	-	-	gleich	hit
+typo_chat	silent	gernr	-	-	gerne	hit
+typo_chat	silent	suprr	-	-	super	hit
+typo_chat	silent	moiment	-	-	moment	hit
+typo_chat	silent	ebwn	-	-	eben	hit
+typo_chat	silent	wohll	-	-	wohl	hit
+typo_chat	silent	nixx	-	-	nix	hit
+typo_common	silent	idh	-	-	ich	hit
+typo_common	silent	ubd	-	-	und	hit
+typo_common	silent	abber	-	-	aber	hit
+typo_common	silent	nochh	-	-	noch	hit
+typo_common	silent	auchh	-	-	auch	hit
+typo_common	silent	mehrr	-	-	mehr	hit
+typo_common	silent	dicjh	-	-	dich	hit
+typo_common	silent	eurch	-	-	euch	hit
+typo_common	silent	mirr	-	-	mir	hit
+typo_common	silent	dikr	-	-	dir	hit
+typo_common	silent	chabe	-	-	habe	hit
+typo_common	silent	binst	-	-	bist	hit
+silent_pinned	silent	dur	-	-	dir	hit
+silent_pinned	silent	mut	-	-	mit	hit
+safe_known	silent	und	-	-	-	no_silent
+safe_known	silent	ich	-	-	-	no_silent
+safe_known	silent	nicht	-	-	-	no_silent
+safe_known	silent	hallo	-	-	-	no_silent
+safe_known	silent	danke	-	-	-	no_silent
+safe_known	silent	bitte	-	-	-	no_silent
+safe_known	silent	geht	-	-	-	no_silent
+safe_known	silent	heute	-	-	-	no_silent
+safe_known	silent	nix	-	-	-	no_silent
+safe_known	silent	moin	-	-	-	no_silent
+safe_known	silent	eh	-	-	-	no_silent
+safe_known	silent	fühle	-	-	-	no_silent
+safe_known	silent	genial	-	-	-	no_silent
+safe_known	silent	halt	-	-	-	no_silent
+safe_known	silent	schon	-	-	-	no_silent
+safe_known	silent	gross	-	-	-	no_silent
+safe_known	silent	mochte	-	-	-	no_silent
+safe_known	silent	gabe	-	-	-	no_silent
+safe_known	silent	war	-	-	-	no_silent
+veto_en	silent	ort	-	-	-	no_silent
+veto_en	silent	gab	-	-	-	no_silent
+veto_en	silent	mutter	-	-	-	no_silent
+veto_en	silent	spiel	-	-	-	no_silent
+veto_en	silent	grad	-	-	-	no_silent
+veto_en	silent	praxis	-	-	-	no_silent
+veto_en	silent	sue	-	-	-	no_silent
+veto_en	silent	bip	-	-	-	no_silent
+umlaut	silent	grun	-	-	grün	hit
+umlaut	silent	strase	-	-	straße	hit
+umlaut	silent	strasse	-	-	straße	hit
+umlaut	silent	munchen	-	-	münchen	hit
+umlaut	silent	uber	-	-	über	hit
+umlaut	silent	fur	-	-	für	hit
+umlaut	silent	frueh	-	-	früh	hit
+umlaut	silent	konnen	-	-	können	hit
+umlaut	silent	mude	-	-	müde	hit
+umlaut	silent	ubel	-	-	übel	hit
+compound	chip	bahnho	-	-	bahnhof	hit
+compound	chip	geburts	-	-	geburtstag	hit
+compound	chip	wochenen	-	-	wochenende	hit
+compound	chip	einkaufs	-	-	einkaufszentrum	hit
+compound	chip	fahrra	-	-	fahrrad	hit
+compound	chip	fruhst	-	-	frühstück	hit
+compound	chip	feierab	-	-	feierabend	hit
+compound	chip	hausaufga	-	-	hausaufgaben	hit
+compound	chip	schlafzim	-	-	schlafzimmer	hit
+compound	chip	kaffee	-	-	kaffee	hit
+compound	chip	supermarkt	-	-	supermarkt	hit
+compound	chip	wochenend	-	-	wochenende	hit
+compound	silent	bahnhf	-	-	bahnhof	hit
+contraction	chip	gehts	-	-	geht's	hit
+contraction	chip	gibts	-	-	gibt's	hit
+contraction	chip	ists	-	-	ist's	hit
+contraction	chip	wars	-	-	war's	hit
+contraction	chip	hats	-	-	hat's	hit
+contraction	chip	machs	-	-	mach's	hit
+nextword_chat	nextword	-	ich	-	habe	hit
+nextword_chat	nextword	-	ich	-	bin	hit
+nextword_chat	nextword	-	ich	-	werde	hit
+nextword_chat	nextword	-	ich	-	glaube	hit
+nextword_chat	nextword	-	ich	-	muss	hit
+nextword_chat	nextword	-	hab	-	ich	hit
+nextword_chat	nextword	-	habe	-	ich	hit
+nextword_chat	nextword	-	habe	-	die	hit
+nextword_chat	nextword	-	bin	-	ich	hit
+nextword_chat	nextword	-	wir	-	haben	hit
+nextword_chat	nextword	-	wir	-	können	hit
+nextword_chat	nextword	-	du	-	bist	hit
+nextword_chat	nextword	-	du	-	hast	hit
+nextword_chat	nextword	-	jetzt	-	mal	hit
+nextword_chat	nextword	-	jetzt	-	geht	hit
+nextword_chat	nextword	-	mal	-	sehen	hit
+nextword_chat	nextword	-	danke	-	dir	hit
+nextword_chat	nextword	-	danke	-	schön	hit
+nextword_chat	nextword	-	bis	-	bald	hit
+nextword_chat	nextword	-	bis	-	später	hit
+nextword_chat	nextword	-	bis	-	morgen	hit
+nextword_chat	nextword	-	gute	-	nacht	hit
+nextword_chat	nextword	-	liebe	-	grüße	hit
+nextword_chat	nextword	-	viele	-	grüße	hit
+nextword_chat	nextword	-	alles	-	klar	hit
+nextword_chat	nextword	-	wie	-	geht	hit
+nextword_chat	nextword	-	mach	-	gut	hit
+nextword_chat	nextword	-	moment	-	mal	hit
+nextword_chat	nextword	-	schon	-	mal	hit
+nextword_chat	nextword	-	gleich	-	mal	hit
+nextword_chat	nextword	-	guten	-	morgen	hit
+nextword_chat	nextword	-	schönen	-	tag	hit
+nextword_chat	nextword	-	habe	ich	die	hit
+nextword_common	nextword	-	das	-	land	hit
+nextword_common	nextword	-	das	-	jahr	hit
+nextword_common	nextword	-	und	-	die	hit
+nextword_common	nextword	-	der	-	stadt	hit
+nextword_common	nextword	-	muss	-	man	hit
+nextword_common	nextword	-	bis	-	zu	hit
+chip_pin	chip	ha	ich	-	habe	hit
+chip_pin	chip	bi	ich	-	bin	hit
+chip_pin	chip	ic	hab	-	ich	hit
+chip_pin	chip	bi	du	-	bist	hit
+chip_pin	chip	h	ich	-	habe	hit
+chip_pin	chip	mi	ich	-	mich	hit

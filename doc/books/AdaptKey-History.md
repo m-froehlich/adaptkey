@@ -27429,3 +27429,83 @@ build_en_dict.py BUILD VERIFY: PASS (dict.tsv sha256
 touches no veto surface). Full suite 2,015 green. Plan note: M1 done; M2 (D-582, the Golden-Set harness)
 follows and makes Vorher/Nachher numbers mandatory for every round after it.
 
+
+## §582 - D-582: the German chat golden set lands - 203 curated chat cases through the three device paths, the baseline measured and pinned (the Vorher for every round after this one)
+
+The dictionary-quality-next-level plan's M2, the "messbar machen, dann verbessern" round: a pure
+test round, no dictionary data change, no pack, no bump. Two files: `app/src/test/resources/
+german_chat_golden_set.tsv` (203 cases, TAB columns category/mode/typed/previous/previous2/expected/
+kind, header comments carry the schema) and `GermanChatEvaluationTest.kt` (five tests, the
+`FusionEvaluationTest` evaluation precedent). Case categories and stock: greeting 30, particle 32,
+typo_chat 19, typo_common 12, silent_pinned 2 (the device-confirmed dur->dir and mut->mit), safe_known
+19, veto_en 8, umlaut 10, compound 13, chip_pin 6 (D-503 pinning under typing), nextword_chat 33,
+nextword_common 6, gap_lexicon 7, contraction 6.
+
+Wiring mirrors the device exactly: the DE store from the real `dictionaries/de/dict.tsv` + `bigram.tsv`
+via `DictionaryAssetParser` into `InMemoryDictionaryStore` (assumeTrue guards when the trees are not
+reachable), the EN store from the real bundled `app/src/main/assets/en/dict.tsv` for the D-106 veto's
+other side; the DE provider is the production construction (GermanRules, Umlaut folding, default
+QWERTZ proximity, DEFAULT = MEDIUM aggressiveness). Three paths measured: chips =
+`suggestionsFor(includeExpensiveFallbacks = true)` (the deferred pass the user reads), hit@1/@3/@12;
+silent correction = the AdaptKeyService commit sequence verbatim - `diacriticRestoration` FIRST (so
+"fur"->"für" fires before the veto, because English knows "fur"), then `knownInOtherLanguage` against
+the real EN dictionary, then `autocorrectFor` - scored as precision/recall; next word =
+`nextWordSuggestions(prev, prevPrev)`, hit@1/@3/@12. Deliberately out of scope and documented as such
+in the KDoc: A-03's classifier verdict and A-13's recovery sit on top and can only ever suppress what
+is measured here; capitalisation is not one of the measured paths.
+
+D-582 BASELINE (2026-11-28, on the post-D-581 data) - the numbers every following round reports
+Vorher/Nachher against:
+
+- Chips: greeting n=30 hit@1=76% @3=86% @12=90%; particle n=32 @1=87% @3=93% @12=96%; compound
+  n=12 @1=75% @3=91% @12=100%; chip_pin n=6 100% at every depth (D-503 pinning works under typing).
+- Silent: typo_chat n=19 precision=0.89 recall=0.44; typo_common n=12 precision=0.78 recall=0.70;
+  silent_pinned 2/2; umlaut 10/10 (the one fully reliable repair path); veto_en 8/8 no-intervention;
+  safe_known 19/19 no-intervention.
+- Next word: nextword_chat n=33 @1=12% @3=24% @12=39%; nextword_common controls @1=66% @3=83%
+  @12=100% - the pipeline itself works, the chat half is the documented gap.
+
+The five findings the baseline surfaced:
+
+1. **The dakne-class now has its number**: chat-typo silent recall is 44%. The misses are
+   systematic - real, plausible typos whose best target is a low-frequency chat word
+   ("dankw"->danke 49, "hallp"->hallo 165, "moinn"->moin 18, "gester"->gestern 49, "suprr"->super 275,
+   "moiment"->moment 494) all return NO correction: `CorrectionConfidence` keeps them under
+   MEDIUM's 0.75 auto bar exactly as §1.3 predicted. M3's register floors are the fix; this harness
+   is their Vorher/Nachher instrument.
+2. **A real false positive, removed from the stock and recorded**: typing the rare-but-real
+   colloquial "wär" (freq 24) silently becomes "war" (81,209) - folded cost 0 through the
+   umlaut fold, so the A-01 override clears at every level. This is an unnoticed live behaviour of
+   the current confidence path, not an accepted one; the case left the no_silent class (it would
+   fail the exact safety pin) and stands as candidate material for the M5/M7 confidence work.
+3. **Three more measured false positives stay IN the stock as hit cases** (they drag the printed
+   precision, which is the point): "nich" (9, a legit colloquial dictionary entry) silently becomes
+   "noch" (adjacent i->o slip, cost 1, the override fires on 37,867/9); "eurch" becomes "durch"
+   (the vertical e->d slip at cost 1 beats "euch" at cost 2, cost-first ranking); "mehrr" becomes
+   "mehre" (trailing r->e cost 1 beats "mehr"'s blocked cost-2 path). Precision 0.89/0.78 printed
+   every run.
+4. **Dead chat contexts, per case**: after "danke " the blank-slate list is EMPTY (0 bigram rows),
+   after "gute " it is "Beziehungen und", after "moment " "der des in", after "guten " "Ruf und
+   Hoffnung" - the §1.7 register skew verbatim, now measured. M4's Vorher.
+5. **The lexicon gaps are zero for every single case**: gap_lexicon 0/7 (tschüss/tschüs/ciao/okay/
+   haha/krass/deins - typo candidates like "Schuss"/"CIA"/"Kay" fill the bar instead) and contraction
+   0/6 (gehts->"Gents geht gehrst" - "geht's" does not exist to be found). M3's Vorher, per case.
+
+Floors committed (rot-guards with headroom below the measured values, not targets - the printed
+numbers are the targets): greeting @3 >= 75%, particle @3 >= 80%, compound @12 >= 85%, chip_pin @3
+>= 90%; silent recall >= 0.30 and precision >= 0.60 across the four repair categories, with the
+device-confirmed silent_pinned pair pinned >= 0.99 recall and umlaut >= 0.85/0.95; nextword_common
+@3 >= 70%, nextword_chat @12 >= 25% (until M4 lifts it deliberately); the no_silent class exact-zero.
+The gap categories (gap_lexicon, contraction, nextword_chat's chat half) are print-only and asserted
+stocked (>= 7/6/33 cases) so no later round can silently lose the measure. Ranking constants
+(FUZZY_COST_DECAY 0.01, PREFIX_LENGTH_DECAY 0.3, TRIGRAM_BACKOFF_WEIGHT 0.4) untouched - the harness
+is their calibration instrument for a future tuning round, each with a device Gegenprobe per the
+§575 pattern; this round establishes the baseline and keeps them exactly as they are.
+
+Checks: quality_gate PASS on both mandated cuts (de --capitalises-nouns, en --lang en); no EN asset
+change so no reseed bump (M8-pin n/a); no dictionary data change so no pack and no version bump
+(test-round precedence). Full suite 2,020 green (2,015 + 5). Environment note: the bare `gradlew`
+failed again with the drifted JAVA_HOME - the round ran through the Android Studio JBR
+(`C:\Program Files\Android\Android Studio\jbr`, JDK 21.0.10), the same resolution the earlier
+jdk-25 note documented. Plan note: M2 done; next M3 (D-583, the German messaging register +
+apostrophe contractions, de pack 56, first round whose visible gain is measurable in these numbers).

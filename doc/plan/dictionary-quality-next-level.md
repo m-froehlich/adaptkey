@@ -7,8 +7,13 @@ gesenkt behalten (M1). Umsetzung in Runden (§5); jede Runde hat ihren eigenen r
 Session-Chip (Seitenleisten-Gruppe „Wörterbuch-Runden") und startet erst auf ausdrücklichen
 Start-Befehl in ihrem Chip. **M1 (D-581) erledigt 2026-11-28 (§581): DE-Pack 55 gepusht,
 EN-Reseed 4, Gate mit Typability + Denylist; Abweichung von der M1-Datenliste: EN `amp`
-bleibt (echte Verb-Familie amp/amping/amped, §4-Philosophie, Freigabe im Chip).** Nächste
-Runde: M2 (D-582, Golden-Set — ab dann Vorher/Nachher je Runde).**
+bleibt (echte Verb-Familie amp/amping/amped, §4-Philosophie, Freigabe im Chip).**
+**M2 (D-582) erledigt 2026-11-28 (§582): Golden-Set-Harness steht (203 kuratierte Fälle,
+`GermanChatEvaluationTest` über die drei Geräte-Pfade), Baseline dokumentiert — die Kernzahl:
+stille Chat-Typo-Reparatur Recall 44 % (die dakne-Klasse unter der MEDIUM-Bar); Vorher/Nachher
+ist ab jetzt für jede Runde Pflicht.** Nächste Runde: M3 (D-583, DE-Messaging-Register +
+Apostroph-Kontraktionen, Pack 56 — die erste Runde, deren sichtbarer Gewinn in diesen Zahlen
+steigt).**
 
 Origin: Nutzer-Anfrage (2026-11-26). Die Wörterbuch-Qualität soll „auf ein neues Level“: bessere
 Chips, besser funktionierende Auto-Korrektur, echter messbarer und sichtbarer Mehrwert. Deutsch ist
