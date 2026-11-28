@@ -229,6 +229,7 @@
     <string name="d280_intro">Додатни језици необавезна су преузимања (речник сваког од њих није укључен у апликацију да би остала мала) - преузмите датотеку једном у прегледачу, а затим је овде увезите. После ради потпуно ван мреже, као и све остало у овој апликацији.</string>
     <string name="d280_status_installed">Инсталирано.</string>
     <string name="d280_status_update_available">Инсталирано - доступно је ажурирање.</string>
+    <string name="d594_space_update_label">Доступно је ажурирање</string>
     <string name="d280_status_not_installed">Није инсталирано.</string>
     <string name="d280_download">1. Преузми (у прегледачу)</string>
     <string name="d280_import">2. Увези преузету датотеку</string>

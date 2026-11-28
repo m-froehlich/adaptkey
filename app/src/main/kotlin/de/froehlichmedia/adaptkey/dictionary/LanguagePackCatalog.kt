@@ -3651,4 +3651,48 @@ object LanguagePackCatalog {
             version = 3
         )
     )
+    
+    /**
+     * D-593: the catalog entry for [language], or null when the language has no hosted pack
+     * ([ENTRIES] deliberately does not list every [Language] - see the class KDoc). The one lookup the
+     * space-bar update marker's own predicate needs, kept next to the data so a caller cannot invent a
+     * second, differing notion of "this language has a pack".
+     */
+    fun entryFor(language: Language): Entry? = ENTRIES.firstOrNull { it.language == language }
+    
+    /**
+     * D-593: whether the space bar of the currently active [language] should show the update marker -
+     * the *exact* predicate `LanguagePacksActivity.buildRow()` already draws its per-row
+     * "update available" hint from, mirrored here so the keyboard's marker and the settings screen can
+     * never disagree about what an update is. Deliberately pure (the caller reads the store), so the
+     * D-334 semantics travel with it:
+     *
+     * - the language must actually be installed (a pack the user never installed has nothing to update),
+     * - the catalog entry's own [Entry.version] must be strictly newer than the installed version,
+     * - and the hint must not be D-334-suppressed: [suppressedCatalogVersion] at or past the catalog's
+     *   own version means the user already attempted this very update and the hosted archive turned out
+     *   stale - the marker must not claim an update that is not there to install.
+     *
+     * A language with no catalog entry at all (English, which is bundled and never listed, or any
+     * community-imported language without hosting) has nothing recognisable to update, so it never
+     * marks.
+     *
+     * @param language the active input language
+     * @param isInstalled whether [language]'s pack is installed (English is never - it is bundled)
+     * @param installedVersion the version [de.froehlichmedia.adaptkey.language.InstalledLanguagesStore]
+     *        recorded for [language]'s install
+     * @param suppressedCatalogVersion the D-334 dismissal recorded for [language], 0 when none
+     * @return whether the update marker belongs on this language's space bar
+     */
+    fun updateAvailableFor(
+        language: Language,
+        isInstalled: Boolean,
+        installedVersion: Int,
+        suppressedCatalogVersion: Int
+    ): Boolean {
+        val entry = entryFor(language) ?: return false
+        return isInstalled &&
+            installedVersion < entry.version &&
+            suppressedCatalogVersion < entry.version
+    }
 }

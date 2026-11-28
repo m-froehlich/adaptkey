@@ -267,6 +267,10 @@
     <string name="d280_intro">Additional languages are optional downloads (each one\'s dictionary is not bundled in the app, to keep it small) - download the file once in the browser, then import it here. Afterwards it works fully offline, like everything else in this app.</string>
     <string name="d280_status_installed">Installed.</string>
     <string name="d280_status_update_available">Installed - update available.</string>
+    <!-- D-594: the space-bar update marker's own second line - the settings screen's hint above, minus
+         its "installed -" prefix and full stop: on the key the language endonym already says installed,
+         and a key label carries no sentence punctuation. -->
+    <string name="d594_space_update_label">Update available</string>
     <string name="d280_status_not_installed">Not installed.</string>
     <string name="d280_download">1. Download (in the browser)</string>
     <string name="d280_import">2. Import the downloaded file</string>

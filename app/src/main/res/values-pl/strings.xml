@@ -229,6 +229,7 @@
     <string name="d280_intro">Dodatkowe języki to opcjonalne pobrania (słownik każdego z nich nie jest dołączony do aplikacji, aby była mała) - pobierz plik raz w przeglądarce, a potem zaimportuj go tutaj. Potem działa w pełni offline, jak wszystko inne w tej aplikacji.</string>
     <string name="d280_status_installed">Zainstalowany.</string>
     <string name="d280_status_update_available">Zainstalowany - dostępna aktualizacja.</string>
+    <string name="d594_space_update_label">Dostępna aktualizacja</string>
     <string name="d280_status_not_installed">Niezainstalowany.</string>
     <string name="d280_download">1. Pobierz (w przeglądarce)</string>
     <string name="d280_import">2. Zaimportuj pobrany plik</string>

@@ -229,6 +229,7 @@
     <string name="d280_intro">A további nyelvek opcionális letöltések (mindegyik szótára nincs benne az alkalmazásban, hogy kicsi maradjon) - töltsd le a fájlt egyszer a böngészőben, majd importáld itt. Utána teljesen offline működik, mint minden más ebben az alkalmazásban.</string>
     <string name="d280_status_installed">Telepítve.</string>
     <string name="d280_status_update_available">Telepítve - frissítés érhető el.</string>
+    <string name="d594_space_update_label">Frissítés érhető el</string>
     <string name="d280_status_not_installed">Nincs telepítve.</string>
     <string name="d280_download">1. Letöltés (a böngészőben)</string>
     <string name="d280_import">2. A letöltött fájl importálása</string>

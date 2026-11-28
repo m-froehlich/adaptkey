@@ -229,6 +229,7 @@
     <string name="d280_intro">Дополнительные языки — необязательная загрузка (словарь каждого не входит в приложение, чтобы оно оставалось небольшим): скачайте файл один раз в браузере, затем импортируйте его здесь. После этого он работает полностью автономно, как и всё остальное в этом приложении.</string>
     <string name="d280_status_installed">Установлен.</string>
     <string name="d280_status_update_available">Установлен — доступно обновление.</string>
+    <string name="d594_space_update_label">Доступно обновление</string>
     <string name="d280_status_not_installed">Не установлен.</string>
     <string name="d280_download">1. Скачать (в браузере)</string>
     <string name="d280_import">2. Импортировать скачанный файл</string>

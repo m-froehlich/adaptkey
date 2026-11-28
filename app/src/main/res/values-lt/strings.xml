@@ -229,6 +229,7 @@
     <string name="d280_intro">Papildomos kalbos yra neprivalomi atsisiuntimai (kiekvienos žodynas neįtrauktas į programą, kad ji išliktų maža) - atsisiųskite failą vieną kartą naršyklėje, o tada importuokite čia. Po to jis veikia visiškai neprisijungęs, kaip ir viskas kita šioje programoje.</string>
     <string name="d280_status_installed">Įdiegta.</string>
     <string name="d280_status_update_available">Įdiegta - yra naujinys.</string>
+    <string name="d594_space_update_label">Yra naujinys</string>
     <string name="d280_status_not_installed">Neįdiegta.</string>
     <string name="d280_download">1. Atsisiųsti (naršyklėje)</string>
     <string name="d280_import">2. Importuoti atsisiųstą failą</string>

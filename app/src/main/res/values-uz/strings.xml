@@ -229,6 +229,7 @@
     <string name="d280_intro">Qo‘shimcha tillar ixtiyoriy yuklab olishdir (har birining lug‘ati ilovaga kiritilmagan, shuning uchun ilova kichik qoladi) - faylni brauzerda bir marta yuklab oling, so‘ng shu yerda import qiling. Shundan keyin bu ilovadagi hamma narsa kabi butunlay oflayn ishlaydi.</string>
     <string name="d280_status_installed">O‘rnatilgan.</string>
     <string name="d280_status_update_available">O‘rnatilgan - yangilanish mavjud.</string>
+    <string name="d594_space_update_label">Yangilanish mavjud</string>
     <string name="d280_status_not_installed">O‘rnatilmagan.</string>
     <string name="d280_download">1. Yuklab olish (brauzerda)</string>
     <string name="d280_import">2. Yuklab olingan faylni import qilish</string>

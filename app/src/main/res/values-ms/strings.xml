@@ -229,6 +229,7 @@
     <string name="d280_intro">Bahasa tambahan ialah muat turun pilihan (kamus setiap satunya tidak disertakan dalam aplikasi, supaya kekal kecil) - muat turun fail sekali dalam pelayar, kemudian import di sini. Selepas itu ia berfungsi sepenuhnya luar talian, seperti segala yang lain dalam aplikasi ini.</string>
     <string name="d280_status_installed">Dipasang.</string>
     <string name="d280_status_update_available">Dipasang - kemas kini tersedia.</string>
+    <string name="d594_space_update_label">Kemas kini tersedia</string>
     <string name="d280_status_not_installed">Belum dipasang.</string>
     <string name="d280_download">1. Muat turun (dalam pelayar)</string>
     <string name="d280_import">2. Import fail yang dimuat turun</string>

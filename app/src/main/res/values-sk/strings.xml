@@ -229,6 +229,7 @@
     <string name="d280_intro">Ďalšie jazyky sú voliteľné stiahnutia (slovník každého z nich nie je súčasťou aplikácie, aby zostala malá) - stiahnite súbor raz v prehliadači a potom ho importujte tu. Potom funguje úplne offline ako všetko ostatné v tejto aplikácii.</string>
     <string name="d280_status_installed">Nainštalované.</string>
     <string name="d280_status_update_available">Nainštalované - je dostupná aktualizácia.</string>
+    <string name="d594_space_update_label">Je dostupná aktualizácia</string>
     <string name="d280_status_not_installed">Nenainštalované.</string>
     <string name="d280_download">1. Stiahnuť (v prehliadači)</string>
     <string name="d280_import">2. Importovať stiahnutý súbor</string>

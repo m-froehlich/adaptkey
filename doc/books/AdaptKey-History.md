@@ -27509,3 +27509,59 @@ failed again with the drifted JAVA_HOME - the round ran through the Android Stud
 (`C:\Program Files\Android\Android Studio\jbr`, JDK 21.0.10), the same resolution the earlier
 jdk-25 note documented. Plan note: M2 done; next M3 (D-583, the German messaging register +
 apostrophe contractions, de pack 56, first round whose visible gain is measurable in these numbers).
+
+## §583 - D-594 (+D-593/D-595/D-596): the space-bar update marker lands - the active language's stale pack becomes visible exactly where typing happens, and the space long-press becomes the direct route to the fix
+
+Origin: Nutzer-Anfrage (2026-11-28): "Es hängt einiges von einem aktuellen Sprachpaket ab. Deshalb
+will ich auf diese Weise gerne sicherstellen, dass das nicht vergessen wird" - the D-579/D-580
+deployment lesson in UI form: the packs screen held the only "Update verfügbar" hint, seen by whoever
+happened to open it. Three Nutzer-Calls, all taken the same day: Farbe = Amber-Vollfläche statt Grün
+(Grün sagt "fertig", Rot sagt "Fehler", das App-Blau ist durch die suggested-row-Tönung und den
+verbatim-chip belegt - Amber besetzt exakt "da ist etwas für dich zu tun, nichts ist kaputt");
+Long-Press = Override immer (D-401 pausiert im Update-Zustand bis zur Installation, unabhängig vom
+cursorControlEnabled-Setting - der gewollte Druck); Bestätigung = kurzer Grün-Blitz nach der
+Installation (Grün in seiner richtigen Rolle: der kurze "done", nie der Dauerzustand).
+
+Signal (D-593): `LanguagePackCatalog.entryFor`/`updateAvailableFor` - das exakte
+`LanguagePacksActivity.buildRow()`-Prädikat (installiert + Catalog strikt neuer + keine D-334-
+Unterdrückung) als pure, JVM-testbare Funktion; kein zweites Wahrheits-Oracle. Gepusht vom Service in
+`updateSpaceLabel()` - dem bestehenden Space-Affordance-Choke-Punkt (Label D-003, Chevrons D-502) -,
+sodass jeder bestehende Refresh-Punkt (Sprachwechsel, erste Frame, jeder Feldfokus) neu rechnet und
+der Marker eine fertige Installation nie überlebt. English (gebündelt, nie im Catalog) und Sprachen
+ohne Catalog-Entry markieren nie.
+
+Darstellung (D-594): Amber-Vollfläche auf dem Letters-Surface-Space-Key (D-097-konsistent - dort, wo
+auch das Sprachlabel steht; nie in URL-/E-Mail-Modus oder Emoji-Capture). Zweizeiliger, vertikal
+zentrierter Block: Endonym auf angehobener Baseline, das eigene kurze `d594_space_update_label`
+darunter (12dp) - dokumentierte Umsetzungs-Abweichung vom Plan: `d280_status_update_available` hätte
+seinen "Installiert - "-Vorspann und den Punkt mit auf die Taste gebracht; der neue String steht in
+allen 32 gepflegten Sprachen, je Sprache in der etablierten Wortwahl des eigenen D-280-Hinweises.
+Policy + Geometrie pure in `keyboard/SpaceUpdateMarker` (das SpaceSwipeHints-Muster: visible,
+twoLineBaselines, fits mit der 0.82-Blockhöhen-Grenze, damit ein kurzer Key auf Fläche + Endonym
+zurückfällt, nie eine abgeschnittene Zeile zeichnet); die D-130-Fade spielt auf der erhöhten Baseline
+weiter; D-416-Punkt und D-502-Chevrons unverändert (ihr Amber-Kontrast ist Gerät-Check-Restposten).
+
+Long-Press (D-595): eigener Candidate-Zweig in `scheduleLongPress()` - bei Update-Pending feuert der
+Space-Long-Press den System-Long-Press-Haptic und navigiert direkt in `LanguagePacksActivity`
+(`EXTRA_HIGHLIGHT_LANGUAGE_CODE` der aktiven Sprache, der Onboarding-Pfad); D-401 pausiert bis zur
+Installation. Bewegungs-Abbruch unverändert (bewusstes Halten bleibt Pflicht); die Emoji-Capture
+nullt den neuen Listener, sodass dort gar kein Space-Long-Press scheduliert wird und sich Space exakt
+wie bisher verhält; nach der Installation kehrt D-401 zurück.
+
+Grün-Blitz (D-596): der INSTALL-Zweig der Paket-Seite setzt `SpaceInstallFlashStore` (eigenes
+Prefs-File - das Flag überlebt einen Prozess-Tod zwischen Import und nächstem Keyboard-Auftritt;
+bewusst nicht im Backup-Export, der seine Quellen explizit aufzählt); der Service konsumiert es beim
+nächsten Feldfokus - nur, wo die Letters-Ebene sichtbar ist (sonst verzögert, nie verloren) - und
+flasht die Taste 600 ms in `space_installed_flash` (#43A047, das D-247-Gelernt-Grün). Farben in
+beiden Paletten: `space_update_background` #FFB300 hell / #FFA000 dunkel (eine Stufe tiefer gegen
+Glare auf #202124), `space_update_text` #1A1C1E dunkel (die Nacht-`key_text` wäre auf Amber weg).
+
+Checks: compile clean; 18 neue JVM-Tests grün (Prädikat 5 in `LanguagePackCatalogTest`, Marker-
+Policy/Geometrie 8 in `SpaceUpdateMarkerTest`) plus die 5 bestehenden Catalog-Tests; full suite
+2,033 green (2,020 + 13); fresh 1.3.30/630 release APK built and hash-recorded
+(b1cd40ba4154bf397742abf7839cefbf0193c3fe6cac5d100e14b2ce8de396a3, built from the bumped tree - the
+Bump as its own concluding commit, before the build per version-bump.md). Offen, absichtlich: die
+Gerät-Checks (Tag/Nacht-Kontrast der Amber-Fläche, Chevrons/Punkt-Kontrast auf Amber, D-401-Pause
+und Rückkehr mit Setting an und aus, Grün-Blitz genau einmal auch nach Prozess-Tod, Marker weg nach
+der Installation, D-334-Ausblendung) - sie stehen im Plan-Status-Header; die Gerät-Bestätigung wird
+als eigener Docs-Commit nachgetragen.

@@ -229,6 +229,7 @@
     <string name="d280_intro">Ang karagdagang mga wika ay opsyonal na download (ang diksyunaryo ng bawat isa ay hindi kasama sa app, para manatili itong maliit) - i-download ang file nang isang beses sa browser, saka i-import dito. Pagkatapos nito ay gumagana ito nang ganap na offline, tulad ng lahat ng iba pa sa app na ito.</string>
     <string name="d280_status_installed">Naka-install.</string>
     <string name="d280_status_update_available">Naka-install - may available na update.</string>
+    <string name="d594_space_update_label">May available na update</string>
     <string name="d280_status_not_installed">Hindi naka-install.</string>
     <string name="d280_download">1. I-download (sa browser)</string>
     <string name="d280_import">2. I-import ang na-download na file</string>

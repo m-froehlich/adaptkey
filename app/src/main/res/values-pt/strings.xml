@@ -229,6 +229,7 @@
     <string name="d280_intro">Os idiomas adicionais são downloads opcionais (o dicionário de cada um não vem no aplicativo, para mantê-lo pequeno) - baixe o arquivo uma vez no navegador e importe-o aqui. Depois funciona totalmente off-line, como todo o resto deste aplicativo.</string>
     <string name="d280_status_installed">Instalado.</string>
     <string name="d280_status_update_available">Instalado - atualização disponível.</string>
+    <string name="d594_space_update_label">Atualização disponível</string>
     <string name="d280_status_not_installed">Não instalado.</string>
     <string name="d280_download">1. Baixar (no navegador)</string>
     <string name="d280_import">2. Importar o arquivo baixado</string>

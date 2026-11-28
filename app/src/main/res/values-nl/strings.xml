@@ -229,6 +229,7 @@
     <string name="d280_intro">Extra talen zijn optionele downloads (het woordenboek van elk ervan zit niet in de app, om die klein te houden) - download het bestand eenmalig in de browser en importeer het hier. Daarna werkt het volledig offline, zoals al het andere in deze app.</string>
     <string name="d280_status_installed">Geïnstalleerd.</string>
     <string name="d280_status_update_available">Geïnstalleerd - update beschikbaar.</string>
+    <string name="d594_space_update_label">Update beschikbaar</string>
     <string name="d280_status_not_installed">Niet geïnstalleerd.</string>
     <string name="d280_download">1. Downloaden (in de browser)</string>
     <string name="d280_import">2. Het gedownloade bestand importeren</string>

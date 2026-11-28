@@ -47,4 +47,11 @@
     <color name="touch_model_fill">#334DB6A2</color>
     <color name="touch_model_stroke">#884DB6A2</color>
     <color name="touch_model_dot">#E0EF5350</color>
+
+    <!-- D-594: the space-bar update marker's amber, one step deeper (Material Amber 700 vs the light
+         palette's Amber 600) against the dark keyboard body - the same "something to do here" signal
+         with a little less glare on #202124. The marker's dark label ink (space_update_text) and the
+         D-596 green flash fill (space_installed_flash) are identical in both modes and stay in
+         values/colors.xml per this file's own header rule. -->
+    <color name="space_update_background">#FFA000</color>
 </resources>

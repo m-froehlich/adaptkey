@@ -127,6 +127,7 @@ import de.froehlichmedia.adaptkey.language.LanguageCycle
 import de.froehlichmedia.adaptkey.language.LanguageProfileLoader
 import de.froehlichmedia.adaptkey.language.LanguageRulesRegistry
 import de.froehlichmedia.adaptkey.language.SuggestedLanguages
+import de.froehlichmedia.adaptkey.language.SpaceInstallFlashStore
 import de.froehlichmedia.adaptkey.prediction.AdaptiveLearning
 import de.froehlichmedia.adaptkey.prediction.CapitalisationProposal
 import de.froehlichmedia.adaptkey.prediction.HighCertaintyCapitalisation
@@ -2386,6 +2387,9 @@ class AdaptKeyService : InputMethodService() {
         keyboardView?.urlMode = urlMode
         // D-03: label the space bar with the current input language.
         updateSpaceLabel()
+        // D-596: the one-shot green confirmation after a language-pack install, now that the fresh
+        // field focus has (re)computed the marker itself.
+        maybeFlashSpaceInstalled()
         // Pick up an offset model seeded by the calibration screen (K-01). Safe on a fresh field (not a
         // restart): the live model was persisted on the previous onFinishInput, so storage is current.
         if (!restarting) {
@@ -4477,10 +4481,10 @@ class AdaptKeyService : InputMethodService() {
     }
     
     /**
-     * Wires [keyboardView]'s five listeners to their ordinary handlers - the ones that read the real
+     * Wires [keyboardView]'s ordinary listeners to their handlers - the ones that read the real
      * [currentInputConnection] and touch composing state. Factored out of [onCreateInputView] so
      * [exitEmojiSearch] can restore exactly the same wiring [enterEmojiSearch] replaced, without
-     * duplicating the five listener assignments in two places.
+     * duplicating the listener assignments in two places.
      */
     private fun wireLetterKeyListeners() {
         val view = keyboardView ?: return
@@ -4492,6 +4496,9 @@ class AdaptKeyService : InputMethodService() {
         view.onBackspaceRepeatEndListener = AdaptKeyboardView.OnBackspaceRepeatEndListener { handleBackspaceRepeatEnd() }
         view.onLongPressPopupListener = AdaptKeyboardView.OnLongPressPopupListener { key, alternative -> handleLongPressAlternative(key, alternative) }
         view.onCursorControlListener = cursorControlListener
+        // D-595: the space-bar update marker's navigation shortcut - always wired (the override applies
+        // regardless of the cursor-control setting); emoji search nulls it again while it captures.
+        view.onSpaceUpdateNavigateListener = AdaptKeyboardView.OnSpaceUpdateNavigateListener { openLanguagePacksFromSpaceMarker() }
         // D-516/G-09: the glide stroke lifecycle (null while emoji search captures the keyboard).
         view.onGlideListener = glideListener
     }
@@ -4517,6 +4524,10 @@ class AdaptKeyService : InputMethodService() {
         view?.onBackspaceRepeatListener = null
         view?.onLongPressPopupListener = null
         view?.onGlideListener = null
+        // D-595: the same for the space-bar update marker's navigation shortcut - the capture mode's
+        // space long-press stays a plain no-op exactly as before (the view-side candidate checks the
+        // listener, so no space long-press is even scheduled). Restored by wireLetterKeyListeners().
+        view?.onSpaceUpdateNavigateListener = null
         // D-401: the space-bar cursor-control gesture must never arm while search captures every keystroke
         // locally (see this function's own class KDoc) - cursorControlEnabled is the one flag the view
         // itself gates arming on, so forcing it off here is enough; restored from the real setting in
@@ -4675,11 +4686,21 @@ class AdaptKeyService : InputMethodService() {
      * D-03: pushes the current input language's display label onto the space bar. D-502: this is the space
      * bar's one language-affordance choke point, so it also pushes the swipe-chevron availability (at least
      * one other language installed) - the two must never disagree, since the chevrons advertise exactly the
-     * gesture the label's language participates in.
+     * gesture the label's language participates in. D-593: it likewise pushes the update marker's signal
+     * ([LanguagePackCatalog.updateAvailableFor], the exact `LanguagePacksActivity.buildRow()` predicate
+     * incl. D-334 suppression, for the active language) - every existing refresh point (language change,
+     * first frame, each fresh field) re-reads the stores here, so the marker cannot outlive a completed
+     * install even when the pack page's import flow never notifies the service directly.
      */
     private fun updateSpaceLabel() {
         keyboardView?.spaceLabel = languageLabel(activeLanguage)
         keyboardView?.languageSwipeAvailable = LanguageCycle.alternativeExists(InstalledLanguagesStore.load(this))
+        keyboardView?.spaceUpdateAvailable = LanguagePackCatalog.updateAvailableFor(
+            language = activeLanguage,
+            isInstalled = activeLanguage in InstalledLanguagesStore.load(this),
+            installedVersion = InstalledLanguagesStore.installedVersion(this, activeLanguage),
+            suppressedCatalogVersion = InstalledLanguagesStore.suppressedCatalogVersion(this, activeLanguage)
+        )
     }
     
     /**
@@ -4692,6 +4713,47 @@ class AdaptKeyService : InputMethodService() {
      * @return the label to display
      */
     private fun languageLabel(language: Language): String = language.endonym
+    
+    /**
+     * D-595: the space-bar update marker's long-press target - straight into the language packs screen
+     * with the active language highlighted, the same launch-and-highlight shape onboarding's own
+     * language step already uses. The predicate only ever marks the *active* language, so the highlight
+     * names exactly the one row the user came here for.
+     */
+    private fun openLanguagePacksFromSpaceMarker() {
+        launchFromKeyboard(LanguagePacksActivity::class.java) {
+            putExtra(LanguagePacksActivity.EXTRA_HIGHLIGHT_LANGUAGE_CODE, activeLanguage.code)
+        }
+    }
+    
+    /**
+     * D-596: consumes the one-shot post-install flag ([SpaceInstallFlashStore]) and flashes the space
+     * bar green exactly once - the brief "done" acknowledgement that green exists for here, never a
+     * persistent state. Consumed only where the acknowledgement is actually visible: the letters
+     * surface's space key, the same key state D-594's marker occupies. A field focus that opens on a
+     * symbol page, in URL-/email-mode, or inside the emoji-search capture leaves the flag armed for the
+     * next ordinary field - the confirmation is delayed, never lost.
+     *
+     * Called from [onStartInputView] right after [updateSpaceLabel]: the marker has just been
+     * recomputed (and after an install is already false), so the flash plays on the ordinary key and
+     * never fights the amber fill.
+     */
+    private fun maybeFlashSpaceInstalled() {
+        if (!SpaceInstallFlashStore.isPending(this)) {
+            return
+        }
+        val view = keyboardView
+        val spaceKeyVisible = view != null &&
+            !emojiSearchActive &&
+            surface == InputSurface.LETTERS &&
+            !urlMode &&
+            !emailMode
+        if (!spaceKeyVisible) {
+            return
+        }
+        SpaceInstallFlashStore.clear(this)
+        view?.flashSpaceInstalled()
+    }
     
     /**
      * Handles a swipe gesture (§4 G-01 … G-03, the L-03 upward swipe to the symbol layer, and §48's

@@ -149,6 +149,20 @@ class AdaptKeyboardView @JvmOverloads constructor(
     }
     
     /**
+     * D-595: invoked when the space key's long-press fires while the active language's pack has a
+     * pending update ([AdaptKeyboardView.spaceUpdateAvailable]) - the marker's own navigation shortcut
+     * to the language packs screen. While the update is pending the D-401 cursor-control long-press is
+     * deliberately paused in favour of this (Nutzer-Call 2026-11-28: the override applies regardless of
+     * the cursor-control setting); only once the pack is installed does the space long-press arm cursor
+     * control again. Nulled while emoji search captures the keyboard, so capture mode's space long-press
+     * stays a no-op exactly as before.
+     */
+    fun interface OnSpaceUpdateNavigateListener {
+        
+        fun onSpaceUpdateNavigate()
+    }
+    
+    /**
      * D-516/G-09: callbacks for the glide-typing stroke lifecycle. The view owns the touch stream,
      * the claim classification ([GlideGestureController]) and the trail drawing; the listener (the
      * service) owns recognition and every composing/commit side. [onGlideReleased] carries the
@@ -232,6 +246,9 @@ class AdaptKeyboardView @JvmOverloads constructor(
     var onLongPressPopupListener: OnLongPressPopupListener? = null
 
     var onCursorControlListener: OnCursorControlListener? = null
+
+    /** D-595: the space-bar update marker's navigation shortcut (see [OnSpaceUpdateNavigateListener]). */
+    var onSpaceUpdateNavigateListener: OnSpaceUpdateNavigateListener? = null
 
     /** D-516/G-09: the glide-typing stroke lifecycle; null while the feature or the field forbids it. */
     var onGlideListener: OnGlideListener? = null
@@ -321,6 +338,61 @@ class AdaptKeyboardView @JvmOverloads constructor(
         canvas.drawText(LANGUAGE_SWIPE_RIGHT_GLYPH, rect.right - inset, baseline, spaceSwipeHintPaint)
     }
     
+    /**
+     * D-594: whether [key] is the space key the update marker belongs on right now - [SpaceUpdateMarker]
+     * 's tested policy plus the one thing the policy cannot know, that this is the space key being drawn.
+     */
+    private fun showsSpaceUpdateMarker(key: Key): Boolean {
+        return key.code == KeyCode.SPACE && SpaceUpdateMarker.visible(
+            surface,
+            urlMode,
+            emailMode,
+            languageLabelShown = spaceLabel.isNotEmpty(),
+            updateAvailable = spaceUpdateAvailable
+        )
+    }
+    
+    /**
+     * D-594: whether the marker's two lines fit the space key's height ([SpaceUpdateMarker.fits]) -
+     * false means the marker draws as amber fill + endonym at the ordinary centred baseline only,
+     * never as a clipped second line.
+     */
+    private fun spaceMarkerTwoLinesFit(keyHeightPx: Float): Boolean {
+        return SpaceUpdateMarker.fits(
+            keyHeightPx = keyHeightPx,
+            mainAscentPx = textPaint.ascent(),
+            mainDescentPx = textPaint.descent(),
+            subAscentPx = spaceUpdateTextPaint.ascent(),
+            subDescentPx = spaceUpdateTextPaint.descent(),
+            lineGapPx = dp(SpaceUpdateMarker.LINE_GAP_DP)
+        )
+    }
+    
+    /**
+     * D-594: draws the marker's two-line label - the endonym on its raised baseline, the localized
+     * "update available" line beneath it, the block as a whole vertically centred on the key
+     * (Nutzer-Call 2026-11-28: the two lines must not read as "pushed down"). Only called once
+     * [spaceMarkerTwoLinesFit] confirmed the room. The D-130 language-change fade keeps playing on the
+     * marker's own (raised) endonym baseline, so the label swap animates inside the marked state
+     * instead of dropping the marker for the fade's duration.
+     */
+    private fun drawSpaceUpdateMarkerLabel(canvas: Canvas, cx: Float, centerY: Float) {
+        val twoLine = SpaceUpdateMarker.twoLineBaselines(
+            centerY = centerY,
+            mainAscent = textPaint.ascent(),
+            mainDescent = textPaint.descent(),
+            subAscent = spaceUpdateTextPaint.ascent(),
+            subDescent = spaceUpdateTextPaint.descent(),
+            lineGap = dp(SpaceUpdateMarker.LINE_GAP_DP)
+        )
+        if (spaceLabelFadeFrom != null) {
+            drawFadingSpaceLabel(canvas, cx, twoLine.mainBaseline)
+        } else {
+            canvas.drawText(spaceLabel, cx, twoLine.mainBaseline, textPaint)
+        }
+        canvas.drawText(spaceUpdateMarkerText, cx, twoLine.subBaseline, spaceUpdateTextPaint)
+    }
+    
     /** Personal offset model (T-03); when null the view resolves taps purely geometrically. */
     var offsetModel: OffsetModel? = null
     
@@ -350,6 +422,21 @@ class AdaptKeyboardView @JvmOverloads constructor(
      * language at all.
      */
     var languageSwipeAvailable: Boolean = false
+        set(value) {
+            field = value
+            invalidate()
+        }
+    
+    /**
+     * D-593/D-594: whether the active input language's installed pack has a strictly newer catalog
+     * version that the user has not already D-334-checked - the exact `LanguagePacksActivity.buildRow()`
+     * predicate, pushed by the service from its own `updateSpaceLabel()` language-affordance choke point
+     * so every label refresh recomputes it. While true, the letters surface's space bar draws the amber
+     * update marker ([SpaceUpdateMarker]) and its long-press navigates to the language packs screen
+     * ([onSpaceUpdateNavigateListener]) instead of arming the D-401 cursor control - until the pack is
+     * installed and the next push clears it.
+     */
+    var spaceUpdateAvailable: Boolean = false
         set(value) {
             field = value
             invalidate()
@@ -712,6 +799,17 @@ class AdaptKeyboardView @JvmOverloads constructor(
         paintSuppressedKey = null
         invalidate()
     }
+    
+    // D-596: the one-shot green confirmation flash after a language-pack install - green in its correct
+    // role as the brief "done", never the persistent state (that is D-594's amber marker). Replaces the
+    // ordinary space-key fill for spaceInstalledFlashDurationMs; much longer than the D-04 press flash
+    // because it must be read as an acknowledgement, not merely seen.
+    private var spaceInstalledFlashActive = false
+    private val spaceInstalledFlashRunnable = Runnable {
+        spaceInstalledFlashActive = false
+        invalidate()
+    }
+    private val spaceInstalledFlashDurationMs = 600L
     private val repressGapMs = 16L
     
     // D-07: the accelerating backspace-on-hold repeat. Scheduled on ACTION_DOWN of the backspace key and
@@ -971,6 +1069,26 @@ class AdaptKeyboardView @JvmOverloads constructor(
         color = ContextCompat.getColor(context, R.color.key_hint)
         textAlign = Paint.Align.CENTER
         textSize = dp(14f)
+    }
+    
+    // D-594: the space-bar update marker - a full amber fill plus the second line's own dark ink (a
+    // dedicated colour, not key_text: the night palette's light key_text would vanish on the amber).
+    // The second line is sized between the corner hints (11dp) and the label (20dp), same
+    // considered-starting-point precedent as every other visual constant in this file.
+    private val spaceUpdateBackgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = ContextCompat.getColor(context, R.color.space_update_background)
+    }
+    private val spaceUpdateTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = ContextCompat.getColor(context, R.color.space_update_text)
+        textAlign = Paint.Align.CENTER
+        textSize = dp(SpaceUpdateMarker.SUB_TEXT_SIZE_DP)
+    }
+    private val spaceUpdateMarkerText: String = context.getString(R.string.d594_space_update_label)
+    
+    // D-596: the one-shot green "install confirmed" fill, replacing the space key's ordinary paint for
+    // the flash duration (see spaceInstalledFlashActive above).
+    private val spaceInstalledFlashPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = ContextCompat.getColor(context, R.color.space_installed_flash)
     }
     
     // D-401: the cursor-control gesture's own crosshair - Stage 1 (moving the caret) reuses the app's
@@ -1251,6 +1369,9 @@ class AdaptKeyboardView @JvmOverloads constructor(
             if (isHiddenKey(key)) {
                 continue
             }
+            // D-594: the space bar's amber update-marker fill - below the press feedback (a pressed
+            // space must keep its ordinary flash) but above the ordinary paints.
+            val spaceMarker = showsSpaceUpdateMarker(key)
             val paint = when {
                 // D-184: this key is mid-repress-gap - paint it as unpressed for one frame even though
                 // pressedKey already points at it, so the following frame's highlight reads as a new blink.
@@ -1258,6 +1379,11 @@ class AdaptKeyboardView @JvmOverloads constructor(
                 // key is an ordinary symbol key in role and paints like any character key.
                 key === paintSuppressedKey -> if (key.code == KeyCode.CHAR || !key.specialStyling) keyPaint else specialKeyPaint
                 key === pressedKey || key === flashKey -> pressedKeyPaint
+                // D-596: the one-shot green install confirmation outranks the marker fill - the install
+                // has just happened, the "done" flash is the more current truth (and the service has
+                // already recomputed the marker off by the time this can show).
+                key.code == KeyCode.SPACE && spaceInstalledFlashActive -> spaceInstalledFlashPaint
+                key.code == KeyCode.SPACE && spaceMarker -> spaceUpdateBackgroundPaint
                 key.code == KeyCode.CHAR || !key.specialStyling -> keyPaint
                 else -> specialKeyPaint
             }
@@ -1288,9 +1414,14 @@ class AdaptKeyboardView @JvmOverloads constructor(
             val label = labelFor(key)
             val cx = rect.centerX()
             val baseline = rect.centerY() - (textPaint.descent() + textPaint.ascent()) / 2f
-            // D-130: the space key's own label cross-fades while a language-change acknowledgement is
-            // playing, instead of jumping straight to the new text.
-            if (key.code == KeyCode.SPACE && spaceLabelFadeFrom != null) {
+            // D-594: the marker's two-line block replaces the ordinary single-centred label when the
+            // key is tall enough; below it, the existing single-line behaviour (including the D-130
+            // fade) is untouched.
+            if (spaceMarker && spaceMarkerTwoLinesFit(rect.height())) {
+                drawSpaceUpdateMarkerLabel(canvas, cx, rect.centerY())
+            } else if (key.code == KeyCode.SPACE && spaceLabelFadeFrom != null) {
+                // D-130: the space key's own label cross-fades while a language-change acknowledgement
+                // is playing, instead of jumping straight to the new text.
                 drawFadingSpaceLabel(canvas, cx, baseline)
             } else {
                 canvas.drawText(label, cx, baseline, textPaint)
@@ -2144,12 +2275,26 @@ class AdaptKeyboardView @JvmOverloads constructor(
         // long-press action (KeyboardLayout.hasLongPressAction deliberately stays unaware of this
         // feature-toggle-gated case - see that function's own KDoc).
         val isCursorControlCandidate = key.code == KeyCode.SPACE && cursorControlEnabled
-        if (!KeyboardLayout.hasLongPressAction(key) && !isCursorControlCandidate) {
+        // D-595: while the active language's pack has a pending update, the space long-press is the
+        // amber marker's own navigation shortcut instead - D-401 stays paused until the pack is
+        // installed, regardless of the cursor-control setting (Nutzer-Call 2026-11-28). Requires a live
+        // listener so the emoji-search capture mode (which nulls it) schedules no space long-press at
+        // all, exactly as before; after the install clears spaceUpdateAvailable, cursor control returns.
+        val isUpdateNavigateCandidate = key.code == KeyCode.SPACE && spaceUpdateAvailable &&
+            onSpaceUpdateNavigateListener != null
+        if (!KeyboardLayout.hasLongPressAction(key) && !isCursorControlCandidate && !isUpdateNavigateCandidate) {
             return
         }
         val runnable = Runnable {
             if (pressedKey === key) {
                 longPressFired = true
+                if (isUpdateNavigateCandidate) {
+                    // D-595: the same plain system long-press haptic the D-401 arm uses - the
+                    // navigation is a deliberate action and should feel like one.
+                    performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                    onSpaceUpdateNavigateListener?.onSpaceUpdateNavigate()
+                    return@Runnable
+                }
                 if (isCursorControlCandidate) {
                     // D-401: the plain system long-press haptic, exactly like any other no-popup long-press
                     // below - this feature has no dedicated haptic setting of its own.
@@ -2653,6 +2798,20 @@ class AdaptKeyboardView @JvmOverloads constructor(
     private fun cancelFlash() {
         longPressHandler.removeCallbacks(flashRunnable)
         flashKey = null
+    }
+    
+    /**
+     * D-596: flashes the space bar green once, acknowledging a just-completed language-pack install -
+     * the caller (the service, at the next field focus where the letters surface's space key is
+     * actually visible) decides *whether* to flash; this only draws. Replaces any previous still-lit
+     * flash of its own kind; an ordinary D-04 press flash arriving mid-flash simply wins for its 16 ms
+     * and the green resumes for the rest of its duration.
+     */
+    fun flashSpaceInstalled() {
+        longPressHandler.removeCallbacks(spaceInstalledFlashRunnable)
+        spaceInstalledFlashActive = true
+        invalidate()
+        longPressHandler.postDelayed(spaceInstalledFlashRunnable, spaceInstalledFlashDurationMs)
     }
     
     /**

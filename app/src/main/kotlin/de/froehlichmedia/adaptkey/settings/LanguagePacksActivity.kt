@@ -30,6 +30,7 @@ import de.froehlichmedia.adaptkey.download.DownloadFileSupport
 import de.froehlichmedia.adaptkey.language.ActiveLanguageStore
 import de.froehlichmedia.adaptkey.language.InstalledLanguagesStore
 import de.froehlichmedia.adaptkey.language.Language
+import de.froehlichmedia.adaptkey.language.SpaceInstallFlashStore
 import java.io.File
 import java.text.Collator
 
@@ -324,6 +325,10 @@ class LanguagePacksActivity : SettingsScreenActivity() {
                 LanguagePackInstaller.VersionCheck.INSTALL -> {
                     LanguagePackInstaller.install(staged, LanguagePackStorage.packDir(this), language)
                     InstalledLanguagesStore.add(this, language, version)
+                    // D-596: the keyboard owes one green space-bar confirmation flash now - the
+                    // resident service consumes the flag at its next field focus (see
+                    // SpaceInstallFlashStore's own KDoc for why it is a prefs flag, not a service field).
+                    SpaceInstallFlashStore.markPending(this)
                     // D-502: a genuinely fresh install - the language had no pack before this archive
                     // was imported - selects the new language in the keyboard right away, so it is
                     // actually visible the next time the keyboard opens (the reason a user installs a

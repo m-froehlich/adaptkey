@@ -43,4 +43,97 @@ class LanguagePackCatalogTest {
             assertTrue(entry.version > 0, "${entry.language} has a non-positive version: ${entry.version}")
         }
     }
+    
+    // ---- D-593: the space-bar update marker predicate (the LanguagePacksActivity.buildRow() mirror) ----
+    
+    @Test
+    fun `D-593 installed with a strictly newer catalog version marks`() {
+        val entry = LanguagePackCatalog.entryFor(Language.GERMAN)!!
+        assertTrue(
+            LanguagePackCatalog.updateAvailableFor(
+                Language.GERMAN,
+                isInstalled = true,
+                installedVersion = entry.version - 1,
+                suppressedCatalogVersion = 0
+            )
+        )
+    }
+    
+    @Test
+    fun `D-593 installed but already current does not mark`() {
+        val entry = LanguagePackCatalog.entryFor(Language.GERMAN)!!
+        assertFalse(
+            LanguagePackCatalog.updateAvailableFor(
+                Language.GERMAN,
+                isInstalled = true,
+                installedVersion = entry.version,
+                suppressedCatalogVersion = 0
+            )
+        )
+        // A locally newer install (the stale-hosted-archive case from the other direction) is current too.
+        assertFalse(
+            LanguagePackCatalog.updateAvailableFor(
+                Language.GERMAN,
+                isInstalled = true,
+                installedVersion = entry.version + 1,
+                suppressedCatalogVersion = 0
+            )
+        )
+    }
+    
+    @Test
+    fun `D-593 not installed does not mark even with a newer catalog`() {
+        val entry = LanguagePackCatalog.entryFor(Language.GERMAN)!!
+        assertFalse(
+            LanguagePackCatalog.updateAvailableFor(
+                Language.GERMAN,
+                isInstalled = false,
+                installedVersion = entry.version - 1,
+                suppressedCatalogVersion = 0
+            )
+        )
+    }
+    
+    @Test
+    fun `D-334 a suppression at or past the catalog version hides the hint, an older one does not`() {
+        val entry = LanguagePackCatalog.entryFor(Language.GERMAN)!!
+        assertFalse(
+            LanguagePackCatalog.updateAvailableFor(
+                Language.GERMAN,
+                isInstalled = true,
+                installedVersion = entry.version - 1,
+                suppressedCatalogVersion = entry.version
+            )
+        )
+        assertFalse(
+            LanguagePackCatalog.updateAvailableFor(
+                Language.GERMAN,
+                isInstalled = true,
+                installedVersion = entry.version - 1,
+                suppressedCatalogVersion = entry.version + 1
+            )
+        )
+        assertTrue(
+            LanguagePackCatalog.updateAvailableFor(
+                Language.GERMAN,
+                isInstalled = true,
+                installedVersion = entry.version - 1,
+                suppressedCatalogVersion = entry.version - 1
+            )
+        )
+    }
+    
+    @Test
+    fun `D-593 a language with no catalog entry never marks`() {
+        // English is bundled and deliberately never listed (pinned by the test above) - its space bar
+        // has nothing recognisable to update, whatever the version numbers claim.
+        assertFalse(
+            LanguagePackCatalog.updateAvailableFor(
+                Language.ENGLISH,
+                isInstalled = true,
+                installedVersion = 0,
+                suppressedCatalogVersion = 0
+            )
+        )
+    }
 }

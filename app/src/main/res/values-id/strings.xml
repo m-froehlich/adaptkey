@@ -229,6 +229,7 @@
     <string name="d280_intro">Bahasa tambahan adalah unduhan opsional (kamus masing-masing tidak disertakan dalam aplikasi, agar tetap kecil) - unduh berkas sekali di peramban, lalu impor di sini. Setelah itu berfungsi sepenuhnya luring, seperti semua yang lain di aplikasi ini.</string>
     <string name="d280_status_installed">Terpasang.</string>
     <string name="d280_status_update_available">Terpasang - pembaruan tersedia.</string>
+    <string name="d594_space_update_label">Pembaruan tersedia</string>
     <string name="d280_status_not_installed">Belum terpasang.</string>
     <string name="d280_download">1. Unduh (di peramban)</string>
     <string name="d280_import">2. Impor berkas yang diunduh</string>

@@ -51,4 +51,19 @@
     <color name="touch_model_fill">#3300796B</color>
     <color name="touch_model_stroke">#8800796B</color>
     <color name="touch_model_dot">#E0D32F2F</color>
+    <!-- D-594: the space-bar update marker's full amber fill (Material Amber 600) - reads as "there is
+         something for you to do here, nothing is broken". Deliberately not green (that says "done",
+         the opposite of an open action), not red (that says "error"), and not the app's accent blue
+         (already taken by the suggested-language row tint and the verbatim chip). -->
+    <color name="space_update_background">#FFB300</color>
+    <!-- D-594: the marker's own label ink for the second line ("Update verfügbar") - deliberately dark,
+         NOT key_text: the night palette's key_text is light and would vanish on the amber fill.
+         Identical in both modes, so it stays absent from values-night per that file's own header rule. -->
+    <color name="space_update_text">#1A1C1E</color>
+    <!-- D-596: the one-shot green space-bar confirmation flash after a successful language-pack
+         install - D-247's device-distinguishable Material Green 600, the app's established
+         "gelernt/erledigt" green. That is green's correct role here: the brief "done", never the
+         persistent state. Identical in both modes (the light night-mode key_text stays legible on it),
+         so it too stays out of values-night. -->
+    <color name="space_installed_flash">#43A047</color>
 </resources>
