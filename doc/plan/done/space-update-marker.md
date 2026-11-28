@@ -1,15 +1,10 @@
 # AdaptKey — Plan: Space-Update-Marker (Amber-Markierung bei Sprachpaket-Update)
 
-**Status: OFFEN — umgesetzt (2026-11-28), offen: die Gerät-Checks aus §6.** Die drei Kern-Calls sind
-entschieden (Nutzer-Calls vom 2026-11-28, je der eigene Vorschlag bzw. meine Empfehlung): Farbe =
-**Amber-Vollfläche** statt Grün, Long-Press = **Override immer** (D-401 pausiert im Update-Zustand
-bis zur Installation, unabhängig vom Setting), Bestätigung = **kurzer Grün-Blitz** nach erfolgreicher
-Installation. Umsetzung erfolgt noch am selben Tag: D-593-Prädikat in `LanguagePackCatalog`,
-Marker-Zeichnung + Long-Press-Override in `AdaptKeyboardView`, Verkabelung + Grün-Blitz-Konsum im
-Service, Flag im INSTALL-Zweig der Paket-Seite, Farben in beiden Paletten, eigener kurzer
-`d594_space_update_label`-String in allen 32 Sprachen (siehe §2, Umsetzungs-Note), 18 neue
-JVM-Tests (Prädikat + Policy/Geometrie) grün. Am Gerät zu verifizieren: Tag/Nacht-Kontrast der
-Amber-Fläche, Chevrons/Punkt-Kontrast auf Amber, D-401-Pause und Rückkehr, Grün-Blitz genau einmal.
+**Status: CLOSED (2026-11-28, device-confirmed) — die drei Kern-Calls (Farbe = Amber-Vollfläche,
+Long-Press = Override immer, Bestätigung = kurzer Grün-Blitz) sind am selben Tag umgesetzt
+(v1.3.30/630, D-593..D-596) und vom Nutzer am Gerät gegen ein echtes, pending Paket-Update bestätigt
+(„optimal funktioniert"): der komplette Zyklus — Amber-Marker auf der Leertaste, Long-Press mit
+Highlight in die Paket-Seite, Installation, Grün-Blitz, Normalzustand, D-401 zurück.**
 
 Origin: Nutzer-Anfrage (2026-11-28) — es hängt viel an einem aktuellen Sprachpaket (Korrektur-
 qualität, Register, Gate-Fixes; D-579/D-580 sind das frische Beispiel, dass ein versäumter

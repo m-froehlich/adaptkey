@@ -27565,3 +27565,16 @@ Gerät-Checks (Tag/Nacht-Kontrast der Amber-Fläche, Chevrons/Punkt-Kontrast auf
 und Rückkehr mit Setting an und aus, Grün-Blitz genau einmal auch nach Prozess-Tod, Marker weg nach
 der Installation, D-334-Ausblendung) - sie stehen im Plan-Status-Header; die Gerät-Bestätigung wird
 als eigener Docs-Commit nachgetragen.
+
+## §584 - Docs: D-593..D-596 device-confirmed - the space-bar update marker's first real round-trip verified live with a genuinely pending pack update
+
+User device round on the 1.3.30/630 release build (SHA256
+b1cd40ba4154bf397742abf7839cefbf0193c3fe6cac5d100e14b2ce8de396a3), same day as §583: "das hat optimal
+funktioniert. Ich konnte es gleich mit dem letzten Paket verifizieren" - the full cycle ran against a
+real pending pack update: the amber marker on the space bar, the long-press into
+`LanguagePacksActivity` with the highlighted row, the install, the one-shot green flash, the marker
+gone, D-401 cursor control back. Progress D-593..D-596 resolved as device-confirmed;
+`space-update-marker.md` moved to the done folder with its status header closed. The §6 sub-checks
+beyond the reported cycle (night-mode contrast read, chevrons/pending-dot on amber, D-334 suppression
+display, landscape fallback) were not individually called out - they stay ordinary device-feedback
+items, nothing blocking.
