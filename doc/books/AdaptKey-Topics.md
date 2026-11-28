@@ -668,8 +668,20 @@ Konventionen:
 | D-578 | EN-Reseed erzwungen | BUNDLED_DICTIONARY_VERSION 2 -> 3 - existing installs finally see the plan's bundled-EN data on update | ← Nachfolge Plan `english-dictionary-quality.md` |
 | D-579 | Catalog-Versäumnis: Dur-Fix | LanguagePackCatalog German 52 -> 54 - "Update verfügbar" hint restored; Dur 100 reaches installs | ← Nachfolge Plan `english-dictionary-quality.md` |
 | D-580 | dur->dir am Gerät bestätigt | device-confirmed: root cause was the un-pushed hosted pack (52); after push + pack-54 import dur->dir fires silently | ← Nachfolge Plan `english-dictionary-quality.md` |
+| D-581 | Markup Artefact Sweep (DE+EN) | sweep of markup artefacts and non-typable rows in de/en dictionaries (nbsp rank 21/75, entity fragments, 333 embedded-space rows) + gate denylist | ← Plan `dictionary-quality-next-level.md` |
+| D-582 | Golden-Set Harness | German chat golden-set evaluation harness with baseline metrics (chip@1, silent-correction precision/recall) + tuning of the not-yet-device-tuned ranking constants | ← Plan `dictionary-quality-next-level.md` |
+| D-583 | German Messaging Register + Contractions | German messaging-register floors (danke/bitte/hallo/tschüss-class) + apostrophe contractions (geht's-class) | ← Plan `dictionary-quality-next-level.md` |
+| D-584 | Bigram Revision + EN Refresh | bigram hygiene and chat-context coverage for de (orphans, EN leakage, greeting pairs) + first en bigram refresh | ← Plan `dictionary-quality-next-level.md` |
+| D-585 | Register Calibration Procedure | reproducible register-calibration procedure (curated floors or build-time informal-corpus blend) for every language pack | ← Plan `dictionary-quality-next-level.md` |
+| D-586 | German Confusables Audit | German QWERTY-confusables ratio audit after the EN D-573 precedent - zero silent pairs outside the curated blacklist | ← Plan `dictionary-quality-next-level.md` |
+| D-587 | Veto Residual: Frequency Threshold | residual veto victims (34 whitelisted legitimate EN words) - frequency-scaled D-106 veto decision | ← Plan `dictionary-quality-next-level.md` |
+| D-588 | Deployment Pins + Visibility | deployment invariant pins (catalog == version.txt, reseed discipline) + visibility of dictionary rounds | ← Plan `dictionary-quality-next-level.md` |
+| D-589 | Verb Tail Decision | unattested verb-form tail decision (5,591 freq-1 VERB rows, D-462 rest) | ← Plan `dictionary-quality-next-level.md` |
+| D-590 | Lemma-Family Ranking | optional chip-only lemma-family frequency inheritance for ranking (no autocorrect change, no build-time minting) | ← Plan `dictionary-quality-next-level.md` |
+| D-591 | English Colloquial Register | English colloquial/abbreviation register round (gonna/ok/btw/idk-class, y'all) + gate floors | ← Plan `dictionary-quality-next-level.md` |
+| D-592 | Blueprint Rollout | roll the German blueprint (gate defaults, register floors, confusables audit) out to the language packs | ← Plan `dictionary-quality-next-level.md` |
 
 ---
 
 
-**Nächste freie Nummer: D-581.** (Höchste vergebene: D-580.)
+**Nächste freie Nummer: D-593.** (Höchste vergebene: D-592.)
