@@ -680,8 +680,15 @@ Konventionen:
 | D-590 | Lemma-Family Ranking | optional chip-only lemma-family frequency inheritance for ranking (no autocorrect change, no build-time minting) | ← Plan `dictionary-quality-next-level.md` |
 | D-591 | English Colloquial Register | English colloquial/abbreviation register round (gonna/ok/btw/idk-class, y'all) + gate floors | ← Plan `dictionary-quality-next-level.md` |
 | D-592 | Blueprint Rollout | roll the German blueprint (gate defaults, register floors, confusables audit) out to the language packs | ← Plan `dictionary-quality-next-level.md` |
+| D-593 | Space Update Marker Signal | space-bar update marker signal for the active language - exact `buildRow()` predicate (installed + catalog newer + D-334 suppression) recomputed at the service's label refresh points | ← Plan `space-update-marker.md` |
+| D-594 | Amber Space Marker Visual | amber full-fill space key (letters surface only) with a two-line centered label: endonym + localized "Update verfügbar" | ← Plan `space-update-marker.md` |
+| D-595 | Space Long-Press Update Shortcut | while an update is pending, space long-press opens LanguagePacksActivity highlighted - D-401 cursor control pauses until installed, regardless of the setting | ← Plan `space-update-marker.md` |
+| D-596 | Post-Install Green Flash | one-shot green space-bar fill flash on the next keyboard appearance after a successful pack install | ← Plan `space-update-marker.md` |
+| D-597 | Pack Quality Ledger | improvement ledger (`dictionaries/quality_ledger.tsv`) with fixed-weight measure classes, scoring script, retroactive start scores for all packs, catalog `quality` field + sum pins | ← Plan `pack-quality-indicator.md` |
+| D-598 | Language Pack Row Display | LanguagePacksActivity rows: endonym + localized display name in parentheses, status line with installed version / update arrow, built-in line for English, right-aligned available version + quality score | ← Plan `pack-quality-indicator.md` |
+| D-599 | Pack Row Status Strings (32 Locales) | placeholder rework of the language-pack status strings (installed version, update arrow) across all 32 locale files | ← Plan `pack-quality-indicator.md` |
 
 ---
 
 
-**Nächste freie Nummer: D-593.** (Höchste vergebene: D-592.)
+**Nächste freie Nummer: D-600.** (Höchste vergebene: D-599.)
